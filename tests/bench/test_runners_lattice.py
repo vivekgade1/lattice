@@ -189,3 +189,27 @@ def test_refusal_in_repair_round_keeps_earlier_round_tokens(tmp_path: Path) -> N
     assert outcome.cache_read_tokens == 300 + 3
     assert outcome.latency_s == 1.5
     assert outcome.model == "m-a,m-r"
+
+
+def test_retried_refusals_are_recorded_on_the_outcome(tmp_path) -> None:
+    import dataclasses
+
+    from bench.datasets import load_fixtures, write_fixtures
+    from bench.runners import prepare_workdir, run_lattice
+    from bench.tasks import suite
+    from lattice.llm.client import ScriptedGenerator
+
+    solution = (Path(__file__).parents[1] / "fixtures" / "lattice_solutions" / "s01.py").read_text()
+
+    class RetriedOnce(ScriptedGenerator):
+        def generate(self, system, messages):
+            return dataclasses.replace(super().generate(system, messages), refusals=1)
+
+    fixtures = tmp_path / "fx"
+    write_fixtures(fixtures)
+    task = next(t for t in suite("seed") if t.id == "s01")
+    workdir = prepare_workdir(task, tmp_path / "w", fixtures)
+    outcome = run_lattice(task, RetriedOnce([f"```python\n{solution}```"]), workdir,
+                          load_fixtures(fixtures), arm="C", max_repairs=0)
+
+    assert outcome.correct and outcome.refused_attempts == 1

@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import dataclasses
 import shutil
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import polars as pl
 
@@ -46,6 +47,7 @@ class TaskOutcome:
     # cache creation); cache_read_tokens is the cached share of it.
     cache_read_tokens: int = 0
     model: str = ""  # comma-separated distinct served models, in call order
+    refused_attempts: int = 0  # refused calls that were retried and then answered
 
 
 def _wrote_exact(workdir: Path, name: str) -> bool:
@@ -131,7 +133,7 @@ def _baseline_outcome(
     )
 
 
-def run_baseline(
+def _run_baseline(
     task: Task,
     generator: Generator,
     workdir: Path,
@@ -294,7 +296,7 @@ def _round_totals(rounds: Sequence[Round]) -> _Totals:
     )
 
 
-def run_lattice(
+def _run_lattice(
     task: Task,
     generator: Generator,
     workdir: Path,
@@ -446,3 +448,28 @@ def run_lattice(
         cache_read_tokens=cache_read_tokens,
         model=model,
     )
+
+
+class _RefusalCounter:
+    """Wraps a Generator to total the refused-then-retried attempts behind each answer."""
+
+    def __init__(self, inner: Generator) -> None:
+        self.inner = inner
+        self.count = 0
+
+    def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
+        generation = self.inner.generate(system, messages)
+        self.count += generation.refusals
+        return generation
+
+
+def run_baseline(task: Task, generator: Generator, *args: Any, **kwargs: Any) -> TaskOutcome:
+    counter = _RefusalCounter(generator)
+    outcome = _run_baseline(task, counter, *args, **kwargs)
+    return dataclasses.replace(outcome, refused_attempts=counter.count)
+
+
+def run_lattice(task: Task, generator: Generator, *args: Any, **kwargs: Any) -> TaskOutcome:
+    counter = _RefusalCounter(generator)
+    outcome = _run_lattice(task, counter, *args, **kwargs)
+    return dataclasses.replace(outcome, refused_attempts=counter.count)
