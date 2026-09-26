@@ -16,6 +16,7 @@ class ArmTierStats:
     n: int
     accuracy: float
     first_shot_pass: float | None
+    check_pass_rate: float | None
     mean_rounds: float
     mean_output_tokens: float
     mean_latency_s: float
@@ -40,6 +41,7 @@ def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
             n=0,
             accuracy=0.0,
             first_shot_pass=None,
+            check_pass_rate=None,
             mean_rounds=0.0,
             mean_output_tokens=0.0,
             mean_latency_s=0.0,
@@ -49,9 +51,18 @@ def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
 
     # `check_passed` is None for arm A (no static checker runs there); for
     # arms B/C it records whether the program ultimately passed Lattice's
-    # checks (possibly after repairs).
-    checked = [o.check_passed for o in outcomes if o.check_passed is not None]
-    first_shot_pass = sum(1 for v in checked if v) / len(checked) if checked else None
+    # checks (possibly after repairs). `first_shot_pass` is the share that
+    # passed on round 1 (no repair needed); `check_pass_rate` is the share
+    # that passed at all, in any round.
+    checked = [o for o in outcomes if o.check_passed is not None]
+    if checked:
+        first_shot_pass = sum(1 for o in checked if o.check_passed and o.rounds == 1) / len(
+            checked
+        )
+        check_pass_rate = sum(1 for o in checked if o.check_passed) / len(checked)
+    else:
+        first_shot_pass = None
+        check_pass_rate = None
 
     mean_rounds = sum(o.rounds for o in outcomes) / n
     mean_output_tokens = sum(o.output_tokens for o in outcomes) / n
@@ -61,6 +72,7 @@ def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
         n=n,
         accuracy=accuracy,
         first_shot_pass=first_shot_pass,
+        check_pass_rate=check_pass_rate,
         mean_rounds=mean_rounds,
         mean_output_tokens=mean_output_tokens,
         mean_latency_s=mean_latency_s,
@@ -143,14 +155,14 @@ def evaluate_gate(summary: Summary) -> GateResult:
     b_all = stats.get(("B", "all"))
     if b_all is None:
         checks.append(("check_pass_rate", False, "missing arm B results"))
-    elif b_all.first_shot_pass is None:
+    elif b_all.check_pass_rate is None:
         checks.append(("check_pass_rate", False, "arm B has no check_passed data"))
     else:
         checks.append(
             (
                 "check_pass_rate",
-                b_all.first_shot_pass >= 0.99,
-                f"share of B outcomes with check_passed = {b_all.first_shot_pass:.3f}"
+                b_all.check_pass_rate >= 0.99,
+                f"share of B outcomes with check_passed = {b_all.check_pass_rate:.3f}"
                 " (need >= 0.99)",
             )
         )
@@ -162,14 +174,15 @@ def evaluate_gate(summary: Summary) -> GateResult:
 def render_markdown(summary: Summary, gate: GateResult | None) -> str:
     lines = ["# Lattice Benchmark Report", ""]
     lines.append(
-        "| Arm | Tier | n | Accuracy | First-shot pass | Mean rounds "
+        "| Arm | Tier | n | Accuracy | First-shot pass | Check pass rate | Mean rounds "
         "| Mean output tokens | Mean latency (s) |"
     )
-    lines.append("|---|---|---|---|---|---|---|---|")
+    lines.append("|---|---|---|---|---|---|---|---|---|")
     for (arm, tier), stat in sorted(summary.stats.items()):
         fsp = "-" if stat.first_shot_pass is None else f"{stat.first_shot_pass:.2%}"
+        cpr = "-" if stat.check_pass_rate is None else f"{stat.check_pass_rate:.2%}"
         lines.append(
-            f"| {arm} | {tier} | {stat.n} | {stat.accuracy:.2%} | {fsp} | "
+            f"| {arm} | {tier} | {stat.n} | {stat.accuracy:.2%} | {fsp} | {cpr} | "
             f"{stat.mean_rounds:.2f} | {stat.mean_output_tokens:.1f} | {stat.mean_latency_s:.2f} |"
         )
 

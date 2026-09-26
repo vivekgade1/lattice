@@ -56,27 +56,43 @@ def test_summarize_first_shot_pass_is_none_when_check_passed_is_none() -> None:
     summary = summarize([_outcome(check_passed=None)])
 
     assert summary.stats[("A", "all")].first_shot_pass is None
+    assert summary.stats[("A", "all")].check_pass_rate is None
 
 
-def test_summarize_first_shot_pass_for_arm_with_check_passed_data() -> None:
+def test_summarize_check_pass_rate_for_arm_with_check_passed_data() -> None:
     outcomes = [
-        _outcome(arm="B", tier="single", check_passed=True, correct=True),
+        _outcome(arm="B", tier="single", check_passed=True, correct=True, rounds=1),
         _outcome(arm="B", tier="single", check_passed=False, correct=False, failure="schema"),
     ]
 
     summary = summarize(outcomes)
 
-    assert summary.stats[("B", "all")].first_shot_pass == 0.5
+    assert summary.stats[("B", "all")].check_pass_rate == 0.5
+
+
+def test_summarize_first_shot_pass_only_counts_round_one_passes() -> None:
+    outcomes = [
+        _outcome(arm="B", tier="single", check_passed=True, correct=True, rounds=1),
+        _outcome(arm="B", tier="single", check_passed=True, correct=True, rounds=2),
+        _outcome(arm="B", tier="single", check_passed=False, correct=False, rounds=3),
+    ]
+
+    summary = summarize(outcomes)
+
+    # First-shot pass: only the rounds==1 pass counts, out of 3 checked outcomes.
+    assert summary.stats[("B", "all")].first_shot_pass == pytest.approx(1 / 3)
+    # Check pass rate: both eventually-passing outcomes count, regardless of round.
+    assert summary.stats[("B", "all")].check_pass_rate == pytest.approx(2 / 3)
 
 
 def test_gate_passes_when_all_thresholds_are_met() -> None:
     summary = Summary(
         stats={
-            ("A", "multi"): ArmTierStats(10, 0.40, None, 1.0, 100.0, 1.0),
-            ("B", "multi"): ArmTierStats(10, 0.60, 0.99, 1.5, 200.0, 2.0),
-            ("A", "single"): ArmTierStats(10, 0.90, None, 1.0, 80.0, 1.0),
-            ("B", "single"): ArmTierStats(10, 0.89, 0.99, 1.2, 150.0, 1.8),
-            ("B", "all"): ArmTierStats(20, 0.75, 0.995, 1.35, 175.0, 1.9),
+            ("A", "multi"): ArmTierStats(10, 0.40, None, None, 1.0, 100.0, 1.0),
+            ("B", "multi"): ArmTierStats(10, 0.60, 0.99, 0.99, 1.5, 200.0, 2.0),
+            ("A", "single"): ArmTierStats(10, 0.90, None, None, 1.0, 80.0, 1.0),
+            ("B", "single"): ArmTierStats(10, 0.89, 0.99, 0.99, 1.2, 150.0, 1.8),
+            ("B", "all"): ArmTierStats(20, 0.75, 0.995, 0.995, 1.35, 175.0, 1.9),
         },
         failures={},
     )
@@ -90,11 +106,11 @@ def test_gate_passes_when_all_thresholds_are_met() -> None:
 def test_gate_fails_on_insufficient_multi_step_improvement() -> None:
     summary = Summary(
         stats={
-            ("A", "multi"): ArmTierStats(10, 0.40, None, 1.0, 100.0, 1.0),
-            ("B", "multi"): ArmTierStats(10, 0.45, 0.99, 1.5, 200.0, 2.0),
-            ("A", "single"): ArmTierStats(10, 0.90, None, 1.0, 80.0, 1.0),
-            ("B", "single"): ArmTierStats(10, 0.89, 0.99, 1.2, 150.0, 1.8),
-            ("B", "all"): ArmTierStats(20, 0.67, 0.995, 1.35, 175.0, 1.9),
+            ("A", "multi"): ArmTierStats(10, 0.40, None, None, 1.0, 100.0, 1.0),
+            ("B", "multi"): ArmTierStats(10, 0.45, 0.99, 0.99, 1.5, 200.0, 2.0),
+            ("A", "single"): ArmTierStats(10, 0.90, None, None, 1.0, 80.0, 1.0),
+            ("B", "single"): ArmTierStats(10, 0.89, 0.99, 0.99, 1.2, 150.0, 1.8),
+            ("B", "all"): ArmTierStats(20, 0.67, 0.995, 0.995, 1.35, 175.0, 1.9),
         },
         failures={},
     )
@@ -110,11 +126,11 @@ def test_gate_fails_on_insufficient_multi_step_improvement() -> None:
 def test_gate_fails_on_single_step_regression() -> None:
     summary = Summary(
         stats={
-            ("A", "multi"): ArmTierStats(10, 0.40, None, 1.0, 100.0, 1.0),
-            ("B", "multi"): ArmTierStats(10, 0.60, 0.99, 1.5, 200.0, 2.0),
-            ("A", "single"): ArmTierStats(10, 0.90, None, 1.0, 80.0, 1.0),
-            ("B", "single"): ArmTierStats(10, 0.50, 0.99, 1.2, 150.0, 1.8),
-            ("B", "all"): ArmTierStats(20, 0.55, 0.995, 1.35, 175.0, 1.9),
+            ("A", "multi"): ArmTierStats(10, 0.40, None, None, 1.0, 100.0, 1.0),
+            ("B", "multi"): ArmTierStats(10, 0.60, 0.99, 0.99, 1.5, 200.0, 2.0),
+            ("A", "single"): ArmTierStats(10, 0.90, None, None, 1.0, 80.0, 1.0),
+            ("B", "single"): ArmTierStats(10, 0.50, 0.99, 0.99, 1.2, 150.0, 1.8),
+            ("B", "all"): ArmTierStats(20, 0.55, 0.995, 0.995, 1.35, 175.0, 1.9),
         },
         failures={},
     )
@@ -129,11 +145,11 @@ def test_gate_fails_on_single_step_regression() -> None:
 def test_gate_fails_on_low_check_pass_rate() -> None:
     summary = Summary(
         stats={
-            ("A", "multi"): ArmTierStats(10, 0.40, None, 1.0, 100.0, 1.0),
-            ("B", "multi"): ArmTierStats(10, 0.60, 0.80, 1.5, 200.0, 2.0),
-            ("A", "single"): ArmTierStats(10, 0.90, None, 1.0, 80.0, 1.0),
-            ("B", "single"): ArmTierStats(10, 0.89, 0.80, 1.2, 150.0, 1.8),
-            ("B", "all"): ArmTierStats(20, 0.75, 0.80, 1.35, 175.0, 1.9),
+            ("A", "multi"): ArmTierStats(10, 0.40, None, None, 1.0, 100.0, 1.0),
+            ("B", "multi"): ArmTierStats(10, 0.60, 0.80, 0.80, 1.5, 200.0, 2.0),
+            ("A", "single"): ArmTierStats(10, 0.90, None, None, 1.0, 80.0, 1.0),
+            ("B", "single"): ArmTierStats(10, 0.89, 0.80, 0.80, 1.2, 150.0, 1.8),
+            ("B", "all"): ArmTierStats(20, 0.75, 0.80, 0.80, 1.35, 175.0, 1.9),
         },
         failures={},
     )
@@ -147,7 +163,7 @@ def test_gate_fails_on_low_check_pass_rate() -> None:
 
 def test_gate_handles_missing_arm_b_gracefully() -> None:
     summary = Summary(
-        stats={("A", "multi"): ArmTierStats(10, 0.4, None, 1.0, 100.0, 1.0)},
+        stats={("A", "multi"): ArmTierStats(10, 0.4, None, None, 1.0, 100.0, 1.0)},
         failures={},
     )
 
