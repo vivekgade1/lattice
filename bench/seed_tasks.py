@@ -168,7 +168,7 @@ def _m08(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
         .group_by("customer_id")
         .agg((pl.col("qty") * pl.col("unit_price")).sum().alias("total_revenue"))
         .filter(pl.col("total_revenue") >= 1000)
-        .sort(["total_revenue", "customer_id"], descending=[True, True])
+        .sort(["total_revenue", "customer_id"], descending=[True, False])
         .head(5)
     )
 
