@@ -63,6 +63,12 @@ def test_bare_non_terminal(diags):
     assert "must be assigned" in [d for d in diags(src) if d.code == "L302"][0].message
 
 
+def test_assigned_write_is_left_to_p5(codes):
+    src = prog('x = write(raw, "o.csv")')
+    assert "L302" not in codes(src)
+    assert codes(src).count("L502") == 1
+
+
 def test_where_predicate_by_keyword(diags):
     src = prog('x = where(raw, pred=col("a") > 1)', 'write(x, "o.csv")')
     (d,) = [d for d in diags(src) if d.code == "L303"]

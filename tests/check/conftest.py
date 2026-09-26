@@ -19,10 +19,14 @@ CUSTOMERS = Schema.from_pairs(
     [("customer_id", Scalar.INT), ("name", Scalar.STR), ("city", Scalar.STR)]
 )
 
+REGION_REVENUE = Schema.from_pairs([("region", Scalar.STR), ("revenue", Scalar.FLOAT)])
+
 
 @pytest.fixture
 def profile() -> Profile:
-    return Profile(schemas={"Orders": ORDERS, "Customers": CUSTOMERS})
+    return Profile(
+        schemas={"Orders": ORDERS, "Customers": CUSTOMERS, "RegionRevenue": REGION_REVENUE}
+    )
 
 
 @pytest.fixture
@@ -43,3 +47,24 @@ def codes(diags):
         return [d.code for d in diags(src)]
 
     return run
+
+
+@pytest.fixture
+def program(profile):
+    """Build a full program from a body: header plus exactly the imports it uses."""
+    import ast
+
+    from lattice.catalog import IMPORTABLE
+
+    def build(body: str) -> str:
+        used = {n.id for n in ast.walk(ast.parse(body)) if isinstance(n, ast.Name)}
+        ops = sorted(used & IMPORTABLE)
+        schemas = sorted(used & set(profile.schemas))
+        out = "# lattice: v1\n"
+        if ops:
+            out += f"from lattice.ops import {', '.join(ops)}\n"
+        if schemas:
+            out += f"from lattice.schemas import {', '.join(schemas)}\n"
+        return out + body
+
+    return build

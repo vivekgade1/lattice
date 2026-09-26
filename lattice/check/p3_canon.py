@@ -65,13 +65,7 @@ class _Canon:
                 f"the result of '{unit}' must be assigned to a name",
                 f"write 'name = {unit}(...)'",
             )
-        elif isinstance(stmt, ast.Assign) and unit in TERMINAL_OPS:
-            self.ctx.error(
-                "L302",
-                stmt,
-                f"'{unit}' produces no table; call it as a bare statement",
-                f"write '{unit}(...)' without assigning it",
-            )
+        # an assigned terminal op ('x = write(...)') is P5's L502
         for inner in ast.walk(value):
             if inner is not value and self._unit(inner) is not None:
                 self.ctx.error(
