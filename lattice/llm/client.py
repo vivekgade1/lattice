@@ -1,0 +1,136 @@
+"""Claude generation client: request shaping, response unpacking, code extraction."""
+
+from __future__ import annotations
+
+import re
+import time
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from typing import Any, Protocol
+
+_FALLBACK_BETA = "server-side-fallback-2026-06-01"
+_FALLBACK_MODELS: list[dict[str, str]] = [{"model": "claude-opus-4-8"}]
+
+_FENCE_RE = re.compile(r"```([^\n]*)\n(.*?)```", re.DOTALL)
+
+
+@dataclass(frozen=True)
+class Usage:
+    input_tokens: int
+    output_tokens: int
+    cache_read_input_tokens: int = 0
+    cache_creation_input_tokens: int = 0
+
+
+@dataclass(frozen=True)
+class Generation:
+    text: str
+    usage: Usage
+    latency_s: float
+    stop_reason: str
+
+
+class GenerationRefused(Exception):
+    """Raised when the model declines to answer (`stop_reason == "refusal"`)."""
+
+
+class Generator(Protocol):
+    def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation: ...
+
+
+class ClaudeGenerator:
+    """Generator backed by the Claude beta messages endpoint."""
+
+    def __init__(
+        self,
+        model: str = "claude-opus-5",
+        max_tokens: int = 16000,
+        effort: str = "high",
+        client: Any | None = None,
+    ) -> None:
+        self.model = model
+        self.max_tokens = max_tokens
+        self.effort = effort
+        self._client = client
+
+    @property
+    def client(self) -> Any:
+        """The underlying SDK client, constructed lazily if none was injected."""
+        if self._client is None:
+            import anthropic
+
+            self._client = anthropic.Anthropic()
+        return self._client
+
+    def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
+        start = time.perf_counter()
+        response = self.client.beta.messages.create(
+            model=self.model,
+            max_tokens=self.max_tokens,
+            betas=[_FALLBACK_BETA],
+            fallbacks=_FALLBACK_MODELS,
+            output_config={"effort": self.effort},
+            system=[
+                {
+                    "type": "text",
+                    "text": system,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ],
+            messages=list(messages),
+        )
+        latency_s = time.perf_counter() - start
+
+        if response.stop_reason == "refusal":
+            raise GenerationRefused(
+                f"model refused to generate (stop_reason={response.stop_reason!r})"
+            )
+
+        text = "".join(block.text for block in response.content if block.type == "text")
+        usage = Usage(
+            input_tokens=getattr(response.usage, "input_tokens", 0) or 0,
+            output_tokens=getattr(response.usage, "output_tokens", 0) or 0,
+            cache_read_input_tokens=getattr(response.usage, "cache_read_input_tokens", 0) or 0,
+            cache_creation_input_tokens=(
+                getattr(response.usage, "cache_creation_input_tokens", 0) or 0
+            ),
+        )
+        return Generation(
+            text=text,
+            usage=usage,
+            latency_s=latency_s,
+            stop_reason=response.stop_reason,
+        )
+
+
+class ScriptedGenerator:
+    """Test double: replays canned texts in order and records every call."""
+
+    def __init__(self, texts: Sequence[str]) -> None:
+        self._texts = list(texts)
+        self._index = 0
+        self.calls: list[tuple[str, list[dict]]] = []
+
+    def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
+        self.calls.append((system, list(messages)))
+        if self._index >= len(self._texts):
+            raise IndexError("ScriptedGenerator: no more scripted texts")
+        text = self._texts[self._index]
+        self._index += 1
+        return Generation(text=text, usage=Usage(0, 0), latency_s=0.0, stop_reason="end_turn")
+
+
+def extract_code(text: str) -> str | None:
+    """First ```python`/```py fenced block; else the first bare fence; else None."""
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    blocks = [(info.strip().lower(), body) for info, body in _FENCE_RE.findall(normalized)]
+
+    for info, body in blocks:
+        if info in ("python", "py"):
+            return body
+
+    for info, body in blocks:
+        if info == "":
+            return body
+
+    return None
