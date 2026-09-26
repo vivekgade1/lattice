@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from bench.runners import TaskOutcome
@@ -20,18 +21,29 @@ class ArmTierStats:
     mean_rounds: float
     mean_output_tokens: float
     mean_latency_s: float
+    max_rounds: int = 0
 
 
 @dataclass(frozen=True)
 class Summary:
     stats: Mapping[tuple[str, str], ArmTierStats]
     failures: Mapping[str, Mapping[str, int]]
+    # arm -> sorted distinct models that actually served its requests
+    models: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
 class GateResult:
     passed: bool
     checks: tuple[tuple[str, bool, str], ...]
+    notes: tuple[str, ...] = ()  # informational lines; never affect `passed`
+
+
+# Documented tolerance: arm B may trail arm A on single-step tasks by at most
+# this much accuracy (sampling noise on a small tier), and still pass the gate.
+SINGLE_TIER_TOLERANCE = 0.02
+# Arm B may use at most 2 repairs, i.e. at most 3 generation rounds per task.
+MAX_B_ROUNDS = 3
 
 
 def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
@@ -67,6 +79,7 @@ def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
     mean_rounds = sum(o.rounds for o in outcomes) / n
     mean_output_tokens = sum(o.output_tokens for o in outcomes) / n
     mean_latency_s = sum(o.latency_s for o in outcomes) / n
+    max_rounds = max(o.rounds for o in outcomes)
 
     return ArmTierStats(
         n=n,
@@ -76,6 +89,7 @@ def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
         mean_rounds=mean_rounds,
         mean_output_tokens=mean_output_tokens,
         mean_latency_s=mean_latency_s,
+        max_rounds=max_rounds,
     )
 
 
@@ -83,10 +97,12 @@ def summarize(outcomes: Sequence[TaskOutcome]) -> Summary:
     by_arm_tier: dict[tuple[str, str], list[TaskOutcome]] = defaultdict(list)
     by_arm: dict[str, list[TaskOutcome]] = defaultdict(list)
     failures: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    models: dict[str, set[str]] = defaultdict(set)
 
     for outcome in outcomes:
         by_arm_tier[(outcome.arm, outcome.tier)].append(outcome)
         by_arm[outcome.arm].append(outcome)
+        models[outcome.arm].update(m for m in outcome.model.split(",") if m)
         if outcome.failure is not None:
             failures[outcome.arm][outcome.failure] += 1
 
@@ -99,6 +115,7 @@ def summarize(outcomes: Sequence[TaskOutcome]) -> Summary:
     return Summary(
         stats=stats,
         failures={arm: dict(labels) for arm, labels in failures.items()},
+        models={arm: tuple(sorted(names)) for arm, names in models.items() if names},
     )
 
 
@@ -106,8 +123,11 @@ def evaluate_gate(summary: Summary) -> GateResult:
     """Phase-3 go/no-go gate (thresholds finalized in Task 24).
 
     Checks: (1) multi-step accuracy improves by >= 0.15 over the baseline;
-    (2) single-step accuracy does not regress by more than 0.02; (3) at
-    least 99% of arm B's programs ultimately pass Lattice's static checks.
+    (2) single-step accuracy does not regress by more than the documented
+    ``SINGLE_TIER_TOLERANCE`` (0.02); (3) at least 99% of arm B's programs
+    ultimately pass Lattice's static checks; (4) arm B never used more than
+    2 repairs (max rounds <= 3). The join-tier delta is reported as an
+    informational note only.
     Missing arms are handled gracefully: the affected check fails with a
     detail naming which arm's results are absent.
     """
@@ -143,12 +163,13 @@ def evaluate_gate(summary: Summary) -> GateResult:
             )
         )
     else:
-        threshold = a_single.accuracy - 0.02
+        threshold = a_single.accuracy - SINGLE_TIER_TOLERANCE
         checks.append(
             (
                 "single_step_no_regression",
                 b_single.accuracy >= threshold,
-                f"acc(B,single) = {b_single.accuracy:.3f} (need >= {threshold:.3f})",
+                f"acc(B,single) = {b_single.accuracy:.3f} (need >= acc(A,single) - "
+                f"{SINGLE_TIER_TOLERANCE:.2f} tolerance = {threshold:.3f})",
             )
         )
 
@@ -167,8 +188,29 @@ def evaluate_gate(summary: Summary) -> GateResult:
             )
         )
 
+    if b_all is None:
+        checks.append(("max_repair_rounds", False, "missing arm B results"))
+    else:
+        checks.append(
+            (
+                "max_repair_rounds",
+                b_all.max_rounds <= MAX_B_ROUNDS,
+                f"max rounds used by arm B = {b_all.max_rounds} "
+                f"(need <= {MAX_B_ROUNDS}, i.e. <= {MAX_B_ROUNDS - 1} repairs)",
+            )
+        )
+
+    notes: list[str] = []
+    a_join = stats.get(("A", "join"))
+    b_join = stats.get(("B", "join"))
+    if a_join is not None and b_join is not None:
+        notes.append(
+            f"join tier (informational): acc(B,join) - acc(A,join) = "
+            f"{b_join.accuracy - a_join.accuracy:.3f}"
+        )
+
     passed = all(ok for _, ok, _ in checks)
-    return GateResult(passed=passed, checks=tuple(checks))
+    return GateResult(passed=passed, checks=tuple(checks), notes=tuple(notes))
 
 
 def render_markdown(summary: Summary, gate: GateResult | None) -> str:
@@ -197,15 +239,30 @@ def render_markdown(summary: Summary, gate: GateResult | None) -> str:
     else:
         lines.append("(no failures recorded)")
 
+    if summary.models:
+        lines.append("")
+        lines.append("## Served models")
+        lines.append("")
+        for arm in sorted(summary.models):
+            lines.append(f"- **{arm}**: {', '.join(summary.models[arm])}")
+
     if gate is not None:
         lines.append("")
         lines.append("## Gate")
         lines.append("")
         lines.append(f"**Result: {'PASS' if gate.passed else 'FAIL'}**")
         lines.append("")
+        lines.append(
+            f"Single-step tolerance: arm B may trail arm A by at most "
+            f"{SINGLE_TIER_TOLERANCE:.2f} accuracy on the single tier. Arm B may use "
+            f"at most {MAX_B_ROUNDS - 1} repairs ({MAX_B_ROUNDS} rounds) per task."
+        )
+        lines.append("")
         for name, ok, detail in gate.checks:
             mark = "PASS" if ok else "FAIL"
             lines.append(f"- [{mark}] `{name}`: {detail}")
+        for note in gate.notes:
+            lines.append(f"- [INFO] {note}")
 
     return "\n".join(lines) + "\n"
 
@@ -215,6 +272,15 @@ def write_outcomes(path: Path, outcomes: Sequence[TaskOutcome]) -> None:
     with path.open("w") as f:
         for outcome in outcomes:
             f.write(json.dumps(asdict(outcome)) + "\n")
+
+
+def append_outcome(path: Path, outcome: TaskOutcome) -> None:
+    """Append one outcome as a JSONL line and flush it to disk immediately."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a") as f:
+        f.write(json.dumps(asdict(outcome)) + "\n")
+        f.flush()
+        os.fsync(f.fileno())
 
 
 def read_outcomes(path: Path) -> list[TaskOutcome]:

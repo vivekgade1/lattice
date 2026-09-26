@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from lattice.check import CheckResult, check_source
 from lattice.diagnostics import Diagnostic, Severity, Span, render_for_llm
-from lattice.llm.client import Generation, Generator, extract_code
+from lattice.llm.client import Generation, GenerationRefused, Generator, extract_code
 from lattice.profile import Profile
 
 _NO_CODE_DIAGNOSTIC = Diagnostic(
@@ -36,6 +36,19 @@ class SynthesisResult:
         return self.check is not None and self.check.ok
 
 
+class SynthesisRefused(GenerationRefused):
+    """A refusal during synthesis; ``rounds`` holds the rounds completed before it.
+
+    The refused call's own usage/latency/model are on the inherited attributes.
+    """
+
+    def __init__(self, cause: GenerationRefused, rounds: tuple[Round, ...]) -> None:
+        super().__init__(
+            str(cause), usage=cause.usage, latency_s=cause.latency_s, model=cause.model
+        )
+        self.rounds = rounds
+
+
 def _repair_message(diagnostics: tuple[Diagnostic, ...]) -> str:
     return (
         "The program failed Lattice checks:\n"
@@ -63,7 +76,12 @@ def synthesize(
     source: str | None = None
 
     for i in range(max_repairs + 1):
-        generation = generator.generate(system, messages)
+        try:
+            generation = generator.generate(system, messages)
+        except SynthesisRefused:
+            raise
+        except GenerationRefused as exc:
+            raise SynthesisRefused(exc, tuple(rounds)) from exc
         code = extract_code(generation.text)
 
         if code is None:

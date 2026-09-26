@@ -291,3 +291,49 @@ class TestExtractCode:
     def test_falls_back_to_bare_block_when_no_python_block(self):
         text = "```sql\nSELECT 1;\n```\n\n```\nprint(1)\n```\n"
         assert extract_code(text) == "print(1)\n"
+
+
+class TestServedModelAndRefusalAccounting:
+    """Regression tests for review finding minor 7."""
+
+    def test_served_model_is_recorded(self):
+        response = _response([_text_block("x")])
+        response.model = "claude-opus-4-8"
+        gen = ClaudeGenerator(client=_fake_client(response))
+
+        result = gen.generate("sys", [])
+
+        assert result.model == "claude-opus-4-8"
+
+    def test_generation_model_defaults_to_empty(self):
+        gen = Generation(text="x", usage=Usage(1, 2), latency_s=0.0, stop_reason="end_turn")
+        assert gen.model == ""
+
+    def test_usage_total_input_includes_cache_tokens(self):
+        usage = Usage(
+            input_tokens=10, output_tokens=5, cache_read_input_tokens=100,
+            cache_creation_input_tokens=1000,
+        )
+        assert usage.total_input_tokens == 1110
+
+    def test_refusal_carries_usage_latency_and_model(self):
+        response = _response(
+            [], stop_reason="refusal",
+            usage=_usage(input_tokens=7, output_tokens=3, cache_read=11, cache_creation=0),
+        )
+        response.model = "claude-opus-5"
+        gen = ClaudeGenerator(client=_fake_client(response))
+
+        with pytest.raises(GenerationRefused) as info:
+            gen.generate("sys", [])
+
+        assert info.value.usage == Usage(7, 3, 11, 0)
+        assert info.value.model == "claude-opus-5"
+        assert info.value.latency_s >= 0.0
+
+    def test_generation_refused_defaults(self):
+        exc = GenerationRefused("nope")
+        assert str(exc) == "nope"
+        assert exc.usage == Usage(0, 0)
+        assert exc.model == ""
+        assert exc.latency_s == 0.0

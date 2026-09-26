@@ -101,3 +101,43 @@ def test_repair_messages_never_include_the_system_prompt() -> None:
         assert system_arg == _SYSTEM
         for message in messages:
             assert _SYSTEM not in message["content"]
+
+
+# --- Regression test for review finding minor 7 ---------------------------
+
+
+class _RefusesOnCall:
+    """Returns scripted generations, raising GenerationRefused on call ``refuse_at``."""
+
+    def __init__(self, texts: list[str], refuse_at: int) -> None:
+        self._texts = texts
+        self._refuse_at = refuse_at
+        self._n = 0
+
+    def generate(self, system, messages):  # type: ignore[no-untyped-def]
+        from lattice.llm.client import Generation, GenerationRefused, Usage
+
+        self._n += 1
+        if self._n == self._refuse_at:
+            raise GenerationRefused("refused", usage=Usage(5, 1, 7, 0), model="m-refuse")
+        text = self._texts[self._n - 1]
+        return Generation(text, Usage(100, 10, 1000, 0), 0.5, "end_turn", model="m-ok")
+
+
+def test_refusal_in_repair_round_keeps_earlier_rounds() -> None:
+    import pytest
+
+    from lattice.llm.client import GenerationRefused
+    from lattice.llm.repair import SynthesisRefused
+
+    generator = _RefusesOnCall([_fenced(_INVALID_NO_HEADER)], refuse_at=2)
+
+    with pytest.raises(SynthesisRefused) as info:
+        synthesize("do the thing", bench_profile(), generator, system=_SYSTEM, max_repairs=2)
+
+    exc = info.value
+    assert isinstance(exc, GenerationRefused)
+    assert len(exc.rounds) == 1
+    assert exc.rounds[0].generation.usage.output_tokens == 10
+    assert exc.usage.cache_read_input_tokens == 7
+    assert exc.model == "m-refuse"

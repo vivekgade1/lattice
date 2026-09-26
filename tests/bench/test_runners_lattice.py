@@ -137,3 +137,55 @@ def test_classify_failure_maps_known_codes() -> None:
     assert classify_failure([_diag("L000")]) == "no_code"
     assert classify_failure([_diag("L501")]) == "other_static"
     assert classify_failure([]) == "other_static"
+
+
+# --- Regression tests for review finding minor 7 ---------------------------
+
+from lattice.llm.client import Generation, GenerationRefused, Usage  # noqa: E402
+
+
+class _SequenceGenerator:
+    """Yields (text, model) generations with fixed usage; refuses on ``refuse_at``."""
+
+    def __init__(self, items: list[tuple[str, str]], refuse_at: int | None = None) -> None:
+        self._items = items
+        self._refuse_at = refuse_at
+        self._n = 0
+
+    def generate(self, system, messages):  # type: ignore[no-untyped-def]
+        self._n += 1
+        if self._n == self._refuse_at:
+            raise GenerationRefused("no", usage=Usage(1, 2, 3, 4), latency_s=0.5, model="m-r")
+        text, model = self._items[self._n - 1]
+        return Generation(text, Usage(10, 20, 300, 4000), 1.0, "end_turn", model=model)
+
+
+def test_lattice_tokens_include_cache_and_models_are_recorded(tmp_path: Path) -> None:
+    workdir, fixtures_frames = _setup(tmp_path)
+    generator = _SequenceGenerator([(_REBINDING_S01, "m-a"), (_CORRECT_S01, "m-b")])
+
+    outcome = run_lattice(_S01, generator, workdir, fixtures_frames, arm="B", max_repairs=2)
+
+    assert outcome.correct is True
+    assert outcome.rounds == 2
+    assert outcome.input_tokens == 2 * 4310
+    assert outcome.cache_read_tokens == 600
+    assert outcome.output_tokens == 40
+    assert outcome.model == "m-a,m-b"
+
+
+def test_refusal_in_repair_round_keeps_earlier_round_tokens(tmp_path: Path) -> None:
+    workdir, fixtures_frames = _setup(tmp_path)
+    generator = _SequenceGenerator([(_REBINDING_S01, "m-a")], refuse_at=2)
+
+    outcome = run_lattice(_S01, generator, workdir, fixtures_frames, arm="B", max_repairs=2)
+
+    assert outcome.correct is False
+    assert outcome.failure == "refused"
+    assert outcome.check_passed is False
+    assert outcome.rounds == 2
+    assert outcome.output_tokens == 20 + 2
+    assert outcome.input_tokens == 4310 + (1 + 3 + 4)
+    assert outcome.cache_read_tokens == 300 + 3
+    assert outcome.latency_s == 1.5
+    assert outcome.model == "m-a,m-r"

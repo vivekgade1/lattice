@@ -21,6 +21,11 @@ class Usage:
     cache_read_input_tokens: int = 0
     cache_creation_input_tokens: int = 0
 
+    @property
+    def total_input_tokens(self) -> int:
+        """All prompt tokens billed for the call: raw + cache reads + cache writes."""
+        return self.input_tokens + self.cache_read_input_tokens + self.cache_creation_input_tokens
+
 
 @dataclass(frozen=True)
 class Generation:
@@ -28,10 +33,28 @@ class Generation:
     usage: Usage
     latency_s: float
     stop_reason: str
+    model: str = ""  # the model that actually served the request (may be a fallback)
 
 
 class GenerationRefused(Exception):
-    """Raised when the model declines to answer (`stop_reason == "refusal"`)."""
+    """Raised when the model declines to answer (`stop_reason == "refusal"`).
+
+    Carries the refused call's usage, latency and served model so callers can
+    still account for the tokens it consumed.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        usage: Usage | None = None,
+        latency_s: float = 0.0,
+        model: str = "",
+    ) -> None:
+        super().__init__(message)
+        self.usage = usage if usage is not None else Usage(0, 0)
+        self.latency_s = latency_s
+        self.model = model
 
 
 class Generator(Protocol):
@@ -80,13 +103,10 @@ class ClaudeGenerator:
             messages=list(messages),
         )
         latency_s = time.perf_counter() - start
+        served_model = getattr(response, "model", "") or ""
+        if not isinstance(served_model, str):
+            served_model = str(served_model)
 
-        if response.stop_reason == "refusal":
-            raise GenerationRefused(
-                f"model refused to generate (stop_reason={response.stop_reason!r})"
-            )
-
-        text = "".join(block.text for block in response.content if block.type == "text")
         usage = Usage(
             input_tokens=getattr(response.usage, "input_tokens", 0) or 0,
             output_tokens=getattr(response.usage, "output_tokens", 0) or 0,
@@ -95,11 +115,22 @@ class ClaudeGenerator:
                 getattr(response.usage, "cache_creation_input_tokens", 0) or 0
             ),
         )
+
+        if response.stop_reason == "refusal":
+            raise GenerationRefused(
+                f"model refused to generate (stop_reason={response.stop_reason!r})",
+                usage=usage,
+                latency_s=latency_s,
+                model=served_model,
+            )
+
+        text = "".join(block.text for block in response.content if block.type == "text")
         return Generation(
             text=text,
             usage=usage,
             latency_s=latency_s,
             stop_reason=response.stop_reason,
+            model=served_model,
         )
 
 

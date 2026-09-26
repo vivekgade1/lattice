@@ -22,7 +22,7 @@ from lattice.llm.prompt import (
     lattice_system_prompt,
     lattice_task_message,
 )
-from lattice.llm.repair import synthesize
+from lattice.llm.repair import Round, SynthesisRefused, synthesize
 from lattice.runtime import LatticeRuntimeError
 from lattice.runtime.exec import run_source
 
@@ -42,16 +42,63 @@ class TaskOutcome:
     latency_s: float
     failure: str | None  # None when correct; else a taxonomy label
     detail: str
+    # input_tokens above is the total billed prompt size (raw + cache read +
+    # cache creation); cache_read_tokens is the cached share of it.
+    cache_read_tokens: int = 0
+    model: str = ""  # comma-separated distinct served models, in call order
+
+
+_STALE_OUTPUTS = ("out.parquet", "out.csv", "solution.py")
+_DETAIL_LIMIT = 2000
 
 
 def prepare_workdir(task: Task, root: Path, fixtures: Path) -> Path:
-    """Create ``root/<task.id>/`` with copies of the task's input CSVs."""
+    """Create ``root/<task.id>/`` with copies of the task's input CSVs.
+
+    Outputs left over from a previous run (``out.parquet``, ``out.csv``,
+    ``solution.py``) are removed so they cannot be scored as this run's.
+    """
     workdir = root / task.id
     workdir.mkdir(parents=True, exist_ok=True)
+    for name in _STALE_OUTPUTS:
+        stale = workdir / name
+        if stale.is_dir():
+            shutil.rmtree(stale)
+        else:
+            stale.unlink(missing_ok=True)
     for name in task.inputs:
         filename = DATASETS[name].filename
         shutil.copyfile(fixtures / filename, workdir / filename)
     return workdir
+
+
+def _join_models(models: Sequence[str]) -> str:
+    seen: list[str] = []
+    for model in models:
+        if model and model not in seen:
+            seen.append(model)
+    return ",".join(seen)
+
+
+def harness_error_outcome(task: Task, arm: Arm, exc: BaseException) -> TaskOutcome:
+    """Outcome for a task whose run crashed inside the harness itself.
+
+    Counts as incorrect; ``check_passed`` is None because no verdict exists.
+    """
+    detail = f"{type(exc).__name__}: {exc}"
+    return TaskOutcome(
+        task_id=task.id,
+        arm=arm,
+        tier=task.tier,
+        correct=False,
+        check_passed=None,
+        rounds=0,
+        output_tokens=0,
+        input_tokens=0,
+        latency_s=0.0,
+        failure="harness_error",
+        detail=detail[:_DETAIL_LIMIT],
+    )
 
 
 def _baseline_outcome(
@@ -70,10 +117,12 @@ def _baseline_outcome(
         check_passed=None,
         rounds=1,
         output_tokens=generation.usage.output_tokens,
-        input_tokens=generation.usage.input_tokens,
+        input_tokens=generation.usage.total_input_tokens,
         latency_s=generation.latency_s,
         failure=failure,
         detail=detail,
+        cache_read_tokens=generation.usage.cache_read_input_tokens,
+        model=generation.model,
     )
 
 
@@ -85,7 +134,26 @@ def run_baseline(
 ) -> TaskOutcome:
     """Generate one pandas script for ``task``, sandbox it, and score the result."""
     message = baseline_task_message(task)
-    generation = generator.generate(BASELINE_SYSTEM, [{"role": "user", "content": message}])
+    try:
+        generation = generator.generate(
+            BASELINE_SYSTEM, [{"role": "user", "content": message}]
+        )
+    except GenerationRefused as exc:
+        return TaskOutcome(
+            task_id=task.id,
+            arm="A",
+            tier=task.tier,
+            correct=False,
+            check_passed=None,
+            rounds=1,
+            output_tokens=exc.usage.output_tokens,
+            input_tokens=exc.usage.total_input_tokens,
+            latency_s=exc.latency_s,
+            failure="refused",
+            detail=str(exc),
+            cache_read_tokens=exc.usage.cache_read_input_tokens,
+            model=exc.model,
+        )
 
     code = extract_code(generation.text)
     if code is None:
@@ -182,6 +250,8 @@ def _lattice_outcome(
     latency_s: float,
     failure: str | None,
     detail: str,
+    cache_read_tokens: int = 0,
+    model: str = "",
 ) -> TaskOutcome:
     return TaskOutcome(
         task_id=task.id,
@@ -195,6 +265,27 @@ def _lattice_outcome(
         latency_s=latency_s,
         failure=failure,
         detail=detail,
+        cache_read_tokens=cache_read_tokens,
+        model=model,
+    )
+
+
+@dataclass(frozen=True)
+class _Totals:
+    output_tokens: int
+    input_tokens: int
+    cache_read_tokens: int
+    latency_s: float
+    models: tuple[str, ...]
+
+
+def _round_totals(rounds: Sequence[Round]) -> _Totals:
+    return _Totals(
+        output_tokens=sum(r.generation.usage.output_tokens for r in rounds),
+        input_tokens=sum(r.generation.usage.total_input_tokens for r in rounds),
+        cache_read_tokens=sum(r.generation.usage.cache_read_input_tokens for r in rounds),
+        latency_s=sum(r.generation.latency_s for r in rounds),
+        models=tuple(r.generation.model for r in rounds),
     )
 
 
@@ -218,23 +309,33 @@ def run_lattice(
     try:
         result = synthesize(message, profile, generator, system=system, max_repairs=max_repairs)
     except GenerationRefused as exc:
-        return _lattice_outcome(
-            task,
-            arm,
+        # Keep the accounting of rounds completed before the refusal, plus the
+        # refused call itself (which still consumed tokens).
+        prior: tuple[Round, ...] = exc.rounds if isinstance(exc, SynthesisRefused) else ()
+        totals = _round_totals(prior)
+        return TaskOutcome(
+            task_id=task.id,
+            arm=arm,
+            tier=task.tier,
             correct=False,
             check_passed=False,
-            rounds=0,
-            output_tokens=0,
-            input_tokens=0,
-            latency_s=0.0,
+            rounds=len(prior) + 1,
+            output_tokens=totals.output_tokens + exc.usage.output_tokens,
+            input_tokens=totals.input_tokens + exc.usage.total_input_tokens,
+            latency_s=totals.latency_s + exc.latency_s,
             failure="refused",
             detail=str(exc),
+            cache_read_tokens=totals.cache_read_tokens + exc.usage.cache_read_input_tokens,
+            model=_join_models([*totals.models, exc.model]),
         )
 
     rounds = len(result.rounds)
-    output_tokens = sum(r.generation.usage.output_tokens for r in result.rounds)
-    input_tokens = sum(r.generation.usage.input_tokens for r in result.rounds)
-    latency_s = sum(r.generation.latency_s for r in result.rounds)
+    totals = _round_totals(result.rounds)
+    output_tokens = totals.output_tokens
+    input_tokens = totals.input_tokens
+    latency_s = totals.latency_s
+    cache_read_tokens = totals.cache_read_tokens
+    model = _join_models(totals.models)
 
     if not result.ok:
         last_diags = result.rounds[-1].diagnostics if result.rounds else ()
@@ -249,6 +350,8 @@ def run_lattice(
             latency_s=latency_s,
             failure=classify_failure(last_diags),
             detail=render_for_llm(last_diags),
+            cache_read_tokens=cache_read_tokens,
+            model=model,
         )
 
     assert result.source is not None
@@ -267,6 +370,8 @@ def run_lattice(
             latency_s=latency_s,
             failure="runtime_error",
             detail=exc.render(),
+            cache_read_tokens=cache_read_tokens,
+            model=model,
         )
 
     out_path = workdir / "out.parquet"
@@ -282,6 +387,8 @@ def run_lattice(
             latency_s=latency_s,
             failure="no_output",
             detail="program did not write out.parquet",
+            cache_read_tokens=cache_read_tokens,
+            model=model,
         )
 
     try:
@@ -298,6 +405,8 @@ def run_lattice(
             latency_s=latency_s,
             failure="no_output",
             detail=f"could not read out.parquet: {exc}",
+            cache_read_tokens=cache_read_tokens,
+            model=model,
         )
 
     expected = task.reference(fixtures_frames)
@@ -314,6 +423,8 @@ def run_lattice(
             latency_s=latency_s,
             failure="wrong_result",
             detail=reason,
+            cache_read_tokens=cache_read_tokens,
+            model=model,
         )
 
     return _lattice_outcome(
@@ -327,4 +438,6 @@ def run_lattice(
         latency_s=latency_s,
         failure=None,
         detail="",
+        cache_read_tokens=cache_read_tokens,
+        model=model,
     )

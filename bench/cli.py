@@ -14,9 +14,16 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from bench.datasets import load_fixtures, write_fixtures
-from bench.report import evaluate_gate, render_markdown, summarize, write_outcomes
-from bench.runners import Arm, TaskOutcome, prepare_workdir, run_baseline, run_lattice
-from bench.tasks import suite
+from bench.report import append_outcome, evaluate_gate, render_markdown, summarize
+from bench.runners import (
+    Arm,
+    TaskOutcome,
+    harness_error_outcome,
+    prepare_workdir,
+    run_baseline,
+    run_lattice,
+)
+from bench.tasks import Task, suite
 from lattice.llm.client import ClaudeGenerator, Generator, ScriptedGenerator
 
 _SEPARATOR_RE = re.compile(r"(?m)^=====$")
@@ -54,6 +61,38 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _run_one(
+    arm: Arm,
+    task: Task,
+    *,
+    work_root: Path,
+    fixtures_dir: Path,
+    fixtures_frames: dict,
+    offline_dir: Path | None,
+    model: str,
+    max_repairs: int,
+) -> TaskOutcome:
+    workdir = prepare_workdir(task, work_root / arm, fixtures_dir)
+
+    if offline_dir is not None:
+        generator: Generator = _offline_generator(offline_dir, arm, task.id)
+    else:
+        generator = ClaudeGenerator(model=model)
+
+    if arm == "A":
+        return run_baseline(task, generator, workdir, fixtures_frames)
+    if arm in ("B", "C"):
+        return run_lattice(
+            task,
+            generator,
+            workdir,
+            fixtures_frames,
+            arm=arm,
+            max_repairs=max_repairs if arm == "B" else 0,
+        )
+    raise ValueError(f"unknown arm: {arm!r}")
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -75,37 +114,38 @@ def main(argv: Sequence[str] | None = None) -> int:
     work_root = out_dir / "work"
     offline_dir = Path(args.offline) if args.offline else None
 
+    for arm in arms:
+        if arm not in ("A", "B", "C"):
+            parser.error(f"unknown arm: {arm!r}")
+
+    outcomes_path = out_dir / "outcomes.jsonl"
+    outcomes_path.write_text("")  # start fresh; each outcome is appended as it completes
+
     outcomes: list[TaskOutcome] = []
     for arm in arms:
         for task in tasks:
-            workdir = prepare_workdir(task, work_root / arm, fixtures_dir)
-
-            if offline_dir is not None:
-                generator: Generator = _offline_generator(offline_dir, arm, task.id)
-            else:
-                generator = ClaudeGenerator(model=args.model)
-
-            if arm == "A":
-                outcome = run_baseline(task, generator, workdir, fixtures_frames)
-            elif arm in ("B", "C"):
-                max_repairs = args.max_repairs if arm == "B" else 0
-                outcome = run_lattice(
+            # Per-task isolation: a crash inside the harness for one task must
+            # not lose the others. (BaseExceptions such as KeyboardInterrupt
+            # still abort, but every completed outcome is already on disk.)
+            try:
+                outcome = _run_one(
+                    arm,
                     task,
-                    generator,
-                    workdir,
-                    fixtures_frames,
-                    arm=arm,
-                    max_repairs=max_repairs,
+                    work_root=work_root,
+                    fixtures_dir=fixtures_dir,
+                    fixtures_frames=fixtures_frames,
+                    offline_dir=offline_dir,
+                    model=args.model,
+                    max_repairs=args.max_repairs,
                 )
-            else:
-                raise ValueError(f"unknown arm: {arm!r}")
-
+            except Exception as exc:
+                outcome = harness_error_outcome(task, arm, exc)
+            append_outcome(outcomes_path, outcome)
             outcomes.append(outcome)
 
     summary = summarize(outcomes)
     gate = evaluate_gate(summary) if outcomes else None
 
-    write_outcomes(out_dir / "outcomes.jsonl", outcomes)
     report_path = out_dir / "report.md"
     report_path.write_text(render_markdown(summary, gate))
 

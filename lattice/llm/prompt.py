@@ -16,16 +16,6 @@ if TYPE_CHECKING:
     from bench.tasks import Task
     from lattice.profile import Profile
 
-BASELINE_SYSTEM = (
-    "You are an expert data engineer. Write one Python 3 script using pandas "
-    "that reads the listed CSV files from the current directory, computes "
-    "exactly what is requested, and writes the final result to out.parquet "
-    "with exactly the requested columns, using index=False. "
-    "Output exactly one ```python code block containing the complete script "
-    "and nothing else runnable."
-)
-
-
 def dataset_description(name: str) -> str:
     """Render one input dataset as ``"<file>.csv — columns: c1 (T1), c2 (T2), ..."``."""
     from bench.datasets import DATASETS
@@ -37,13 +27,33 @@ def dataset_description(name: str) -> str:
     return f"{dataset.filename} — columns: {columns}"
 
 
+_INPUTS_HEADER = "Input files (in the current directory):"
+_OUTPUT_LINE = "Write the final result to out.parquet"
+
+
+def _pandas_read_call(name: str) -> str:
+    from bench.datasets import DATASETS
+    from lattice.typesys import Scalar
+
+    dataset = DATASETS[name]
+    dates = [col for col, scalar in dataset.schema.columns if scalar is Scalar.DATE]
+    if dates:
+        return f'pd.read_csv("{dataset.filename}", parse_dates={dates!r})'.replace("'", '"')
+    return f'pd.read_csv("{dataset.filename}")'
+
+
 def baseline_task_message(task: Task) -> str:
-    """The user-turn message for the pandas baseline arm."""
-    lines = [task.prompt, "", "Input files (read them from the current directory):"]
+    """The user-turn message for the pandas baseline arm.
+
+    Mirrors :func:`lattice_task_message`: same files, columns/types and output
+    target, plus a per-file language-specific loading hint.
+    """
+    lines = [task.prompt, "", _INPUTS_HEADER]
     for name in task.inputs:
         lines.append(f"- {dataset_description(name)}")
+        lines.append(f"  read with: {_pandas_read_call(name)}")
     lines.append("")
-    lines.append('Write the final result to out.parquet with index=False.')
+    lines.append(f"{_OUTPUT_LINE} with index=False.")
     return "\n".join(lines)
 
 
@@ -156,15 +166,36 @@ itself.
 - The program must end by writing its result: `write(<table>, "out.parquet")`.
 """
 
+# The three worked example problems. Both arms see the SAME three problems
+# (Lattice programs here, pandas scripts in the baseline guide) so neither arm
+# gets extra worked examples. They deliberately differ from every benchmark
+# task (tests/llm/test_prompt_fairness.py enforces this).
+_EXAMPLE_PROBLEMS = (
+    "Example 1 — filter, then derive a column, then project. For refunded "
+    "orders, compute refund_amount = qty * unit_price * (1 - discount), treating "
+    "a missing discount as 0. Return order_id, customer_id, refund_amount.",
+    "Example 2 — group, sort with an explicit tie-break, then limit. Among "
+    "cancelled orders, compute cancelled_qty = sum(qty) per product_id and return "
+    "the 3 products with the largest cancelled_qty (ties: higher product_id "
+    "first). Return product_id, cancelled_qty.",
+    "Example 3 — a reusable function that joins two tables. For orders with a "
+    "given status (here \"pending\"), inner-join products on product_id and "
+    "compute max_unit_price = max(unit_price) per category. Return category, "
+    "max_unit_price.",
+)
+
 _EXAMPLE_1 = '''```python
 # lattice: v1
 from lattice.ops import coalesce, col, derive, load, select, where, write
 from lattice.schemas import Orders
 
 orders = load("orders.csv", schema=Orders)
-paid = where(orders, col("status") == "paid")
-priced = derive(paid, net_price=col("unit_price") * (1 - coalesce(col("discount"), 0.0)))
-result = select(priced, cols=["order_id", "net_price"])
+refunded = where(orders, col("status") == "refunded")
+priced = derive(
+    refunded,
+    refund_amount=col("qty") * col("unit_price") * (1 - coalesce(col("discount"), 0.0)),
+)
+result = select(priced, cols=["order_id", "customer_id", "refund_amount"])
 write(result, "out.parquet")
 ```'''
 
@@ -174,15 +205,11 @@ from lattice.ops import agg, col, group, limit, load, sort, where, write
 from lattice.schemas import Orders
 
 orders = load("orders.csv", schema=Orders)
-paid = where(orders, col("status") == "paid")
-by_product = group(
-    paid,
-    by=["product_id"],
-    total_revenue=agg.sum(col("qty") * col("unit_price")),
-)
-ranked = sort(by_product, by=["total_revenue", "product_id"], desc=True)
-top5 = limit(ranked, n=5)
-write(top5, "out.parquet")
+cancelled = where(orders, col("status") == "cancelled")
+by_product = group(cancelled, by=["product_id"], cancelled_qty=agg.sum(col("qty")))
+ranked = sort(by_product, by=["cancelled_qty", "product_id"], desc=True)
+top3 = limit(ranked, n=3)
+write(top3, "out.parquet")
 ```'''
 
 _EXAMPLE_3 = '''```python
@@ -192,34 +219,32 @@ from lattice.schemas import Orders, Products
 
 
 @step
-def revenue_by_category(
+def max_price_by_category(
     orders: Table[Orders], products: Table[Products], wanted: Str
 ) -> Table:
-    paid = where(orders, col("status") == wanted)
-    joined = join(paid, products, on=["product_id"], how="left")
-    by_category = group(
-        joined, by=["category"], revenue=agg.sum(col("qty") * col("unit_price"))
-    )
+    kept = where(orders, col("status") == wanted)
+    joined = join(kept, products, on=["product_id"], how="inner")
+    by_category = group(joined, by=["category"], max_unit_price=agg.max(col("unit_price")))
     return by_category
 
 
 orders = load("orders.csv", schema=Orders)
 products = load("products.csv", schema=Products)
-revenue = revenue_by_category(orders, products, wanted="paid")
-write(revenue, "out.parquet")
+prices = max_price_by_category(orders, products, wanted="pending")
+write(prices, "out.parquet")
 ```'''
 
 _EXAMPLES_SECTION = f"""## Examples
 
-Example 1 — filter, then derive a column, then project:
+{_EXAMPLE_PROBLEMS[0]}
 
 {_EXAMPLE_1}
 
-Example 2 — group, sort with an explicit tie-break, then limit:
+{_EXAMPLE_PROBLEMS[1]}
 
 {_EXAMPLE_2}
 
-Example 3 — a reusable `@step` that joins two tables:
+{_EXAMPLE_PROBLEMS[2]} In Lattice this is a `@step`:
 
 {_EXAMPLE_3}
 """
@@ -258,20 +283,159 @@ def lattice_system_prompt() -> str:
 def lattice_task_message(task: Task, profile: Profile) -> str:
     """The user-turn message for the Lattice arm.
 
-    Renders each input as the exact ``load(...)`` call that already loaded it
-    (inputs are provided pre-loaded; the model must not call ``load`` itself
-    with a different path) plus its schema, then the task prompt, then the
-    required ``write(...)`` call.
+    Lists exactly the same files, columns/types and output target as
+    :func:`baseline_task_message`; the only difference is the per-file
+    language-specific loading hint (the ``load(...)`` call and schema name).
     """
     from bench.datasets import DATASETS
 
-    lines = [task.prompt, "", "Input tables (already available exactly as loaded here):"]
+    lines = [task.prompt, "", _INPUTS_HEADER]
     for name in task.inputs:
         dataset = DATASETS[name]
-        schema = profile.schemas[dataset.schema_name]
-        lines.append(f'{name} = load("{dataset.filename}", schema={dataset.schema_name})')
-        cols = ", ".join(f"{col_name} ({scalar.value})" for col_name, scalar in schema.columns)
-        lines.append(f"  schema {dataset.schema_name}: {cols}")
+        if dataset.schema_name not in profile.schemas:
+            raise KeyError(f"schema {dataset.schema_name!r} missing from profile")
+        lines.append(f"- {dataset_description(name)}")
+        lines.append(
+            f'  load with: load("{dataset.filename}", schema={dataset.schema_name})'
+        )
     lines.append("")
-    lines.append('Write the final table with write(<table>, "out.parquet").')
+    lines.append(f'{_OUTPUT_LINE} with write(<table>, "out.parquet").')
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Baseline (pandas) arm system prompt
+# ---------------------------------------------------------------------------
+#
+# Spec §2 requires "same model, same prompt budget": the pandas arm gets a
+# guide of comparable length (tests keep it within ±30% of the Lattice
+# prompt) that works the SAME three example problems as the Lattice prompt.
+
+_PANDAS_RULES_SECTION = """## Rules
+
+- Write one complete Python 3 script. Import only `pandas as pd` and, if you \
+need it, `numpy as np`. Do not use the network, do not read or write any file \
+other than the listed inputs and `out.parquet`, and do not print large output.
+- Read each input with `pd.read_csv("<file>.csv")` from the current directory. \
+Pass `parse_dates=[...]` listing every column whose type is `Date`, so date \
+columns are real datetimes rather than strings.
+- Column types in the task description map to pandas as follows: `Int` -> \
+int64 (a column containing nulls may load as float64), `Float` -> float64, \
+`Str` -> object/str, `Date` -> datetime64 (via `parse_dates`), `Bool` -> bool.
+- A missing (null) value in the CSV loads as `NaN`/`NaT`. Treat nulls exactly \
+as the task says (e.g. `fillna(0.0)` only when told to treat missing as 0). \
+Comparisons against `NaN` are false, so null rows drop out of filters.
+- Use `&`, `|`, `~` with parentheses around each comparison to combine boolean \
+masks — never `and`/`or`/`not`. Use `.copy()` after filtering before you add \
+columns, to avoid chained-assignment warnings.
+- Group with `df.groupby(keys, as_index=False).agg(new_name=("column", "fn"))` \
+using `sum`, `mean`, `min`, `max` or `size`/`count`. `groupby` drops rows whose \
+key is null unless you pass `dropna=False`; keep or drop null keys exactly as \
+the task says.
+- Join with `left.merge(right, on=[...], how="inner")` or `how="left"`. For \
+"rows with no match" use `~left["key"].isin(right["key"])` (or a left merge \
+followed by an `isna()` test on a right-hand column).
+- Whole-table aggregates (no grouping) produce a single-row result: build it \
+explicitly, e.g. `pd.DataFrame({"total": [df["x"].sum()], "n": [len(df)]})`.
+- Conditionals: `np.where(cond, a, b)` for two branches; for several ordered \
+branches use `np.select([c1, c2], [v1, v2], default=v3)` — the first true \
+condition wins. Null handling: `s.isna()` tests for null, `s.fillna(v)` \
+replaces nulls, `a.fillna(b)` is "a, or b when a is null".
+- Conversions: `.astype("int64")` truncates floats toward zero, \
+`.astype("float64")` widens ints, `.astype(str)` renders numbers as text \
+(`3` becomes `"3"`). Keep integer results as integers and fractional results \
+as floats; do not round unless the task asks for rounding.
+- Sort with `sort_values(by=[...], ascending=...)`, always including the \
+tie-break columns the task names, then `head(n)` for a top-n.
+- Strings: `.str.strip()`, `.str.lower()`, `.str.upper()`, `.str.len()`, \
+`.str.contains(s, regex=False)`, `.str.startswith(s)`, \
+`.str.replace(old, new, regex=False)`, and `+` to concatenate. Dates: \
+`.dt.year`, `.dt.month`, `.dt.day`, `pd.Timestamp("YYYY-MM-DD")`, \
+`(a - b).dt.days`, `+ pd.Timedelta(days=n)`. Math: `np.floor`, `np.ceil`, \
+`np.sqrt`, `np.log`, `.abs()`, `.clip(lower=, upper=)`, `.round(n)`, \
+`.astype(...)`.
+- Output exactly the requested columns, with exactly the requested names, and \
+nothing else (no index column, no helper columns). Row order only matters \
+when the task asks for a sorted or top-n result.
+- The script must end by writing its result: \
+`result.to_parquet("out.parquet", index=False)`.
+"""
+
+_PANDAS_EXAMPLE_1 = '''```python
+import pandas as pd
+
+orders = pd.read_csv("orders.csv", parse_dates=["order_date"])
+refunded = orders[orders["status"] == "refunded"].copy()
+refunded["refund_amount"] = (
+    refunded["qty"] * refunded["unit_price"] * (1 - refunded["discount"].fillna(0.0))
+)
+result = refunded[["order_id", "customer_id", "refund_amount"]]
+result.to_parquet("out.parquet", index=False)
+```'''
+
+_PANDAS_EXAMPLE_2 = '''```python
+import pandas as pd
+
+orders = pd.read_csv("orders.csv", parse_dates=["order_date"])
+cancelled = orders[orders["status"] == "cancelled"]
+by_product = cancelled.groupby("product_id", as_index=False).agg(
+    cancelled_qty=("qty", "sum")
+)
+ranked = by_product.sort_values(["cancelled_qty", "product_id"], ascending=False)
+top3 = ranked.head(3)
+top3.to_parquet("out.parquet", index=False)
+```'''
+
+_PANDAS_EXAMPLE_3 = '''```python
+import pandas as pd
+
+
+def max_price_by_category(
+    orders: pd.DataFrame, products: pd.DataFrame, wanted: str
+) -> pd.DataFrame:
+    kept = orders[orders["status"] == wanted]
+    joined = kept.merge(products, on=["product_id"], how="inner")
+    return joined.groupby("category", as_index=False).agg(
+        max_unit_price=("unit_price", "max")
+    )
+
+
+orders = pd.read_csv("orders.csv", parse_dates=["order_date"])
+products = pd.read_csv("products.csv")
+prices = max_price_by_category(orders, products, wanted="pending")
+prices.to_parquet("out.parquet", index=False)
+```'''
+
+_PANDAS_EXAMPLES_SECTION = f"""## Examples
+
+{_EXAMPLE_PROBLEMS[0]}
+
+{_PANDAS_EXAMPLE_1}
+
+{_EXAMPLE_PROBLEMS[1]}
+
+{_PANDAS_EXAMPLE_2}
+
+{_EXAMPLE_PROBLEMS[2]} In pandas this is a plain function:
+
+{_PANDAS_EXAMPLE_3}
+"""
+
+BASELINE_SYSTEM = (
+    "\n\n".join(
+        [
+            "You are an expert data engineer. Write one Python 3 script using "
+            "pandas that reads the listed CSV files from the current directory, "
+            "computes exactly what is requested, and writes the final result to "
+            "out.parquet with exactly the requested columns, using index=False. "
+            "Your script is run once, unattended, in a fresh directory that "
+            "contains only the input files; its out.parquet is then compared "
+            "with the correct answer, so follow the task and the rules below "
+            "precisely.",
+            _PANDAS_RULES_SECTION,
+            _PANDAS_EXAMPLES_SECTION,
+            _OUTPUT_FORMAT_SECTION.replace("program", "script"),
+        ]
+    )
+    + "\n"
+)

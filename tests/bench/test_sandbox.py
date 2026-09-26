@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import os
+import socket
+import sys
+import time
 from pathlib import Path
 
 import pytest
 
+from bench import sandbox
 from bench.sandbox import run_python_script
 
 
@@ -49,3 +54,132 @@ def test_stderr_is_captured_on_failure(tmp_path: Path) -> None:
 
     assert result.returncode != 0
     assert "boom" in result.stderr
+
+
+# --- Regression tests for review finding M5 / minor 3 -----------------------
+
+_HAS_SANDBOX_EXEC = sys.platform == "darwin" and sandbox.sandbox_exec_available()
+
+
+def _pid_alive(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def test_timeout_kills_whole_process_group_including_grandchildren(tmp_path: Path) -> None:
+    code = (
+        "import subprocess, sys, time\n"
+        "p = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])\n"
+        "open('grandchild.pid', 'w').write(str(p.pid))\n"
+        "time.sleep(60)\n"
+    )
+    start = time.monotonic()
+    result = run_python_script(code, tmp_path, timeout_s=2.0)
+    elapsed = time.monotonic() - start
+
+    assert result.timed_out
+    # The grandchild inherits the stdout/stderr pipes; if it survived, reading
+    # them to EOF would block for the full 60 s.
+    assert elapsed < 15
+    pid = int((tmp_path / "grandchild.pid").read_text())
+    deadline = time.monotonic() + 5
+    while _pid_alive(pid) and time.monotonic() < deadline:
+        time.sleep(0.05)
+    assert not _pid_alive(pid), "grandchild survived the sandbox timeout"
+
+
+def test_cpu_limit_is_applied(tmp_path: Path) -> None:
+    code = "import resource\nprint(resource.getrlimit(resource.RLIMIT_CPU)[0])\n"
+    result = run_python_script(code, tmp_path, timeout_s=10.0)
+
+    assert result.returncode == 0, result.stderr
+    assert int(result.stdout.strip()) == 15
+
+
+def test_file_size_limit_is_applied(tmp_path: Path) -> None:
+    code = "open('big.bin', 'wb').write(b'x' * (2 * 1024 * 1024))\n"
+    result = run_python_script(code, tmp_path, max_file_bytes=1024 * 1024)
+
+    assert result.returncode != 0
+    assert (tmp_path / "big.bin").stat().st_size <= 1024 * 1024
+
+
+def test_default_file_size_limit_allows_normal_output(tmp_path: Path) -> None:
+    code = "open('ok.bin', 'wb').write(b'x' * (2 * 1024 * 1024))\n"
+    result = run_python_script(code, tmp_path)
+
+    assert result.returncode == 0, result.stderr
+    assert (tmp_path / "ok.bin").stat().st_size == 2 * 1024 * 1024
+
+
+@pytest.mark.skipif(not _HAS_SANDBOX_EXEC, reason="needs macOS sandbox-exec")
+def test_sandbox_blocks_writes_outside_workdir(tmp_path: Path) -> None:
+    workdir = tmp_path / "work"
+    escape = tmp_path / "escaped.txt"
+    code = f"open({str(escape)!r}, 'w').write('x')\n"
+    result = run_python_script(code, workdir)
+
+    assert result.returncode != 0
+    assert not escape.exists()
+
+
+@pytest.mark.skipif(not _HAS_SANDBOX_EXEC, reason="needs macOS sandbox-exec")
+def test_sandbox_allows_writes_inside_workdir(tmp_path: Path) -> None:
+    code = (
+        "import os, tempfile\n"
+        "open('inside.txt', 'w').write('x')\n"
+        "os.makedirs('sub', exist_ok=True)\n"
+        "open('sub/deep.txt', 'w').write('y')\n"
+        "with tempfile.NamedTemporaryFile() as f:\n"
+        "    f.write(b'tmp')\n"
+        "open(os.devnull, 'w').write('z')\n"
+    )
+    result = run_python_script(code, tmp_path)
+
+    assert result.returncode == 0, result.stderr
+    assert (tmp_path / "inside.txt").read_text() == "x"
+    assert (tmp_path / "sub" / "deep.txt").read_text() == "y"
+
+
+@pytest.mark.skipif(not _HAS_SANDBOX_EXEC, reason="needs macOS sandbox-exec")
+def test_sandbox_blocks_network(tmp_path: Path) -> None:
+    server = socket.socket()
+    server.bind(("127.0.0.1", 0))
+    server.listen(1)
+    port = server.getsockname()[1]
+    try:
+        code = (
+            "import socket\n"
+            "s = socket.socket()\n"
+            "s.settimeout(3)\n"
+            f"s.connect(('127.0.0.1', {port}))\n"
+            "print('connected')\n"
+        )
+        result = run_python_script(code, tmp_path, timeout_s=20.0)
+    finally:
+        server.close()
+
+    assert result.returncode != 0
+    assert "connected" not in result.stdout
+
+
+@pytest.mark.skipif(not _HAS_SANDBOX_EXEC, reason="needs macOS sandbox-exec")
+def test_sandbox_runs_a_normal_pandas_solution(tmp_path: Path) -> None:
+    from bench.datasets import write_fixtures
+
+    write_fixtures(tmp_path)
+    code = (
+        "import pandas as pd\n"
+        "orders = pd.read_csv('orders.csv', parse_dates=['order_date'])\n"
+        "paid = orders[orders['status'] == 'paid']\n"
+        "paid.to_parquet('out.parquet', index=False)\n"
+    )
+    result = run_python_script(code, tmp_path, timeout_s=60.0)
+
+    assert result.returncode == 0, result.stderr
+    assert (tmp_path / "out.parquet").exists()
