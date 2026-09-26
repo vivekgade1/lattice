@@ -297,3 +297,13 @@ def test_read_outcomes_accepts_legacy_lines_without_new_fields(tmp_path: Path) -
     )
     [outcome] = read_outcomes(path)
     assert outcome.model == "" and outcome.cache_read_tokens == 0
+
+
+def test_harness_errors_count_against_check_pass_rate() -> None:
+    outcomes = [
+        _outcome(task_id="s01", arm="B", check_passed=True),
+        _outcome(task_id="s02", arm="B", correct=False, check_passed=None,
+                 failure="harness_error"),
+    ]
+    stats = summarize(outcomes).stats[("B", "all")]
+    assert stats.check_pass_rate == 0.5

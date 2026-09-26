@@ -13,7 +13,13 @@ from lattice.check import CheckResult, check_source
 from lattice.diagnostics import Span
 from lattice.ir import Node, Plan, lower
 from lattice.profile import Profile
-from lattice.runtime import LatticeExprError, LatticeInternalError, LatticeRuntimeError, ops
+from lattice.runtime import (
+    LatticeExprError,
+    LatticeInternalError,
+    LatticeRuntimeError,
+    is_panic,
+    ops,
+)
 from lattice.runtime.exprs import DTYPES, Guard
 
 
@@ -126,6 +132,13 @@ def _run_op(
         text = str(err).strip().splitlines()
         raise LatticeRuntimeError(
             "R103", node.span, f"{node.op}() failed: {text[0] if text else type(err).__name__}"
+        ) from err
+    except BaseException as err:
+        if not is_panic(err):
+            raise
+        text = str(err).strip().splitlines()
+        raise LatticeRuntimeError(
+            "R103", node.span, f"{node.op}() failed: {text[0] if text else 'engine panic'}"
         ) from err
 
 

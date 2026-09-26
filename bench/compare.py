@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import polars as pl
 
+from lattice.runtime import is_panic
+
 _ROW_INDEX = "__frames_match_row__"
 _SORT_DIGITS = 6
 _DETAIL_LIMIT = 300
@@ -31,7 +33,9 @@ def frames_match(
 ) -> tuple[bool, str]:
     try:
         return _frames_match(actual, expected, ordered=ordered, rtol=rtol, atol=atol)
-    except Exception as exc:  # never raise: report as a mismatch
+    except BaseException as exc:  # never raise: report as a mismatch (incl. engine panics)
+        if not isinstance(exc, Exception) and not is_panic(exc):
+            raise
         message = f"{type(exc).__name__}: {exc}"
         return False, f"comparison error: {message[:_DETAIL_LIMIT]}"
 

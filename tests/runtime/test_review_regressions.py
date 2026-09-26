@@ -415,3 +415,45 @@ def test_join_size_estimate_is_exact():
     for how in ("inner", "left"):
         expected = left.join(right, on=["k"], how=how, coalesce=True).height
         assert join_size(left, right, ["k"], how) == expected
+
+
+# ---- N1: out-of-range dates must not reach a polars panic ----------------------------
+
+
+def test_date_add_days_out_of_range_is_L404():
+    body = (
+        'x = derive(t, d=fn.date_add(fn.to_date("2024-01-01", format="%Y-%m-%d"),'
+        " days=100000000))\n"
+    )
+    assert "L404" in errors(LOAD + body + W)
+
+
+def test_date_add_days_within_range_runs():
+    body = 'x = derive(t, d=fn.date_add(fn.to_date("2024-01-01", format="%Y-%m-%d"), days=-3650))\n'
+    assert errors(LOAD + body + W) == []
+
+
+def test_polars_panic_in_an_op_becomes_R103(root: Path, monkeypatch):
+    from lattice.runtime import ops
+
+    class PanicException(BaseException):  # same name as pyo3's panic type
+        pass
+
+    def boom(*_a, **_k):
+        raise PanicException("out-of-range date")
+
+    monkeypatch.setattr(ops, "limit", boom)
+    with pytest.raises(LatticeRuntimeError) as err:
+        run_source(prog(LOAD + "x = limit(t, n=1)\n" + W), PROFILE, root)
+    assert err.value.code == "R103"
+
+
+def test_is_panic_only_matches_panics():
+    from lattice.runtime import is_panic
+
+    class PanicException(BaseException):
+        pass
+
+    assert is_panic(PanicException("x"))
+    assert not is_panic(KeyboardInterrupt())
+    assert not is_panic(ValueError())

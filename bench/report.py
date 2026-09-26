@@ -66,7 +66,9 @@ def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
     # checks (possibly after repairs). `first_shot_pass` is the share that
     # passed on round 1 (no repair needed); `check_pass_rate` is the share
     # that passed at all, in any round.
-    checked = [o for o in outcomes if o.check_passed is not None]
+    # Lattice arms: a task that never produced a checked verdict (harness error,
+    # refusal) counts against the pass rate instead of dropping out of it.
+    checked = [o for o in outcomes if o.check_passed is not None or o.arm != "A"]
     if checked:
         first_shot_pass = sum(1 for o in checked if o.check_passed and o.rounds == 1) / len(
             checked

@@ -30,3 +30,10 @@ class LatticeExprError(Exception):
         super().__init__(message)
         self.code = code
         self.message = message
+
+
+def is_panic(exc: BaseException) -> bool:
+    """True for a Rust panic surfaced by a native extension (pyo3's PanicException).
+
+    It derives from BaseException, so ordinary `except Exception` handlers miss it."""
+    return type(exc).__name__ == "PanicException"

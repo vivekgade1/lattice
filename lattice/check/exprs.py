@@ -12,7 +12,14 @@ import ast
 import difflib
 from collections.abc import Mapping
 
-from lattice.catalog import AGG_FUNCS, DATE_DIFF_UNITS, FN_ALIASES, FN_SIGS, ROUND_DIGITS_MAX
+from lattice.catalog import (
+    AGG_FUNCS,
+    DATE_ADD_DAYS_MAX,
+    DATE_DIFF_UNITS,
+    FN_ALIASES,
+    FN_SIGS,
+    ROUND_DIGITS_MAX,
+)
 from lattice.check.astutil import literal_value
 from lattice.check.context import CheckContext
 from lattice.diagnostics import Severity, Span, span_of
@@ -395,6 +402,16 @@ class ExprTyper:
                     value,
                     f"fn.round digits= must be between 0 and {ROUND_DIGITS_MAX}, got {v}",
                     "e.g. digits=2",
+                )
+                return False
+        if fn_name == "date_add" and arg == "days":
+            v = literal_value(value)
+            if isinstance(v, int) and abs(v) > DATE_ADD_DAYS_MAX:
+                self.ctx.error(
+                    "L404",
+                    value,
+                    f"fn.date_add days= must be within ±{DATE_ADD_DAYS_MAX}, got {v}",
+                    "e.g. days=30",
                 )
                 return False
         return True

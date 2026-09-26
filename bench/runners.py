@@ -48,6 +48,11 @@ class TaskOutcome:
     model: str = ""  # comma-separated distinct served models, in call order
 
 
+def _wrote_exact(workdir: Path, name: str) -> bool:
+    """Exact-case check, so scoring doesn't depend on a case-insensitive filesystem."""
+    return name in {p.name for p in workdir.iterdir()}
+
+
 _STALE_OUTPUTS = ("out.parquet", "out.csv", "solution.py")
 _DETAIL_LIMIT = 2000
 
@@ -186,7 +191,7 @@ def run_baseline(
         )
 
     out_path = workdir / "out.parquet"
-    if not out_path.exists():
+    if not _wrote_exact(workdir, "out.parquet"):
         return _baseline_outcome(
             task,
             generation,
@@ -375,7 +380,7 @@ def run_lattice(
         )
 
     out_path = workdir / "out.parquet"
-    if not out_path.exists():
+    if not _wrote_exact(workdir, "out.parquet"):
         return _lattice_outcome(
             task,
             arm,

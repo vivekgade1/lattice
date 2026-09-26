@@ -174,3 +174,18 @@ def test_nested_dtype_mismatch_is_reported_not_raised() -> None:
     ok, reason = frames_match(actual, expected, ordered=False)
     assert not ok
     assert "dtype mismatch" in reason
+
+
+def test_panic_during_comparison_is_reported_not_raised(monkeypatch) -> None:
+    import bench.compare as compare
+
+    class PanicException(BaseException):
+        pass
+
+    def boom(*_a, **_k):
+        raise PanicException("out-of-range date")
+
+    monkeypatch.setattr(compare, "_frames_match", boom)
+    df = pl.DataFrame({"a": [1]})
+    ok, reason = compare.frames_match(df, df, ordered=False)
+    assert not ok and "PanicException" in reason

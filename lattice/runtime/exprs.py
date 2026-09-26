@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 
 import polars as pl
 
-from lattice.catalog import ROUND_DIGITS_MAX
+from lattice.catalog import DATE_ADD_DAYS_MAX, ROUND_DIGITS_MAX
 from lattice.check.astutil import literal_value
 from lattice.runtime import LatticeExprError, LatticeInternalError
 from lattice.typesys import Scalar
@@ -174,6 +174,15 @@ class _Compiler:
         return result
 
 
+def _date_add_days(node: ast.expr) -> int:
+    days = _int(node)
+    if abs(days) > DATE_ADD_DAYS_MAX:
+        raise LatticeExprError(
+            "R103", f"fn.date_add days= must be within ±{DATE_ADD_DAYS_MAX}, got {days}"
+        )
+    return days
+
+
 def _literal(node: ast.expr) -> object:
     """Python value of a literal keyword argument (checked to be a literal)."""
     v = literal_value(node)
@@ -273,7 +282,7 @@ _FN: Mapping[str, _Builder] = {
     "month": lambda c, a, k: _one(a).dt.month().cast(pl.Int64),
     "day": lambda c, a, k: _one(a).dt.day().cast(pl.Int64),
     "date_diff": lambda c, a, k: (_two(a)[0] - _two(a)[1]).dt.total_days().cast(pl.Int64),
-    "date_add": lambda c, a, k: _one(a) + pl.duration(days=_int(k["days"])),
+    "date_add": lambda c, a, k: _one(a) + pl.duration(days=_date_add_days(k["days"])),
     "to_date": _to_date,
     "to_int": _to_int,
     "to_float": _to_float,

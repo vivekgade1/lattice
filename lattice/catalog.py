@@ -81,6 +81,7 @@ FN_SIGS: Mapping[str, FnSig] = {
 }
 DATE_DIFF_UNITS = frozenset({"days"})
 ROUND_DIGITS_MAX = 2**32 - 1  # fn.round digits= range (polars takes a u32)
+DATE_ADD_DAYS_MAX = 36_500_000  # |fn.date_add days=| (~100k years; keeps dates representable)
 
 FN_ALIASES: Mapping[str, str] = {
     "length": "len",

@@ -25,6 +25,7 @@ from bench.runners import (
 )
 from bench.tasks import Task, suite
 from lattice.llm.client import ClaudeGenerator, Generator, ScriptedGenerator
+from lattice.runtime import is_panic
 
 _SEPARATOR_RE = re.compile(r"(?m)^=====$")
 
@@ -138,7 +139,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                     model=args.model,
                     max_repairs=args.max_repairs,
                 )
-            except Exception as exc:
+            except BaseException as exc:
+                if not isinstance(exc, Exception) and not is_panic(exc):
+                    raise
                 outcome = harness_error_outcome(task, arm, exc)
             append_outcome(outcomes_path, outcome)
             outcomes.append(outcome)
