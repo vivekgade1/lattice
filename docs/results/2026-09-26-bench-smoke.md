@@ -1,6 +1,6 @@
 # Lattice Phase 0–3 — verification results (2026-09-26)
 
-Branch `lattice-design`. Default model `claude-opus-5`.
+Branch `lattice-design`. Default model `claude-opus-5` (no server-side fallback — it silently rerouted Lattice-arm calls to claude-opus-4-8).
 
 ## What was verified
 
@@ -14,17 +14,32 @@ Branch `lattice-design`. Default model `claude-opus-5`.
 | Hand-written Lattice solutions vs polars references | all 30 seed tasks + 9 of the harder added tasks match |
 | Independent review (2 rounds) | round 1: 1 blocker + 5 majors, all fixed; round 2: 1 new major (engine panic from out-of-range dates), fixed and re-verified via the reviewer's reproduction |
 
-## Not yet run: live benchmark
+## Live smoke run (claude-opus-5, 12 tasks × 3 arms)
 
-No Anthropic credentials were available in this environment, so the live runs were not executed:
+Tasks: s01,s05,s09,s20,m02,m03,m07,m13,m25,j02,j05,j12. All requests served by `claude-opus-5` (no fallback).
 
-- Live smoke test: `ANTHROPIC_API_KEY=… uv run pytest -m live`
-- Smoke benchmark (12 tasks × 3 arms, ≈36 calls + repairs):
-  `uv run python -m bench.cli run --arms A,B,C --suite all --tasks s01,s05,s09,s20,m02,m03,m07,m13,m25,j02,j05,j12 --out results/smoke`
-- Phase-3 gate (100 tasks × 3 arms ≈ 300+ calls) — run only with explicit approval of the cost:
-  `uv run python -m bench.cli run --arms A,B,C --suite all --out results/gate`
+| Arm | single (4) | multi (5) | join (3) | all (12) |
+|---|---|---|---|---|
+| A — pandas | 100% | 100% | 100% | 100% |
+| B — Lattice + repair | 75% | 80% | 100% | 83% |
+| C — Lattice first-shot | 100% | 80% | 100% | 92% |
 
-The gate in `report.md` checks: multi-step accuracy B − A ≥ +15 points; single-step no regression (2-point tolerance); arm B check-pass rate ≥ 99% (harness errors count as failures); arm B ≤ 2 repairs.
+- All B misses (s01, m07) were **refusals, category `cyber`** — a false positive on the Lattice prompt. Excluding refusals B was 10/10, every program passing the checker on round 1.
+- The one C miss (m07) was a real model error (used `fn.*` without importing `fn`, L203) that arm B's repair loop is designed to fix.
+- Gate: FAIL (−20 pts multi-step). Not a meaningful gate result: n=12, and arm A is at 100%, so there is no headroom for a +15 improvement (ceiling effect).
+
+### What this implies before the full 100-task gate run
+
+1. **Refusals**: intermittent `cyber` refusals on Lattice-arm prompts (2 of 24 Lattice calls here; 1 of 3 earlier; 0 of 10 in a direct probe). Rewording the Lattice system prompt and measuring refusal rate is required first, or the gate measures the classifier rather than the language.
+2. **Ceiling effect**: Opus 5 solves these pandas tasks perfectly. To test the thesis, the suite needs harder multi-step tasks (5–8 dependent steps) and/or a smaller model (e.g. `--model claude-haiku-4-5`), where the report's multi-step failure modes actually occur.
+
+## Commands
+
+- Live smoke test: `uv run pytest -m live` (key read from `.env`)
+- Smoke benchmark: `uv run python -m bench.cli run --arms A,B,C --suite all --tasks s01,s05,s09,s20,m02,m03,m07,m13,m25,j02,j05,j12 --out results/smoke`
+- Phase-3 gate (100 tasks × 3 arms ≈ 300+ calls): `uv run python -m bench.cli run --arms A,B,C --suite all --out results/gate`
+
+The gate checks: multi-step accuracy B − A ≥ +15 points; single-step no regression (2-point tolerance); arm B check-pass rate ≥ 99% (harness errors and refusals count as failures); arm B ≤ 2 repairs; all arms served by the same model.
 
 ## Known open minors (accepted for now)
 
