@@ -23,6 +23,14 @@ class Usage:
         """All prompt tokens billed for the call: raw + cache reads + cache writes."""
         return self.input_tokens + self.cache_read_input_tokens + self.cache_creation_input_tokens
 
+    def __add__(self, other: Usage) -> Usage:
+        return Usage(
+            self.input_tokens + other.input_tokens,
+            self.output_tokens + other.output_tokens,
+            self.cache_read_input_tokens + other.cache_read_input_tokens,
+            self.cache_creation_input_tokens + other.cache_creation_input_tokens,
+        )
+
 
 @dataclass(frozen=True)
 class Generation:
@@ -31,6 +39,7 @@ class Generation:
     latency_s: float
     stop_reason: str
     model: str = ""  # the model that actually served the request (audited by the gate)
+    refusals: int = 0  # refused attempts that were retried before this answer
 
 
 class GenerationRefused(Exception):
@@ -63,7 +72,8 @@ class ClaudeGenerator:
 
     No server-side model fallback: the benchmark must compare arms on the same model,
     and a fallback silently rerouted Lattice-arm requests to another model in live
-    testing. A genuine refusal surfaces as GenerationRefused instead."""
+    testing. A refused call is retried up to `refusal_retries` times (identically for
+    every arm); if every attempt is refused it surfaces as GenerationRefused."""
 
     def __init__(
         self,
@@ -71,8 +81,10 @@ class ClaudeGenerator:
         max_tokens: int = 16000,
         effort: str = "high",
         client: Any | None = None,
+        refusal_retries: int = 2,
     ) -> None:
         self.model = model
+        self.refusal_retries = refusal_retries
         self.max_tokens = max_tokens
         self.effort = effort
         self._client = client
@@ -87,6 +99,28 @@ class ClaudeGenerator:
         return self._client
 
     def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
+        spent = Usage(0, 0)
+        latency = 0.0
+        for attempt in range(self.refusal_retries + 1):
+            try:
+                result = self._generate_once(system, messages)
+            except GenerationRefused as refused:
+                spent, latency = spent + refused.usage, latency + refused.latency_s
+                if attempt == self.refusal_retries:
+                    refused.usage, refused.latency_s = spent, latency
+                    raise
+                continue
+            return Generation(
+                text=result.text,
+                usage=spent + result.usage,
+                latency_s=latency + result.latency_s,
+                stop_reason=result.stop_reason,
+                model=result.model,
+                refusals=attempt,
+            )
+        raise AssertionError("unreachable")
+
+    def _generate_once(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
         start = time.perf_counter()
         response = self.client.messages.create(
             model=self.model,

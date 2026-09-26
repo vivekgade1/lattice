@@ -319,7 +319,7 @@ class TestServedModelAndRefusalAccounting:
             usage=_usage(input_tokens=7, output_tokens=3, cache_read=11, cache_creation=0),
         )
         response.model = "claude-opus-5"
-        gen = ClaudeGenerator(client=_fake_client(response))
+        gen = ClaudeGenerator(client=_fake_client(response), refusal_retries=0)
 
         with pytest.raises(GenerationRefused) as info:
             gen.generate("sys", [])
@@ -341,4 +341,27 @@ def test_refusal_message_includes_category_and_explanation():
     response.stop_details = types.SimpleNamespace(category="cyber", explanation="flagged")
     gen = ClaudeGenerator(client=_fake_client(response))
     with pytest.raises(GenerationRefused, match="category='cyber'.*flagged"):
+        gen.generate("s", [{"role": "user", "content": "u"}])
+
+
+def test_refusal_is_retried_and_usage_accumulates():
+    refusal = _response([], stop_reason="refusal", usage=_usage(input_tokens=5, output_tokens=0))
+    ok = _response([_text_block("done")], usage=_usage(input_tokens=7, output_tokens=3))
+    replies = iter([refusal, ok])
+    client = types.SimpleNamespace(
+        messages=types.SimpleNamespace(create=lambda **_: next(replies))
+    )
+    gen = ClaudeGenerator(client=client, refusal_retries=2)
+
+    result = gen.generate("s", [{"role": "user", "content": "u"}])
+
+    assert result.text == "done"
+    assert (result.usage.input_tokens, result.usage.output_tokens) == (12, 3)
+    assert result.refusals == 1
+
+
+def test_refusal_raises_after_retries_are_exhausted():
+    refusal = _response([], stop_reason="refusal")
+    gen = ClaudeGenerator(client=_fake_client(refusal), refusal_retries=1)
+    with pytest.raises(GenerationRefused):
         gen.generate("s", [{"role": "user", "content": "u"}])

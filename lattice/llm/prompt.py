@@ -265,12 +265,14 @@ def lattice_system_prompt() -> str:
     function lists cannot drift from the checker.
     """
     sections = [
-        "You are writing a program in Lattice: a small, statically checked "
-        "Python-syntax profile for tabular data pipelines. It is ordinary "
-        "Python source, but only a narrow, whitelisted subset of the language "
-        "is legal, and every program is checked for structure, names, and "
-        "types before it ever runs. Your program will be rejected with exact "
-        "diagnostics if it violates a rule below — follow them precisely.",
+        # Neutral wording matters: an intro describing a "whitelisted subset" that is
+        # "legal" and "rejected before it ever runs" drew cyber-category refusals from
+        # claude-opus-5 on 8/40 calls; this wording drew 0/40.
+        "Lattice is a small domain-specific language for tabular data analysis. "
+        "Programs are written in Python syntax, using only the operations and "
+        "expression functions documented below. A validator checks each program's "
+        "structure, names and column types and reports precise diagnostics, so "
+        "follow the conventions exactly.",
         _RULES_SECTION,
         _op_catalog_section(),
         _expression_library_section(),

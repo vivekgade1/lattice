@@ -79,3 +79,12 @@ def test_task_message_lists_every_input() -> None:
 
     assert 'load("orders.csv", schema=Orders)' in message
     assert 'load("customers.csv", schema=Customers)' in message
+
+
+def test_system_prompt_avoids_wording_that_triggered_refusals() -> None:
+    # A live probe (claude-opus-5, 40 calls each) refused 8/40 with an intro describing
+    # a "whitelisted subset" that is "legal" and "rejected ... before it ever runs",
+    # and 0/40 with a neutral DSL description.
+    text = lattice_system_prompt().lower()
+    for phrase in ("whitelisted", "is legal", "before it ever runs", "will be rejected"):
+        assert phrase not in text
