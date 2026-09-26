@@ -14,6 +14,40 @@ Branch `lattice-design`. Default model `claude-opus-5` (no server-side fallback 
 | Hand-written Lattice solutions vs polars references | all 30 seed tasks + 9 of the harder added tasks match |
 | Independent review (2 rounds) | round 1: 1 blocker + 5 majors, all fixed; round 2: 1 new major (engine panic from out-of-range dates), fixed and re-verified via the reviewer's reproduction |
 
+## Full benchmark (130 tasks: 33 single, 40 multi, 27 join, 30 deep with 5–8 dependent steps)
+
+Before the run: Lattice-prompt refusals fixed (8/40 → 0/80 by rewording the intro; 0 refused attempts across all 1,040 full-run calls), deep tier added, `fn.*` semantics documented (a missing argument-order note for `fn.date_diff` had caused every Lattice wrong result in a first Opus run).
+
+### claude-opus-5
+
+| Arm | single | multi | join | deep | all |
+|---|---|---|---|---|---|
+| A — pandas | 100% | 100% | 96.3% | 100% | **99.2%** |
+| B — Lattice + repair | 100% | 100% | 100% | 100% | **100%** |
+| C — Lattice first-shot | 93.9% | 92.5% | 100% | 83.3% | **92.3%** |
+
+Gate: FAIL only on `multi_step_improvement` (+0.0 pts; pandas is already at 100% on multi+deep). All other checks pass: check-pass rate 100%, ≤ 2 repairs, same model. Every arm-C miss was a static error the repair loop fixed; 7 of 10 were `L306` (unused import).
+
+### claude-haiku-4-5
+
+| Arm | single | multi | join | deep | all |
+|---|---|---|---|---|---|
+| A — pandas | 100% | 100% | 96.3% | 100% | **99.2%** |
+| B — Lattice + repair | 97.0% | 95.0% | 85.2% | 63.3% | **86.2%** |
+| C — Lattice first-shot | 75.8% | 57.5% | 48.1% | 6.7% | **48.5%** |
+
+Gate: FAIL (multi+deep −18.6 pts; deep −36.7 pts). Most first-shot static failures are bookkeeping rules rather than the branching-factor rules the design targets: `L203` unknown/unimported name (18 tasks), `L405` derive re-using an existing column name (15), `L306` unused import (11); the targeted rules (`L201` shadowing, `L301/L302` chaining) account for only ~8.
+
+### Conclusion
+
+- The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
+- For a strong model, Lattice + repair reaches parity (100%) at ~1.5× output tokens.
+- For a smaller model, the cost of an unfamiliar language dominates (the report's own distribution-shift argument): 48.5% first-shot, 86.2% with repair, vs 99.2% for pandas.
+- The checker + repair loop is the component that works: +8 pts (Opus) and +38 pts (Haiku) over first-shot Lattice.
+- If Lattice continues, the data points at removing bookkeeping friction first (ambient imports would eliminate L203/L306/L112 outright; allowing derive to overwrite a column would remove L405), then re-measuring on a model/task mix where pandas actually fails.
+
+Raw results: `results/final-opus5/`, `results/full-haiku45/` (gitignored).
+
 ## Live smoke run (claude-opus-5, 12 tasks × 3 arms)
 
 Tasks: s01,s05,s09,s20,m02,m03,m07,m13,m25,j02,j05,j12. All requests served by `claude-opus-5` (no fallback).
