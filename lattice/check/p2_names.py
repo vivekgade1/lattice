@@ -200,6 +200,20 @@ class _Resolver:
         names.sort(key=lambda n: (n.lineno, n.col_offset))
         for n in names:
             self._use(n, scope, where)
+        # load(..., schema="Orders") is reported by P4 (L414, hint schema=Orders); count
+        # the misuse as a use of the imported schema so it is not also reported unused.
+        for call in ast.walk(expr):
+            if not (
+                isinstance(call, ast.Call)
+                and isinstance(call.func, ast.Name)
+                and call.func.id == "load"
+            ):
+                continue
+            for kw in call.keywords:
+                if kw.arg == "schema" and isinstance(kw.value, ast.Constant):
+                    b = self.globals_.lookup(str(kw.value.value))
+                    if b is not None and b.kind == "import":
+                        b.used = True
 
     def _use(self, node: ast.Name, scope: Scope, where: _StepCtx) -> None:
         name = node.id

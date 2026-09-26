@@ -13,7 +13,7 @@ from lattice.check import CheckResult, check_source
 from lattice.diagnostics import Span
 from lattice.ir import Node, Plan, lower
 from lattice.profile import Profile
-from lattice.runtime import LatticeInternalError, LatticeRuntimeError, ops
+from lattice.runtime import LatticeExprError, LatticeInternalError, LatticeRuntimeError, ops
 from lattice.runtime.exprs import DTYPES, Guard
 
 
@@ -42,7 +42,10 @@ _GUARD_MESSAGES: Mapping[str, str] = {
 
 
 def _resolve(root: Path, path: str, span: Span) -> Path:
-    resolved = (root / path).resolve()
+    try:
+        resolved = (root / path).resolve()
+    except (ValueError, OSError) as err:  # e.g. an embedded NUL byte
+        raise LatticeRuntimeError("R102", span, f"invalid path {path!r}: {err}") from err
     if not resolved.is_relative_to(root):
         raise LatticeRuntimeError(
             "R102", span, f"path '{path}' resolves outside the working directory"
@@ -80,7 +83,9 @@ def _assert_schema(node: Node, df: pl.DataFrame) -> None:
         )
 
 
-def _run_op(node: Node, inputs: list[pl.DataFrame], root: Path) -> tuple[pl.DataFrame, list[Guard]]:
+def _run_op(
+    node: Node, inputs: list[pl.DataFrame], root: Path, max_rows: int
+) -> tuple[pl.DataFrame, list[Guard]]:
     p = node.params
     try:
         match node.op:
@@ -100,6 +105,13 @@ def _run_op(node: Node, inputs: list[pl.DataFrame], root: Path) -> tuple[pl.Data
             case "group":
                 return ops.group(inputs[0], p["by"], p["aggs"])
             case "join":
+                # estimate first: a many-to-many join could exhaust memory before the
+                # row limit is checked on its output
+                n = ops.join_size(inputs[0], inputs[1], p["on"], p["how"])
+                if n > max_rows:
+                    raise LatticeRuntimeError(
+                        "R201", node.span, f"join() would produce {n} rows (limit {max_rows})"
+                    )
                 return ops.join(inputs[0], inputs[1], p["on"], p["how"]), []
             case "sort":
                 return ops.sort(inputs[0], p["by"], p["desc"]), []
@@ -107,6 +119,9 @@ def _run_op(node: Node, inputs: list[pl.DataFrame], root: Path) -> tuple[pl.Data
                 return ops.limit(inputs[0], p["n"]), []
             case _:
                 raise LatticeInternalError(f"no runtime implementation for op '{node.op}'")
+    except LatticeExprError as err:
+        message = f"{node.op}() failed: {err.message}"
+        raise LatticeRuntimeError(err.code, node.span, message) from err
     except pl.exceptions.PolarsError as err:
         text = str(err).strip().splitlines()
         raise LatticeRuntimeError(
@@ -117,6 +132,9 @@ def _run_op(node: Node, inputs: list[pl.DataFrame], root: Path) -> tuple[pl.Data
 def execute(
     plan: Plan, io_root: Path, *, max_rows: int = 5_000_000, time_limit_s: float = 60.0
 ) -> RunResult:
+    """Run the plan. Limits: an op whose output exceeds `max_rows` raises R201 (a join is
+    estimated from per-key counts and refused *before* it runs); the time limit is
+    checked between ops (R202), so one long-running op is not interrupted."""
     root = io_root.resolve()
     last_use: dict[str, int] = {}
     for i, node in enumerate(plan.nodes):
@@ -142,7 +160,7 @@ def execute(
             ops.write(inputs[0], path, node.params["path"], node.span)
             outputs[node.params["path"]] = inputs[0]
         else:
-            df, guards = _run_op(node, inputs, root)
+            df, guards = _run_op(node, inputs, root, max_rows)
             _assert_schema(node, df)
             if df.height > max_rows:
                 raise LatticeRuntimeError(

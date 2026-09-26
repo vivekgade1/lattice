@@ -17,7 +17,13 @@ from lattice.catalog import (
     OPS_MODULE,
     SCHEMAS_MODULE,
 )
-from lattice.check.astutil import is_table_annotation, is_valid_annotation
+from lattice.check.astutil import (
+    INT64_MAX,
+    INT64_MIN,
+    is_table_annotation,
+    is_valid_annotation,
+    literal_value,
+)
 from lattice.check.context import CheckContext
 
 _BIN_OPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Mod, ast.BitAnd, ast.BitOr)
@@ -221,6 +227,8 @@ def _check_signature(fn: ast.FunctionDef, ctx: CheckContext) -> None:
         shape_problems.append("**kwargs")
     if args.defaults or any(d is not None for d in args.kw_defaults):
         shape_problems.append("default values")
+    if fn.type_params:
+        shape_problems.append("type parameters")
     if shape_problems:
         ctx.error(
             "L601",
@@ -244,6 +252,14 @@ def _check_signature(fn: ast.FunctionDef, ctx: CheckContext) -> None:
                 f"table parameter '{a.arg}' must name its schema",
                 "write Table[SchemaName]",
             )
+        elif isinstance(ann, ast.Name) and ann.id == "Date":
+            ctx.error(
+                "L601",
+                a,
+                f"step parameter '{a.arg}' cannot be Date: there is no Date literal to pass",
+                "take a Str parameter and convert it in the step with "
+                'fn.to_date(s, format="%Y-%m-%d")',
+            )
     if not is_table_annotation(fn.returns):
         ctx.error(
             "L601",
@@ -255,6 +271,14 @@ def _check_signature(fn: ast.FunctionDef, ctx: CheckContext) -> None:
 
 def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext) -> None:
     body = fn.body
+    if all(isinstance(s, ast.Expr) and isinstance(s.value, ast.Constant) for s in body):
+        ctx.error(
+            "L602",
+            fn,
+            f"step '{fn.name}' has no body",
+            "write one or more op statements and end with 'return <name>'",
+        )
+        return
     last = len(body) - 1
     assigns = 0
     for i, stmt in enumerate(body):
@@ -323,6 +347,10 @@ def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext) -> None:
 
 def _check_expr(node: ast.expr, ctx: CheckContext) -> None:
     match node:
+        case ast.Constant() | ast.UnaryOp(op=ast.USub()) if isinstance(
+            literal_value(node), int
+        ) and not isinstance(literal_value(node), bool):
+            _check_int_range(node, ctx)
         case ast.Constant() | ast.Name():
             return
         case ast.List(elts=elts) | ast.Tuple(elts=elts):
@@ -382,6 +410,17 @@ def _check_expr(node: ast.expr, ctx: CheckContext) -> None:
                 ctx.error(
                     "L101", node, f"'{type(node).__name__}' is not allowed in a Lattice program"
                 )
+
+
+def _check_int_range(node: ast.expr, ctx: CheckContext) -> None:
+    v = literal_value(node)
+    if isinstance(v, int) and not INT64_MIN <= v <= INT64_MAX:
+        ctx.error(
+            "L404",
+            node,
+            f"integer literal {v} does not fit in a 64-bit Int",
+            f"use a value between {INT64_MIN} and {INT64_MAX}",
+        )
 
 
 def _check_call(node: ast.Call, ctx: CheckContext) -> None:

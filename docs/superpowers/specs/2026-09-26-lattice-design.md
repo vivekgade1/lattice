@@ -265,7 +265,13 @@ All inside column expressions (`Col[T]`); nothing here introduces statements.
 2. **Canonical call shapes (refines `L303`).** Each op has one fixed signature saying which parameters are positional and which are keyword. Table inputs are positional; `where(t, pred)` takes its predicate positionally; everything else that is not a table is passed by keyword (e.g. `load(path, schema=S)`, `join(l, r, on=[…], how="left")`, `write(t, path)`).
 3. **Step annotations.** A step's return annotation may be bare `Table` (schema inferred from the body); parameters must be concrete (`Table[Orders]`) or scalar (`Int`, …). A concrete return type is checked exactly (`L605`).
 4. **Nullability.** Every column is nullable in v1; the `T?` distinction is deferred.
-5. **Output files.** `write` accepts `.csv` or `.parquet` paths; the benchmark always uses `out.parquet`.
+5. **Output files.** `write` accepts `.csv` or `.parquet` paths (extension case-insensitive, and the file name must have a stem: `".parquet"` is `L505`); paths containing control characters (NUL, newline, …) are `L501`. The benchmark always uses `out.parquet`.
+6. **Table positions.** A table argument (and a step's `return`) must name a table binding; a schema, import, type, op or step name there is `L419` (`L602` for `return`), so every accepted table argument resolves at lowering.
+7. **Literals.** A *literal* is a bool/int/float/str constant or a (possibly repeatedly) negated number (`-1`, `--2.0`); the checker, IR and runtime all fold the same way. `fn.*` keyword arguments must be literals or a scalar step parameter — computed values (`days=5 % 0`, `sub=fn.to_str(1)`) are `L404`. `fn.round(digits=)` must be in 0..2³²−1 (`L404`; a step argument out of range is runtime `R103`). Int literals must fit in 64 bits (`L404`).
+8. **`fn.clip`.** The result is Float when either bound is Float (the column is cast); Int bounds on an Int column stay Int.
+9. **Date step parameters.** Rejected at the definition (`L601`): there is no Date literal to pass. Take a `Str` parameter and convert inside the step with `fn.to_date(s, format=...)`. PEP 695 type parameters on a step are also `L601`.
+10. **Limits.** Nesting deeper than 100 AST levels is a single `L003` (the checker never raises). At runtime an op whose output exceeds the row limit is `R201`; a `join` is sized exactly from per-key counts and refused *before* it runs. The time limit (`R202`) is checked between ops, so a single long op is not interrupted.
+11. **No-ops (`L304`)** also include `sort(t, by=[])` and renaming a column to itself.
 
 ---
 

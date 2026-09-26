@@ -20,3 +20,13 @@ class LatticeRuntimeError(Exception):
 
     def render(self) -> str:
         return f"{self.span.line}:{self.span.col}: error {self.code}: {self.message}"
+
+
+class LatticeExprError(Exception):
+    """A value-dependent failure while compiling an expression (e.g. a step's scalar
+    argument out of range); the executor re-raises it as LatticeRuntimeError at the op."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message

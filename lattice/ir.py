@@ -16,7 +16,7 @@ from typing import Any
 
 from lattice.catalog import OP_SHAPES
 from lattice.check import CheckedProgram
-from lattice.check.astutil import steps_of
+from lattice.check.astutil import literal_value, steps_of
 from lattice.diagnostics import Span, span_of
 from lattice.runtime import LatticeInternalError
 from lattice.typesys import Scalar, ScalarParamT, Schema, TableT
@@ -68,13 +68,12 @@ def _strs(node: ast.expr) -> tuple[str, ...]:
 
 
 def _scalar_value(node: ast.expr, scalars: Mapping[str, ScalarValue]) -> ScalarValue:
+    """A step's scalar argument: a literal (as `constant_scalar` accepts it, including
+    repeated unary minus) or an enclosing step's scalar parameter."""
+    v = literal_value(node)
+    if v is not None:
+        return v
     match node:
-        case ast.Constant(value=bool(v) | int(v) | float(v) | str(v)):
-            return v
-        case ast.UnaryOp(op=ast.USub(), operand=ast.Constant(value=int(v) | float(v))) if (
-            not isinstance(v, bool)
-        ):
-            return -v
         case ast.Name(id=name) if name in scalars:
             return scalars[name]
         case _:

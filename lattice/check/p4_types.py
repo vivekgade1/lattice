@@ -14,8 +14,8 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass
 
-from lattice.catalog import OP_SHAPES, TABLE_OPS
-from lattice.check.astutil import annotation_schema_name, steps_of
+from lattice.catalog import EXPR_FUNCS, NAMESPACES, OP_SHAPES, TABLE_OPS, TYPE_NAMES
+from lattice.check.astutil import annotation_schema_name, redefined_steps, steps_of
 from lattice.check.context import CheckContext
 from lattice.check.exprs import ExprTyper, constant_scalar, did_you_mean, reported_name_spans
 from lattice.diagnostics import span_of
@@ -69,6 +69,7 @@ class _Types:
         self.ctx = ctx
         self.schemas = ctx.profile.schemas
         self.step_defs = steps_of(module)
+        self.redefined = redefined_steps(module)
         self.silent = TABLE_OPS | frozenset(self.step_defs)
         self.reported = reported_name_spans(ctx)
         self.sigs: dict[str, _Sig] = {}
@@ -111,19 +112,34 @@ class _Types:
             params.append((name, t))
         return StepT(tuple(params), sig.result)
 
+    def _non_table_kind(self, name: str, scalars: Scalars) -> tuple[str, str] | None:
+        """(kind, hint) if `name` is positively known to be something other than a table."""
+        if name in scalars:
+            return "scalar parameter", "pass a table name here"
+        if name in self.schemas:
+            return "schema", f'load it first: t = load("file.csv", schema={name})'
+        if name in self.step_defs:
+            return "step", f"call it first: t = {name}(...), then pass t"
+        if name in TYPE_NAMES:
+            return "type", "pass a table name here"
+        if name in TABLE_OPS:
+            return "op", f"call it first: t = {name}(...), then pass t"
+        if name in NAMESPACES:
+            return "namespace", "pass a table name here"
+        if name in EXPR_FUNCS or name == "step":
+            return "function", "pass a table name here"
+        return None  # otherwise unresolved: P2 reported it (L202/L203/L603/L604)
+
     def _table_arg(self, arg: ast.expr, env: Env, scalars: Scalars) -> TableOrUnknown:
-        if isinstance(arg, ast.Name):
-            t = env.get(arg.id)
-            if t is not None:
-                return t
-            if arg.id in scalars:
-                self.ctx.error(
-                    "L419",
-                    arg,
-                    f"expected a table, got scalar '{arg.id}'",
-                    "pass a table name here",
-                )
-        return UNKNOWN  # not a name (P3) or unresolved (P2): already reported
+        if not isinstance(arg, ast.Name):
+            return UNKNOWN  # not a name: P3 reported it
+        t = env.get(arg.id)
+        if t is not None:
+            return t
+        kind = self._non_table_kind(arg.id, scalars)
+        if kind is not None and not self._silenced(arg):
+            self.ctx.error("L419", arg, f"expected a table, got {kind[0]} '{arg.id}'", kind[1])
+        return UNKNOWN
 
     def _str_list(self, node: ast.expr, what: str) -> list[str] | None:
         if isinstance(node, ast.List | ast.Tuple):
@@ -181,6 +197,7 @@ class _Types:
         shape_ok = len(call.args) == len(shape.positional) and shape.required_kw <= kws.keys()
         if op == "write":
             if shape_ok:
+                self._table_arg(call.args[0], env, scalars)
                 self._write(call)
             return None
         result: TableOrUnknown = UNKNOWN
@@ -396,15 +413,17 @@ class _Types:
                     "convert one side with derive + fn.to_* first",
                 )
         extra = [(n, s) for n, s in right.schema.columns if n not in on]
-        for n, _ in extra:
-            if n in left.schema:
-                ok = False
-                self.ctx.error(
-                    "L416",
-                    call,
-                    f"column '{n}' exists in both tables; rename one side first",
-                    f'e.g. rename(table, {n}="{n}_2")',
-                )
+        clashes = [n for n, _ in extra if n in left.schema]
+        if clashes:
+            ok = False
+            listed = ", ".join(f"'{n}'" for n in clashes)
+            what = f"column {listed} exists" if len(clashes) == 1 else f"columns {listed} exist"
+            self.ctx.error(
+                "L416",
+                call,
+                f"{what} in both tables; rename one side first",
+                f'e.g. rename(table, {clashes[0]}="{clashes[0]}_2")',
+            )
         return TableT(left.schema.extend(extra)) if ok else UNKNOWN
 
     def _sort(self, t: TableT, kws: dict[str, ast.expr]) -> TableOrUnknown:
@@ -450,8 +469,17 @@ class _Types:
             match stmt:
                 case ast.Assign(targets=[ast.Name(id=name)]):
                     env.setdefault(name, self._unit(stmt.value, env, scalars) or UNKNOWN)
-                case ast.Return(value=ast.Name(id=name)):
+                case ast.Return(value=ast.Name(id=name) as ret):
                     result = env.get(name, UNKNOWN)
+                    kind = None if name in env else self._non_table_kind(name, scalars)
+                    if kind is not None and not self._silenced(ret):
+                        self.ctx.error(
+                            "L602",
+                            ret,
+                            f"a step must return a table local or parameter, "
+                            f"got {kind[0]} '{name}'",
+                            "return the name of the step's final table",
+                        )
                 case _:
                     raise TypeError("P1 guarantees step bodies are Assign/Return <name>")
         result = self._declared_result(fn, result)
@@ -501,8 +529,8 @@ class _Types:
 
     def _call_step(self, call: ast.Call, name: str, env: Env, scalars: Scalars) -> TableOrUnknown:
         sig = self.sigs.get(name)
-        if sig is None:
-            return UNKNOWN  # defined later / recursive: P2 reported it
+        if sig is None or name in self.redefined:
+            return UNKNOWN  # defined later / recursive / redefined: P2 reported it
         tables = [(p, t) for p, t in sig.params if not isinstance(t, ScalarParamT)]
         scalar_params = {p: t.scalar for p, t in sig.params if isinstance(t, ScalarParamT)}
         if len(call.args) != len(tables):

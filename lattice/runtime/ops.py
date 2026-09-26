@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import ast
 from collections.abc import Sequence
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import polars as pl
 
@@ -89,6 +89,22 @@ def group(
     return df.group_by(list(by), maintain_order=True).agg(exprs), guards
 
 
+def join_size(left: pl.DataFrame, right: pl.DataFrame, on: Sequence[str], how: str) -> int:
+    """Exact output row count of `join(left, right, on, how)`, from per-key counts
+    (cheap: two group-bys and a join of the count tables; null keys never match)."""
+    keys = list(on)
+    lc = left.group_by(keys).agg(pl.len().cast(pl.Int64).alias("__lattice_nl"))
+    rc = right.group_by(keys).agg(pl.len().cast(pl.Int64).alias("__lattice_nr"))
+    if how == "left":
+        m = lc.join(rc, on=keys, how="left", coalesce=True)
+        r = pl.col("__lattice_nr").fill_null(1)
+    else:
+        m = lc.join(rc, on=keys, how="inner", coalesce=True)
+        r = pl.col("__lattice_nr")
+    total = m.select((pl.col("__lattice_nl") * r).sum()).item()
+    return int(total or 0)
+
+
 def join(left: pl.DataFrame, right: pl.DataFrame, on: Sequence[str], how: str) -> pl.DataFrame:
     match how:
         case "inner" | "left":
@@ -106,14 +122,17 @@ def limit(df: pl.DataFrame, n: int) -> pl.DataFrame:
 
 
 def write(df: pl.DataFrame, path: Path, shown: str, span: Span) -> None:
+    # the format comes from the written path as the program spells it (case-insensitive),
+    # never from the resolved path, which may differ through a symlink
+    suffix = PurePosixPath(shown).suffix.lower()
+    if suffix not in (".csv", ".parquet"):
+        raise LatticeRuntimeError("R103", span, f"could not write '{shown}': unsupported format")
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
-        if path.suffix == ".csv":
+        if suffix == ".csv":
             df.write_csv(path)
-        elif path.suffix == ".parquet":
-            df.write_parquet(path)
         else:
-            raise LatticeInternalError(f"unsupported output format '{shown}'")
+            df.write_parquet(path)
     except (pl.exceptions.PolarsError, OSError) as err:
         raise LatticeRuntimeError(
             "R103", span, f"could not write '{shown}': {_first_line(err)}"

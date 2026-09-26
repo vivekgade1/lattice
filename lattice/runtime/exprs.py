@@ -14,7 +14,9 @@ from dataclasses import dataclass, field
 
 import polars as pl
 
-from lattice.runtime import LatticeInternalError
+from lattice.catalog import ROUND_DIGITS_MAX
+from lattice.check.astutil import literal_value
+from lattice.runtime import LatticeExprError, LatticeInternalError
 from lattice.typesys import Scalar
 
 DTYPES: Mapping[Scalar, pl.DataType] = {
@@ -61,6 +63,10 @@ class _Compiler:
         return expr, inner.guards
 
     def emit(self, node: ast.expr) -> pl.Expr:
+        if isinstance(node, ast.UnaryOp):
+            folded = literal_value(node)  # fold -1, --2.0, -9223372036854775808 to a literal
+            if folded is not None:
+                node = ast.Constant(folded)
         match node:
             case ast.Constant(value=bool(v)):
                 return pl.lit(v, dtype=pl.Boolean)
@@ -169,14 +175,11 @@ class _Compiler:
 
 
 def _literal(node: ast.expr) -> object:
-    """Python value of a literal keyword argument (checked to be constant)."""
-    match node:
-        case ast.Constant(value=v):
-            return v
-        case _ if literal_only(node):
-            return pl.select(_Compiler().emit(node)).item()
-        case _:
-            raise LatticeInternalError(f"keyword argument is not a literal: {ast.dump(node)}")
+    """Python value of a literal keyword argument (checked to be a literal)."""
+    v = literal_value(node)
+    if v is None:
+        raise LatticeInternalError(f"keyword argument is not a literal: {ast.dump(node)}")
+    return v
 
 
 Args = list[pl.Expr]
@@ -221,6 +224,23 @@ def _to_float(c: _Compiler, a: Args, k: Kw) -> pl.Expr:
     return c.cast_checked(x, x.cast(pl.Float64, strict=False))
 
 
+def _round(c: _Compiler, a: Args, k: Kw) -> pl.Expr:
+    digits = _int(k["digits"])
+    if not 0 <= digits <= ROUND_DIGITS_MAX:
+        raise LatticeExprError(
+            "R103", f"fn.round digits= must be between 0 and {ROUND_DIGITS_MAX}, got {digits}"
+        )
+    return _one(a).round(digits)
+
+
+def _clip(c: _Compiler, a: Args, k: Kw) -> pl.Expr:
+    lo, hi = _num(k["lo"]), _num(k["hi"])
+    x = _one(a)
+    if isinstance(lo, float) or isinstance(hi, float):
+        return x.cast(F64).clip(float(lo), float(hi))  # a Float bound makes the result Float
+    return x.clip(lo, hi)
+
+
 def _num(v: object) -> int | float:
     if isinstance(v, int | float) and not isinstance(v, bool):
         return v
@@ -235,12 +255,12 @@ def _int(v: object) -> int:
 
 _FN: Mapping[str, _Builder] = {
     "abs": lambda c, a, k: _one(a).abs(),
-    "round": lambda c, a, k: _one(a).round(_int(k["digits"])),
+    "round": _round,
     "floor": lambda c, a, k: _one(a).floor(),
     "ceil": lambda c, a, k: _one(a).ceil(),
     "log": _log,
     "sqrt": _sqrt,
-    "clip": lambda c, a, k: _one(a).clip(_num(k["lo"]), _num(k["hi"])),
+    "clip": _clip,
     "lower": lambda c, a, k: _one(a).str.to_lowercase(),
     "upper": lambda c, a, k: _one(a).str.to_uppercase(),
     "strip": lambda c, a, k: _one(a).str.strip_chars(),

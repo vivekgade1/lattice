@@ -87,6 +87,14 @@ class _Effects:
         if not (isinstance(arg, ast.Constant) and isinstance(arg.value, str)):
             return  # P4 reported the non-literal path
         path = arg.value
+        if any(ord(ch) < 32 or ord(ch) == 127 for ch in path):
+            self.ctx.error(
+                "L501",
+                arg,
+                "path must not contain control characters",
+                'e.g. "orders.csv" or "out.parquet"',
+            )
+            return
         if not _is_relative(path):
             self.ctx.error(
                 "L501",
@@ -96,11 +104,12 @@ class _Effects:
             )
             return
         allowed = _EXTENSIONS[op]
-        if not path.lower().endswith(allowed):
+        name = PurePosixPath(path).name.lower()
+        if not name.endswith(allowed) or name in allowed:
             self.ctx.error(
                 "L505",
                 arg,
-                f"{op}() path must end with {' or '.join(allowed)}",
+                f"{op}() path must be a file name ending with {' or '.join(allowed)}",
                 f'e.g. "{"orders.csv" if op == "load" else "out.parquet"}"',
             )
 

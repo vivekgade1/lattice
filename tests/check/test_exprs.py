@@ -143,7 +143,8 @@ def test_is_null_arity(profile):
     [
         ('fn.abs(col("qty"))', ColT(INT)),
         ('fn.round(col("price"), digits=2)', ColT(F)),
-        ('fn.clip(col("qty"), lo=0, hi=10.5)', ColT(INT)),
+        ('fn.clip(col("qty"), lo=0, hi=10.5)', ColT(F)),
+        ('fn.clip(col("qty"), lo=0, hi=10)', ColT(INT)),
         ('fn.upper(col("region"))', ColT(S)),
         ('fn.contains(col("region"), sub="no")', ColT(B)),
         ('fn.concat(col("region"), col("status"))', ColT(S)),

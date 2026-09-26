@@ -12,7 +12,8 @@ import ast
 import difflib
 from collections.abc import Mapping
 
-from lattice.catalog import AGG_FUNCS, DATE_DIFF_UNITS, FN_ALIASES, FN_SIGS
+from lattice.catalog import AGG_FUNCS, DATE_DIFF_UNITS, FN_ALIASES, FN_SIGS, ROUND_DIGITS_MAX
+from lattice.check.astutil import literal_value
 from lattice.check.context import CheckContext
 from lattice.diagnostics import Severity, Span, span_of
 from lattice.typesys import NUMERIC, ORDERED, UNKNOWN, ColT, LitT, Scalar, Schema, UnknownT, unify
@@ -22,6 +23,13 @@ ExprT = ColT | LitT | UnknownT
 # Use-site name errors reported by P2; a Name at such a span is typed UNKNOWN silently.
 NAME_ERROR_CODES = frozenset({"L202", "L203", "L603", "L604"})
 
+_EXAMPLE_LITERAL = {
+    Scalar.INT: "2",
+    Scalar.FLOAT: "1.5",
+    Scalar.STR: '"text"',
+    Scalar.BOOL: "True",
+    Scalar.DATE: '"2024-01-01"',
+}
 _ARITH = {ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Mod: "%"}
 _CMP_EQ = {ast.Eq: "==", ast.NotEq: "!="}
 _CMP_ORD = {ast.Lt: "<", ast.LtE: "<=", ast.Gt: ">", ast.GtE: ">="}
@@ -38,12 +46,7 @@ def reported_name_spans(ctx: CheckContext) -> frozenset[Span]:
 
 def constant_scalar(node: ast.expr) -> Scalar | None:
     """Scalar of a literal: a bool/int/float/str constant or a negated number."""
-    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
-        inner = constant_scalar(node.operand)
-        return inner if inner in NUMERIC else None
-    if not isinstance(node, ast.Constant):
-        return None
-    v = node.value
+    v = literal_value(node)
     if isinstance(v, bool):
         return Scalar.BOOL
     if isinstance(v, int):
@@ -317,6 +320,10 @@ class ExprTyper:
         if known is None or not ok:
             return UNKNOWN
         result = sig.result if sig.result is not None else known[0].scalar
+        if name == "clip" and any(
+            self.ctx.types.get(id(kw.value)) == LitT(Scalar.FLOAT) for kw in node.keywords
+        ):
+            result = Scalar.FLOAT  # a Float bound makes the result Float (runtime casts)
         return _wrap(result, known)
 
     def _fn_keywords(self, node: ast.Call, name: str, expected: Mapping[str, Scalar]) -> bool:
@@ -352,8 +359,16 @@ class ExprTyper:
             # a plain literal: no L305 check, it is not in a column position
             t = LitT(s)
             self.ctx.set_type(value, t)
+        elif isinstance(value, ast.Name):
+            t = self.type_of(value)  # a scalar step parameter (substituted when inlined)
         else:
-            t = self.type_of(value)
+            self.ctx.error(
+                "L404",
+                value,
+                f"fn.{fn_name} keyword '{arg}' must be a literal or a scalar step parameter",
+                f"e.g. {arg}={_EXAMPLE_LITERAL[want]}",
+            )
+            return False
         if isinstance(t, UnknownT):
             return False
         if isinstance(t, ColT):
@@ -371,6 +386,16 @@ class ExprTyper:
             if not (isinstance(value, ast.Constant) and value.value in DATE_DIFF_UNITS):
                 units = ", ".join(f'"{u}"' for u in sorted(DATE_DIFF_UNITS))
                 self.ctx.error("L404", value, "unsupported date_diff unit", f"use unit={units}")
+                return False
+        if fn_name == "round" and arg == "digits":
+            v = literal_value(value)
+            if isinstance(v, int) and not 0 <= v <= ROUND_DIGITS_MAX:
+                self.ctx.error(
+                    "L404",
+                    value,
+                    f"fn.round digits= must be between 0 and {ROUND_DIGITS_MAX}, got {v}",
+                    "e.g. digits=2",
+                )
                 return False
         return True
 

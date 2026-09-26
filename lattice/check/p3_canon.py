@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 
 from lattice.catalog import IMPORTABLE, OP_SHAPES, TABLE_OPS, TERMINAL_OPS, OpShape
-from lattice.check.astutil import step_param_kinds, steps_of
+from lattice.check.astutil import redefined_steps, step_param_kinds, steps_of
 from lattice.check.context import CheckContext
 
 
@@ -14,6 +14,7 @@ class _Canon:
         self.module = module
         self.ctx = ctx
         self.steps = steps_of(module)
+        self.redefined = redefined_steps(module)  # P2 reported L201; skip their call shapes
 
     def _unit(self, node: ast.AST) -> str | None:
         """The op or step name if `node` is a unit call, else None."""
@@ -75,7 +76,7 @@ class _Canon:
                 )
         if unit in TABLE_OPS:
             self._op_shape(value, unit, OP_SHAPES[unit])
-        else:
+        elif unit not in self.redefined:
             self._step_shape(value, self.steps[unit])
 
     def _unknown_callee(self, value: ast.expr) -> bool:
@@ -178,6 +179,19 @@ class _Canon:
             case "derive" | "rename" if not kws:
                 self.ctx.error(
                     "L304", call, f"'{op}' without any columns is a no-op", "remove this step"
+                )
+            case "rename":
+                for kw in call.keywords:
+                    if isinstance(kw.value, ast.Constant) and kw.value.value == kw.arg:
+                        self.ctx.error(
+                            "L304",
+                            kw,
+                            f"renaming '{kw.arg}' to itself is a no-op",
+                            "remove this rename",
+                        )
+            case "sort" if _is_empty_list(kws.get("by")):
+                self.ctx.error(
+                    "L304", call, "'sort' with by=[] is a no-op", "list the columns to sort by"
                 )
             case "select" if _is_empty_list(kws.get("cols")):
                 self.ctx.error(

@@ -17,6 +17,16 @@ class ParseResult:
     source: str
 
 
+def too_deep() -> Diagnostic:
+    return Diagnostic(
+        "L003",
+        Severity.ERROR,
+        Span(1, 1),
+        "program is nested too deeply",
+        "split deep expressions into several derive steps",
+    )
+
+
 def _normalize(source: str) -> str:
     if source.startswith("﻿"):
         source = source[1:]
@@ -43,6 +53,8 @@ def parse(source: str) -> ParseResult:
     except SyntaxError as e:
         module = None
         diags.append(Diagnostic("L002", Severity.ERROR, Span(e.lineno or 1, e.offset or 1), e.msg))
+    except (RecursionError, MemoryError):  # parser stack overflow on absurd nesting
+        return ParseResult(None, (too_deep(),), text)
     except ValueError as e:  # e.g. source contains NUL bytes
         module = None
         diags.append(Diagnostic("L002", Severity.ERROR, Span(1, 1), str(e)))

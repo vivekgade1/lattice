@@ -156,7 +156,8 @@ def test_math_functions():
     assert sq.dtype == pl.Float64 and sq.to_list() == [1.0, None, 0.0, None]
     assert guard_counts('fn.sqrt(col("i"))') == {"R302": 1}
     clip = ev('fn.clip(col("i"), lo=-1.0, hi=0.5)')
-    assert clip.dtype == pl.Int64
+    assert clip.dtype == pl.Float64  # a Float bound makes the result Float
+    assert ev('fn.clip(col("i"), lo=-1, hi=1)').dtype == pl.Int64
     assert ev('fn.clip(col("f"), lo=-1, hi=1)').to_list() == [1.0, -1.0, 0.0, None]
 
 
@@ -208,8 +209,11 @@ def test_casts():
     assert ts.dtype == pl.String and ts.to_list() == ["1", "-2", "0", None]
 
 
-def test_keyword_literal_expression_is_evaluated():
-    assert ev('fn.round(col("f"), digits=1 + 0)').to_list() == [1.2, -2.5, 0.0, None]
+def test_keyword_arguments_must_be_literals():
+    # the checker rejects computed keyword values (L404); only literals reach the runtime
+    assert ev('fn.round(col("f"), digits=--1)').to_list() == [1.2, -2.5, 0.0, None]
+    with pytest.raises(LatticeInternalError):
+        ev('fn.round(col("f"), digits=1 + 0)')
 
 
 def test_aggregates():

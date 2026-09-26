@@ -41,6 +41,34 @@ def step_param_kinds(fn: ast.FunctionDef) -> tuple[tuple[str, Literal["table", "
     )
 
 
+INT64_MIN, INT64_MAX = -(2**63), 2**63 - 1
+
+LiteralValue = bool | int | float | str
+
+
+def literal_value(node: ast.AST | None) -> LiteralValue | None:
+    """Python value of a literal: a bool/int/float/str constant, or a (possibly
+    repeatedly) negated numeric constant. None for anything else."""
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+        inner = literal_value(node.operand)
+        if isinstance(inner, int | float) and not isinstance(inner, bool):
+            return -inner
+        return None
+    if isinstance(node, ast.Constant) and isinstance(node.value, bool | int | float | str):
+        return node.value
+    return None
+
+
+def redefined_steps(module: ast.Module) -> frozenset[str]:
+    """Step names defined more than once (P2 reports L201; call sites are not re-checked)."""
+    seen: set[str] = set()
+    dups: set[str] = set()
+    for stmt in module.body:
+        if isinstance(stmt, ast.FunctionDef):
+            (dups if stmt.name in seen else seen).add(stmt.name)
+    return frozenset(dups)
+
+
 def steps_of(module: ast.Module) -> dict[str, ast.FunctionDef]:
     """Module-level step definitions by name (first definition wins)."""
     steps: dict[str, ast.FunctionDef] = {}
