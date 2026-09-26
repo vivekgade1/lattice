@@ -43,6 +43,21 @@ def test_system_prompt_has_exactly_three_examples_that_all_check_clean() -> None
         assert not result.diagnostics
 
 
+def test_examples_use_no_imports() -> None:
+    for block in _code_blocks(lattice_system_prompt()):
+        assert "import" not in block
+
+
+def test_rules_state_ambient_names_and_derive_overwrite() -> None:
+    prompt = lattice_system_prompt()
+    assert "No imports are needed" in prompt
+    assert "input schema names are always available" in prompt
+    assert "may overwrite an existing column" in prompt
+    assert "read the input table `t`" in prompt
+    # the old import-bookkeeping rule is gone
+    assert "no unused" not in prompt and "exactly match the names used" not in prompt
+
+
 def test_system_prompt_states_output_format() -> None:
     prompt = lattice_system_prompt()
     assert "```python" in prompt

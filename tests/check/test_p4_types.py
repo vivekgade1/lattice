@@ -97,6 +97,39 @@ def test_derive_extends(profile):
     assert [d.code for d in ctx.diagnostics] == ["L204"]  # 'd' unused
 
 
+def test_derive_overwrites_in_place_same_type(profile):
+    src = PRE + LOAD + 'd = derive(raw, qty=col("qty") + 1, extra=2)\n'
+    ctx, m, _ = run_p4(profile, src)
+    expected = schema(profile, "Orders").extend([("extra", INT)])
+    assert type_of_assign(ctx, m, "d") == TableT(expected)
+    assert [d.code for d in ctx.diagnostics] == ["L204"]  # no L405
+
+
+def test_derive_overwrite_changes_type_keeps_position(profile):
+    src = PRE + LOAD + 'd = derive(raw, qty=col("qty") * 1.5)\n'
+    ctx, m, _ = run_p4(profile, src)
+    cols = type_of_assign(ctx, m, "d").schema.columns
+    orders = schema(profile, "Orders").columns
+    assert [n for n, _ in cols] == [n for n, _ in orders]
+    assert dict(cols)["qty"] == F
+
+
+def test_derive_kwargs_read_input_table(profile):
+    # 'b' reads the INPUT 'qty' (Int), not the Str value assigned by the earlier keyword
+    src = PRE + LOAD + 'd = derive(raw, qty=col("status"), b=col("qty") + 1)\n'
+    ctx, m, _ = run_p4(profile, src)
+    t = type_of_assign(ctx, m, "d").schema
+    assert t.get("qty") == S and t.get("b") == INT
+    # and a keyword cannot read a column that only an earlier keyword creates
+    src = PRE + LOAD + 'x = derive(raw, a=1, b=col("a"))\nwrite(x, "o.csv")\n'
+    assert errors(profile, src) == ["L401"]
+
+
+def test_derive_overwrite_type_error_still_reported(profile):
+    src = PRE + LOAD + 'x = derive(raw, qty=col("status") + 1)\nwrite(x, "o.csv")\n'
+    assert errors(profile, src) == ["L402"]
+
+
 def test_select_projects(profile):
     ctx, m, _ = run_p4(profile, PRE + LOAD + 's = select(raw, cols=["region", "qty"])\n')
     assert type_of_assign(ctx, m, "s") == TableT(Schema.from_pairs([("region", S), ("qty", INT)]))
@@ -266,7 +299,6 @@ def test_step_param_not_a_schema_L414(profile):
         ('x = load("o.csv", schema=Int)', "L414"),
         ('x = where(raw, col("qty"))', "L403"),
         ('x = where(raw, col("qty") + 1)', "L403"),
-        ('x = derive(raw, qty=col("qty") + 1)', "L405"),
         ('x = derive(raw, a=col("nope"))', "L401"),
         ("x = select(raw, cols=[1])", "L404"),
         ('x = select(raw, cols="qty")', "L404"),

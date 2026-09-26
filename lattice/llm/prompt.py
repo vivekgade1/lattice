@@ -64,7 +64,11 @@ def baseline_task_message(task: Task) -> str:
 _OP_DESCRIPTIONS: dict[str, str] = {
     "load": "read a schema-declared input table from a CSV file",
     "where": "keep only the rows where the Bool predicate is true; null predicates drop the row",
-    "derive": "add one or more new columns, each a column expression",
+    "derive": (
+        "add new columns or replace existing ones (same position), each a column "
+        "expression; every expression reads the input table, not columns set earlier "
+        "in the same call"
+    ),
     "select": "project the table down to exactly the listed columns, in that given order",
     "rename": "rename one or more existing columns",
     "group": "group by zero or more columns and compute the given aggregates per group",
@@ -144,11 +148,16 @@ def _expression_library_section() -> str:
 _RULES_SECTION = """## Rules
 
 - The first line of the program must be exactly `# lattice: v1`.
-- Import only `from lattice.ops import ...` and `from lattice.schemas import ...`; \
-the imported names must exactly match the names used in the program (no unused \
-imports, nothing used without being imported).
+- No imports are needed: all ops, `col`, `when`, `coalesce`, `is_null`, `fn`, \
+`agg`, `step`, the type names and the input schema names are always available.
 - Every statement calls exactly one table op or `@step` and assigns its result to \
-a brand-new name. Never reassign or reuse a name (no shadowing).
+a brand-new name. Never reassign or reuse a name, and never use a built-in name \
+(an op, function, type or schema name such as `where` or `Orders`) as a variable, \
+step or parameter name.
+- `derive(t, name=expr)` may overwrite an existing column: it is replaced in place \
+with the expression's value and type. All expressions in one `derive` call read \
+the input table `t`, so a later keyword never sees an earlier keyword's new value; \
+use a second `derive` for that.
 - Never nest calls: a table argument must always be a plain name, never another \
 call. Assign the inner result to its own name first.
 - `where(table, predicate)` takes its predicate positionally; every other \
@@ -188,9 +197,6 @@ _EXAMPLE_PROBLEMS = (
 
 _EXAMPLE_1 = '''```python
 # lattice: v1
-from lattice.ops import coalesce, col, derive, load, select, where, write
-from lattice.schemas import Orders
-
 orders = load("orders.csv", schema=Orders)
 refunded = where(orders, col("status") == "refunded")
 priced = derive(
@@ -203,9 +209,6 @@ write(result, "out.parquet")
 
 _EXAMPLE_2 = '''```python
 # lattice: v1
-from lattice.ops import agg, col, group, limit, load, sort, where, write
-from lattice.schemas import Orders
-
 orders = load("orders.csv", schema=Orders)
 cancelled = where(orders, col("status") == "cancelled")
 by_product = group(cancelled, by=["product_id"], cancelled_qty=agg.sum(col("qty")))
@@ -216,8 +219,6 @@ write(top3, "out.parquet")
 
 _EXAMPLE_3 = '''```python
 # lattice: v1
-from lattice.ops import Str, Table, agg, col, group, join, load, step, where, write
-from lattice.schemas import Orders, Products
 
 
 @step

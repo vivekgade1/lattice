@@ -10,11 +10,11 @@ LOAD = 'raw = load("orders.csv", schema=Orders)\n'  # line 4
 
 
 def p3(diags, src):
-    """P3 diagnostics only (L306 is reported by P2)."""
+    """P3 diagnostics only."""
     return [
         (d.code, d.span.line, d.span.col)
         for d in diags(src)
-        if d.code.startswith(("L30", "L7")) and d.code != "L306"
+        if d.code.startswith(("L30", "L7"))
     ]
 
 
@@ -90,6 +90,7 @@ def test_sort_unexpected_keyword(diags):
     [
         "x = where(raw, True)",
         "x = derive(raw)",
+        'x = derive(raw, qty=col("qty"))',
         "x = select(raw, cols=[])",
         "x = group(raw, by=[])",
     ],
@@ -97,6 +98,17 @@ def test_sort_unexpected_keyword(diags):
 def test_noop_steps(diags, stmt):
     src = prog(stmt, 'write(x, "o.csv")')
     assert [c for c, *_ in p3(diags, src)] == ["L304"]
+
+
+def test_derive_identity_overwrite_flagged_per_column(diags):
+    src = prog('x = derive(raw, qty=col("qty"), total=col("qty") * 2)', 'write(x, "o.csv")')
+    ds = [d for d in diags(src) if d.code == "L304"]
+    assert len(ds) == 1 and "'qty'" in ds[0].message
+
+
+def test_derive_real_overwrite_is_not_noop(diags):
+    src = prog('x = derive(raw, qty=col("qty") + 1)', 'write(x, "o.csv")')
+    assert p3(diags, src) == []
 
 
 def test_two_consecutive_wheres_ok(diags):

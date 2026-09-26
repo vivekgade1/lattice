@@ -60,6 +60,12 @@ class Schema:
         """Append columns; caller has already rejected collisions."""
         return Schema(self.columns + tuple(pairs))
 
+    def with_columns(self, pairs: Iterable[tuple[str, Scalar]]) -> Schema:
+        """derive(): replace existing columns in place (new type), append new ones in order."""
+        updates = dict(pairs)
+        kept = tuple((n, updates.pop(n, t)) for n, t in self.columns)
+        return Schema(kept + tuple(updates.items()))
+
     def project(self, names: Iterable[str]) -> Schema:
         return Schema(tuple((n, self._require(n)) for n in names))
 

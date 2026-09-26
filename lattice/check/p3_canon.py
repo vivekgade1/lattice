@@ -180,6 +180,15 @@ class _Canon:
                 self.ctx.error(
                     "L304", call, f"'{op}' without any columns is a no-op", "remove this step"
                 )
+            case "derive":
+                for kw in call.keywords:
+                    if _is_col_named(kw.value, kw.arg):
+                        self.ctx.error(
+                            "L304",
+                            kw,
+                            f"deriving '{kw.arg}' from itself is a no-op",
+                            "remove this column from the derive",
+                        )
             case "rename":
                 for kw in call.keywords:
                     if isinstance(kw.value, ast.Constant) and kw.value.value == kw.arg:
@@ -225,6 +234,18 @@ class _Canon:
 
 def _is_when(node: ast.AST) -> bool:
     return isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "when"
+
+
+def _is_col_named(node: ast.expr, name: str | None) -> bool:
+    return (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "col"
+        and len(node.args) == 1
+        and not node.keywords
+        and isinstance(node.args[0], ast.Constant)
+        and node.args[0].value == name
+    )
 
 
 def _is_empty_list(node: ast.expr | None) -> bool:

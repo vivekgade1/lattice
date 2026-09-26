@@ -294,27 +294,19 @@ class _Types:
         return t  # the predicate never changes the schema
 
     def _derive(self, call: ast.Call, t: TableT, scalars: Scalars) -> TableOrUnknown:
+        # Every expression reads the INPUT table: a later keyword does not see an earlier
+        # keyword's new value. An existing name is replaced in place (with the new type).
         typer = self._typer(t.schema, scalars)
-        seen = set(t.schema.names())
-        new: list[tuple[str, Scalar]] = []
+        cols: list[tuple[str, Scalar]] = []
         unknown = False
         for kw in call.keywords:
             assert kw.arg is not None  # P1 rejects **kwargs
             vt = typer.type_of(kw.value)
-            if kw.arg in seen:
-                self.ctx.error(
-                    "L405",
-                    kw,
-                    f"column '{kw.arg}' already exists",
-                    "choose a new name or rename first",
-                )
-                continue
-            seen.add(kw.arg)
             if isinstance(vt, UnknownT):
                 unknown = True
             else:
-                new.append((kw.arg, vt.scalar))
-        return UNKNOWN if unknown else TableT(t.schema.extend(new))
+                cols.append((kw.arg, vt.scalar))
+        return UNKNOWN if unknown else TableT(t.schema.with_columns(cols))
 
     def _select(self, t: TableT, cols_node: ast.expr) -> TableOrUnknown:
         names = self._str_list(cols_node, "cols")

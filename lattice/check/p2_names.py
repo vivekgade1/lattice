@@ -2,7 +2,10 @@
 
 Scopes (all lexical, resolved in one forward walk over the file):
 
-* ``globals_`` — imports and completed steps; visible everywhere.
+* ``globals_`` — ambient names (every catalog name in ``IMPORTABLE`` and every
+  profile schema name, predeclared) and completed steps; visible everywhere.
+  ``from lattice.ops/schemas import ...`` is optional: P1 validates imported
+  names and P2 treats them as already bound (never unused, never duplicates).
 * ``tables``   — module-level assignments; parent ``globals_``.
 * one scope per step body — parameters and locals; parent ``globals_`` (not
   ``tables``), which is what makes step bodies unable to see module tables.
@@ -20,10 +23,10 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 from typing import Literal
 
-from lattice.catalog import FN_ALIASES, IMPORTABLE, OP_ALIASES, OPS_MODULE, SCHEMAS_MODULE
+from lattice.catalog import FN_ALIASES, IMPORTABLE, OP_ALIASES
 from lattice.check.context import CheckContext
 
-Kind = Literal["import", "step", "table", "param", "local"]
+Kind = Literal["ambient", "step", "table", "param", "local"]
 
 _BUILTINS = frozenset(dir(builtins))
 
@@ -80,6 +83,8 @@ class _Resolver:
         self.module = module
         self.ctx = ctx
         self.globals_ = Scope(None)
+        for name in sorted(IMPORTABLE | frozenset(ctx.profile.schemas)):
+            self.globals_.bindings[name] = Binding(name, "ambient", module, 0, used=True)
         self.tables = Scope(self.globals_)
         self.step_scopes: list[Scope] = []
         self.reported: set[tuple[str, str, int]] = set()
@@ -96,8 +101,7 @@ class _Resolver:
         for stmt in self.module.body:
             match stmt:
                 case ast.ImportFrom():
-                    for alias in stmt.names:
-                        self._bind(self.globals_, alias.name, "import", alias, (self.globals_,))
+                    pass  # optional: P1 validated the names, which are ambient anyway
                 case ast.Assign():
                     self._uses(stmt.value, self.tables, _StepCtx(None))
                     self._bind(
@@ -159,7 +163,7 @@ class _Resolver:
         visible: tuple[Scope, ...],
     ) -> None:
         line = getattr(node, "lineno", 1)
-        if kind != "import" and name in _BUILTINS:
+        if name in _BUILTINS:
             self.ctx.error(
                 "L205",
                 node,
@@ -171,12 +175,18 @@ class _Resolver:
             for s in visible:
                 existing = existing or s.lookup(name)
             if existing is not None:
-                if existing.kind in ("import", "step") and kind not in ("import", "step"):
-                    what = "an imported name" if existing.kind == "import" else "a step"
+                if existing.kind == "ambient":
                     self.ctx.error(
                         "L205",
                         node,
-                        f"'{name}' shadows {what} (line {existing.line})",
+                        f"'{name}' shadows a built-in Lattice name",
+                        "use a different name",
+                    )
+                elif existing.kind == "step" and kind != "step":
+                    self.ctx.error(
+                        "L205",
+                        node,
+                        f"'{name}' shadows a step (line {existing.line})",
                         "use a different name",
                     )
                 else:
@@ -200,20 +210,6 @@ class _Resolver:
         names.sort(key=lambda n: (n.lineno, n.col_offset))
         for n in names:
             self._use(n, scope, where)
-        # load(..., schema="Orders") is reported by P4 (L414, hint schema=Orders); count
-        # the misuse as a use of the imported schema so it is not also reported unused.
-        for call in ast.walk(expr):
-            if not (
-                isinstance(call, ast.Call)
-                and isinstance(call.func, ast.Name)
-                and call.func.id == "load"
-            ):
-                continue
-            for kw in call.keywords:
-                if kw.arg == "schema" and isinstance(kw.value, ast.Constant):
-                    b = self.globals_.lookup(str(kw.value.value))
-                    if b is not None and b.kind == "import":
-                        b.used = True
 
     def _use(self, node: ast.Name, scope: Scope, where: _StepCtx) -> None:
         name = node.id
@@ -276,10 +272,6 @@ class _Resolver:
         )
 
     def _unknown_hint(self, name: str, scope: Scope) -> str | None:
-        if name in IMPORTABLE:
-            return f"add it to 'from {OPS_MODULE} import ...'"
-        if name in self.ctx.profile.schemas:
-            return f"add it to 'from {SCHEMAS_MODULE} import ...'"
         if name in OP_ALIASES:
             return f"the op is called '{OP_ALIASES[name]}'"
         if name in FN_ALIASES:
@@ -311,14 +303,7 @@ class _Resolver:
             for b in scope.all_bindings():
                 if b.used:
                     continue
-                if b.kind == "import":
-                    self.ctx.error(
-                        "L306",
-                        b.node,
-                        f"imported name '{b.name}' is never used",
-                        "remove it from the import list",
-                    )
-                else:
+                if b.kind != "ambient":
                     self.ctx.warn(
                         "L204",
                         b.node,

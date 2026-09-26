@@ -129,8 +129,7 @@ A program is a module of **top-level single-assignment statements**, each callin
 
 ```python
 # lattice: v1
-from lattice.ops import load, where, derive, group, write, col, agg
-
+# (no imports needed: ops, col, fn, agg, types and schema names are ambient — §5.11 item 12)
 raw_orders       = load("orders.csv", schema=Orders)
 paid_orders      = where(raw_orders, col("status") == "paid")
 orders_w_total   = derive(paid_orders, total=col("qty") * col("price"))
@@ -148,7 +147,7 @@ out = df.assign(total=lambda d: d.qty * d.price).groupby("region").total.sum()  
 
 ### 5.2 P1 — Node whitelist
 
-Allowed: `Module`, `ImportFrom` (only `from lattice.ops import …`, first statement block only), `Assign` (single `Name` target), `Expr` (only a bare terminal op call, e.g. `write`), `Call`, `Name`, `Constant`, `List`/`Tuple` of constants, `keyword`, `Compare`/`BinOp`/`BoolOp`/`UnaryOp` **only inside column expressions** (§5.5), `Attribute` **only** as `agg.<fn>` / `fn.<name>` (§5.10). `FunctionDef` **only** with exactly the `@step` decorator, fully annotated, whose body obeys §5.9; `Return` only as the last statement of a step.
+Allowed: `Module`, `ImportFrom` (optional; only `from lattice.ops import …` / `from lattice.schemas import …`, first statement block only), `Assign` (single `Name` target), `Expr` (only a bare terminal op call, e.g. `write`), `Call`, `Name`, `Constant`, `List`/`Tuple` of constants, `keyword`, `Compare`/`BinOp`/`BoolOp`/`UnaryOp` **only inside column expressions** (§5.5), `Attribute` **only** as `agg.<fn>` / `fn.<name>` (§5.10). `FunctionDef` **only** with exactly the `@step` decorator, fully annotated, whose body obeys §5.9; `Return` only as the last statement of a step.
 
 Everything else is rejected with `L1xx` codes: undecorated/other-decorated `def`, nested `def`, `class`, `lambda`, comprehensions, `for`/`while`/`if` statements, conditional expressions (`a if c else b` — use `when`), `with`, `try`, `global`/`nonlocal`, `import`, subscripts, starred args, default parameter values, f-strings, walrus, augmented assignment, method calls, `async`, `yield`.
 
@@ -156,9 +155,10 @@ Everything else is rejected with `L1xx` codes: undecorated/other-decorated `def`
 
 - Scoping: **static** (lexical) resolution in a pass after parsing — one module scope, plus one scope per `@step` body (§5.9).
 - Every name is bound **exactly once** (`L201 rebinding`). This *is* the no-shadowing rule.
-- Every use must be bound **earlier in the file** (`L202 use-before-def`, `L203 unknown name`).
-- Every binding must be **used later** or be a terminal op (`L204 dead step` — warning).
-- Names shadowing catalog ops or Python builtins rejected (`L205`).
+- **Ambient names.** Every catalog name (the ops, `col`, `when`, `coalesce`, `is_null`, `fn`, `agg`, `step`, `Table` and the scalar type names) and every schema name in the profile is predeclared in the module-level scope and visible everywhere, including step bodies. Imports are optional (§5.11 items 1, 12).
+- Every other use must be bound **earlier in the file** (`L202 use-before-def`, `L203 unknown name` — only for names that are neither ambient nor bound; did-you-mean and alias hints such as `filter` → `where`).
+- Every binding must be **used later** or be a terminal op (`L204 dead step` — warning; never for ambient names).
+- Binding a name equal to an ambient name (a table, step, step parameter or local named `where`, `col`, `Orders`, …) or a Python builtin is rejected (`L205`, "shadows a built-in Lattice name").
 
 ### 5.4 P3 — Canonical-form rules (one way to say each thing)
 
@@ -167,9 +167,9 @@ Everything else is rejected with `L1xx` codes: undecorated/other-decorated `def`
 | A table-typed argument must be a `Name`, never a nested op call (no chaining) | `L301` |
 | Exactly one op call per statement | `L302` |
 | Every op call uses its one fixed call shape (§5.11 item 2): table input(s) positional, `where`'s predicate positional, every other parameter by keyword; step calls pass tables positionally and scalars by keyword | `L303` |
-| No no-op steps: `where(t, True)`, `derive(t)` with no columns, and similar identity ops are rejected (two consecutive `where` steps remain legal) | `L304` |
+| No no-op steps: `where(t, True)`, `derive(t)` with no columns, `derive(t, a=col("a"))`, and similar identity ops are rejected (two consecutive `where` steps remain legal) | `L304` |
 | Column references only via `col("name")`; no bare strings where a column is expected | `L305` |
-| Import list must exactly match ops used (no unused, no missing) | `L306` |
+| ~~Import list must exactly match ops used~~ — removed (§5.11 item 12); imports are optional | ~~`L306`~~ |
 
 ### 5.5 P4 — Types and schemas (synthesized bottom-up)
 
@@ -182,7 +182,7 @@ Types are few and distinct, no implicit coercion:
 Each op in the catalog has a typed signature **with a schema transfer function**, e.g.
 
 - `where(t: Table[S], pred: Col[Bool]) -> Table[S]`
-- `derive(t: Table[S], **new: Col[T_i]) -> Table[S ∪ {new_i: T_i}]` (error if a name already exists — `L405`)
+- `derive(t: Table[S], **new: Col[T_i]) -> Table[S ⊕ {new_i: T_i}]` — a new name is appended; an existing name is **replaced in place** (same position, type `T_i`). Every `new_i` is typed and evaluated against the **input** table `S`: a later keyword does not see an earlier keyword's new value (§5.11 item 12)
 - `group(t: Table[S], by: list[col∈S], **aggs: Agg) -> Table[{by…} ∪ {agg names}]`
 - `join(left: Table[A], right: Table[B], on: list[str], how: "inner"|"left") -> Table[A ⊎ B]` (collision error)
 
@@ -261,7 +261,7 @@ All inside column expressions (`Col[T]`); nothing here introduces statements.
 
 ### 5.11 Clarifications (decided by the Phase 0–3 plan)
 
-1. **Imports.** Exactly two modules may be imported from: `from lattice.ops import …` (the ops, `col`, `when`, `coalesce`, `is_null`, `agg`, `fn`, `step`, `Table`, and the scalar type names) and `from lattice.schemas import …` (input schema names from the profile). No aliases, no wildcards, no relative imports. Imports must exactly match use (unused → `L306`, missing → `L203`).
+1. **Imports.** Exactly two modules may be imported from: `from lattice.ops import …` (the ops, `col`, `when`, `coalesce`, `is_null`, `agg`, `fn`, `step`, `Table`, and the scalar type names) and `from lattice.schemas import …` (input schema names from the profile). No aliases, no wildcards, no relative imports. Unknown imported names are `L112` (with alias hints), other modules / plain `import` are `L103`, imports after other statements are `L102`, aliases `L104`. Imports are optional and an unused import is fine (`L306` was removed — item 12).
 2. **Canonical call shapes (refines `L303`).** Each op has one fixed signature saying which parameters are positional and which are keyword. Table inputs are positional; `where(t, pred)` takes its predicate positionally; everything else that is not a table is passed by keyword (e.g. `load(path, schema=S)`, `join(l, r, on=[…], how="left")`, `write(t, path)`).
 3. **Step annotations.** A step's return annotation may be bare `Table` (schema inferred from the body); parameters must be concrete (`Table[Orders]`) or scalar (`Int`, …). A concrete return type is checked exactly (`L605`).
 4. **Nullability.** Every column is nullable in v1; the `T?` distinction is deferred.
@@ -271,7 +271,10 @@ All inside column expressions (`Col[T]`); nothing here introduces statements.
 8. **`fn.clip`.** The result is Float when either bound is Float (the column is cast); Int bounds on an Int column stay Int.
 9. **Date step parameters.** Rejected at the definition (`L601`): there is no Date literal to pass. Take a `Str` parameter and convert inside the step with `fn.to_date(s, format=...)`. PEP 695 type parameters on a step are also `L601`.
 10. **Limits.** Nesting deeper than 100 AST levels is a single `L003` (the checker never raises). At runtime an op whose output exceeds the row limit is `R201`; a `join` is sized exactly from per-key counts and refused *before* it runs. The time limit (`R202`) is checked between ops, so a single long op is not interrupted.
-11. **No-ops (`L304`)** also include `sort(t, by=[])` and renaming a column to itself.
+11. **No-ops (`L304`)** also include `sort(t, by=[])`, renaming a column to itself, and deriving a column from itself (`derive(t, a=col("a"))`).
+12. **Ambient names and derive overwrite (post-benchmark change).** A live benchmark on claude-haiku-4-5 showed first-shot Lattice failures dominated by bookkeeping rules rather than the rules the design targets: `L203` missing import (18 tasks), `L405` derive reusing an existing column (15), `L306` unused import (11). Two changes remove that friction:
+    - *Ambient names.* Every name in `lattice.catalog.IMPORTABLE` and every profile schema name is predeclared in the module-level (globals) scope, visible everywhere including step bodies. `from lattice.ops/schemas import …` stays valid but optional; `L306` is removed; `L112`/`L103`/`L102`/`L104` are unchanged. `L203` fires only for names that are neither ambient nor bound. Binding an ambient name remains `L205`; `L204` never fires for ambient names.
+    - *Derive may overwrite.* `derive(t, name=expr)` with an existing `name` replaces that column in place (same position; type = the expression's type — the IR's predicted schema and the runtime schema assertion agree, as polars `with_columns` replaces in place). All expressions in one `derive` call read the input table; a later keyword does not see an earlier keyword's value. `L405` no longer applies to `derive` (it remains for `rename`/`group`/`join` collisions, with `L416`); an identity overwrite `derive(t, a=col("a"))` is `L304`.
 
 ---
 

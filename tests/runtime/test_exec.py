@@ -150,6 +150,83 @@ def test_derive_select_rename(root):
     assert df["label"].to_list()[0] == "APPLE"
 
 
+def _raw(src: str, root: Path) -> RunResult:
+    """Run source verbatim (no import header is added)."""
+    result, rr = run_source(src, PROFILE, root)
+    assert result.ok, result.diagnostics
+    assert result.diagnostics == ()
+    assert rr is not None
+    return rr
+
+
+def test_program_without_imports_runs(root):
+    rr = _raw(
+        "# lattice: v1\n"
+        "@step\n"
+        "def stocked(items: Table[Items], k: Int) -> Table:\n"
+        '    s = where(items, col("qty") >= k)\n'
+        "    return s\n"
+        't = load("items.csv", schema=Items)\n'
+        "s = stocked(t, k=2)\n"
+        'd = derive(s, tag=fn.upper(col("name")))\n'
+        'g = group(d, by=["tag"], n=agg.count())\n'
+        'write(g, "out.parquet")\n',
+        root,
+    )
+    df = rr.outputs["out.parquet"]
+    assert df.rows() == [("APPLE", 2), ("FIG", 1)]
+
+
+def test_derive_overwrite_same_type_in_place(root):
+    df = _raw(
+        "# lattice: v1\n"
+        't = load("items.csv", schema=Items)\n'
+        'd = derive(t, qty=col("qty") + 10)\n'
+        'write(d, "out.parquet")\n',
+        root,
+    ).outputs["out.parquet"]
+    assert df.columns == ["id", "name", "qty", "price", "day"]
+    assert df.schema["qty"] == pl.Int64
+    assert df["qty"].to_list() == [13, 10, 15, None, 12]
+
+
+def test_derive_overwrite_changes_type_schema_matches(root):
+    src = (
+        "# lattice: v1\n"
+        't = load("items.csv", schema=Items)\n'
+        'd = derive(t, qty=col("qty") * 0.5, name=fn.len(col("name")))\n'
+        'write(d, "out.parquet")\n'
+    )
+    result = check_source(src, PROFILE)
+    assert result.ok, result.diagnostics
+    predicted = [n for n in lower(result.program).nodes if n.op == "derive"][0].schema
+    assert predicted.columns == (
+        ("id", Scalar.INT),
+        ("name", Scalar.INT),
+        ("qty", Scalar.FLOAT),
+        ("price", Scalar.FLOAT),
+        ("day", Scalar.DATE),
+    )
+    df = _raw(src, root).outputs["out.parquet"]  # the runtime schema assertion passes
+    assert df.schema == pl.Schema(
+        {"id": pl.Int64, "name": pl.Int64, "qty": pl.Float64, "price": pl.Float64, "day": pl.Date}
+    )
+    assert df["qty"].to_list() == [1.5, 0.0, 2.5, None, 1.0]
+
+
+def test_derive_kwargs_see_the_input_table(root):
+    df = _raw(
+        "# lattice: v1\n"
+        't = load("items.csv", schema=Items)\n'
+        'd = derive(t, qty=col("qty") * 100, big=col("qty") > 2)\n'
+        'write(d, "out.parquet")\n',
+        root,
+    ).outputs["out.parquet"]
+    # 'big' compares the ORIGINAL qty (3, 0, 5, null, 2), not qty * 100
+    assert df["big"].to_list() == [True, False, True, None, False]
+    assert df["qty"].to_list() == [300, 0, 500, None, 200]
+
+
 def test_rename_swap(root):
     df = out(
         't = load("owners.csv", schema=Owners)\n'

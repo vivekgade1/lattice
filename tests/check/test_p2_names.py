@@ -1,3 +1,5 @@
+import pytest
+
 from lattice.diagnostics import Severity
 
 H = "# lattice: v1\n"
@@ -18,10 +20,10 @@ def test_rebinding(diags):
     assert d.span.line == 6 and "line 5" in d.message
 
 
-def test_duplicate_import(codes):
+def test_duplicate_import_is_harmless(codes):
+    # imports are optional re-statements of ambient names; repeating one is not a rebinding
     src = H + OPS + "from lattice.ops import load\n" + SCH + LOAD + 'write(raw, "o.csv")\n'
-    src = src.replace(OPS, OPS.replace("where, derive, ", "").replace(", step, Table, Int", ""))
-    assert "L201" in codes(src)
+    assert codes(src) == []
 
 
 def test_param_shadows_import(diags):
@@ -60,18 +62,42 @@ def test_unknown_name(diags):
     assert "'pandas'" in d.message
 
 
-def test_missing_import_hint(diags):
+def test_unimported_op_is_ambient(codes):
+    # formerly L203 "missing import": every catalog name is predeclared
     src = H + "from lattice.ops import load, write, col\n" + SCH + LOAD
     src += 'x = where(raw, col("qty") > 1)\nwrite(x, "o.csv")\n'
-    (d,) = only(diags, src, "L203")
-    assert "from lattice.ops import" in d.hint
+    assert codes(src) == []
 
 
-def test_missing_schema_import_hint(diags):
+def test_unimported_schema_is_ambient(codes):
     src = H + "from lattice.ops import load, write\n" + 'x = load("a.csv", schema=Orders)\n'
     src += 'write(x, "o.csv")\n'
+    assert codes(src) == []
+
+
+def test_no_imports_at_all(diags):
+    src = H + LOAD + (
+        "@step\n"
+        "def big(t: Table[Orders], n: Int) -> Table:\n"
+        '    out = where(t, col("qty") > n)\n'
+        "    return out\n"
+        "x = big(raw, n=2)\n"
+        'y = derive(x, total=col("qty") * col("price"), day=fn.year(col("order_date")))\n'
+        'write(y, "o.csv")\n'
+    )
+    assert diags(src) == ()
+
+
+def test_unknown_name_typo_hint(diags):
+    src = H + LOAD + 'x = selct(raw, cols=["qty"])\nwrite(x, "o.csv")\n'
     (d,) = only(diags, src, "L203")
-    assert "from lattice.schemas import" in d.hint
+    assert "select" in d.hint
+
+
+def test_unknown_name_fn_alias_hint(diags):
+    src = H + LOAD + 'x = derive(raw, n=length(col("status")))\nwrite(x, "o.csv")\n'
+    (d,) = only(diags, src, "L203")
+    assert "fn.len" in d.hint
 
 
 def test_alias_hint(diags):
@@ -150,13 +176,61 @@ def test_module_call_before_step_defined(codes):
     assert codes(src) == ["L604"]
 
 
-def test_unused_import_is_error(diags):
+def test_unused_import_is_fine(diags):
+    # L306 is gone: imports are optional, so an unused one is neither error nor warning
     src = PRE + LOAD + 'write(raw, "o.csv")\n'
-    ds = only(diags, src, "L306")
-    names = sorted(d.message.split("'")[1] for d in ds)
-    assert names == ["Int", "Table", "col", "derive", "step", "where"]
-    assert all(d.severity is Severity.ERROR for d in ds)
-    assert all(d.span.line == 2 for d in ds)
+    assert diags(src) == ()
+
+
+def test_unknown_import_still_l112(diags):
+    src = H + "from lattice.ops import load, write, filter\n" + SCH + LOAD
+    src += 'write(raw, "o.csv")\n'
+    (d,) = only(diags, src, "L112")
+    assert "where" in d.hint
+
+
+def test_unknown_schema_import_still_l112(codes):
+    src = H + "from lattice.schemas import Nope\n" + LOAD + 'write(raw, "o.csv")\n'
+    assert codes(src) == ["L112"]
+
+
+@pytest.mark.parametrize(
+    "stmt, line",
+    [
+        ('where = load("a.csv", schema=Orders)\nwrite(where, "o.csv")\n', 3),
+        ('Orders = load("a.csv", schema=Orders)\nwrite(Orders, "o.csv")\n', 3),
+        ('Int = load("a.csv", schema=Orders)\nwrite(Int, "o.csv")\n', 3),
+    ],
+)
+def test_binding_ambient_name_is_l205(diags, stmt, line):
+    src = H + LOAD + stmt
+    ds = only(diags, src, "L205")
+    assert len(ds) == 1 and ds[0].span.line == line
+    assert "built-in Lattice name" in ds[0].message
+
+
+def test_step_param_named_col_is_l205(diags):
+    src = H + LOAD + (
+        "@step\n"
+        "def f(col: Table[Orders]) -> Table:\n"
+        '    y = where(col, fn.len(fn.lower(fn.strip(fn.upper(fn.to_str(1))))) > 0)\n'
+        "    return y\n"
+        "x = f(raw)\n"
+        'write(x, "o.csv")\n'
+    )
+    ds = only(diags, src, "L205")
+    assert len(ds) == 1 and ds[0].span.line == 4
+
+
+def test_step_named_like_op_is_l205(codes):
+    src = H + LOAD + (
+        "@step\n"
+        "def limit(t: Table[Orders]) -> Table:\n"
+        '    y = where(t, col("qty") > 1)\n'
+        "    return y\n"
+        'write(raw, "o.csv")\n'
+    )
+    assert "L205" in codes(src)
 
 
 def test_unused_table_is_warning(diags):
