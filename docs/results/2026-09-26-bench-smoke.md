@@ -38,6 +38,16 @@ Gate: FAIL only on `multi_step_improvement` (+0.0 pts; pandas is already at 100%
 
 Gate: FAIL (multi+deep −18.6 pts; deep −36.7 pts). Most first-shot static failures are bookkeeping rules rather than the branching-factor rules the design targets: `L203` unknown/unimported name (18 tasks), `L405` derive re-using an existing column name (15), `L306` unused import (11); the targeted rules (`L201` shadowing, `L301/L302` chaining) account for only ~8.
 
+### claude-haiku-4-5 after step 1 (ambient names + derive overwrite; j08 wording fixed)
+
+| Arm | single | multi | join | deep | all |
+|---|---|---|---|---|---|
+| A — pandas | 100% | 100% | 100% | 100% | **100%** |
+| B — Lattice + repair | 97.0% (was 97.0) | 100% (95.0) | 96.3% (85.2) | 83.3% (63.3) | **94.6%** (86.2) |
+| C — Lattice first-shot | 93.9% (75.8) | 95.0% (57.5) | 92.6% (48.1) | 73.3% (6.7) | **89.2%** (48.5) |
+
+First-shot pass 50.8% → 92.3%; mean rounds for B 1.62 → 1.13; B output tokens 564 → 251 (now close to pandas' 227). Gate still FAIL (multi+deep −7.1 pts vs pandas' 100%). Remaining first-shot static failures: `agg.count(x)` with an argument (3 tasks), `join(on=[])` attempted as a cross join for share-of-total (3), named scalar constants like `cutoff = fn.to_date(...)` (2), misc (3); plus 4–5 wrong results.
+
 ### Conclusion
 
 - The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
