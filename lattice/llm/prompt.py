@@ -140,7 +140,8 @@ def _expression_library_section() -> str:
     lines.append(
         "Aggregate library `agg.*` (only valid as a `group()` keyword value): "
         + ", ".join(f"`agg.{name}(...)`" for name in sorted(AGG_FUNCS))
-        + ". `agg.count()` takes no argument; every other aggregate takes one column expression."
+        + ". `agg.count()` counts rows and `agg.count(x)` counts the non-null values of x; "
+        "every other aggregate takes one column expression."
     )
     return "\n".join(lines)
 
@@ -154,6 +155,11 @@ _RULES_SECTION = """## Rules
 a brand-new name. Never reassign or reuse a name, and never use a built-in name \
 (an op, function, type or schema name such as `where` or `Orders`) as a variable, \
 step or parameter name.
+- A statement may also bind a named constant, `name = <expr>`, when the \
+expression uses no columns (literals, operators, `fn.*` on literals, earlier \
+constants, a step's scalar parameters), e.g. `cutoff = fn.to_date("2025-01-01", \
+format="%Y-%m-%d")`. Use it anywhere a value is allowed; an `fn.*` keyword or a \
+step's scalar argument takes a constant only if it is a plain literal (`days = 30`).
 - `derive(t, name=expr)` may overwrite an existing column: it is replaced in place \
 with the expression's value and type. All expressions in one `derive` call read \
 the input table `t`, so a later keyword never sees an earlier keyword's new value; \
@@ -163,6 +169,12 @@ call. Assign the inner result to its own name first.
 - `where(table, predicate)` takes its predicate positionally; every other \
 non-table argument to every op is passed by keyword (e.g. `load(path, \
 schema=Orders)`, `join(l, r, on=[...], how="left")`, `write(table, path)`).
+- `join(l, r, on=[], how="inner")` (or `"left"`) attaches every column of `r` to \
+every row of `l`; `r` must have at most one row, e.g. a total from \
+`group(t, by=[], ...)`. Share of a total: \
+`total = group(t, by=[], all_qty=agg.sum(col("qty")))`, \
+`with_total = join(t, total, on=[], how="inner")`, \
+`shares = derive(with_total, share=col("qty") / col("all_qty"))`.
 - There are no loops, no `if` statements, no lambdas, no comprehensions, no \
 method calls, and no subscripts anywhere. Use `when(...)` for conditionals and \
 `col("name")` for column access.
@@ -171,9 +183,9 @@ method calls, and no subscripts anywhere. Use `when(...)` for conditionals and \
 - `@step` defines a reusable, pure sub-pipeline: every parameter is annotated \
 (`Table[Schema]` or a scalar type name), the return type is `Table[Schema]` or \
 bare `Table`, the body is single-assignment statements ending in exactly one \
-`return <name>`, and it may only read its own parameters and locals — never a \
-module-level table. A step must be defined before it is called and cannot call \
-itself.
+`return <name>`, and it may only read its own parameters and locals (and constants \
+defined above it) — never a module-level table. A step must be defined before it \
+is called and cannot call itself.
 - The program must end by writing its result: `write(<table>, "out.parquet")`.
 """
 
@@ -342,6 +354,15 @@ the task says.
 followed by an `isna()` test on a right-hand column).
 - Whole-table aggregates (no grouping) produce a single-row result: build it \
 explicitly, e.g. `pd.DataFrame({"total": [df["x"].sum()], "n": [len(df)]})`.
+- Share of a total: compute the whole-table total as a scalar first, e.g. \
+`total_qty = df["qty"].sum()` (which skips nulls), then divide: \
+`df["share"] = df["qty"] / total_qty` (for a per-group total: \
+`df.groupby(keys)["qty"].transform("sum")`); a single-row frame can also be \
+attached to every row with `df.merge(one_row, how="cross")`. Named scalar constants \
+are fine and often help readability, e.g. `cutoff = pd.Timestamp("2025-01-01")` or \
+`min_qty = 5`. In aggregations `"count"` counts the non-null values of a column \
+while `"size"` counts every row, nulls \
+included.
 - Conditionals: `np.where(cond, a, b)` for two branches; for several ordered \
 branches use `np.select([c1, c2], [v1, v2], default=v3)` — the first true \
 condition wins. Null handling: `s.isna()` tests for null, `s.fillna(v)` \

@@ -6,9 +6,12 @@ Scopes (all lexical, resolved in one forward walk over the file):
   profile schema name, predeclared) and completed steps; visible everywhere.
   ``from lattice.ops/schemas import ...`` is optional: P1 validates imported
   names and P2 treats them as already bound (never unused, never duplicates).
-* ``tables``   — module-level assignments; parent ``globals_``.
-* one scope per step body — parameters and locals; parent ``globals_`` (not
-  ``tables``), which is what makes step bodies unable to see module tables.
+* ``consts``   — module-level named constants (``name = <column-free scalar
+  expression>``, see ``is_constant_expr``); parent ``globals_``.
+* ``tables``   — module-level table assignments; parent ``consts``.
+* one scope per step body — parameters, locals and step-local constants; parent
+  ``consts`` (not ``tables``), which is what makes step bodies unable to see module
+  tables while still reading module constants defined above them.
 
 A step's name is entered into ``globals_`` only once its ``def`` is complete,
 so a step cannot call itself or any step defined after it.
@@ -24,9 +27,10 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from lattice.catalog import FN_ALIASES, IMPORTABLE, OP_ALIASES
+from lattice.check.astutil import is_constant_expr
 from lattice.check.context import CheckContext
 
-Kind = Literal["ambient", "step", "table", "param", "local"]
+Kind = Literal["ambient", "step", "table", "param", "local", "const"]
 
 _BUILTINS = frozenset(dir(builtins))
 
@@ -85,13 +89,17 @@ class _Resolver:
         self.globals_ = Scope(None)
         for name in sorted(IMPORTABLE | frozenset(ctx.profile.schemas)):
             self.globals_.bindings[name] = Binding(name, "ambient", module, 0, used=True)
-        self.tables = Scope(self.globals_)
+        self.consts = Scope(self.globals_)
+        self.tables = Scope(self.consts)
         self.step_scopes: list[Scope] = []
         self.reported: set[tuple[str, str, int]] = set()
-        # module-level table names -> first binding line; later steps -> def line
+        # module-level table / constant names -> first binding line; later steps -> def line
         for stmt in module.body:
             if isinstance(stmt, ast.Assign):
-                self.tables.future.setdefault(_target(stmt), stmt.lineno)
+                name = _target(stmt)
+                if name not in self.tables.future and name not in self.consts.future:
+                    kind_scope = self.consts if self._is_const(stmt) else self.tables
+                    kind_scope.future[name] = stmt.lineno
             elif isinstance(stmt, ast.FunctionDef):
                 self.globals_.future.setdefault(stmt.name, stmt.lineno)
 
@@ -104,10 +112,11 @@ class _Resolver:
                     pass  # optional: P1 validated the names, which are ambient anyway
                 case ast.Assign():
                     self._uses(stmt.value, self.tables, _StepCtx(None))
+                    const = self._is_const(stmt)
                     self._bind(
-                        self.tables,
+                        self.consts if const else self.tables,
                         _target(stmt),
-                        "table",
+                        "const" if const else "table",
                         stmt.targets[0],
                         (self.globals_, self.tables),
                     )
@@ -119,8 +128,11 @@ class _Resolver:
                     raise TypeError(f"P1 should have rejected {type(stmt).__name__}")
         self._report_unused()
 
+    def _is_const(self, stmt: ast.Assign) -> bool:
+        return is_constant_expr(stmt.value)
+
     def _step(self, fn: ast.FunctionDef) -> None:
-        scope = Scope(self.globals_)
+        scope = Scope(self.consts)
         self.step_scopes.append(scope)
         where = _StepCtx(fn.name, fn.lineno)
         for a in fn.args.args:
@@ -142,9 +154,8 @@ class _Resolver:
             match stmt:
                 case ast.Assign():
                     self._uses(stmt.value, scope, where)
-                    self._bind(
-                        scope, _target(stmt), "local", stmt.targets[0], (scope, self.globals_)
-                    )
+                    kind: Kind = "const" if self._is_const(stmt) else "local"
+                    self._bind(scope, _target(stmt), kind, stmt.targets[0], (scope, self.globals_))
                 case ast.Return(value=ast.Name() as value):
                     self._uses(value, scope, where)
                 case _:
@@ -266,6 +277,20 @@ class _Resolver:
             )
             self._mark_used(scope, name)
             return
+        if name in self.consts.future:  # a module constant defined further down
+            line = self.consts.future[name]
+            self._once(
+                "L202",
+                name,
+                scope,
+                node,
+                f"'{name}' is used before it is assigned (line {line})",
+                "define the constant above the step that uses it"
+                if in_step
+                else "assign it before this statement",
+            )
+            self._mark_used(self.consts, name)
+            return
         # (4) unknown
         self._once(
             "L203", name, scope, node, f"unknown name '{name}'", self._unknown_hint(name, scope)
@@ -298,7 +323,7 @@ class _Resolver:
     # ---- unused -------------------------------------------------------------
 
     def _report_unused(self) -> None:
-        scopes = [self.globals_, self.tables, *self.step_scopes]
+        scopes = [self.globals_, self.consts, self.tables, *self.step_scopes]
         for scope in scopes:
             for b in scope.all_bindings():
                 if b.used:

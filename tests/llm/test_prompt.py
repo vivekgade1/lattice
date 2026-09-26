@@ -119,3 +119,34 @@ def test_date_diff_documents_argument_order_and_unit() -> None:
 
     doc = FN_DOCS["date_diff"]
     assert "end" in doc and "start" in doc and '"days"' in doc
+
+
+def test_rules_state_count_cross_join_and_constants() -> None:
+    prompt = lattice_system_prompt()
+    assert "`agg.count(x)` counts the non-null values of x" in prompt
+    assert 'join(l, r, on=[], how="inner")' in prompt
+    assert "at most one row" in prompt
+    assert "named constant" in prompt
+
+
+def test_rule_snippets_check_clean() -> None:
+    """The inline share-of-total and constant snippets in the rules are valid Lattice."""
+    prompt = lattice_system_prompt()
+    statements = [
+        'cutoff = fn.to_date("2025-01-01", format="%Y-%m-%d")',
+        'total = group(t, by=[], all_qty=agg.sum(col("qty")))',
+        'with_total = join(t, total, on=[], how="inner")',
+        'shares = derive(with_total, share=col("qty") / col("all_qty"))',
+    ]
+    for stmt in statements:
+        assert stmt.replace("cutoff = ", "") in prompt.replace("\n", " ") or stmt in prompt
+    source = (
+        "# lattice: v1\n"
+        't = load("orders.csv", schema=Orders)\n'
+        + "\n".join(statements)
+        + '\nrecent = where(shares, col("order_date") >= cutoff)\n'
+        'write(recent, "out.parquet")\n'
+    )
+    result = check_source(source, bench_profile())
+    assert result.ok, [d.render() for d in result.diagnostics]
+    assert not result.diagnostics

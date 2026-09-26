@@ -91,7 +91,12 @@ def group(
 
 def join_size(left: pl.DataFrame, right: pl.DataFrame, on: Sequence[str], how: str) -> int:
     """Exact output row count of `join(left, right, on, how)`, from per-key counts
-    (cheap: two group-bys and a join of the count tables; null keys never match)."""
+    (cheap: two group-bys and a join of the count tables; null keys never match).
+    With on=[] (a single-row right table) every left row pairs with every right row;
+    a left join keeps a left row even when the right table is empty."""
+    if not on:
+        per_left = right.height if how == "inner" else max(right.height, 1)
+        return left.height * per_left
     keys = list(on)
     lc = left.group_by(keys).agg(pl.len().cast(pl.Int64).alias("__lattice_nl"))
     rc = right.group_by(keys).agg(pl.len().cast(pl.Int64).alias("__lattice_nr"))
@@ -106,11 +111,28 @@ def join_size(left: pl.DataFrame, right: pl.DataFrame, on: Sequence[str], how: s
 
 
 def join(left: pl.DataFrame, right: pl.DataFrame, on: Sequence[str], how: str) -> pl.DataFrame:
+    if not on:
+        return _cross_join(left, right, how)
     match how:
         case "inner" | "left":
             return left.join(right, on=list(on), how=how, coalesce=True)
         case _:
             raise LatticeInternalError(f"unsupported join how={how!r}")
+
+
+def _cross_join(left: pl.DataFrame, right: pl.DataFrame, how: str) -> pl.DataFrame:
+    """join(on=[]): the checker guarantees `right` has at most one row. Every left row
+    gets the right row's values; with an empty right table an inner join is empty and
+    a left join keeps every left row with typed nulls for the right columns."""
+    if how not in ("inner", "left"):
+        raise LatticeInternalError(f"unsupported join how={how!r}")
+    if right.height > 1:
+        raise LatticeInternalError(f"join on=[] with a {right.height}-row right table")
+    if right.height == 0 and how == "left":
+        return left.with_columns(
+            pl.lit(None, dtype=dtype).alias(name) for name, dtype in right.schema.items()
+        )
+    return left.join(right, how="cross", maintain_order="left_right")
 
 
 def sort(df: pl.DataFrame, by: Sequence[str], desc: bool) -> pl.DataFrame:

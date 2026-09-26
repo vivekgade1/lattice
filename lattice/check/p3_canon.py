@@ -5,7 +5,12 @@ from __future__ import annotations
 import ast
 
 from lattice.catalog import IMPORTABLE, OP_SHAPES, TABLE_OPS, TERMINAL_OPS, OpShape
-from lattice.check.astutil import redefined_steps, step_param_kinds, steps_of
+from lattice.check.astutil import (
+    is_constant_expr,
+    redefined_steps,
+    step_param_kinds,
+    steps_of,
+)
 from lattice.check.context import CheckContext
 
 
@@ -50,12 +55,15 @@ class _Canon:
         self._check_when(value)
         unit = self._unit(value)
         if unit is None or not isinstance(value, ast.Call):
+            if isinstance(stmt, ast.Assign) and is_constant_expr(value):
+                return  # a named constant: P4 types it
             if self._unknown_callee(value):
                 return  # P2 already reported the unknown name
             self.ctx.error(
                 "L302",
                 value,
-                "each statement must call exactly one table op or step",
+                "each statement must call exactly one table op or step "
+                "(or bind a constant that uses no columns)",
                 "e.g. 'name = derive(table, new_col=...)'",
             )
             return

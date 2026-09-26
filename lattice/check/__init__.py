@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 from lattice.check import p1_nodes, p2_names, p3_canon, p4_types, p5_effects
+from lattice.check.astutil import MAX_DEPTH
 from lattice.check.context import CheckContext
 from lattice.diagnostics import Diagnostic, has_errors, sort_key
 from lattice.parse import parse, too_deep
@@ -37,9 +38,6 @@ def _sorted(diags: list[Diagnostic]) -> tuple[Diagnostic, ...]:
     return tuple(sorted(diags, key=sort_key))
 
 
-# Maximum AST nesting depth. Keeps the recursive checker, IR lowering (deepcopy) and
-# expression compiler far from Python's recursion limit.
-MAX_DEPTH = 100
 
 
 def _depth(module: ast.Module) -> int:

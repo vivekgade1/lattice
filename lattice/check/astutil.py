@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 from typing import Literal
 
-from lattice.catalog import NAMESPACES
+from lattice.catalog import EXPR_FUNCS, NAMESPACES
 from lattice.typesys import SCALAR_NAMES
 
 
@@ -40,6 +40,14 @@ def step_param_kinds(fn: ast.FunctionDef) -> tuple[tuple[str, Literal["table", "
         (a.arg, "table" if is_table_annotation(a.annotation) else "scalar") for a in fn.args.args
     )
 
+
+# Maximum AST nesting depth. Keeps the recursive checker, IR lowering (deepcopy) and
+# expression compiler far from Python's recursion limit. Also bounds an expression's
+# depth after named constants are substituted into it (P4).
+MAX_DEPTH = 100
+# Maximum size (AST nodes) of one statement's value after substituting named constants:
+# chained constants (b = a + a, c = b + b, ...) would otherwise grow exponentially.
+MAX_EXPANDED_NODES = 10_000
 
 INT64_MIN, INT64_MAX = -(2**63), 2**63 - 1
 
@@ -90,3 +98,26 @@ def call_name(call: ast.Call) -> str | None:
     ):
         return f"{func.value.id}.{func.attr}"
     return None
+
+
+# Plain-name functions that may appear in a constant expression (fn.* is an attribute).
+_CONST_CALLS = EXPR_FUNCS - {"col"}
+
+
+def is_constant_expr(node: ast.expr) -> bool:
+    """True if an assigned value binds a named constant: a column-free scalar
+    expression (no col(), no agg.*, no lists, no table op, step or unknown call).
+
+    This is syntactic, so every pass classifies a statement the same way; whether
+    the value is really a well-typed scalar is P4's business."""
+    for n in ast.walk(node):
+        match n:
+            case ast.List() | ast.Tuple():
+                return False
+            case ast.Call(func=ast.Name(id=name)) if name not in _CONST_CALLS:
+                return False  # col(), a table op or step, or an unknown callee
+            case ast.Attribute(value=ast.Name(id="agg")):
+                return False
+            case _:
+                pass
+    return True

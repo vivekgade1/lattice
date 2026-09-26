@@ -2,8 +2,11 @@
 
 Step calls are inlined: each call site gets its own sub-graph whose node ids are
 prefixed with the call-site binding (`"<binding>/<local>"`, composing for nested
-steps). Expressions inside an inlined body are deep-copied with scalar-parameter
-names replaced by constants, so the checked AST is never mutated.
+steps). Named constants (`name = <column-free scalar expression>`) produce no node:
+every expression is deep-copied with constant names replaced by their (already
+substituted) value expressions and, inside an inlined body, scalar-parameter names
+replaced by literals — so the runtime never sees a constant or parameter name and
+the checked AST is never mutated.
 """
 
 from __future__ import annotations
@@ -16,12 +19,13 @@ from typing import Any
 
 from lattice.catalog import OP_SHAPES
 from lattice.check import CheckedProgram
-from lattice.check.astutil import literal_value, steps_of
+from lattice.check.astutil import is_constant_expr, literal_value, steps_of
 from lattice.diagnostics import Span, span_of
 from lattice.runtime import LatticeInternalError
 from lattice.typesys import Scalar, ScalarParamT, Schema, TableT
 
 ScalarValue = bool | int | float | str
+Subst = Mapping[str, ast.expr]  # name -> replacement expression (fully substituted)
 
 
 @dataclass(frozen=True)
@@ -40,15 +44,18 @@ class Plan:
 
 
 class _Substitute(ast.NodeTransformer):
-    """Replace scalar-parameter names with constants (on an already-copied tree)."""
+    """Replace constant and scalar-parameter names by (copies of) their values, on an
+    already-copied tree. Replacements are fully substituted already, so they are
+    not revisited."""
 
-    def __init__(self, scalars: Mapping[str, ScalarValue]) -> None:
-        self.scalars = scalars
+    def __init__(self, subst: Subst) -> None:
+        self.subst = subst
 
     def visit_Name(self, node: ast.Name) -> ast.expr:
-        if node.id in self.scalars:
-            return ast.copy_location(ast.Constant(self.scalars[node.id]), node)
-        return node
+        value = self.subst.get(node.id)
+        if value is None:
+            return node
+        return ast.copy_location(copy.deepcopy(value), node)
 
 
 def _str(node: ast.expr) -> str:
@@ -67,39 +74,47 @@ def _strs(node: ast.expr) -> tuple[str, ...]:
             raise LatticeInternalError(f"expected a list of strings, got {ast.dump(node)}")
 
 
-def _scalar_value(node: ast.expr, scalars: Mapping[str, ScalarValue]) -> ScalarValue:
+def _scalar_value(node: ast.expr, subst: Subst) -> ScalarValue:
     """A step's scalar argument: a literal (as `constant_scalar` accepts it, including
-    repeated unary minus) or an enclosing step's scalar parameter."""
+    repeated unary minus), an enclosing step's scalar parameter, or a named constant
+    bound to a literal."""
     v = literal_value(node)
-    if v is not None:
-        return v
-    match node:
-        case ast.Name(id=name) if name in scalars:
-            return scalars[name]
-        case _:
-            raise LatticeInternalError(f"step scalar argument is not a literal: {ast.dump(node)}")
+    if v is None and isinstance(node, ast.Name) and node.id in subst:
+        v = literal_value(subst[node.id])
+    if v is None:
+        raise LatticeInternalError(f"step scalar argument is not a literal: {ast.dump(node)}")
+    return v
 
 
 class _Lowerer:
     def __init__(self, program: CheckedProgram) -> None:
         self.program = program
         self.step_defs = steps_of(program.module)
+        # step name -> the module constants bound before its definition
+        self.step_consts: dict[str, dict[str, ast.expr]] = {}
         self.nodes: list[Node] = []
         self.writes = 0
 
     def run(self) -> Plan:
         env: dict[str, str] = {}
+        consts: dict[str, ast.expr] = {}
         for stmt in self.program.module.body:
             match stmt:
-                case ast.ImportFrom() | ast.FunctionDef():
+                case ast.ImportFrom():
                     pass
+                case ast.FunctionDef(name=name):
+                    self.step_consts.setdefault(name, dict(consts))
+                case ast.Assign(targets=[ast.Name(id=name)], value=value) if is_constant_expr(
+                    value
+                ):
+                    consts[name] = self._expr(value, consts)
                 case ast.Assign(targets=[ast.Name(id=name)], value=ast.Call() as call):
-                    out = self._unit(call, name, env, {}, "")
+                    out = self._unit(call, name, env, consts, "")
                     if out is None:
                         raise LatticeInternalError("write() result was bound to a name")
                     env[name] = out
                 case ast.Expr(value=ast.Call() as call):
-                    self._unit(call, None, env, {}, "")
+                    self._unit(call, None, env, consts, "")
                 case _:
                     raise LatticeInternalError(f"unexpected statement {type(stmt).__name__}")
         return Plan(tuple(self.nodes))
@@ -111,24 +126,24 @@ class _Lowerer:
         call: ast.Call,
         binding: str | None,
         env: Mapping[str, str],
-        scalars: Mapping[str, ScalarValue],
+        subst: Subst,
         prefix: str,
     ) -> str | None:
         match call.func:
             case ast.Name(id=name) if name in OP_SHAPES:
-                return self._op(call, name, binding, env, scalars, prefix)
+                return self._op(call, name, binding, env, subst, prefix)
             case ast.Name(id=name) if name in self.step_defs:
                 if binding is None:
                     raise LatticeInternalError(f"step call '{name}' is not bound to a name")
-                return self._inline(call, name, binding, env, scalars, prefix)
+                return self._inline(call, name, binding, env, subst, prefix)
             case _:
                 raise LatticeInternalError(f"not a unit call: {ast.dump(call.func)}")
 
-    def _expr(self, node: ast.expr, scalars: Mapping[str, ScalarValue]) -> ast.expr:
-        if not scalars:
-            return node  # module level: nothing to substitute; the executor never mutates
+    def _expr(self, node: ast.expr, subst: Subst) -> ast.expr:
+        if not any(isinstance(n, ast.Name) and n.id in subst for n in ast.walk(node)):
+            return node  # nothing to substitute; the executor never mutates
         copied = copy.deepcopy(node)
-        out = _Substitute(scalars).visit(copied)
+        out = _Substitute(subst).visit(copied)
         return ast.fix_missing_locations(out)
 
     def _op(
@@ -137,7 +152,7 @@ class _Lowerer:
         op: str,
         binding: str | None,
         env: Mapping[str, str],
-        scalars: Mapping[str, ScalarValue],
+        subst: Subst,
         prefix: str,
     ) -> str | None:
         shape = OP_SHAPES[op]
@@ -154,11 +169,11 @@ class _Lowerer:
             case "load":
                 params = {"path": _str(call.args[0])}
             case "where":
-                params = {"predicate": self._expr(call.args[1], scalars)}
+                params = {"predicate": self._expr(call.args[1], subst)}
             case "derive":
                 params = {
                     "columns": tuple(
-                        (kw.arg, self._expr(kw.value, scalars))
+                        (kw.arg, self._expr(kw.value, subst))
                         for kw in call.keywords
                         if kw.arg is not None
                     )
@@ -172,7 +187,7 @@ class _Lowerer:
                     )
                 }
             case "group":
-                params = {"by": _strs(kws["by"]), "aggs": self._aggs(call, scalars)}
+                params = {"by": _strs(kws["by"]), "aggs": self._aggs(call, subst)}
             case "join":
                 how = _str(kws["how"]) if "how" in kws else "inner"
                 params = {"on": _strs(kws["on"]), "how": how}
@@ -212,9 +227,7 @@ class _Lowerer:
         self.nodes.append(Node(node_id, op, tuple(inputs), params, schema, span_of(call)))
         return None if op == "write" else node_id
 
-    def _aggs(
-        self, call: ast.Call, scalars: Mapping[str, ScalarValue]
-    ) -> tuple[tuple[str, str, ast.expr | None], ...]:
+    def _aggs(self, call: ast.Call, subst: Subst) -> tuple[tuple[str, str, ast.expr | None], ...]:
         out: list[tuple[str, str, ast.expr | None]] = []
         for kw in call.keywords:
             if kw.arg is None or kw.arg == "by":
@@ -223,7 +236,7 @@ class _Lowerer:
                 case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"), attr=func), args=[]):
                     out.append((kw.arg, func, None))
                 case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"), attr=func), args=[a]):
-                    out.append((kw.arg, func, self._expr(a, scalars)))
+                    out.append((kw.arg, func, self._expr(a, subst)))
                 case _:
                     raise LatticeInternalError(f"not an aggregate: {ast.dump(kw.value)}")
         return tuple(out)
@@ -236,7 +249,7 @@ class _Lowerer:
         name: str,
         binding: str,
         env: Mapping[str, str],
-        scalars: Mapping[str, ScalarValue],
+        subst: Subst,
         prefix: str,
     ) -> str:
         fn = self.step_defs[name]
@@ -245,11 +258,13 @@ class _Lowerer:
             raise LatticeInternalError(f"no signature for step '{name}'")
         kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
         inner_env: dict[str, str] = {}
-        inner_scalars: dict[str, ScalarValue] = {}
+        # module constants visible to the body, overridden by parameters and locals
+        inner_subst: dict[str, ast.expr] = dict(self.step_consts.get(name, {}))
         table_args = iter(call.args)
         for pname, pt in sig.params:
             match pt:
                 case TableT():
+                    inner_subst.pop(pname, None)
                     arg = next(table_args, None)
                     match arg:
                         case ast.Name(id=a) if a in env:
@@ -257,18 +272,23 @@ class _Lowerer:
                         case _:
                             raise LatticeInternalError(f"bad table argument for '{pname}'")
                 case ScalarParamT(scalar=s):
-                    value = _scalar_value(kws[pname], scalars)
+                    value = _scalar_value(kws[pname], subst)
                     if s is Scalar.FLOAT and isinstance(value, int) and not isinstance(value, bool):
                         value = float(value)  # Int literal accepted for Float: widen now
-                    inner_scalars[pname] = value
+                    inner_subst[pname] = ast.Constant(value)
                 case _:
                     raise LatticeInternalError(f"bad parameter type for '{pname}'")
         inner_prefix = f"{prefix}{binding}/"
         result: str | None = None
         for stmt in fn.body:
             match stmt:
+                case ast.Assign(targets=[ast.Name(id=local)], value=value) if is_constant_expr(
+                    value
+                ):
+                    inner_subst[local] = self._expr(value, inner_subst)
                 case ast.Assign(targets=[ast.Name(id=local)], value=ast.Call() as body_call):
-                    out = self._unit(body_call, local, inner_env, inner_scalars, inner_prefix)
+                    inner_subst.pop(local, None)
+                    out = self._unit(body_call, local, inner_env, inner_subst, inner_prefix)
                     if out is None:
                         raise LatticeInternalError("write() inside a step")
                     inner_env[local] = out

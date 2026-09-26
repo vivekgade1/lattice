@@ -297,6 +297,8 @@ def test_subexpressions_recorded(profile):
         ('agg.min(col("region"))', S),
         ('agg.max(col("order_date"))', D),
         ("agg.count()", INT),
+        ('agg.count(col("qty"))', INT),
+        ('agg.count(col("region"))', INT),
     ],
 )
 def test_agg_ok(profile, src, expected):
@@ -308,7 +310,8 @@ def test_agg_ok(profile, src, expected):
     [
         ('col("qty")', "L413"),
         ('agg.total(col("qty"))', "L106"),
-        ('agg.count(col("qty"))', "L404"),
+        ('agg.count(col("qty"), col("price"))', "L404"),
+        ('agg.count(col("zz"))', "L401"),
         ("agg.sum()", "L404"),
         ('agg.sum(col("region"))', "L402"),
         ('agg.mean(col("status"))', "L402"),

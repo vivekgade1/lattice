@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 
 
@@ -88,6 +88,9 @@ class Schema:
 @dataclass(frozen=True)
 class TableT:
     schema: Schema
+    # Statically known to have at most one row (group(by=[]), limit(n=1), and row-wise
+    # ops of such a table). Not part of equality: tables match by schema only.
+    at_most_one_row: bool = field(default=False, compare=False)
 
 
 @dataclass(frozen=True)

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import ast
 import difflib
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 
 from lattice.catalog import (
     AGG_FUNCS,
@@ -20,7 +20,7 @@ from lattice.catalog import (
     FN_SIGS,
     ROUND_DIGITS_MAX,
 )
-from lattice.check.astutil import literal_value
+from lattice.check.astutil import LiteralValue, literal_value
 from lattice.check.context import CheckContext
 from lattice.diagnostics import Severity, Span, span_of
 from lattice.typesys import NUMERIC, ORDERED, UNKNOWN, ColT, LitT, Scalar, Schema, UnknownT, unify
@@ -97,12 +97,21 @@ class ExprTyper:
         scalars: Mapping[str, Scalar],
         silent_calls: frozenset[str] = frozenset(),
         reported: frozenset[Span] | None = None,
+        consts: Mapping[str, LiteralValue | None] | None = None,
+        tables: Collection[str] = (),
     ) -> None:
+        """`scalars`: scalar step parameters and well-typed named constants in scope.
+        `consts`: every named constant in scope -> its plain literal value (None when
+        computed, e.g. `b = a * 2`); a constant absent from `scalars` already
+        produced a diagnostic, so its uses are typed UNKNOWN silently.
+        `tables`: table names in scope (for a precise message when one is misused)."""
         self.ctx = ctx
         self.schema = schema
         self.scalars = scalars
         self.silent_calls = silent_calls
         self.reported = reported_name_spans(ctx) if reported is None else reported
+        self.consts = consts or {}
+        self.tables = tables
 
     # ---- public -------------------------------------------------------------
 
@@ -185,8 +194,15 @@ class ExprTyper:
         s = self.scalars.get(name)
         if s is not None:
             return LitT(s)
-        if span_of(node) in self.reported:
-            return UNKNOWN
+        if name in self.consts or span_of(node) in self.reported:
+            return UNKNOWN  # an ill-typed constant or an unresolved name: already reported
+        if name in self.tables:
+            return self._err(
+                "L411",
+                node,
+                f"'{name}' is a table, not a value",
+                'reference a column with col("name"); pass tables to ops by name',
+            )
         return self._err("L411", node, f"'{name}' is not a column expression", f'use col("{name}")')
 
     # ---- calls --------------------------------------------------------------
@@ -367,12 +383,27 @@ class ExprTyper:
             t = LitT(s)
             self.ctx.set_type(value, t)
         elif isinstance(value, ast.Name):
-            t = self.type_of(value)  # a scalar step parameter (substituted when inlined)
+            # a scalar step parameter or a named constant (substituted when lowered)
+            t = self.type_of(value)
+            if (
+                not isinstance(t, UnknownT)
+                and value.id in self.consts
+                and self.consts[value.id] is None
+            ):
+                self.ctx.error(
+                    "L404",
+                    value,
+                    f"fn.{fn_name} keyword '{arg}' must be a literal, a scalar step parameter "
+                    f"or a constant bound to a literal; '{value.id}' is computed",
+                    f"e.g. {arg}={_EXAMPLE_LITERAL[want]}",
+                )
+                return False
         else:
             self.ctx.error(
                 "L404",
                 value,
-                f"fn.{fn_name} keyword '{arg}' must be a literal or a scalar step parameter",
+                f"fn.{fn_name} keyword '{arg}' must be a literal, a scalar step parameter "
+                "or a constant bound to a literal",
                 f"e.g. {arg}={_EXAMPLE_LITERAL[want]}",
             )
             return False
@@ -389,13 +420,14 @@ class ExprTyper:
                 None,
             )
             return False
+        lit = self.literal_of(value)
         if fn_name == "date_diff" and arg == "unit":
-            if not (isinstance(value, ast.Constant) and value.value in DATE_DIFF_UNITS):
+            if lit not in DATE_DIFF_UNITS:
                 units = ", ".join(f'"{u}"' for u in sorted(DATE_DIFF_UNITS))
                 self.ctx.error("L404", value, "unsupported date_diff unit", f"use unit={units}")
                 return False
         if fn_name == "round" and arg == "digits":
-            v = literal_value(value)
+            v = lit
             if isinstance(v, int) and not 0 <= v <= ROUND_DIGITS_MAX:
                 self.ctx.error(
                     "L404",
@@ -405,7 +437,7 @@ class ExprTyper:
                 )
                 return False
         if fn_name == "date_add" and arg == "days":
-            v = literal_value(value)
+            v = lit
             if isinstance(v, int) and abs(v) > DATE_ADD_DAYS_MAX:
                 self.ctx.error(
                     "L404",
@@ -415,6 +447,13 @@ class ExprTyper:
                 )
                 return False
         return True
+
+    def literal_of(self, value: ast.expr) -> LiteralValue | None:
+        """The value of a literal, or of a named constant bound to a literal."""
+        v = literal_value(value)
+        if v is None and isinstance(value, ast.Name):
+            return self.consts.get(value.id)
+        return v
 
     # ---- operators ----------------------------------------------------------
 
@@ -515,10 +554,19 @@ class ExprTyper:
             )
             return None
         if attr == "count":
-            if node.args or node.keywords:
-                self.ctx.error("L404", node, "agg.count() takes no arguments", "write agg.count()")
+            if not node.args and not node.keywords:
+                return Scalar.INT  # counts rows
+            if len(node.args) != 1 or node.keywords:
+                self.ctx.error(
+                    "L404",
+                    node,
+                    "agg.count takes no argument (count rows) or one column expression "
+                    "(count its non-null values)",
+                    'write agg.count() or agg.count(col("x"))',
+                )
                 return None
-            return Scalar.INT
+            counted = self.type_of(node.args[0])  # any scalar type
+            return None if isinstance(counted, UnknownT) else Scalar.INT
         if len(node.args) != 1 or node.keywords:
             self.ctx.error("L404", node, f"agg.{attr} takes exactly one column expression", None)
             return None

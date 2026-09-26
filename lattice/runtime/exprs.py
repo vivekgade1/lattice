@@ -298,10 +298,9 @@ def compile_expr(node: ast.expr) -> Compiled:
 
 def compile_agg(func: str, arg: ast.expr | None) -> Compiled:
     """An aggregate over a group (or the whole frame). Literal-only arguments are
-    broadcast to one value per row first, so agg.sum(1) counts rows like SQL."""
-    if func == "count":
-        if arg is not None:
-            raise LatticeInternalError("agg.count() takes no argument")
+    broadcast to one value per row first, so agg.sum(1) counts rows like SQL.
+    agg.count() counts rows; agg.count(x) counts the non-null values of x."""
+    if func == "count" and arg is None:
         return Compiled(pl.len().cast(pl.Int64))
     if arg is None:
         raise LatticeInternalError(f"agg.{func} needs an argument")
@@ -316,6 +315,8 @@ def compile_agg(func: str, arg: ast.expr | None) -> Compiled:
             out = x.min()
         case "max":
             out = x.max()
+        case "count":
+            out = x.count().cast(pl.Int64)  # polars count() excludes nulls
         case _:
             raise LatticeInternalError(f"unknown aggregate agg.{func}")
     return Compiled(out, inner.guards)
