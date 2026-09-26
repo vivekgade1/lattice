@@ -662,7 +662,8 @@ SEED_TASKS: tuple[Task, ...] = (
             "Join the orders table to the customers table on customer_id, then keep only "
             'rows where status equals "paid". Compute order_value = qty * unit_price for '
             "each such order (before discount), then for each region compute "
-            "avg_order_value = mean(order_value) rounded to 2 decimal places. Return "
+            "avg_order_value = mean(order_value) rounded to 2 decimal places; customers "
+            "with a null region form their own null-region group. Return "
             "exactly two columns: region, avg_order_value. Row order does not matter."
         ),
         inputs=("orders", "customers"),
