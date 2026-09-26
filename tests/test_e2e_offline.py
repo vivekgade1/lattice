@@ -98,3 +98,17 @@ def test_arm_c_reports_shadowing_without_repair(tmp_path: Path) -> None:
     [outcome] = read_outcomes(out / "outcomes.jsonl")
 
     assert (outcome.correct, outcome.check_passed, outcome.failure) == (False, False, "shadowing")
+
+
+def test_parallel_workers_give_the_same_outcomes(tmp_path: Path) -> None:
+    _script(tmp_path / "script")
+    runs = {}
+    for workers in ("1", "6"):
+        out = tmp_path / f"out{workers}"
+        assert main(["run", "--arms", "B,C", "--suite", "seed", "--offline",
+                     str(tmp_path / "script"), "--out", str(out), "--workers", workers]) == 0
+        runs[workers] = sorted(
+            (o.arm, o.task_id, o.correct, o.rounds, o.failure)
+            for o in read_outcomes(out / "outcomes.jsonl")
+        )
+    assert runs["1"] == runs["6"] and len(runs["1"]) == 60

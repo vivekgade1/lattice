@@ -10,7 +10,9 @@ from __future__ import annotations
 import argparse
 import datetime
 import re
+import threading
 from collections.abc import Sequence
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from bench.datasets import load_fixtures, write_fixtures
@@ -59,6 +61,9 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     run_parser.add_argument("--offline", default=None, help="directory of scripted responses")
     run_parser.add_argument("--max-repairs", type=int, default=2)
+    run_parser.add_argument(
+        "--workers", type=int, default=1, help="tasks to run concurrently (default 1)"
+    )
 
     return parser
 
@@ -124,29 +129,37 @@ def main(argv: Sequence[str] | None = None) -> int:
     outcomes_path = out_dir / "outcomes.jsonl"
     outcomes_path.write_text("")  # start fresh; each outcome is appended as it completes
 
-    outcomes: list[TaskOutcome] = []
-    for arm in arms:
-        for task in tasks:
-            # Per-task isolation: a crash inside the harness for one task must
-            # not lose the others. (BaseExceptions such as KeyboardInterrupt
-            # still abort, but every completed outcome is already on disk.)
-            try:
-                outcome = _run_one(
-                    arm,
-                    task,
-                    work_root=work_root,
-                    fixtures_dir=fixtures_dir,
-                    fixtures_frames=fixtures_frames,
-                    offline_dir=offline_dir,
-                    model=args.model,
-                    max_repairs=args.max_repairs,
-                )
-            except BaseException as exc:
-                if not isinstance(exc, Exception) and not is_panic(exc):
-                    raise
-                outcome = harness_error_outcome(task, arm, exc)
+    append_lock = threading.Lock()
+
+    def run_task(arm: Arm, task: Task) -> TaskOutcome:
+        # Per-task isolation: a crash inside the harness for one task must
+        # not lose the others. (BaseExceptions such as KeyboardInterrupt
+        # still abort, but every completed outcome is already on disk.)
+        try:
+            outcome = _run_one(
+                arm,
+                task,
+                work_root=work_root,
+                fixtures_dir=fixtures_dir,
+                fixtures_frames=fixtures_frames,
+                offline_dir=offline_dir,
+                model=args.model,
+                max_repairs=args.max_repairs,
+            )
+        except BaseException as exc:
+            if not isinstance(exc, Exception) and not is_panic(exc):
+                raise
+            outcome = harness_error_outcome(task, arm, exc)
+        with append_lock:
             append_outcome(outcomes_path, outcome)
-            outcomes.append(outcome)
+        return outcome
+
+    jobs = [(arm, task) for arm in arms for task in tasks]
+    if args.workers <= 1:
+        outcomes = [run_task(arm, task) for arm, task in jobs]
+    else:
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
+            outcomes = list(pool.map(lambda job: run_task(*job), jobs))
 
     summary = summarize(outcomes)
     gate = evaluate_gate(summary) if outcomes else None
