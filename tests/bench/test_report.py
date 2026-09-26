@@ -329,3 +329,80 @@ def test_gate_same_model_passes_for_one_model_and_ignores_unrecorded() -> None:
                  failure="harness_error", model=""),
     ]
     assert _gate_checks(outcomes)["same_model"] is True
+
+
+# --- deep tier: pooled into the multi-step gate check -----------------------
+
+
+def test_gate_multi_step_check_pools_multi_and_deep_tiers() -> None:
+    stats = _passing_stats()
+    # multi alone: B - A = 0.20; deep drags the pooled delta below 0.15:
+    # A pooled = (4 + 18) / 30 = 0.733, B pooled = (6 + 18) / 30 = 0.800 -> 0.067
+    stats[("A", "deep")] = ArmTierStats(20, 0.90, None, None, 1.0, 100.0, 1.0)
+    stats[("B", "deep")] = ArmTierStats(20, 0.90, 0.99, 0.99, 1.5, 200.0, 2.0)
+
+    gate = evaluate_gate(Summary(stats=stats, failures={}))
+
+    by_name = {name: (ok, detail) for name, ok, detail in gate.checks}
+    ok, detail = by_name["multi_step_improvement"]
+    assert ok is False
+    assert "multi+deep" in detail
+    assert "0.067" in detail
+    assert "n_A=30, n_B=30" in detail
+    assert gate.passed is False
+
+
+def test_gate_deep_tier_can_carry_the_multi_step_check() -> None:
+    stats = _passing_stats()
+    stats[("B", "multi")] = ArmTierStats(10, 0.40, 0.99, 0.99, 1.5, 200.0, 2.0)  # no gain
+    stats[("A", "deep")] = ArmTierStats(30, 0.50, None, None, 1.0, 100.0, 1.0)
+    stats[("B", "deep")] = ArmTierStats(30, 0.80, 0.99, 0.99, 1.5, 200.0, 2.0)
+
+    gate = evaluate_gate(Summary(stats=stats, failures={}))
+
+    # pooled: A = (4 + 15) / 40 = 0.475, B = (4 + 24) / 40 = 0.700 -> 0.225
+    assert dict((n, ok) for n, ok, _ in gate.checks)["multi_step_improvement"] is True
+    assert gate.passed is True
+    assert any("acc(B,deep) - acc(A,deep) = 0.300" in note for note in gate.notes)
+    md = render_markdown(Summary(stats=stats, failures={}), gate)
+    assert "[INFO] deep tier (informational)" in md
+
+
+def test_gate_multi_step_check_works_with_deep_tier_only() -> None:
+    stats = {k: v for k, v in _passing_stats().items() if k[1] != "multi"}
+    stats[("A", "deep")] = ArmTierStats(30, 0.50, None, None, 1.0, 100.0, 1.0)
+    stats[("B", "deep")] = ArmTierStats(30, 0.70, 0.99, 0.99, 1.5, 200.0, 2.0)
+
+    gate = evaluate_gate(Summary(stats=stats, failures={}))
+
+    assert dict((n, ok) for n, ok, _ in gate.checks)["multi_step_improvement"] is True
+
+
+def test_gate_multi_step_check_reports_missing_arm_across_both_tiers() -> None:
+    stats = {k: v for k, v in _passing_stats().items() if k != ("B", "multi")}
+
+    gate = evaluate_gate(Summary(stats=stats, failures={}))
+
+    by_name = {name: (ok, detail) for name, ok, detail in gate.checks}
+    ok, detail = by_name["multi_step_improvement"]
+    assert ok is False
+    assert "missing arm B" in detail and "'deep'" in detail
+    assert not any("deep tier" in note for note in gate.notes)
+
+
+def test_summarize_and_render_include_deep_tier_rows() -> None:
+    summary = summarize(
+        [
+            _outcome(task_id="d01", arm="A", tier="deep", correct=False, failure="wrong_result"),
+            _outcome(task_id="d02", arm="A", tier="deep", correct=True),
+            _outcome(task_id="d01", arm="B", tier="deep", correct=True, check_passed=True),
+        ]
+    )
+
+    assert summary.stats[("A", "deep")].n == 2
+    assert summary.stats[("A", "deep")].accuracy == 0.5
+    assert summary.stats[("B", "deep")].accuracy == 1.0
+    md = render_markdown(summary, evaluate_gate(summary))
+    assert "| A | deep | 2 | 50.00% |" in md
+    assert "| B | deep | 1 | 100.00% |" in md
+    assert "pools the multi and deep tiers" in md

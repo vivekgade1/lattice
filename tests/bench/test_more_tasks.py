@@ -45,10 +45,13 @@ def test_all_more_tasks_are_task_instances_with_valid_inputs() -> None:
 
 
 def test_tier_shares_within_bounds() -> None:
-    all_tasks = suite("all")
-    total = len(all_tasks)
+    # Shares of the original seed + more suites; the deep tier is a separate add-on
+    # (bench/deep_tasks.py) and is excluded so these targets stay meaningful.
+    base_tasks = [t for t in suite("all") if t.tier != "deep"]
+    assert len(base_tasks) == len(SEED_TASKS) + len(MORE_TASKS)
+    total = len(base_tasks)
     counts: dict[str, int] = {}
-    for task in all_tasks:
+    for task in base_tasks:
         counts[task.tier] = counts.get(task.tier, 0) + 1
 
     targets = {"single": 0.33, "multi": 0.40, "join": 0.27}

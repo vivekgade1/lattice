@@ -51,7 +51,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     run_parser = subparsers.add_parser("run", help="run the benchmark and write a report")
     run_parser.add_argument("--arms", default="A", help="comma-separated arms, e.g. A,B,C")
-    run_parser.add_argument("--suite", default="seed", choices=("seed", "all"))
+    run_parser.add_argument("--suite", default="seed", choices=("seed", "deep", "all"))
     run_parser.add_argument(
         "--tasks", default=None, help="comma-separated task ids to restrict to"
     )

@@ -44,6 +44,9 @@ class GateResult:
 SINGLE_TIER_TOLERANCE = 0.02
 # Arm B may use at most 2 repairs, i.e. at most 3 generation rounds per task.
 MAX_B_ROUNDS = 3
+# Tiers pooled for the gate's multi-step check: the 3-6 step "multi" tier plus
+# the 5-8 step "deep" tier (added because a strong baseline saturates "multi").
+MULTI_STEP_TIERS: tuple[str, ...] = ("multi", "deep")
 
 
 def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
@@ -121,36 +124,57 @@ def summarize(outcomes: Sequence[TaskOutcome]) -> Summary:
     )
 
 
+def pooled_accuracy(
+    stats: Mapping[tuple[str, str], ArmTierStats], arm: str, tiers: Sequence[str]
+) -> tuple[float, int] | None:
+    """Accuracy of `arm` over the union of `tiers` (n-weighted), with the pooled n;
+    None when the arm has no outcomes in any of those tiers."""
+    parts = [stats[(arm, tier)] for tier in tiers if (arm, tier) in stats]
+    n = sum(part.n for part in parts)
+    if n == 0:
+        return None
+    return sum(part.accuracy * part.n for part in parts) / n, n
+
+
 def evaluate_gate(summary: Summary) -> GateResult:
     """Phase-3 go/no-go gate (thresholds finalized in Task 24).
 
-    Checks: (1) multi-step accuracy improves by >= 0.15 over the baseline;
+    Checks: (1) multi-step accuracy -- pooled over the "multi" and "deep" tiers
+    (``MULTI_STEP_TIERS``) -- improves by >= 0.15 over the baseline;
     (2) single-step accuracy does not regress by more than the documented
     ``SINGLE_TIER_TOLERANCE`` (0.02); (3) at least 99% of arm B's programs
     ultimately pass Lattice's static checks; (4) arm B never used more than
     2 repairs (max rounds <= 3); (5) every arm was served by the same model.
-    The join-tier delta is reported as an
-    informational note only.
+    The deep-tier delta alone and the join-tier delta are reported as
+    informational notes only.
     Missing arms are handled gracefully: the affected check fails with a
     detail naming which arm's results are absent.
     """
     stats = summary.stats
     checks: list[tuple[str, bool, str]] = []
 
-    a_multi = stats.get(("A", "multi"))
-    b_multi = stats.get(("B", "multi"))
+    tiers_label = "+".join(MULTI_STEP_TIERS)
+    a_multi = pooled_accuracy(stats, "A", MULTI_STEP_TIERS)
+    b_multi = pooled_accuracy(stats, "B", MULTI_STEP_TIERS)
     if a_multi is None or b_multi is None:
         missing = "A" if a_multi is None else "B"
         checks.append(
-            ("multi_step_improvement", False, f"missing arm {missing} results for tier 'multi'")
+            (
+                "multi_step_improvement",
+                False,
+                f"missing arm {missing} results for tiers "
+                + "/".join(f"'{t}'" for t in MULTI_STEP_TIERS),
+            )
         )
     else:
-        delta = b_multi.accuracy - a_multi.accuracy
+        (a_acc, a_n), (b_acc, b_n) = a_multi, b_multi
+        delta = b_acc - a_acc
         checks.append(
             (
                 "multi_step_improvement",
                 delta >= 0.15,
-                f"acc(B,multi) - acc(A,multi) = {delta:.3f} (need >= 0.15)",
+                f"acc(B,{tiers_label}) - acc(A,{tiers_label}) = {delta:.3f} (need >= 0.15; "
+                f"n_A={a_n}, n_B={b_n})",
             )
         )
 
@@ -216,6 +240,13 @@ def evaluate_gate(summary: Summary) -> GateResult:
     )
 
     notes: list[str] = []
+    a_deep = stats.get(("A", "deep"))
+    b_deep = stats.get(("B", "deep"))
+    if a_deep is not None and b_deep is not None:
+        notes.append(
+            f"deep tier (informational): acc(B,deep) - acc(A,deep) = "
+            f"{b_deep.accuracy - a_deep.accuracy:.3f}"
+        )
     a_join = stats.get(("A", "join"))
     b_join = stats.get(("B", "join"))
     if a_join is not None and b_join is not None:
@@ -270,7 +301,8 @@ def render_markdown(summary: Summary, gate: GateResult | None) -> str:
         lines.append(
             f"Single-step tolerance: arm B may trail arm A by at most "
             f"{SINGLE_TIER_TOLERANCE:.2f} accuracy on the single tier. Arm B may use "
-            f"at most {MAX_B_ROUNDS - 1} repairs ({MAX_B_ROUNDS} rounds) per task."
+            f"at most {MAX_B_ROUNDS - 1} repairs ({MAX_B_ROUNDS} rounds) per task. "
+            f"The multi-step check pools the {' and '.join(MULTI_STEP_TIERS)} tiers."
         )
         lines.append("")
         for name, ok, detail in gate.checks:

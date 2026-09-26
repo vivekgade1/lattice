@@ -13,7 +13,8 @@ from lattice.runtime.exec import run_source
 
 SOLUTIONS = Path(__file__).parent / "fixtures" / "lattice_solutions"
 TASKS = {t.id: t for t in SEED_TASKS}
-SOLVED = sorted(p.stem for p in SOLUTIONS.glob("*.py"))
+# deep-tier solutions (dNN) are covered by tests/test_differential_deep.py
+SOLVED = sorted(p.stem for p in SOLUTIONS.glob("*.py") if not p.stem.startswith("d"))
 REQUIRED = {"s05", "s08", "s09", "m02", "m03", "m04", "m07", "m12", "j02", "j04", "j05", "j07"}
 
 
