@@ -53,8 +53,8 @@ def test_suite_seed_matches_seed_tasks() -> None:
     assert suite("seed") == SEED_TASKS
 
 
-def test_suite_all_falls_back_to_seed_when_more_tasks_absent() -> None:
-    assert suite("all") == SEED_TASKS
+def test_suite_all_starts_with_seed_tasks() -> None:
+    assert suite("all")[: len(SEED_TASKS)] == SEED_TASKS
 
 
 def test_suite_unknown_name_raises() -> None:
