@@ -14,6 +14,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from bench.datasets import load_fixtures, write_fixtures
+from bench.envfile import load_env_file
 from bench.report import append_outcome, evaluate_gate, render_markdown, summarize
 from bench.runners import (
     Arm,
@@ -95,6 +96,7 @@ def _run_one(
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    load_env_file()
     parser = _build_parser()
     args = parser.parse_args(argv)
 

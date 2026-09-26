@@ -6,9 +6,12 @@ from pathlib import Path
 import pytest
 
 from bench.cli import main
+from bench.envfile import load_env_file
 from bench.report import read_outcomes
 
 pytestmark = pytest.mark.live
+
+load_env_file()
 
 
 @pytest.mark.skipif(
