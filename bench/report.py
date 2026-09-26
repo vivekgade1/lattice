@@ -128,7 +128,8 @@ def evaluate_gate(summary: Summary) -> GateResult:
     (2) single-step accuracy does not regress by more than the documented
     ``SINGLE_TIER_TOLERANCE`` (0.02); (3) at least 99% of arm B's programs
     ultimately pass Lattice's static checks; (4) arm B never used more than
-    2 repairs (max rounds <= 3). The join-tier delta is reported as an
+    2 repairs (max rounds <= 3); (5) every arm was served by the same model.
+    The join-tier delta is reported as an
     informational note only.
     Missing arms are handled gracefully: the affected check fails with a
     detail naming which arm's results are absent.
@@ -201,6 +202,18 @@ def evaluate_gate(summary: Summary) -> GateResult:
                 f"(need <= {MAX_B_ROUNDS}, i.e. <= {MAX_B_ROUNDS - 1} repairs)",
             )
         )
+
+    served = sorted({m for names in summary.models.values() for m in names})
+    checks.append(
+        (
+            "same_model",
+            len(served) <= 1,
+            "all arms served by " + (served[0] if served else "an unrecorded model (offline)")
+            if len(served) <= 1
+            else "arms were served by different models: "
+            + "; ".join(f"{arm}: {', '.join(n)}" for arm, n in sorted(summary.models.items())),
+        )
+    )
 
     notes: list[str] = []
     a_join = stats.get(("A", "join"))

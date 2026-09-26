@@ -307,3 +307,25 @@ def test_harness_errors_count_against_check_pass_rate() -> None:
     ]
     stats = summarize(outcomes).stats[("B", "all")]
     assert stats.check_pass_rate == 0.5
+
+
+def _gate_checks(outcomes: list[TaskOutcome]) -> dict[str, bool]:
+    return {name: ok for name, ok, _ in evaluate_gate(summarize(outcomes)).checks}
+
+
+def test_gate_fails_when_arms_were_served_by_different_models() -> None:
+    outcomes = [
+        _outcome(arm="A", tier="multi", model="claude-opus-5"),
+        _outcome(arm="B", tier="multi", check_passed=True, model="claude-opus-4-8"),
+    ]
+    assert _gate_checks(outcomes)["same_model"] is False
+
+
+def test_gate_same_model_passes_for_one_model_and_ignores_unrecorded() -> None:
+    outcomes = [
+        _outcome(arm="A", tier="multi", model="claude-opus-5"),
+        _outcome(arm="B", tier="multi", check_passed=True, model="claude-opus-5"),
+        _outcome(arm="B", tier="single", check_passed=None, correct=False,
+                 failure="harness_error", model=""),
+    ]
+    assert _gate_checks(outcomes)["same_model"] is True

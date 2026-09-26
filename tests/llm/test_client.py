@@ -28,9 +28,7 @@ def _fake_client(response, capture=None):
             capture.append(kwargs)
         return response
 
-    return types.SimpleNamespace(
-        beta=types.SimpleNamespace(messages=types.SimpleNamespace(create=create))
-    )
+    return types.SimpleNamespace(messages=types.SimpleNamespace(create=create))
 
 
 def _usage(input_tokens=10, output_tokens=20, cache_read=0, cache_creation=0):
@@ -58,8 +56,7 @@ class TestClaudeGeneratorRequestShape:
         kwargs = calls[0]
         assert kwargs["model"] == "claude-opus-5"
         assert kwargs["max_tokens"] == 16000
-        assert kwargs["betas"] == ["server-side-fallback-2026-06-01"]
-        assert kwargs["fallbacks"] == [{"model": "claude-opus-4-8"}]
+        assert "betas" not in kwargs and "fallbacks" not in kwargs  # no silent reroute
         assert kwargs["output_config"] == {"effort": "high"}
         assert kwargs["system"] == [
             {
@@ -337,3 +334,11 @@ class TestServedModelAndRefusalAccounting:
         assert exc.usage == Usage(0, 0)
         assert exc.model == ""
         assert exc.latency_s == 0.0
+
+
+def test_refusal_message_includes_category_and_explanation():
+    response = _response([], stop_reason="refusal")
+    response.stop_details = types.SimpleNamespace(category="cyber", explanation="flagged")
+    gen = ClaudeGenerator(client=_fake_client(response))
+    with pytest.raises(GenerationRefused, match="category='cyber'.*flagged"):
+        gen.generate("s", [{"role": "user", "content": "u"}])

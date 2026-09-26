@@ -8,9 +8,6 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-_FALLBACK_BETA = "server-side-fallback-2026-06-01"
-_FALLBACK_MODELS: list[dict[str, str]] = [{"model": "claude-opus-4-8"}]
-
 _FENCE_RE = re.compile(r"```([^\n]*)\n(.*?)```", re.DOTALL)
 
 
@@ -33,7 +30,7 @@ class Generation:
     usage: Usage
     latency_s: float
     stop_reason: str
-    model: str = ""  # the model that actually served the request (may be a fallback)
+    model: str = ""  # the model that actually served the request (audited by the gate)
 
 
 class GenerationRefused(Exception):
@@ -62,7 +59,11 @@ class Generator(Protocol):
 
 
 class ClaudeGenerator:
-    """Generator backed by the Claude beta messages endpoint."""
+    """Generator backed by the Claude messages endpoint.
+
+    No server-side model fallback: the benchmark must compare arms on the same model,
+    and a fallback silently rerouted Lattice-arm requests to another model in live
+    testing. A genuine refusal surfaces as GenerationRefused instead."""
 
     def __init__(
         self,
@@ -87,11 +88,9 @@ class ClaudeGenerator:
 
     def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
         start = time.perf_counter()
-        response = self.client.beta.messages.create(
+        response = self.client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,
-            betas=[_FALLBACK_BETA],
-            fallbacks=_FALLBACK_MODELS,
             output_config={"effort": self.effort},
             system=[
                 {
@@ -117,8 +116,11 @@ class ClaudeGenerator:
         )
 
         if response.stop_reason == "refusal":
+            details = getattr(response, "stop_details", None)
+            category = getattr(details, "category", None)
+            explanation = getattr(details, "explanation", None) or ""
             raise GenerationRefused(
-                f"model refused to generate (stop_reason={response.stop_reason!r})",
+                f"model refused to generate (category={category!r}): {explanation[:300]}",
                 usage=usage,
                 latency_s=latency_s,
                 model=served_model,
