@@ -48,6 +48,16 @@ Gate: FAIL (multi+deep −18.6 pts; deep −36.7 pts). Most first-shot static fa
 
 First-shot pass 50.8% → 92.3%; mean rounds for B 1.62 → 1.13; B output tokens 564 → 251 (now close to pandas' 227). Gate still FAIL (multi+deep −7.1 pts vs pandas' 100%). Remaining first-shot static failures: `agg.count(x)` with an argument (3 tasks), `join(on=[])` attempted as a cross join for share-of-total (3), named scalar constants like `cutoff = fn.to_date(...)` (2), misc (3); plus 4–5 wrong results.
 
+### claude-haiku-4-5 after step 1b (agg.count(x), single-row cross join, named constants; all arms re-run because the pandas prompt gained matching guidance)
+
+| Arm | single | multi | join | deep | all |
+|---|---|---|---|---|---|
+| A — pandas | 100% | 100% | 100% | 93.3% | **98.5%** |
+| B — Lattice + repair | 100% | 97.5% | 92.6% | 90.0% | **95.4%** |
+| C — Lattice first-shot | 97.0% | 95.0% | 92.6% | 76.7% | **90.8%** |
+
+Checker pass rate: B 100%, first-shot 94.6%; B mean rounds 1.06; B output tokens 231 vs pandas 226; 0 refusals. Gate: FAIL only on `multi_step_improvement` (−2.9 pts on multi+deep; deep −3.3 = one task). Every remaining B miss is a logic error that passed the checker (6 tasks; d05 was also missed by pandas), not language friction. Differences of 1–4 tasks are within run-to-run noise at this sample size.
+
 ### Conclusion
 
 - The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
