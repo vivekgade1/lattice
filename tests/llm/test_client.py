@@ -365,3 +365,11 @@ def test_refusal_raises_after_retries_are_exhausted():
     gen = ClaudeGenerator(client=_fake_client(refusal), refusal_retries=1)
     with pytest.raises(GenerationRefused):
         gen.generate("s", [{"role": "user", "content": "u"}])
+
+
+def test_haiku_requests_omit_effort():
+    calls = []
+    gen = ClaudeGenerator(model="claude-haiku-4-5", client=_fake_client(
+        _response([_text_block("x")]), capture=calls))
+    gen.generate("s", [{"role": "user", "content": "u"}])
+    assert "output_config" not in calls[0]

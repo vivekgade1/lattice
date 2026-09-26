@@ -122,10 +122,14 @@ class ClaudeGenerator:
 
     def _generate_once(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
         start = time.perf_counter()
+        # Haiku models reject the effort setting; every other current model accepts it.
+        extra = {} if self.model.startswith("claude-haiku") else {
+            "output_config": {"effort": self.effort}
+        }
         response = self.client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,
-            output_config={"effort": self.effort},
+            **extra,
             system=[
                 {
                     "type": "text",

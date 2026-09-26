@@ -213,3 +213,4 @@ def test_retried_refusals_are_recorded_on_the_outcome(tmp_path) -> None:
                           load_fixtures(fixtures), arm="C", max_repairs=0)
 
     assert outcome.correct and outcome.refused_attempts == 1
+    assert (workdir / "program_round1.py").read_text() == solution

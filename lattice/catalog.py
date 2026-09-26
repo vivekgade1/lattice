@@ -79,6 +79,39 @@ FN_SIGS: Mapping[str, FnSig] = {
     "to_float": FnSig((ANY,), {}, Scalar.FLOAT),
     "to_str": FnSig((ANY,), {}, Scalar.STR),
 }
+# One-line semantics for every fn.* (rendered into the model's system prompt).
+FN_DOCS: Mapping[str, str] = {
+    "abs": "absolute value",
+    "round": "round to `digits` decimal places",
+    "floor": "largest whole number <= x (as Float)",
+    "ceil": "smallest whole number >= x (as Float)",
+    "log": "natural logarithm; null where x <= 0",
+    "sqrt": "square root; null where x < 0",
+    "clip": "limit x to the range [lo, hi]",
+    "lower": "lowercase the string",
+    "upper": "uppercase the string",
+    "strip": "remove leading and trailing whitespace",
+    "len": "number of characters in the string",
+    "contains": "true where the string contains `sub` (plain text, not a pattern)",
+    "starts_with": "true where the string starts with `prefix`",
+    "replace": "replace every occurrence of `old` with `new` (plain text)",
+    "concat": "join two strings; null if either is null",
+    "year": "calendar year of a Date",
+    "month": "month number 1-12 of a Date",
+    "day": "day of month 1-31 of a Date",
+    "date_diff": (
+        'fn.date_diff(end, start, unit="days") = end minus start in whole days '
+        '(positive when end is later); "days" is the only unit. E.g. days from '
+        'signup_date to 2025-01-01 is fn.date_diff(fn.to_date("2025-01-01", '
+        'format="%Y-%m-%d"), col("signup_date"), unit="days")'
+    ),
+    "date_add": "the Date shifted by `days` (negative moves earlier)",
+    "to_date": "parse a string with a strftime `format` such as \"%Y-%m-%d\"; null if unparsable",
+    "to_int": "convert to Int; null if not convertible",
+    "to_float": "convert to Float; null if not convertible",
+    "to_str": "convert to Str",
+}
+
 DATE_DIFF_UNITS = frozenset({"days"})
 ROUND_DIGITS_MAX = 2**32 - 1  # fn.round digits= range (polars takes a u32)
 DATE_ADD_DAYS_MAX = 36_500_000  # |fn.date_add days=| (~100k years; keeps dates representable)

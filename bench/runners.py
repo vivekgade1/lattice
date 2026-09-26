@@ -55,7 +55,12 @@ def _wrote_exact(workdir: Path, name: str) -> bool:
     return name in {p.name for p in workdir.iterdir()}
 
 
-_STALE_OUTPUTS = ("out.parquet", "out.csv", "solution.py")
+_STALE_OUTPUTS = (
+    "out.parquet",
+    "out.csv",
+    "solution.py",
+    *(f"program_round{i}.py" for i in range(1, 11)),
+)
 _DETAIL_LIMIT = 2000
 
 
@@ -335,6 +340,10 @@ def _run_lattice(
             cache_read_tokens=totals.cache_read_tokens + exc.usage.cache_read_input_tokens,
             model=_join_models([*totals.models, exc.model]),
         )
+
+    for r in result.rounds:  # keep every attempt for later inspection
+        if r.source is not None:
+            (workdir / f"program_round{r.index}.py").write_text(r.source)
 
     rounds = len(result.rounds)
     totals = _round_totals(result.rounds)

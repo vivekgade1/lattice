@@ -88,3 +88,19 @@ def test_system_prompt_avoids_wording_that_triggered_refusals() -> None:
     text = lattice_system_prompt().lower()
     for phrase in ("whitelisted", "is legal", "before it ever runs", "will be rejected"):
         assert phrase not in text
+
+
+def test_every_fn_has_a_semantic_description_in_the_prompt() -> None:
+    from lattice.catalog import FN_DOCS, FN_SIGS
+
+    assert set(FN_DOCS) == set(FN_SIGS)
+    text = lattice_system_prompt()
+    for name, doc in FN_DOCS.items():
+        assert doc in text, name
+
+
+def test_date_diff_documents_argument_order_and_unit() -> None:
+    from lattice.catalog import FN_DOCS
+
+    doc = FN_DOCS["date_diff"]
+    assert "end" in doc and "start" in doc and '"days"' in doc

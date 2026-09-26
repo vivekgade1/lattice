@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from lattice.catalog import AGG_FUNCS, FN_SIGS, OP_SHAPES
+from lattice.catalog import AGG_FUNCS, FN_DOCS, FN_SIGS, OP_SHAPES
 
 if TYPE_CHECKING:
     from bench.tasks import Task
@@ -105,6 +105,8 @@ def _render_fn_sig(name: str) -> str:
     sig = FN_SIGS[name]
     n_params = len(sig.params)
     params = ["x"] if n_params == 1 else [f"x{i + 1}" for i in range(n_params)]
+    if name == "date_diff":
+        params = ["end", "start"]
     args = list(params) + [f"{k}=" for k in sig.kwargs]
     result = sig.result.value if sig.result is not None else "same scalar type as its first arg"
     return f"`fn.{name}({', '.join(args)})` -> {result}"
@@ -129,7 +131,7 @@ def _expression_library_section() -> str:
         "",
     ]
     for name in FN_SIGS:
-        lines.append(f"- {_render_fn_sig(name)}")
+        lines.append(f"- {_render_fn_sig(name)} — {FN_DOCS[name]}")
     lines.append("")
     lines.append(
         "Aggregate library `agg.*` (only valid as a `group()` keyword value): "
