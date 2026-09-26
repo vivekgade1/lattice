@@ -436,6 +436,236 @@ A *unit call* is a Call whose func is a Name in `TABLE_OPS` or in the module's s
 
 **Required tests:** chained `where(derive(t, a=col("x")), ...)` → L301 at inner call; `x = col("a")` → L302; bare `derive(t, a=...)` statement → L302; `where(t, pred=col("a") > 1)` → L303 (positional expected); `select(t)` → L303 missing `cols`; `sort(t, by=["a"], reverse=True)` → L303 unexpected; `where(t, True)` → L304; `derive(t)` → L304; nested when in then → L701; step called with scalar positionally → L303; valid program → none.
 
+---
+
+## Phase 2 — Types, IR, execution
+
+### Task 13: Column-expression typing (L1 library)
+
+**Files:** Create `lattice/check/exprs.py`; Test `tests/check/test_exprs.py`
+
+**Interfaces:**
+```python
+class ExprTyper:
+    def __init__(self, ctx: CheckContext, schema: Schema, scalars: Mapping[str, Scalar], silent_calls: frozenset[str] = frozenset()): ...
+    def type_of(self, node: ast.expr) -> ColT | LitT | UnknownT     # records ctx.set_type(node, t)
+    def type_agg(self, node: ast.expr) -> Scalar | None             # for group() keyword values
+```
+`scalars` = the enclosing step's scalar parameters (they type as `LitT`). `silent_calls` = table ops + step names (P3 already reported them if they appear inside expressions → return UNKNOWN without a new diagnostic). Result helper: `LitT` if every operand is `LitT`, else `ColT`. Any UNKNOWN operand → UNKNOWN with no new diagnostic.
+
+| Node | Rule | Error |
+|---|---|---|
+| `Constant None` | — | `L410` "None is not allowed; use is_null(...) or coalesce(...)" |
+| `Constant bool/int/float/str` | `LitT(BOOL/INT/FLOAT/STR)` (check bool before int); str equal to a column name → warning `L305` hint `col("<s>")` | |
+| `Name` in scalars | `LitT` | else `L411` "'x' is not a column expression" hint `col("x")` |
+| `col("x")` | exactly one str Constant arg, no keywords (`L412`); unknown column → `L401` "unknown column 'x'; table has {…}" + did-you-mean hint | |
+| `when(c, then=a, otherwise=b)` | exactly 1 positional + keywords `then`,`otherwise` (`L404`); `c` Bool (`L403`); `unify(a,b)` (`L402`) | |
+| `coalesce(a, b)` | 2 positional; unify (`L402`) → that type | |
+| `is_null(a)` | 1 positional → `Bool` (always ColT/LitT per operand) | |
+| `fn.<name>(…)` | name not in FN_SIGS: in FN_ALIASES → `L702` hint canonical, else `L106` "unknown function fn.x" + did-you-mean; positional count (`L404`); each positional scalar ∈ allowed set (`L402` "fn.x expects {…} for argument N, got T"); keywords exactly the signature's (`L404`); each keyword value must type as `LitT` (`L404` "'digits' must be a literal") of the declared scalar (Int literal accepted for Float); `date_diff` unit must be a str Constant in `DATE_DIFF_UNITS` (`L404`); result per `FnSig.result` (None → first argument's scalar) | |
+| `agg.*(…)` inside type_of | — | `L413` "aggregates are only allowed as group() keyword values" |
+| other Name-call | in silent_calls → UNKNOWN silently; else `L411` "'f(...)' is not a column expression" | |
+| `BinOp + - * %` | both NUMERIC → INT if both INT else FLOAT | `L402` "'+' cannot combine Str and Int" (Str+Str hint `fn.concat`) |
+| `BinOp /` | both NUMERIC → FLOAT | `L402` |
+| `BinOp & |` | both BOOL → BOOL | `L402` |
+| `Compare == !=` | `unify` not None → BOOL; either side FLOAT → warning `L406` "float equality" | `L402` |
+| `Compare < <= > >=` | both NUMERIC, or equal scalars in {STR, DATE} → BOOL | `L402` |
+| `UnaryOp -` | NUMERIC → same | `L402` |
+| `UnaryOp ~` | BOOL → BOOL | `L402` |
+| `List`/`Tuple` | — | `L411` "lists are only allowed for by=/on=/cols=" |
+| anything else | `raise TypeError` (P1 guarantees shapes) | |
+
+`type_agg(node)`: must be `Call(func=Attribute(Name "agg", attr))` else `L413` "group() keyword values must be aggregates like agg.sum(col(\"x\"))"; attr not in AGG_FUNCS → `L106`; `count()` takes no args (`L404`) → INT; others exactly one positional expression: `sum` NUMERIC → same; `mean` NUMERIC → FLOAT; `min`/`max` ORDERED → same (`L402` otherwise).
+
+**Required tests:** each row above has a positive and a negative test; `col("prce")` hint contains `price`; `when` with Int/Float branches → FLOAT; `fn.length(...)` → L702 hint `len`; `fn.round(col("price"), digits=col("d"))` → L404; `(col("a") > 1) & col("b")` where b is Int → one L402 only; UNKNOWN suppression: `col("zz") + 1` → exactly one diagnostic (L401).
+
+### Task 14: P4 — op schema transfer and step signatures
+
+**Files:** Replace stub `lattice/check/p4_types.py`; Test `tests/check/test_p4_types.py`
+
+**Interfaces:** `def run(module: ast.Module, ctx: CheckContext) -> dict[str, StepT]` (step name → signature). Also records `ctx.set_type(call, TableT | UNKNOWN)` on every table-op/step call node (IR relies on this; `write` calls get no type).
+
+Walk module statements in order with `env: dict[str, TableT | UnknownT]` (first binding wins); step definitions are typed when reached and added to the step table. Skip calls P3 already rejected (non-unit statements) silently. Table positional args: Name in env → its type; Name that is a scalar param → `L419` "expected a table, got scalar 'x'"; otherwise UNKNOWN silently. If any input table is UNKNOWN, the op result is UNKNOWN and its expressions are not checked.
+
+Transfer functions (keywords by name):
+- `load(path, schema=S)`: path str Constant (`L404`); `S` Name in `profile.schemas` (`L414` "unknown schema 'S'") → `TableT(S)`.
+- `where(t, pred)`: `type_of(pred)` — `ColT(BOOL)` ok; `LitT` → `L304` "predicate does not reference any column"; other → `L403` "where() predicate must be Bool, got T" → `t`.
+- `derive(t, **new)`: in order; new name already in schema or earlier in this call → `L405` "column 'x' already exists" hint "choose a new name or rename first"; value typed with `type_of` (LitT ok) → schema extended. Any UNKNOWN value → result UNKNOWN (after checking all).
+- `select(t, cols=[...])`: list/tuple of str Constants (`L404`); unknown column `L401`; duplicate `L415` → projected.
+- `rename(t, old="new", ...)`: old exists (`L401`), value str Constant (`L404`), new names distinct and not colliding with non-renamed columns (`L405`) → renamed.
+- `group(t, by=[...], **aggs)`: by list of existing columns (`L401`, dup `L415`); each agg via `type_agg`; agg name equal to a by column or dup → `L405` → schema = by columns (their types) + aggs.
+- `join(l, r, on=[...], how="inner")`: each on column in both (`L401` naming left/right) with equal scalar (`L402`); `how` str Constant in {"inner","left"} (`L404`), default inner; non-key column in both → `L416` "column 'x' exists in both tables; rename one side first" → `l.columns + [c for c in r.columns if c not in on]`.
+- `sort(t, by=[...], desc=False)`: by columns exist (`L401`); `desc` bool Constant (`L404`) → `t`.
+- `limit(t, n=10)`: `n` int Constant (not bool) > 0 (`L417`) → `t`.
+- `write(t, path)`: path str Constant (`L404`) → no type.
+- step call `s(t1, …, k=v)`: each table arg schema must equal the parameter schema exactly (`L418` "step 's' parameter 'p' expects {…}, got {…}"); each keyword value must be a Constant of the parameter's scalar (Int accepted for Float) or a Name of an enclosing scalar param with a compatible scalar (`L402`) → the step's result.
+
+Step typing: params from annotations — `Table[S]` → `TableT(profile.schemas[S])` (`L414` unknown S); bare `Table` as a parameter → `L601` "step parameters need a concrete schema, e.g. Table[Orders]"; scalar type names → `ScalarParamT`. Body statements typed with env = table params and scalars = scalar params. Returned local's type vs declared return: `Table[S]` must equal exactly (`L605` "step 'f' returns {…} but declares {…}"); bare `Table` → inferred. Result `StepT(params, result)`.
+
+**Required tests:** schema propagation through each op (assert `ctx.types` of the final call node); every error code above; join collision; derive of a literal column (`derive(t, one=1)`) ok; step with `-> Table` inferred then used downstream with correct schema; `L605` mismatch; `L418` mismatch; scalar param used in where predicate inside a step; UNKNOWN input suppresses downstream diagnostics (a program whose `load` has an unknown schema produces exactly one diagnostic even with three downstream ops).
+
+### Task 15: P5 effects + integration tests
+
+**Files:** Replace stub `lattice/check/p5_effects.py`; Test `tests/check/test_p5_effects.py`, `tests/check/test_integration.py`
+
+**Interfaces:** `def run(module: ast.Module, ctx: CheckContext) -> None`
+
+Rules: `x = write(...)` → `L502` "write(...) returns nothing; call it as its own statement"; `load`/`write` anywhere inside a step body → `L503` "steps must be pure: load/write are only allowed at module level"; path argument (str Constant) of `load`/`write`: absolute, contains `..` part, backslash, or empty → `L501` "path must be relative to the working directory"; `load` path must end `.csv`, `write` path `.csv` or `.parquet` → `L505`; no module-level `write` at all → `L504` "program never writes a result".
+
+**Required tests:** each code; **multi-error test** — one program containing exactly five independent errors (L201 rebinding, L301 nesting, L401 unknown column, L403 non-Bool predicate, L501 bad path) yields exactly those five error codes; **perf test** — a generated 300-statement valid program checks in < 1.0 s; the spec §5.1 example and §5.9 step example (adapted to available schemas) check with zero errors; Review-Focus #5: CRLF+BOM version of a valid program checks ok.
+
+### Task 16: Canonical printer
+
+**Files:** Create `lattice/canon.py`; Test `tests/test_canon.py`
+
+**Interfaces:** `def canonical_source(program: CheckedProgram) -> str` — `HEADER + "\n" + ast.unparse(program.module) + "\n"`.
+
+**Required tests:** round trip — for 5 valid programs, `canonical_source` of the re-checked canonical text equals itself (fixpoint) and re-checks with no errors; formatting normalizes quotes/spacing (`col( 'a' )` → `col('a')`).
+
+### Task 17: IR lowering with step inlining
+
+**Files:** Create `lattice/ir.py`; Test `tests/test_ir.py`
+
+**Interfaces:**
+```python
+@dataclass(frozen=True)
+class Node:
+    id: str                       # module binding name, or "<call-site>/<local>" for inlined step bodies; "_write<k>" for writes
+    op: str                       # a TABLE_OPS name (never a step)
+    inputs: tuple[str, ...]       # ids of input nodes, in positional order
+    params: Mapping[str, Any]     # see below
+    schema: Schema | None         # statically predicted output schema; None for write
+    span: Span                    # call site (for inlined nodes: the call inside the step body)
+@dataclass(frozen=True)
+class Plan: nodes: tuple[Node, ...]   # topological, deterministic (source order after inlining)
+def lower(program: CheckedProgram) -> Plan
+```
+`params` per op: load `{"path": str}`; where `{"predicate": ast.expr}`; derive `{"columns": tuple[tuple[str, ast.expr], ...]}`; select `{"cols": tuple[str, ...]}`; rename `{"mapping": tuple[tuple[str, str], ...]}`; group `{"by": tuple[str, ...], "aggs": tuple[tuple[str, str, ast.expr | None], ...]}` (name, agg function, argument or None for count); join `{"on": tuple[str, ...], "how": str}`; sort `{"by": tuple[str, ...], "desc": bool}`; limit `{"n": int}`; write `{"path": str}`.
+
+Inlining: a step call binds table params to caller node ids and scalar params to Python values (Constants, or the caller's own substituted scalars); body statements lower recursively with id prefix `"<caller binding>/"`; every expression inside an inlined body is deep-copied with scalar-param `Name`s replaced by `Constant`s (`ast.copy_location`). The call-site binding resolves to the node id of the returned local. Schemas come from `program.types[id(call)]`.
+
+**Required tests:** linear pipeline → nodes in order with correct inputs/schemas; step called twice with different `min_qty` → two independent sub-graphs with prefixed ids and substituted constants (assert the Constant values inside the where predicates); nested step (step calling an earlier step) prefixes compose (`r/inner/x`); write nodes carry path; lowering never mutates the original module AST (compare `ast.dump` before/after).
+
+### Task 18: Runtime expression compiler
+
+**Files:** Create `lattice/runtime/exprs.py`; Test `tests/runtime/test_exprs.py`
+
+**Interfaces:**
+```python
+@dataclass
+class Compiled:
+    expr: pl.Expr
+    guards: list[tuple[str, pl.Expr]]    # (code, Boolean expr true on rows where a null was produced by a guard)
+def compile_expr(node: ast.expr) -> Compiled
+def compile_agg(func: str, arg: ast.expr | None) -> Compiled   # sum/mean/min/max/count
+DTYPES: Mapping[Scalar, pl.DataType]   # Int64, Float64, String, Boolean, Date
+```
+Exhaustive `match` (final `case _: raise LatticeInternalError`, defined in `lattice/runtime/__init__.py` as `class LatticeInternalError(Exception)` alongside `class LatticeRuntimeError(Exception)` with attributes `code: str`, `span: Span`, `message: str`). Mapping: Constant → `pl.lit(v, dtype=...)` (bool→Boolean, int→Int64, float→Float64, str→String); `col` → `pl.col`; `when` → `pl.when(c).then(a).otherwise(b)`; `coalesce` → `pl.coalesce`; `is_null` → `.is_null()`; `+ - *` native; `/` → `pl.when(r == 0).then(None).otherwise(l.cast(Float64) / r)` + guard `("R301", r == 0)`; `%` → same null-on-zero with guard; `& |` native; comparisons native; `-x`, `~x` native; fn: abs `.abs()`, round `.round(d)`, floor/ceil, log `when(x > 0).then(x.cast(F64).log())` guard `R302` on `x <= 0`, sqrt guard on `x < 0`, clip `.clip(lo, hi)`, lower/upper `str.to_lowercase/to_uppercase`, strip `str.strip_chars()`, len `str.len_chars().cast(Int64)`, contains `str.contains(sub, literal=True)`, starts_with `str.starts_with`, replace `str.replace_all(old, new, literal=True)`, concat `pl.concat_str([a, b])`, year/month/day `dt.year()/…cast(Int64)`, date_diff `(a - b).dt.total_days()`, date_add `x + pl.duration(days=n)`, to_date `str.to_date(format, strict=False)` guard `R303` on `x.is_not_null() & result.is_null()`, to_int/to_float `cast(..., strict=False)` with R303 guard, to_str `cast(String)`. Aggregates: sum `.sum()`, mean `.mean()`, min/max, count `pl.len().cast(Int64)`.
+
+**Required tests:** each mapping evaluated on a small DataFrame with expected values and dtypes; `/` by zero gives null and guard count 1; null propagation `null + 1 = null`; `log(0)` null + R302; failed `to_int("x")` null + R303; literal-only derive yields Int64 not Int32.
+
+### Task 19: Ops + executor
+
+**Files:** Create `lattice/runtime/ops.py`, `lattice/runtime/exec.py`; Test `tests/runtime/test_exec.py`
+
+**Interfaces:**
+```python
+# runtime/exec.py
+@dataclass(frozen=True)
+class RuntimeIssue: code: str; span: Span; message: str; count: int
+@dataclass(frozen=True)
+class RunResult: outputs: Mapping[str, pl.DataFrame]      # write path -> frame written
+                 warnings: tuple[RuntimeIssue, ...]
+def execute(plan: Plan, io_root: Path, *, max_rows: int = 5_000_000, time_limit_s: float = 60.0) -> RunResult
+def run_source(source: str, profile: Profile, io_root: Path) -> tuple[CheckResult, RunResult | None]  # convenience: check → lower → execute
+```
+Ops: load → `pl.read_csv(path, schema=polars schema)` then float columns `fill_nan(None)`; any read/parse failure → `LatticeRuntimeError("R101", span, "could not load 'x': <first line of error>")`; missing file → R101 too. where → `filter`; derive → `with_columns(expr.alias(name))` (all columns in one call, in order); select; rename; group → `by` empty: `df.select(aggs)`; else `group_by(by, maintain_order=True).agg(aggs)`; join → `left.join(right, on=on, how=how, coalesce=True)`; sort → `sort(by, descending=desc, nulls_last=True, maintain_order=True)`; limit → `head(n)`; write → `.csv` `write_csv` / `.parquet` `write_parquet`. Paths resolved under `io_root`; resolved path outside root → R102. After every non-write node assert `list(df.schema.items()) == [(n, DTYPES[t]) ...]` else raise `LatticeInternalError("E901 ...")`. Guard counts computed on the node's input frame; nonzero → `RuntimeIssue`. Row count > max_rows → R201; elapsed > time_limit → R202 (checked between nodes). Nodes run in plan order; intermediate frames freed when no later node consumes them.
+
+**Required tests:** end-to-end small pipeline with fixtures written to tmp; each op; Review-Focus #1 empty table through group/join/derive keeps schema and `group(by=[], n=agg.count())` → one row n=0 plus `sum` → 0 and `mean` → null; Review-Focus #2 CSV column `unit price` via `col("unit price")`; Review-Focus #4 bad date string → `LatticeRuntimeError` code R101 with span line of the load; path escape R102 (construct Plan manually); schema assertion E901 (construct a Plan with a wrong predicted schema).
+
+### Task 20: Differential + semantics tests
+
+**Files:** Create `tests/test_differential.py`, `tests/test_semantics.py`, `tests/fixtures/lattice_solutions/*.py` (hand-written Lattice programs)
+
+Write correct Lattice solutions for at least 12 seed tasks spanning all tiers (must include s05, s08, s09, m02, m03, m04, m07, m12, j02, j04, j05, j07) and one using a `@step`. For each: `run_source` with `bench_profile()` on fixtures in tmp, read `out.parquet`, `frames_match` against `task.reference`. Semantics tests: one test per spec §5.7 row (division by zero, NaN at load, null arithmetic, null predicate in where, `&`/`|` Bool only (checker), empty-group aggregates, evaluation order determinism (run twice → identical frames), float equality warning L406).
+
+**Passing criteria for Phase 2:** `uv run pytest -q` exits 0.
+
+---
+
+## Phase 3 — LLM loop and gate
+
+### Task 21: Lattice prompt + repair loop
+
+**Files:** Modify `lattice/llm/prompt.py` (add Lattice parts); Create `lattice/llm/repair.py`; Test `tests/llm/test_prompt.py`, `tests/llm/test_repair.py`
+
+**Interfaces:**
+```python
+# prompt.py
+def lattice_system_prompt() -> str      # deterministic (no timestamps); built from catalog
+def lattice_task_message(task: Task, profile: Profile) -> str
+# repair.py
+@dataclass(frozen=True)
+class Round: index: int; source: str | None; diagnostics: tuple[Diagnostic, ...]; generation: Generation
+@dataclass(frozen=True)
+class SynthesisResult:
+    check: CheckResult | None; source: str | None; rounds: tuple[Round, ...]
+    @property
+    def ok(self) -> bool
+def synthesize(task_message: str, profile: Profile, generator: Generator, *, system: str, max_repairs: int = 2) -> SynthesisResult
+```
+System prompt sections: (1) what Lattice is (Python syntax, strict profile, checked before running); (2) the rules — header line, imports from `lattice.ops` / `lattice.schemas` exactly matching use, one op per statement assigned to a new name, never reassign, no nesting, no loops/if/lambda/comprehensions/methods/subscripts, `where(t, pred)` positional predicate, all other non-table args keyword, `&`/`|`/`~` instead of and/or/not, `when` nesting only in `otherwise`, `@step` rules, finish with `write(result, "out.parquet")`; (3) op catalog with canonical signatures and schema effect, one line each; (4) expression library: `col`, operators, `when`, `coalesce`, `is_null`, every `fn.*` with signature (generated from `FN_SIGS`), `agg.*`; (5) three complete example programs (filter+derive; group+sort+limit; join+step); (6) output format — exactly one ```` ```python ```` block. Task message: the task prompt, then each input as `load("<file>", schema=<SchemaName>)` with the schema rendered, then "Write the final table with write(<table>, \"out.parquet\")."
+
+`synthesize`: messages start `[{"role": "user", "content": task_message}]`; up to `1 + max_repairs` generations; extract code (missing → synthetic diagnostic `L000` "response contained no ```python code block" at 1:1); `check_source`; success → return; else append assistant turn (full text) and user turn: "The program failed Lattice checks:\n" + `render_for_llm(diags)` + "\nReturn the complete corrected program in one ```python block." Warnings never block.
+
+**Required tests:** system prompt identical across calls and mentions every op and every `fn` name; examples in the system prompt all pass `check_source` with `bench_profile()` (extract them from the prompt text and check); ScriptedGenerator scenarios — first-shot valid (1 round); invalid then valid (2 rounds; second call's messages contain the diagnostics text); three invalid → `ok False`, 3 rounds; no code block then valid (L000 in round 1); repair message never includes the system prompt.
+
+### Task 22: Lattice arms B/C + taxonomy
+
+**Files:** Modify `bench/runners.py`, `bench/cli.py`; Test `tests/bench/test_runners_lattice.py`, extend `tests/bench/test_cli.py`
+
+**Interfaces:** `def run_lattice(task: Task, generator: Generator, workdir: Path, fixtures_frames: Mapping[str, pl.DataFrame], *, arm: Literal["B", "C"], max_repairs: int) -> TaskOutcome` (arm C ⇒ max_repairs 0); `def classify_failure(diags: Sequence[Diagnostic]) -> str` — first error code: `L201`→`shadowing`, `L202`/`L604`→`sequencing`, `L301`/`L302`→`chaining`, `L4xx`→`schema`, `L000`→`no_code`, other L→`other_static`; runtime error → `runtime_error`; wrong result → `wrong_result`. `check_passed` = synthesis ok; tokens/latency summed over rounds. CLI arms B and C enabled.
+
+**Required tests:** scripted correct Lattice program for s01 → correct; scripted rebinding program on arm C → `failure == "shadowing"`, rounds 1; arm B repairs it with a second scripted response → correct, rounds 2; CLI offline run over A,B,C for s01,m01 produces a report with three arms.
+
+### Task 23: Grow the suite to ≥100 tasks
+
+**Files:** Create `bench/more_tasks.py` (`MORE_TASKS: tuple[Task, ...]`); Test `tests/bench/test_more_tasks.py`
+
+At least 70 new tasks with ids `s11…`, `m13…`, `j09…`, keeping overall tier shares within ±5 points of seed (≈33% single, 40% multi, 27% join). Exercise every op, every `fn.*` family (string, date, math, cast), `when` multi-branch, `coalesce`, left joins, `by=[]` global aggregates, sort+limit. Same prompt discipline as Task 4.
+
+**Required tests:** `len(suite("all")) >= 100`; ids unique across suites; tier shares within bounds; every reference runs on fixtures and returns ≥1 row; every prompt names its output columns (each reference output column name appears in the prompt text).
+
+### Task 24: Gate, end-to-end runs, results doc
+
+**Files:** Create `tests/test_e2e_offline.py`, `tests/test_live_smoke.py` (marked `live`), `docs/results/2026-09-26-bench-smoke.md`
+
+- Offline e2e test: builds scripted responses for 10 tasks (arm A correct pandas, arm B one invalid-then-valid Lattice program, arm C valid first shot), runs `bench.cli.main([...])`, asserts report exists, gate section rendered, and arm accuracies equal 1.0.
+- Live smoke (only with credentials; `pytest -m live`): 1 task × arms A and B.
+- Live smoke benchmark: `uv run python -m bench.cli run --arms A,B,C --suite all --tasks <12 ids across tiers> --out results/smoke` (cost-bounded ≈36 model calls + repairs). Record the report in `docs/results/2026-09-26-bench-smoke.md` with the gate result, clearly labelled as a smoke run (not the Phase-3 gate, which needs the full ≥100-task run — requires explicit user approval).
+
+**Passing criteria:** `uv run pytest -q` and `uv run ruff check .` exit 0; offline e2e passes; smoke report committed.
+
+---
+
+## Execution graph
+
+| Node | Tasks | Depends on | Model tier |
+|---|---|---|---|
+| N0 | 1 + plan contracts | — | frontier (lead) |
+| A | 2, 3, 4 | N0 | mid |
+| B | 8–12 | N0 | frontier |
+| C | 5 | N0 | mid |
+| D | 13–16 | B | frontier |
+| E | 6, 7 | A, C | mid |
+| H | 23 | A | mid |
+| F | 17–20 | D, A | frontier |
+| G | 21, 22 | F, E | mid |
+| I | 24 | G, H | lead |
+| R | whole-branch review | I | frontier |
+
+Levels: L0 N0 → L1 {A, B, C} → L2 {D, E, H} → L3 F → L4 G → L5 I → L6 R. Each node's gate: its tasks' tests + ruff pass; on failure retry with feedback (max 2), then escalate.
+
 ## Task Index (full step-by-step bodies still to be written — see status note)
 
 **Phase 0 — Benchmark baseline**

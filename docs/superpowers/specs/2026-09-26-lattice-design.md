@@ -166,7 +166,7 @@ Everything else is rejected with `L1xx` codes: undecorated/other-decorated `def`
 |---|---|
 | A table-typed argument must be a `Name`, never a nested op call (no chaining) | `L301` |
 | Exactly one op call per statement | `L302` |
-| Keyword args for all non-table parameters; positional only for the table input(s) | `L303` |
+| Every op call uses its one fixed call shape (§5.11 item 2): table input(s) positional, `where`'s predicate positional, every other parameter by keyword; step calls pass tables positionally and scalars by keyword | `L303` |
 | No no-op steps: `where(t, True)`, `derive(t)` with no columns, and similar identity ops are rejected (two consecutive `where` steps remain legal) | `L304` |
 | Column references only via `col("name")`; no bare strings where a column is expected | `L305` |
 | Import list must exactly match ops used (no unused, no missing) | `L306` |
@@ -257,6 +257,15 @@ All inside column expressions (`Col[T]`); nothing here introduces statements.
   - cast: `fn.to_int, fn.to_float, fn.to_str` (the only way to convert — no implicit coercion)
 - Math-domain errors (`log(0)`, `sqrt(-1)`, failed casts) → `null` + runtime warning counter, consistent with §5.7.
 - Catalog growth rule: a new `fn` is added only with a distinct intent — no aliases (`L702` if a program uses a removed/aliased name, with a hint to the canonical one).
+
+
+### 5.11 Clarifications (decided by the Phase 0–3 plan)
+
+1. **Imports.** Exactly two modules may be imported from: `from lattice.ops import …` (the ops, `col`, `when`, `coalesce`, `is_null`, `agg`, `fn`, `step`, `Table`, and the scalar type names) and `from lattice.schemas import …` (input schema names from the profile). No aliases, no wildcards, no relative imports. Imports must exactly match use (unused → `L306`, missing → `L203`).
+2. **Canonical call shapes (refines `L303`).** Each op has one fixed signature saying which parameters are positional and which are keyword. Table inputs are positional; `where(t, pred)` takes its predicate positionally; everything else that is not a table is passed by keyword (e.g. `load(path, schema=S)`, `join(l, r, on=[…], how="left")`, `write(t, path)`).
+3. **Step annotations.** A step's return annotation may be bare `Table` (schema inferred from the body); parameters must be concrete (`Table[Orders]`) or scalar (`Int`, …). A concrete return type is checked exactly (`L605`).
+4. **Nullability.** Every column is nullable in v1; the `T?` distinction is deferred.
+5. **Output files.** `write` accepts `.csv` or `.parquet` paths; the benchmark always uses `out.parquet`.
 
 ---
 
