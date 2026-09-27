@@ -451,3 +451,38 @@ was available offline.
    cannot pass the new comment's id).
 3. **Fan-out needs an explicit cap.** "Notify every watcher" becomes "the first 100"
    (L439). The cap is by design, but the importer must report it as a behaviour change.
+
+## Thin slice — LLM edits through Lattice vs direct Python edits (baseline, 2026-09-27)
+
+Plan: `docs/superpowers/plans/2026-09-27-lattice-thin-slice.md`. Setup:
+- **Tickets:** 6 realistic change tickets on the official FastAPI template, each with unstated traps (`bench/edit_slice/`).
+- **Arms:**
+  - **P** edits the Python.
+  - **L** edits the imported Lattice, which is then emitted as FastAPI.
+- **Controls:** same ticket text and a repair budget of 2 in both arms. Feedback is only what a developer sees locally (a checker or start-up error, plus a smoke request). Scoring uses a hidden oracle.
+- **Scale:** 3 reps per model; the language is frozen as of commit 2b9eee3.
+
+| model | arm | correct | loud | silent | $ total | $/correct | rounds | lines changed | out tok/run |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| sonnet-5 | P | **15/18** | 0 | 3 | 0.57 | 0.038 | 1.06 | 32.1 | 2.3k |
+| sonnet-5 | L | 3/18 | 8 | 7 | 3.39 | 1.129 | 2.56 | 15.2 | 15.9k |
+| haiku-4-5 | P | **12/18** | 0 | 6 | 0.27 | 0.023 | 1.17 | 29.6 | 2.2k |
+| haiku-4-5 | L | 3/18 | 6 | 9 | 0.80 | 0.266 | 2.61 | 13.1 | 6.1k |
+
+**Verdict: with the language as it stood, the core claim fails on this slice.** Editing through Lattice was much less accurate and 3–10× more expensive than editing Python directly.
+
+Causes, from the per-run records:
+1. **Language gaps.** t1 (case-insensitive contains) and t5 ("was the field sent", DateTime arithmetic) can't be expressed. t2 and t4 need workarounds.
+   - These four tickets account for most L failures.
+   - Sonnet spent up to 16k output tokens per round trying to express the impossible and ran out of tokens ("no code"). That explains most of the cost gap.
+2. **A semantic trap in the language itself.** `owned(t, by=user)` means "rows the caller may see", and an Admin sees every row. "The signed-in user's own items" (t6) was written as `owned(...)` in all 6 L runs, and all 6 were silent failures: admins got everyone's stats. The API guide's own examples name the result `my_items = owned(...)`, which teaches the mistake. The reference solution needed a join trick.
+3. **Low first-try checker pass rate.** Almost every L run needed at least one repair round for checker errors, even on the expressible tickets t3 and t6.
+4. **P's silent failures fall where Lattice is strong.** They were a `since` with a timezone offset parsed wrongly (t2, both models) and a missing admin check on restore (t4, Haiku). But L never got far enough on those tickets to show it.
+5. **Where L did produce code, it was better code.** Correct L runs changed fewer lines (13–15 vs 30–32) and the emitted code answered faster (0.8–1.0 ms vs 6.6 ms per request; 1.7 vs 2.1–2.3 queries per request).
+
+Next:
+- Add the six gap features (built in isolation, not yet merged).
+- Fix the `owned` semantics trap.
+- Save candidate sources in the records.
+- Re-run the same 72 runs.
+- Add a fresh held-out ticket set to guard against tuning the language to these six tickets.
