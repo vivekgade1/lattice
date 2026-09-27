@@ -125,6 +125,21 @@ New finding: Lattice's fan-out losses in run 2 (f01, f02, f07, x07) share one ca
 - Gate: `silent_failure_reduction` PASS (5.9% vs 26.5%), `accuracy_parity` PASS (90.7% vs 81.5%) — third consecutive pass; `safety` not demonstrated.
 - Lattice's remaining misses are the same logic errors in every run (n05 distinct buyers, f12 per-tier output, w02, x10) plus one L401 on f11 — model reasoning, not language friction.
 
+## TODO — metrics to capture in future benchmark runs
+
+Accuracy alone can't say whether Lattice is better or worse; every future run should also report, per task outcome and aggregated per (model, arm, family):
+
+| Metric | Status |
+|---|---|
+| Output / input / cache-read tokens, summed over repair rounds | recorded (`TaskOutcome`) |
+| Repair rounds, first-shot pass, latency | recorded |
+| **Cost per task and per correct task** (tokens × model price) | missing |
+| **Final program size**: lines, statements, AST nodes, characters, output tokens of the final program only | missing (programs are saved as `program_round*.py` / `solution.py`, but not measured) |
+| **Program execution time** (sandbox run for pandas, `execute()` for Lattice) | missing |
+| Diagnostics per repair round (count and codes) | partially (only the last round's in `detail`) |
+
+Report these side by side with accuracy so the verdict covers correctness, cost, and program quality.
+
 ### Conclusion
 
 - The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
