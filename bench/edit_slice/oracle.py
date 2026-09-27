@@ -33,7 +33,8 @@ Silent dominates loud: one silent case makes the run silent even if another cras
 case where the reference itself answers 5xx (the template's IntegrityError on a null
 title) is equal when the candidate crashes the same way.
 
-This module describes the template's tables, auth and tickets (t1-t12). A ticket on a
+This module describes the template's tables, auth and tickets (t1-t18; t13-t18 are round
+3's held-out template set, with no Lattice reference). A ticket on a
 held-out repo (``Ticket.repo``: t19-t24) gets its oracle from :mod:`bench.edit_slice.repos`
 in the same :class:`TicketOracle` shape; three knobs cover what differs there: the
 password-hash columns the normaliser hides, a frozen clock the whole suite runs under
@@ -202,6 +203,32 @@ USER_ITEM_COUNTS = RouteSpec("read_user_item_counts", "GET", f"{API}/users/item-
                              pagination=("skip", "limit"), errors=(NOT_ADMIN,),
                              tables=("user", "item"))  # fmt: skip
 
+# ---- round 3's held-out template set's routes (t13-t18; no Lattice reference) -------------
+NEW_PASSWORD = P("new_password", "str", "body", min_len=8, max_len=128)
+RESET_PASSWORD_USER = RouteSpec(
+    "reset_password_user", "POST", f"{API}/users/{{user_id}}/reset-password", "other",
+    "user", auth="admin", params=(USER_ID, NEW_PASSWORD),
+    errors=(USER_NOT_FOUND, NOT_ADMIN),
+)  # fmt: skip
+CHANGE_EMAIL = RouteSpec(
+    "change_email", "PATCH", f"{API}/users/me/email", "other", "user",
+    params=(P("current_password", "str", "body", min_len=8, max_len=128),
+           P("new_email", "email", "body")),
+)  # fmt: skip
+DUPLICATE_ITEM = RouteSpec("duplicate_item", "POST", f"{API}/items/{{id}}/duplicate", "other",
+                          "item", params=(ID,), errors=(NOT_FOUND, NOT_OWNER))  # fmt: skip
+ITEM_AUDIT = RouteSpec(
+    "read_item_audit", "GET", f"{API}/items/audit", "list", "item", auth="admin",
+    params=(*PAGE, P("owner_email", "str", "query", required=False)),
+    pagination=("skip", "limit"), errors=(NOT_ADMIN,), tables=("item", "user"),
+)  # fmt: skip
+SET_PREFERENCES = RouteSpec(
+    "set_preferences", "PUT", f"{API}/users/me/preferences", "other", "user",
+    params=(P("default_page_size", "int", "body", nullable=True, ge=1, le=100),),
+)  # fmt: skip
+READ_PREFERENCES = RouteSpec("read_preferences", "GET", f"{API}/users/me/preferences",
+                             "other", "user")  # fmt: skip
+
 ROUTES: dict[str, tuple[RouteSpec, ...]] = {
     "t1_search": (_read_items(P("q", "str", "query", required=False)),),
     "t2_since": (
@@ -228,6 +255,12 @@ ROUTES: dict[str, tuple[RouteSpec, ...]] = {
     "t10_owner_counts": (USER_ITEM_COUNTS,),
     "t11_title_trim": (CREATE_ITEM, UPDATE_ITEM),
     "t12_transfer": (TRANSFER_ITEM,),
+    "t13_password_reset": (RESET_PASSWORD_USER,),
+    "t14_email_change": (CHANGE_EMAIL,),
+    "t15_duplicate_item": (DUPLICATE_ITEM,),
+    "t16_admin_audit": (ITEM_AUDIT,),
+    "t17_page_size_preference": (SET_PREFERENCES, READ_PREFERENCES),
+    "t18_duplicate_title_guard": (CREATE_ITEM, UPDATE_ITEM),
 }
 
 # ---- database variants --------------------------------------------------------------------
@@ -357,12 +390,22 @@ def _variant_writer(ticket_id: str, plan: SeedPlan) -> dict[str, Callable[[Engin
         owning(alice=3, bob=1)(engine)
         _fill(engine, ticket_id, extra_id("user/frank"), "bulk/frank", 1)
 
+    def audit_extra(engine: Engine) -> None:
+        """t16_admin_audit: erin (mixed-case email, no other rows use it) and frank
+        (inactive), each with one item -- so a case-insensitive ``owner_email`` fold is
+        distinguishable from the reference's exact match, and an inactive owner's items
+        are exercised."""
+        _add_users(engine, ticket_id, ["erin", "frank"])
+        _fill(engine, ticket_id, extra_id("user/erin"), "bulk/erin", 1)
+        _fill(engine, ticket_id, extra_id("user/frank"), "bulk/frank", 1)
+
     own = {h: len(plan.owned("item", h)) for h in uid}
     return {"search": search, "soft": soft, "fresh": fresh, "no_bob_items": no_bob_items,
             "undated": undated, "no_items": no_items,
             "second_admin": with_users("dave"),
             "more_users": with_users("dave", "erin", "frank", "gina"),
             "counts": counts,
+            "audit_extra": audit_extra,
             "alice_at_limit": owning(alice=QUOTA - own[ACTOR]),
             "alice_below_limit": owning(alice=QUOTA - 1 - own[ACTOR]),
             "admin_at_limit": owning(admin=QUOTA - own[ADMIN]),
@@ -675,6 +718,132 @@ def _t12_cases(plan: SeedPlan) -> list[Case]:
     ]
 
 
+def _t13_cases(plan: SeedPlan) -> list[Case]:
+    users = f"{API}/users"
+    uid = {h: plan.user(h).id for h in (ACTOR, OTHER, ADMIN, INACTIVE)}
+    dave = extra_id("user/dave")
+
+    def c(what: str, target: uuid.UUID | str, user: str, db: str = "seed") -> Case:
+        return Case(f"t13.{what}", "POST", f"{users}/{target}/reset-password", user=user,
+                    json={"new_password": "FreshPass123"}, db=db, tables=("user",),
+                    route="reset_password_user")  # fmt: skip
+
+    return [
+        c("admin_resets_alice", uid[ACTOR], ADMIN),
+        c("admin_resets_own_password", uid[ADMIN], ADMIN),
+        c("admin_resets_inactive_user", uid[INACTIVE], ADMIN),
+        c("admin_resets_other_admin", dave, ADMIN, db="second_admin"),
+        c("alice_cannot_reset_bob", uid[OTHER], ACTOR),
+        c("alice_cannot_reset_self", uid[ACTOR], ACTOR),
+        c("reset_unknown_user", MISSING_ID, ADMIN),
+    ]
+
+
+def _t14_cases(plan: SeedPlan) -> list[Case]:
+    path = f"{API}/users/me/email"
+
+    def c(what: str, user: str, password: str, new_email: str) -> Case:
+        return Case(f"t14.{what}", "PATCH", path, user=user,
+                    json={"current_password": password, "new_email": new_email},
+                    tables=("user",), route="change_email")  # fmt: skip
+
+    alice_pw, admin_pw = plan.user(ACTOR).password, plan.user(ADMIN).password
+    return [
+        c("alice_changes_email", ACTOR, alice_pw, "alice.new@example.com"),
+        c("wrong_password", ACTOR, "not-the-password", "whoever@example.com"),
+        c("wrong_password_email_taken", ACTOR, "not-the-password", plan.user(OTHER).email),
+        c("email_already_taken", ACTOR, alice_pw, plan.user(OTHER).email),
+        c("email_same_as_own", ACTOR, alice_pw, plan.user(ACTOR).email),
+        c("admin_changes_own_email", ADMIN, admin_pw, "admin.new@example.com"),
+    ]
+
+
+def _t15_cases(plan: SeedPlan) -> list[Case]:
+    items = f"{API}/items"
+
+    def c(what: str, item: uuid.UUID | str, user: str) -> Case:
+        return Case(f"t15.{what}", "POST", f"{items}/{item}/duplicate", user=user,
+                    tables=("item",), route="duplicate_item")  # fmt: skip
+
+    own, bobs, admins = _row(plan, ACTOR)["id"], _row(plan, OTHER)["id"], _row(plan, ADMIN)["id"]
+    return [
+        c("alice_duplicates_own_item", own, ACTOR),
+        c("admin_duplicates_bobs_item", bobs, ADMIN),
+        c("admin_duplicates_own_item", admins, ADMIN),
+        c("bob_cannot_duplicate_alices_item", own, OTHER),
+        c("missing_item", MISSING_ID, ACTOR),
+    ]
+
+
+def _t16_cases(plan: SeedPlan) -> list[Case]:
+    path = f"{API}/items/audit"
+
+    def c(what: str, user: str = ADMIN, db: str = "seed", **params: Any) -> Case:
+        return Case(f"t16.{what}", "GET", path, user=user, params=params or None, db=db,
+                    tables=("item",), route="read_item_audit")  # fmt: skip
+
+    return [
+        c("admin_sees_all"),
+        c("filter_by_owner_email", owner_email=plan.user(ACTOR).email),
+        # erin's stored email is mixed-case ("Erin.Stone@example.com"): a lowercase query
+        # matches under case-folding but not under the reference's exact comparison
+        c("filter_case_mismatch", db="audit_extra", owner_email="erin.stone@example.com"),
+        c("filter_unknown_email", owner_email="nobody@example.com"),
+        c("includes_inactive_owner_items", db="audit_extra", owner_email="frank@alice-corp.com"),
+        c("window", skip=2, limit=3),
+        c("alice_not_admin", user=ACTOR),
+        Case("t16.item_route_still_works", "GET", f"{API}/items/{_row(plan, ACTOR)['id']}",
+             user=ADMIN, route="read_item_audit"),
+    ]  # fmt: skip
+
+
+def _t17_cases(plan: SeedPlan) -> list[Case]:
+    path = f"{API}/users/me/preferences"
+
+    def put(what: str, user: str, value: Any) -> Case:
+        return Case(f"t17.{what}", "PUT", path, user=user, json={"default_page_size": value},
+                    tables=("user",), route="set_preferences")  # fmt: skip
+
+    def get(what: str, user: str) -> Case:
+        return Case(f"t17.{what}", "GET", path, user=user, route="read_preferences")
+
+    return [
+        get("alice_never_set", ACTOR),
+        get("bob_never_set", OTHER),
+        put("alice_sets_25", ACTOR, 25),
+        put("alice_sets_min", ACTOR, 1),
+        put("alice_sets_max", ACTOR, 100),
+        put("alice_zero_refused", ACTOR, 0),
+        put("alice_101_refused", ACTOR, 101),
+        put("alice_clears_with_null", ACTOR, None),
+    ]
+
+
+def _t18_cases(plan: SeedPlan) -> list[Case]:
+    items = f"{API}/items/"
+    alice0, alice1 = _row(plan, ACTOR), _row(plan, ACTOR, 1)
+    bob0, bob1 = _row(plan, OTHER), _row(plan, OTHER, 1)
+
+    def create(what: str, title: str, user: str = ACTOR) -> Case:
+        return Case(f"t18.{what}", "POST", items, user=user, json={"title": title},
+                    tables=("item",), route="create_item")  # fmt: skip
+
+    def put(what: str, item: dict[str, Any], body: dict[str, Any], user: str = ACTOR) -> Case:
+        return Case(f"t18.{what}", "PUT", f"{items}{item['id']}", user=user, json=body,
+                    tables=("item",), route="update_item")  # fmt: skip
+
+    return [
+        create("create_duplicate_own_title", alice0["title"]),
+        create("create_matches_other_users_title_ok", bob0["title"]),
+        create("create_different_case_is_not_a_duplicate", alice0["title"].upper()),
+        create("admin_title_matches_alices_is_ok", alice0["title"], user=ADMIN),
+        put("update_echoes_own_title", alice0, {"title": alice0["title"]}),
+        put("update_description_only_ok", alice0, {"description": "new description"}),
+        put("update_to_another_owned_title", alice0, {"title": alice1["title"]}),
+        put("update_conflict_before_ownership", bob0, {"title": bob1["title"]}, user=ACTOR),
+    ]
+
+
 SPECIFIC: dict[str, Callable[[SeedPlan], list[Case]]] = {
     "t1_search": _t1_cases,
     "t2_since": _t2_cases,
@@ -688,6 +857,12 @@ SPECIFIC: dict[str, Callable[[SeedPlan], list[Case]]] = {
     "t10_owner_counts": _t10_cases,
     "t11_title_trim": _t11_cases,
     "t12_transfer": _t12_cases,
+    "t13_password_reset": _t13_cases,
+    "t14_email_change": _t14_cases,
+    "t15_duplicate_item": _t15_cases,
+    "t16_admin_audit": _t16_cases,
+    "t17_page_size_preference": _t17_cases,
+    "t18_duplicate_title_guard": _t18_cases,
 }
 
 # ---- declared deviations ------------------------------------------------------------------
@@ -757,6 +932,13 @@ BLANK_BEFORE_OWNER = Deviation(
     "valid reading and reveals nothing about the item.",
     400, {"detail": "Title must not be blank"}, accept_original=True,
 )  # fmt: skip
+CASE_INSENSITIVE_TITLE_DUP = Deviation(
+    "case-insensitive-title-duplicate", "ambiguity",
+    "Whether the same title in a different letter case counts as a duplicate for the "
+    "same owner is not stated; the reference matches the database's exact collation, as "
+    "the app's own unique email index does; folding case is an equally valid reading.",
+    400, {"detail": "Item with this title already exists"}, accept_original=True,
+)  # fmt: skip
 # ticket ambiguities: ticket -> case name -> accepted alternatives
 AMBIGUITIES: dict[str, dict[str, tuple[Deviation, ...]]] = {
     "t11_title_trim": {
@@ -764,6 +946,9 @@ AMBIGUITIES: dict[str, dict[str, tuple[Deviation, ...]]] = {
         "update_item.boundary.title.below_min": (BLANK_TITLE,),
         "t11.create_empty": (BLANK_TITLE,),
         "t11.blank_title_other_users_item": (BLANK_BEFORE_OWNER,),
+    },
+    "t18_duplicate_title_guard": {
+        "t18.create_different_case_is_not_a_duplicate": (CASE_INSENSITIVE_TITLE_DUP,),
     },
 }
 

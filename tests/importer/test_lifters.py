@@ -387,7 +387,7 @@ def test_page_list_lifts_the_owned_list(ctx):
     assert f is not None and f.success == "Page" and f.response == "ItemPublic"
     assert [(s.name, s.op) for s in f.steps] == [
         ("items", "fetch"),
-        ("visible", "owned"),
+        ("visible", "accessible"),
         ("ordered", "sort"),
         ("result", "page"),
     ]

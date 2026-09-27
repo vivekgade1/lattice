@@ -201,7 +201,7 @@ def test_l802_owned_rows_returned_without_owned():
         "where(mine,", "where(orders,"
     )
     d = diag(src, "L802")
-    assert d.hint == "filter with owned(orders, by=user) before returning or writing"
+    assert d.hint == "filter with accessible(orders, by=user) before returning or writing"
     assert errors(src) == ["L802"]  # one mistake, one diagnostic (at the update)
 
 
@@ -960,7 +960,7 @@ def test_items_read_without_owned_is_l802():
     )
     d = bench_diag(src, "L802")
     assert "OrderItems" in d.message
-    assert d.hint == "filter with owned(items, by=user) before returning or writing"
+    assert d.hint == "filter with accessible(items, by=user) before returning or writing"
     assert bench_errors(src) == ["L802"]
     assert bench_errors(src.replace("auth=Customer", "auth=Admin")) == []
 
@@ -1058,7 +1058,9 @@ def test_insert_into_items_takes_no_owner():
     assert bench_errors(src) == ["L404"]
 
 
-def test_update_cannot_move_rows_to_another_owner():
+def test_update_moves_rows_to_another_owner_only_when_checked_and_existing():
+    """Round 2 (§6.4): an owner transfer of owner-checked rows (or in an Admin
+    endpoint) is allowed; the new owner must exist (else_=); unchecked rows stay L802."""
     src = """
     @endpoint("PATCH", "/orders/{order_id}", auth=Customer)
     def move(order_id: Int(ge=1), to: Int(ge=1), user: CurrentUser) -> One | NotFound:
@@ -1069,8 +1071,15 @@ def test_update_cannot_move_rows_to_another_owner():
         done = update(order, customer_id=to)
         return done
     """
-    assert bench_errors(src) == ["L802"]
-    assert bench_errors(src.replace("auth=Customer", "auth=Admin")) == []
+    assert bench_errors(src) == ["L404"]  # the new owner may not exist
+    assert bench_errors(src.replace("auth=Customer", "auth=Admin")) == ["L404"]
+    declared = src.replace("customer_id=to)", 'customer_id=to, else_=NotFound("user"))')
+    assert bench_errors(declared) == []
+    assert bench_errors(declared.replace("auth=Customer", "auth=Admin")) == []
+    unchecked = declared.replace(
+        "mine = owned(orders, by=user)", 'mine = where(orders, col("id") > 0)'
+    )
+    assert bench_errors(unchecked) == ["L802"]
 
 
 def test_at_min_and_at_max_are_available_in_endpoints():

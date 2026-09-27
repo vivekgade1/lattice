@@ -4,6 +4,7 @@ and the round trip through our own compiler on the realapps and template program
 
 from __future__ import annotations
 
+import ast
 import uuid
 from dataclasses import replace
 
@@ -44,7 +45,7 @@ CTX = LiftContext(
     bindings={CALLER: "user", ITEM_ID: "id", 100: "limit", 0: "skip", "x": "title"},
 )
 FETCH_ITEM = step("fetch", "Item")
-OWNED = step("owned", by="user")
+OWNED = step("accessible", by="user")
 
 
 def lifted(sql: str, *params: object, ctx: LiftContext = CTX) -> Lifted:
@@ -70,7 +71,7 @@ def test_a_filtered_ordered_page():
     )
     assert out.kind == "read" and out.columns == ITEM_COLS
     assert out.render() == (
-        "t0 = fetch(Item)\nt1 = owned(t0, by=user)\n"
+        "t0 = fetch(Item)\nt1 = accessible(t0, by=user)\n"
         "t2 = sort(t1, by=['created_at'], desc=1)\nt3 = page(t2, limit=limit, offset=skip)"
     )
 
@@ -149,6 +150,23 @@ def test_ascending_sorts_note_the_null_order():
     out = lifted("SELECT item.title FROM item ORDER BY item.title, item.id DESC")
     assert out.steps[-1] == step("sort", by=["title", "id"], desc="[0, 1]")
     assert any("NULLs first" in n for n in out.notes)
+
+
+SMALLEST = replace(CTX, null_order="smallest")
+
+
+def test_a_smallest_null_order_profile_sorts_like_sqlite():
+    sql = "SELECT item.title FROM item ORDER BY item.title, item.id DESC"
+    out = lifted(sql, ctx=SMALLEST)
+    assert out.steps[-1] == step("sort", by=["title", "id"], desc="[0, 1]")
+    assert not any("NULLs" in n for n in out.notes)
+
+
+def test_a_smallest_profile_keeps_an_explicit_nulls_last():
+    sql = "SELECT item.title FROM item ORDER BY (item.title IS NULL), item.title"
+    out = lifted(sql, ctx=SMALLEST)
+    assert out.steps[-1] == step("sort", by=["title"], nulls=ast.Constant("last"))
+    assert lifted(sql).steps[-1] == step("sort", by=["title"])  # the default is last
 
 
 def test_a_param_on_the_left_is_flipped():
@@ -251,7 +269,7 @@ def test_the_round_trip_covers_every_statement_shape():
     ops = {op for p in PROGRAMS.values() for *_, got, _ in lift_plans(*p)
            for op in got.ops}  # type: ignore[attr-defined]  # fmt: skip
     assert ops == {
-        "fetch", "rows", "user", "where", "owned", "derive", "select", "sort", "page",
+        "fetch", "rows", "user", "where", "accessible", "derive", "select", "sort", "page",
         "insert", "update", "delete",
     }  # fmt: skip
 

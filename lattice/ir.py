@@ -227,8 +227,10 @@ class _Lowerer:
                     case _:
                         raise LatticeInternalError("sort desc= is not a bool literal or list")
                 params = {"by": _strs(kws["by"]), "desc": flag}
-                if "nulls" in kws:  # absent: "last"
+                if "nulls" in kws:  # absent: the profile's null order
                     params["nulls"] = _str(kws["nulls"])
+                elif self.program.profile.sort_nulls != "last":
+                    params["nulls"] = self.program.profile.sort_nulls
             case "limit":
                 match kws["n"]:
                     case ast.Constant(value=int(n)) if not isinstance(n, bool):
@@ -236,7 +238,9 @@ class _Lowerer:
                     case _:
                         raise LatticeInternalError("limit n= is not an int literal")
             case "window":
-                params = window_params(call, kws, lambda e: self._expr(e, subst))
+                params = window_params(
+                    call, kws, lambda e: self._expr(e, subst), self.program.profile.sort_nulls
+                )
             case "traverse":
                 params = traverse_params(kws, _int(self._expr(kws["max_depth"], subst)))
             case "write":
@@ -414,10 +418,14 @@ WinSpec = tuple[str, str, ast.expr | None, int | None]
 
 
 def window_params(
-    call: ast.Call, kws: Mapping[str, ast.expr], expr: Callable[[ast.expr], ast.expr]
+    call: ast.Call,
+    kws: Mapping[str, ast.expr],
+    expr: Callable[[ast.expr], ast.expr],
+    nulls: str = "last",
 ) -> dict[str, Any]:
     """window(): {"by", "order", "desc" (one bool per order column), "columns"
-    (WinSpec per window column, in keyword order)}. `expr` substitutes an argument's
+    (WinSpec per window column, in keyword order)}, plus "nulls" (the profile's null
+    order, NULL_ORDERS) when it is not "last". `expr` substitutes an argument's
     constants (and, in the API IR, its parameters)."""
     order = _strs(kws["order"]) if "order" in kws else ()
     descending = set(_strs(kws["desc"])) if "desc" in kws else set()
@@ -432,12 +440,15 @@ def window_params(
                 columns.append((kw.arg, func, arg, count))
             case _:
                 raise LatticeInternalError(f"not a window function: {ast.dump(kw.value)}")
-    return {
+    out: dict[str, Any] = {
         "by": _strs(kws["by"]) if "by" in kws else (),
         "order": order,
         "desc": tuple(c in descending for c in order),
         "columns": tuple(columns),
     }
+    if nulls != "last":
+        out["nulls"] = nulls
+    return out
 
 
 def traverse_params(kws: Mapping[str, ast.expr], max_depth: object) -> dict[str, Any]:

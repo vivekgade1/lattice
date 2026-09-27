@@ -12,7 +12,8 @@ Semantics follow the tabular (polars) runtime exactly:
   (or rowid) for fetch, the JSON array index for materialized rows, `MIN(__ord)`
   for a group (groups in order of first appearance), a fresh `ROW_NUMBER()` for a
   join (left order, then right order) and for a sort (the sort keys with nulls
-  last, ties in input order — a stable sort). Limit/page/the final SELECT order by
+  placed by `nulls=` -- the profile's `null_order` when absent --, ties in input
+  order — a stable sort). Limit/page/the final SELECT order by
   `__ord`, so pages are stable even without a sort.
 * where() drops rows whose predicate is null (SQL WHERE does the same); null group
   keys form their own group; joins never match null keys.
@@ -24,7 +25,8 @@ Semantics follow the tabular (polars) runtime exactly:
 * Dates are ISO-8601 text; Bool is 0/1.
 
 Every endpoint parameter, constant and literal is a bind parameter; identifiers are
-always quoted.
+always quoted. So are the caller's values (`user.<column>`, `is_admin(user)`): binds
+taken from the row authentication read, never a query of their own.
 
 The compiler is parameterized by a `lattice.api.backend.Dialect` (default: SQLite): it
 builds the dialect-neutral CTE skeleton and asks the dialect for identifier quoting,
@@ -65,6 +67,26 @@ def sent_bind(name: str) -> str:
     return f"__sent_{name}"
 
 
+def caller_bind(column: str) -> str:
+    """Bind name of the caller's value of users-table column `column` (`user.<column>`),
+    read from the caller's row that authentication loaded."""
+    return f"__caller_{column}"
+
+
+class CallerRef(ast.expr):
+    """A caller reference lowered: `user.<column>` (`column`; the users-table key binds
+    as `:__user_id`, any other column as `caller_bind(column)`), or with `admin`
+    `user.is_admin` / `is_admin(user)` (`:__is_admin`, a 0/1 flag)."""
+
+    _fields = ()
+
+    def __init__(self, column: str | None, *, key: bool = False, admin: bool = False) -> None:
+        super().__init__()
+        self.column = column
+        self.key = key
+        self.admin = admin
+
+
 class ParamRef(ast.expr):
     """An endpoint parameter inside a lowered expression (bound as `:p_<name>`).
     `optional`: its default is UNSET (an update() value that may be "not sent")."""
@@ -75,6 +97,20 @@ class ParamRef(ast.expr):
         super().__init__()
         self.name = name
         self.optional = optional
+
+
+class RowsValue(ast.expr):
+    """The value of `column` in the one row of step `step`'s materialized rows (bound
+    as JSON with `columns`): an owner transfer's new owner, `update(t, owner=<a
+    one-row users table>)`. Null when that step has no row."""
+
+    _fields = ()
+
+    def __init__(self, step: str, columns: tuple[str, ...], column: str) -> None:
+        super().__init__()
+        self.step = step
+        self.columns = columns
+        self.column = column
 
 
 class OwnerIs(ast.expr):
@@ -101,7 +137,8 @@ class SqlQuery:
     `:__now` (fn.now()) is; `sent`: optional parameters whose "was sent" flag
     (`sent_bind(name)`, 0/1) is referenced; `total`: the statement is a page read with
     its total (two trailing columns `__in_page`, `__total`; an empty page is one
-    placeholder row with `__in_page` 0)."""
+    placeholder row with `__in_page` 0); `caller`: the users-table columns whose
+    caller value (`caller_bind(column)`, from the caller's row) is referenced."""
 
     text: str
     params: tuple[str, ...] = ()
@@ -111,6 +148,7 @@ class SqlQuery:
     now: bool = False
     sent: tuple[str, ...] = ()
     total: bool = False
+    caller: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -161,12 +199,15 @@ class InsertWrite:
 @dataclass(frozen=True)
 class UpdateWrite:
     """UPDATE the rows of `table` whose key matches a row of `source` (a materialized
-    step: (step id, columns)), returning the key and the updated columns."""
+    step: (step id, columns)), returning the key and the updated columns. With `exists`
+    = (users table, its key, the owner column): an owner transfer that writes only the
+    rows whose new owner (the value of that column) is a row of the users table."""
 
     table: str
     key: Sequence[str]
     source: tuple[str, tuple[str, ...]]
     values: Sequence[tuple[str, ast.expr]]
+    exists: tuple[str, str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -210,9 +251,11 @@ def bind_values(
     is_admin: bool = False,
     now: object = None,
     dialect: Dialect = SQLITE,
+    caller: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     """The named parameters to execute `query` with. An optional parameter that was not
-    sent (UNSET) binds null, and its "sent" flag 0; `now` is the request's instant."""
+    sent (UNSET) binds null, and its "sent" flag 0; `now` is the request's instant;
+    `caller` is the caller's row (column -> stored value) for `user.<column>`."""
     values = params or {}
     out: dict[str, object] = {name: dialect.to_db(v) for name, v in query.binds}
     for p in query.params:
@@ -227,6 +270,10 @@ def bind_values(
         out[IS_ADMIN] = int(is_admin)
     if query.now:
         out[NOW] = dialect.to_db(now)
+    for column in query.caller:
+        if caller is None:
+            raise LatticeInternalError(f"user.{column} without an authenticated caller")
+        out[caller_bind(column)] = caller[column]  # already the stored spelling
     return out
 
 
@@ -258,6 +305,7 @@ class _Builder:
     user: bool = False
     now: bool = False
     sent: list[str] = field(default_factory=list)
+    caller: list[str] = field(default_factory=list)
     recursive: bool = False  # some CTE refers to itself (traverse)
 
     def q(self, name: str) -> str:
@@ -279,6 +327,7 @@ class _Builder:
             self.now,
             tuple(self.sent),
             total,
+            tuple(self.caller),
         )
 
     def _add(self, sql: str) -> str:
@@ -307,6 +356,19 @@ class _Builder:
     def user_ref(self) -> tuple[str, str]:
         self.user = True
         return self.d.bind(USER_ID), self.d.bind(IS_ADMIN)
+
+    def caller_ref(self, ref: CallerRef) -> str:
+        """user.<column> / user.is_admin: a bind of the request (no query of its own)."""
+        uid, is_admin = self.user_ref() if ref.key or ref.admin else ("", "")
+        if ref.admin:
+            return self.d.flag(is_admin)
+        if ref.key:
+            return uid
+        if ref.column is None:
+            raise LatticeInternalError("a caller reference without a column")
+        if ref.column not in self.caller:
+            self.caller.append(ref.column)
+        return self.d.bind(caller_bind(ref.column))
 
     def now_ref(self) -> str:
         """fn.now(): one bind for the whole request (every use is the same instant)."""
@@ -479,14 +541,16 @@ class _Builder:
 
     def _window(self, rel: Rel, source: str) -> str:
         """window(): one window function per new column, over the partition `by`,
-        ordered by `order` (nulls last) and then by the input order (`__ord`: tied rows
-        keep their input order, as polars' stable sort). rank/dense_rank order by
-        `order` alone, so tied rows are peers. The rows keep the input order."""
+        ordered by `order` (null keys placed by `nulls`, the profile's null order;
+        default last) and then by the input order (`__ord`: tied rows keep their input
+        order, as polars' stable sort). rank/dense_rank order by `order` alone, so tied
+        rows are peers. The rows keep the input order."""
         q = self.q
         p = rel.params
         partition = ", ".join(q(c) for c in p["by"])
+        nulls = p.get("nulls", "last")
         keys = ", ".join(
-            f"({q(c)} IS NULL), {q(c)}{' DESC' if d else ''}"
+            self._sort_key(q(c), bool(d), nulls)
             for c, d in zip(p["order"], p["desc"], strict=True)
         )
         stable = f"{keys}, {ORD}" if keys else ORD
@@ -679,6 +743,10 @@ class _Builder:
                 return self.d.native(name, [self.expr(a) for a in args])
             case OwnerIs(owner=owner, via=via):
                 return self.owner_cond(owner, via)
+            case CallerRef():
+                return self.caller_ref(node)
+            case RowsValue(step=step, columns=columns, column=column):
+                return f"(SELECT {self.q(column)} FROM {self.rows_cte(step, columns)})"
             case ast.BinOp(left=left, op=op, right=right):
                 return self._binop(self.expr(left), op, self.expr(right))
             case ast.Compare(left=left, ops=[op], comparators=[right]):
@@ -789,12 +857,20 @@ def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
                 exprs.append(dialect.new_uuid())
             ret = ", ".join(q(c) for c in returning)
             return b.query(dialect.insert(q(table), cols, exprs, ret))
-        case UpdateWrite(table=table, key=key, source=source, values=values):
+        case UpdateWrite(table=table, key=key, source=source, values=values, exists=exists):
             src = b.rows_cte(*source)
             keys = [f"{q(k)} AS {q(f'__k{i}')}" for i, k in enumerate(key)]
             vals = [f"{b.expr(e)} AS {q(f'__v{i}')}" for i, (_, e) in enumerate(values)]
             sets = ", ".join(_set(b, table, c, e, i) for i, (c, e) in enumerate(values))
             match = " AND ".join(f"{q(table)}.{q(k)} = s.{q(f'__k{i}')}" for i, k in enumerate(key))
+            if exists is not None:
+                # an owner transfer: only to a users row (a missing one writes nothing)
+                users, users_key, owner = exists
+                i = [c for c, _ in values].index(owner)
+                match += (
+                    f" AND EXISTS (SELECT 1 FROM {q(users)} WHERE {q(users)}.{q(users_key)} "
+                    f"= s.{q(f'__v{i}')})"
+                )
             ret = ", ".join(q(c) for c in [*key, *(c for c, _ in values)])
             select = f"SELECT {', '.join(keys + vals)} FROM {src}"
             return b.query(dialect.update_from(q(table), sets, select, match, ret))
@@ -866,12 +942,13 @@ def compile_update(
     source: tuple[str, tuple[str, ...]],
     values: Sequence[tuple[str, ast.expr]],
     *,
+    exists: tuple[str, str, str] | None = None,
     dialect: Dialect = SQLITE,
 ) -> SqlQuery:
     """UPDATE the rows of `table` whose key matches a row of `source` (a materialized
     step: (step id, columns)); each value is evaluated against that source row.
-    RETURNING the key and the updated columns."""
-    return dialect.compile_write(UpdateWrite(table, key, source, values))
+    RETURNING the key and the updated columns. `exists`: see `UpdateWrite`."""
+    return dialect.compile_write(UpdateWrite(table, key, source, values, exists))
 
 
 def compile_delete(

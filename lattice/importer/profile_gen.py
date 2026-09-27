@@ -522,6 +522,9 @@ def generate_profile(model: RepoModel) -> ProfileResult:
         api.append(f"roles_from=AdminFlag({admin.admin_column!r}, {CUSTOMER!r})")
     if sqlite:
         api += ["backend='sqlite'", "uuid_storage='hex32'", "datetime_storage='sql_space'"]
+        # SQLite's own ORDER BY puts NULLs first ascending and last descending: the
+        # imported app keeps that order for every sort that does not say nulls=
+        api.append("null_order='smallest'")
     if active is not None and active.active_column:
         api.append(f"active_column={active.active_column!r}")
         if active.active_status is not None:

@@ -232,17 +232,29 @@ def test_the_dry_run_scores_every_reference_correct(arm, ticket_id):
     if arm == "L" and ticket_id in GAPS:
         assert r.outcome == "not_expressible" and r.detail == GAPS[ticket_id]
         return
+    # round 3's held-out template set (t13-t18): no Lattice reference is written at all
+    if arm == "L" and ticket_id in tickets.ROUND3_TEMPLATE:
+        assert r.outcome == "no_reference" and r.dry_run
+        return
     assert (r.outcome, r.rounds, r.failed_cases) == ("correct", 1, []), r.detail
     assert r.model == "reference" and r.dry_run and r.cost_usd == 0
 
 
 def test_every_ticket_is_expressible_in_lattice_but_the_recorded_gaps():
     """The baseline six are all expressible; a held-out ticket current Lattice cannot
-    express is a recorded gap (with the missing feature), not a written solution."""
+    express is a recorded gap (with the missing feature), not a written solution. The
+    round-2 owner transfer closed the last one (t12_transfer). Round 3's held-out
+    template set (t13-t18) is neither: it is held out from the language work on
+    purpose, with no reference written and no gap recorded either."""
     assert set(GAPS) <= set(tickets.HELD_OUT)
-    assert set(GAPS) == {"t12_transfer"}
+    assert GAPS == {}
+    assert not any(has_lattice_reference(t) or t in GAPS for t in tickets.ROUND3_TEMPLATE)
     assert all(has_lattice_reference(t) for t in tickets.BASELINE)
-    assert all(has_lattice_reference(t) != (t in GAPS) for t in TICKET_IDS)
+    assert all(
+        has_lattice_reference(t) != (t in GAPS)
+        for t in TICKET_IDS
+        if t not in tickets.ROUND3_TEMPLATE
+    )
 
 
 # ---- nothing hidden reaches a prompt --------------------------------------------------------

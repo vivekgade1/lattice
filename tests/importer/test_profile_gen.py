@@ -317,6 +317,16 @@ def test_non_sqlite_dialect_makes_storage_unclear(tmp_path: Path) -> None:
     assert ("storage", "app") in topics(result)
 
 
+def test_a_sqlite_source_keeps_sqlites_null_order(tmp_path: Path) -> None:
+    assert load(generate(tmp_path)).profile().api.null_order == "smallest"
+
+
+def test_a_non_sqlite_source_keeps_the_default_null_order(tmp_path: Path) -> None:
+    main = MAIN.replace('"sqlite://"', '"postgresql://u:p@h/db"')
+    result = generate(tmp_path, main=main)
+    assert "null_order" not in result.source
+
+
 def test_unclear_is_a_value() -> None:
     u = Unclear("owner", "Note", "why", ("a", "b"))
     assert u.candidates == ("a", "b")
@@ -383,6 +393,7 @@ def test_template_settings_equal_the_reference(profile: Profile) -> None:
         "unauthorized_detail",
         "forbidden_detail",
         "datetime_wire",
+        "null_order",
     ):
         assert getattr(api, field) == getattr(ref, field), field
     assert profile.schemas == {} and profile.version == "v1"

@@ -240,6 +240,7 @@ OP_ALIASES: Mapping[str, str] = {
 # their `tables` count is 0; `insert` takes `owner=user` plus one keyword per column.
 API_OP_SHAPES: Mapping[str, OpShape] = {
     "fetch": OpShape(("table_name",), 0),
+    "accessible": OpShape(("table",), 1, frozenset({"by"})),
     "owned": OpShape(("table",), 1, frozenset({"by"})),
     "mine": OpShape(("table",), 1, frozenset({"by"})),
     "one": OpShape(("table",), 1, frozenset({"else_"})),
@@ -250,15 +251,21 @@ API_OP_SHAPES: Mapping[str, OpShape] = {
     "delete": OpShape(("table",), 1),
 }
 API_OPS = frozenset(API_OP_SHAPES)
-# `owned(t, by=user)` keeps the rows the caller may access (Admin: every row);
-# `mine(t, by=user)` keeps only the caller's own rows, for every role.
-OWNER_FILTERS = frozenset({"owned", "mine"})
+# `accessible(t, by=user)` keeps the rows the caller may access (Admin: every row);
+# `owned` is its older name, kept as an alias. `mine(t, by=user)` keeps only the
+# caller's own rows, for every role.
+OWNER_FILTERS = frozenset({"accessible", "owned", "mine"})
+# Alias -> the preferred op (the guide documents only the preferred one).
+API_OP_ALIASES: Mapping[str, str] = {"owned": "accessible"}
 # Ambient API names that programs may still bind as variables (`mine = owned(...)` was
 # the idiom before `mine()` existed): only a body that never calls the op may bind it.
-SOFT_API_NAMES = frozenset({"mine"})
+SOFT_API_NAMES = frozenset({"mine", "accessible", "is_admin"})
 # insert(..., unique_or=Conflict("...")) / update(..., unique_or=...): the declared 409
 # answered when the write hits a UNIQUE constraint (a reserved keyword, not a column).
 UNIQUE_OR = "unique_or"
+# one(..., else_=E) / require(..., else_=E): the declared error; update(t, owner=...,
+# else_=E): the error answered when the new owner does not exist.
+ELSE_KW = "else_"
 API_WRITE_OPS = frozenset({"insert", "update", "delete"})
 # Table ops allowed inside an endpoint body (besides steps); anything else is L841.
 API_ENDPOINT_OPS = API_OPS | frozenset(
@@ -307,12 +314,16 @@ OWNER_IS = "owner_is"
 SENT = "sent"
 # `native.<name>(...)`: a typed native function declared by ApiProfile.natives.
 NATIVE_NS = "native"
+# Caller references in endpoint expressions: `user.<column>` (a non-private column of
+# the users table), `user.is_admin` and `is_admin(user)` (a Bool: the caller has the
+# admin role) -- the caller's values, the same on every row.
+IS_ADMIN = "is_admin"
 API_AMBIENT = (
     API_OPS
     | frozenset(API_ERRORS)
     | frozenset(API_SUCCESS_KINDS)
     | API_TYPE_NAMES
-    | {"endpoint", UNSET_NAME, OWNER_IS, NATIVE_NS, SENT}
+    | {"endpoint", UNSET_NAME, OWNER_IS, NATIVE_NS, SENT, IS_ADMIN}
 )
 # The expression subset the API profile compiles to SQL (anything else is L841).
 API_FN_FUNCS = frozenset(

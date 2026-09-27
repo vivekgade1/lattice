@@ -22,12 +22,14 @@ from lattice.catalog import (
     DATETIME_DIFF_UNITS,
     FN_ALIASES,
     FN_SIGS,
+    IS_ADMIN,
     NATIVE_NS,
     ORDER_AGGS,
     OWNER_IS,
     ROUND_DIGITS_MAX,
     SENT,
     UNSET_NAME,
+    USER_PARAM,
     WIN_CUMULATIVE,
     WIN_FUNCS,
     WIN_MOVING,
@@ -131,13 +133,16 @@ class ExprTyper:
         consts: Mapping[str, LiteralValue | None] | None = None,
         tables: Collection[str] = (),
         natives: Mapping[str, NativeSig] | None = None,
+        caller: Schema | None = None,
     ) -> None:
         """`scalars`: scalar step parameters and well-typed named constants in scope.
         `consts`: every named constant in scope -> its plain literal value (None when
         computed, e.g. `b = a * 2`); a constant absent from `scalars` already
         produced a diagnostic, so its uses are typed UNKNOWN silently.
         `tables`: table names in scope (for a precise message when one is misused).
-        `natives`: the API profile's native functions (native.<name>(...))."""
+        `natives`: the API profile's native functions (native.<name>(...)).
+        `caller`: the users table when the endpoint takes `user: CurrentUser` (its
+        public columns are `user.<column>`)."""
         self.ctx = ctx
         self.schema = schema
         self.scalars = scalars
@@ -146,6 +151,7 @@ class ExprTyper:
         self.consts = consts or {}
         self.tables = tables
         self.natives = natives or {}
+        self.caller = caller
         self.api = ctx.profile.api is not None
 
     # ---- public -------------------------------------------------------------
@@ -191,6 +197,10 @@ class ExprTyper:
                     "aggregates are only allowed as group() keyword values",
                     "use derive for row-wise values and group(..., name=agg.sum(...)) to aggregate",
                 )
+            case ast.Attribute(value=ast.Name(id=name) as value, attr=attr) if (
+                name == USER_PARAM and self.api
+            ):
+                return self._caller_attr(node, value, attr)
             case ast.Attribute(value=ast.Name(id=ns), attr=attr):
                 return self._err(
                     "L411", node, f"'{ns}.{attr}' is not a column expression", "call it"
@@ -268,6 +278,8 @@ class ExprTyper:
                 return self._is_null(node)
             case _ if name == SENT and self.api:
                 return self._sent(node)
+            case _ if name == IS_ADMIN and self.api:
+                return self._is_admin(node)
             case _ if span_of(node.func) in self.reported:
                 return UNKNOWN
             case _ if name == OWNER_IS and self.api:
@@ -276,7 +288,7 @@ class ExprTyper:
                     node,
                     "owner_is(user) is only allowed as the whole condition of require()",
                     'write mine = require(row, owner_is(user), else_=Forbidden("...")), '
-                    "or filter with owned(t, by=user)",
+                    "or filter with accessible(t, by=user)",
                 )
             case _ if name in (NATIVE_NS, UNSET_NAME) and self.api:
                 return self._err("L411", node, f"'{name}(...)' is not a column expression", None)
@@ -387,6 +399,59 @@ class ExprTyper:
                     node,
                     "sent() takes one parameter name",
                     "e.g. sent(title) for a parameter title: Str(max_len=100) = UNSET",
+                )
+
+    # ---- the caller ---------------------------------------------------------
+
+    def _caller_attr(self, node: ast.Attribute, value: ast.Name, attr: str) -> ExprT:
+        """user.<column>: the caller's value of a public users-table column, the same on
+        every row (a constant of the request); user.is_admin: whether the caller has
+        the admin role (a Bool). Private columns are L803."""
+        if self.caller is None:
+            if span_of(value) in self.reported:
+                return UNKNOWN  # `user` is not in scope: already reported
+            return self._err(
+                "L106",
+                node,
+                f"'{USER_PARAM}.{attr}' needs the caller: only endpoints that take "
+                f"{USER_PARAM}: CurrentUser have one",
+                "Public endpoints and @step functions have no caller",
+            )
+        if attr == IS_ADMIN:
+            return LitT(Scalar.BOOL)
+        scalar = self.caller.get(attr)
+        if scalar is None:
+            public = [IS_ADMIN, *(c for c in self.caller.names() if c not in self.caller.private)]
+            listed = ", ".join(f"{USER_PARAM}.{c}" for c in public)
+            close = difflib.get_close_matches(attr, public, n=1)
+            hint = f"did you mean '{USER_PARAM}.{close[0]}'?" if close else None
+            return self._err(
+                "L106",
+                node,
+                f"unknown caller attribute '{USER_PARAM}.{attr}'",
+                hint or f"the caller has {listed}",
+            )
+        if attr in self.caller.private:
+            return self._err(
+                "L803",
+                node,
+                f"'{USER_PARAM}.{attr}' reads the private column {attr} of the caller",
+                "private columns never leave the database; use a public column",
+            )
+        return LitT(scalar)
+
+    def _is_admin(self, node: ast.Call) -> ExprT:
+        """is_admin(user): whether the caller has the admin role (a Bool constant of the
+        request), the same as user.is_admin."""
+        match node:
+            case ast.Call(args=[ast.Name(id=name) as arg], keywords=[]) if name == USER_PARAM:
+                return self._caller_attr(ast.Attribute(arg, IS_ADMIN), arg, IS_ADMIN)
+            case _:
+                return self._err(
+                    "L404",
+                    node,
+                    f"{IS_ADMIN}() takes the caller",
+                    f"write {IS_ADMIN}(user), or user.is_admin",
                 )
 
     def _fn(self, node: ast.Call, name: str) -> ExprT:

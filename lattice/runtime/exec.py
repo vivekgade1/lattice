@@ -128,7 +128,9 @@ def _run_op(
             case "limit":
                 return ops.limit(inputs[0], p["n"]), []
             case "window":
-                return ops.window(inputs[0], p["by"], p["order"], p["desc"], p["columns"])
+                return ops.window(
+                    inputs[0], p["by"], p["order"], p["desc"], p["columns"], p.get("nulls", "last")
+                )
             case "traverse":
                 out = ops.traverse(
                     inputs[0],

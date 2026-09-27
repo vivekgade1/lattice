@@ -156,6 +156,8 @@ def template_profile() -> Profile:
         forbidden_detail="The user doesn't have enough privileges",
         # pydantic's spelling of the naive datetimes SQLite hands back
         datetime_wire="naive",
+        # SQLAlchemy on SQLite: ORDER BY puts NULLs first ascending, last descending
+        null_order="smallest",
     )
     return Profile(schemas={}, api=api)
 

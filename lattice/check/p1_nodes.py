@@ -498,14 +498,16 @@ def _check_expr(node: ast.expr, ctx: CheckContext, discarded: bool = False) -> N
                 _check_expr(e, ctx)
         case ast.Call():
             _check_call(node, ctx)
+        case ast.Attribute(value=ast.Name(id=name)) if (
+            name == USER_PARAM and ctx.profile.api is not None
+        ):
+            return  # user.<column>: a caller reference (P4 types it)
         case ast.Attribute():
             if not (isinstance(node.value, ast.Name) and node.value.id in _namespaces(ctx)):
-                ctx.error(
-                    "L106",
-                    node,
-                    f"attribute access '.{node.attr}' is not allowed",
-                    f'reference columns with col("{node.attr}"); only agg.* and fn.* use dots',
-                )
+                hint = f'reference columns with col("{node.attr}"); only agg.* and fn.* use dots'
+                if ctx.profile.api is not None:
+                    hint += f", and {USER_PARAM}.<column> for the caller's values (e.g. user.id)"
+                ctx.error("L106", node, f"attribute access '.{node.attr}' is not allowed", hint)
         case ast.BinOp():
             if not isinstance(node.op, _BIN_OPS):
                 ctx.error(

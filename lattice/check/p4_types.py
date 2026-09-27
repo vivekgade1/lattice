@@ -24,9 +24,11 @@ from lattice.catalog import (
     API_AMBIENT,
     API_ERRORS,
     API_OP_SHAPES,
+    ELSE_KW,
     EXPR_FUNCS,
     FOR_EACH,
     IO_OPS,
+    IS_ADMIN,
     ITERATE,
     ITERATE_FIXPOINT,
     ITERATE_MAX,
@@ -309,7 +311,18 @@ class _Types:
             consts=scope.consts,
             tables=scope.env,
             natives=self.natives,
+            caller=self._caller(scope),
         )
+
+    def _caller(self, scope: _Scope) -> Schema | None:
+        """The users table when an endpoint body has its caller (`user: CurrentUser`)
+        in scope: `user.<column>` references its columns."""
+        if self.api is None or not self.in_endpoint:
+            return None
+        t = scope.env.get(USER_PARAM)
+        if not isinstance(t, TableT) or t.source != self.api.users_table:
+            return None
+        return self.api.tables.get(self.api.users_table)
 
     def _assign(self, name: str, value: ast.expr, scope: _Scope) -> None:
         """One assignment: a named constant or a unit call. The first binding of a
@@ -584,6 +597,8 @@ class _Types:
                 pass
             case LitT() if isinstance(pred, ast.Constant):
                 pass  # P3 reported the constant predicate
+            case LitT(scalar=Scalar.BOOL) if mentions_caller(pred):
+                pass  # a condition on the caller (e.g. is_admin(user)): per request
             case LitT():
                 self.ctx.error(
                     "L304",
@@ -1646,6 +1661,9 @@ class _Types:
         if not public and all(p.name != USER_PARAM for p in params):
             # a missing `user` parameter is P6's L801; type its uses anyway
             scope.env[USER_PARAM] = caller if caller is not None else UNKNOWN
+        if caller is not None and isinstance(scope.env.get(USER_PARAM), TableT):
+            for column in caller.nullable:  # user.<column> may be missing
+                scope.nullconsts[f"{USER_PARAM}.{column}"] = True
         self.in_endpoint = True
         try:
             for stmt in fn.body:
@@ -1720,7 +1738,7 @@ class _Types:
                     source=name,
                     plain=plain_columns(schema),
                 )
-            case "owned" | "mine":
+            case "accessible" | "owned" | "mine":
                 return self._owned(call, op, tables[0], kws["by"])
             case "one":
                 self._else(kws["else_"])
@@ -1798,6 +1816,8 @@ class _Types:
         match pt:
             case ColT(scalar=Scalar.BOOL) | UnknownT():
                 pass
+            case LitT(scalar=Scalar.BOOL) if mentions_caller(pred):
+                pass  # a condition on the caller (e.g. ~is_admin(user)): per request
             case LitT(scalar=Scalar.BOOL):
                 self.ctx.error(
                     "L304",
@@ -1852,8 +1872,9 @@ class _Types:
         )
 
     def _owned(self, call: ast.Call, op: str, t: TableT, by: ast.expr) -> TableOrUnknown:
-        """owned(t, by=user) / mine(t, by=user): the rows the caller may access / the
-        caller's own rows. Either one is an ownership filter (mine() is the stricter)."""
+        """accessible(t, by=user) (alias owned) / mine(t, by=user): the rows the caller
+        may access / the caller's own rows. Either one is an ownership filter (mine() is
+        the stricter)."""
         if not (isinstance(by, ast.Name) and by.id == USER_PARAM):
             if not self._silenced(by):
                 self.ctx.error("L404", by, f"{op}() filters by the caller", "write by=user")
@@ -1980,7 +2001,7 @@ class _Types:
                 "L841",
                 call,
                 f"{op}() needs rows of one database table",
-                f"{op} the result of fetch/where/owned/one on that table, not of a join, "
+                f"{op} the result of fetch/where/accessible/one on that table, not of a join, "
                 "group, rename or step",
             )
             return None
@@ -2000,10 +2021,30 @@ class _Types:
         schema = self._write_source(call, t, "update")
         typer = self._typer(t.schema, scope)
         key_cols = {c for k in schema.keys for c in k} if schema is not None else set()
+        given = {kw.arg for kw in call.keywords}
+        transfer = "owner" in given or (
+            schema is not None and schema.owner is not None and schema.owner in given
+        )
         for kw in call.keywords:
             assert kw.arg is not None
             if kw.arg == UNIQUE_OR:
                 self._unique_or(kw.value)
+                continue
+            if kw.arg == ELSE_KW:
+                if transfer:
+                    self._else(kw.value)
+                else:
+                    self.ctx.error(
+                        "L404",
+                        kw,
+                        "update() takes else_= only with an owner transfer (owner=...): the "
+                        "error answered when the new owner does not exist",
+                        "remove else_=; check rows with one(..., else_=...) or require(...)",
+                    )
+                continue
+            if kw.arg == "owner":
+                if schema is not None:
+                    self._new_owner(kw, t, schema, scope, given)
                 continue
             if schema is not None and not self._require_columns([kw.arg], schema, kw):
                 continue
@@ -2024,6 +2065,62 @@ class _Types:
             if not isinstance(vt, UnknownT) and want is not None:
                 self._compatible(kw.value, vt.scalar, want, kw.arg)
         return t
+
+    def _new_owner(
+        self, kw: ast.keyword, t: TableT, schema: Schema, scope: _Scope, given: set[str | None]
+    ) -> None:
+        """update(t, owner=<new owner>): the caller (`user`), a one-row users table, or
+        a value of the users table's key type (P6 checks who may transfer and that the
+        new owner exists)."""
+        assert self.api is not None
+        table, value = t.source or "", kw.value
+        if schema.owner_via is not None:
+            fk, parent = schema.owner_via
+            self.ctx.error(
+                "L404",
+                kw,
+                f"'{table}' is owned through {fk} -> {parent}, not by an owner column",
+                f"remove owner=; set {fk}= to the id of a {parent} row instead",
+            )
+            return
+        if schema.owner is None:
+            self.ctx.error("L404", kw, f"'{table}' has no owner column", "remove owner=")
+            return
+        if schema.owner in given:
+            self.ctx.error(
+                "L404",
+                kw,
+                f"update() sets the owner twice: owner= and {schema.owner}=",
+                "keep one of them, e.g. owner=",
+            )
+            return
+        users = self.api.tables.get(self.api.users_table)
+        key = users.keys[0][0] if users is not None and users.keys else None
+        if isinstance(value, ast.Name) and value.id == USER_PARAM:
+            return  # the caller
+        if isinstance(value, ast.Name) and value.id in scope.env:
+            rows = scope.env[value.id]
+            if isinstance(rows, UnknownT):
+                return
+            if not (
+                rows.source == self.api.users_table
+                and rows.at_most_one_row
+                and key is not None
+                and key in rows.schema
+            ):
+                self.ctx.error(
+                    "L404",
+                    value,
+                    f"owner= takes one row of {self.api.users_table} (its {key or 'key'}), "
+                    f"the caller (user), or a {self.api.users_table} key value",
+                    f'e.g. target = one(where(fetch({self.api.users_table}), col("email") == '
+                    f'email), else_=NotFound("...")); update(t, owner=target)',
+                )
+            return
+        want = schema.get(schema.owner)
+        vt = self._typer(t.schema, scope).type_of(value)
+        if not isinstance(vt, UnknownT) and want is not None:
+            self._compatible(value, vt.scalar, want, schema.owner)
 
     def _null_write(self, kw: ast.keyword, schema: Schema, table: str) -> bool:
         """None as an insert()/update() value: a null for a nullable column, L410 for a
@@ -2228,6 +2325,17 @@ class _Types:
         if not set(_str_list_of(by_node)) <= t.plain:
             return True
         return any(_reads_other(kw.value, t.plain) for kw in kws if kw.arg != "by")
+
+
+def mentions_caller(node: ast.AST) -> bool:
+    """The expression reads the caller: `user.<attr>` or `is_admin(...)`."""
+    for n in ast.walk(node):
+        match n:
+            case ast.Attribute(value=ast.Name(id=name)) if name == USER_PARAM:
+                return True
+            case ast.Call(func=ast.Name(id=name)) if name == IS_ADMIN:
+                return True
+    return False
 
 
 def is_owner_is(node: ast.expr) -> bool:

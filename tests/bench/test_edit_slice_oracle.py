@@ -26,7 +26,7 @@ from bench.edit_slice.reference import (
     reference_files,
     reference_variant,
 )
-from bench.edit_slice.tickets import BASELINE, HELD_OUT, TICKETS, ticket
+from bench.edit_slice.tickets import BASELINE, HELD_OUT, ROUND3_TEMPLATE, TICKETS, ticket
 from bench.edit_slice.variant import load_variant
 from bench.template_app import make_app
 from bench.template_app.seed import TEMPLATE_USERS, build_template_db
@@ -48,14 +48,20 @@ EXPECTED_COUNTS = {
     "t10_owner_counts": (15, 7),
     "t11_title_trim": (45, 13),
     "t12_transfer": (17, 14),
+    "t13_password_reset": (21, 7),
+    "t14_email_change": (19, 6),
+    "t15_duplicate_item": (9, 5),
+    "t16_admin_audit": (15, 8),
+    "t17_page_size_preference": (24, 8),
+    "t18_duplicate_title_guard": (45, 8),
 }
 
 
 # ---- tickets -------------------------------------------------------------------------------
 
 
-def test_twelve_tickets_with_their_routes_and_files():
-    assert IDS == [*BASELINE, *HELD_OUT]
+def test_eighteen_tickets_with_their_routes_and_files():
+    assert IDS == [*BASELINE, *HELD_OUT, *ROUND3_TEMPLATE]
     assert list(BASELINE) == [
         "t1_search",
         "t2_since",
@@ -71,6 +77,14 @@ def test_twelve_tickets_with_their_routes_and_files():
         "t10_owner_counts",
         "t11_title_trim",
         "t12_transfer",
+    ]
+    assert list(ROUND3_TEMPLATE) == [
+        "t13_password_reset",
+        "t14_email_change",
+        "t15_duplicate_item",
+        "t16_admin_audit",
+        "t17_page_size_preference",
+        "t18_duplicate_title_guard",
     ]
     for t in TICKETS:
         assert t.title and t.text and t.routes and t.files
@@ -96,6 +110,12 @@ def test_twelve_tickets_with_their_routes_and_files():
         ("t10_owner_counts", ["zero", "no items", "route order", "inactive"]),
         ("t11_title_trim", ["description only", "tab", "newline"]),
         ("t12_transfer", ["not enough permissions", "owner or", "before"]),
+        ("t13_password_reset", ["self-lockout", "old password", "another admin"]),
+        ("t14_email_change", ["before", "own current email", "excluded"]),
+        ("t15_duplicate_item", ["original item's owner", "takes it over", "fresh id"]),
+        ("t16_admin_audit", ["deactivated", "case-sensitive", "route order"]),
+        ("t17_page_size_preference", ["never", "not a 404", "no other route"]),
+        ("t18_duplicate_title_guard", ["before the duplicate", "case-sensitive", "writes nothing"]),
     ],
 )
 def test_the_traps_are_not_spelled_out(tid, spelled_out):
@@ -367,15 +387,97 @@ TRAPS = {
         "silent",
         lambda: _transfer_email_first(),
     ),
+    # ---- round 3's held-out template set (t13-t18; no Lattice reference)
+    # an admin cannot reset another admin's password (or their own): both are admins
+    "password-reset-blocks-admins": (
+        "t13_password_reset",
+        "silent",
+        lambda: _password_reset_blocks_admins(),
+    ),
+    # the new email is looked up before the password is checked: a wrong password with a
+    # taken email answers 409, revealing the email is taken to someone who guessed wrong
+    "email-change-checks-email-first": (
+        "t14_email_change",
+        "silent",
+        lambda: _email_change_checks_email_first(),
+    ),
+    # the copy is owned by the caller, not by the original item's owner
+    "duplicate-takes-ownership": (
+        "t15_duplicate_item",
+        "silent",
+        lambda: _patched(
+            "t15_duplicate_item",
+            "api/routes/items.py",
+            "        owner_id=item.owner_id,\n",
+            "        owner_id=current_user.id,\n",
+        ),
+    ),
+    # owner_email matched case-insensitively: a search-style fold, not the account lookup
+    # the ticket asks for
+    "audit-email-filter-case-insensitive": (
+        "t16_admin_audit",
+        "silent",
+        lambda: _patched(
+            "t16_admin_audit",
+            "api/routes/items.py",
+            "User.email == owner_email",
+            "func.lower(User.email) == func.lower(owner_email)",
+            count=2,
+        ),
+    ),
+    # the upper bound is off by one: 101 is accepted instead of refused
+    "preferences-upper-bound-off-by-one": (
+        "t17_page_size_preference",
+        "silent",
+        lambda: _patched(
+            "t17_page_size_preference",
+            "api/routes/users.py",
+            "default_page_size: int | None = Field(ge=1, le=100)",
+            "default_page_size: int | None = Field(ge=1, le=101)",
+        ),
+    ),
+    # the duplicate-title check runs before the ownership check: a stranger editing
+    # someone else's item to a colliding title learns of the collision (400, not 403)
+    "duplicate-title-checked-before-ownership": (
+        "t18_duplicate_title_guard",
+        "silent",
+        lambda: _patched(
+            "t18_duplicate_title_guard",
+            "api/routes/items.py",
+            "    if not current_user.is_superuser and (item.owner_id != current_user.id):\n"
+            '        raise HTTPException(status_code=403, detail="Not enough permissions")\n'
+            "    update_dict = item_in.model_dump(exclude_unset=True)\n"
+            '    if "title" in update_dict and update_dict["title"] != item.title:\n'
+            "        _check_title_available(\n"
+            "            session, item.owner_id, update_dict[\"title\"], exclude_id=item.id\n"
+            "        )\n",
+            "    update_dict = item_in.model_dump(exclude_unset=True)\n"
+            '    if "title" in update_dict and update_dict["title"] != item.title:\n'
+            "        _check_title_available(\n"
+            "            session, item.owner_id, update_dict[\"title\"], exclude_id=item.id\n"
+            "        )\n"
+            "    if not current_user.is_superuser and (item.owner_id != current_user.id):\n"
+            '        raise HTTPException(status_code=403, detail="Not enough permissions")\n',
+        ),
+    ),
 }
 
 HELD_OUT_TRAPS = sorted(n for n, (tid, _, _) in TRAPS.items() if tid in HELD_OUT)
+ROUND3_TRAPS = sorted(n for n, (tid, _, _) in TRAPS.items() if tid in ROUND3_TEMPLATE)
 
 
 def test_held_out_traps_score_silent():
     silent = [n for n in HELD_OUT_TRAPS if TRAPS[n][1] == "silent"]
     assert len(silent) >= 3
     assert {TRAPS[n][0] for n in HELD_OUT_TRAPS} == set(HELD_OUT)
+
+
+def test_round3_traps_score_silent():
+    """Round 3's held-out template set (t13-t18): at least 3 trap variants score
+    silent, one per ticket, covering every ticket of the set."""
+    silent = [n for n in ROUND3_TRAPS if TRAPS[n][1] == "silent"]
+    assert len(silent) >= 3
+    assert {TRAPS[n][0] for n in ROUND3_TRAPS} == set(ROUND3_TEMPLATE)
 
 
 def _move_stats_after_read_item() -> dict[str, str]:
@@ -420,6 +522,50 @@ def _transfer_email_first() -> dict[str, str]:
     assert tail.count(check + lookup_block) == 1
     tail = tail.replace(check + lookup_block, lookup_block + check)
     files[path] = head + tail
+    return files
+
+
+def _password_reset_blocks_admins() -> dict[str, str]:
+    files = dict(reference_files("t13_password_reset"))
+    path = "api/routes/users.py"
+    src = files[path]
+    not_found = (
+        '        raise HTTPException(status_code=404, detail="User not found")\n'
+    )
+    old = not_found + "    user.hashed_password = get_password_hash(body.new_password)\n"
+    blocked = (
+        "    if user.is_superuser:\n"
+        "        raise HTTPException(\n"
+        '            status_code=403, detail="Cannot reset an admin\'s password"\n'
+        "        )\n"
+    )
+    new = not_found + blocked + "    user.hashed_password = get_password_hash(body.new_password)\n"
+    assert src.count(old) == 1
+    files[path] = src.replace(old, new)
+    return files
+
+
+def _email_change_checks_email_first() -> dict[str, str]:
+    files = dict(reference_files("t14_email_change"))
+    path = "api/routes/users.py"
+    src = files[path]
+    check_password = (
+        "    verified, _ = verify_password(body.current_password, "
+        "current_user.hashed_password)\n"
+        "    if not verified:\n"
+        '        raise HTTPException(status_code=400, detail="Incorrect password")\n'
+    )
+    check_email = (
+        "    existing_user = crud.get_user_by_email(session=session, email=body.new_email)\n"
+        "    if existing_user and existing_user.id != current_user.id:\n"
+        "        raise HTTPException(\n"
+        '            status_code=409, detail="User with this email already exists"\n'
+        "        )\n"
+    )
+    old = check_password + check_email
+    new = check_email + check_password
+    assert src.count(old) == 1
+    files[path] = src.replace(old, new)
     return files
 
 

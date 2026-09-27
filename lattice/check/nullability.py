@@ -36,6 +36,10 @@ def expr_nullable(
             return False
         case ast.Name(id=name):
             return consts.get(name, False)
+        case ast.Attribute(value=ast.Name(id=name), attr=attr):
+            # a caller reference `user.<column>`: nullable like that users column
+            # (P4 records "user.<column>" for the endpoint's nullable user columns)
+            return consts.get(f"{name}.{attr}", False)
         case ast.Call(func=ast.Name(id="coalesce"), args=[a, b]):
             return rec(a) and rec(b)
         case ast.Call(func=ast.Name(id="when"), args=[cond], keywords=kws):

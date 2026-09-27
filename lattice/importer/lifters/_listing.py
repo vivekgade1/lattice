@@ -285,7 +285,7 @@ def page_fragment(
     current = "{#" + rows + "}"
     if found.owner_filter:
         # the rows the caller may access (an Admin sees every row): not "mine"
-        steps.append(Step("visible", "owned", (current,), (("by", USER),)))
+        steps.append(Step("visible", "accessible", (current,), (("by", USER),)))
         current = "{#visible}"
     projected = project(route, found.table, current, name="public", response=item)
     if projected is None:

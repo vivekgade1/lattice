@@ -676,7 +676,7 @@ def test_owner_is_is_an_ownership_check_with_l823() -> None:
     assert result.ok, result.diagnostics
     d = diag(OWNER_IS.format(auth="Customer", cond="owner_is(user)"), "L823")
     assert d.severity is Severity.WARNING
-    assert "403" in d.message and "owned()" in d.message
+    assert "403" in d.message and "accessible()" in d.message
 
 
 def test_owner_is_in_admin_endpoints_has_no_warning() -> None:

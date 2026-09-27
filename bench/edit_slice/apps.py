@@ -3,7 +3,7 @@
 Everything the harness needs to know about one app lives here, as data:
 
 * ``template`` -- the official FastAPI template (``bench/template_app``), the app the
-  importer's lifters are developed against (tickets t1-t12);
+  importer's lifters are developed against (tickets t1-t18);
 * ``taskflow`` and ``justnotes`` -- the importer's held-out repos
   (``bench/import_repos/``, see their ``PROVENANCE.md``), round 3's tickets t19-t24.
 

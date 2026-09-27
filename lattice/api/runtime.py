@@ -435,8 +435,10 @@ def _run_steps(
     for the dispatch after COMMIT."""
     results: dict[str, Result] = {}
     totals: dict[str, int] = {}
+    caller_row: dict[str, object] | None = None
     if caller is not None:
         results[USER_PARAM] = (plan.user_columns, [caller])
+        caller_row = dict(zip(plan.user_columns, caller, strict=True))
 
     def write(step: WriteStep) -> list[tuple[Any, ...]]:
         """A write statement; with unique_or=Conflict(...), a UNIQUE violation answers
@@ -457,6 +459,7 @@ def _run_steps(
             is_admin=is_admin,
             now=now,
             dialect=dialect,
+            caller=caller_row,
         )
         return conn.execute(sql.text, binds).fetchall()
 
@@ -487,6 +490,8 @@ def _run_steps(
             case WriteStep(kind="update"):
                 assert step.input is not None
                 returned = write(step)
+                if step.missing is not None and len(returned) < len(results[step.input][1]):
+                    raise _error(step.missing)  # an owner transfer to a missing user
                 k = len(step.key)
                 new = {tuple(r[:k]): r[k:] for r in returned}
                 names = step.schema.names()

@@ -100,11 +100,11 @@ def test_every_traced_statement_lifts(lifted):
 
 
 def test_read_items_is_the_owned_sorted_counted_page(lifted):
-    # count(*) folded into the page; the admin's unfiltered variant into owned(by=user)
+    # count(*) folded into the page; the admin's unfiltered variant into accessible(by=user)
     assert reads(lifted["read_items"]) == [chain("read_items", "result")]
     assert chain("read_items", "result") == (
         step("fetch", "Item"),
-        step("owned", by="user"),
+        step("accessible", by="user"),
         step("sort", by=["created_at"], desc=True),
         step("page", limit="limit", offset="skip", total=True),
     )

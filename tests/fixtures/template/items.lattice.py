@@ -5,7 +5,7 @@
 @endpoint("GET", "/api/v1/items/", auth=Customer, response="ItemPublic")
 def read_items(user: CurrentUser, skip: Int(ge=0) = 0, limit: Int(ge=0, le=100) = 100) -> Page:
     items = fetch(Item)
-    visible = owned(items, by=user)
+    visible = accessible(items, by=user)
     ordered = sort(visible, by=["created_at"], desc=True)
     result = page(ordered, limit=limit, offset=skip, total=True)
     return result

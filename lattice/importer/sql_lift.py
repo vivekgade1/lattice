@@ -34,6 +34,8 @@ from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any
 
+from lattice.catalog import API_OP_ALIASES
+
 __all__ = [
     "LiftContext",
     "Lifted",
@@ -942,7 +944,7 @@ class LiftContext:
 
     * ``tables``: SQL table -> Lattice class name (default: the table name capitalised);
     * ``columns``: SQL table -> its columns (a read of all of them is no ``select``);
-    * ``owners``: SQL table -> owner column (``owner_id = <caller>`` is ``owned``);
+    * ``owners``: SQL table -> owner column (``owner_id = <caller>`` is ``accessible``);
     * ``users_table`` / ``user_key``: the caller's table and key (``WHERE user.id =
       <caller>`` reads the caller's row: the source ``user``);
     * ``keys``: SQL table -> generated key column (an unbound fresh UUID written there is
@@ -951,7 +953,9 @@ class LiftContext:
       (``"user"`` is the caller's key);
     * ``binds``: the named binds of our own compiler's SQL (``SqlQuery.binds``);
     * ``rows``: bind name -> the step whose rows it carries (``SqlQuery.rows``);
-    * ``params``: the positional values of ``?`` placeholders.
+    * ``params``: the positional values of ``?`` placeholders;
+    * ``null_order``: the profile's ``ApiProfile.null_order`` (where a ``sort`` without
+      ``nulls=`` puts null keys): ``"smallest"`` is SQLite's own ORDER BY order.
     """
 
     tables: Mapping[str, str] = field(default_factory=dict)
@@ -964,6 +968,7 @@ class LiftContext:
     binds: Mapping[str, Any] = field(default_factory=dict)
     rows: Mapping[str, str] = field(default_factory=dict)
     params: Sequence[Any] = ()
+    null_order: str = "last"
 
     def cls(self, table: str) -> str:
         return self.tables.get(table) or table[:1].upper() + table[1:]
@@ -1165,7 +1170,7 @@ class _Lifter:
 
     def caller_filter(self, e: Any, table: str | None) -> str | None:
         """``<col> = <caller>`` in a traced statement: ``"user_row"`` for the caller's
-        own row, ``"owned"`` for the table's owner column."""
+        own row, ``"owned"`` for the table's owner column (lifted as ``accessible``)."""
         if not (isinstance(e, Binary) and e.op == "="):
             return None
         col, val = (e.left, e.right) if isinstance(e.left, Col) else (e.right, e.left)
@@ -1289,15 +1294,15 @@ class _Lifter:
     def where(self, pipe: _Pipe, e: Any) -> None:
         for c in _conjuncts(e):
             if self.owner_check(c, pipe.table):
-                pipe.steps.append(step("owned", by="user"))
+                pipe.steps.append(step("accessible", by="user"))
                 continue
             kind = self.caller_filter(c, pipe.table)
             if kind == "user_row" and pipe.steps == [step("fetch", self.ctx.cls(pipe.table or ""))]:
                 pipe.steps = [Step("user")]
                 continue
             if kind == "owned":
-                pipe.steps.append(step("owned", by="user"))
-                self.note("owned(by=user) from an owner-column filter on the caller's key; "
+                pipe.steps.append(step("accessible", by="user"))
+                self.note("accessible(by=user) from an owner-column filter on the caller's key; "
                           "the admin bypass is not visible in one statement")  # fmt: skip
                 continue
             pipe.steps.append(step("where", self.expr(c)))
@@ -1368,6 +1373,8 @@ class _Lifter:
         keys: list[str] = []
         flags: list[bool] = []
         nulls_last = set()
+        asc_last: set[str] = set()  # null_order "smallest": ascending keys, NULLs last
+        asc_first: set[str] = set()  # ... and ascending keys, NULLs first
         for o in order:
             e = o.expr
             if isinstance(e, Col) and e.name == ORD:
@@ -1379,12 +1386,27 @@ class _Lifter:
                 raise _Stop("sort by expression", "ORDER BY something other than a column")
             keys.append(e.name)
             flags.append(o.desc)
-            if not o.desc and e.name not in nulls_last and o.nulls != "last":
+            wants_last = e.name in nulls_last or o.nulls == "last"
+            if self.ctx.null_order == "smallest":
+                # the profile sorts like SQLite: only an ascending key that puts NULLs
+                # last differs (sort(..., nulls="last") below when every one does)
+                if not o.desc and wants_last:
+                    asc_last.add(e.name)
+                elif not o.desc:
+                    asc_first.add(e.name)
+            elif not o.desc and not wants_last:
                 self.note(f"ORDER BY {e.name} ASC: SQLite sorts NULLs first; Lattice's "
                           "sort puts them last (equal when the column has no nulls)")  # fmt: skip
         if not keys:
             return
         desc: Any = flags[0] if len(set(flags)) == 1 else ast.List([ast.Constant(f) for f in flags])
+        if asc_last and asc_first:
+            self.note(f"ORDER BY mixes NULLS FIRST ({', '.join(sorted(asc_first))}) and "
+                      f"NULLS LAST ({', '.join(sorted(asc_last))}) ascending keys; the sort "
+                      "puts nulls first (equal when the columns have no nulls)")  # fmt: skip
+        if asc_last and not asc_first:
+            pipe.steps.append(step("sort", by=keys, desc=desc, nulls=ast.Constant("last")))
+            return
         pipe.steps.append(step("sort", by=keys, desc=desc))
 
     def order(self, pipe: _Pipe, order: Sequence[Order]) -> None:
@@ -1571,7 +1593,7 @@ def lift_trace(
 
 # ======================================================================== combining lifts ==
 
-FILTERS = frozenset({"fetch", "rows", "user", "where", "owned", "join"})
+FILTERS = frozenset({"fetch", "rows", "user", "where", "accessible", "owned", "join"})
 
 
 def with_total(count: Lifted, rows: Lifted) -> Lifted | None:
@@ -1617,7 +1639,7 @@ def consolidate(lifts: Sequence[Lifted]) -> list[Lifted]:
     for group in groups.values():
         winner, n = Counter(x.steps for x in group).most_common(1)[0]
         counts[winner] += len(group)
-    owned = step("owned", by="user")
+    owned = step("accessible", by="user")
     keep = []
     for steps in counts:
         variant = any(
@@ -1635,7 +1657,7 @@ def consolidate(lifts: Sequence[Lifted]) -> list[Lifted]:
 # ============================================================ steps of a Lattice program ==
 
 PIPE_OPS = frozenset(
-    {"where", "owned", "derive", "select", "sort", "limit", "page", "join", "rename"}
+    {"where", "accessible", "owned", "derive", "select", "sort", "limit", "page", "join", "rename"}
 )
 ALIAS_OPS = frozenset({"one", "require"})
 WRITE_OPS = frozenset({"insert", "update", "delete"})
@@ -1686,6 +1708,7 @@ def program_steps(source: str) -> dict[str, list[ProgramStep]]:
             input_var = None
             if op not in ("fetch", "insert") and args and isinstance(args[0], ast.Name):
                 input_var = args.pop(0).id
+            op = API_OP_ALIASES.get(op, op)  # owned() is accessible() (the lifted name)
             steps.append(ProgramStep(target.id, input_var, step(op, *args, **kws)))
         out[fn.name] = steps
     return out

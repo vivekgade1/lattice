@@ -18,6 +18,7 @@ from lattice.catalog import (
     API_ENDPOINT_OPS,
     API_ERRORS,
     API_FN_FUNCS,
+    ELSE_KW,
     FN_SIGS,
     FOR_EACH,
     FOR_EACH_MAX_ROWS,
@@ -59,7 +60,19 @@ _TABLE_ARG_OPS = ("update", "delete")
 _ROW_FILTERS = frozenset({"where", "sort", "select", "limit"})
 # ops a parent-row lookup for an owned-through write may pass through (_pinned)
 _PIN_CHAIN = frozenset(
-    {"fetch", "owned", "mine", "where", "sort", "select", "limit", "one", "require", "derive"}
+    {
+        "fetch",
+        "accessible",
+        "owned",
+        "mine",
+        "where",
+        "sort",
+        "select",
+        "limit",
+        "one",
+        "require",
+        "derive",
+    }
 )
 # ops whose result has exactly as many rows as their (first) input
 _ROW_WISE = frozenset(
@@ -398,9 +411,10 @@ class _Endpoint:
     # ---- owned() placement (L404), checks before owned() (L802) ------------------------
 
     def _owned_calls(self) -> None:
-        """owned() / mine() filter by ONE owner column, so it must see the rows of one fetched
-        table: fetch(T), possibly narrowed by where/sort/select/limit."""
-        for op in ("owned", "mine"):
+        """accessible() (alias owned) / mine() filter by ONE owner column, so they must
+        see the rows of one fetched table: fetch(T), possibly narrowed by
+        where/sort/select/limit."""
+        for op in ("accessible", "owned", "mine"):
             for call in self._calls(op):
                 if self._type(call) is None or not call.args:
                     continue  # P4 reported it
@@ -411,7 +425,7 @@ class _Endpoint:
                     call,
                     f"{op}() must filter the rows of one fetched table",
                     f"apply {op}() to each table right after fetch, before joining: "
-                    f"{'visible' if op == 'owned' else 'own'} = {op}(fetched, by=user)",
+                    f"{'own' if op == 'mine' else 'visible'} = {op}(fetched, by=user)",
                 )
 
     def _owner_is_inputs(self) -> None:
@@ -484,9 +498,9 @@ class _Endpoint:
                 "L823",
                 call,
                 "require(..., owner_is(user)) reveals that other users' rows exist (403); "
-                "owned() answers 404",
+                "accessible() answers 404",
                 "keep it only when the 403 is the intended contract; otherwise filter with "
-                "owned(t, by=user) before one()",
+                "accessible(t, by=user) before one()",
             )
 
     # ---- UNSET: optional parameters ---------------------------------------------------
@@ -681,7 +695,7 @@ class _Endpoint:
             "L802",
             node,
             f"rows of {tables} reach the caller without an ownership check",
-            f"filter with owned({fetched}, by=user) before returning or writing",
+            f"filter with accessible({fetched}, by=user) before returning or writing",
         )
 
     def _writes(self) -> None:
@@ -790,27 +804,70 @@ class _Endpoint:
             )
 
     def _update_owner(self, call: ast.Call) -> None:
-        """update() may not hand rows to another owner: the owner column is never set,
-        and an owner_via foreign key only to a parent row the caller owns."""
-        if self.admin or self.reported_ownership or not call.args:
+        """update() hands rows to another owner (owner=, or the owner column by name)
+        only in an Admin endpoint or for rows that passed an ownership check
+        (accessible/owned, mine, owner_is): L802 otherwise. An owner_via foreign key
+        points only to a parent row the caller owns."""
+        if not call.args:
             return
         t = self._type(call.args[0]) if isinstance(call.args[0], ast.Name) else None
         if t is None and isinstance(call.args[0], ast.Name):
             t = self._name_type(call.args[0].id)
         schema = self.api.tables.get(t.source or "") if t is not None else None
-        if schema is None:
+        if t is None or schema is None:
             return
         given = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
-        if schema.owner is not None and schema.owner in given:
+        new_owner = given.get("owner")
+        if new_owner is None and schema.owner is not None:
+            new_owner = given.get(schema.owner)
+        if new_owner is not None and schema.owner is not None:
+            self._new_owner_exists(call, new_owner, ELSE_KW in given)
+        if self.admin or self.reported_ownership:
+            return
+        if new_owner is not None and schema.owner is not None and not t.owner_checked:
             self.reported_ownership = True
             self.ctx.error(
                 "L802",
                 call,
-                f"update() changes the owner column '{schema.owner}' of {t.source}",
-                f"remove {schema.owner}=; rows keep their owner",
+                f"update() changes the owner column '{schema.owner}' of {t.source} rows "
+                "the caller was not checked to own",
+                "check the rows first: accessible(t, by=user) after fetch, or "
+                'require(row, owner_is(user), else_=Forbidden("...")); or make the endpoint '
+                "auth=Admin",
             )
         elif schema.owner_via is not None and schema.owner_via[0] in given:
             self._via_value(call, t.source or "", schema.owner_via, given[schema.owner_via[0]])
+
+    def _new_owner_exists(self, call: ast.Call, value: ast.expr, declared: bool) -> None:
+        """The new owner of a transfer must exist. The caller does (`user`,
+        `user.<key>`), and so does a users row read by one() (possibly through
+        require()); any other new owner needs `else_=` -- the error answered, in the
+        same statement, when no users row has that key (L404)."""
+        if declared or self._existing_user(value):
+            return
+        self.ctx.error(
+            "L404",
+            value,
+            "the new owner must exist: update() answers an error when no "
+            f"{self.api.users_table} row has this key",
+            'declare it: update(t, owner=..., else_=NotFound("User not found"))',
+        )
+
+    def _existing_user(self, value: ast.expr) -> bool:
+        users = self.api.tables.get(self.api.users_table)
+        key = users.keys[0][0] if users is not None and users.keys else None
+        match value:
+            case ast.Name(id=name) if name == USER_PARAM:
+                return True
+            case ast.Attribute(value=ast.Name(id=name), attr=attr) if name == USER_PARAM:
+                return attr == key
+            case ast.Name(id=name) if name in self.locals:
+                node: ast.expr | None = self.locals[name]
+                while _call_name(node) == "require" and isinstance(node, ast.Call):
+                    arg = node.args[0] if node.args else None
+                    node = self.locals.get(arg.id) if isinstance(arg, ast.Name) else None
+                return _call_name(node) == "one"
+        return False
 
     def _via_value(
         self, call: ast.Call, table: str, via: tuple[str, str], value: ast.expr | None
@@ -835,7 +892,7 @@ class _Endpoint:
             "L802",
             call,
             f"{table}.{fk} must reference a {parent} row the caller owns",
-            f"look it up first: visible = owned(fetch({parent}), by=user); "
+            f"look it up first: visible = accessible(fetch({parent}), by=user); "
             f'found = where(visible, col("{key}") == {shown}); '
             f'parent = one(found, else_=NotFound("...")); then {fk}={shown}',
         )
@@ -953,6 +1010,7 @@ class _Endpoint:
             ("require", "else_"),
             ("insert", UNIQUE_OR),
             ("update", UNIQUE_OR),
+            ("update", ELSE_KW),
         ):
             for call in self._calls(op):
                 err = _kw(call, keyword)

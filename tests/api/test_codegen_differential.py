@@ -51,7 +51,7 @@ from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import effects, gaps, loops, mine_owner, partb, realapps
+from tests.api import effects, gaps, loops, mine_owner, partb, realapps, round2
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -840,6 +840,76 @@ MINE_CASES: tuple[HttpCase, ...] = (
 )
 
 
+# ---- round-2 fixes: null order, caller references, accessible, owner transfer ---------------
+# (tests/api/round2.py)
+
+_R2 = round2
+_R2ITEMS = "SELECT id, title, description, owner_id FROM item ORDER BY rowid"
+
+
+def _r2case(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _R2.TOKENS[who], **kw)
+
+
+ROUND2_CASES: tuple[HttpCase, ...] = (
+    _r2case("null order asc", "GET", "/sorted/descriptions", "admin"),
+    _r2case("null order desc", "GET", "/sorted/descriptions", "admin", query={"newest": True}),
+    _r2case("explicit nulls last", "GET", "/sorted/descriptions/last", "admin"),
+    _r2case("window null order", "GET", "/sorted/numbered", "admin"),
+    *(_r2case(f"user.id {who}", "GET", "/me/items", who) for who in ("admin", "alice", "bob")),
+    *(_r2case(f"caller derive {who}", "GET", "/me/flags", who) for who in ("admin", "bob")),
+    _r2case("stamp own", "PUT", f"/items/{_R2.ALPHA}/stamp", "alice", after_sql=_R2ITEMS),
+    _r2case(
+        "stamp as admin", "PUT", f"/items/{_R2.ZETA}/stamp", "admin", status=403,
+        after_sql=_R2ITEMS,
+    ),  # fmt: skip
+    _r2case(
+        "stamp other's", "PUT", f"/items/{_R2.GAMMA}/stamp", "alice", status=404,
+        after_sql=_R2ITEMS,
+    ),  # fmt: skip
+    _r2case(
+        "signed insert", "POST", "/items/signed", "bob", json={"title": "New"},
+        after_sql="SELECT title, description, owner_id FROM item ORDER BY rowid",
+    ),  # fmt: skip
+    *(
+        _r2case(
+            f"transfer {who} {email}", "POST", f"/items/{item}/transfer", who,
+            json={"new_owner_email": email}, status=status, after_sql=_R2ITEMS,
+        )  # fmt: skip
+        for who, item, email, status in (
+            ("alice", _R2.ALPHA, "bob@example.com", 200),
+            ("alice", _R2.ALPHA, "alice@example.com", 400),
+            ("alice", _R2.ALPHA, "nobody@example.com", 404),
+            ("alice", _R2.ALPHA, "carol@example.com", 400),
+            ("bob", _R2.ALPHA, "bob@example.com", 403),
+            ("admin", _R2.GAMMA, "alice@example.com", 200),
+            ("alice", _R2.NOBODY, "bob@example.com", 404),
+        )
+    ),
+    *(
+        _r2case(
+            f"give {who} {owner[-3:]}", "PUT", f"/items/{item}/owner", who,
+            json={"owner_id": owner}, status=status, after_sql=_R2ITEMS,
+        )  # fmt: skip
+        for who, item, owner, status in (
+            ("alice", _R2.ALPHA, _R2.CAROL, 200),
+            ("alice", _R2.ALPHA, _R2.NOBODY, 404),
+            ("alice", _R2.GAMMA, _R2.CAROL, 404),
+            ("admin", _R2.GAMMA, _R2.ADMIN, 200),
+        )
+    ),
+    _r2case("claim", "PUT", f"/items/{_R2.GAMMA}/claim", "admin", after_sql=_R2ITEMS),
+    _r2case(
+        "give all", "PUT", "/items/mine/owner", "alice", json={"owner_id": _R2.BOB},
+        status=204, after_sql=_R2ITEMS,
+    ),  # fmt: skip
+    _r2case(
+        "give all nobody", "PUT", "/items/mine/owner", "alice",
+        json={"owner_id": _R2.NOBODY}, status=409, after_sql=_R2ITEMS,
+    ),  # fmt: skip
+)
+
+
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
     _R.PROGRAM,
@@ -867,9 +937,23 @@ PROGRAMS["mine"] = (
     _M.PROGRAM,
     ApiTask("mine", "control", "mine() vs owned()", MINE_CASES + _probes(MINE_CASES)),
 )
+PROGRAMS["round2"] = (
+    _R2.PROGRAM,
+    ApiTask("round2", "control", "round-2 fixes", ROUND2_CASES + _probes(ROUND2_CASES)),
+)
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
-EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb", "loops", "effects", "gaps", "mine"]
+EXTRA_IDS = [
+    "numeric",
+    "mapped_join",
+    "realapps",
+    "partb",
+    "loops",
+    "effects",
+    "gaps",
+    "mine",
+    "round2",
+]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -891,6 +975,7 @@ SETUPS = {
     "effects": Setup(effects.PROFILE, effects.build_db, effects.NATIVES, effects.NATIVES_FILE),
     "gaps": Setup(gaps.PROFILE, gaps.build_db, gaps.NATIVES, gaps.NATIVES_FILE),
     "mine": Setup(_M.PROFILE, _M.build_db, _M.NATIVES, _M.NATIVES_FILE),
+    "round2": Setup(_R2.PROFILE, _R2.build_db, _R2.NATIVES, _R2.NATIVES_FILE),
 }
 
 

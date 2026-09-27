@@ -20,6 +20,7 @@ from lattice.catalog import (
     API_AGG_FUNCS,
     API_ERRORS,
     API_FN_FUNCS,
+    API_OP_ALIASES,
     API_OP_SHAPES,
     PAGE_LIMIT_MAX,
 )
@@ -99,7 +100,9 @@ those values), `Bool`, `Date`, or bare `Int`/`Float`/`Str` (unbounded). Constrai
 literals. A literal default is allowed: `limit: Int(ge=1, le=100) = 20`.
 - `user: CurrentUser` is the authenticated caller as a one-row table with the Users \
 columns (`col("id")`, `col("role")`, ...). Required when `auth` is not `Public`, \
-absent when it is.
+absent when it is. In expressions, `user.id`, `user.<column>` (not private columns) \
+and `is_admin(user)` (a Bool) are the caller's values, e.g. \
+`where(t, col("customer_id") == user.id)`.
 - Return annotation: one success kind, then every error the body can raise. Success: \
 `One` (200, the single returned row as a JSON object), `Page` (200, \
 `{{"items": [...], "limit": n, "offset": n}}`), `Created` (201, the inserted row; POST \
@@ -113,15 +116,15 @@ wrong type or outside its constraints (checked before the body runs).
 
 _API_OP_DOCS: dict[str, tuple[str, str]] = {
     "fetch": ("fetch(Table)", "all rows of a database table (read lazily, set-based)"),
-    "owned": (
-        "owned(t, by=user)",
+    "accessible": (
+        "accessible(t, by=user)",
         "keep the rows whose owner column is the caller's id, or, for a table owned "
         "through a parent (e.g. OrderItems), whose parent row is the caller's (Admin "
-        "callers keep every row)",
+        "callers keep every row); `owned(t, by=user)` is an older name for it",
     ),
     "mine": (
         "mine(t, by=user)",
-        "keep only the caller's own rows, like `owned` but for Admin callers too",
+        "keep only the caller's own rows, like `accessible` but for Admin callers too",
     ),
     "one": (
         'one(t, else_=NotFound("thing"))',
@@ -144,7 +147,9 @@ _API_OP_DOCS: dict[str, tuple[str, str]] = {
     "update": (
         "update(t, col=<expr>, ...)",
         'set columns on the rows of t (by key); returns them updated, e.g. `stock=col("stock") '
-        "- qty`",
+        "- qty`; `owner=<user row from one(...)>` or `owner=<id>, "
+        'else_=NotFound("...")` (404 if no such user) hands rows checked with `accessible`/'
+        "`owner_is` (or any row, in Admin endpoints) to another user",
     ),
     "delete": ("delete(t)", "delete the rows of t; returns them"),
 }
@@ -166,10 +171,10 @@ _TABLE_OP_DOCS: dict[str, str] = {
 
 
 def _lattice_ops_section() -> str:
-    if set(_API_OP_DOCS) != set(API_OP_SHAPES):
+    if set(_API_OP_DOCS) != set(API_OP_SHAPES) - set(API_OP_ALIASES):
         raise AssertionError("_API_OP_DOCS out of sync with API_OP_SHAPES")
     lines = ["## Operations", "", "Endpoint operations (call each exactly this way):", ""]
-    for op in API_OP_SHAPES:
+    for op in _API_OP_DOCS:
         shape, doc = _API_OP_DOCS[op]
         lines.append(f"- `{shape}`: {doc}")
     lines += ["", "Table operations also available in endpoints:", ""]
@@ -214,7 +219,7 @@ API_LIST_EXAMPLE = ('PUBLIC = ["id", "email", "name"]', "select(created, cols=PU
 _LATTICE_LOOPS_SECTION = f"""## Row-by-row work, formats and uniqueness
 
 - `window(t, by=[...], order=[...], desc=[...], name=win.<f>(...), ...)` keeps every \
-row and adds values over its `by` group in `order` (nulls last): `win.row_number()`, \
+row and adds values over its `by` group in `order` (nulls as in `sort`): `win.row_number()`, \
 `win.rank()`, `win.dense_rank()`; `win.lag(x, offset=1)` / `win.lead(x, offset=1)` \
 (null past the edge); `win.cum_sum(x)`, `win.cum_count()`, `win.cum_min(x)`, \
 `win.cum_max(x)` (running); `win.mean(x, rows=N)` / `win.sum(x, rows=N)` (the row and \
@@ -224,7 +229,7 @@ the N-1 before it). `by` + `order` must be unique: end `order` with a key. E.g. 
 `edges` reachable from the rows of `start` (a name) through `parent` -> `child` links \
 (`direction="up"`: the ancestors), each once at its smallest `depth` (a new Int column, \
 0 = start), in one query; cycle-safe; `max_depth` a literal 1-1000 or a bounded Int \
-parameter; call `owned` first on an owned table. E.g. `{API_TRAVERSE_EXAMPLE[0]}` then \
+parameter; call `accessible` first on an owned table. E.g. `{API_TRAVERSE_EXAMPLE[0]}` then \
 `{API_TRAVERSE_EXAMPLE[1]}`.
 - `for_each(t, native.<name>, <expr>, ...)`, a statement, calls an effect native the task \
 declares (e.g. send an email) once per row of `t` after the endpoint commits, in order; \
@@ -265,13 +270,13 @@ one; negative is earlier) and `fn.datetime_diff(end, start, unit=)` (whole "days
 `{API_OPTIONAL_EXAMPLES[3]}`; `fn.now()` is one instant per request.
 - `{API_OPTIONAL_EXAMPLES[4]}` (or `insert(T, c=None)`) writes null into a nullable column.
 - `sort` directions may be Bool expressions of parameters, and `nulls=` places nulls: \
-"last" (default), "first", or "smallest" (first ascending, last descending), e.g. \
-`{API_OPTIONAL_EXAMPLES[5]}`."""
+"last" (default, unless the profile sets `null_order`), "first", or "smallest" (first \
+ascending, last descending), e.g. `{API_OPTIONAL_EXAMPLES[5]}`."""
 
-# owned() vs mine() (the thin slice's "my items" trap); the baseline guide carries the
-# same information in SQL terms (BASELINE_OWN_ROWS).
+# accessible() vs mine() (the thin slice's "my items" trap); the baseline guide carries
+# the same information in SQL terms (BASELINE_OWN_ROWS).
 LATTICE_OWN_ROWS = (
-    "- `owned(t, by=user)` = rows the caller may access (admins: all rows). "
+    "- `accessible(t, by=user)` = rows the caller may access (admins: all rows). "
     "`mine(t, by=user)` = the caller's own rows only (admins too) — use it for "
     "'my …' features."
 )
@@ -289,7 +294,7 @@ so parameters may also be named like a Python builtin (`zip`, `id`, `type`) or `
 - The body ends with exactly one `return <name>`. Names bound by `one`, `require`, \
 `insert`, `update` and `delete` may stay unused (they act by their effect).
 - `update` and `delete` need rows of one database table that still contain its key \
-column (after `fetch`, `owned`, `where`, `one`, `select`, ...; not after `join`, `group` \
+column (after `fetch`, `accessible`, `where`, `one`, `select`, ...; not after `join`, `group` \
 or `rename`).
 - `join(l, r, on=K)` needs `r` unique on `K` (a table key inside `K`, or `r` from \
 `group(..., by=K)`; with `on={"id": "order_id"}`, unique on the right names); \
@@ -299,7 +304,7 @@ or `rename`).
 # Pitfall advice, removable for the no-hints condition (the reference stays).
 LATTICE_ADVICE: tuple[str, ...] = (
     "- Ownership: for a table with an owner column or owned through a parent, call "
-    "`owned(t, by=user)` right after `fetch` and before `where`/`one`/`update`/`delete`/"
+    "`accessible(t, by=user)` right after `fetch` and before `where`/`one`/`update`/`delete`/"
     "`return`, so another customer's row answers 404 exactly like a missing one; "
     "`insert` into an owned table passes `owner=user` (never set the owner column "
     "yourself); an aggregate over many customers' rows is public only if it groups by, "
@@ -326,7 +331,7 @@ def list_addresses(
     user: CurrentUser, limit: Int(ge=1, le=50) = 20, offset: Int(ge=0) = 0
 ) -> Page:
     addresses = fetch(Addresses)
-    visible = owned(addresses, by=user)
+    visible = accessible(addresses, by=user)
     ordered = sort(visible, by=["id"])
     result = page(ordered, limit=limit, offset=offset)
     return result
@@ -355,12 +360,12 @@ def post_review(
     wanted = where(products, col("id") == product_id)
     product = one(wanted, else_=NotFound("product"))
     items = fetch(OrderItems)
-    visible_items = owned(items, by=user)
+    visible_items = accessible(items, by=user)
     this_product = where(visible_items, col("product_id") == product_id)
     times_bought = group(this_product, by=[], n=agg.count())
     ordered = require(times_bought, col("n") > 0, else_=Forbidden("product not ordered"))
     reviews = fetch(Reviews)
-    visible_reviews = owned(reviews, by=user)
+    visible_reviews = accessible(reviews, by=user)
     same = where(visible_reviews, col("product_id") == product_id)
     existing = group(same, by=[], n=agg.count())
     fresh = require(existing, col("n") == 0, else_=Conflict("already reviewed"))
@@ -463,6 +468,8 @@ async def invalid_input(request: Request, exc: RequestValidationError) -> JSONRe
 - Rows of a table with an owner column belong to that user; Admin callers may see \
 and change every row. Columns listed as private never appear in a response.
 {BASELINE_OWN_ROWS}
+- To hand rows to another user, set the owner column (`UPDATE ... SET owner_id = ?`) \
+only on rows the caller may change, and answer 404 when no user has the new id.
 - Everything a request writes succeeds or fails together: commit only after every \
 check passed.
 - Dates are ISO `YYYY-MM-DD` strings. Import only the standard library, `fastapi`, \

@@ -1,7 +1,8 @@
 """The edit slice's change tickets (plan 2026-09-27 thin slice, node E1).
 
-Twelve realistic changes to the vendored FastAPI template (``bench/template_app``): the
-baseline six (t1-t6) and a held-out six (t7-t12, see below), written
+Eighteen realistic changes to the vendored FastAPI template (``bench/template_app``): the
+baseline six (t1-t6), a held-out six (t7-t12) and a second held-out six for round 3
+(t13-t18, see below), written
 the way a PM or engineer files them. Each names what to build and the exact response
 contract (paths, parameter names, status codes, error details) -- the hidden acceptance
 suite compares answers exactly, so the contract has to be stated -- but *not* the
@@ -49,6 +50,42 @@ expressibility. Their traps:
   the app's 403 "Not enough permissions"), and that is checked *before* the email is
   looked up (a stranger cannot probe for accounts); an admin may transfer anyone's
   item; no error writes anything; an unknown item is the app's 404.
+
+**Held-out template set, round 3 (t13-t18).** Six more tickets on the template, written
+after t7-t12 to guard against tuning Lattice to the first held-out set the same way that
+set guarded against tuning it to the baseline six. Unlike t7-t12, **no Lattice reference
+is written for these**: they are held out from the language and lifter work entirely
+(see :mod:`bench.edit_slice.lattice_reference` and :func:`bench.edit_slice.run.dry_run`,
+which records arm L's dry run on them as ``no_reference``, not a language gap). The
+texts were written first, in this order -- t13, t14, t15, t16, t17, t18 -- the way a
+backlog would hold them (a support fix, a security fix, a feature request, an admin
+need, a UX preference, a data-quality fix), before any oracle case. Their traps:
+
+* ``t13_password_reset`` -- an admin may reset *their own* password with this endpoint
+  (no self-lockout restriction, unlike deactivate); an admin may reset another admin's
+  password, or an inactive user's; no old password is required or checked;
+* ``t14_email_change`` -- the current password is checked *before* the new email is
+  looked up (a wrong password never reveals whether an email is taken); the caller's
+  own current email is never a conflict (excluded by id, as the app's own ``/users/me``
+  update already does);
+* ``t15_duplicate_item`` -- the copy belongs to the *original item's owner*, not to the
+  caller (an admin duplicating another user's item does not take it over); the copy
+  gets a fresh id and creation time, never the original's;
+* ``t16_admin_audit`` -- items owned by deactivated users are still listed; ``/audit``
+  must not be swallowed by ``/{id}``; ``owner_email`` matches an account's email
+  exactly (case-sensitively, as everywhere else an email identifies one account), not
+  as a case-insensitive search; ``count`` is the filtered count; an unmatched
+  ``owner_email`` is an empty list, not a 404;
+* ``t17_page_size_preference`` -- before ever being set, the preference reads back as
+  null, not a 404; exactly 1 and 100 are allowed, 0 and 101 are refused; the preference
+  is the caller's own, set and read through no other route;
+* ``t18_duplicate_title_guard`` -- the duplicate check is scoped to the caller's own
+  items (another user's, or even an admin's, identical title is fine); on update, the
+  ownership check runs *before* the duplicate-title check (a stranger editing someone
+  else's item to a colliding title still gets the app's 403, never the 400, and never
+  learns of the collision); the match is exact (case-sensitive, as the app's own email
+  uniqueness is), so a different-case title is not a duplicate; a refused create or
+  update writes nothing.
 
 **Held-out repos (t19-t24, round 3).** Six tickets on the importer's held-out repos
 (``bench/import_repos/``; ``Ticket.repo``): three on TaskFlow (tasks; another user's task
@@ -313,6 +350,95 @@ shape as `GET /api/v1/items/{id}`.
         routes=("POST /api/v1/items/{id}/transfer",),
         files=(MODELS, ITEMS),
     ),
+    # ---- round 3's held-out template set (see the module docstring), in the order written ----
+    Ticket(
+        id="t13_password_reset",
+        title="Admin endpoint to reset a user's password",
+        text="""\
+Support keeps getting locked-out-account tickets where the user has no way to prove who
+they are well enough to reset their own password. Add
+`POST /api/v1/users/{user_id}/reset-password`, for admins (superusers) only, with the
+JSON body `{"new_password": "<new password>"}` (the same length rules as everywhere else:
+8 to 128 characters). It sets the user's password to the given value and returns
+`{"message": "Password reset successfully"}`.
+
+- Unknown id: 404 with detail "User not found".""",
+        routes=("POST /api/v1/users/{user_id}/reset-password",),
+        files=(USERS,),
+    ),
+    Ticket(
+        id="t14_email_change",
+        title="Self-service email change with password confirmation",
+        text="""\
+Users can change their email today without proving they still know their password, which
+security wants fixed. Add `PATCH /api/v1/users/me/email` with the JSON body
+`{"current_password": "<password>", "new_email": "<email>"}`. On success it updates the
+caller's email and returns the user in the same shape as `GET /api/v1/users/me`.
+
+- Wrong `current_password`: 400 with detail "Incorrect password".
+- `new_email` already belongs to another account: 409 with detail "User with this email
+  already exists".""",
+        routes=("PATCH /api/v1/users/me/email",),
+        files=(USERS,),
+    ),
+    Ticket(
+        id="t15_duplicate_item",
+        title="Duplicate an item",
+        text="""\
+People keep recreating similar items from scratch instead of tweaking a copy. Add
+`POST /api/v1/items/{id}/duplicate`: it creates a new item titled "<original title>
+(copy)", with the same description, and answers 200 with the new item in the same shape
+as `GET /api/v1/items/{id}`. Only the item's owner or an admin may duplicate it (anyone
+else gets the app's usual 403).
+
+- Unknown id: 404 with detail "Item not found".""",
+        routes=("POST /api/v1/items/{id}/duplicate",),
+        files=(ITEMS,),
+    ),
+    Ticket(
+        id="t16_admin_audit",
+        title="Admin audit: items across all users",
+        text="""\
+Support needs to audit item activity across every account. Add `GET /api/v1/items/audit`,
+for admins (superusers) only:
+
+    {"data": [{"id": <item id>, "title": <title>, "owner_email": <email>,
+               "created_at": <created_at>}, ...],
+     "count": <number of matching items>}
+
+Ordered newest first. An optional `owner_email` query parameter narrows the list to the
+items owned by the account with that email. `skip` and `limit` page through the
+(possibly narrowed) list as on `GET /api/v1/items/`.""",
+        routes=("GET /api/v1/items/audit",),
+        files=(MODELS, ITEMS),
+    ),
+    Ticket(
+        id="t17_page_size_preference",
+        title="Per-user default page size preference",
+        text="""\
+Some users page through far more items than others. Let each user set how many results
+they would like per page by default. Add:
+
+- `PUT /api/v1/users/me/preferences` with the JSON body `{"default_page_size": <1-100 or
+  null>}`, setting the caller's own preference (null clears it back to unset). Returns
+  `{"default_page_size": <value>}`.
+- `GET /api/v1/users/me/preferences`, returning the caller's current value the same way.
+
+`default_page_size` outside 1-100 is refused with 422.""",
+        routes=("PUT /api/v1/users/me/preferences", "GET /api/v1/users/me/preferences"),
+        files=(MODELS, USERS),
+    ),
+    Ticket(
+        id="t18_duplicate_title_guard",
+        title="Refuse duplicate item titles for the same owner",
+        text="""\
+Exports get confusing when the same person has two items with the identical title. On
+`POST /api/v1/items/` and `PUT /api/v1/items/{id}`, refuse a title that matches the title
+of another item the same caller already owns, with 400 and detail "Item with this title
+already exists". Nothing else about creating or updating items changes.""",
+        routes=("POST /api/v1/items/", "PUT /api/v1/items/{id}"),
+        files=(ITEMS,),
+    ),
 )
 
 TASKFLOW_ROUTES = "routes.py"
@@ -429,7 +555,10 @@ The profile page shows a few numbers about the signed-in user's notes. Add
 )
 
 BASELINE: tuple[str, ...] = tuple(t.id for t in TICKETS[:6])
-HELD_OUT: tuple[str, ...] = tuple(t.id for t in TICKETS[6:])
+HELD_OUT: tuple[str, ...] = tuple(t.id for t in TICKETS[6:12])
+# round 3's held-out template set (t13-t18): no Lattice reference is written for these
+# (see the module docstring); ``HELD_OUT`` stays t7-t12, the first held-out set.
+ROUND3_TEMPLATE: tuple[str, ...] = tuple(t.id for t in TICKETS[12:])
 HELD_OUT_REPOS: tuple[str, ...] = tuple(t.id for t in REPO_TICKETS)
 # every ticket: the template's (TICKETS, what `--tickets all` runs) and the held-out repos'
 ALL_TICKETS: tuple[Ticket, ...] = (*TICKETS, *REPO_TICKETS)

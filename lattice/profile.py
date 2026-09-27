@@ -18,6 +18,11 @@ ERROR_BODIES = ("lattice", "fastapi")
 DATETIME_WIRES = ("iso_z", "naive")
 # ApiProfile.inactive_status: the statuses an inactive caller may be answered with.
 INACTIVE_STATUSES = (400, 401, 403)
+# ApiProfile.null_order / Profile.null_order: where null keys go when a `sort` gives no
+# `nulls=` (and in `window` order). "last": after every value, in either direction;
+# "smallest": null is the smallest value -- first ascending, last descending (SQLite's
+# own order, so an imported SQLite app keeps its behaviour).
+NULL_ORDERS = ("last", "smallest")
 
 
 def _default_page_shape() -> Mapping[str, str]:
@@ -128,6 +133,9 @@ class ApiProfile:
     # with microseconds and "Z"; "naive" the UTC value without a zone, as pydantic
     # serializes a naive datetime ("2026-02-02T06:00:00", microseconds only when set).
     datetime_wire: str = "iso_z"
+    # Round 2: the default place of null sort keys (NULL_ORDERS) for `sort` without
+    # `nulls=` and for `window` order.
+    null_order: str = "last"
 
     def __post_init__(self) -> None:
         self._validate_page_shape()
@@ -150,6 +158,8 @@ class ApiProfile:
                 raise ValueError(f"ApiProfile.{name} must be a non-empty text or None")
         if self.datetime_wire not in DATETIME_WIRES:
             raise ValueError(f"ApiProfile.datetime_wire must be one of {DATETIME_WIRES}")
+        if self.null_order not in NULL_ORDERS:
+            raise ValueError(f"ApiProfile.null_order must be one of {NULL_ORDERS}")
 
     @staticmethod
     def default_page_shape() -> Mapping[str, str]:
@@ -264,6 +274,21 @@ class Profile:
     outputs: frozenset[str] | None = None
     # Present for API programs (@endpoint); None for tabular pipelines.
     api: ApiProfile | None = None
+    # Tabular pipelines: the default place of null sort keys (NULL_ORDERS), as
+    # ApiProfile.null_order is for API programs (which use the ApiProfile's).
+    null_order: str = "last"
+
+    def __post_init__(self) -> None:
+        if self.null_order not in NULL_ORDERS:
+            raise ValueError(f"Profile.null_order must be one of {NULL_ORDERS}")
+
+    @property
+    def sort_nulls(self) -> str:
+        """The null order of this profile's programs: the API profile's for API
+        programs, else the tabular one."""
+        if self.api is not None:
+            return getattr(self.api, "null_order", "last")
+        return self.null_order
 
     @property
     def enforce_keys(self) -> bool:

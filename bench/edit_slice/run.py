@@ -57,9 +57,12 @@ run's ``rep<N>`` directory.
 
 ``python -m bench.edit_slice.run --model M --arm P|L --tickets ... --reps N --out
 results.jsonl [--max-tokens 16000] [--dry-run-reference]`` (``--tickets all``: the template's
-t1-t12; ``repos``: the held-out repos' t19-t24; or comma-separated ids); ``--estimate`` prints the
+t1-t18; ``repos``: the held-out repos' t19-t24; ``round3``: every ticket, t1-t24; or
+comma-separated ids); ``--estimate`` prints the
 prompt sizes and the live run's cost estimate instead (no generation). The dry run
-feeds the hand-written references through each arm (no API call).
+feeds the hand-written references through each arm (no API call); arm L on t13-t18 has no
+reference to feed (they are held out from the language work, see
+:mod:`bench.edit_slice.tickets`) and is reported as ``no_reference``.
 """
 
 from __future__ import annotations
@@ -92,7 +95,7 @@ from bench.edit_slice.lattice_reference import (
 )
 from bench.edit_slice.oracle import Outcome, evaluate
 from bench.edit_slice.reference import reference_files
-from bench.edit_slice.tickets import REPO_TICKETS, TICKETS, Ticket, ticket
+from bench.edit_slice.tickets import ALL_TICKETS, REPO_TICKETS, TICKETS, Ticket, ticket
 from bench.edit_slice.variant import app_source, load_variant
 from bench.metrics import cost_usd
 from lattice.llm.client import Generation, GenerationRefused, Generator, ScriptedGenerator
@@ -783,8 +786,12 @@ def reference_answer(arm: Arm, ticket_id: str) -> str | None:
 
 
 def dry_run(arm: Arm, ticket_id: str) -> RunRecord:
-    """The reference fed through ``arm`` (no API call); a gap is ``not_expressible``, and
-    arm L on an app without an import (:func:`start_lattice`) is ``not_imported``."""
+    """The reference fed through ``arm`` (no API call). Three ways arm L can have nothing
+    to run: no import at all for the app (``not_imported``, a held-out repo before the
+    importer's output is registered); current Lattice cannot express the ticket, a
+    recorded gap (``not_expressible``); or the ticket is held out from the language and
+    lifter work on purpose, with no Lattice reference written for it at all
+    (``no_reference`` -- round 3's t13-t18, see :mod:`bench.edit_slice.tickets`)."""
     repo = ticket(ticket_id).repo
     if arm == "L" and not has_lattice_start(repo):
         return RunRecord(
@@ -793,6 +800,15 @@ def dry_run(arm: Arm, ticket_id: str) -> RunRecord:
             "reference",
             outcome="not_imported",
             detail=f"arm L on {repo!r} needs the importer's output (start_lattice)",
+            dry_run=True,
+        )
+    if arm == "L" and not has_lattice_reference(ticket_id) and ticket_id not in GAPS:
+        return RunRecord(
+            ticket_id,
+            arm,
+            "reference",
+            outcome="no_reference",
+            detail=f"{ticket_id!r} is held out: no Lattice reference is written for it",
             dry_run=True,
         )
     answer = reference_answer(arm, ticket_id)
@@ -919,7 +935,10 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--tickets",
         default="all",
-        help="comma-separated ticket ids, all (the template's t1-t12) or repos (t19-t24)",
+        help=(
+            "comma-separated ticket ids, all (the template's t1-t18), repos (t19-t24) "
+            "or round3 (all of t1-t24)"
+        ),
     )
     p.add_argument("--reps", type=int, default=1)
     p.add_argument("--out", default="results/edit_slice/results.jsonl")
@@ -951,6 +970,8 @@ def _tickets(spec: str) -> list[str]:
         return [t.id for t in TICKETS]
     if spec == "repos":
         return [t.id for t in REPO_TICKETS]
+    if spec == "round3":
+        return [t.id for t in ALL_TICKETS]
     ids = [s.strip() for s in spec.split(",") if s.strip()]
     for tid in ids:
         ticket(tid)

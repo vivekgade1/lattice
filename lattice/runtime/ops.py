@@ -169,18 +169,23 @@ def sort(
     null keys: "last" / "first" in either direction, "smallest" first when ascending
     and last when descending."""
     descending = [desc] * len(by) if isinstance(desc, bool) else list(desc)
-    match nulls:
-        case "last":
-            nulls_last = [True] * len(by)
-        case "first":
-            nulls_last = [False] * len(by)
-        case "smallest":
-            nulls_last = list(descending)
-        case _:
-            raise LatticeInternalError(f"unknown sort nulls= {nulls!r}")
+    nulls_last = _nulls_last(descending, nulls)
     if not by:
         return df
     return df.sort(list(by), descending=descending, nulls_last=nulls_last, maintain_order=True)
+
+
+def _nulls_last(descending: Sequence[bool], nulls: str) -> list[bool]:
+    """Per sort column: whether its null keys go last (`nulls` as in sort())."""
+    match nulls:
+        case "last":
+            return [True] * len(descending)
+        case "first":
+            return [False] * len(descending)
+        case "smallest":
+            return list(descending)
+        case _:
+            raise LatticeInternalError(f"unknown sort nulls= {nulls!r}")
 
 
 def limit(df: pl.DataFrame, n: int) -> pl.DataFrame:
@@ -196,17 +201,19 @@ def window(
     order: Sequence[str],
     desc: Sequence[bool],
     columns: Sequence[tuple[str, str, ast.expr | None, int | None]],
+    nulls: str = "last",
 ) -> Result:
     """window(): each column is a window function over the rows of its `by` partition
-    sorted by `order` (nulls last, `desc` per order column; tied rows keep their input
-    order: a stable sort). The output keeps `df`'s rows in `df`'s order."""
+    sorted by `order` (`desc` per order column; null keys placed by `nulls`, the
+    profile's null order; tied rows keep their input order: a stable sort). The output
+    keeps `df`'s rows in `df`'s order."""
     guards: list[Guard] = []
     work = df.with_row_index(_IDX)
     if by or order:
         work = work.sort(
             [*by, *order],
             descending=[False] * len(by) + list(desc),
-            nulls_last=True,
+            nulls_last=[True] * len(by) + _nulls_last(list(desc), nulls),
             maintain_order=True,
         )
     partition = list(by)

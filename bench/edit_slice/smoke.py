@@ -107,6 +107,28 @@ SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
         SmokeRequest("alice", "POST", _ITEMS, json={"title": "Smoke test"}, save=True),
         SmokeRequest("alice", "POST", f"{_ITEM}/transfer", json={"new_owner_email": _BOB_EMAIL}),
     ),
+    # round 3's held-out template set (t13-t18; no Lattice reference)
+    "t13_password_reset": (
+        SmokeRequest("admin", "POST", f"{_USERS}{_ALICE}/reset-password",
+                     json={"new_password": "NewSmokePass1"}),
+    ),
+    "t14_email_change": (
+        SmokeRequest("alice", "PATCH", f"{_USERS}me/email",
+                     json={"current_password": TEMPLATE_USERS["alice"][1],
+                          "new_email": "alice.smoke@example.com"}),
+    ),
+    "t15_duplicate_item": (
+        SmokeRequest("alice", "POST", _ITEMS, json={"title": "Smoke test"}, save=True),
+        SmokeRequest("alice", "POST", f"{_ITEM}/duplicate"),
+    ),
+    "t16_admin_audit": (SmokeRequest("admin", "GET", f"{_ITEMS}audit"),),
+    "t17_page_size_preference": (
+        SmokeRequest("alice", "PUT", f"{_USERS}me/preferences", json={"default_page_size": 25}),
+        SmokeRequest("alice", "GET", f"{_USERS}me/preferences"),
+    ),
+    "t18_duplicate_title_guard": (
+        SmokeRequest("alice", "POST", _ITEMS, json={"title": "Smoke test"}),
+    ),
     # round 3: the held-out repos (their own seed users, alice and bob)
     "t19_task_summary": (SmokeRequest("alice", "GET", f"{_TASKS}/summary"),),
     "t20_bulk_status": (  # tasks 1 and 2 are alice's in TaskFlow's seed

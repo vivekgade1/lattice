@@ -26,9 +26,11 @@ from typing import Any, Literal
 from lattice.api.backend import dialect_for
 from lattice.api.outbox import CREATE_SQL, OUTBOX_TABLE
 from lattice.api.sql import (
+    CallerRef,
     OwnerIs,
     ParamRef,
     Rel,
+    RowsValue,
     SqlExpr,
     SqlQuery,
     compile_delete,
@@ -40,7 +42,9 @@ from lattice.api.sql import (
 )
 from lattice.catalog import (
     API_ERRORS,
+    ELSE_KW,
     FOR_EACH,
+    IS_ADMIN,
     NATIVE_NS,
     OP_SHAPES,
     PUBLIC_ROLE,
@@ -50,7 +54,7 @@ from lattice.catalog import (
 from lattice.check import CheckedProgram
 from lattice.check.api_info import EndpointInfo, ParamSpec, user_table
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
-from lattice.check.p4_types import is_owner_is
+from lattice.check.p4_types import is_owner_is, mentions_caller
 from lattice.diagnostics import Span, span_of
 from lattice.ir import traverse_params, window_params
 from lattice.profile import AdminFlag, ApiProfile, NativeSig, NativeToken, RoleColumn, TokenColumn
@@ -128,6 +132,9 @@ class WriteStep:
     # insert/update(..., unique_or=Conflict("...")): the error answered when the
     # statement hits a UNIQUE constraint (else the generic 409, UNIQUE_CONFLICT).
     conflict: ErrorSpec | None = None
+    # update(t, owner=..., else_=E): an owner transfer guarded in its statement (only
+    # to an existing users row); fewer rows written than `input` has answers E.
+    missing: ErrorSpec | None = None
 
 
 @dataclass(frozen=True)
@@ -246,6 +253,28 @@ class _Substitute(ast.NodeTransformer):
         return ast.copy_location(copy.deepcopy(value), node)
 
 
+class _Caller(ast.NodeTransformer):
+    """user.<column> / user.is_admin / is_admin(user) -> CallerRef (binds of the
+    request: the caller's row was read by authentication)."""
+
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+    def visit_Attribute(self, node: ast.Attribute) -> ast.expr:
+        if isinstance(node.value, ast.Name) and node.value.id == USER_PARAM:
+            if node.attr == IS_ADMIN:
+                ref = CallerRef(None, admin=True)
+            else:
+                ref = CallerRef(node.attr, key=node.attr == self.key)
+            return ast.copy_location(ref, node)
+        return self.generic_visit(node)  # type: ignore[return-value]
+
+    def visit_Call(self, node: ast.Call) -> ast.expr:
+        if isinstance(node.func, ast.Name) and node.func.id == IS_ADMIN:
+            return ast.copy_location(CallerRef(None, admin=True), node)
+        return self.generic_visit(node)  # type: ignore[return-value]
+
+
 def _str(node: ast.expr) -> str:
     match node:
         case ast.Constant(value=str(v)):
@@ -323,6 +352,8 @@ class _Write:
     schema: Schema
     span: Span
     conflict: ErrorSpec | None = None  # unique_or=Conflict(...)
+    missing: ErrorSpec | None = None  # update(t, owner=..., else_=...)
+    owner_from: _Val | None = None  # update(t, owner=<one-row users table>)
 
 
 @dataclass(frozen=True)
@@ -361,6 +392,9 @@ class _Endpoint:
             datetime_storage=getattr(api, "datetime_storage", "iso_z"),
         )
         self.info = info
+        # ApiProfile.null_order: where null keys go in a sort without nulls= and in
+        # window order (resolved here, so the SQL -- and the generated app -- carry it)
+        self.null_order: str = getattr(api, "null_order", "last")
         self.step_defs = steps_of(program.module)
         self.step_consts = step_consts
         self.rels: dict[str, Rel] = {}
@@ -378,8 +412,10 @@ class _Endpoint:
             if spec.scalar is not None:
                 self.subst[spec.name] = ParamRef(spec.name, spec.optional)
         users = api.tables.get(api.users_table)
+        # the users table's key: user.<key> is the caller's id (:__user_id)
+        self.user_key = users.keys[0][0] if users is not None and users.keys else "id"
         if users is not None and any(p.source == "user" for p in info.params):
-            key = users.keys[0][0] if users.keys else "id"
+            key = self.user_key
             self.rels[USER_PARAM] = Rel(
                 USER_PARAM,
                 "user",
@@ -395,10 +431,12 @@ class _Endpoint:
     # ---- phase 1 ---------------------------------------------------------------------
 
     def _expr(self, node: ast.expr, subst: Mapping[str, ast.expr]) -> ast.expr:
-        if not any(isinstance(n, ast.Name) and n.id in subst for n in ast.walk(node)):
-            return node
-        out = _Substitute(subst).visit(copy.deepcopy(node))
-        return ast.fix_missing_locations(out)
+        out = node
+        if any(isinstance(n, ast.Name) and n.id in subst for n in ast.walk(node)):
+            out = ast.fix_missing_locations(_Substitute(subst).visit(copy.deepcopy(node)))
+        if mentions_caller(out):
+            out = _Caller(self.user_key).visit(copy.deepcopy(out) if out is node else out)
+        return out
 
     def _schema(self, call: ast.Call) -> Schema:
         t = self.program.types.get(id(call))
@@ -559,8 +597,22 @@ class _Endpoint:
                 t = self._type(call)
                 if t.source is None:
                     raise LatticeInternalError(f"{op}() rows have no source table")
+                schema = self.api.tables[t.source]
+                missing = _error(kws.pop(ELSE_KW)) if ELSE_KW in kws else None
+                new_owner = kws.pop("owner", None)
                 values = tuple((k, self._expr(v, subst)) for k, v in kws.items())
-                self._note_nulls(self.api.tables[t.source], values)
+                owner_from: _Val | None = None
+                if new_owner is not None:  # an owner transfer: owner= sets the owner column
+                    if schema.owner is None:
+                        raise LatticeInternalError(f"owner= on {t.source}, which has no owner")
+                    if isinstance(new_owner, ast.Name) and new_owner.id in env:
+                        if new_owner.id == USER_PARAM:  # the caller
+                            values += ((schema.owner, CallerRef(self.user_key, key=True)),)
+                        else:  # a one-row users table: its key, in the statement
+                            owner_from = env[new_owner.id]
+                    else:
+                        values += ((schema.owner, self._expr(new_owner, subst)),)
+                self._note_nulls(schema, values)
                 self.step_schemas[rid] = self._schema_of(val)
                 self.events.append(
                     _Write(
@@ -570,9 +622,11 @@ class _Endpoint:
                         val,
                         values,
                         False,
-                        self.api.tables[t.source],
+                        schema,
                         span_of(call),
                         conflict,
+                        missing,
+                        owner_from,
                     )
                 )
                 return _StepVal(rid)
@@ -581,7 +635,8 @@ class _Endpoint:
             case _:
                 inputs = tuple(self._rel_of(table_arg(a)) for a in call.args[: _tables(op)])
                 params = self._params(op, call, kws, subst)
-                self.rels[rid] = Rel(rid, op, inputs, params, self._schema(call))
+                rel_op = "owned" if op == "accessible" else op  # the same filter
+                self.rels[rid] = Rel(rid, rel_op, inputs, params, self._schema(call))
                 if op == "page":
                     self.page_of[rid] = PageArgs(
                         _page_arg(params["limit"]),
@@ -607,7 +662,7 @@ class _Endpoint:
                 schema = self.api.tables[name.id]
                 order = schema.keys[0] if schema.keys else ()
                 return {"table": self.api.table_names[name.id], "order": order}
-            case "owned" | "mine":
+            case "accessible" | "owned" | "mine":
                 owner, via = self._owner(self._type(call))
                 return {"owner": owner} if via is None else {"via": via}
             case "page":
@@ -658,13 +713,15 @@ class _Endpoint:
                     case _:
                         flag = direction(desc)
                 out = {"by": _strs(kws["by"]), "desc": flag}
-                if "nulls" in kws:  # absent: "last"
+                if "nulls" in kws:  # absent: the profile's null order
                     out["nulls"] = _str(kws["nulls"])
+                elif self.null_order != "last":
+                    out["nulls"] = self.null_order
                 return out
             case "limit":
                 return {"n": _int(self._expr(kws["n"], subst))}
             case "window":
-                return window_params(call, kws, lambda e: self._expr(e, subst))
+                return window_params(call, kws, lambda e: self._expr(e, subst), self.null_order)
             case "traverse":
                 return traverse_params(kws, self._page_value(kws["max_depth"], subst))
             case _:
@@ -1001,12 +1058,33 @@ class _Endpoint:
         if key is None:
             raise LatticeInternalError(f"{ev.kind}() rows lack the key of {ev.table}")
         src = (source, schema.names())
+        written = ev.values
+        if ev.owner_from is not None and ev.schema.owner is not None:
+            # the new owner: the key of the one row of a users table read earlier
+            owner_step = rows_of(ev.owner_from, ev.span)
+            owner_cols = self._schema_of(ev.owner_from).names()
+            written += ((ev.schema.owner, RowsValue(owner_step, owner_cols, self.user_key)),)
+            values = tuple((c, _sql_text(e)) for c, e in written)
         if ev.kind == "update":
-            sql = compile_update(table, key, src, ev.values, dialect=self.dialect)
+            exists = None
+            if ev.missing is not None and ev.schema.owner is not None:
+                users = self.api.table_names[self.api.users_table]
+                exists = (users, self.user_key, ev.schema.owner)
+            sql = compile_update(table, key, src, written, exists=exists, dialect=self.dialect)
         else:
             sql = compile_delete(table, key, src, dialect=self.dialect)
         return WriteStep(
-            ev.id, ev.kind, table, source, values, ev.span, sql, schema, key, ev.conflict
+            ev.id,
+            ev.kind,
+            table,
+            source,
+            values,
+            ev.span,
+            sql,
+            schema,
+            key,
+            ev.conflict,
+            ev.missing,
         )
 
 
@@ -1045,7 +1123,7 @@ def _arg_columns(ev: _ForEach) -> list[tuple[str, ast.expr]]:
 def _tables(op: str) -> int:
     if op in OP_SHAPES:
         return OP_SHAPES[op].tables
-    return {"fetch": 0, "owned": 1, "mine": 1, "page": 1}[op]
+    return {"fetch": 0, "accessible": 1, "owned": 1, "mine": 1, "page": 1}[op]
 
 
 def _page_arg(v: int | ParamRef) -> int | str:

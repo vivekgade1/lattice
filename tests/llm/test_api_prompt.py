@@ -83,7 +83,7 @@ def test_advice_has_equal_substance_in_both_arms() -> None:
         assert lat.startswith(topic) and base.startswith(topic)
         assert 0.7 <= len(base) / len(lat) <= 1.3, topic
     lattice = "\n".join(LATTICE_ADVICE)
-    for needle in ("owned(t, by=user)", "owner=user", "404", "ge=, le=", "max_len=", "422"):
+    for needle in ("accessible(t, by=user)", "owner=user", "404", "ge=, le=", "max_len=", "422"):
         assert needle in lattice, needle
     for needle in ("return annotation", "else_=NotFound", "page(", "join", "group"):
         assert needle in lattice, needle
@@ -732,7 +732,7 @@ def test_both_arms_tell_accessible_rows_from_the_callers_own_rows() -> None:
     from lattice.llm.api_prompt import BASELINE_OWN_ROWS, LATTICE_OWN_ROWS
 
     assert LATTICE_OWN_ROWS == (
-        "- `owned(t, by=user)` = rows the caller may access (admins: all rows). "
+        "- `accessible(t, by=user)` = rows the caller may access (admins: all rows). "
         "`mine(t, by=user)` = the caller's own rows only (admins too) — use it for "
         "'my …' features."
     )
@@ -745,8 +745,31 @@ def test_both_arms_tell_accessible_rows_from_the_callers_own_rows() -> None:
 
 
 def test_owned_results_are_never_named_as_the_callers_own() -> None:
-    """Every owned() result in the Lattice guide reads as visible rows, not as "mine"."""
+    """Every accessible() result in the Lattice guide reads as visible rows, not as
+    "mine"."""
     prompt = api_lattice_system_prompt(hints=True)
-    bindings = re.findall(r"\b(\w+) = owned\(", prompt)
+    bindings = re.findall(r"\b(\w+) = accessible\(", prompt)
     assert bindings and all(b.startswith("visible") for b in bindings), bindings
     assert not re.search(r"\b(mine|my_\w+) = ", prompt)
+
+
+def test_both_arms_document_the_round2_fixes() -> None:
+    """Round 2 (spec 2026-09-27 lattice-t2 §6): the Lattice guide names `accessible`
+    (with `owned` as its older name), the caller references and the owner transfer;
+    the baseline guide carries the transfer rule in SQL terms (the caller's values are
+    its `current_user` dict already)."""
+    lattice = api_lattice_system_prompt(hints=False)
+    for needle in (
+        "`accessible(t, by=user)`",
+        "`owned(t, by=user)` is an older name",
+        "`user.id`",
+        "`is_admin(user)`",
+        "owner=<user row from one(...)>",
+        'else_=NotFound("...")',
+        "`null_order`",
+    ):
+        assert needle in lattice, needle
+    assert "= owned(" not in lattice
+    baseline = api_baseline_system_prompt(hints=False)
+    assert "SET owner_id = ?" in baseline and "answer 404 when no user" in baseline
+    assert '"id", "role", "email"' in baseline

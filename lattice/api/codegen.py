@@ -99,7 +99,7 @@ from lattice.api.outbox import (
     RETRY_SQL,
 )
 from lattice.api.runtime import auth_sql
-from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, sent_bind
+from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, caller_bind, sent_bind
 from lattice.catalog import EMAIL_MAX_LEN, USER_PARAM
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, UNSET, ParamSpec
@@ -914,6 +914,13 @@ def check_require(result: Result, flag: str, err: ErrorResponse) -> None:
         raise err
 
 
+def check_written(source: Result, returned: list[tuple[Any, ...]], err: ErrorResponse) -> None:
+    """An owner transfer (update(t, owner=..., else_=E)) wrote fewer rows than it was
+    given: the new owner is no users row -> the declared error."""
+    if len(returned) < len(source[1]):
+        raise err
+
+
 def merge_update(
     source: Result,
     returned: list[tuple[Any, ...]],
@@ -1338,6 +1345,11 @@ class _EndpointGen:
             items += [(_py_str(USER_ID), "user_id"), (_py_str(IS_ADMIN), "is_admin")]
         if sql.now:
             items += [(_py_str(NOW), _Call("sql_value", ("now",)))]
+        # user.<column>: the caller's stored value, from the row auth read
+        items += [
+            (_py_str(caller_bind(c)), f"caller.row[{self.plan.user_columns.index(c)}]")
+            for c in sql.caller
+        ]
         return _Dict(tuple(items))
 
     def run(self, step_id: str, sql: SqlQuery, conflict: ErrorSpec | None = None) -> _Call:
@@ -1397,6 +1409,9 @@ class _EndpointGen:
                 assert step.input is not None
                 self.comment(step.span.line, f"update {step.table}")
                 self.emit(self.run(step.id, step.sql, step.conflict), "returned = ")
+                if step.missing is not None:  # an owner transfer to a missing user
+                    check = (self.result(step.input), "returned", self.error_call(step.missing))
+                    self.emit(_Call("check_written", check))
                 args = (
                     self.result(step.input),
                     "returned",

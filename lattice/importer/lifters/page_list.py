@@ -1,8 +1,8 @@
 """list of the caller's rows: ``if caller.<admin flag>: <list-with-count of every row>
 else: <the same, both queries filtered on T.<owner> == caller.<key>>`` then the
-envelope -> ``fetch`` / ``owned(by=user)`` / ``sort`` / ``page(..., total=True)``.
+envelope -> ``fetch`` / ``accessible(by=user)`` / ``sort`` / ``page(..., total=True)``.
 
-``owned`` keeps an Admin caller's every row, so the two branches must be the same
+``accessible`` keeps an Admin caller's every row, so the two branches must be the same
 listing except for the owner filter (the profile's owner column, compared with the
 caller's key) and the test the profile's admin column (see ``_listing``)."""
 
@@ -14,7 +14,10 @@ from lattice.importer.extract import RepoModel
 from lattice.importer.lifters._listing import listing, page_fragment, tail
 from lattice.importer.lifters.base import LiftFragment, RouteSource, attr_of
 
-IDIOM = "if superuser: list all else: list owned (offset/limit + count) -> owned + page(total=True)"
+IDIOM = (
+    "if superuser: list all else: list owned (offset/limit + count) "
+    "-> accessible + page(total=True)"
+)
 
 
 def match(route: RouteSource, model: RepoModel) -> LiftFragment | None:
