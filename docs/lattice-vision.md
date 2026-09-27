@@ -94,12 +94,18 @@ Versioning (`# lattice: v1` header) already exists, so the language can evolve w
 
 ## 6. Roadmap
 
-| Phase | Deliverable | Proves |
+### Done
+Tabular + API profiles, checker, plan IR, polars/SQL runtimes, FastAPI code generation (differentially verified), fair benchmark with cost/size/latency metrics, implicit-requirements evidence.
+
+### Import → Lattice → emit programme (in progress)
+
+| # | Sub-project | Delivers |
 |---|---|---|
-| Now | API benchmark live runs (Haiku/Sonnet/Opus, hints/no-hints) | guarantees reduce silent API bugs at acceptable cost |
-| 1 | **Typed native functions** (escape hatch) | "any complex logic" without losing guarantees around it |
-| 2 | **Lifters**: SQL → Lattice reads; FastAPI+SQL CRUD → endpoints; pandas chains → pipelines; LLM-assisted lift + differential verification | existing code can enter Lattice with tested equivalence |
-| 3 | **Edit-and-emit workflow**: LLM edits lifted Lattice, emit a minimal diff to the original repo | Lattice as the interface for changing existing code |
-| 4 | **Learning loop v1**: verified-program corpus + retrieval few-shots; failure clustering dashboard proposing constructs | fluency and language improve with use |
-| 5 | Bounded iteration & window functions; optimizer pass; more targets (SQL for tabular, TypeScript/Go for APIs) | expressiveness and optimality grow under guarantees |
-| 6 | Fine-tuned Lattice models from the corpus (optional) | shorter prompts, lower cost, higher first-shot accuracy |
+| 1 | **Language extensions for real apps** (in progress) | `Uuid`/`DateTime`, page + total and app page shapes, declared response models, partial updates (`UNSET`), faithful 403 ownership (`owner_is`, policy warning), typed pure native functions, pluggable auth, backend capability model + dialect-neutral SQL layer; proven on the official FastAPI template's items/users/login routes |
+| 1b | **Loop-shaped constructs** | window functions (running totals, rank, lag/lead), bounded `iterate(step, until=…, max=N)`, `traverse(edges, start=…, max_depth=N)` (recursive CTE / `$graphLookup`), batched side-effect natives (`for_each`, run after commit); each compiled to SQL, polars and generated FastAPI with differential tests. Unbounded loops stay out of checked Lattice by design — they live in native functions |
+| 2 | **Importer** | FastAPI + SQLModel → Lattice + native islands; LLM-assisted with differential equivalence verification, deterministic lifters for recurring idioms; loop patterns mapped to 1b constructs; per-repo coverage + policy-deviation report |
+| 3 | **SQLModel emitter + edit loop** | idiomatic SQLModel/FastAPI in the repo's style; import → LLM edits Lattice → emit minimal diff; emitter proven equal to the runtime |
+| 4 | **Backends** | Postgres + MySQL, then MongoDB (aggregation pipelines), then ClickHouse (reads first); capability model rejects programs a backend cannot run with full guarantees |
+
+### Later
+Learning loop (verified-program corpus, retrieval few-shots, failure clustering proposing constructs), optimizer pass, more targets (TypeScript/Go), optional fine-tuned Lattice models.
