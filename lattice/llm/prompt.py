@@ -178,7 +178,8 @@ def _expression_library_section() -> str:
             f"`agg.{name}(x, of=o)`" if name in ORDER_AGGS else f"`agg.{name}(...)`"
             for name in sorted(AGG_FUNCS)
         )
-        + ". `agg.count()` counts rows and `agg.count(x)` counts the non-null values of x; "
+        + ". `agg.count()` counts rows, `agg.count(x)` the non-null values of x, "
+        "`agg.count_distinct(x)` its distinct non-null values; "
         "at_min/at_max give x where o is smallest/largest (ties: earliest row); an "
         "earlier sort does not change which row is picked; "
         "every other aggregate takes one column expression."
@@ -466,9 +467,8 @@ explicitly, e.g. `pd.DataFrame({"total": [df["x"].sum()], "n": [len(df)]})`.
 `df.groupby(keys)["qty"].transform("sum")`); a single-row frame can also be \
 attached to every row with `df.merge(one_row, how="cross")`. Named scalar constants \
 are fine and often help readability, e.g. `cutoff = pd.Timestamp("2025-01-01")` or \
-`min_qty = 5`. In aggregations `"count"` counts the non-null values of a column \
-while `"size"` counts every row, nulls \
-included.
+`min_qty = 5`. In aggregations `"count"` counts the non-null values of a column, \
+`"nunique"` its distinct non-null values, and `"size"` every row, nulls included.
 - Conditionals: `np.where(cond, a, b)` for two branches; for several ordered \
 branches use `np.select([c1, c2], [v1, v2], default=v3)` — the first true \
 condition wins. Null handling: `s.isna()` tests for null, `s.fillna(v)` \

@@ -577,6 +577,17 @@ class ExprTyper:
                 "L106", node, f"unknown aggregate agg.{attr}", did_you_mean(attr, sorted(AGG_FUNCS))
             )
             return None
+        if attr == "count_distinct":
+            if len(node.args) != 1 or node.keywords:
+                self.ctx.error(
+                    "L404",
+                    node,
+                    "agg.count_distinct takes one column expression",
+                    'write agg.count_distinct(col("customer_id"))',
+                )
+                return None
+            counted = self.type_of(node.args[0])  # any scalar type
+            return None if isinstance(counted, UnknownT) else Scalar.INT
         if attr == "count":
             if not node.args and not node.keywords:
                 return Scalar.INT  # counts rows

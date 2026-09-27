@@ -337,6 +337,8 @@ def compile_agg(func: str, arg: ast.expr | None, order: ast.expr | None = None) 
             out = x.max()
         case "count":
             out = x.count().cast(pl.Int64)  # polars count() excludes nulls
+        case "count_distinct":
+            out = x.drop_nulls().n_unique().cast(pl.Int64)
         case _:
             raise LatticeInternalError(f"unknown aggregate agg.{func}")
     return Compiled(out, inner.guards)

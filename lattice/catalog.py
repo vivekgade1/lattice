@@ -39,7 +39,7 @@ EXPR_FUNCS = frozenset({"col", "when", "coalesce", "is_null"})
 NAMESPACES = frozenset({"agg", "fn"})
 TYPE_NAMES = frozenset({"Table", "Int", "Float", "Str", "Bool", "Date"})
 IMPORTABLE = TABLE_OPS | EXPR_FUNCS | NAMESPACES | TYPE_NAMES | {"step"}
-AGG_FUNCS = frozenset({"sum", "mean", "min", "max", "count", "at_min", "at_max"})
+AGG_FUNCS = frozenset({"sum", "mean", "min", "max", "count", "count_distinct", "at_min", "at_max"})
 # aggregates that pick one row's value by an ordering expression: agg.at_max(x, of=o)
 ORDER_AGGS = frozenset({"at_min", "at_max"})
 # Rejected names: "first"/"last" read as "first row after a sort" (the pandas idiom), but

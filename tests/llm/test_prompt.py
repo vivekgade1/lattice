@@ -123,7 +123,7 @@ def test_date_diff_documents_argument_order_and_unit() -> None:
 
 def test_rules_state_count_cross_join_and_constants() -> None:
     prompt = lattice_system_prompt()
-    assert "`agg.count(x)` counts the non-null values of x" in prompt
+    assert "`agg.count(x)` the non-null values of x" in prompt
     assert 'join(l, r, on=[], how="inner")' in prompt
     assert "at most one row" in prompt
     assert "named constant" in prompt
