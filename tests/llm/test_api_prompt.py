@@ -518,3 +518,17 @@ def test_lattice_examples_answer_like_the_fastapi_examples(
     lattice_statuses = [(c.name, c.status) for c in results.cases]
     fastapi_statuses = [(c.name, c.status) for c in fastapi_results[index].cases]
     assert lattice_statuses == fastapi_statuses
+
+
+def test_implicit_view_gives_both_arms_the_same_implicit_message() -> None:
+    """Spec §5.6: under --implicit both arms' task message carries the implicit spec
+    (never the explicit one) and still differs only in the arm line."""
+    implicit = [t for t in suite("api") if t.implicit_spec is not None]
+    assert implicit
+    for task in implicit:
+        view = task.implicit_view()
+        lattice = api_task_message(view, "lattice")
+        baseline = api_task_message(view, "baseline")
+        assert lattice.startswith(task.implicit_spec) and baseline.startswith(task.implicit_spec)
+        assert task.spec not in lattice and task.spec not in baseline
+        assert lattice.splitlines()[:-1] == baseline.splitlines()[:-1]

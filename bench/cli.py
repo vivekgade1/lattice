@@ -12,6 +12,7 @@ constraints).
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import datetime
 import importlib
 import re
@@ -36,6 +37,7 @@ from bench.report import (
 from bench.runners import (
     Arm,
     TaskOutcome,
+    api_condition,
     harness_error_outcome,
     prepare_workdir,
     run_api_baseline,
@@ -96,6 +98,12 @@ def _build_parser() -> argparse.ArgumentParser:
         default="runtime",
         choices=("runtime", "generated"),
         help="api suite: serve Lattice arms (B/C) with the runtime or the generated FastAPI app",
+    )
+    run_parser.add_argument(
+        "--implicit",
+        action="store_true",
+        help="api suite: implicit-requirements condition -- both arms get the task specs "
+        "without the org-policy sentences; the hidden cases still expect the policy",
     )
 
     report_parser = subparsers.add_parser(
@@ -212,6 +220,7 @@ def _run_one_api(
     max_repairs: int,
     hints: bool = True,
     lattice_backend: str = "runtime",
+    implicit: bool = False,
 ) -> TaskOutcome:
     workdir = _prepare_api_workdir(work_root / arm, task.id)
     if offline_dir is not None:
@@ -228,6 +237,7 @@ def _run_one_api(
             arm=arm,
             max_repairs=max_repairs if arm == "P" else 0,
             hints=hints,
+            implicit=implicit,
         )
     if arm in ("B", "C"):
         return run_api_lattice(
@@ -241,6 +251,7 @@ def _run_one_api(
             hints=hints,
             backend=lattice_backend,
             kit_path=context.kit_path,
+            implicit=implicit,
         )
     raise ValueError(f"unknown arm: {arm!r}")
 
@@ -251,6 +262,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "report":
         return _report(Path(args.out_dir), args.merge)
+
+    if args.implicit and args.suite != "api":
+        parser.error("--implicit applies to --suite api only")
 
     arms: tuple[Arm, ...] = tuple(a.strip() for a in args.arms.split(",") if a.strip())  # type: ignore[assignment]
 
@@ -305,6 +319,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     max_repairs=args.max_repairs,
                     hints=not args.no_hints,
                     lattice_backend=args.lattice_backend,
+                    implicit=args.implicit,
                 )
             else:
                 outcome = _run_one(
@@ -322,6 +337,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             if not isinstance(exc, Exception) and not is_panic(exc):
                 raise
             outcome = harness_error_outcome(task, arm, exc)
+            if api_context is not None:
+                outcome = dataclasses.replace(outcome, condition=api_condition(args.implicit))
         with append_lock:
             append_outcome(outcomes_path, outcome)
         return outcome

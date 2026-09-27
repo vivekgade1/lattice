@@ -260,6 +260,30 @@ def evaluate_case(
     return True, ""
 
 
+def resolve_expected_status(case: dict, status: int) -> dict:
+    """``case`` with ``expect_status_any`` applied (spec §5.6): when the case lists
+    alternative statuses and ``status`` is one of them, it stands in for
+    ``expect_status``; otherwise (always, for explicit cases) ``case`` itself."""
+    allowed = case.get("expect_status_any")
+    if allowed and status in allowed:
+        return {**case, "expect_status": status}
+    return case
+
+
+def evaluate_http_case(
+    case: dict,
+    status: int,
+    body: object,
+    queries: int,
+    after_rows: list | None,
+    crash: str,
+) -> tuple[bool, str]:
+    """``evaluate_case`` on ``resolve_expected_status(case, status)``: every other
+    expectation is checked unchanged."""
+    case = resolve_expected_status(case, status)
+    return evaluate_case(case, status, body, queries, after_rows, crash)
+
+
 # --- end driver helpers ---
 
 _HELPERS = (
@@ -272,6 +296,8 @@ _HELPERS = (
     _match_rows,
     _server_error,
     evaluate_case,
+    resolve_expected_status,
+    evaluate_http_case,
 )
 
 _DRIVER_TEMPLATE = '''\
@@ -399,6 +425,7 @@ def _run_case(case, app):
                 conn.close()
         except Exception:
             after_rows = None
+    case = resolve_expected_status(case, status)
     passed, reason = evaluate_case(case, status, body, queries, after_rows, crash)
     return {
         "name": case["name"], "kind": case["kind"], "family": case["family"],
@@ -590,7 +617,7 @@ def _run_case_in_process(app: Any, case: HttpCase, db_path: Path, counter: list[
                 conn.close()
         except sqlite3.Error:
             after_rows = None
-    passed, reason = evaluate_case(_case_dict(case), status, body, queries, after_rows, crash)
+    passed, reason = evaluate_http_case(_case_dict(case), status, body, queries, after_rows, crash)
     return CaseResult(
         name=case.name,
         kind=case.kind,

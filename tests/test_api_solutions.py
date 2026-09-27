@@ -193,3 +193,72 @@ def test_lattice_solution_passes_every_case(task_id: str, pristine_db: Path, tmp
         profile=api_profile(),
     )
     assert classify(results) == "correct", _describe(results)
+
+
+# ------------------------------------------------ implicit-requirements condition --
+# (spec §5.6) The same solutions under each task's implicit view: the policy sentences
+# are gone from the spec, the hidden cases still expect the policy (403 or 404 for
+# another customer's row). The reference solutions stay correct; the naive ownership
+# scripts are still caught.
+
+IMPLICIT_IDS = [t.id for t in API_TASKS if t.implicit_spec is not None]
+IMPLICIT_OWNERSHIP_IDS = [t for t in IMPLICIT_IDS if TASKS[t].family == "ownership"]
+
+
+@pytest.fixture(scope="session")
+def fastapi_implicit_runs(
+    pristine_db: Path, tmp_path_factory: pytest.TempPathFactory
+) -> Mapping[tuple[str, str], CaseResults]:
+    root = tmp_path_factory.mktemp("api_implicit_runs")
+    jobs = [(task_id, "fastapi_correct") for task_id in IMPLICIT_IDS]
+    jobs += [(task_id, "fastapi_naive") for task_id in IMPLICIT_OWNERSHIP_IDS]
+
+    def run(job: tuple[str, str]) -> CaseResults:
+        task_id, kind = job
+        return run_cases_fastapi(
+            (SOLUTIONS / task_id / f"{kind}.py").read_text(),
+            root / f"{task_id}_{kind}",
+            TASKS[task_id].implicit_view(),
+            db_builder=_copier(pristine_db),
+            kit_path=KIT_PATH,
+        )
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        return dict(zip(jobs, pool.map(run, jobs), strict=True))
+
+
+def test_implicit_condition_covers_ownership_and_efficiency():
+    assert len(IMPLICIT_IDS) == 16 and len(IMPLICIT_OWNERSHIP_IDS) == 8
+
+
+@pytest.mark.parametrize("task_id", IMPLICIT_IDS)
+def test_implicit_fastapi_correct_passes_every_case(task_id: str, fastapi_implicit_runs):
+    results = fastapi_implicit_runs[(task_id, "fastapi_correct")]
+    assert classify(results) == "correct", _describe(results)
+    assert len(results.cases) == len(TASKS[task_id].cases)
+
+
+@pytest.mark.parametrize("task_id", IMPLICIT_OWNERSHIP_IDS)
+def test_implicit_fastapi_naive_still_fails_an_ownership_trap(task_id: str, fastapi_implicit_runs):
+    results = fastapi_implicit_runs[(task_id, "fastapi_naive")]
+    assert results.started, _describe(results)
+    assert all(c.passed for c in results.cases if c.kind == "happy"), _describe(results)
+    failed = [c for c in results.cases if not c.passed]
+    assert failed and all(c.kind == "trap" for c in failed), _describe(results)
+    assert classify(results) == "silent", _describe(results)
+
+
+@pytest.mark.parametrize("task_id", IMPLICIT_IDS)
+def test_implicit_lattice_solution_passes_every_case(
+    task_id: str, pristine_db: Path, tmp_path: Path
+):
+    if _lattice_runtime() is None:
+        pytest.skip("lattice.api.runtime (serve_source) is not built yet")
+    results = run_cases_lattice(
+        (SOLUTIONS / task_id / "lattice.py").read_text(),
+        tmp_path,
+        TASKS[task_id].implicit_view(),
+        db_builder=_copier(pristine_db),
+        profile=api_profile(),
+    )
+    assert classify(results) == "correct", _describe(results)

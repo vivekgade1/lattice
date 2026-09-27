@@ -7,7 +7,7 @@ loads it lazily.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Literal
 
 CaseKind = Literal["happy", "trap"]
@@ -29,7 +29,9 @@ class HttpCase:
     serving the request, authentication included. ``after_sql`` is run against the
     DB after the request and its rows must equal ``after_expect`` (a list of rows;
     a bare scalar is a one-column row; row order significant only if ``ordered``).
-    Keyword-only, so the field order can follow the spec.
+    ``expect_status_any`` (implicit-requirements condition, spec §5.6), when set,
+    accepts any of its statuses in place of ``expect_status``; every other
+    expectation still applies. Keyword-only, so the field order can follow the spec.
     """
 
     name: str
@@ -46,6 +48,7 @@ class HttpCase:
     max_queries: int | None = None
     after_sql: str | None = None
     after_expect: list | None = None
+    expect_status_any: tuple[int, ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -54,6 +57,23 @@ class ApiTask:
     family: str  # ownership | validation | errors | efficiency | control
     spec: str  # natural-language endpoint spec(s)
     cases: tuple[HttpCase, ...]
+    # Implicit-requirements condition (spec §5.6): the same ticket without the
+    # org-policy sentences, and the same cases with a status tolerance where that
+    # spec no longer fixes one. None = use ``spec`` / ``cases``.
+    implicit_spec: str | None = None
+    implicit_cases: tuple[HttpCase, ...] | None = None
+
+    def implicit_view(self) -> ApiTask:
+        """The task as the implicit condition runs it: ``spec`` and ``cases``
+        replaced by their implicit versions (when set). Everything downstream --
+        both arms' task message, the case runners -- just uses the view."""
+        return replace(
+            self,
+            spec=self.implicit_spec if self.implicit_spec is not None else self.spec,
+            cases=self.implicit_cases if self.implicit_cases is not None else self.cases,
+            implicit_spec=None,
+            implicit_cases=None,
+        )
 
     @property
     def tier(self) -> str:

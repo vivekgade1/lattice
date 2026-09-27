@@ -176,6 +176,9 @@ class TaskOutcome:
     max_queries: int = 0
     mean_latency_ms: float = 0.0
     failed_cases: tuple[str, ...] = ()
+    # API suite: the spec condition ("implicit" = org-policy sentences removed from
+    # the task specs, spec 2026-09-27 §5.6); "" = the explicit specs (old JSONL).
+    condition: str = ""
 
 
 def _wrote_exact(workdir: Path, name: str) -> bool:
@@ -989,15 +992,37 @@ def _run_api_lattice(
     raise AssertionError("unreachable")  # pragma: no cover
 
 
-def run_api_baseline(task: Any, generator: Generator, *args: Any, **kwargs: Any) -> TaskOutcome:
-    """Arms A/P on an ``ApiTask`` (see ``_run_api_baseline``)."""
+API_CONDITION_IMPLICIT = "implicit"
+
+
+def api_condition(implicit: bool) -> str:
+    """The ``TaskOutcome.condition`` of an api run ("" for the explicit specs)."""
+    return API_CONDITION_IMPLICIT if implicit else ""
+
+
+def run_api_baseline(
+    task: Any, generator: Generator, *args: Any, implicit: bool = False, **kwargs: Any
+) -> TaskOutcome:
+    """Arms A/P on an ``ApiTask`` (see ``_run_api_baseline``). ``implicit`` runs the
+    task's implicit view (its implicit spec in the task message, its implicit cases)."""
     counter = _RefusalCounter(generator)
+    if implicit:
+        task = task.implicit_view()
     outcome = _run_api_baseline(task, counter, *args, **kwargs)
-    return dataclasses.replace(outcome, refused_attempts=counter.count)
+    return dataclasses.replace(
+        outcome, refused_attempts=counter.count, condition=api_condition(implicit)
+    )
 
 
-def run_api_lattice(task: Any, generator: Generator, *args: Any, **kwargs: Any) -> TaskOutcome:
-    """Arms B/C on an ``ApiTask`` (see ``_run_api_lattice``)."""
+def run_api_lattice(
+    task: Any, generator: Generator, *args: Any, implicit: bool = False, **kwargs: Any
+) -> TaskOutcome:
+    """Arms B/C on an ``ApiTask`` (see ``_run_api_lattice``); ``implicit`` as in
+    ``run_api_baseline`` -- both arms see the same view."""
     counter = _RefusalCounter(generator)
+    if implicit:
+        task = task.implicit_view()
     outcome = _run_api_lattice(task, counter, *args, **kwargs)
-    return dataclasses.replace(outcome, refused_attempts=counter.count)
+    return dataclasses.replace(
+        outcome, refused_attempts=counter.count, condition=api_condition(implicit)
+    )

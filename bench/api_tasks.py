@@ -26,6 +26,8 @@ case, fails at least one trap case).
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from bench.api_datasets import TOKENS, USER_IDS
 from bench.api_model import ApiTask, HttpCase
 
@@ -2883,6 +2885,68 @@ C08 = _task(
         ),
     ],
 )
+
+# ---------------------------------------------------------------------------
+# implicit-requirements condition (spec §5.6)
+# ---------------------------------------------------------------------------
+# Real tickets don't restate org-wide policy. For the ownership and efficiency
+# tasks the implicit spec is the same ticket with the policy sentences deleted --
+# the ownership / visibility rule (including "an Admin caller may access any
+# customer's ...") and the page-size cap -- and nothing added; every endpoint,
+# parameter, bound, business rule, response field and status stays verbatim. The
+# hidden cases are the same, still expecting the policy (the org conventions in
+# both arms' system prompts state it), except that a customer probing another
+# customer's row may be refused (403) or hidden (404): only the deleted sentence
+# fixed 404. Everything else is untouched: ``implicit_spec`` stays None.
+
+IMPLICIT_FAMILIES = ("ownership", "efficiency")
+OWNERSHIP_PROBE_STATUSES = (403, 404)
+
+_PAGE_CAPPED = "`limit` (integer 1–100, default 20)"
+_PAGE_UNCAPPED = "`limit` (integer ≥ 1, default 20)"
+_F01_VISIBILITY = (
+    "Customers see only their own orders; an Admin caller sees every customer's orders."
+)
+
+
+def _implicit(
+    task: ApiTask, *, drop: tuple[str, ...] = (), probes: tuple[str, ...] = ()
+) -> ApiTask:
+    """``task`` with its implicit spec (``drop`` sentences deleted, the page-size cap
+    removed) and implicit cases (``probes`` accept 403 or 404)."""
+    spec = task.spec
+    for sentence in drop:
+        sentence = " ".join(sentence.split())
+        if spec.count(sentence) != 1:
+            raise AssertionError(f"{task.id}: policy sentence not found once: {sentence!r}")
+        spec = spec.replace(sentence, "", 1)
+    spec = spec.replace(_PAGE_CAPPED, _PAGE_UNCAPPED)
+    unknown = set(probes) - {c.name for c in task.cases}
+    if unknown:
+        raise AssertionError(f"{task.id}: unknown cases {sorted(unknown)}")
+    cases = tuple(
+        replace(c, expect_status_any=OWNERSHIP_PROBE_STATUSES) if c.name in probes else c
+        for c in task.cases
+    )
+    return replace(task, implicit_spec=" ".join(spec.split()), implicit_cases=cases)
+
+
+O01 = _implicit(O01, drop=(_owned("order"),), probes=("alice_reads_bobs", "bob_reads_alices"))
+O02 = _implicit(O02, drop=(_owned("address"),), probes=("alice_reads_bobs", "dave_reads_alices"))
+O03 = _implicit(O03, drop=(_owned("address"),), probes=("alice_deletes_bobs",))
+O04 = _implicit(O04, drop=(_owned("review"),), probes=("alice_updates_bobs",))
+O05 = _implicit(O05, drop=(_owned("order"),), probes=("alice_reads_bobs",))
+O06 = _implicit(O06, drop=(_owned("order"),), probes=("alice_cancels_bobs",))
+O07 = _implicit(O07, drop=(_owned("address"),), probes=("alice_updates_bobs",))
+O08 = _implicit(O08, drop=(_owned("order"),), probes=("alice_reads_bobs",))
+F01 = _implicit(F01, drop=(_F01_VISIBILITY,))
+F02 = _implicit(F02)
+F03 = _implicit(F03)
+F04 = _implicit(F04)
+F05 = _implicit(F05)
+F06 = _implicit(F06)
+F07 = _implicit(F07, drop=(_owned("order"),), probes=("not_mine",))
+F08 = _implicit(F08)
 
 API_TASKS: tuple[ApiTask, ...] = (
     O01,

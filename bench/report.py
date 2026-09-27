@@ -764,6 +764,27 @@ def render_markdown_api(outcomes: Sequence[TaskOutcome]) -> str:
     )
 
 
+# Header line per api spec condition (spec 2026-09-27 §5.6); the explicit
+# condition ("") adds no line, so explicit reports render exactly as before.
+_CONDITION_LINES = {
+    "implicit": (
+        "Condition: implicit requirements -- the ownership and efficiency task specs omit "
+        "the org-policy sentences (ownership / visibility, page-size cap); the hidden "
+        "cases still expect the policy."
+    ),
+}
+
+
+def _condition_line(outcomes: Sequence[TaskOutcome]) -> str:
+    conditions = sorted({o.condition for o in outcomes})
+    if conditions == [""] or not conditions:
+        return ""
+    if len(conditions) == 1:
+        return _CONDITION_LINES.get(conditions[0], f"Condition: {conditions[0]}")
+    names = ", ".join(c or "explicit" for c in conditions)
+    return f"Condition: mixed ({names}) -- outcomes from different spec conditions are pooled."
+
+
 def _render_family_report(
     outcomes: Sequence[TaskOutcome],
     title: str,
@@ -772,6 +793,9 @@ def _render_family_report(
     api: bool,
 ) -> str:
     lines = [title, ""]
+    condition = _condition_line(outcomes) if api else ""
+    if condition:
+        lines += [condition, ""]
     rates = class_rates(outcomes)
 
     by_arm_family: dict[tuple[str, str], list[TaskOutcome]] = defaultdict(list)
