@@ -133,11 +133,13 @@ def run_python_script(
     timeout_s: float = 60.0,
     *,
     max_file_bytes: int = DEFAULT_MAX_FILE_BYTES,
+    script_name: str = "solution.py",
 ) -> ScriptResult:
-    """Write ``code`` to ``workdir/solution.py`` and run it in an isolated subprocess."""
+    """Write ``code`` to ``workdir/<script_name>`` (default ``solution.py``) and
+    run it in an isolated subprocess."""
     workdir.mkdir(parents=True, exist_ok=True)
     workdir = workdir.resolve()
-    script_path = workdir / "solution.py"
+    script_path = workdir / script_name
     script_path.write_text(code)
     tmpdir = workdir / ".tmp"
     tmpdir.mkdir(exist_ok=True)
@@ -148,7 +150,7 @@ def run_python_script(
         "TMPDIR": str(tmpdir),
     }
 
-    argv = [sys.executable, "-I", "solution.py"]
+    argv = [sys.executable, "-I", script_name]
     if sandbox_exec_available():
         argv = [_SANDBOX_EXEC, "-p", sandbox_profile(workdir), *argv]
 

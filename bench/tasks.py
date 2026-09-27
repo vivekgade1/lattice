@@ -42,6 +42,15 @@ def suite(name: str) -> tuple[Task, ...]:
                 raise
             return ()
         return BENCH2_TASKS
+    if name == "api":
+        # API suite: a tuple of bench.api_model.ApiTask (not Task).
+        try:
+            from bench.api_tasks import API_TASKS
+        except ModuleNotFoundError as exc:  # until the api tasks module exists
+            if exc.name != "bench.api_tasks":
+                raise
+            return ()
+        return API_TASKS  # type: ignore[return-value]
     if name == "all":
         from bench.deep_tasks import DEEP_TASKS
         from bench.more_tasks import MORE_TASKS

@@ -169,6 +169,13 @@ class TaskOutcome:
     # pandas failure labels; () for a round that ran and wrote output.
     diagnostics_per_round: tuple[tuple[str, ...], ...] = ()
     cost_usd: float = 0.0  # tokens x bench.metrics.PRICES; 0 for an unknown model
+    # API suite only (final round's case run; 0 / () when no case ran):
+    # SQL data statements per request (mean and max over the cases, auth
+    # included), mean request latency, and the names of the failed cases.
+    mean_queries: float = 0.0
+    max_queries: int = 0
+    mean_latency_ms: float = 0.0
+    failed_cases: tuple[str, ...] = ()
 
 
 def _wrote_exact(workdir: Path, name: str) -> bool:
@@ -655,4 +662,281 @@ def run_lattice(task: Task, generator: Generator, *args: Any, **kwargs: Any) -> 
 def run_baseline_repair(task: Task, generator: Generator, *args: Any, **kwargs: Any) -> TaskOutcome:
     counter = _RefusalCounter(generator)
     outcome = _run_baseline_repair(task, counter, *args, **kwargs)
+    return dataclasses.replace(outcome, refused_attempts=counter.count)
+
+
+# --------------------------------------------------------------------------
+# API suite (spec 2026-09-27 §5.4): arms A/P (FastAPI) and B/C (Lattice API).
+# --------------------------------------------------------------------------
+
+_API_SERVER_ERROR = "server error: "
+_API_RETURN_SCRIPT = "Return the complete corrected script in one ```python block."
+
+
+def _api_prompts(prompts: Any) -> Any:
+    """The prompt module (``lattice.llm.api_prompt``), imported lazily unless injected."""
+    if prompts is not None:
+        return prompts
+    import importlib
+
+    return importlib.import_module("lattice.llm.api_prompt")
+
+
+def _api_visible_failure(results: Any) -> tuple[str, str] | None:
+    """(label, error text) for a loud failure the model may be told about, or
+    None. Only three things are ever surfaced, and never a case's name, request
+    or expected values: the app did not start (its error output), a happy case
+    crashed the app (the traceback), or every happy case failed (the status
+    codes received). Trap-case results are never surfaced."""
+    if not results.started:
+        return ("timeout" if results.timed_out else "start_error", results.start_error)
+    happy = [c for c in results.cases if c.kind == "happy"]
+    for c in happy:
+        if c.reason.startswith(_API_SERVER_ERROR):
+            return ("crash", c.reason[len(_API_SERVER_ERROR) :])
+    if happy and all(not c.passed for c in happy):
+        statuses = ", ".join(str(c.status) for c in happy)
+        return (
+            "happy_failed",
+            f"the app started, but every basic request failed (response statuses: {statuses})",
+        )
+    return None
+
+
+def _api_repair_message(label: str, text: str) -> str:
+    tail = "\n".join(text.splitlines()[-_STDERR_TAIL_LINES:])
+    return f"The app failed: {label}. Error output:\n{tail}\n{_API_RETURN_SCRIPT}"
+
+
+def _api_verdict(results: Any) -> tuple[bool, str | None, str]:
+    """(correct, failure label, detail) for a run whose code produced a result."""
+    from bench.api_runner import classify
+
+    verdict = classify(results)
+    failed = [c for c in results.cases if not c.passed]
+    detail = "; ".join(f"{c.name}: {c.reason}" for c in failed)[:_DETAIL_LIMIT]
+    if verdict == "correct":
+        return True, None, ""
+    if verdict == "silent":
+        return False, "wrong_result", detail
+    visible = _api_visible_failure(results)
+    if not results.started:
+        assert visible is not None
+        return False, visible[0], results.start_error[:_DETAIL_LIMIT]
+    if any(c.kind == "happy" and c.reason.startswith(_API_SERVER_ERROR) for c in failed):
+        return False, "crash", detail
+    return False, "happy_failed", detail
+
+
+def _api_outcome(ledger: _Ledger, results: Any, **kwargs: Any) -> TaskOutcome:
+    from bench.api_runner import query_stats
+
+    outcome = ledger.outcome(**kwargs)
+    if results is None or not results.cases:
+        return outcome
+    mean_q, max_q, mean_ms = query_stats(results)
+    return dataclasses.replace(
+        outcome,
+        mean_queries=mean_q,
+        max_queries=max_q,
+        mean_latency_ms=mean_ms,
+        failed_cases=tuple(c.name for c in results.cases if not c.passed),
+    )
+
+
+def _run_api_baseline(
+    task: Any,
+    generator: Generator,
+    workdir: Path,
+    *,
+    db_builder: Any,
+    kit_path: Path,
+    arm: Literal["A", "P"] = "P",
+    max_repairs: int = 2,
+    hints: bool = True,
+    prompts: Any = None,
+    timeout_s: float = 60.0,
+) -> TaskOutcome:
+    """Arms A (single shot) and P (repair): a FastAPI script run against the
+    task's HTTP cases in the sandbox. P repairs only on a visible loud failure
+    (see ``_api_visible_failure``) or a response without code; a run whose happy
+    cases pass is final, so a failed trap case is never surfaced."""
+    from bench.api_runner import run_cases_fastapi
+
+    if arm == "A":
+        max_repairs = 0
+    api_prompt = _api_prompts(prompts)
+    system = api_prompt.api_baseline_system_prompt(hints=hints)
+    messages: list[dict[str, str]] = [
+        {"role": "user", "content": api_prompt.api_task_message(task, "baseline")}
+    ]
+    ledger = _Ledger(task, arm)
+
+    for attempt in range(max_repairs + 1):
+        try:
+            generation = generator.generate(system, messages)
+        except GenerationRefused as exc:
+            return ledger.refused(exc, check_passed=None)
+        ledger.generations.append(generation)
+
+        code = extract_code(generation.text)
+        ledger.start_round(code)
+        results = None
+        if code is None:
+            failure, detail = "no_code", "response contained no ```python code block"
+            feedback = _api_repair_message(failure, detail)
+        else:
+            started = time.perf_counter()
+            results = run_cases_fastapi(
+                code,
+                workdir,
+                task,
+                db_builder=db_builder,
+                kit_path=kit_path,
+                timeout_s=timeout_s,
+            )
+            ledger.exec_s = time.perf_counter() - started
+            correct, label, detail = _api_verdict(results)
+            visible = _api_visible_failure(results)
+            if visible is None or correct:
+                ledger.diagnostics.append(() if label in (None, "wrong_result") else (label,))
+                return _api_outcome(
+                    ledger,
+                    results,
+                    correct=correct,
+                    check_passed=None,
+                    failure=label,
+                    detail=detail,
+                )
+            failure = label or visible[0]
+            feedback = _api_repair_message(visible[0], visible[1])
+
+        ledger.diagnostics.append((failure,))
+        if attempt == max_repairs:
+            return _api_outcome(
+                ledger, results, correct=False, check_passed=None, failure=failure, detail=detail
+            )
+        messages.append({"role": "assistant", "content": generation.text})
+        messages.append({"role": "user", "content": feedback})
+
+    raise AssertionError("unreachable")  # pragma: no cover
+
+
+def _run_api_lattice(
+    task: Any,
+    generator: Generator,
+    workdir: Path,
+    *,
+    db_builder: Any,
+    profile: Profile,
+    arm: Literal["B", "C"] = "B",
+    max_repairs: int = 2,
+    hints: bool = True,
+    prompts: Any = None,
+    serve: Any = None,
+    hooks: Any = None,
+) -> TaskOutcome:
+    """Arms B (repair) and C (single shot): a Lattice API program, checked and
+    served by the runtime, run against the task's HTTP cases in process.
+
+    B repairs on the checker's diagnostics (the same message as bench2's static
+    repair) and on the same visible run-time failures arm P repairs on (start
+    error, a crashed happy case, every happy case failing) -- never on a trap
+    case."""
+    from bench.api_runner import run_cases_lattice
+
+    if arm == "C":
+        max_repairs = 0
+    workdir.mkdir(parents=True, exist_ok=True)
+    api_prompt = _api_prompts(prompts)
+    system = api_prompt.api_lattice_system_prompt(hints=hints)
+    messages: list[dict[str, str]] = [
+        {"role": "user", "content": api_prompt.api_task_message(task, "lattice")}
+    ]
+    ledger = _Ledger(task, arm)
+
+    for attempt in range(max_repairs + 1):
+        try:
+            generation = generator.generate(system, messages)
+        except GenerationRefused as exc:
+            return ledger.refused(exc, check_passed=False)
+        ledger.generations.append(generation)
+        index = len(ledger.generations)
+
+        code = extract_code(generation.text)
+        ledger.start_round(code)
+        results = None
+        check_passed = False
+        if code is None:
+            diagnostics: tuple[Diagnostic, ...] = (_NO_CODE_DIAGNOSTIC,)
+            failure, detail = "no_code", render_for_llm(diagnostics)
+            ledger.diagnostics.append(("L000",))
+            feedback = _static_repair_message(diagnostics)
+        else:
+            (workdir / f"program_round{index}.py").write_text(code)
+            started = time.perf_counter()
+            results = run_cases_lattice(
+                code,
+                workdir,
+                task,
+                db_builder=db_builder,
+                profile=profile,
+                serve=serve,
+                hooks=hooks,
+            )
+            elapsed = time.perf_counter() - started
+            if results.diagnostics:
+                ordered = sorted(results.diagnostics, key=sort_key)
+                ledger.diagnostics.append(
+                    _dedup([d.code for d in ordered if d.severity is Severity.ERROR])
+                )
+                failure, detail = "static", render_for_llm(results.diagnostics)
+                feedback = _static_repair_message(results.diagnostics)
+                results = None
+            else:
+                check_passed = True
+                if results.started:
+                    ledger.exec_s = elapsed
+                correct, label, detail = _api_verdict(results)
+                visible = _api_visible_failure(results)
+                if visible is None or correct:
+                    ledger.diagnostics.append(() if label in (None, "wrong_result") else (label,))
+                    return _api_outcome(
+                        ledger,
+                        results,
+                        correct=correct,
+                        check_passed=True,
+                        failure=label,
+                        detail=detail,
+                    )
+                failure = label or visible[0]
+                ledger.diagnostics.append((failure,))
+                feedback = _runtime_repair_message(f"{visible[0]}: {visible[1]}")
+
+        if attempt == max_repairs:
+            return _api_outcome(
+                ledger,
+                results,
+                correct=False,
+                check_passed=check_passed,
+                failure=failure,
+                detail=detail,
+            )
+        messages.append({"role": "assistant", "content": generation.text})
+        messages.append({"role": "user", "content": feedback})
+
+    raise AssertionError("unreachable")  # pragma: no cover
+
+
+def run_api_baseline(task: Any, generator: Generator, *args: Any, **kwargs: Any) -> TaskOutcome:
+    """Arms A/P on an ``ApiTask`` (see ``_run_api_baseline``)."""
+    counter = _RefusalCounter(generator)
+    outcome = _run_api_baseline(task, counter, *args, **kwargs)
+    return dataclasses.replace(outcome, refused_attempts=counter.count)
+
+
+def run_api_lattice(task: Any, generator: Generator, *args: Any, **kwargs: Any) -> TaskOutcome:
+    """Arms B/C on an ``ApiTask`` (see ``_run_api_lattice``)."""
+    counter = _RefusalCounter(generator)
+    outcome = _run_api_lattice(task, counter, *args, **kwargs)
     return dataclasses.replace(outcome, refused_attempts=counter.count)

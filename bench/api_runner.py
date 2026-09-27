@@ -1,0 +1,626 @@
+"""API benchmark harness (spec 2026-09-27 §5.4): run a task's HTTP cases against
+a FastAPI script (inside the sandbox) or a Lattice program (in process), count
+SQL statements per request, and classify the result as correct / silent / loud.
+
+Every case runs against a fresh copy of a pristine DB. The pristine DB is
+written by the caller-supplied ``db_builder(path)`` (the CLI passes one that
+copies the DB it built once per run).
+
+Expectation semantics (``evaluate_case``), checked in this order:
+
+1. the request did not crash (an unhandled exception is status 500);
+2. ``status == expect_status``;
+3. ``expect_json`` (if set) subset-matches the JSON body (see ``_match_value``);
+4. ``queries <= max_queries`` (if set);
+5. ``after_sql`` (if set) returns exactly ``after_expect`` from the DB after
+   the request (see ``_match_rows``).
+
+The pure helpers between the ``--- driver helpers ---`` markers use only the
+standard library: their source is copied verbatim into the sandbox driver, so
+both paths share one implementation.
+"""
+
+from __future__ import annotations
+
+import dataclasses
+import importlib
+import inspect
+import json
+import shutil
+import sqlite3
+import threading
+import time
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Literal
+
+from bench.api_model import ApiTask, HttpCase
+from bench.sandbox import run_python_script
+
+DbBuilder = Callable[[Path], None]
+
+_RESULTS_MARK = "__API_RESULTS__"
+_DRIVER_NAME = "_api_driver.py"
+_PRISTINE = "pristine.db"
+_KIT_NAME = "platform_kit.py"
+_ERROR_LIMIT = 3000
+
+
+@dataclass(frozen=True)
+class CaseResult:
+    name: str
+    kind: str  # "happy" | "trap"
+    family: str
+    passed: bool
+    status: int
+    queries: int
+    latency_ms: float
+    reason: str  # "" when passed; else the first failed expectation
+
+
+@dataclass(frozen=True)
+class CaseResults:
+    cases: tuple[CaseResult, ...]
+    started: bool
+    start_error: str = ""
+    # Lattice only: the checker's diagnostics when it rejected the program.
+    diagnostics: tuple[Any, ...] = ()
+    timed_out: bool = False
+
+
+# --- driver helpers (stdlib only; copied into the sandbox driver) ---
+
+
+def _is_counted_statement(sql: str) -> bool:
+    """True for a data statement; transaction control / pragmas are not counted."""
+    head = sql.lstrip().split(None, 1)
+    if not head:
+        return False
+    return head[0].upper() in ("SELECT", "INSERT", "UPDATE", "DELETE", "WITH", "REPLACE")
+
+
+def _short(value: object) -> str:
+    text = json.dumps(value, default=str) if not isinstance(value, str) else repr(value)
+    return text if len(text) <= 80 else text[:77] + "..."
+
+
+def _match_scalar(expected: object, actual: object, where: str) -> str | None:
+    import math
+
+    if isinstance(expected, bool) or isinstance(actual, bool):
+        if type(expected) is type(actual) and expected == actual:
+            return None
+    elif isinstance(expected, int | float) and isinstance(actual, int | float):
+        if math.isclose(expected, actual, rel_tol=1e-9, abs_tol=1e-6):
+            return None
+    elif expected == actual:
+        return None
+    return f"{where}: expected {_short(expected)}, got {_short(actual)}"
+
+
+def _match_value(expected: object, actual: object, ordered: bool, where: str = "$") -> str | None:
+    """None when ``actual`` matches ``expected``; else a one-line reason.
+
+    Objects: subset match (every expected key present and matching). Lists: same
+    length, element-wise match -- positional when ``ordered``, otherwise a
+    perfect matching between expected and actual elements (multiset).
+    """
+    if isinstance(expected, dict):
+        if not isinstance(actual, dict):
+            return f"{where}: expected an object, got {_short(actual)}"
+        for key, value in expected.items():
+            if key not in actual:
+                return f"{where}.{key}: missing"
+            reason = _match_value(value, actual[key], ordered, f"{where}.{key}")
+            if reason is not None:
+                return reason
+        return None
+    if isinstance(expected, list | tuple):
+        if not isinstance(actual, list | tuple):
+            return f"{where}: expected a list, got {_short(actual)}"
+        if len(expected) != len(actual):
+            return f"{where}: expected {len(expected)} items, got {len(actual)}"
+        if ordered:
+            for i, (e, a) in enumerate(zip(expected, actual, strict=True)):
+                reason = _match_value(e, a, ordered, f"{where}[{i}]")
+                if reason is not None:
+                    return reason
+            return None
+        return _match_unordered(list(expected), list(actual), where)
+    return _match_scalar(expected, actual, where)
+
+
+def _match_unordered(expected: list, actual: list, where: str) -> str | None:
+    """Perfect bipartite matching (Kuhn's algorithm) of expected to actual items."""
+    fits = [
+        [j for j, a in enumerate(actual) if _match_value(e, a, False, where) is None]
+        for e in expected
+    ]
+    owner: dict[int, int] = {}
+
+    def assign(i: int, seen: set[int]) -> bool:
+        for j in fits[i]:
+            if j in seen:
+                continue
+            seen.add(j)
+            if j not in owner or assign(owner[j], seen):
+                owner[j] = i
+                return True
+        return False
+
+    for i in range(len(expected)):
+        if not assign(i, set()):
+            return f"{where}: no matching item for expected {_short(expected[i])} (unordered)"
+    return None
+
+
+def _match_rows(expected: list, actual: list, ordered: bool) -> str | None:
+    """Compare DB rows: a bare scalar is a one-column row; columns positional;
+    row order significant only when ``ordered``."""
+
+    def as_record(row: object) -> dict:
+        cells = list(row) if isinstance(row, list | tuple) else [row]
+        record: dict = {str(i): cell for i, cell in enumerate(cells)}
+        record["#columns"] = len(cells)
+        return record
+
+    return _match_value(
+        [as_record(r) for r in expected], [as_record(r) for r in actual], ordered, "after_sql"
+    )
+
+
+def evaluate_case(
+    case: dict,
+    status: int,
+    body: object,
+    queries: int,
+    after_rows: list | None,
+    crash: str,
+) -> tuple[bool, str]:
+    """(passed, reason) for one case; ``case`` is ``dataclasses.asdict(HttpCase)``."""
+    if crash:
+        return False, "server error: " + crash
+    if status != case["expect_status"]:
+        return False, f"status {status}, expected {case['expect_status']}"
+    if case.get("expect_json") is not None:
+        if body is None:
+            return False, "response body is not JSON"
+        reason = _match_value(case["expect_json"], body, bool(case.get("ordered")))
+        if reason is not None:
+            return False, "json mismatch at " + reason
+    limit = case.get("max_queries")
+    if limit is not None and queries > limit:
+        return False, f"{queries} queries, max {limit}"
+    if case.get("after_sql"):
+        if after_rows is None:
+            return False, "after_sql could not be run"
+        reason = _match_rows(
+            list(case.get("after_expect") or []), after_rows, bool(case.get("ordered"))
+        )
+        if reason is not None:
+            return False, "db state mismatch at " + reason
+    return True, ""
+
+
+# --- end driver helpers ---
+
+_HELPERS = (
+    _is_counted_statement,
+    _short,
+    _match_scalar,
+    _match_value,
+    _match_unordered,
+    _match_rows,
+    evaluate_case,
+)
+
+_DRIVER_TEMPLATE = '''\
+"""Generated API case driver: runs solution.app against each case (sandboxed)."""
+from __future__ import annotations
+
+import json
+import os
+import sqlite3
+import sys
+import time
+import traceback
+
+sys.path.insert(0, os.getcwd())
+sys.dont_write_bytecode = True
+
+MARK = __MARK__
+CASES = json.loads(__CASES__)
+ERROR_LIMIT = __ERROR_LIMIT__
+with open(__PRISTINE__, "rb") as _f:
+    PRISTINE = _f.read()
+
+__HELPERS__
+
+_real_connect = sqlite3.connect
+_counter = [0]
+
+
+def _trace(sql):
+    if _is_counted_statement(sql):
+        _counter[0] += 1
+
+
+def _counting_connect(*args, **kwargs):
+    conn = _real_connect(*args, **kwargs)
+    conn.set_trace_callback(_trace)
+    return conn
+
+
+sqlite3.connect = _counting_connect
+
+
+def _tail(text):
+    return text[-ERROR_LIMIT:]
+
+
+def _fresh_db():
+    for suffix in ("", "-journal", "-wal", "-shm"):
+        try:
+            os.remove("app.db" + suffix)
+        except FileNotFoundError:
+            pass
+    with open("app.db", "wb") as f:
+        f.write(PRISTINE)
+
+
+def _fresh_app():
+    for name in ("solution", "platform_kit"):
+        sys.modules.pop(name, None)
+    import platform_kit
+
+    original = getattr(platform_kit, "_on_connect", None)
+
+    def _on_connect(conn):
+        if original is not None:
+            original(conn)
+        conn.set_trace_callback(_trace)
+
+    platform_kit._on_connect = _on_connect
+    import solution
+
+    app = getattr(solution, "app", None)
+    return app if app is not None else platform_kit.app
+
+
+def _run_case(case, app):
+    from starlette.testclient import TestClient
+
+    headers = {}
+    if case["token"] is not None:
+        headers["Authorization"] = "Bearer " + case["token"]
+    status, body, crash = 500, None, ""
+    _counter[0] = 0
+    started = time.perf_counter()
+    try:
+        with TestClient(app) as client:
+            response = client.request(
+                case["method"],
+                case["path"],
+                params=case["query"] or None,
+                json=case["json"],
+                headers=headers,
+            )
+        status = response.status_code
+        try:
+            body = response.json() if response.content else None
+        except ValueError:
+            body = None
+    except BaseException:
+        crash = _tail(traceback.format_exc())
+    latency_ms = (time.perf_counter() - started) * 1000.0
+    queries = _counter[0]
+    after_rows = None
+    if case["after_sql"] and not crash:
+        try:
+            conn = _real_connect("app.db")
+            try:
+                after_rows = [list(r) for r in conn.execute(case["after_sql"]).fetchall()]
+            finally:
+                conn.close()
+        except Exception:
+            after_rows = None
+    passed, reason = evaluate_case(case, status, body, queries, after_rows, crash)
+    return {
+        "name": case["name"], "kind": case["kind"], "family": case["family"],
+        "passed": passed, "status": status, "queries": queries,
+        "latency_ms": latency_ms, "reason": reason,
+    }
+
+
+def main():
+    _fresh_db()
+    try:
+        _fresh_app()
+    except BaseException:
+        print(MARK + json.dumps({"started": False, "error": _tail(traceback.format_exc())}))
+        return
+    results = []
+    for case in CASES:
+        _fresh_db()
+        try:
+            app = _fresh_app()
+        except BaseException:
+            crash = _tail(traceback.format_exc())
+            results.append({
+                "name": case["name"], "kind": case["kind"], "family": case["family"],
+                "passed": False, "status": 500, "queries": 0, "latency_ms": 0.0,
+                "reason": "server error: " + crash,
+            })
+            continue
+        results.append(_run_case(case, app))
+    print(MARK + json.dumps({"started": True, "cases": results}))
+
+
+main()
+'''
+
+
+def _case_dict(case: HttpCase) -> dict:
+    data = dataclasses.asdict(case)
+    data["query"] = dict(case.query or {})
+    return data
+
+
+def driver_source(task: ApiTask) -> str:
+    """The self-contained driver script run inside the sandbox for ``task``."""
+    helpers = "\n\n".join(inspect.getsource(fn) for fn in _HELPERS)
+    cases = json.dumps([_case_dict(c) for c in task.cases], default=str)
+    return (
+        _DRIVER_TEMPLATE.replace("__HELPERS__", helpers)
+        .replace("__MARK__", repr(_RESULTS_MARK))
+        .replace("__CASES__", repr(cases))
+        .replace("__ERROR_LIMIT__", str(_ERROR_LIMIT))
+        .replace("__PRISTINE__", repr(_PRISTINE))
+    )
+
+
+def _parse_driver_output(stdout: str) -> dict | None:
+    for line in reversed(stdout.splitlines()):
+        if line.startswith(_RESULTS_MARK):
+            try:
+                return json.loads(line[len(_RESULTS_MARK) :])
+            except ValueError:
+                return None
+    return None
+
+
+def run_cases_fastapi(
+    script: str,
+    workdir: Path,
+    task: ApiTask,
+    *,
+    db_builder: DbBuilder,
+    kit_path: Path,
+    timeout_s: float = 60,
+) -> CaseResults:
+    """Run ``task``'s cases against a FastAPI ``script`` inside the sandbox.
+
+    Writes ``solution.py``, ``platform_kit.py`` (copied from ``kit_path``) and a
+    pristine DB into ``workdir``, then runs a generated driver under
+    ``bench.sandbox.run_python_script``. Per case the driver restores ``app.db``
+    from the pristine bytes (read before any model code runs), re-imports
+    ``platform_kit`` and ``solution`` fresh, counts data statements on every
+    SQLite connection (``platform_kit._on_connect`` is wrapped and
+    ``sqlite3.connect`` is patched, both installing a trace callback), and sends
+    the request through Starlette's ``TestClient``.
+    """
+    workdir.mkdir(parents=True, exist_ok=True)
+    (workdir / "solution.py").write_text(script)
+    shutil.copyfile(kit_path, workdir / _KIT_NAME)
+    pristine = workdir / _PRISTINE
+    pristine.unlink(missing_ok=True)
+    db_builder(pristine)
+
+    result = run_python_script(
+        driver_source(task), workdir, timeout_s=timeout_s, script_name=_DRIVER_NAME
+    )
+    payload = _parse_driver_output(result.stdout)
+    if payload is None:
+        if result.timed_out:
+            return CaseResults(
+                cases=(),
+                started=False,
+                start_error=f"the app exceeded the {timeout_s:g}s time limit",
+                timed_out=True,
+            )
+        error = result.stderr.strip() or f"driver exited with code {result.returncode}"
+        return CaseResults(cases=(), started=False, start_error=error[-_ERROR_LIMIT:])
+    if not payload.get("started"):
+        return CaseResults(cases=(), started=False, start_error=str(payload.get("error", "")))
+    return CaseResults(
+        cases=tuple(CaseResult(**c) for c in payload["cases"]),
+        started=True,
+    )
+
+
+# The Lattice runtime's ``on_connect`` hook is module-global state; serialize
+# every in-process run that replaces it.
+_LATTICE_LOCK = threading.Lock()
+
+
+def _render_start_error(exc: BaseException) -> str:
+    render = getattr(exc, "render", None)
+    if callable(render):
+        try:
+            return str(render())
+        except Exception:
+            pass
+    return f"{type(exc).__name__}: {exc}"
+
+
+def _run_case_in_process(app: Any, case: HttpCase, db_path: Path, counter: list[int]) -> CaseResult:
+    import traceback
+
+    from starlette.testclient import TestClient
+
+    headers = {"Authorization": f"Bearer {case.token}"} if case.token is not None else {}
+    status, body, crash = 500, None, ""
+    counter[0] = 0
+    started = time.perf_counter()
+    try:
+        with TestClient(app) as client:
+            response = client.request(
+                case.method,
+                case.path,
+                params=dict(case.query) or None,
+                json=case.json,
+                headers=headers,
+            )
+        status = response.status_code
+        try:
+            body = response.json() if response.content else None
+        except ValueError:
+            body = None
+    except Exception:
+        crash = traceback.format_exc()[-_ERROR_LIMIT:]
+    latency_ms = (time.perf_counter() - started) * 1000.0
+    queries = counter[0]
+    after_rows = None
+    if case.after_sql and not crash:
+        try:
+            conn = sqlite3.connect(db_path)
+            try:
+                after_rows = [list(r) for r in conn.execute(case.after_sql).fetchall()]
+            finally:
+                conn.close()
+        except sqlite3.Error:
+            after_rows = None
+    passed, reason = evaluate_case(_case_dict(case), status, body, queries, after_rows, crash)
+    return CaseResult(
+        name=case.name,
+        kind=case.kind,
+        family=case.family,
+        passed=passed,
+        status=status,
+        queries=queries,
+        latency_ms=latency_ms,
+        reason=reason,
+    )
+
+
+def _fresh_copy(pristine: Path, target: Path) -> None:
+    for suffix in ("", "-journal", "-wal", "-shm"):
+        Path(f"{target}{suffix}").unlink(missing_ok=True)
+    shutil.copyfile(pristine, target)
+
+
+def run_cases_lattice(
+    source: str,
+    workdir: Path,
+    task: ApiTask,
+    *,
+    db_builder: DbBuilder,
+    profile: Any,
+    serve: Callable[..., tuple[Any, Any]] | None = None,
+    hooks: Any = None,
+) -> CaseResults:
+    """Run ``task``'s cases against a Lattice API program, in process.
+
+    ``serve(source, profile, db_path) -> (CheckResult, app | None)`` defaults to
+    ``lattice.api.runtime.serve_source``; it is called once per case with a
+    fresh DB copy. ``hooks`` is the object whose ``on_connect(conn)`` the runtime
+    calls for every new SQLite connection (default: the runtime module); it is
+    replaced for the duration of the run with a wrapper that installs the
+    statement-counting trace callback, then restored.
+    """
+    if serve is None:
+        runtime = importlib.import_module("lattice.api.runtime")
+        serve = runtime.serve_source
+        if hooks is None:
+            hooks = runtime
+
+    from lattice.diagnostics import render_for_llm
+
+    workdir.mkdir(parents=True, exist_ok=True)
+    pristine = workdir / _PRISTINE
+    pristine.unlink(missing_ok=True)
+    db_builder(pristine)
+
+    counter = [0]
+
+    def trace(sql: str) -> None:
+        if _is_counted_statement(sql):
+            counter[0] += 1
+
+    results: list[CaseResult] = []
+    with _LATTICE_LOCK:
+        previous = getattr(hooks, "on_connect", None) if hooks is not None else None
+
+        def on_connect(conn: sqlite3.Connection) -> None:
+            if previous is not None:
+                previous(conn)
+            conn.set_trace_callback(trace)
+
+        if hooks is not None:
+            hooks.on_connect = on_connect
+        try:
+            for index, case in enumerate(task.cases):
+                db_path = workdir / f"case_{index:02d}.db"
+                _fresh_copy(pristine, db_path)
+                try:
+                    try:
+                        check, app = serve(source, profile, db_path)
+                    except Exception as exc:
+                        return CaseResults(
+                            cases=(), started=False, start_error=_render_start_error(exc)
+                        )
+                    if not check.ok:
+                        return CaseResults(
+                            cases=(),
+                            started=False,
+                            start_error=render_for_llm(check.diagnostics),
+                            diagnostics=tuple(check.diagnostics),
+                        )
+                    if app is None:
+                        return CaseResults(
+                            cases=(), started=False, start_error="the runtime built no app"
+                        )
+                    results.append(_run_case_in_process(app, case, db_path, counter))
+                finally:
+                    for suffix in ("", "-journal", "-wal", "-shm"):
+                        Path(f"{db_path}{suffix}").unlink(missing_ok=True)
+        finally:
+            if hooks is not None:
+                hooks.on_connect = previous
+    return CaseResults(cases=tuple(results), started=True)
+
+
+Classification = Literal["correct", "silent", "loud"]
+
+
+def classify(results: CaseResults) -> Classification:
+    """Spec §5.4: not started or any happy case failed -> loud; all happy cases
+    pass and a trap case fails -> silent; everything passes -> correct."""
+    if not results.started:
+        return "loud"
+    if any(not c.passed for c in results.cases if c.kind == "happy"):
+        return "loud"
+    if any(not c.passed for c in results.cases):
+        return "silent"
+    return "correct"
+
+
+def query_stats(results: CaseResults) -> tuple[float, int, float]:
+    """(mean queries per request, max queries, mean latency ms) over the cases run."""
+    cases = results.cases
+    if not cases:
+        return 0.0, 0, 0.0
+    return (
+        sum(c.queries for c in cases) / len(cases),
+        max(c.queries for c in cases),
+        sum(c.latency_ms for c in cases) / len(cases),
+    )
+
+
+def summarize_mapping(results: CaseResults) -> Mapping[str, int]:
+    """Counts of passed/failed happy and trap cases (for details and messages)."""
+    counts = {"happy_passed": 0, "happy_failed": 0, "trap_passed": 0, "trap_failed": 0}
+    for c in results.cases:
+        counts[f"{c.kind}_{'passed' if c.passed else 'failed'}"] += 1
+    return counts

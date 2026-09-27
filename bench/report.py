@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -41,6 +41,10 @@ class Efficiency:
     mean_program_lines: float | None  # over outcomes that produced a program
     mean_program_ast_nodes: float | None  # over outcomes with a parseable program
     mean_exec_s: float | None  # over outcomes whose final program ran
+    # API suite: over outcomes whose final round ran cases (exec_s > 0).
+    mean_queries: float | None = None
+    max_queries: int | None = None
+    mean_case_latency_ms: float | None = None
 
 
 def outcome_cost(o: TaskOutcome) -> float:
@@ -68,6 +72,7 @@ def efficiency(group: Sequence[TaskOutcome]) -> Efficiency:
     costs = [outcome_cost(o) for o in group]
     priced = any(c > 0 for c in costs)
     total_cost = sum(costs)
+    ran = [o for o in group if _ran_cases(o)]
     return Efficiency(
         n=n,
         correct=correct,
@@ -80,7 +85,15 @@ def efficiency(group: Sequence[TaskOutcome]) -> Efficiency:
             [o.program_ast_nodes for o in group if o.program_ast_nodes > 0]
         ),
         mean_exec_s=_mean([o.exec_s for o in group if o.exec_s > 0]),
+        mean_queries=_mean([o.mean_queries for o in ran]),
+        max_queries=max((o.max_queries for o in ran), default=None),
+        mean_case_latency_ms=_mean([o.mean_latency_ms for o in ran]),
     )
+
+
+def _ran_cases(o: TaskOutcome) -> bool:
+    """An API outcome whose final round ran its HTTP cases."""
+    return o.mean_latency_ms > 0
 
 
 def _ratio(num: float | None, den: float | None) -> str:
@@ -116,23 +129,35 @@ def _fmt(value: float | None, spec: str, prefix: str = "") -> str:
 
 
 def _efficiency_lines(
-    label: str, rows: Sequence[tuple[str, str, Efficiency]], verdicts: Sequence[str]
+    label: str,
+    rows: Sequence[tuple[str, str, Efficiency]],
+    verdicts: Sequence[str],
+    *,
+    api: bool = False,
 ) -> list[str]:
+    api_head = " Mean queries / request | Max queries | Mean request latency (ms) |" if api else ""
     lines = [
         "",
         "## Efficiency",
         "",
         f"| Arm | {label} | n | Correct | Mean cost / task | Cost / correct task "
         "| Mean input tokens | Mean output tokens | Mean program lines | Mean AST nodes "
-        "| Mean exec (s) |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
+        "| Mean exec (s) |" + api_head,
+        "|---|---|---|---|---|---|---|---|---|---|---|" + ("---|---|---|" if api else ""),
     ]
     for arm, key, e in rows:
+        api_cells = (
+            f" {_fmt(e.mean_queries, '.2f')} | "
+            f"{'n/a' if e.max_queries is None else e.max_queries} | "
+            f"{_fmt(e.mean_case_latency_ms, '.1f')} |"
+            if api
+            else ""
+        )
         lines.append(
             f"| {arm} | {key} | {e.n} | {e.correct} | {_fmt(e.mean_cost_usd, '.4f', '$')} | "
             f"{_fmt(e.cost_per_correct_usd, '.4f', '$')} | {e.mean_input_tokens:.0f} | "
             f"{e.mean_output_tokens:.0f} | {_fmt(e.mean_program_lines, '.1f')} | "
-            f"{_fmt(e.mean_program_ast_nodes, '.1f')} | {_fmt(e.mean_exec_s, '.3f')} |"
+            f"{_fmt(e.mean_program_ast_nodes, '.1f')} | {_fmt(e.mean_exec_s, '.3f')} |" + api_cells
         )
     lines.append("")
     lines.append(
@@ -141,6 +166,12 @@ def _efficiency_lines(
         "Program size is the final round's program (lines exclude blanks and comments; AST "
         "nodes = ast.walk count). Exec = wall time running the final program. n/a = not "
         "recorded for any outcome in the group."
+        + (
+            " Queries = SQL data statements per request (authentication included) and "
+            "request latency, over the final round's HTTP cases of outcomes whose cases ran."
+            if api
+            else ""
+        )
     )
     if verdicts:
         lines.append("")
@@ -519,21 +550,24 @@ def _silent_rate(
     return sum(1 for o in group if outcome_class(o) == "silent") / len(group)
 
 
-def _trap_silent_check(outcomes: Sequence[TaskOutcome]) -> tuple[str, bool, str]:
+def _trap_silent_check(
+    outcomes: Sequence[TaskOutcome], families: Sequence[str] | None = None
+) -> tuple[str, bool, str]:
     """Criterion 1: silent(B, trap) <= 0.5 * silent(P, trap).
 
     Degenerate case: if arm P has no silent failures on the trap families,
     there is nothing for B to have reduced, so the check fails outright
     rather than trivially passing.
     """
-    b_silent = _silent_rate(outcomes, "B", TRAP_FAMILIES)
-    p_silent = _silent_rate(outcomes, "P", TRAP_FAMILIES)
+    families = TRAP_FAMILIES if families is None else tuple(families)
+    b_silent = _silent_rate(outcomes, "B", families)
+    p_silent = _silent_rate(outcomes, "P", families)
     if b_silent is None or p_silent is None:
         missing = "B" if b_silent is None else "P"
         return (
             "silent_failure_reduction",
             False,
-            f"missing arm {missing} results for trap families {TRAP_FAMILIES}",
+            f"missing arm {missing} results for trap families {families}",
         )
     if p_silent == 0.0:
         return ("silent_failure_reduction", False, "no silent failures in P to reduce")
@@ -636,6 +670,53 @@ def evaluate_gate_step2(outcomes: Sequence[TaskOutcome]) -> GateResult:
     return GateResult(passed=all(ok for _, ok, _ in checks), checks=checks)
 
 
+# API suite gate (spec 2026-09-27 §5.4). Trap families: every family but "control".
+API_TRAP_FAMILIES: tuple[str, ...] = ("ownership", "validation", "errors", "efficiency")
+API_EFFICIENCY_FAMILY = "efficiency"
+
+
+def _mean_queries(outcomes: Sequence[TaskOutcome], arm: str) -> float | None:
+    """Mean over the efficiency-family outcomes of ``arm`` whose cases ran of the
+    per-task mean SQL statements per request."""
+    ran = [
+        o.mean_queries
+        for o in outcomes
+        if o.arm == arm and o.family == API_EFFICIENCY_FAMILY and _ran_cases(o)
+    ]
+    return sum(ran) / len(ran) if ran else None
+
+
+def _query_efficiency_check(outcomes: Sequence[TaskOutcome]) -> tuple[str, bool, str]:
+    b = _mean_queries(outcomes, "B")
+    p = _mean_queries(outcomes, "P")
+    if b is None or p is None:
+        missing = "B" if b is None else "P"
+        return (
+            "query_efficiency",
+            False,
+            f"no arm {missing} efficiency-family outcome ran its cases",
+        )
+    return (
+        "query_efficiency",
+        b <= p,
+        f"efficiency family: mean queries/request B = {b:.2f} (need <= P = {p:.2f})",
+    )
+
+
+def evaluate_gate_api(outcomes: Sequence[TaskOutcome]) -> GateResult:
+    """The API gate: silent(B) <= 0.5 * silent(P) on the trap families, accuracy
+    parity with P, mean queries/request on the efficiency family B <= P, same
+    model, and arm B's repair budget."""
+    checks = (
+        _trap_silent_check(outcomes, API_TRAP_FAMILIES),
+        _accuracy_parity_check(outcomes),
+        _query_efficiency_check(outcomes),
+        _same_model_check(outcomes),
+        _max_rounds_check(outcomes),
+    )
+    return GateResult(passed=all(ok for _, ok, _ in checks), checks=checks)
+
+
 def _step2_row(arm: str, family: str, group: Sequence[TaskOutcome], r: Mapping[str, float]) -> str:
     n = len(group)
     lattice = arm in ("B", "C")
@@ -661,7 +742,28 @@ def render_markdown_step2(outcomes: Sequence[TaskOutcome]) -> str:
     Lattice arms, mean output tokens and latency, and counts of outcomes with
     executed unsafe effects / static flags / checker blocks), an informational
     static-flag breakdown, and the step-2 gate. Used for ``--suite bench2``."""
-    lines = ["# Lattice Benchmark Report — Step 2 (bench2)", ""]
+    return _render_family_report(
+        outcomes, "# Lattice Benchmark Report — Step 2 (bench2)", evaluate_gate_step2, api=False
+    )
+
+
+def render_markdown_api(outcomes: Sequence[TaskOutcome]) -> str:
+    """The step-2 style family report for ``--suite api``: the same family rows,
+    an efficiency table with queries / request latency columns, and the api gate
+    (``evaluate_gate_api``)."""
+    return _render_family_report(
+        outcomes, "# Lattice Benchmark Report — API suite", evaluate_gate_api, api=True
+    )
+
+
+def _render_family_report(
+    outcomes: Sequence[TaskOutcome],
+    title: str,
+    gate_fn: Callable[[Sequence[TaskOutcome]], GateResult],
+    *,
+    api: bool,
+) -> str:
+    lines = [title, ""]
     rates = class_rates(outcomes)
 
     by_arm_family: dict[tuple[str, str], list[TaskOutcome]] = defaultdict(list)
@@ -695,7 +797,7 @@ def render_markdown_step2(outcomes: Sequence[TaskOutcome]) -> str:
             for (arm, family), group in sorted(by_arm_family.items())
         ]
         eff_rows += [(arm, "all", efficiency(group)) for arm, group in sorted(by_arm.items())]
-        lines.extend(_efficiency_lines("Family", eff_rows, efficiency_verdicts(outcomes)))
+        lines.extend(_efficiency_lines("Family", eff_rows, efficiency_verdicts(outcomes), api=api))
 
     flag_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for o in outcomes:
@@ -712,7 +814,7 @@ def render_markdown_step2(outcomes: Sequence[TaskOutcome]) -> str:
             for label, count in sorted(flag_counts[arm].items()):
                 lines.append(f"  - {label}: {count}")
 
-    gate = evaluate_gate_step2(outcomes) if outcomes else None
+    gate = gate_fn(outcomes) if outcomes else None
     if gate is not None:
         lines.append("")
         lines.append("## Gate")
@@ -750,7 +852,7 @@ def read_outcomes(path: Path) -> list[TaskOutcome]:
             if not line:
                 continue
             fields = json.loads(line)
-            for name in ("unsafe", "static_flags", "blocked"):
+            for name in ("unsafe", "static_flags", "blocked", "failed_cases"):
                 if name in fields:  # JSON has no tuples; restore the dataclass's type
                     fields[name] = tuple(fields[name])
             if "diagnostics_per_round" in fields:

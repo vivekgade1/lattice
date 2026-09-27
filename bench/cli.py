@@ -13,12 +13,15 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import importlib
 import re
+import shutil
 import threading
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from bench.api_model import API_TIER, ApiTask
 from bench.datasets import load_fixtures, write_fixtures
 from bench.envfile import load_env_file
 from bench.report import (
@@ -26,6 +29,7 @@ from bench.report import (
     evaluate_gate,
     read_outcomes,
     render_markdown,
+    render_markdown_api,
     render_markdown_step2,
     summarize,
 )
@@ -34,6 +38,8 @@ from bench.runners import (
     TaskOutcome,
     harness_error_outcome,
     prepare_workdir,
+    run_api_baseline,
+    run_api_lattice,
     run_baseline,
     run_baseline_repair,
     run_lattice,
@@ -44,6 +50,9 @@ from lattice.runtime import is_panic
 
 _SEPARATOR_RE = re.compile(r"(?m)^=====$")
 _KNOWN_ARMS = ("A", "P", "B", "C")
+# FastAPI scaffolding copied into every arm A/P workdir of the api suite.
+API_KIT_PATH = Path(__file__).resolve().parent / "api_kit" / "platform_kit.py"
+API_DB_NAME = "app.db"
 
 
 def _offline_generator(offline_dir: Path, arm: str, task_id: str) -> Generator:
@@ -64,7 +73,9 @@ def _build_parser() -> argparse.ArgumentParser:
 
     run_parser = subparsers.add_parser("run", help="run the benchmark and write a report")
     run_parser.add_argument("--arms", default="A", help="comma-separated arms, e.g. A,P,B,C")
-    run_parser.add_argument("--suite", default="seed", choices=("seed", "deep", "all", "bench2"))
+    run_parser.add_argument(
+        "--suite", default="seed", choices=("seed", "deep", "all", "bench2", "api")
+    )
     run_parser.add_argument("--tasks", default=None, help="comma-separated task ids to restrict to")
     run_parser.add_argument("--model", default="claude-opus-5")
     run_parser.add_argument(
@@ -96,7 +107,9 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _render_report(outcomes: Sequence[TaskOutcome], *, bench2: bool) -> str:
+def _render_report(outcomes: Sequence[TaskOutcome], *, bench2: bool, api: bool = False) -> str:
+    if api:
+        return render_markdown_api(outcomes)
     if bench2:
         return render_markdown_step2(outcomes)
     summary = summarize(outcomes)
@@ -110,8 +123,9 @@ def _report(out_dir: Path, merge: Sequence[str]) -> int:
         outcomes.extend(read_outcomes(Path(extra)))
     # bench2 outcomes carry a family; the other suites never do.
     bench2 = any(o.family for o in outcomes)
+    api = any(o.tier == API_TIER for o in outcomes)
     report_path = out_dir / "report.md"
-    report_path.write_text(_render_report(outcomes, bench2=bench2))
+    report_path.write_text(_render_report(outcomes, bench2=bench2, api=api))
     print(str(report_path))
     return 0
 
@@ -154,6 +168,74 @@ def _run_one(
     raise ValueError(f"unknown arm: {arm!r}")
 
 
+class _ApiContext:
+    """Per-run inputs of the api suite: the DB built once into the fixtures dir
+    (each case run copies it), the api profile, and the platform kit path."""
+
+    def __init__(self, fixtures_dir: Path) -> None:
+        # Lazily imported: nothing outside an api run touches this module.
+        api_datasets = importlib.import_module("bench.api_datasets")
+
+        fixtures_dir.mkdir(parents=True, exist_ok=True)
+        self.db_path = fixtures_dir / API_DB_NAME
+        self.db_path.unlink(missing_ok=True)
+        api_datasets.build_db(self.db_path, seed=21)
+        self.profile = api_datasets.api_profile()
+        self.kit_path = API_KIT_PATH
+
+    def db_builder(self, path: Path) -> None:
+        shutil.copyfile(self.db_path, path)
+
+
+def _prepare_api_workdir(root: Path, task_id: str) -> Path:
+    workdir = root / task_id
+    if workdir.exists():
+        shutil.rmtree(workdir)
+    workdir.mkdir(parents=True)
+    return workdir
+
+
+def _run_one_api(
+    arm: Arm,
+    task: ApiTask,
+    *,
+    work_root: Path,
+    context: _ApiContext,
+    offline_dir: Path | None,
+    model: str,
+    max_repairs: int,
+    hints: bool = True,
+) -> TaskOutcome:
+    workdir = _prepare_api_workdir(work_root / arm, task.id)
+    if offline_dir is not None:
+        generator: Generator = _offline_generator(offline_dir, arm, task.id)
+    else:
+        generator = ClaudeGenerator(model=model)
+    if arm in ("A", "P"):
+        return run_api_baseline(
+            task,
+            generator,
+            workdir,
+            db_builder=context.db_builder,
+            kit_path=context.kit_path,
+            arm=arm,
+            max_repairs=max_repairs if arm == "P" else 0,
+            hints=hints,
+        )
+    if arm in ("B", "C"):
+        return run_api_lattice(
+            task,
+            generator,
+            workdir,
+            db_builder=context.db_builder,
+            profile=context.profile,
+            arm=arm,
+            max_repairs=max_repairs if arm == "B" else 0,
+            hints=hints,
+        )
+    raise ValueError(f"unknown arm: {arm!r}")
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     load_env_file()
     parser = _build_parser()
@@ -172,7 +254,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     fixtures_dir = out_dir / "fixtures"
-    if args.suite == "bench2":
+    api_context: _ApiContext | None = None
+    fixtures_frames: dict = {}
+    if args.suite == "api":
+        api_context = _ApiContext(fixtures_dir)
+    elif args.suite == "bench2":
         # Lazily imported: nothing outside a bench2 run touches this module.
         import bench.bench2_datasets as bench2
 
@@ -199,17 +285,29 @@ def main(argv: Sequence[str] | None = None) -> int:
         # not lose the others. (BaseExceptions such as KeyboardInterrupt
         # still abort, but every completed outcome is already on disk.)
         try:
-            outcome = _run_one(
-                arm,
-                task,
-                work_root=work_root,
-                fixtures_dir=fixtures_dir,
-                fixtures_frames=fixtures_frames,
-                offline_dir=offline_dir,
-                model=args.model,
-                max_repairs=args.max_repairs,
-                hints=not args.no_hints,
-            )
+            if api_context is not None:
+                outcome = _run_one_api(
+                    arm,
+                    task,  # type: ignore[arg-type]
+                    work_root=work_root,
+                    context=api_context,
+                    offline_dir=offline_dir,
+                    model=args.model,
+                    max_repairs=args.max_repairs,
+                    hints=not args.no_hints,
+                )
+            else:
+                outcome = _run_one(
+                    arm,
+                    task,
+                    work_root=work_root,
+                    fixtures_dir=fixtures_dir,
+                    fixtures_frames=fixtures_frames,
+                    offline_dir=offline_dir,
+                    model=args.model,
+                    max_repairs=args.max_repairs,
+                    hints=not args.no_hints,
+                )
         except BaseException as exc:
             if not isinstance(exc, Exception) and not is_panic(exc):
                 raise
@@ -226,7 +324,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             outcomes = list(pool.map(lambda job: run_task(*job), jobs))
 
     report_path = out_dir / "report.md"
-    report_path.write_text(_render_report(outcomes, bench2=args.suite == "bench2"))
+    report_path.write_text(
+        _render_report(outcomes, bench2=args.suite == "bench2", api=args.suite == "api")
+    )
 
     print(str(report_path))
     return 0
