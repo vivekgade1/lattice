@@ -253,3 +253,31 @@ Ownership and efficiency tickets with org-policy sentences removed (visibility r
 - **Without hints** the comparison is not information-equal (the cap is stated only as a Lattice language rule), so those rows measure "policy in the language vs policy nowhere" — which is the Lattice thesis, but report it separately.
 - **Ownership** never failed silently in either arm: the schema facts ("owner column: customer_id") were enough for every model to scope queries correctly.
 - Lattice + repair (B) was correct on 38–40/40 in every run; first-shot C failures were loud (checker), mostly missing `owned()` on OrderItems or page bounds, all repaired in B.
+
+## API profile — output code metrics (correct solutions only)
+
+Aggregated over all API runs (explicit + implicit, hints + no hints); P = FastAPI written by the model (with repair), B = Lattice written by the model (with repair). Scripts: `bench/analysis/api_code_metrics.py`, `bench/analysis/api_same_stack.py`.
+
+**Program size (what the model writes)**
+
+| Model | P lines / AST nodes / chars | B lines / AST nodes / chars | B vs P (AST) | output tokens P → B |
+|---|---|---|---|---|
+| claude-haiku-4-5 | 31.6 / 214 / 1446 | **11.9 / 116 / 526** | 0.54× | 440 → 280 |
+| claude-sonnet-5 | 29.3 / 205 / 1332 | **11.7 / 114 / 508** | 0.56× | 553 → 372 |
+| claude-opus-5 | 32.4 / 225 / 1454 | **11.6 / 116 / 514** | 0.52× | 642 → 340 |
+
+The FastAPI app Lattice generates from a B program is ~428 lines, almost all of it the shared runtime prelude (auth, validation, transactions, serialization) that is identical for every program.
+
+**Runtime performance on the same stack** (claude-sonnet-5, explicit + hints; the model's FastAPI script vs the FastAPI app generated from the model's Lattice program; same sandboxed driver, same DB, 40 tasks × all cases × 5 repetitions)
+
+| Family | median latency P → generated | queries/request P → generated |
+|---|---|---|
+| all | 1.67 → **1.44 ms** | 1.82 → 1.82 |
+| control | 1.74 → 1.57 | 1.54 → 1.62 |
+| efficiency | 1.72 → 1.64 | 1.65 → 1.65 |
+| errors | 1.62 → 1.37 | 1.92 → 1.89 |
+| ownership | 1.68 → 1.47 | 2.30 → 2.36 |
+| validation | 1.65 → 1.36 | 1.71 → 1.60 |
+
+- Lattice programs are ~60% shorter (lines/chars) and ~45% smaller in AST nodes than equivalent model-written FastAPI, which is where its lower cost per correct task on Sonnet/Opus comes from.
+- Generated apps are ~14% faster per request than model-written FastAPI on the same stack, with the same number of SQL statements (one statement per read pipeline). Latencies are small-DB, single-client, in-process TestClient timings — indicative of per-request overhead, not a load test.
