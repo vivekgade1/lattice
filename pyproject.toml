@@ -22,6 +22,15 @@ template = [
     "python-multipart>=0.0.27",
     "sqlmodel>=0.0.39",
 ]
+# Held-out repos for the importer (I6a): bench/import_repos/. Everything else these
+# apps need (sqlmodel, pydantic-settings, pyjwt, pwdlib, email-validator) is already
+# covered by the `template` group above; python-jose is the one dependency unique to
+# JustNotes (bench/import_repos/justnotes) -- its JWT helper is unmodified upstream
+# code, so it was stubbed only where that was possible (see PROVENANCE.md) and added
+# here where it was not.
+import_repos = [
+    "python-jose>=3.5.0",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -42,4 +51,4 @@ line-length = 100
 select = ["E", "F", "I", "B", "UP"]
 
 [tool.uv]
-default-groups = ["dev", "template"]
+default-groups = ["dev", "template", "import_repos"]
