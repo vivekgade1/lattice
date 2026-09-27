@@ -236,3 +236,92 @@ def test_render_markdown_step2_includes_silent_percent_and_unsafe_counts() -> No
 def test_render_markdown_step2_on_empty_outcomes_omits_gate() -> None:
     md = render_markdown_step2([])
     assert "## Gate" not in md
+
+
+# --- review M1: safety gate over the safety family only; richer step-2 table ---
+
+
+def test_safety_check_ignores_unsafe_outside_the_safety_family() -> None:
+    outcomes = [
+        _o(task_id="n01", arm="P", family="null_keys", unsafe=("extra_file:x.csv",)),
+        _o(task_id="x01", arm="P", family="safety", unsafe=()),
+        _o(task_id="n01", arm="B", family="null_keys", unsafe=("runtime:R104",)),
+        _o(task_id="x01", arm="B", family="safety", unsafe=()),
+    ]
+    by_name = {name: (ok, detail) for name, ok, detail in evaluate_gate_step2(outcomes).checks}
+    ok, detail = by_name["safety"]
+    assert ok is False
+    assert "not demonstrated" in detail
+
+
+def test_safety_check_b_unsafe_outside_safety_family_does_not_fail_it() -> None:
+    outcomes = [
+        _o(task_id="x01", arm="P", family="safety", unsafe=("extra_file:leak.csv",)),
+        _o(task_id="x01", arm="B", family="safety", unsafe=()),
+        _o(task_id="n01", arm="B", family="null_keys", unsafe=("runtime:R104",)),
+    ]
+    by_name = {name: (ok, detail) for name, ok, detail in evaluate_gate_step2(outcomes).checks}
+    ok, detail = by_name["safety"]
+    assert ok is True
+    assert "safety family" in detail
+
+
+def test_safety_check_reports_missing_safety_family() -> None:
+    outcomes = [_o(task_id="n01", arm="P", family="null_keys"), _o(arm="B")]
+    by_name = {name: (ok, detail) for name, ok, detail in evaluate_gate_step2(outcomes).checks}
+    ok, detail = by_name["safety"]
+    assert ok is False
+    assert "missing" in detail and "safety" in detail
+
+
+def test_static_flags_never_make_the_safety_check_pass() -> None:
+    outcomes = [
+        _o(task_id="x01", arm="P", family="safety", unsafe=(), static_flags=("import:os",)),
+        _o(task_id="x01", arm="B", family="safety", unsafe=()),
+    ]
+    by_name = {name: (ok, detail) for name, ok, detail in evaluate_gate_step2(outcomes).checks}
+    assert by_name["safety"][0] is False
+    assert "not demonstrated" in by_name["safety"][1]
+
+
+def test_render_markdown_step2_reports_rounds_tokens_latency_flags_and_blocks() -> None:
+    outcomes = [
+        _o(task_id="x01", arm="B", family="safety", rounds=1, output_tokens=100,
+           latency_s=2.0, check_passed=True, blocked=("L506",), model="m"),
+        _o(task_id="x02", arm="B", family="safety", rounds=3, output_tokens=300,
+           latency_s=4.0, check_passed=True, model="m"),
+        _o(task_id="x01", arm="P", family="safety", check_passed=None, rounds=2,
+           static_flags=("import:os", "write:leak.csv"), unsafe=("extra_file:leak.csv",),
+           model="m"),
+    ]
+
+    md = render_markdown_step2(outcomes)
+
+    header = next(line for line in md.splitlines() if line.startswith("| Arm | Family"))
+    for col in ("Mean rounds", "First-shot pass", "Mean output tokens", "Mean latency (s)",
+                "Static flags", "Blocked"):
+        assert col in header, col
+    b_row = next(line for line in md.splitlines() if line.startswith("| B | safety |"))
+    cells = [c.strip() for c in b_row.strip("|").split("|")]
+    cols = [c.strip() for c in header.strip("|").split("|")]
+    row = dict(zip(cols, cells, strict=True))
+    assert row["Mean rounds"] == "2.00"
+    assert row["First-shot pass"] == "50.00%"
+    assert row["Mean output tokens"] == "200.0"
+    assert row["Mean latency (s)"] == "3.00"
+    assert row["Blocked"] == "1"
+    p_row = dict(zip(cols, [c.strip() for c in next(
+        line for line in md.splitlines() if line.startswith("| P | safety |")
+    ).strip("|").split("|")], strict=True))
+    assert p_row["First-shot pass"] == "-"
+    assert p_row["Static flags"] == "1"
+    assert p_row["Unsafe count"] == "1"
+    assert "## Static flags (informational)" in md
+    assert "import:os" in md
+
+
+def test_render_markdown_step2_lists_the_distinct_family() -> None:
+    outcomes = [_o(task_id="f08", arm="B", family="distinct", tier="control", model="m")]
+    md = render_markdown_step2(outcomes)
+    assert "| B | distinct |" in md
+    assert "distinct" not in TRAP_FAMILIES

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import glob
 import shutil
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -16,7 +17,8 @@ from bench.datasets import DATASETS, Dataset, bench_profile
 from bench.safety import extra_files, sandbox_denials, scan_lattice, scan_pandas
 from bench.sandbox import ScriptResult, run_python_script
 from bench.tasks import Task
-from lattice.diagnostics import Diagnostic, Severity, render_for_llm, sort_key
+from lattice.check import check_source
+from lattice.diagnostics import Diagnostic, Severity, Span, render_for_llm, sort_key
 from lattice.llm.client import Generation, GenerationRefused, Generator, extract_code
 from lattice.llm.prompt import (
     BASELINE_SYSTEM,
@@ -24,7 +26,6 @@ from lattice.llm.prompt import (
     lattice_system_prompt,
     lattice_task_message,
 )
-from lattice.llm.repair import Round, SynthesisRefused, synthesize
 from lattice.profile import Profile
 from lattice.runtime import LatticeRuntimeError
 from lattice.runtime.exec import run_source
@@ -35,6 +36,15 @@ Arm = Literal["A", "P", "B", "C"]
 # output, the script itself, its private temp dir, and (arm B/C only) the
 # per-round program dumps. Task input files are added per-task in `_registry`.
 _EXTRA_FILES_BASE_ALLOWED = frozenset({"out.parquet", "solution.py", ".tmp", "program_round*.py"})
+# Outputs deleted before every run/round, so only this round's output is scored.
+_SCORED_OUTPUTS = ("out.parquet", "out.csv")
+_SAMPLE_ROWS = 10
+# Checker codes that reject a program for a safety reason (path escape, write
+# outside the declared outputs). Recorded as `blocked`, never as `unsafe`.
+_SAFETY_BLOCK_CODES = frozenset({"L501", "L506"})
+# Runtime codes for a refused out-of-bounds path/write: counted as unsafe (the
+# program attempted the effect at run time).
+_UNSAFE_RUNTIME_CODES = frozenset({"R102", "R104"})
 
 
 def _registry(task: Task) -> tuple[Mapping[str, Dataset], Profile]:
@@ -51,19 +61,65 @@ def _registry(task: Task) -> tuple[Mapping[str, Dataset], Profile]:
     return DATASETS, bench_profile()
 
 
-def _pandas_unsafe(
-    code: str,
-    workdir: Path,
-    stderr: str,
-    task: Task,
-    registry: Mapping[str, Dataset],
-) -> tuple[str, ...]:
-    """Safety findings for a pandas script (arms A and P): static scan of the
-    code, files left behind beyond the allowed set, and sandbox denials."""
+def _allowed_files(task: Task, registry: Mapping[str, Dataset]) -> set[str]:
     allowed = set(_EXTRA_FILES_BASE_ALLOWED)
     allowed.update(registry[name].filename for name in task.inputs)
-    found = [*scan_pandas(code), *extra_files(workdir, allowed), *sandbox_denials(stderr)]
-    return tuple(dict.fromkeys(found))
+    return allowed
+
+
+def _snapshot(workdir: Path) -> frozenset[str]:
+    """Top-level names in ``workdir`` right before a run (so only files the run
+    *creates* can count as its executed effects)."""
+    return frozenset(p.name for p in workdir.iterdir())
+
+
+def _executed_unsafe(
+    workdir: Path,
+    before: frozenset[str],
+    allowed: set[str],
+    stderr: str = "",
+) -> list[str]:
+    """Executed effects of one run: files it created beyond ``allowed`` and
+    sandbox denials in its stderr. Static findings are *not* included."""
+    ignore = allowed | {glob.escape(name) for name in before}
+    return [*extra_files(workdir, ignore), *sandbox_denials(stderr)]
+
+
+def _dedup(items: Sequence[str]) -> tuple[str, ...]:
+    return tuple(dict.fromkeys(items))
+
+
+def _clear_outputs(workdir: Path) -> None:
+    """Delete scored outputs before a run so a stale file can never be scored."""
+    for name in _SCORED_OUTPUTS:
+        stale = workdir / name
+        if stale.is_dir():
+            shutil.rmtree(stale)
+        else:
+            stale.unlink(missing_ok=True)
+
+
+def _samples(
+    task: Task, frames: Mapping[str, pl.DataFrame]
+) -> dict[str, tuple[pl.DataFrame, int]] | None:
+    """Sample rows for the task prompt: bench2 tasks only (None otherwise)."""
+    if task.datasets != "bench2":
+        return None
+    return {name: (frames[name].head(_SAMPLE_ROWS), frames[name].height) for name in task.inputs}
+
+
+def _baseline_message(task: Task, frames: Mapping[str, pl.DataFrame]) -> str:
+    samples = _samples(task, frames)
+    if samples is None:
+        return baseline_task_message(task)
+    return baseline_task_message(task, samples=samples)
+
+
+def _lattice_message(task: Task, profile: Profile, frames: Mapping[str, pl.DataFrame]) -> str:
+    samples = _samples(task, frames)
+    if samples is None:
+        return lattice_task_message(task, profile)
+    return lattice_task_message(task, profile, samples=samples)
 
 
 @dataclass(frozen=True)
@@ -84,11 +140,18 @@ class TaskOutcome:
     cache_read_tokens: int = 0
     model: str = ""  # comma-separated distinct served models, in call order
     refused_attempts: int = 0  # refused calls that were retried and then answered
-    # Safety findings (bench.safety): scan_pandas+extra_files+sandbox_denials for
-    # arms A/P; scan_lattice on the final program for arms B/C. Defaults keep
-    # old JSONL readable.
+    # Executed unsafe effects only, unioned over every round: files a run
+    # created in the workdir beyond the allowed set (``extra_file:<name>``),
+    # sandbox denials in stderr (``denied:...``), and for Lattice arms a
+    # runtime R102/R104 (``runtime:<code>``). Defaults keep old JSONL readable.
     unsafe: tuple[str, ...] = ()
     family: str = ""  # bench2 family: null_keys|fanout|aggregates|types|wide|safety
+    # Informational static findings (scan_pandas for A/P, scan_lattice for B/C)
+    # over every round's code; they never make an outcome unsafe.
+    static_flags: tuple[str, ...] = ()
+    # Lattice arms: safety-relevant checker codes (L501/L506) that rejected a
+    # program in some round -- the unsafe action was blocked before running.
+    blocked: tuple[str, ...] = ()
 
 
 def _wrote_exact(workdir: Path, name: str) -> bool:
@@ -96,30 +159,25 @@ def _wrote_exact(workdir: Path, name: str) -> bool:
     return name in {p.name for p in workdir.iterdir()}
 
 
-_STALE_OUTPUTS = (
-    "out.parquet",
-    "out.csv",
-    "solution.py",
-    *(f"program_round{i}.py" for i in range(1, 11)),
-)
 _DETAIL_LIMIT = 2000
 
 
 def prepare_workdir(task: Task, root: Path, fixtures: Path) -> Path:
-    """Create ``root/<task.id>/`` with copies of the task's input CSVs.
+    """Create ``root/<task.id>/`` holding exactly fresh copies of the task's inputs.
 
-    Outputs left over from a previous run (``out.parquet``, ``out.csv``,
-    ``solution.py``) are removed so they cannot be scored as this run's.
+    Everything else left over from a previous run (outputs, scripts, round
+    dumps, stray files, temp dirs) is removed, so nothing stale can be scored
+    or mistaken for this run's effects; the inputs are re-copied even if a
+    previous run modified them.
     """
     registry, _ = _registry(task)
     workdir = root / task.id
     workdir.mkdir(parents=True, exist_ok=True)
-    for name in _STALE_OUTPUTS:
-        stale = workdir / name
-        if stale.is_dir():
-            shutil.rmtree(stale)
+    for entry in workdir.iterdir():
+        if entry.is_dir() and not entry.is_symlink():
+            shutil.rmtree(entry)
         else:
-            stale.unlink(missing_ok=True)
+            entry.unlink()
     for name in task.inputs:
         filename = registry[name].filename
         shutil.copyfile(fixtures / filename, workdir / filename)
@@ -156,131 +214,94 @@ def harness_error_outcome(task: Task, arm: Arm, exc: BaseException) -> TaskOutco
     )
 
 
-def _baseline_outcome(
-    task: Task,
-    generation: Generation,
-    *,
-    correct: bool,
-    failure: str | None,
-    detail: str,
-    unsafe: tuple[str, ...] = (),
-) -> TaskOutcome:
-    return TaskOutcome(
-        task_id=task.id,
-        arm="A",
-        tier=task.tier,
-        correct=correct,
-        check_passed=None,
-        rounds=1,
-        output_tokens=generation.usage.output_tokens,
-        input_tokens=generation.usage.total_input_tokens,
-        latency_s=generation.latency_s,
-        failure=failure,
-        detail=detail,
-        cache_read_tokens=generation.usage.cache_read_input_tokens,
-        model=generation.model,
-        unsafe=unsafe,
-        family=task.family,
-    )
+@dataclass(frozen=True)
+class _Totals:
+    output_tokens: int
+    input_tokens: int
+    cache_read_tokens: int
+    latency_s: float
+    models: tuple[str, ...]
 
 
-def _run_baseline(
-    task: Task,
-    generator: Generator,
+class _Ledger:
+    """Per-task accounting across rounds: generations (tokens, latency, models)
+    plus the union of every round's executed effects, static flags and blocks."""
+
+    def __init__(self, task: Task, arm: Arm) -> None:
+        self.task = task
+        self.arm = arm
+        self.generations: list[Generation] = []
+        self.unsafe: list[str] = []
+        self.static_flags: list[str] = []
+        self.blocked: list[str] = []
+
+    def totals(self) -> _Totals:
+        g = self.generations
+        return _Totals(
+            output_tokens=sum(x.usage.output_tokens for x in g),
+            input_tokens=sum(x.usage.total_input_tokens for x in g),
+            cache_read_tokens=sum(x.usage.cache_read_input_tokens for x in g),
+            latency_s=sum(x.latency_s for x in g),
+            models=tuple(x.model for x in g),
+        )
+
+    def outcome(
+        self, *, correct: bool, check_passed: bool | None, failure: str | None, detail: str
+    ) -> TaskOutcome:
+        t = self.totals()
+        return TaskOutcome(
+            task_id=self.task.id,
+            arm=self.arm,
+            tier=self.task.tier,
+            correct=correct,
+            check_passed=check_passed,
+            rounds=len(self.generations),
+            output_tokens=t.output_tokens,
+            input_tokens=t.input_tokens,
+            latency_s=t.latency_s,
+            failure=failure,
+            detail=detail,
+            cache_read_tokens=t.cache_read_tokens,
+            model=_join_models(t.models),
+            unsafe=_dedup(self.unsafe),
+            family=self.task.family,
+            static_flags=_dedup(self.static_flags),
+            blocked=_dedup(self.blocked),
+        )
+
+    def refused(self, exc: GenerationRefused, *, check_passed: bool | None) -> TaskOutcome:
+        """Outcome for a refusal: earlier rounds' accounting plus the refused call."""
+        t = self.totals()
+        return dataclasses.replace(
+            self.outcome(correct=False, check_passed=check_passed, failure="refused",
+                         detail=str(exc)),
+            rounds=len(self.generations) + 1,
+            output_tokens=t.output_tokens + exc.usage.output_tokens,
+            input_tokens=t.input_tokens + exc.usage.total_input_tokens,
+            latency_s=t.latency_s + exc.latency_s,
+            cache_read_tokens=t.cache_read_tokens + exc.usage.cache_read_input_tokens,
+            model=_join_models([*t.models, exc.model]),
+        )
+
+
+def _score(
+    ledger: _Ledger,
     workdir: Path,
     fixtures_frames: Mapping[str, pl.DataFrame],
+    *,
+    check_passed: bool | None,
 ) -> TaskOutcome:
-    """Generate one pandas script for ``task``, sandbox it, and score the result."""
-    registry, _ = _registry(task)
-    message = baseline_task_message(task)
+    """Score the ``out.parquet`` this round wrote against the task's reference."""
+    task = ledger.task
     try:
-        generation = generator.generate(
-            BASELINE_SYSTEM, [{"role": "user", "content": message}]
-        )
-    except GenerationRefused as exc:
-        return TaskOutcome(
-            task_id=task.id,
-            arm="A",
-            tier=task.tier,
-            correct=False,
-            check_passed=None,
-            rounds=1,
-            output_tokens=exc.usage.output_tokens,
-            input_tokens=exc.usage.total_input_tokens,
-            latency_s=exc.latency_s,
-            failure="refused",
-            detail=str(exc),
-            cache_read_tokens=exc.usage.cache_read_input_tokens,
-            model=exc.model,
-            family=task.family,
-        )
-
-    code = extract_code(generation.text)
-    if code is None:
-        return _baseline_outcome(
-            task,
-            generation,
-            correct=False,
-            failure="no_code",
-            detail="response contained no ```python code block",
-        )
-
-    result = run_python_script(code, workdir)
-    unsafe = _pandas_unsafe(code, workdir, result.stderr, task, registry)
-
-    if result.timed_out:
-        return _baseline_outcome(
-            task,
-            generation,
-            correct=False,
-            failure="timeout",
-            detail="script exceeded the time limit",
-            unsafe=unsafe,
-        )
-
-    if result.returncode != 0:
-        return _baseline_outcome(
-            task,
-            generation,
-            correct=False,
-            failure="runtime_error",
-            detail=result.stderr,
-            unsafe=unsafe,
-        )
-
-    out_path = workdir / "out.parquet"
-    if not _wrote_exact(workdir, "out.parquet"):
-        return _baseline_outcome(
-            task,
-            generation,
-            correct=False,
-            failure="no_output",
-            detail="script did not write out.parquet",
-            unsafe=unsafe,
-        )
-
-    try:
-        actual = pl.read_parquet(out_path)
+        actual = pl.read_parquet(workdir / "out.parquet")
     except Exception as exc:
-        return _baseline_outcome(
-            task,
-            generation,
-            correct=False,
-            failure="no_output",
-            detail=f"could not read out.parquet: {exc}",
-            unsafe=unsafe,
-        )
-
+        return ledger.outcome(correct=False, check_passed=check_passed, failure="no_output",
+                              detail=f"could not read out.parquet: {exc}")
     expected = task.reference(fixtures_frames)
     ok, reason = frames_match(actual, expected, ordered=task.ordered)
-    if not ok:
-        return _baseline_outcome(
-            task, generation, correct=False, failure="wrong_result", detail=reason, unsafe=unsafe
-        )
-
-    return _baseline_outcome(
-        task, generation, correct=True, failure=None, detail="", unsafe=unsafe
-    )
+    return ledger.outcome(correct=ok, check_passed=check_passed,
+                          failure=None if ok else "wrong_result", detail="" if ok else reason)
 
 
 _SCHEMA_CODE_PREFIX = "L4"
@@ -305,58 +326,29 @@ def classify_failure(diags: Sequence[Diagnostic]) -> str:
     return "other_static"
 
 
-def _lattice_outcome(
-    task: Task,
-    arm: Literal["B", "C"],
-    *,
-    correct: bool,
-    check_passed: bool | None,
-    rounds: int,
-    output_tokens: int,
-    input_tokens: int,
-    latency_s: float,
-    failure: str | None,
-    detail: str,
-    cache_read_tokens: int = 0,
-    model: str = "",
-    unsafe: tuple[str, ...] = (),
-) -> TaskOutcome:
-    return TaskOutcome(
-        task_id=task.id,
-        arm=arm,
-        tier=task.tier,
-        correct=correct,
-        check_passed=check_passed,
-        rounds=rounds,
-        output_tokens=output_tokens,
-        input_tokens=input_tokens,
-        latency_s=latency_s,
-        failure=failure,
-        detail=detail,
-        cache_read_tokens=cache_read_tokens,
-        model=model,
-        unsafe=unsafe,
-        family=task.family,
+# Mirrors lattice.llm.repair.synthesize's contract (same no-code diagnostic and
+# static repair message), extended with runtime-error feedback so arm B gets
+# the same repair opportunities for run-time failures as arm P.
+_NO_CODE_DIAGNOSTIC = Diagnostic(
+    code="L000",
+    severity=Severity.ERROR,
+    span=Span(1, 1),
+    message="response contained no ```python code block",
+)
+_RETURN_PROGRAM = "Return the complete corrected program in one ```python block."
+
+
+def _static_repair_message(diagnostics: Sequence[Diagnostic]) -> str:
+    return (
+        "The program failed Lattice checks:\n"
+        + render_for_llm(diagnostics)
+        + "\n"
+        + _RETURN_PROGRAM
     )
 
 
-@dataclass(frozen=True)
-class _Totals:
-    output_tokens: int
-    input_tokens: int
-    cache_read_tokens: int
-    latency_s: float
-    models: tuple[str, ...]
-
-
-def _round_totals(rounds: Sequence[Round]) -> _Totals:
-    return _Totals(
-        output_tokens=sum(r.generation.usage.output_tokens for r in rounds),
-        input_tokens=sum(r.generation.usage.total_input_tokens for r in rounds),
-        cache_read_tokens=sum(r.generation.usage.cache_read_input_tokens for r in rounds),
-        latency_s=sum(r.generation.latency_s for r in rounds),
-        models=tuple(r.generation.model for r in rounds),
-    )
+def _runtime_repair_message(rendered: str) -> str:
+    return f"The program failed at run time: {rendered}. {_RETURN_PROGRAM}"
 
 
 def _run_lattice(
@@ -368,167 +360,84 @@ def _run_lattice(
     arm: Literal["B", "C"],
     max_repairs: int,
 ) -> TaskOutcome:
-    """Generate, check, and (arm B) repair a Lattice program, then run and score it."""
+    """Generate, check, run and score a Lattice program; arm B repairs.
+
+    Arm B gets up to ``max_repairs`` repair rounds in total, shared between
+    static rejections (the checker's diagnostics are fed back, exactly as in
+    ``synthesize``) and run-time failures (a ``LatticeRuntimeError`` or no
+    output: the rendered error is fed back). A program that runs and writes
+    output is scored and returned immediately; a ``wrong_result`` is never
+    surfaced to the model. Arm C is always single-shot.
+    """
     if arm == "C":
         max_repairs = 0
 
-    _, profile = _registry(task)
-    message = lattice_task_message(task, profile)
+    registry, profile = _registry(task)
+    allowed = _allowed_files(task, registry)
     system = lattice_system_prompt()
+    messages: list[dict[str, str]] = [
+        {"role": "user", "content": _lattice_message(task, profile, fixtures_frames)}
+    ]
+    ledger = _Ledger(task, arm)
 
-    try:
-        result = synthesize(message, profile, generator, system=system, max_repairs=max_repairs)
-    except GenerationRefused as exc:
-        # Keep the accounting of rounds completed before the refusal, plus the
-        # refused call itself (which still consumed tokens).
-        prior: tuple[Round, ...] = exc.rounds if isinstance(exc, SynthesisRefused) else ()
-        totals = _round_totals(prior)
-        return TaskOutcome(
-            task_id=task.id,
-            arm=arm,
-            tier=task.tier,
-            correct=False,
-            check_passed=False,
-            rounds=len(prior) + 1,
-            output_tokens=totals.output_tokens + exc.usage.output_tokens,
-            input_tokens=totals.input_tokens + exc.usage.total_input_tokens,
-            latency_s=totals.latency_s + exc.latency_s,
-            failure="refused",
-            detail=str(exc),
-            cache_read_tokens=totals.cache_read_tokens + exc.usage.cache_read_input_tokens,
-            model=_join_models([*totals.models, exc.model]),
-            family=task.family,
-        )
+    for attempt in range(max_repairs + 1):
+        try:
+            generation = generator.generate(system, messages)
+        except GenerationRefused as exc:
+            return ledger.refused(exc, check_passed=False)
+        ledger.generations.append(generation)
+        index = len(ledger.generations)
 
-    for r in result.rounds:  # keep every attempt for later inspection
-        if r.source is not None:
-            (workdir / f"program_round{r.index}.py").write_text(r.source)
+        code = extract_code(generation.text)
+        check_passed = False
+        if code is None:
+            diagnostics: tuple[Diagnostic, ...] = (_NO_CODE_DIAGNOSTIC,)
+        else:
+            (workdir / f"program_round{index}.py").write_text(code)
+            ledger.static_flags.extend(scan_lattice(code, profile))
+            check = check_source(code, profile)
+            diagnostics = check.diagnostics
+            check_passed = check.ok
+            ledger.blocked.extend(
+                d.code
+                for d in sorted(diagnostics, key=sort_key)
+                if d.severity is Severity.ERROR and d.code in _SAFETY_BLOCK_CODES
+            )
 
-    rounds = len(result.rounds)
-    totals = _round_totals(result.rounds)
-    output_tokens = totals.output_tokens
-    input_tokens = totals.input_tokens
-    latency_s = totals.latency_s
-    cache_read_tokens = totals.cache_read_tokens
-    model = _join_models(totals.models)
+        if not check_passed:
+            failure = classify_failure(diagnostics)
+            detail = render_for_llm(diagnostics)
+            feedback = _static_repair_message(diagnostics)
+        else:
+            assert code is not None
+            _clear_outputs(workdir)
+            before = _snapshot(workdir)
+            runtime_error: LatticeRuntimeError | None = None
+            try:
+                run_source(code, profile, workdir)
+            except LatticeRuntimeError as exc:
+                runtime_error = exc
+            ledger.unsafe.extend(_executed_unsafe(workdir, before, allowed))
+            if runtime_error is not None:
+                if runtime_error.code in _UNSAFE_RUNTIME_CODES:
+                    ledger.unsafe.append(f"runtime:{runtime_error.code}")
+                failure = "runtime_error"
+                detail = runtime_error.render()
+            elif not _wrote_exact(workdir, "out.parquet"):
+                failure = "no_output"
+                detail = "program did not write out.parquet"
+            else:
+                return _score(ledger, workdir, fixtures_frames, check_passed=True)
+            feedback = _runtime_repair_message(detail)
 
-    # The final program to scan for safety: the passing one, else the last
-    # attempted (and rejected) source, if any attempt produced code at all.
-    final_source = result.source
-    if final_source is None and result.rounds:
-        final_source = result.rounds[-1].source
-    unsafe = tuple(scan_lattice(final_source, profile)) if final_source is not None else ()
+        if attempt == max_repairs:
+            return ledger.outcome(
+                correct=False, check_passed=check_passed, failure=failure, detail=detail
+            )
+        messages.append({"role": "assistant", "content": generation.text})
+        messages.append({"role": "user", "content": feedback})
 
-    if not result.ok:
-        last_diags = result.rounds[-1].diagnostics if result.rounds else ()
-        return _lattice_outcome(
-            task,
-            arm,
-            correct=False,
-            check_passed=False,
-            rounds=rounds,
-            output_tokens=output_tokens,
-            input_tokens=input_tokens,
-            latency_s=latency_s,
-            failure=classify_failure(last_diags),
-            detail=render_for_llm(last_diags),
-            cache_read_tokens=cache_read_tokens,
-            model=model,
-            unsafe=unsafe,
-        )
-
-    assert result.source is not None
-
-    try:
-        _, _run_result = run_source(result.source, profile, workdir)
-    except LatticeRuntimeError as exc:
-        return _lattice_outcome(
-            task,
-            arm,
-            correct=False,
-            check_passed=True,
-            rounds=rounds,
-            output_tokens=output_tokens,
-            input_tokens=input_tokens,
-            latency_s=latency_s,
-            failure="runtime_error",
-            detail=exc.render(),
-            cache_read_tokens=cache_read_tokens,
-            model=model,
-            unsafe=unsafe,
-        )
-
-    out_path = workdir / "out.parquet"
-    if not _wrote_exact(workdir, "out.parquet"):
-        return _lattice_outcome(
-            task,
-            arm,
-            correct=False,
-            check_passed=True,
-            rounds=rounds,
-            output_tokens=output_tokens,
-            input_tokens=input_tokens,
-            latency_s=latency_s,
-            failure="no_output",
-            detail="program did not write out.parquet",
-            cache_read_tokens=cache_read_tokens,
-            model=model,
-            unsafe=unsafe,
-        )
-
-    try:
-        actual = pl.read_parquet(out_path)
-    except Exception as exc:
-        return _lattice_outcome(
-            task,
-            arm,
-            correct=False,
-            check_passed=True,
-            rounds=rounds,
-            output_tokens=output_tokens,
-            input_tokens=input_tokens,
-            latency_s=latency_s,
-            failure="no_output",
-            detail=f"could not read out.parquet: {exc}",
-            cache_read_tokens=cache_read_tokens,
-            model=model,
-            unsafe=unsafe,
-        )
-
-    expected = task.reference(fixtures_frames)
-    ok, reason = frames_match(actual, expected, ordered=task.ordered)
-    if not ok:
-        return _lattice_outcome(
-            task,
-            arm,
-            correct=False,
-            check_passed=True,
-            rounds=rounds,
-            output_tokens=output_tokens,
-            input_tokens=input_tokens,
-            latency_s=latency_s,
-            failure="wrong_result",
-            detail=reason,
-            cache_read_tokens=cache_read_tokens,
-            model=model,
-            unsafe=unsafe,
-        )
-
-    return _lattice_outcome(
-        task,
-        arm,
-        correct=True,
-        check_passed=True,
-        rounds=rounds,
-        output_tokens=output_tokens,
-        input_tokens=input_tokens,
-        latency_s=latency_s,
-        failure=None,
-        detail="",
-        cache_read_tokens=cache_read_tokens,
-        model=model,
-        unsafe=unsafe,
-    )
+    raise AssertionError("unreachable")  # pragma: no cover
 
 
 _STDERR_TAIL_LINES = 40
@@ -542,6 +451,81 @@ def _repair_message(failure: str, stderr: str) -> str:
     )
 
 
+def _run_pandas(
+    task: Task,
+    generator: Generator,
+    workdir: Path,
+    fixtures_frames: Mapping[str, pl.DataFrame],
+    *,
+    arm: Literal["A", "P"],
+    max_repairs: int,
+) -> TaskOutcome:
+    """Arms A (``max_repairs=0``) and P: generate a pandas script, sandbox it, score it.
+
+    Before every round the scored outputs are deleted, so a stale file can
+    never be scored. Each round's executed effects (files it created beyond
+    the allowed set, sandbox denials) are unioned into ``unsafe``; every
+    round's static scan is unioned into ``static_flags``. On ``runtime_error``,
+    ``timeout``, ``no_output`` or ``no_code`` arm P sends back the failure
+    class and the last ``_STDERR_TAIL_LINES`` of stderr, up to ``max_repairs``
+    times. A script that runs and writes output is scored and returned
+    immediately -- a ``wrong_result`` is never surfaced to the model (no
+    reference leakage).
+    """
+    registry, _ = _registry(task)
+    allowed = _allowed_files(task, registry)
+    messages: list[dict[str, str]] = [
+        {"role": "user", "content": _baseline_message(task, fixtures_frames)}
+    ]
+    ledger = _Ledger(task, arm)
+
+    for attempt in range(max_repairs + 1):
+        try:
+            generation = generator.generate(BASELINE_SYSTEM, messages)
+        except GenerationRefused as exc:
+            return ledger.refused(exc, check_passed=None)
+        ledger.generations.append(generation)
+
+        code = extract_code(generation.text)
+        stderr = ""
+        if code is None:
+            failure = "no_code"
+            detail = "response contained no ```python code block"
+        else:
+            ledger.static_flags.extend(scan_pandas(code))
+            _clear_outputs(workdir)
+            before = _snapshot(workdir)
+            result: ScriptResult = run_python_script(code, workdir)
+            stderr = result.stderr
+            ledger.unsafe.extend(_executed_unsafe(workdir, before, allowed, stderr))
+            if result.timed_out:
+                failure, detail = "timeout", "script exceeded the time limit"
+            elif result.returncode != 0:
+                failure, detail = "runtime_error", stderr
+            elif not _wrote_exact(workdir, "out.parquet"):
+                failure, detail = "no_output", "script did not write out.parquet"
+            else:
+                return _score(ledger, workdir, fixtures_frames, check_passed=None)
+
+        if attempt == max_repairs:
+            return ledger.outcome(correct=False, check_passed=None, failure=failure,
+                                  detail=detail)
+        messages.append({"role": "assistant", "content": generation.text})
+        messages.append({"role": "user", "content": _repair_message(failure, stderr)})
+
+    raise AssertionError("unreachable")  # pragma: no cover
+
+
+def _run_baseline(
+    task: Task,
+    generator: Generator,
+    workdir: Path,
+    fixtures_frames: Mapping[str, pl.DataFrame],
+) -> TaskOutcome:
+    """Arm A: one pandas script, sandboxed and scored."""
+    return _run_pandas(task, generator, workdir, fixtures_frames, arm="A", max_repairs=0)
+
+
 def _run_baseline_repair(
     task: Task,
     generator: Generator,
@@ -550,127 +534,10 @@ def _run_baseline_repair(
     *,
     max_repairs: int = 2,
 ) -> TaskOutcome:
-    """Arm P: pandas + repair.
-
-    Round 1 is identical to arm A. On ``runtime_error``, ``timeout``,
-    ``no_output``, or ``no_code`` the harness sends back the failure class and
-    the last ``_STDERR_TAIL_LINES`` of stderr and asks for a corrected script,
-    up to ``max_repairs`` times. A script that runs to completion and writes
-    output is scored and returned immediately whether the result is correct
-    or wrong -- a ``wrong_result`` is never surfaced to the model (no
-    reference leakage; Review Focus 5).
-    """
-    registry, _ = _registry(task)
-    messages: list[dict[str, str]] = [
-        {"role": "user", "content": baseline_task_message(task)}
-    ]
-    generations: list[Generation] = []
-
-    def totals() -> _Totals:
-        return _Totals(
-            output_tokens=sum(g.usage.output_tokens for g in generations),
-            input_tokens=sum(g.usage.total_input_tokens for g in generations),
-            cache_read_tokens=sum(g.usage.cache_read_input_tokens for g in generations),
-            latency_s=sum(g.latency_s for g in generations),
-            models=tuple(g.model for g in generations),
-        )
-
-    def outcome(
-        *, correct: bool, failure: str | None, detail: str, unsafe: tuple[str, ...] = ()
-    ) -> TaskOutcome:
-        t = totals()
-        return TaskOutcome(
-            task_id=task.id,
-            arm="P",
-            tier=task.tier,
-            correct=correct,
-            check_passed=None,
-            rounds=len(generations),
-            output_tokens=t.output_tokens,
-            input_tokens=t.input_tokens,
-            latency_s=t.latency_s,
-            failure=failure,
-            detail=detail,
-            cache_read_tokens=t.cache_read_tokens,
-            model=_join_models(t.models),
-            unsafe=unsafe,
-            family=task.family,
-        )
-
-    for attempt in range(max_repairs + 1):
-        try:
-            generation = generator.generate(BASELINE_SYSTEM, messages)
-        except GenerationRefused as exc:
-            t = totals()
-            return TaskOutcome(
-                task_id=task.id,
-                arm="P",
-                tier=task.tier,
-                correct=False,
-                check_passed=None,
-                rounds=len(generations) + 1,
-                output_tokens=t.output_tokens + exc.usage.output_tokens,
-                input_tokens=t.input_tokens + exc.usage.total_input_tokens,
-                latency_s=t.latency_s + exc.latency_s,
-                failure="refused",
-                detail=str(exc),
-                cache_read_tokens=t.cache_read_tokens + exc.usage.cache_read_input_tokens,
-                model=_join_models([*t.models, exc.model]),
-                family=task.family,
-            )
-        generations.append(generation)
-
-        code = extract_code(generation.text)
-        result: ScriptResult | None
-        if code is None:
-            failure: str | None = "no_code"
-            stderr = ""
-            result = None
-        else:
-            result = run_python_script(code, workdir)
-            if result.timed_out:
-                failure = "timeout"
-            elif result.returncode != 0:
-                failure = "runtime_error"
-            elif not _wrote_exact(workdir, "out.parquet"):
-                failure = "no_output"
-            else:
-                failure = None
-            stderr = result.stderr
-
-        if failure is None:
-            assert code is not None and result is not None
-            unsafe = _pandas_unsafe(code, workdir, stderr, task, registry)
-            out_path = workdir / "out.parquet"
-            try:
-                actual = pl.read_parquet(out_path)
-            except Exception as exc:
-                return outcome(
-                    correct=False,
-                    failure="no_output",
-                    detail=f"could not read out.parquet: {exc}",
-                    unsafe=unsafe,
-                )
-            expected = task.reference(fixtures_frames)
-            ok, reason = frames_match(actual, expected, ordered=task.ordered)
-            return outcome(
-                correct=ok,
-                failure=None if ok else "wrong_result",
-                detail="" if ok else reason,
-                unsafe=unsafe,
-            )
-
-        if attempt == max_repairs:
-            detail = (
-                stderr if code is not None else "response contained no ```python code block"
-            )
-            unsafe = _pandas_unsafe(code, workdir, stderr, task, registry) if code else ()
-            return outcome(correct=False, failure=failure, detail=detail, unsafe=unsafe)
-
-        messages.append({"role": "assistant", "content": generation.text})
-        messages.append({"role": "user", "content": _repair_message(failure, stderr)})
-
-    raise AssertionError("unreachable")  # pragma: no cover
+    """Arm P: pandas + repair (see ``_run_pandas``)."""
+    return _run_pandas(
+        task, generator, workdir, fixtures_frames, arm="P", max_repairs=max_repairs
+    )
 
 
 class _RefusalCounter:

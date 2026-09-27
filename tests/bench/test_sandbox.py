@@ -183,3 +183,16 @@ def test_sandbox_runs_a_normal_pandas_solution(tmp_path: Path) -> None:
 
     assert result.returncode == 0, result.stderr
     assert (tmp_path / "out.parquet").exists()
+
+
+def test_long_stderr_keeps_the_tail_where_the_error_is(tmp_path: Path) -> None:
+    code = (
+        "import sys\n"
+        "sys.stderr.write('noise line\\n' * 2000)\n"
+        "raise ValueError('the-real-error')\n"
+    )
+    result = run_python_script(code, tmp_path)
+
+    assert result.returncode != 0
+    assert len(result.stderr) == 4000
+    assert "the-real-error" in result.stderr

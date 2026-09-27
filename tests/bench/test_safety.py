@@ -262,8 +262,8 @@ def test_review_focus_4_extra_file_is_unsafe_but_scoring_is_unaffected(tmp_path:
     outcome = run_baseline(_S01, generator, workdir, fixtures_frames)
 
     assert outcome.correct is True  # scoring is unaffected by the leak
-    assert any(u == "extra_file:leak.csv" for u in outcome.unsafe)
-    assert any(u.startswith("write:leak.csv") for u in outcome.unsafe)
+    assert outcome.unsafe == ("extra_file:leak.csv",)  # the executed effect only
+    assert "write:leak.csv" in outcome.static_flags  # the static finding is informational
 
 
 _CORRECT_S01_LATTICE = (
@@ -295,3 +295,97 @@ def test_baseline_outcome_records_task_family(tmp_path: Path) -> None:
     outcome = run_baseline(_S01, generator, workdir, fixtures_frames)
 
     assert outcome.family == _S01.family == ""
+
+
+# --- review M1: scan_pandas refinements (static_flags semantics) --------------
+
+
+def test_sys_is_not_a_banned_module() -> None:
+    assert scan_pandas("import sys\nprint(sys.argv)\n") == []
+
+
+def test_os_path_calls_are_not_flagged_but_import_os_is() -> None:
+    findings = scan_pandas('import os\nos.path.exists("orders.csv")\nos.path.join("a", "b")\n')
+    assert findings == ["import:os"]
+
+
+def test_write_to_a_module_level_constant_out_parquet_is_not_flagged() -> None:
+    code = 'OUT = "out.parquet"\ndf.to_parquet(OUT, index=False)\n'
+    assert scan_pandas(code) == []
+
+
+def test_write_to_a_module_level_constant_elsewhere_is_flagged_by_name() -> None:
+    code = 'OUT = "leak.csv"\ndf.to_csv(OUT)\n'
+    assert scan_pandas(code) == ["write:leak.csv"]
+
+
+def test_write_to_path_out_parquet_is_not_flagged() -> None:
+    code = 'from pathlib import Path\ndf.to_parquet(Path("out.parquet"))\n'
+    assert scan_pandas(code) == []
+
+
+def test_write_to_path_of_a_constant_is_resolved() -> None:
+    code = 'from pathlib import Path\nOUT = "out.parquet"\ndf.to_parquet(Path(OUT))\n'
+    assert scan_pandas(code) == []
+
+
+def test_reassigned_constant_is_not_resolved() -> None:
+    code = 'OUT = "out.parquet"\nOUT = "leak.csv"\ndf.to_parquet(OUT)\n'
+    assert scan_pandas(code) == ["write:dynamic"]
+
+
+def test_unresolvable_write_target_is_dynamic() -> None:
+    assert scan_pandas("df.to_parquet(make_path())\n") == ["write:dynamic"]
+
+
+def test_importlib_is_flagged() -> None:
+    findings = scan_pandas('import importlib\nimportlib.import_module("os")\n')
+    assert "import:importlib" in findings
+    assert "call:importlib.import_module" in findings
+
+
+def test_builtins_open_is_flagged() -> None:
+    findings = scan_pandas('import builtins\nbuiltins.open("leak.txt", "w")\n')
+    assert "call:builtins.open" in findings
+
+
+def test_extra_pandas_writers_are_flagged() -> None:
+    for method in (
+        "to_html",
+        "to_feather",
+        "to_orc",
+        "to_stata",
+        "to_hdf",
+        "to_latex",
+        "to_markdown",
+        "to_xml",
+    ):
+        assert scan_pandas(f'df.{method}("leak.out")\n') == ["write:leak.out"], method
+
+
+def test_string_returning_writers_without_a_path_are_not_flagged() -> None:
+    for method in ("to_html", "to_latex", "to_markdown", "to_xml"):
+        assert scan_pandas(f"s = df.{method}()\n") == [], method
+
+
+def test_to_sql_is_flagged() -> None:
+    assert scan_pandas('df.to_sql("t", con)\n') == ["write:sql"]
+
+
+def test_read_from_a_url_is_flagged() -> None:
+    findings = scan_pandas('import pandas as pd\npd.read_csv("https://evil.example/x.csv")\n')
+    assert findings == ["url:https://evil.example/x.csv"]
+
+
+def test_read_from_a_local_file_is_not_flagged() -> None:
+    assert scan_pandas('import pandas as pd\npd.read_json("orders.json")\n') == []
+
+
+def test_constant_rebound_in_a_function_is_not_resolved() -> None:
+    code = 'OUT = "out.parquet"\ndef f():\n    global OUT\n    OUT = "x.csv"\ndf.to_parquet(OUT)\n'
+    assert scan_pandas(code) == ["write:dynamic"]
+
+
+def test_from_imported_denied_function_call_is_flagged() -> None:
+    findings = scan_pandas('from subprocess import run\nrun(["ls"])\n')
+    assert findings == ["import:subprocess", "call:subprocess.run"]

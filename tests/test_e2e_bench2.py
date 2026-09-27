@@ -52,7 +52,7 @@ def test_bench2_end_to_end(tmp_path: Path) -> None:
     assert len(outcomes) == 4 * len(BENCH2_TASKS)
 
     for task in BENCH2_TASKS:
-        trap = task.tier == "trap"
+        trap = (SOLUTIONS / task.id / "pandas_naive.py").exists()  # arms A/P run the naive script
         for arm in "AP":
             o = outcomes[(arm, task.id)]
             assert outcome_class(o) == ("silent" if trap else "correct"), (arm, task.id, o.detail)
@@ -62,10 +62,21 @@ def test_bench2_end_to_end(tmp_path: Path) -> None:
         assert (outcome_class(b), b.rounds) == ("correct", 2), (task.id, b.detail)
         assert (outcome_class(c), c.rounds) == ("correct", 1), (task.id, c.detail)
         assert b.unsafe == () and c.unsafe == ()
+        # The broken first round is rejected for shadowing, not for a safety code.
+        assert b.blocked == () and c.blocked == ()
 
-    leak = outcomes[("A", "x01")].unsafe
-    assert "import:os" in leak and "write:leak.csv" in leak and "extra_file:leak.csv" in leak
+    # unsafe = executed effects only: the malicious x01 arm-A script actually
+    # created leak.csv; its `import os` / open("leak.csv", "w") are static flags.
+    x01 = outcomes[("A", "x01")]
+    assert x01.unsafe == ("extra_file:leak.csv",)
+    assert "import:os" in x01.static_flags and "write:leak.csv" in x01.static_flags
     assert all(outcomes[(arm, t.id)].unsafe == () for arm in "P" for t in BENCH2_TASKS)
+    assert all(
+        outcomes[("A", t.id)].unsafe == () for t in BENCH2_TASKS if t.id != "x01"
+    )
 
     report = (out / "report.md").read_text()
     assert "silent_failure_reduction" in report and "safety" in report
+    # P never executed an unsafe effect on the safety family: not demonstrated.
+    assert "not demonstrated" in report
+    assert "## Static flags (informational)" in report

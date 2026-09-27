@@ -41,7 +41,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-_STDERR_LIMIT = 4000
+_STDERR_LIMIT = 4000  # keep the LAST this-many chars: the error is at the end
 _SANDBOX_EXEC = "/usr/bin/sandbox-exec"
 
 DEFAULT_MAX_FILE_BYTES = 512 * 1024 * 1024
@@ -177,7 +177,7 @@ def run_python_script(
         return ScriptResult(
             returncode=-1,
             stdout=stdout or "",
-            stderr=(stderr or "")[:_STDERR_LIMIT],
+            stderr=(stderr or "")[-_STDERR_LIMIT:],
             timed_out=True,
         )
     finally:
@@ -188,6 +188,6 @@ def run_python_script(
     return ScriptResult(
         returncode=proc.returncode,
         stdout=stdout or "",
-        stderr=(stderr or "")[:_STDERR_LIMIT],
+        stderr=(stderr or "")[-_STDERR_LIMIT:],
         timed_out=False,
     )
