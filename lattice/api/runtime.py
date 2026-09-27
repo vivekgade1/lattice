@@ -66,20 +66,24 @@ from lattice.api.backend import (
     wire_datetime,
 )
 from lattice.api.ir import (
+    CallStep,
     CheckStep,
     EndpointPlan,
     ErrorSpec,
     ForEachStep,
+    PostStep,
     ReadStep,
+    T2CheckStep,
     WriteStep,
     lower_api,
 )
 from lattice.api.sql import bind_values, compile_lookup, decode
-from lattice.catalog import EMAIL_MAX_LEN, PUBLIC_ROLE, USER_PARAM
+from lattice.catalog import EMAIL_MAX_LEN, LIST_KIND, PUBLIC_ROLE, T2_EFFECT_PREFIX, USER_PARAM
 from lattice.check import CheckResult, check_source
-from lattice.check.api_info import MISSING, ParamSpec, pattern_problem
+from lattice.check.api_info import MISSING, UNSET, ParamSpec, pattern_problem
 from lattice.profile import Profile
 from lattice.runtime import LatticeInternalError, LatticeRuntimeError
+from lattice.t2 import support as t2s
 from lattice.typesys import Scalar
 
 __all__ = ["ApiRuntimeError", "build_app", "error_body", "on_connect", "serve_source"]
@@ -429,16 +433,32 @@ def _run_steps(
     caller: tuple[Any, ...] | None = None,
     now: dt.datetime | None = None,
     pending: list[tuple[Any, ...]] | None = None,
+    t2: dict[str, object] | None = None,
 ) -> tuple[dict[str, Result], dict[str, int]]:
     """Every step's rows, and the total of each page(total=True) read (by step id).
     Outbox rows written by for_each steps are appended to `pending` (id, native, args)
-    for the dispatch after COMMIT."""
+    for the dispatch after COMMIT. `t2`: the program's loaded procedures (T2 steps run
+    them on the request's one fuel budget)."""
     results: dict[str, Result] = {}
     totals: dict[str, int] = {}
     caller_row: dict[str, object] | None = None
     if caller is not None:
         results[USER_PARAM] = (plan.user_columns, [caller])
         caller_row = dict(zip(plan.user_columns, caller, strict=True))
+    values = dict(values)  # whole-value calls bind their scalar results here
+    fuel: t2s.T2Fuel | None = None
+    request: t2s.T2Request | None = None
+    if plan.uses_t2:
+        if t2 is None:
+            raise LatticeInternalError(f"plan '{plan.name}' runs procedures, none are loaded")
+        fuel = t2s.T2Fuel(plan.fuel)
+        role = caller_role(plan, caller) if caller is not None else ""
+        request = t2s.T2Request(
+            values, UNSET, caller_row, plan.t2_caller, plan.user_key, is_admin, role, now
+        )
+
+    def encode(v: object) -> object:
+        return dialect.to_db(v)
 
     def write(step: WriteStep) -> list[tuple[Any, ...]]:
         """A write statement; with unique_or=Conflict(...), a UNIQUE violation answers
@@ -519,9 +539,46 @@ def _run_steps(
                 written = run(step.sql)
                 if pending is not None:
                     pending.extend(written)
+            case PostStep() | T2CheckStep() | CallStep():
+                assert t2 is not None and fuel is not None and request is not None
+                try:
+                    _t2_step(step, t2, fuel, request, results, values, encode)
+                except t2s.T2Error as err:
+                    t2s.t2_report(f"{step.span.line}:{step.span.col}", err)
+                    raise ApiRuntimeError(err.code, step.span, err.message) from None
             case _:
                 raise LatticeInternalError(f"unknown step {step!r}")
     return results, totals
+
+
+def _t2_step(
+    step: PostStep | T2CheckStep | CallStep,
+    ns: dict[str, object],
+    fuel: t2s.T2Fuel,
+    request: t2s.T2Request,
+    results: dict[str, Result],
+    values: dict[str, object],
+    encode: Callable[[object], object],
+) -> None:
+    """One T2 step: procedures over rows already read (lattice.t2.support)."""
+    match step:
+        case PostStep():
+            cols, rows = results[step.input]
+            out = step.schema.names()
+            rows = t2s.t2_post(ns, fuel, request, cols, rows, step.ops, out, encode)
+            results[step.id] = (out, rows)
+        case T2CheckStep():
+            cols, rows = results[step.input]
+            if not t2s.t2_holds(ns, fuel, request, cols, rows, step.proc, step.args):
+                raise _error(step.error)
+        case CallStep():
+            value = t2s.t2_call(
+                ns, fuel, request, step.proc, step.args, results, step.result, encode
+            )
+            if step.bind is not None:
+                values[step.bind] = value
+            else:
+                results[step.id] = value  # type: ignore[assignment]
 
 
 def _respond(
@@ -542,6 +599,8 @@ def _respond(
         }
         for row in _project(results[plan.returns], names)
     ]
+    if plan.success == LIST_KIND:  # a JSON array of the (bounded) rows
+        return JSONResponse(items)
     if plan.success == "Page":
         if plan.page is None:
             raise LatticeInternalError(f"Page endpoint '{plan.name}' returns no page()")
@@ -600,6 +659,7 @@ def _serve(
     natives: Mapping[str, NativeImpl] | None = None,
     content_type: str | None = None,
     effects: Mapping[str, Callable[..., object]] | None = None,
+    t2: dict[str, object] | None = None,
 ) -> Response:
     dialect = plan_dialect(plan)
     impls = natives or {}
@@ -624,7 +684,7 @@ def _serve(
         dialect.begin(conn, writes=plan.writes)
         in_txn = True
         results, totals = _run_steps(
-            plan, dialect, conn, values, user_id, is_admin, caller, now, pending
+            plan, dialect, conn, values, user_id, is_admin, caller, now, pending, t2
         )
         response = _respond(plan, dialect, results, values, totals)
         dialect.commit(conn)
@@ -663,6 +723,7 @@ def _handler(
     db_path: Path,
     natives: Mapping[str, NativeImpl],
     effects: Mapping[str, Callable[..., object]] | None = None,
+    t2: dict[str, object] | None = None,
 ):
     async def endpoint(request: Request) -> Response:
         body = await request.body()
@@ -677,6 +738,7 @@ def _handler(
             natives,
             request.headers.get("content-type"),
             effects,
+            t2,
         )
 
     endpoint.__name__ = plan.name
@@ -735,6 +797,30 @@ def effect_impls(
     return impls
 
 
+def load_procedures(
+    plans: Sequence[EndpointPlan], natives: Mapping[str, Callable[..., object]] | None
+) -> dict[str, object] | None:
+    """The program's procedures (`EndpointPlan.t2`, one module for every plan) loaded
+    in their restricted namespace, with the natives they call; None without any. A
+    native without an implementation is a ValueError."""
+    codes = {plan.t2.source: plan.t2 for plan in plans if plan.t2 is not None}
+    if not codes:
+        return None
+    if len(codes) > 1:
+        raise ValueError("the plans come from different programs (their procedures differ)")
+    (code,) = codes.values()
+    impls: dict[str, object] = {}
+    for name in code.natives:
+        fn = (natives or {}).get(name)
+        if fn is None:
+            raise ValueError(
+                f"native {name!r} (called by a procedure) has no implementation: pass "
+                f"natives={{{name!r}: ...}}"
+            )
+        impls[name] = fn
+    return t2s.t2_load(code.source, impls)
+
+
 def build_app(
     plans: Sequence[EndpointPlan],
     db_path: Path,
@@ -749,8 +835,19 @@ def build_app(
     db = Path(db_path)
     impls = native_impls(plans, natives)
     effects = effect_impls(plans, natives)
+    t2 = load_procedures(plans, natives)
+    if t2 is not None:
+        for plan in plans:
+            for name, params in plan.t2_effects:
+                budget = plan.fuel
+                effects[T2_EFFECT_PREFIX + name] = t2s.t2_effect(t2, budget, name, params)
     routes = [
-        Route(plan.path, _handler(plan, db, impls, effects), methods=[plan.method], name=plan.name)
+        Route(
+            plan.path,
+            _handler(plan, db, impls, effects, t2),
+            methods=[plan.method],
+            name=plan.name,
+        )
         for plan in sorted(plans, key=_specificity)
     ]
     styles = {plan.error_body for plan in plans}

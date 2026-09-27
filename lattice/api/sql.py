@@ -219,7 +219,20 @@ class DeleteWrite:
     source: tuple[str, tuple[str, ...]]
 
 
-WriteSpec = InsertWrite | UpdateWrite | DeleteWrite
+@dataclass(frozen=True)
+class InsertManyWrite:
+    """insert_many (T2): INSERT one row per row of `source` (a materialized step: (step
+    id, columns) -- every column is written), in its order, returning `returning`;
+    `owner` / `generate` as for InsertWrite."""
+
+    table: str
+    source: tuple[str, tuple[str, ...]]
+    returning: Sequence[str]
+    owner: str | None = None
+    generate: str | None = None
+
+
+WriteSpec = InsertWrite | UpdateWrite | DeleteWrite | InsertManyWrite
 
 
 # ---- values -------------------------------------------------------------------------
@@ -874,6 +887,22 @@ def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
             ret = ", ".join(q(c) for c in [*key, *(c for c, _ in values)])
             select = f"SELECT {', '.join(keys + vals)} FROM {src}"
             return b.query(dialect.update_from(q(table), sets, select, match, ret))
+        case InsertManyWrite(
+            table=table, source=source, returning=returning, owner=owner, generate=generate
+        ):
+            src = b.rows_cte(*source)
+            cols = [q(c) for c in source[1]]
+            exprs = [q(c) for c in source[1]]
+            if owner is not None:
+                uid, _ = b.user_ref()
+                cols.append(q(owner))
+                exprs.append(uid)
+            if generate is not None:
+                cols.append(q(generate))
+                exprs.append(dialect.new_uuid())
+            select = f"SELECT {', '.join(exprs)} FROM {src} ORDER BY {ORD}"
+            ret = ", ".join(q(c) for c in returning)
+            return b.query(dialect.insert_select(q(table), cols, select, ret))
         case DeleteWrite(table=table, key=key, source=source):
             src = b.rows_cte(*source)
             cols_sql = ", ".join(q(k) for k in key)
@@ -934,6 +963,19 @@ def compile_insert(
     With `owner`, that column is set to the caller's id; with `generate`, that (Uuid
     key) column to a fresh uuid4."""
     return dialect.compile_write(InsertWrite(table, values, returning, owner, generate))
+
+
+def compile_insert_many(
+    table: str,
+    source: tuple[str, tuple[str, ...]],
+    returning: Sequence[str],
+    *,
+    owner: str | None = None,
+    generate: str | None = None,
+    dialect: Dialect = SQLITE,
+) -> SqlQuery:
+    """insert_many: INSERT every row of `source` (its columns) RETURNING `returning`."""
+    return dialect.compile_write(InsertManyWrite(table, source, returning, owner, generate))
 
 
 def compile_update(

@@ -72,14 +72,18 @@ import math
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
 
 from lattice.api.backend import SQLITE
 from lattice.api.ir import (
+    CallStep,
     CheckStep,
     EndpointPlan,
     ErrorSpec,
     ForEachStep,
+    PostStep,
     ReadStep,
+    T2CheckStep,
     WriteStep,
     lower_api,
 )
@@ -100,11 +104,12 @@ from lattice.api.outbox import (
 )
 from lattice.api.runtime import auth_sql
 from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, caller_bind, sent_bind
-from lattice.catalog import EMAIL_MAX_LEN, USER_PARAM
+from lattice.catalog import EMAIL_MAX_LEN, LIST_KIND, T2_EFFECT_PREFIX, USER_PARAM
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, UNSET, ParamSpec
 from lattice.profile import NativeSig, Profile
 from lattice.runtime import LatticeInternalError
+from lattice.t2 import support as t2_support
 
 __all__ = ["compile_source_to_fastapi", "generate_fastapi"]
 
@@ -1010,6 +1015,11 @@ def respond_page(
     return JSONResponse({name: parts[key] for key, name in shape if name and key in parts})
 
 
+def respond_list(result: Result, columns: Sequence[tuple[str, str]]) -> Response:
+    """List: the returned (bounded) rows as a JSON array."""
+    return JSONResponse(_items(result, columns))
+
+
 def _internal(detail: str) -> JSONResponse:
     return json_error(500, "internal", detail[:500])
 
@@ -1126,7 +1136,52 @@ def _module_names(src: str) -> frozenset[str]:
 # generated module-level names must not shadow the prelude's (or a builtin)
 if f"\nEMAIL_MAX_LEN = {EMAIL_MAX_LEN}\n" not in _PRELUDE:  # the kit's copy of the cap
     raise LatticeInternalError("the generated kit's EMAIL_MAX_LEN is out of date")
-_RESERVED = _module_names(_PRELUDE)
+# T2 (procedures): the support code shared with the runtime (lattice/t2/support.py, from
+# its begin marker), copied verbatim into apps that have procedures, and the helpers the
+# generated steps call.
+_T2_MARKER = "# ---- begin (copied into generated apps)"
+_T2_SUPPORT_TEXT = Path(t2_support.__file__).read_text()
+_T2_SUPPORT = _T2_SUPPORT_TEXT[_T2_SUPPORT_TEXT.index(_T2_MARKER) :]
+_T2_HELPERS = '''\
+def t2_begin(
+    ep: Endpoint, values: dict[str, object], caller: Caller | None, now: dt.datetime
+) -> tuple[T2Fuel, T2Request]:
+    """The request's fuel (T2_FUEL) and what procedure arguments read: the parameters,
+    the caller's row and role, fn.now()."""
+    row = None if caller is None else dict(zip(ep.user_columns, caller.row, strict=True))
+    role = ""
+    if caller is not None:
+        role = t2_role(
+            ep.user_columns, caller.row, ep.role_column, ep.admin_flag, ep.admin_role, ep.flag_role
+        )
+    is_admin = caller is not None and bool(caller.is_admin)
+    request = T2Request(values, UNSET, row, T2_CALLER, ep.user_key, is_admin, role, now)
+    return T2Fuel(T2_FUEL), request
+
+
+def t2_run(where: str, fn: Callable[..., Any], *args: Any) -> Any:
+    """A T2 step: R620/R621 is a 500 with the located message, logged."""
+    try:
+        return fn(*args)
+    except T2Error as err:
+        raise Failure(t2_report(where, err)) from None
+
+
+def t2_rows(
+    fuel: T2Fuel, request: T2Request, result: Result, ops: tuple[Any, ...], out: tuple[str, ...]
+) -> Result:
+    """T2-post: the procedure ops over a read's rows (stored values), in the app layer."""
+    columns, rows = result
+    return out, t2_post(T2, fuel, request, columns, rows, ops, out, sql_value)
+'''
+if _module_names(_T2_SUPPORT) & (_module_names(_PRELUDE) - set(dir(builtins))):
+    raise LatticeInternalError("the T2 support code clashes with the generated prelude")
+_RESERVED = (
+    _module_names(_PRELUDE)
+    | _module_names(_T2_SUPPORT)
+    | _module_names(_T2_HELPERS)
+    | {"T2", "T2_SOURCE", "T2_FUEL", "T2_CALLER"}
+)
 
 
 # ---- rendering helpers -------------------------------------------------------------------
@@ -1235,6 +1290,13 @@ def _literal(v: object) -> str:
     if isinstance(v, tuple):
         return _flat(_Tuple(tuple(_literal(x) for x in v)))
     raise LatticeInternalError(f"no Python literal for {v!r}")
+
+
+def _node(v: object) -> _Node:
+    """A literal (nested tuples of constants, e.g. T2 descriptors) as a code node."""
+    if isinstance(v, tuple):
+        return _Tuple(tuple(_node(x) for x in v))
+    return _literal(v)
 
 
 def _strs(names: Sequence[str]) -> _Tuple:
@@ -1361,6 +1423,9 @@ class _EndpointGen:
     def result(self, step_id: str) -> str:
         return f"results[{_py_str(step_id)}]"
 
+    def where(self, step: PostStep | T2CheckStep | CallStep) -> str:
+        return _py_str(f"{step.span.line}:{step.span.col}")
+
     def error(self, step: CheckStep) -> _Call:
         return self.error_call(step.error)
 
@@ -1369,7 +1434,10 @@ class _EndpointGen:
 
     # ---- steps ----------------------------------------------------------------------------
 
-    def step(self, step: ReadStep | CheckStep | WriteStep | ForEachStep) -> None:
+    def step(
+        self,
+        step: ReadStep | CheckStep | WriteStep | ForEachStep | PostStep | T2CheckStep | CallStep,
+    ) -> None:
         match step:
             case ReadStep() if step.sql.total:
                 self.body.append(f"    # SELECT the rows of {step.id!r} and the page total (one")
@@ -1427,6 +1495,52 @@ class _EndpointGen:
                 cols = _strs(step.schema.names())
                 project = _Call("project", (self.result(step.input), cols))
                 self.emit(_Tuple((cols, project)), f"{self.result(step.id)} = ")
+            case PostStep():
+                self.body.append(
+                    f"    # T2-post: procedures over the rows of {step.input!r} (app layer)"
+                )
+                base = _ident(step.id).upper()
+                ops = self.constant(f"{base}_T2_OPS", _node(step.ops))
+                cols = self.constant(f"{base}_COLUMNS", _strs(step.schema.names()))
+                args = (self.where(step), "t2_rows", "fuel", "t2_req", self.result(step.input))
+                self.emit(_Call("t2_run", (*args, ops, cols)), f"{self.result(step.id)} = ")
+            case T2CheckStep():
+                self.comment(step.span.line, f"require({step.input}, {step.proc}(...))")
+                base = _ident(step.id).upper()
+                t2_args = self.constant(f"{base}_T2_ARGS", _node(step.args))
+                holds = (
+                    self.where(step),
+                    "t2_holds",
+                    "T2",
+                    "fuel",
+                    "t2_req",
+                    f"*{self.result(step.input)}",
+                    _py_str(step.proc),
+                    t2_args,
+                )
+                self.body.extend(_render(_Call("t2_run", holds), "    ", "if not ", ":"))
+                self.body.extend(_render(self.error_call(step.error), "        ", "raise "))
+            case CallStep():
+                self.comment(step.span.line, f"call({step.proc}, ...)")
+                base = _ident(step.id).upper()
+                t2_args = self.constant(f"{base}_T2_ARGS", _node(step.args))
+                result = self.constant(f"{base}_T2_RESULT", _node(step.result))
+                call = (
+                    self.where(step),
+                    "t2_call",
+                    "T2",
+                    "fuel",
+                    "t2_req",
+                    _py_str(step.proc),
+                    t2_args,
+                    "results",
+                    result,
+                    "sql_value",
+                )
+                target = self.result(step.id)
+                if step.bind is not None:  # a scalar value, bound like a parameter
+                    target = f"values[{_py_str(step.bind)}]"
+                self.emit(_Call("t2_run", call), f"{target} = ")
             case ForEachStep():
                 self.comment(step.span.line, f"for_each native.{step.native}")
                 self.body.append("    # one outbox row per row, sent after COMMIT")
@@ -1465,6 +1579,9 @@ class _EndpointGen:
                 args += (f"totals[{_py_str(plan.page.total_step)}]",)
             self.emit(_Call("respond_page", args), "return ")
             return
+        if plan.success == LIST_KIND:
+            self.emit(_Call("respond_list", (result, columns)), "return ")
+            return
         status = "201" if plan.success == "Created" else "200"
         where = _py_str(f"{plan.span.line}:{plan.span.col}")
         args = (result, columns, _Kw("status", status), _Kw("where", where))
@@ -1502,6 +1619,8 @@ class _EndpointGen:
             "        ",
             f"{self.result(USER_PARAM)} = ",
         )
+        if plan.uses_t2:  # one fuel budget for every procedure the request runs
+            self.body.append(f"    fuel, t2_req = t2_begin({ep_name}, values, caller, now)")
         for step in plan.steps:
             self.step(step)
         self.respond()
@@ -1524,7 +1643,7 @@ class _EndpointGen:
                 _Kw("admin_role", _py_str(plan.admin_role)),
                 *self.role_source(),
                 *([_Kw("form", "True")] if plan.body == "form" else []),
-                *([_Kw("effects", "True")] if plan.effects else []),
+                *([_Kw("effects", "True")] if _sends(plan) else []),
             ),
         )
         rule = "# " + "-" * 86
@@ -1547,7 +1666,7 @@ class _EndpointGen:
             "    values: dict[str, object],",
             "    caller: Caller | None,",
             "    now: dt.datetime,",
-            *(["    pending: list[tuple[Any, ...]],"] if plan.effects else []),
+            *(["    pending: list[tuple[Any, ...]],"] if _sends(plan) else []),
             ") -> Response:",
             f'    """{doc}"""',
             *self.body,
@@ -1559,6 +1678,11 @@ class _EndpointGen:
             f"    return await dispatch(request, {ep_name}, {steps_name})",
         ]
         return "\n".join(out)
+
+
+def _sends(plan: EndpointPlan) -> bool:
+    """The plan writes outbox rows (for_each of an effect native or procedure)."""
+    return any(isinstance(s, ForEachStep) for s in plan.steps)
 
 
 def _specificity(plan: EndpointPlan) -> list[int]:
@@ -1584,17 +1708,22 @@ connection and accepts only "Bearer ".
 '''
 
 
-def _natives_section(plans: Sequence[EndpointPlan], module: str, names: _Names) -> tuple[str, str]:
-    """(the import of the natives the plans call or send from `module`, their
-    registration: pure natives in NATIVES, effect natives in EFFECTS)."""
+def _natives_section(
+    plans: Sequence[EndpointPlan], module: str, names: _Names, aliases: dict[str, str]
+) -> tuple[str, str]:
+    """(the import of the natives the plans call or send from `module` -- and the ones
+    procedures call --, their registration: pure natives in NATIVES, effect natives in
+    EFFECTS). `aliases` receives each imported native's local name."""
     natives: dict[str, NativeSig] = {}
     effects: dict[str, NativeSig] = {}
     for plan in plans:
         natives.update(plan.natives)
         effects.update(plan.effects)
-    if not natives and not effects:
+    t2_natives = {n for plan in plans if plan.t2 is not None for n in plan.t2.natives}
+    if not natives and not effects and not t2_natives:
         return "", ""
-    aliases = {name: names.take(f"native_{name}") for name in sorted({*natives, *effects})}
+    for name in sorted({*natives, *effects, *t2_natives}):
+        aliases[name] = names.take(f"native_{name}")
     imported = [f"{name} as {alias}" for name, alias in aliases.items()]
     line = f"from {module} import {', '.join(imported)}"
     if len(line) > _WIDTH:
@@ -1626,6 +1755,50 @@ def _natives_section(plans: Sequence[EndpointPlan], module: str, names: _Names) 
         header = f"{rule}\n# Effect natives (for_each: sent from the outbox after COMMIT)\n{rule}"
         parts.append(header + "\n\n" + register)
     return line + "\n", "\n\n\n".join(parts)
+
+
+def _t2_section(plans: Sequence[EndpointPlan], aliases: dict[str, str]) -> str:
+    """The procedures of a program that has some: the support code shared with the
+    runtime, the compiled source (run in its restricted namespace), the fuel budget,
+    the Caller's columns, and the effectful procedures for_each sends."""
+    codes = {plan.t2.source: plan.t2 for plan in plans if plan.t2 is not None}
+    if not codes:
+        return ""
+    if len(codes) > 1:
+        raise LatticeInternalError("the plans come from different programs")
+    (code,) = codes.values()
+    rule = "# " + "-" * 86
+    fuels = {plan.fuel for plan in plans}
+    callers = {plan.t2_caller for plan in plans}
+    if len(fuels) > 1 or len(callers) > 1:
+        raise LatticeInternalError("the plans disagree on the T2 settings")
+    lines = [f"{_py_str(line + chr(10))}" for line in code.source.rstrip("\n").split("\n")]
+    source = "T2_SOURCE = (\n" + "\n".join(f"    {ln}" for ln in lines) + "\n)"
+    natives = _Dict(tuple((_py_str(n), aliases[n]) for n in code.natives))
+    load = "\n".join(_render(_Call("t2_load", ("T2_SOURCE", natives)), "", "T2 = "))
+    caller = "\n".join(_render(_node(callers.pop()), "", "T2_CALLER = "))
+    parts = [
+        f"{rule}\n# Procedures (T2): the support code shared with the Lattice runtime\n{rule}",
+        _T2_SUPPORT.rstrip("\n"),
+        f"{rule}\n# The program's procedures, fuel-instrumented (lattice.t2.compile); they run\n"
+        f"# in a restricted namespace with only the names their preamble binds\n{rule}",
+        source,
+        load,
+        f"T2_FUEL = {fuels.pop()}  # the fuel budget of one request (ApiProfile.fuel)",
+        caller,
+        _T2_HELPERS.rstrip("\n"),
+    ]
+    effects = sorted({e for plan in plans for e in plan.t2_effects})
+    if effects:
+        entries = tuple(
+            (
+                _py_str(T2_EFFECT_PREFIX + name),
+                _Call("t2_effect", ("T2", "T2_FUEL", _py_str(name), _strs(params))),
+            )
+            for name, params in effects
+        )
+        parts.append("\n".join(_render(_Call("EFFECTS.update", (_Dict(entries),)), "")))
+    return "\n\n\n".join(parts)
 
 
 # Prelude constants set from the (profile-wide) plan settings: (constant, plan field).
@@ -1699,7 +1872,9 @@ def generate_fastapi(
     if target == "router":
         router_doc = f"A FastAPI APIRouter (router; get_db from {kit_module})"
         header = header.replace(_STANDALONE, router_doc, 1)
-    imports, register = _natives_section(ordered, natives_module, names)
+    aliases: dict[str, str] = {}
+    imports, register = _natives_section(ordered, natives_module, names, aliases)
+    t2_section = _t2_section(ordered, aliases)
     kit = "from platform_kit import app, get_db\n"
     if target == "router":
         names.used.add("router")
@@ -1736,6 +1911,8 @@ def generate_fastapi(
     parts = [header + "\n".join(routes) + "\n\n" + prelude.rstrip("\n")]
     if register:
         parts.append(register)
+    if t2_section:
+        parts.append(t2_section)
     owner = "router" if target == "router" else "app"
     parts += [_EndpointGen(plan, names, lines, owner).render() for plan in ordered]
     return "\n\n\n".join(parts) + "\n"

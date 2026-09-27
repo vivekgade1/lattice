@@ -22,6 +22,7 @@ from lattice.catalog import (
     CURRENT_USER,
     EMAIL_PATTERN,
     EMAIL_TYPE,
+    LIST_KIND,
     PARAM_CONSTRAINTS,
     QUERY_METHODS,
     UNSET_NAME,
@@ -73,7 +74,7 @@ class _Unset:
 UNSET = _Unset()
 
 ParamSource = Literal["path", "query", "body", "user"]
-SuccessKind = Literal["One", "Page", "Created", "NoContent"]
+SuccessKind = Literal["One", "Page", "Created", "NoContent", "List"]
 
 
 @dataclass(frozen=True)
@@ -572,13 +573,14 @@ def parse_returns(node: ast.expr | None) -> tuple[str, tuple[str, ...]] | Proble
         )
     parts = _flatten_union(node)
     names = [p.id if isinstance(p, ast.Name) else None for p in parts]
-    kinds = ", ".join(API_SUCCESS_KINDS)
+    success_kinds = (*API_SUCCESS_KINDS, LIST_KIND)
+    kinds = ", ".join(success_kinds)
     errs = ", ".join(API_ERRORS)
-    if names[0] not in API_SUCCESS_KINDS:
+    if names[0] not in success_kinds:
         return (f"the response must start with a success kind ({kinds})", _RETURN_HINT)
     errors: list[str] = []
     for n in names[1:]:
-        if n in API_SUCCESS_KINDS:
+        if n in success_kinds:
             return ("declare exactly one success kind, first", _RETURN_HINT)
         if n not in API_ERRORS:
             shown = n if n is not None else "this"

@@ -88,6 +88,7 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
     # the T0 passes see only the T0 statements.
     t0_body, t2_stmts = t2.split(module, api=profile.api is not None)
     t2_program = t2.run(t2_stmts, t0_body, ctx) if t2_stmts else None
+    ctx.t2 = t2_program
     if t2_stmts:
         module = ast.Module(body=t0_body, type_ignores=module.type_ignores)
 

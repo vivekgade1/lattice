@@ -51,7 +51,7 @@ from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import effects, gaps, loops, mine_owner, partb, realapps, round2
+from tests.api import effects, gaps, loops, mine_owner, partb, realapps, round2, t2prog
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -910,6 +910,76 @@ ROUND2_CASES: tuple[HttpCase, ...] = (
 )
 
 
+# ---- procedures called from endpoints (sub-project 1c T2b; tests/api/t2prog.py) -----------
+
+_T2 = t2prog
+
+
+def _t2case(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _T2.TOKENS[who], **kw)
+
+
+T2_CASES: tuple[HttpCase, ...] = (
+    # scalar procedures in derive (row(), user, fn.now()), a page(total=True) after them
+    *(_t2case(f"items {who}", "GET", "/items", who) for who in ("alice", "bob", "carol", "admin")),
+    _t2case("items page 2", "GET", "/items", "alice", query={"limit": 2, "offset": 1}),
+    _t2case("items past the end", "GET", "/items", "alice", query={"offset": 9}),
+    _t2case("items bad limit", "GET", "/items", "alice", query={"limit": 0}, status=422),
+    # a procedure filter after page()
+    _t2case("long alice", "GET", "/items/long", "alice"),
+    _t2case("long admin", "GET", "/items/long", "admin", query={"min_len": 8, "limit": 3}),
+    _t2case("long none", "GET", "/items/long", "bob", query={"min_len": 20}),
+    # require() with procedures; a T2-post read without page
+    _t2case("item own", "GET", "/items/1", "alice"),
+    _t2case("item short 403", "GET", "/items/2", "alice", status=403),
+    _t2case("item other 404", "GET", "/items/3", "alice", status=404),
+    _t2case("item done own", "GET", "/items/5", "alice"),
+    _t2case("item admin", "GET", "/items/3", "admin"),
+    _t2case("long item", "GET", "/items/1/long", "alice"),
+    _t2case("long item short", "GET", "/items/2/long", "alice", status=404),
+    # whole-value calls: a List of records, a scalar written by update
+    *(_t2case(f"digest {who}", "GET", "/digest", who) for who in ("alice", "bob", "carol")),
+    _t2case(
+        "rescore",
+        "PUT",
+        "/items/1/rescore",
+        "alice",
+        json={"factor": 2},
+        after_sql=_T2.SCORES_AFTER,
+    ),
+    _t2case("rescore default", "PUT", "/items/3/rescore", "bob", json={}),
+    _t2case("rescore other", "PUT", "/items/3/rescore", "alice", json={}, status=404),
+    _t2case(
+        "rescore bad factor", "PUT", "/items/1/rescore", "alice", json={"factor": 11}, status=422
+    ),
+    # insert_many of a procedure's rows
+    _t2case("expand", "POST", "/events/expand", "admin", json={"n": 3}, after_sql=_T2.EVENTS_AFTER),
+    _t2case(
+        "expand ok",
+        "POST",
+        "/events/expand",
+        "admin",
+        json={"n": 2, "kind": "ok"},
+        after_sql=_T2.EVENTS_AFTER,
+    ),
+    _t2case("expand none", "POST", "/events/expand", "admin", json={"n": 0}),
+    _t2case("expand customer", "POST", "/events/expand", "alice", json={"n": 1}, status=403),
+    # an effectful procedure through for_each and the outbox
+    _t2case("notify", "POST", "/items/1/notify", "alice", after_sql=_T2.OUTBOX_AFTER),
+    _t2case("notify fails", "POST", "/items/4/notify", "alice", after_sql=_T2.OUTBOX_AFTER),
+    _t2case("notify other", "POST", "/items/3/notify", "alice", status=404),
+    # the l12 state machine
+    _t2case("replay", "GET", "/logins/replay", "admin"),
+    _t2case("replay customer", "GET", "/logins/replay", "alice", status=403),
+    # R620: fuel and recursion depth
+    _t2case("spin", "GET", "/spin", "alice", status=500),
+    _t2case("spin nothing to run", "GET", "/spin", "carol", status=404),
+    _t2case("depth", "GET", "/depth/10", "alice"),
+    _t2case("depth too deep", "GET", "/depth/5000", "alice", status=500),
+    _t2case("depth none", "GET", "/depth/3", "carol", status=404),
+)
+
+
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
     _R.PROGRAM,
@@ -941,6 +1011,10 @@ PROGRAMS["round2"] = (
     _R2.PROGRAM,
     ApiTask("round2", "control", "round-2 fixes", ROUND2_CASES + _probes(ROUND2_CASES)),
 )
+PROGRAMS["t2"] = (
+    _T2.PROGRAM,
+    ApiTask("t2", "control", "procedures in endpoints", T2_CASES + _probes(T2_CASES)),
+)
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
 EXTRA_IDS = [
@@ -953,6 +1027,7 @@ EXTRA_IDS = [
     "gaps",
     "mine",
     "round2",
+    "t2",
 ]
 
 
@@ -976,6 +1051,7 @@ SETUPS = {
     "gaps": Setup(gaps.PROFILE, gaps.build_db, gaps.NATIVES, gaps.NATIVES_FILE),
     "mine": Setup(_M.PROFILE, _M.build_db, _M.NATIVES, _M.NATIVES_FILE),
     "round2": Setup(_R2.PROFILE, _R2.build_db, _R2.NATIVES, _R2.NATIVES_FILE),
+    "t2": Setup(_T2.PROFILE, _T2.build_db, _T2.NATIVES, _T2.NATIVES_FILE),
 }
 
 
@@ -1049,15 +1125,24 @@ _CAPTURE = (
     "        _cf.write(json.dumps({\n"
     '            "name": case["name"], "status": status, "body": body, "crash": crash,\n'
     '            "queries": queries, "after": after_rows,\n'
-    '            "digest": None if crash else db_digest("app.db"),\n'
+    '            "digest": _digest_or_none("app.db"),\n'
     '        }) + "\\n")\n'
 )
+
+
+def _digest_or_none(path: str) -> str | None:
+    """The database digest after a request, also after a 500 (a runtime diagnostic such
+    as R620 must leave the database as it was); None if it cannot be read."""
+    try:
+        return db_digest(path)
+    except Exception:
+        return None
 
 
 def _capturing_driver_source(task: ApiTask) -> str:
     source = _original_driver_source(task)
     assert _ANCHOR in source, "the sandbox driver changed: update the capture anchor"
-    helper = inspect.getsource(db_digest)
+    helper = inspect.getsource(db_digest) + "\n\n" + inspect.getsource(_digest_or_none)
     source = source.replace(
         "\ndef _run_case(case, app):", f"\n{helper}\n\ndef _run_case(case, app):"
     )
@@ -1236,7 +1321,10 @@ def _mismatches(pid: str, runs: tuple) -> list[str]:
     ):
         assert rc["name"] == gc["name"] == case.name
         where = f"{pid} / {case.name} ({case.method} {case.path})"
-        if gc["crash"]:
+        # a runtime diagnostic answered as a 500 (R620: a procedure ran out of fuel) is
+        # no crash of the generated app when the runtime answers the very same body
+        same_500 = rt.status == gen.status >= 500 and strict_equal(rc["body"], gc["body"])
+        if gc["crash"] and not same_500:
             problems.append(f"{where}: generated app crashed: {gc['crash']}")
             continue
         pairs = {
@@ -1495,3 +1583,91 @@ def test_the_effects_program_passes_its_cases(differential_runs):
         assert [r[2] for r in after["finish null due"]] == [
             '{"types":["Int","Date"],"values":[2,null]}'
         ]
+
+
+def test_the_t2_program_passes_its_cases(differential_runs):
+    """Procedures called from endpoints give the same results on both backends (compared
+    above) and the expected ones: T2-post reads, a procedure filter after page(), checks,
+    whole-value calls, insert_many, an effectful procedure through the outbox, the l12
+    state machine, and R620 as a 500 with the same located message."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs["t2"]
+    want = {c.name: c.expect_status for c in T2_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want
+    for captured in (rt_captured, gen_captured):
+        body = {c["name"]: c["body"] for c in captured}
+        after = {c["name"]: c["after"] for c in captured}
+        items = body["items alice"]
+        assert items["total"] == 4 and [i["id"] for i in items["items"]] == [1, 2, 4]
+        assert items["items"][0] == {
+            "id": 1,
+            "text": "Alpha Task (due Jan 05)",
+            "stale": True,
+            "weekday": 2,
+            "twice": 3.0,
+        }
+        assert items["items"][1]["weekday"] is None
+        assert not any(i["stale"] for i in body["items admin"]["items"])
+        assert body["items carol"]["items"] == [] and body["items carol"]["total"] == 0
+        assert [i["id"] for i in body["long alice"]["items"]] == [5, 4, 1]  # "be" dropped
+        assert body["long admin"]["limit"] == 3
+        assert [i["id"] for i in body["long admin"]["items"]] == [6]
+        assert body["item own"] == {"id": 1, "text": "Alpha Task (due Jan 05)"}
+        assert body["item short 403"]["detail"] == "title too short"
+        assert [line["slug"] for line in body["digest alice"]] == [
+            "delta",
+            "be",
+            "alpha-task",
+            "boom-box",
+        ]
+        assert body["digest carol"] == []
+        assert body["rescore"] == {"id": 1, "score": 3.0}
+        assert [1, 3.0] in after["rescore"]
+        assert body["expand"] == [
+            {"id": 11, "user_id": 1, "minute": 100, "kind": "fail"},
+            {"id": 12, "user_id": 1, "minute": 107, "kind": "fail"},
+            {"id": 13, "user_id": 1, "minute": 114, "kind": "fail"},
+        ]
+        assert after["expand"][-3:] == [
+            [11, 1, 100, "fail"],
+            [12, 1, 107, "fail"],
+            [13, 1, 114, "fail"],
+        ]
+        assert body["expand none"] == []
+        assert after["notify"] == [
+            [
+                "notify_item",
+                "procedure:notify",
+                '{"types":["Str","Str"],"values":["alice@example.com","alpha task"]}',
+                "done",
+                None,
+                1,
+                1,
+            ]
+        ]
+        assert [r[3:5] for r in after["notify fails"]] == [["failed", "ValueError: boom refused"]]
+        statuses = [(r["id"], r["status"], r["sessions"]) for r in body["replay"]]
+        assert statuses[:5] == [
+            (1, "failed", 0),
+            (2, "failed", 0),
+            (3, "locked", 0),
+            (4, "refused", 0),
+            (5, "ok", 1),
+        ]
+        assert body["spin"]["error"] == "internal"
+        spin = body["spin"]["detail"]
+        assert "error R620" in spin and "budget of 20000" in spin
+        assert "error R620" in body["depth too deep"]["detail"]
+        assert "deeper than" in body["depth too deep"]["detail"]
+        assert body["depth"] == {"id": 1, "depth": 10}
+
+
+def test_a_procedure_filter_before_page_is_rejected_by_both_backends(tmp_path: Path):
+    """L880: the t2 program with its procedure filter moved before page()."""
+    result, code = compile_source_to_fastapi(_T2.L880_PROGRAM, _T2.PROFILE)
+    assert code is None and [d.code for d in result.diagnostics] == ["L880"]
+    db = tmp_path / "app.db"
+    _T2.build_db(db)
+    check, app = runtime.serve_source(_T2.L880_PROGRAM, _T2.PROFILE, db, natives=_T2.NATIVES)
+    assert app is None and not check.ok

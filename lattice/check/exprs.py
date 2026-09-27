@@ -27,6 +27,7 @@ from lattice.catalog import (
     ORDER_AGGS,
     OWNER_IS,
     ROUND_DIGITS_MAX,
+    ROW_FN,
     SENT,
     UNSET_NAME,
     USER_PARAM,
@@ -38,6 +39,7 @@ from lattice.catalog import (
 )
 from lattice.check.astutil import LiteralValue, literal_value
 from lattice.check.context import CheckContext
+from lattice.check.t2_calls import scalar_call
 from lattice.diagnostics import Severity, Span, span_of
 from lattice.profile import NativeSig
 from lattice.typesys import NUMERIC, ORDERED, UNKNOWN, ColT, LitT, Scalar, Schema, UnknownT, unify
@@ -134,6 +136,12 @@ class ExprTyper:
         tables: Collection[str] = (),
         natives: Mapping[str, NativeSig] | None = None,
         caller: Schema | None = None,
+        *,
+        nullable: frozenset[str] = frozenset(),
+        nullconsts: Mapping[str, bool] | None = None,
+        private: frozenset[str] = frozenset(),
+        admin: bool = False,
+        endpoint: bool = False,
     ) -> None:
         """`scalars`: scalar step parameters and well-typed named constants in scope.
         `consts`: every named constant in scope -> its plain literal value (None when
@@ -142,7 +150,12 @@ class ExprTyper:
         `tables`: table names in scope (for a precise message when one is misused).
         `natives`: the API profile's native functions (native.<name>(...)).
         `caller`: the users table when the endpoint takes `user: CurrentUser` (its
-        public columns are `user.<column>`)."""
+        public columns are `user.<column>`).
+
+        Procedure calls (T2, `lattice.check.t2_calls`) also read: the table's
+        `nullable` and `private` columns, which names may be None (`nullconsts`),
+        whether the endpoint is Admin (`admin`) and whether this is an endpoint body
+        (`endpoint`). A call must be the node `whole` (set through `type_whole`)."""
         self.ctx = ctx
         self.schema = schema
         self.scalars = scalars
@@ -153,6 +166,13 @@ class ExprTyper:
         self.natives = natives or {}
         self.caller = caller
         self.api = ctx.profile.api is not None
+        self.nullable = nullable
+        self.nullconsts: Mapping[str, bool] = nullconsts or {}
+        self.private = private
+        self.admin = admin
+        self.endpoint = endpoint
+        self.t2 = ctx.t2 if self.api else None
+        self.whole: int | None = None
 
     # ---- public -------------------------------------------------------------
 
@@ -160,6 +180,18 @@ class ExprTyper:
         t = self._synth(node)
         self.ctx.set_type(node, t)
         return t
+
+    def type_whole(self, node: ast.expr) -> ExprT:
+        """Type a whole derive value / where predicate / require condition: the one
+        place a procedure call may stand (T2)."""
+        self.whole = id(node)
+        try:
+            return self.type_of(node)
+        finally:
+            self.whole = None
+
+    def fail(self, code: str, node: ast.AST, message: str, hint: str | None) -> UnknownT:
+        return self._err(code, node, message, hint)
 
     def type_agg(self, node: ast.expr) -> Scalar | None:
         result = self._agg(node)
@@ -280,6 +312,15 @@ class ExprTyper:
                 return self._sent(node)
             case _ if name == IS_ADMIN and self.api:
                 return self._is_admin(node)
+            case _ if self.t2 is not None and name in self.t2.procedures:
+                return scalar_call(self, node, name)
+            case _ if self.t2 is not None and name == ROW_FN:
+                return self._err(
+                    "L881",
+                    node,
+                    "row() is only an argument of a procedure call",
+                    "e.g. derive(t, x=f(row())) for a procedure f(item: Row[Items])",
+                )
             case _ if span_of(node.func) in self.reported:
                 return UNKNOWN
             case _ if name == OWNER_IS and self.api:

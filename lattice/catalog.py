@@ -274,6 +274,9 @@ API_ENDPOINT_OPS = API_OPS | frozenset(
 API_METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
 QUERY_METHODS = frozenset({"GET", "DELETE"})  # other methods take non-path params from the body
 API_SUCCESS_KINDS = ("One", "Page", "Created", "NoContent")
+# `-> List`: a JSON array of the returned rows (no envelope); the rows must be bounded
+# (L439's rule), e.g. the value of a whole-value procedure call (T2).
+LIST_KIND = "List"
 # Declarable errors and their HTTP status codes (401 and 422 are automatic).
 API_ERRORS: Mapping[str, int] = {
     "NotFound": 404,
@@ -322,6 +325,7 @@ API_AMBIENT = (
     API_OPS
     | frozenset(API_ERRORS)
     | frozenset(API_SUCCESS_KINDS)
+    | {LIST_KIND}
     | API_TYPE_NAMES
     | {"endpoint", UNSET_NAME, OWNER_IS, NATIVE_NS, SENT, IS_ADMIN}
 )
@@ -641,6 +645,43 @@ T2_REFLECTION_CALLS = frozenset(
      "isinstance", "issubclass", "id", "super", "object", "memoryview", "classmethod",
      "staticmethod", "property"}
 )
+
+# ---- T2 in endpoints (sub-project 1c, spec §3; node T2b) ------------------------------
+# Endpoints call procedures as scalar functions -- the whole value of a derive column,
+# the whole predicate of where, the whole condition of require (`proc(col("a"), user,
+# fn.now())`, `row()` for the whole row) -- run in the app layer after the read's one
+# statement ("T2-post"); or whole-value: `x = call(proc, rows=t, ...)` over bounded
+# tables. `insert_many(T, rows=x)` writes the rows of a table (a procedure's value)
+# in one statement. Effectful procedures are sent with for_each(t, proc, args...).
+# These names are ambient only in programs that have procedures.
+T2_CALL = "call"
+INSERT_MANY = "insert_many"
+ROW_FN = "row"
+T2_T0_SHAPES: Mapping[str, OpShape] = {
+    T2_CALL: OpShape(("procedure",), 0, var_kw=True),
+    INSERT_MANY: OpShape(
+        ("table_name",), 0, frozenset({"rows"}), frozenset({"owner", "unique_or"})
+    ),
+}
+T2_T0_NAMES = frozenset({T2_CALL, INSERT_MANY, ROW_FN})
+# The outbox `native` of an effectful procedure sent by for_each.
+T2_EFFECT_PREFIX = "procedure:"
+# ApiProfile.fuel: the default fuel budget of one request.
+DEFAULT_FUEL = 1_000_000
+T2_T0_CODES: Mapping[str, str] = {
+    "L880": "a procedure filter before page()/limit() (totals and pages would be computed in "
+    "Python)",
+    "L881": "a procedure call where T0 needs SQL: nested in an expression, an argument that "
+    "is not a column/parameter/constant/user/fn.now()/row(), or an op that needs SQL "
+    "over rows a procedure computed",
+    "L882": "an effectful procedure outside for_each, or a pure one sent with for_each",
+    "L883": "a value that does not cross the T0/T2 boundary (a type T0 has no column for, "
+    "a nullable value for a non-optional parameter, a table that lacks a record's fields)",
+}
+RUNTIME_T2_CODES: Mapping[str, str] = {
+    "R620": "a procedure ran out of fuel (ApiProfile.fuel), or recursed too deep",
+    "R621": "a whole-value call returned more rows than its input bounds",
+}
 
 # ---- diagnostic codes --------------------------------------------------------------
 # T2 subset (L140-L149) and the T2 type checker (L900-L949). L128 (plain class), L130

@@ -33,6 +33,7 @@ from lattice.catalog import (
     OP_ALIASES,
     PUBLIC_ROLE,
     SOFT_API_NAMES,
+    T2_T0_NAMES,
     TABLE_OPS,
     USER_PARAM,
 )
@@ -103,6 +104,9 @@ class _Resolver:
             # API profile: API ops, response kinds, errors, parameter types, roles and
             # database table names
             ambient |= API_AMBIENT | api.roles | frozenset(api.tables)
+            if ctx.t2 is not None:
+                # a program with procedures: endpoints call them (and call/insert_many/row)
+                ambient |= T2_T0_NAMES | frozenset(ctx.t2.procedures)
         for name in sorted(ambient):
             self.globals_.bindings[name] = Binding(name, "ambient", module, 0, used=True)
         self.consts = Scope(self.globals_)

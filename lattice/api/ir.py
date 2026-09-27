@@ -35,6 +35,7 @@ from lattice.api.sql import (
     SqlQuery,
     compile_delete,
     compile_insert,
+    compile_insert_many,
     compile_outbox,
     compile_select,
     compile_update,
@@ -42,12 +43,17 @@ from lattice.api.sql import (
 )
 from lattice.catalog import (
     API_ERRORS,
+    DEFAULT_FUEL,
     ELSE_KW,
     FOR_EACH,
+    INSERT_MANY,
     IS_ADMIN,
     NATIVE_NS,
     OP_SHAPES,
     PUBLIC_ROLE,
+    ROW_FN,
+    T2_CALL,
+    T2_EFFECT_PREFIX,
     UNIQUE_OR,
     USER_PARAM,
 )
@@ -55,14 +61,33 @@ from lattice.check import CheckedProgram
 from lattice.check.api_info import EndpointInfo, ParamSpec, user_table
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
 from lattice.check.p4_types import is_owner_is, mentions_caller
+from lattice.check.t2 import CheckedProcedure
+from lattice.check.t2.types import ListT as T2ListT
+from lattice.check.t2.types import RecordT as T2RecordT
+from lattice.check.t2.types import RowT as T2RowT
+from lattice.check.t2.types import T2Type
+from lattice.check.t2_calls import column_type
 from lattice.diagnostics import Span, span_of
 from lattice.ir import traverse_params, window_params
 from lattice.profile import AdminFlag, ApiProfile, NativeSig, NativeToken, RoleColumn, TokenColumn
 from lattice.runtime import LatticeInternalError
-from lattice.typesys import Scalar, ScalarParamT, Schema, TableT, uuid_key, via_parent_key
+from lattice.t2.compile import T2Code, compile_program
+from lattice.typesys import (
+    ColT,
+    LitT,
+    Scalar,
+    ScalarParamT,
+    Schema,
+    TableT,
+    uuid_key,
+    via_parent_key,
+)
 
 __all__ = [
     "ApiStep",
+    "CallStep",
+    "PostStep",
+    "T2CheckStep",
     "CheckStep",
     "EndpointPlan",
     "ErrorSpec",
@@ -153,7 +178,50 @@ class ForEachStep:
     ddl: str = CREATE_SQL
 
 
-ApiStep = ReadStep | CheckStep | WriteStep | ForEachStep
+@dataclass(frozen=True)
+class PostStep:
+    """T2-post: the rows of step `input` (a read's one statement) run through the
+    row-wise procedure ops `ops` in the app layer, giving rows of `schema`. The op and
+    argument descriptors are plain tuples (`lattice.t2.support.t2_post`)."""
+
+    id: str
+    input: str
+    ops: tuple[Any, ...]
+    span: Span
+    schema: Schema = field(default_factory=lambda: Schema(()))
+
+
+@dataclass(frozen=True)
+class T2CheckStep:
+    """require(t, proc(...), else_=E): procedure `proc` holds on every row of step
+    `input` (false or None: E)."""
+
+    id: str
+    input: str
+    proc: str
+    args: tuple[Any, ...]  # (parameter, argument descriptor) pairs
+    error: ErrorSpec
+    span: Span
+
+
+@dataclass(frozen=True)
+class CallStep:
+    """x = call(proc, ...): a whole-value procedure call. `args`: (parameter,
+    descriptor) pairs, a table argument being ("rows", step, kind, name, fields).
+    `result`: ("rows", fields, many) -- the value becomes this step's rows (`schema`)
+    -- or ("scalar", scalar) -- the value is bound like a parameter, `values[bind]`."""
+
+    id: str
+    proc: str
+    args: tuple[Any, ...]
+    result: tuple[Any, ...]
+    span: Span
+    schema: Schema = field(default_factory=lambda: Schema(()))
+    bind: str | None = None
+
+
+T2Step = PostStep | T2CheckStep | CallStep
+ApiStep = ReadStep | CheckStep | WriteStep | ForEachStep | PostStep | T2CheckStep | CallStep
 
 
 @dataclass(frozen=True)
@@ -231,6 +299,25 @@ class EndpointPlan:
     datetime_wire: str = "iso_z"
     # The effect natives the plan's for_each steps send (never SQL functions).
     effects: tuple[tuple[str, NativeSig], ...] = ()
+    # T2: the program's compiled procedures (shared by every plan of the program; None
+    # without procedures), the request's fuel budget (ApiProfile.fuel), the caller's
+    # columns a procedure sees as Caller (public users-table columns, with their
+    # scalars), and the effectful procedures for_each sends: (name, parameters).
+    t2: T2Code | None = None
+    fuel: int = DEFAULT_FUEL
+    t2_caller: tuple[tuple[str, str], ...] = ()
+    t2_effects: tuple[tuple[str, tuple[str, ...]], ...] = ()
+
+    @property
+    def t2_post_reads(self) -> tuple[str, ...]:
+        """The reads marked "T2-post": procedures run over their rows in the app layer,
+        after their one statement."""
+        return tuple(s.input for s in self.steps if isinstance(s, PostStep))
+
+    @property
+    def uses_t2(self) -> bool:
+        """The plan runs procedures in the request (not only after COMMIT)."""
+        return any(isinstance(s, PostStep | T2CheckStep | CallStep) for s in self.steps)
 
     @property
     def writes(self) -> bool:
@@ -344,7 +431,7 @@ class _Check:
 @dataclass(frozen=True)
 class _Write:
     id: str
-    kind: Literal["insert", "update", "delete"]
+    kind: Literal["insert", "update", "delete", "insert_many"]
     table: str  # schema name
     input: _Val | None
     values: tuple[tuple[str, ast.expr], ...]
@@ -372,7 +459,40 @@ class _ForEach:
     span: Span
 
 
-_Event = _Check | _Write | _Return | _ForEach
+@dataclass(frozen=True)
+class _T2Check:
+    id: str
+    input: _Val
+    proc: str
+    args: tuple[Any, ...]
+    error: ErrorSpec
+    span: Span
+
+
+@dataclass(frozen=True)
+class _T2Call:
+    id: str
+    proc: str
+    # (parameter, descriptor); a table argument is ("rows", _Val, kind, name, fields)
+    args: tuple[Any, ...]
+    result: tuple[Any, ...]
+    span: Span
+    schema: Schema
+    bind: str | None
+
+
+@dataclass(frozen=True)
+class _Post:
+    """A relation computed in the app layer (T2-post): the rows of the SQL relation
+    `base` (one statement) through the procedure ops `ops`, giving `schema`."""
+
+    base: str
+    ops: tuple[Any, ...]
+    schema: Schema
+    span: Span  # the first procedure op (where a R620 is located)
+
+
+_Event = _Check | _Write | _Return | _ForEach | _T2Check | _T2Call
 
 
 class _Endpoint:
@@ -383,9 +503,12 @@ class _Endpoint:
         info: EndpointInfo,
         consts: Mapping[str, ast.expr],
         step_consts: Mapping[str, Mapping[str, ast.expr]],
+        t2: T2Code | None = None,
     ) -> None:
         self.program = program
         self.api = api
+        self.t2 = t2
+        self.post: dict[str, _Post] = {}  # rel id -> its T2-post computation
         self.dialect = dialect_for(
             getattr(api, "backend", "sqlite"),
             uuid_storage=getattr(api, "uuid_storage", "canonical"),
@@ -473,6 +596,11 @@ class _Endpoint:
                     value
                 ):
                     self.subst[name] = self._expr(value, self.subst)
+                case ast.Assign(
+                    targets=[ast.Name(id=name)], value=ast.Call(func=ast.Name(id=op)) as call
+                ) if self.t2 is not None and op == T2_CALL:
+                    self.subst.pop(name, None)
+                    self._t2_call(name, call)
                 case ast.Assign(targets=[ast.Name(id=name)], value=ast.Call() as call):
                     self.subst.pop(name, None)
                     self.env[name] = self._unit(call, name, self.env, self.subst, "")
@@ -490,13 +618,231 @@ class _Endpoint:
         table, native = call.args[0], call.args[1]
         if not (isinstance(table, ast.Name) and table.id in self.env):
             raise LatticeInternalError("for_each() table is not a bound name")
+        k = sum(isinstance(ev, _ForEach) for ev in self.events)
+        args = tuple(self._expr(a, self.subst) for a in call.args[2:])
+        if isinstance(native, ast.Name) and self._procedure(native.id) is not None:
+            # an effectful procedure: its outbox rows carry its column-typed arguments
+            proc = self._procedure(native.id)
+            assert proc is not None
+            scalars = tuple(_column(t)[0] for _, t in proc.sig.params)
+            sig = NativeSig(scalars, effect=True)
+            name = T2_EFFECT_PREFIX + native.id
+            self.events.append(
+                _ForEach(f"_for_each{k}", self.env[table.id], name, sig, args, span_of(call))
+            )
+            return
         if not isinstance(native, ast.Attribute):
             raise LatticeInternalError("for_each() native is not native.<name>")
         sig = self.api.natives[native.attr]
-        k = sum(isinstance(ev, _ForEach) for ev in self.events)
-        args = tuple(self._expr(a, self.subst) for a in call.args[2:])
         self.events.append(
             _ForEach(f"_for_each{k}", self.env[table.id], native.attr, sig, args, span_of(call))
+        )
+
+    # ---- T2: procedures (lattice.check.t2_calls; descriptors: lattice.t2.support) --------
+
+    def _procedure(self, name: str) -> CheckedProcedure | None:
+        t2 = self.program.t2
+        return t2.procedures.get(name) if t2 is not None else None
+
+    def _is_proc_call(self, node: ast.expr) -> bool:
+        return (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and self._procedure(node.func.id) is not None
+        )
+
+    def _t2_post(self, call: ast.Call, op: str, env: Mapping[str, _Val]) -> bool:
+        """A procedure op (derive / where calling a procedure), or any op over rows
+        computed in the app layer (the checker allows select, rename, page, limit)."""
+        if op == "where" and len(call.args) > 1 and self._is_proc_call(call.args[1]):
+            return True
+        if op == "derive" and any(self._is_proc_call(kw.value) for kw in call.keywords):
+            return True
+        first = call.args[0] if call.args else None
+        val = env.get(first.id) if isinstance(first, ast.Name) else None
+        return isinstance(val, _RelVal) and val.rel in self.post
+
+    def _post_op(
+        self,
+        call: ast.Call,
+        op: str,
+        rid: str,
+        val: _Val,
+        kws: Mapping[str, ast.expr],
+        subst: Mapping[str, ast.expr],
+    ) -> _Val:
+        """A T2-post relation: SQL does everything up to `base` in one statement; the
+        procedure ops (and select/rename after them) run over its rows. page/limit
+        after a procedure derive commute into the SQL (the derive keeps every row)."""
+        rel_in = self._rel_of(val)
+        prev = self.post.get(rel_in)
+        base, ops = (prev.base, prev.ops) if prev is not None else (rel_in, ())
+        in_schema = self._schema_of(val)
+        schema = self._schema(call)
+        view = rel_in  # the relation a page view is read through
+        match op:
+            case "derive":
+                sql_cols = [kw for kw in call.keywords if not self._is_proc_call(kw.value)]
+                if sql_cols:  # the SQL columns of the same derive, computed in the read
+                    if prev is not None:
+                        raise LatticeInternalError("a SQL derive over T2-post rows")
+                    cols = tuple((kw.arg, self._expr(kw.value, subst)) for kw in sql_cols)
+                    types = [(kw.arg, self._scalar_of(kw.value)) for kw in sql_cols]
+                    sql_id = f"{rid}#sql"
+                    sql_schema = self.rels[base].schema.with_columns(types)  # type: ignore[arg-type]
+                    params = {"columns": cols}
+                    self.rels[sql_id] = Rel(sql_id, "derive", (base,), params, sql_schema)
+                    if base in self.page_of:
+                        self.page_of[sql_id] = self.page_of[base]
+                        self.page_rel[sql_id] = self.page_rel[base]
+                    base = sql_id
+                for kw in call.keywords:
+                    if self._is_proc_call(kw.value):
+                        assert isinstance(kw.value, ast.Call)
+                        proc, args = self._t2_args(kw.value, in_schema, subst)
+                        scalar = schema.get(kw.arg or "")
+                        assert scalar is not None
+                        ops += (("derive", kw.arg, proc, args, scalar.value),)
+            case "where":
+                proc, args = self._t2_args(call.args[1], in_schema, subst)
+                ops += (("where", proc, args),)
+            case "select":
+                ops += (("select", _strs(kws["cols"])),)
+            case "rename":
+                mapping = tuple((kw.arg, _str(kw.value)) for kw in call.keywords if kw.arg)
+                ops += (("rename", mapping),)
+            case "page" | "limit":
+                params = self._params(op, call, kws, subst)
+                sql_id = f"{rid}#sql"
+                self.rels[sql_id] = Rel(sql_id, op, (base,), params, self.rels[base].schema)
+                if op == "page":
+                    self.page_of[sql_id] = PageArgs(
+                        _page_arg(params["limit"]),
+                        _page_arg(params.get("offset", 0)),
+                        bool(params.get("total", False)),
+                    )
+                    self.page_rel[sql_id] = sql_id
+                base = view = sql_id
+            case _:
+                raise LatticeInternalError(f"'{op}' over T2-post rows")
+        self.post[rid] = _Post(base, ops, schema, prev.span if prev else span_of(call))
+        self.rels[rid] = Rel(rid, "rows", (), {"step": rid}, schema)
+        page_src = view if view in self.page_of else base
+        if page_src in self.page_of:
+            self.page_of[rid] = self.page_of[page_src]
+            self.page_rel[rid] = self.page_rel[page_src]
+        out = _RelVal(rid)
+        self._note_type(out, call)
+        return out
+
+    def _scalar_of(self, node: ast.expr) -> Scalar:
+        t = self.program.types.get(id(node))
+        if isinstance(t, ColT | LitT):
+            return t.scalar
+        raise LatticeInternalError(f"no scalar type recorded at {span_of(node)}")
+
+    def _t2_args(
+        self, node: ast.expr, schema: Schema, subst: Mapping[str, ast.expr]
+    ) -> tuple[str, tuple[Any, ...]]:
+        """(procedure, (parameter, descriptor) pairs) of a scalar call over rows of
+        `schema`."""
+        assert isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+        proc = self._procedure(node.func.id)
+        assert proc is not None
+        names = [p for p, _ in proc.sig.params]
+        pairs = list(zip(names, node.args, strict=False))
+        pairs += [(kw.arg, kw.value) for kw in node.keywords if kw.arg is not None]
+        want = dict(proc.sig.params)
+        args = tuple(
+            (p, self._t2_value(a, want[p], schema, subst))
+            for p, a in sorted(pairs, key=lambda pa: names.index(pa[0]))
+        )
+        return proc.name, args
+
+    def _t2_value(
+        self, node: ast.expr, want: T2Type, schema: Schema | None, subst: Mapping[str, ast.expr]
+    ) -> tuple[Any, ...]:
+        """The descriptor of one procedure argument (`schema`: the current row's)."""
+        if isinstance(node, ast.Name) and node.id == USER_PARAM:
+            return ("caller",)
+        if _is_named_call(node, ROW_FN):
+            if schema is None:
+                raise LatticeInternalError("row() without a row")
+            return ("row", *self._row_shape(want, schema))
+        value = self._expr(node, subst)
+        match value:
+            case ast.Constant(value=v):
+                return ("const", v)
+            case ast.UnaryOp(op=ast.USub(), operand=ast.Constant(value=v)):
+                return ("const", -v)  # type: ignore[operator]
+            case ParamRef(name=name):
+                return ("param", name)
+            case CallerRef(admin=True):
+                return ("is_admin",)
+            case CallerRef(column=str(column)):
+                users = self.api.tables[self.api.users_table]
+                scalar = users.get(column)
+                assert scalar is not None
+                return ("caller_col", column, scalar.value)
+            case ast.Call(func=ast.Attribute(value=ast.Name(id="fn"), attr="now")):
+                return ("now",)
+            case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
+                scalar = schema.get(name) if schema is not None else None
+                if scalar is None:
+                    raise LatticeInternalError(f"procedure argument col('{name}') is no column")
+                return ("col", name, scalar.value)
+        raise LatticeInternalError(f"unsupported procedure argument {ast.dump(value)}")
+
+    def _row_shape(self, want: T2Type, schema: Schema) -> tuple[str, str, tuple[Any, ...]]:
+        """(kind, name, ((column, scalar), ...)) of a whole row handed over as `want`."""
+        if isinstance(want, T2RowT):
+            table = self.api.tables[want.table]
+            names = [c for c in table.names() if want.private or c not in table.private]
+            fields = tuple((c, table.get(c).value) for c in names)  # type: ignore[union-attr]
+            return "row", want.table, fields
+        if isinstance(want, T2RecordT):
+            t2 = self.program.t2
+            assert t2 is not None
+            rec = t2.records[want.name]
+            fields = tuple((f, _column(ft)[0].value) for f, ft in rec.fields)
+            return "record", rec.name, fields
+        raise LatticeInternalError(f"a row handed over as {want}")
+
+    def _t2_call(self, name: str, call: ast.Call) -> None:
+        """name = call(proc, ...): a CallStep; its value becomes rows (a step result)
+        or a value bound like a parameter."""
+        target = call.args[0]
+        assert isinstance(target, ast.Name)
+        proc = self._procedure(target.id)
+        assert proc is not None
+        want = dict(proc.sig.params)
+        order = [p for p, _ in proc.sig.params]
+        args: list[tuple[str, tuple[Any, ...]]] = []
+        for kw in sorted(call.keywords, key=lambda k: order.index(k.arg or "")):
+            assert kw.arg is not None
+            ptype = want[kw.arg]
+            if isinstance(ptype, T2ListT) and isinstance(ptype.elem, T2RowT | T2RecordT):
+                if not (isinstance(kw.value, ast.Name) and kw.value.id in self.env):
+                    raise LatticeInternalError("call() table argument is not a bound name")
+                val = self.env[kw.value.id]
+                shape = self._row_shape(ptype.elem, self._schema_of(val))
+                args.append((kw.arg, ("rows", val, *shape)))
+            else:
+                args.append((kw.arg, self._t2_value(kw.value, ptype, None, self.subst)))
+        t = self.program.types.get(id(call))
+        span = span_of(call)
+        if isinstance(t, TableT):
+            fields = tuple((c, s.value) for c, s in t.schema.columns)
+            result: tuple[Any, ...] = ("rows", fields, not t.at_most_one_row)
+            self.step_schemas[name] = t.schema
+            self.env[name] = _StepVal(name)
+            self.val_types[self.env[name]] = t
+            self.events.append(_T2Call(name, proc.name, tuple(args), result, span, t.schema, None))
+            return
+        scalar, _ = _column(proc.sig.returns)
+        self.subst[name] = ParamRef(name)
+        self.events.append(
+            _T2Call(name, proc.name, tuple(args), ("scalar", scalar.value), span, Schema(()), name)
         )
 
     def _note_type(self, val: _Val, node: ast.expr) -> None:
@@ -552,7 +898,7 @@ class _Endpoint:
         op = call.func.id
         kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
         rid = prefix + binding
-        unique_or = kws.pop(UNIQUE_OR, None) if op in ("insert", "update") else None
+        unique_or = kws.pop(UNIQUE_OR, None) if op in ("insert", "update", INSERT_MANY) else None
         conflict = _error(unique_or) if unique_or is not None else None
 
         def table_arg(node: ast.expr) -> _Val:
@@ -561,6 +907,13 @@ class _Endpoint:
             raise LatticeInternalError(f"unresolved table argument {ast.dump(node)}")
 
         match op:
+            case "require" if self._is_proc_call(call.args[1]):
+                val = table_arg(call.args[0])
+                proc, args = self._t2_args(call.args[1], self._schema_of(val), subst)
+                self.events.append(
+                    _T2Check(rid, val, proc, args, _error(kws["else_"]), span_of(call))
+                )
+                return val
             case "one" | "require":
                 val = table_arg(call.args[0])
                 cond = self._expr(call.args[1], subst) if op == "require" else None
@@ -630,8 +983,30 @@ class _Endpoint:
                     )
                 )
                 return _StepVal(rid)
+            case _ if op == INSERT_MANY and self.t2 is not None:
+                table = call.args[0]
+                if not isinstance(table, ast.Name):
+                    raise LatticeInternalError("insert_many() table is not a name")
+                schema = self.api.tables[table.id]
+                self.step_schemas[rid] = self._schema(call)
+                self.events.append(
+                    _Write(
+                        rid,
+                        "insert_many",
+                        table.id,
+                        table_arg(kws["rows"]),
+                        (),
+                        "owner" in kws,
+                        schema,
+                        span_of(call),
+                        conflict,
+                    )
+                )
+                return _StepVal(rid)
             case _ if op in self.step_defs:
                 return self._inline(call, op, rid, env, subst)
+            case _ if self.t2 is not None and self._t2_post(call, op, env):
+                return self._post_op(call, op, rid, table_arg(call.args[0]), kws, subst)
             case _:
                 inputs = tuple(self._rel_of(table_arg(a)) for a in call.args[: _tables(op)])
                 params = self._params(op, call, kws, subst)
@@ -849,6 +1224,12 @@ class _Endpoint:
             rid = val.rel
             if rid in materialized:
                 return materialized[rid][0]
+            post = self.post.get(rid)
+            if post is not None:  # T2-post: the base read's one statement, then the ops
+                source = rows_of(_RelVal(post.base), span)
+                steps.append(PostStep(rid, source, post.ops, post.span, post.schema))
+                materialized[rid] = (rid, post.schema.names())
+                return rid
             rel = self.rels[rid]
             extra = flags.get(rid, [])
             view = None if extra else view_of(rid)
@@ -907,6 +1288,17 @@ class _Endpoint:
                     )
                 case _Write():
                     steps.append(self._write(ev, rows_of, materialized))
+                case _T2Check():
+                    source = rows_of(ev.input, ev.span)
+                    steps.append(T2CheckStep(ev.id, source, ev.proc, ev.args, ev.error, ev.span))
+                case _T2Call():
+                    args = tuple(
+                        (p, ("rows", rows_of(a[1], ev.span), *a[2:]) if a[0] == "rows" else a)
+                        for p, a in ev.args
+                    )
+                    steps.append(
+                        CallStep(ev.id, ev.proc, args, ev.result, ev.span, ev.schema, ev.bind)
+                    )
                 case _ForEach():
                     source = rows_of(ev.input, ev.span)
                     columns: tuple[str, ...]
@@ -1005,8 +1397,38 @@ class _Endpoint:
             effects=tuple(
                 (name, self.api.natives[name])
                 for name in sorted({ev.native for ev in self.events if isinstance(ev, _ForEach)})
+                if not name.startswith(T2_EFFECT_PREFIX)
             ),
+            t2=self.t2,
+            fuel=getattr(self.api, "fuel", DEFAULT_FUEL),
+            t2_caller=self._t2_caller(),
+            t2_effects=self._t2_effects(),
         )
+
+    def _t2_caller(self) -> tuple[tuple[str, str], ...]:
+        """The users-table columns a procedure sees on the Caller (its public ones)."""
+        if self.t2 is None:
+            return ()
+        users = self.api.tables.get(self.api.users_table)
+        if users is None:
+            return ()
+        return tuple((c, s.value) for c, s in users.columns if c not in users.private)
+
+    def _t2_effects(self) -> tuple[tuple[str, tuple[str, ...]], ...]:
+        """The effectful procedures this endpoint's for_each steps send."""
+        names = sorted(
+            {
+                ev.native[len(T2_EFFECT_PREFIX) :]
+                for ev in self.events
+                if isinstance(ev, _ForEach) and ev.native.startswith(T2_EFFECT_PREFIX)
+            }
+        )
+        out = []
+        for name in names:
+            proc = self._procedure(name)
+            assert proc is not None
+            out.append((name, tuple(p for p, _ in proc.sig.params)))
+        return tuple(out)
 
     def _natives(self, auth_native: str | None) -> tuple[tuple[str, NativeSig], ...]:
         """The natives this endpoint calls (its body, the steps it may inline, and the
@@ -1034,6 +1456,25 @@ class _Endpoint:
     ) -> WriteStep:
         table = self.api.table_names[ev.table]
         values = tuple((c, _sql_text(e)) for c, e in ev.values)
+        if ev.kind == "insert_many":  # every row of a procedure's value, one statement
+            assert ev.input is not None
+            source = rows_of(ev.input, ev.span)
+            cols = self._schema_of(ev.input).names()
+            owner = ev.schema.owner if ev.owner else None
+            key = uuid_key(ev.schema)
+            given = set(cols) | ({owner} if owner is not None else set())
+            sql = compile_insert_many(
+                table,
+                (source, cols),
+                ev.schema.names(),
+                owner=owner,
+                generate=key if key is not None and key not in given else None,
+                dialect=self.dialect,
+            )
+            schema = self.step_schemas[ev.id]
+            return WriteStep(
+                ev.id, "insert", table, None, (), ev.span, sql, schema, conflict=ev.conflict
+            )
         if ev.kind == "insert":
             owner = ev.schema.owner if ev.owner else None
             key = uuid_key(ev.schema)
@@ -1086,6 +1527,18 @@ class _Endpoint:
             ev.conflict,
             ev.missing,
         )
+
+
+def _is_named_call(node: ast.expr, name: str) -> bool:
+    return isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == name
+
+
+def _column(t: T2Type) -> tuple[Scalar, bool]:
+    """(scalar, nullable) of a column-typed procedure value (the checker made sure)."""
+    ct = column_type(t)
+    if ct is None:
+        raise LatticeInternalError(f"{t} is no column type")
+    return ct
 
 
 def _reorder(schema: Schema, fields: tuple[str, ...]) -> Schema:
@@ -1151,6 +1604,7 @@ def lower_api(program: CheckedProgram) -> tuple[EndpointPlan, ...]:
     consts: dict[str, ast.expr] = {}
     step_consts: dict[str, dict[str, ast.expr]] = {}
     plans: list[EndpointPlan] = []
+    t2 = compile_program(program)  # the procedures, compiled once for every plan
     by_node = {id(info.node): info for info in program.endpoints.values()}
     for stmt in program.module.body:
         match stmt:
@@ -1161,7 +1615,7 @@ def lower_api(program: CheckedProgram) -> tuple[EndpointPlan, ...]:
                     )
                 consts[name] = value
             case ast.FunctionDef() if id(stmt) in by_node:
-                ep = _Endpoint(program, api, by_node[id(stmt)], consts, step_consts)
+                ep = _Endpoint(program, api, by_node[id(stmt)], consts, step_consts, t2)
                 ep.lower_body()
                 plans.append(ep.emit())
             case ast.FunctionDef(name=name):

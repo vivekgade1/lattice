@@ -22,9 +22,11 @@ from lattice.catalog import (
     FN_SIGS,
     FOR_EACH,
     FOR_EACH_MAX_ROWS,
+    LIST_KIND,
     PAGE_LIMIT_MAX,
     PUBLIC_ROLE,
     SENT,
+    T2_CALL,
     TABLE_OPS,
     UNIQUE_OR,
     UNSET_NAME,
@@ -248,6 +250,7 @@ class _Endpoint:
         self._errors()
         self._pages()
         self._for_each_inputs()
+        self._procedure_inputs()
         self._response()
         self._response_model()
 
@@ -308,9 +311,29 @@ class _Endpoint:
                     f"limit(t, n=N) with N <= {FOR_EACH_MAX_ROWS}",
                 )
 
+    def _procedure_inputs(self) -> None:
+        """L439 / L802 for whole-value calls (T2): a table handed to a procedure must be
+        bounded (like for_each's input) and ownership-checked (like a response)."""
+        for call in self._calls(T2_CALL):
+            for kw in call.keywords:
+                arg = kw.value
+                t = self._name_type(arg.id) if isinstance(arg, ast.Name) else None
+                if t is None or not isinstance(arg, ast.Name):
+                    continue
+                self._ownership(call, t, arg.id)
+                if not self._bounded(arg.id, set()):
+                    self.ctx.error(
+                        "L439",
+                        arg,
+                        f"call() hands '{arg.id}' to a procedure, but it may have any number "
+                        "of rows",
+                        "pass rows of one(...), page(...) or limit(t, n=N) with N <= "
+                        f"{FOR_EACH_MAX_ROWS}",
+                    )
+
     def _bounded(self, name: str, seen: set[str]) -> bool:
         t = self._name_type(name)
-        if t is not None and (t.at_most_one_row or t.paged):
+        if t is not None and (t.at_most_one_row or t.paged or t.bounded):
             return True
         value = self.locals.get(name)
         if value is None or name in seen or not isinstance(value, ast.Call) or not value.args:
@@ -1220,6 +1243,16 @@ class _Endpoint:
                 f"the response would include private column(s): {cols}",
                 hint,
             )
+        if success == LIST_KIND:
+            if not self._bounded(name, set()):
+                self.ctx.error(
+                    "L831",
+                    ret,
+                    f"'{name}' can have many rows; a List endpoint returns bounded rows",
+                    f"return limit({name}, n=N) (N <= {FOR_EACH_MAX_ROWS}), rows of one(...) or "
+                    "a procedure's value, or declare -> Page and return page(...)",
+                )
+            return
         if success == "Page":
             if t.paged:
                 return

@@ -22,14 +22,18 @@ def expr_nullable(
     nullable_cols: frozenset[str],
     consts_nullable: Mapping[str, bool] | None = None,
     nullable_natives: frozenset[str] = frozenset(),
+    nullable_calls: frozenset[str] = frozenset(),
 ) -> bool:
+    """`nullable_calls`: procedures (T2) whose result may be None (`-> T | None`)."""
     consts = consts_nullable or {}
     natives = nullable_natives
 
     def rec(n: ast.expr, cols: frozenset[str] = nullable_cols) -> bool:
-        return expr_nullable(n, cols, consts, natives)
+        return expr_nullable(n, cols, consts, natives, nullable_calls)
 
     match node:
+        case ast.Call(func=ast.Name(id=f)) if f in nullable_calls:
+            return True
         case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
             return name in nullable_cols
         case ast.Constant():

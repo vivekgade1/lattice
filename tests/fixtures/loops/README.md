@@ -2,7 +2,8 @@
 
 Real-style Python loops, each paired with its Lattice equivalent. This folder is the
 seed test set for the importer (sub-project 2): given the original loop, the importer
-should produce the Lattice program, or keep the loop as a native island.
+should produce the Lattice program -- T0/T1 ops where they fit, a T2 `@procedure` where
+they do not (item 12).
 
 Each `lNN_*.py` item describes itself:
 
@@ -22,7 +23,10 @@ The equivalence tests are in `tests/loops/test_loop_corpus.py`:
 - tabular items run 25 seeds each: the original, the polars executor and, for programs
   without `iterate`, the compiled SQL statement;
 - API items run 8 generated databases each, comparing responses, database rows and
-  side effects between the original app and the Lattice runtime.
+  side effects between the original app and the Lattice runtime;
+- the T2 item (12) runs its compiled, fuel-instrumented `@procedure` on 25 generated
+  inputs, and its endpoint (which calls the procedure whole-value) on 8 generated
+  databases, both against the original.
 
 | # | Item | Loop shape | Construct | Targets |
 |---|---|---|---|---|
@@ -37,7 +41,7 @@ The equivalence tests are in `tests/loops/test_loop_corpus.py`:
 | 09 | converge forecasts | repeat until a per-row predicate holds | `iterate(until=<Bool>)` | polars |
 | 10 | notify watchers after insert (FastAPI + SQLModel) | side effect per row | `for_each` + outbox | API |
 | 11 | order sequence number, same-day ties | per-key counter, ties broken by id | `window` + `win.row_number`, key in `order` | polars, SQL |
-| 12 | login lockout replay | multi-accumulator state machine | **native island** | — |
+| 12 | login lockout replay | multi-accumulator state machine | `@procedure` (T2) | procedure (fuel), API |
 
 ## Bounds the Lattice versions state
 
@@ -56,7 +60,7 @@ and a run that reaches it fails loudly instead of returning a partial answer:
   and a failed notification never fails the request (the original swallows the error
   too).
 
-## Native island: 12, the login lockout state machine
+## T2: 12, the login lockout state machine (formerly the native island)
 
 `replay_logins` walks each user's login events in order and carries four pieces of
 state:
@@ -75,7 +79,7 @@ output:
 - a success clears the failures and counts a session;
 - an admin reset clears everything.
 
-**Why it cannot be expressed:**
+**Why no T0/T1 construct expresses it:**
 
 - **`window`:** its functions are fixed scans. `cum_sum`, `cum_count`, `cum_min` and
   `cum_max` are associative, `lag`/`lead` read fixed offsets, and the rankings and
@@ -91,12 +95,18 @@ output:
 - **`traverse`:** does not apply (there are no parent/child links), and neither does
   `for_each` (there are no effects).
 
-So this loop stays a **native function**: its signature is typed and checked (events
-in, rows with `status` and `sessions` out), and its body is trusted Python. The checker
-points there: the loop gets L127 with the hint *"other loop state (several
-accumulators, a state machine, early exit): keep that logic in a native function"*.
-`tests/loops/test_loop_corpus.py` asserts this, and the importer should report it as a
-native island in its coverage report.
+So this loop is **T2** (sub-project 1c), not a native island any more: a `@procedure`
+over `@record` values (`LATTICE` in the item). The procedure is ordinary Python in the
+checked subset -- its types, the immutability of its input and its effects (none) are
+checked -- and it runs compiled with fuel counters (every loop iteration, call and
+comprehension element costs one unit of the request's `ApiProfile.fuel`; running out is
+R620). There is no trusted body left. The item's endpoint reads the events with one
+statement (bounded by `limit(n=100)`, L439) and calls the procedure whole-value,
+`results = call(replay_logins, events=bounded)`, answering its rows as a `List`.
+
+Checked as T0 (outside a procedure), the original loop still gets L127; its hint still
+names a native function (pointing it at `@procedure` belongs to the hint and guide work
+of node T2c).
 
 ## Language gaps found while writing the corpus
 

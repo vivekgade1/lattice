@@ -27,6 +27,7 @@ from lattice.catalog import (
     ELSE_KW,
     EXPR_FUNCS,
     FOR_EACH,
+    INSERT_MANY,
     IO_OPS,
     IS_ADMIN,
     ITERATE,
@@ -39,6 +40,7 @@ from lattice.catalog import (
     OWNER_IS,
     PUBLIC_ROLE,
     SORT_NULLS,
+    T2_CALL,
     TABLE_OPS,
     TRAVERSE_DEPTH,
     TRAVERSE_DIRECTIONS,
@@ -80,6 +82,17 @@ from lattice.check.exprs import (
     reported_name_spans,
 )
 from lattice.check.nullability import expr_nullable
+from lattice.check.t2.types import Opt as T2Opt
+from lattice.check.t2.types import RecordT as T2RecordT
+from lattice.check.t2.types import RowT as T2RowT
+from lattice.check.t2_calls import (
+    ScalarValue,
+    column_type,
+    fits,
+    is_proc_call,
+    is_row_call,
+    whole_call,
+)
 from lattice.diagnostics import span_of
 from lattice.typesys import (
     NUMERIC,
@@ -268,6 +281,14 @@ class _Types:
         self.reported = reported_name_spans(ctx)
         self.sigs: dict[str, _Sig] = {}
         self.in_endpoint = False  # typing an @endpoint body (API profile)
+        self.endpoint_admin = False  # ... of an auth=Admin endpoint
+        # T2: the program's procedures, and those whose result may be None
+        self.t2 = ctx.t2 if self.api is not None else None
+        self.null_calls = frozenset(
+            name
+            for name, p in (self.t2.procedures.items() if self.t2 is not None else ())
+            if isinstance(p.sig.returns, T2Opt)
+        )
         # the parameters of the endpoint being typed (their bounds: L433)
         self.param_specs: dict[str, ParamSpec] = {}
         self.natives = self.api.natives if self.api is not None else {}
@@ -301,7 +322,13 @@ class _Types:
 
     # ---- helpers ------------------------------------------------------------
 
-    def _typer(self, schema: Schema, scope: _Scope) -> ExprTyper:
+    def _typer(self, schema: Schema, scope: _Scope, t: TableT | None = None) -> ExprTyper:
+        """An expression typer over `schema` (the table `t`, whose nullable and private
+        columns procedure calls read)."""
+        nullconsts = dict(scope.nullconsts)
+        for spec in self.param_specs.values() if self.in_endpoint else ():
+            if spec.optional:  # not sent: a procedure receives None
+                nullconsts[spec.name] = True
         return ExprTyper(
             self.ctx,
             schema,
@@ -312,6 +339,11 @@ class _Types:
             tables=scope.env,
             natives=self.natives,
             caller=self._caller(scope),
+            nullable=t.nullable if t is not None else frozenset(),
+            nullconsts=nullconsts,
+            private=t.private if t is not None else frozenset(),
+            admin=self.endpoint_admin,
+            endpoint=self.in_endpoint,
         )
 
     def _caller(self, scope: _Scope) -> Schema | None:
@@ -329,6 +361,9 @@ class _Types:
         name wins (P2 reported any rebinding)."""
         if is_constant_expr(value):
             self._constant(name, value, scope)
+            return
+        if self.t2 is not None and _call_name(value) == T2_CALL:
+            self._whole_call(name, value, scope)
             return
         t = self._unit(value, scope) or UNKNOWN
         if not scope.bound(name):
@@ -488,6 +523,10 @@ class _Types:
             t = self._iterate(value, scope)
             self.ctx.set_type(value, t)
             return t
+        if self.t2 is not None and name == INSERT_MANY:
+            t = self._insert_many(value, scope)
+            self.ctx.set_type(value, t)
+            return t
         if self.api is not None:
             # API ops outside an endpoint (P5's L503) and load/write inside one (P6's
             # L841) are reported elsewhere
@@ -518,9 +557,13 @@ class _Types:
             inputs = [self._table_arg(a, scope) for a in call.args[: shape.tables]]
             tables = [t for t in inputs if isinstance(t, TableT)]
             if len(tables) == len(inputs):
+                if self.t2 is not None and tables:
+                    self._t2_rows_rules(call, op, tables)
                 result = self._transfer(call, op, tables, kws, scope)
                 if self.api is not None and isinstance(result, TableT) and tables:
                     result = self._api_meta(call, op, tables, result)
+                if self.t2 is not None and isinstance(result, TableT) and tables:
+                    result = replace(result, t2_rows=self._t2_rows_of(call, op, tables))
         self.ctx.set_type(call, result)
         return result
 
@@ -591,7 +634,7 @@ class _Types:
 
     def _where(self, call: ast.Call, t: TableT, scope: _Scope) -> TableOrUnknown:
         pred = call.args[1]
-        pt = self._typer(t.schema, scope).type_of(pred)
+        pt = self._typer(t.schema, scope, t).type_whole(pred)
         match pt:
             case ColT(scalar=Scalar.BOOL) | UnknownT():
                 pass
@@ -621,18 +664,20 @@ class _Types:
     def _derive(self, call: ast.Call, t: TableT, scope: _Scope) -> TableOrUnknown:
         # Every expression reads the INPUT table: a later keyword does not see an earlier
         # keyword's new value. An existing name is replaced in place (with the new type).
-        typer = self._typer(t.schema, scope)
+        typer = self._typer(t.schema, scope, t)
         cols: list[tuple[str, Scalar]] = []
         nullable = set(t.nullable)
         unknown = False
         for kw in call.keywords:
             assert kw.arg is not None  # P1 rejects **kwargs
-            vt = typer.type_of(kw.value)
+            vt = typer.type_whole(kw.value)
             if isinstance(vt, UnknownT):
                 unknown = True
             else:
                 cols.append((kw.arg, vt.scalar))
-                if expr_nullable(kw.value, t.nullable, scope.nullconsts, self.null_natives):
+                if expr_nullable(
+                    kw.value, t.nullable, scope.nullconsts, self.null_natives, self.null_calls
+                ):
                     nullable.add(kw.arg)
                 else:
                     nullable.discard(kw.arg)
@@ -1425,6 +1470,9 @@ class _Types:
             return  # P3 reported the call shape
         t = self._table_arg(call.args[0], scope)
         native = call.args[1]
+        if self.t2 is not None and isinstance(native, ast.Name) and native.id in self.t2.procedures:
+            self._for_each_procedure(call, native.id, t, scope)
+            return
         if not (isinstance(native, ast.Attribute) and isinstance(native.value, ast.Name)):
             return  # P3 reported it
         name = native.attr
@@ -1658,6 +1706,8 @@ class _Types:
                 if spec.nullable:  # `p: T | None = None` is None when not given
                     scope.nullconsts[spec.name] = True
         public =isinstance(decl.auth, ast.Name) and decl.auth.id == PUBLIC_ROLE
+        admin = self.api.admin_role
+        self.endpoint_admin = isinstance(decl.auth, ast.Name) and decl.auth.id == admin
         if not public and all(p.name != USER_PARAM for p in params):
             # a missing `user` parameter is P6's L801; type its uses anyway
             scope.env[USER_PARAM] = caller if caller is not None else UNKNOWN
@@ -1707,6 +1757,8 @@ class _Types:
             inputs = [self._table_arg(a, scope) for a in call.args[: shape.tables]]
             tables = [t for t in inputs if isinstance(t, TableT)]
             if len(tables) == len(inputs):
+                if self.t2 is not None and tables and tables[0].t2_rows:
+                    self._t2_rows_rules(call, op, tables)
                 result = self._api_transfer(call, op, tables, kws, scope)
         self.ctx.set_type(call, result)
         return result
@@ -1812,7 +1864,7 @@ class _Types:
         return replace(t, owner_checked=True)
 
     def _condition(self, pred: ast.expr, t: TableT, scope: _Scope, what: str) -> None:
-        pt = self._typer(t.schema, scope).type_of(pred)
+        pt = self._typer(t.schema, scope, t).type_whole(pred)
         match pt:
             case ColT(scalar=Scalar.BOOL) | UnknownT():
                 pass
@@ -2187,6 +2239,11 @@ class _Types:
         rebound = False
         kws = [kw for kw in call.keywords if kw.arg is not None]
         match op:
+            case "where" if is_proc_call(call.args[1], self.t2):
+                # a procedure filter runs over the read's rows in the app layer: a page
+                # stays that page; the procedure may single out an owner (row())
+                source, paged, page_total = t.source, t.paged, t.page_total
+                narrowed = narrowed or bool(t.owned_from)
             case "where" | "sort" | "limit":
                 source = t.source
                 if op == "where" and t.owned_from and len(call.args) > 1:
@@ -2217,7 +2274,13 @@ class _Types:
             case "derive":
                 overwritten = {kw.arg for kw in kws}
                 private = (t.private - overwritten) | {
-                    kw.arg for kw in kws if kw.arg and _reads(kw.value, t.private, self._verifiers)
+                    kw.arg
+                    for kw in kws
+                    if kw.arg
+                    and (
+                        _reads(kw.value, t.private, self._verifiers)
+                        or self._passes_private_row(kw.value, t)
+                    )
                 }
                 owner_cols = (t.owner_cols - overwritten) | {
                     kw.arg for kw in kws if kw.arg and _reads(kw.value, t.owner_cols)
@@ -2295,6 +2358,264 @@ class _Types:
             plain=plain & names,
         )
 
+    # ---- T2: procedures in endpoints (lattice.check.t2_calls) --------------------------
+
+    def _t2_op(self, call: ast.Call, op: str) -> str | None:
+        """The kind of T2-post op ("filter" / "derive") when this op calls a procedure."""
+        if op == "where" and len(call.args) > 1 and is_proc_call(call.args[1], self.t2):
+            return "filter"
+        if op == "derive" and any(is_proc_call(kw.value, self.t2) for kw in call.keywords):
+            return "derive"
+        return None
+
+    def _t2_rows_rules(self, call: ast.Call, op: str, tables: list[TableT]) -> None:
+        """L880 / L881: what may follow rows a procedure computed in the app layer."""
+        rows = next((t.t2_rows for t in tables if t.t2_rows), "")
+        name = ast.unparse(call.args[0]) if call.args else "the table"
+        t2_op = self._t2_op(call, op)
+        if t2_op == "filter" and tables[0].page_total:
+            self.ctx.error(
+                "L880",
+                call,
+                f"a procedure filter after page(..., total=True): the total counts '{name}' "
+                "before the filter, in SQL, and the page would be filtered in Python",
+                "filter with a T0 condition before page(), or page without total=True",
+            )
+            return
+        if not rows or op in ("select", "rename", "one", "require", "update", "delete"):
+            return
+        if op in ("page", "limit"):
+            if rows == "filtered":
+                self.ctx.error(
+                    "L880",
+                    call,
+                    f"a procedure filter before {op}(): '{name}' is filtered in the app layer, "
+                    f"so {op}() (and its total) would be computed in Python",
+                    f"filter with a T0 condition (where(t, col(...) ...)) before {op}(), or "
+                    f"apply the procedure filter after {op}()",
+                )
+            elif rows == "value":
+                self.ctx.error(
+                    "L881",
+                    call,
+                    f"{op}() over '{name}', a procedure's value: there is no SQL read to page",
+                    f"{op} the rows you pass to the procedure instead",
+                )
+            return
+        if t2_op == "filter":
+            return
+        if t2_op == "derive" and all(is_proc_call(kw.value, self.t2) for kw in call.keywords):
+            return
+        self.ctx.error(
+            "L881",
+            call,
+            f"'{op}' needs SQL, but '{name}' holds rows a procedure computed in the app "
+            "layer (after the read's one statement)",
+            f"do the {op}() before the procedure step, or compute it in the procedure",
+        )
+
+    def _t2_rows_of(self, call: ast.Call, op: str, tables: list[TableT]) -> str:
+        rows = next((t.t2_rows for t in tables if t.t2_rows), "")
+        t2_op = self._t2_op(call, op)
+        if t2_op == "filter":
+            return "value" if rows == "value" else "filtered"
+        if t2_op == "derive":
+            return rows or "post"
+        return rows
+
+    def _passes_private_row(self, node: ast.expr, t: TableT) -> bool:
+        """A procedure call handing the whole row, private columns included, to a
+        procedure (Row(T, private=True), or a record with a private column)."""
+        if self.t2 is None or not is_proc_call(node, self.t2):
+            return False
+        assert isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+        proc = self.t2.procedures[node.func.id]
+        names = [p for p, _ in proc.sig.params]
+        pairs = list(zip(names, node.args, strict=False))
+        pairs += [(kw.arg, kw.value) for kw in node.keywords if kw.arg is not None]
+        want = dict(proc.sig.params)
+        for pname, arg in pairs:
+            ptype = want.get(pname)
+            if not is_row_call(arg) or ptype is None:
+                continue
+            if isinstance(ptype, T2RowT) and ptype.private:
+                return True
+            if isinstance(ptype, T2RecordT):
+                fields = {f for f, _ in self.t2.records[ptype.name].fields}
+                if fields & t.private:
+                    return True
+        return False
+
+    def _whole_call(self, name: str, value: ast.expr, scope: _Scope) -> None:
+        """name = call(proc, ...): a table (records or rows) or a scalar value."""
+        assert isinstance(value, ast.Call)
+        result = whole_call(
+            value,
+            self.ctx,
+            scope.env,
+            lambda: self._typer(Schema(()), scope),
+            self.endpoint_admin,
+            self.in_endpoint,
+        )
+        if scope.bound(name):
+            return  # rebinding (P2's L201): the first binding wins
+        if isinstance(result, ScalarValue):
+            self.ctx.set_type(value, UNKNOWN)
+            scope.scalars[name] = result.scalar  # a value of the request, like a parameter
+            scope.nullconsts[name] = result.nullable
+            return
+        self.ctx.set_type(value, result)
+        if isinstance(result, TableT):
+            scope.env[name] = result
+        else:
+            scope.consts[name] = None  # already reported: its uses are silent
+
+    def _insert_many(self, call: ast.Call, scope: _Scope) -> TableOrUnknown:
+        """insert_many(T, rows=x[, owner=user][, unique_or=Conflict(...)]): every row of
+        the table x (a procedure's value) as a new row of T, in one statement."""
+        if not self.in_endpoint:
+            self.ctx.error("L881", call, "insert_many() is only allowed in an endpoint body", None)
+            return UNKNOWN
+        kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
+        if len(call.args) != 1 or "rows" not in kws:
+            return UNKNOWN  # P3 reported the call shape
+        found = self._db_table(call.args[0])
+        rows_node = kws["rows"]
+        t = self._table_arg(rows_node, scope)
+        if found is None or not isinstance(t, TableT):
+            return UNKNOWN
+        name, schema = found
+        if UNIQUE_OR in kws:
+            self._unique_or(kws[UNIQUE_OR])
+        owner = kws.get("owner")
+        if owner is not None:
+            if not (isinstance(owner, ast.Name) and owner.id == USER_PARAM):
+                self.ctx.error("L404", owner, "insert_many() owner= must be user", "owner=user")
+            elif schema.owner is None or schema.owner_via is not None:
+                self.ctx.error("L404", owner, f"'{name}' has no owner column", "remove owner=user")
+        given = set(t.schema.names())
+        for c in t.schema.names():
+            want = schema.get(c)
+            got = t.schema.get(c)
+            if want is None:
+                self.ctx.error(
+                    "L401",
+                    rows_node,
+                    f"the rows have column '{c}', which {name} lacks",
+                    f"{name} has {', '.join(schema.names())}; select or rename the rows first",
+                )
+            elif got is not None and not fits(got, want):
+                self.ctx.error(
+                    "L402",
+                    rows_node,
+                    f"column '{c}' of {name} is {want.value}, the rows' is {got.value}",
+                    None,
+                )
+            elif c in t.nullable and c not in schema.nullable:
+                self.ctx.error(
+                    "L410",
+                    rows_node,
+                    f"column '{c}' of {name} is not nullable, but the rows' may be null",
+                    "make the record field non-optional",
+                )
+        key = generated_key(schema)
+        if key is not None and key in given:
+            self.ctx.error(
+                "L404",
+                rows_node,
+                f"insert_many() sets the key column '{key}' of {name}",
+                f"drop the field {key}; the database assigns a new {key}",
+            )
+        missing = [
+            c
+            for c in schema.names()
+            if c not in (key, schema.owner, uuid_key(schema))
+            and c not in schema.nullable
+            and c not in given
+        ]
+        if missing:
+            listed = ", ".join(f"'{c}'" for c in missing)
+            self.ctx.error(
+                "L404",
+                call,
+                f"insert_many into {name} does not set required column(s) {listed}",
+                "give the rows these columns (record fields)",
+            )
+        return TableT(
+            schema,
+            keys=schema.keys,
+            nullable=schema.nullable,
+            owner=schema.owner,
+            owner_via=schema.owner_via,
+            owner_cols=_owner_cols(schema),
+            owner_checked=True,  # the caller's own new rows (P6 enforces owner=user)
+            private=schema.private,
+            source=name,
+            plain=plain_columns(schema),
+            bounded=True,
+        )
+
+    def _for_each_procedure(
+        self, call: ast.Call, name: str, t: TableOrUnknown, scope: _Scope
+    ) -> None:
+        """for_each(t, proc, args...): an effectful procedure sent once per row after
+        COMMIT, its arguments computed like an effect native's."""
+        assert self.t2 is not None
+        proc = self.t2.procedures[name]
+        if not proc.effects:
+            self.ctx.error(
+                "L882",
+                call.args[1],
+                f"procedure '{name}' is pure; for_each sends effects",
+                f"compute its value per row instead: derive(t, x={name}(...))",
+            )
+            return
+        wants: list[tuple[str, tuple[Scalar, bool]]] = []
+        for pname, ptype in proc.sig.params:
+            ct = column_type(ptype)
+            if ct is None:
+                self.ctx.error(
+                    "L883",
+                    call.args[1],
+                    f"'{name}' parameter '{pname}' is {ptype}; for_each sends column values",
+                    "take column-typed parameters (Int, Str, Date, ...)",
+                )
+                return
+            wants.append((pname, ct))
+        args = call.args[2:]
+        if len(args) != len(wants):
+            shown = ", ".join(p for p, _ in wants)
+            self.ctx.error(
+                "L404",
+                call,
+                f"procedure '{name}' takes {len(wants)} argument(s), got {len(args)}",
+                f"write for_each(rows, {name}, {shown})",
+            )
+            return
+        if not isinstance(t, TableT):
+            return
+        typer = self._typer(t.schema, scope, t)
+        for arg, (pname, (scalar, nullable)) in zip(args, wants, strict=True):
+            vt = typer.type_of(arg)
+            if isinstance(vt, UnknownT):
+                continue
+            if not fits(vt.scalar, scalar):
+                self.ctx.error(
+                    "L402",
+                    arg,
+                    f"'{name}' parameter '{pname}' is {scalar.value}, got {vt.scalar.value}",
+                    None,
+                )
+            elif not nullable and expr_nullable(
+                arg, t.nullable, typer.nullconsts, self.null_natives, self.null_calls
+            ):
+                self.ctx.error(
+                    "L883",
+                    arg,
+                    f"'{name}' parameter '{pname}' is {scalar.value}, but this value may be null",
+                    f"declare it '{pname}: {scalar.value} | None'",
+                )
+
     def _identity(self, t: TableT) -> frozenset[str]:
         """Columns of `t` identifying its rows or their owner: its keys, the owner /
         owner_via column, and the identity columns of the database table it reads."""
@@ -2325,6 +2646,12 @@ class _Types:
         if not set(_str_list_of(by_node)) <= t.plain:
             return True
         return any(_reads_other(kw.value, t.plain) for kw in kws if kw.arg != "by")
+
+
+def _call_name(node: ast.AST) -> str | None:
+    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+        return node.func.id
+    return None
 
 
 def mentions_caller(node: ast.AST) -> bool:

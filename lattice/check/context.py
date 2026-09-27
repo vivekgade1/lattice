@@ -4,10 +4,14 @@ from __future__ import annotations
 
 import ast
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from lattice.diagnostics import Diagnostic, Severity, Span, span_of
 from lattice.profile import Profile
 from lattice.typesys import Type
+
+if TYPE_CHECKING:
+    from lattice.check.t2.model import T2Program
 
 
 @dataclass
@@ -18,6 +22,9 @@ class CheckContext:
     # Module names read outside the T0 passes' view (by @procedure bodies): P2 does not
     # report them as unused.
     external_uses: set[str] = field(default_factory=set)
+    # The program's checked @procedure / @record part (None without one): the T0 passes
+    # read it to type procedure calls in endpoints.
+    t2: T2Program | None = None
 
     def _add(
         self, code: str, sev: Severity, where: ast.AST | Span, message: str, hint: str | None

@@ -8,8 +8,9 @@ generated inputs (seeded random) and must give identical results.
 * API items: the original FastAPI + SQLModel route through its own app, the Lattice
   program through the Lattice runtime, on copies of one generated database -- same
   responses, same database afterwards, same side effects in the same order;
-* the native island: no Lattice program; the loop is rejected with a hint naming a
-  native function.
+* T2 items (l12, formerly the native island): the loop is still rejected as T0 (L127);
+  its Lattice version is a @procedure, compiled with fuel instrumentation and run on the
+  same generated inputs -- directly, and through an endpoint that calls it whole-value.
 """
 
 from __future__ import annotations
@@ -41,9 +42,10 @@ from lattice.diagnostics import Severity
 from lattice.ir import lower
 from lattice.profile import Profile
 from lattice.runtime.exec import run_source
+from lattice.t2 import T2Fuel, compile_program, t2_load
 from lattice.typesys import Scalar, Schema
 from tests.api.test_sql import _csv_cell, sql_frame
-from tests.fixtures.loops import API, ITEMS, NATIVE_ISLANDS, TABULAR
+from tests.fixtures.loops import API, ITEMS, NATIVE_ISLANDS, T2, TABULAR
 
 SEEDS = range(25)
 API_SEEDS = range(8)
@@ -325,24 +327,93 @@ def test_line_counts_are_measurable() -> None:
         assert (lattice is None) == (name in NATIVE_ISLANDS)
 
 
-# ---- the native island -----------------------------------------------------------------------
+# ---- T2 items (the former native island) -------------------------------------------------------
 
 
-@pytest.mark.parametrize("name", NATIVE_ISLANDS)
-def test_native_island_loop_is_rejected_with_a_native_hint(name: str) -> None:
+def test_no_native_island_is_left() -> None:
+    assert NATIVE_ISLANDS == ()
+    assert "l12_login_state_machine" in T2
+
+
+@pytest.mark.parametrize("name", T2)
+def test_t2_item_loop_is_still_rejected_as_t0(name: str) -> None:
     module = item(name)
-    assert not hasattr(module, "LATTICE")
     function = ast.parse(inspect.getsource(module.original)).body[0]
     assert isinstance(function, ast.FunctionDef)
     loop = next(s for s in function.body if isinstance(s, ast.For))
     source = "# lattice: v1\n" + ast.unparse(loop) + "\n"
     result = check_source(source, Profile(schemas={}))
-    (diag,) = [d for d in result.diagnostics if d.code == "L127"]
-    assert "native function" in (diag.hint or "")
-    # the original itself runs, deterministically, on generated inputs
+    assert [d for d in result.diagnostics if d.code == "L127"]
+
+
+@pytest.mark.parametrize("name", T2)
+def test_t2_item_checks_clean(name: str) -> None:
+    module = item(name)
+    result = check_source(module.LATTICE, module.PROFILE)
+    assert result.ok and not result.diagnostics, [d.render() for d in result.diagnostics]
+    assert result.program is not None and result.program.t2 is not None
+
+
+def _l12_procedure(module: ModuleType):
+    check = check_source(module.LATTICE, module.PROFILE)
+    assert check.program is not None
+    code = compile_program(check.program)
+    assert code is not None
+    return t2_load(code.source)
+
+
+def _l12_expected(module: ModuleType, events: list[dict]) -> list[dict]:
+    return module.original([dict(e) for e in events])
+
+
+@pytest.mark.parametrize("name", T2)
+def test_t2_item_procedure_is_equivalent_on_generated_inputs(name: str) -> None:
+    """The compiled procedure, run with fuel over records, gives exactly the original's
+    rows (event fields plus status and sessions), in the original's order."""
+    module = item(name)
+    ns = _l12_procedure(module)
+    event, replay = ns["LoginEvent"], ns["replay_logins"]
+    locked = nonempty = 0
     for seed in SEEDS:
-        inputs = module.generate(random.Random(seed))
-        assert module.original(**inputs) == module.original(**inputs)
+        events = module.generate(random.Random(seed))["events"]
+        expected = _l12_expected(module, events)
+        fuel = T2Fuel(module.PROFILE.api.fuel)
+        got = replay(fuel, [event(**e) for e in events])
+        rows = [
+            {
+                "id": r.id,
+                "user_id": r.user_id,
+                "minute": r.minute,
+                "kind": r.kind,
+                "status": r.status,
+                "sessions": r.sessions,
+            }
+            for r in got
+        ]
+        assert rows == expected, f"{name} seed {seed}"
+        assert fuel.left > 0 and fuel.depth == 0
+        locked += sum(r["status"] == "locked" for r in expected)
+        nonempty += bool(expected)
+    assert nonempty >= len(SEEDS) // 2 and locked > 0, "the generator never locks an account"
+
+
+@pytest.mark.parametrize("name", T2)
+def test_t2_item_endpoint_is_equivalent_on_generated_databases(name: str, tmp_path: Path) -> None:
+    """The endpoint reads the events (one statement) and calls the procedure whole-value:
+    its List response is the original's rows."""
+    module = item(name)
+    check = check_source(module.LATTICE, module.PROFILE)
+    assert check.program is not None
+    plans = lower_api(check.program)
+    for seed in API_SEEDS:
+        events = module.generate(random.Random(seed))["events"]
+        db = tmp_path / f"l12_{seed}.db"
+        module.build_db(db, events)
+        with TestClient(build_app(plans, db)) as client:
+            resp = client.get("/logins/replay", headers={"Authorization": f"Bearer {module.TOKEN}"})
+        assert resp.status_code == 200, resp.text
+        expected = _l12_expected(module, sorted(events, key=lambda e: e["id"])[: module.MAX_EVENTS])
+        assert resp.json() == expected, f"{name} seed {seed}"
 
 
 @pytest.mark.parametrize("name", ITEMS)

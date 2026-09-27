@@ -266,6 +266,16 @@ class TableT:
     # never a derived value). Only a group whose keys are all plain and whose aggregates
     # read no owner-identifying or private column yields rows that are not per-owner.
     plain: frozenset[str] = field(default=frozenset(), compare=False)
+    # T2 (procedures in endpoints): rows computed in the app layer. "post": a read whose
+    # rows a procedure extended after its one statement (derive; page/limit still go to
+    # SQL); "filtered": ... and a procedure filtered them (a page after it would count
+    # in Python: L880); "value": a whole-value procedure call's rows. Only procedure
+    # ops, select, rename and the row-wise API ops (one, require, writes, for_each,
+    # return) take such rows (L881).
+    t2_rows: str = field(default="", compare=False)
+    # Statically bounded rows besides one/page/limit (L439): a procedure's value, the
+    # rows insert_many wrote.
+    bounded: bool = field(default=False, compare=False)
 
     @property
     def unchecked_owned(self) -> frozenset[str]:

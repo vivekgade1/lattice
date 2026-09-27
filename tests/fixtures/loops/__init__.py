@@ -16,5 +16,7 @@ TABULAR = (
     "l11_ties_order_key",
 )
 API = ("l07_org_chart", "l10_notify_watchers")
-NATIVE_ISLANDS = ("l12_login_state_machine",)
-ITEMS = tuple(sorted(TABULAR + API + NATIVE_ISLANDS))
+# T2 (sub-project 1c): loops no T0/T1 construct expresses, written as a @procedure
+T2 = ("l12_login_state_machine",)
+NATIVE_ISLANDS: tuple[str, ...] = ()  # none left: l12 is T2
+ITEMS = tuple(sorted(TABULAR + API + T2 + NATIVE_ISLANDS))

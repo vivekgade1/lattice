@@ -197,6 +197,8 @@ class Dialect(Protocol):
     def modulo(self, a: str, b: str) -> str: ...  # floored modulo, null on a zero divisor
     def function(self, name: str, x: str, kw: Mapping[str, str]) -> str | None: ...
     def insert(self, table: str, cols: Sequence[str], vals: Sequence[str], ret: str) -> str: ...
+    # insert_many: INSERT the rows a SELECT yields (in its order), RETURNING `ret`
+    def insert_select(self, table: str, cols: Sequence[str], select: str, ret: str) -> str: ...
     def update_from(self, table: str, sets: str, source: str, match: str, ret: str) -> str: ...
     def new_uuid(self) -> str: ...  # a fresh uuid4 (an omitted Uuid key on insert)
     # for_each: INSERT one outbox row per bound row (lattice.api.outbox), RETURNING
@@ -424,6 +426,9 @@ class SqliteDialect:
             listed, values = ", ".join(cols), ", ".join(vals)
             return f"INSERT INTO {table} ({listed}) VALUES ({values}) RETURNING {ret}"
         return f"INSERT INTO {table} DEFAULT VALUES RETURNING {ret}"
+
+    def insert_select(self, table: str, cols: Sequence[str], select: str, ret: str) -> str:
+        return f"INSERT INTO {table} ({', '.join(cols)}) {select} RETURNING {ret}"
 
     def update_from(self, table: str, sets: str, source: str, match: str, ret: str) -> str:
         return f"UPDATE {table} SET {sets} FROM ({source}) AS s WHERE {match} RETURNING {ret}"

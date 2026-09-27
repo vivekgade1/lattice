@@ -13,6 +13,8 @@ from lattice.catalog import (
     ITERATE_SHAPE,
     NATIVE_NS,
     OP_SHAPES,
+    T2_T0_NAMES,
+    T2_T0_SHAPES,
     TERMINAL_OPS,
     UNIQUE_OR,
     WINDOW_KW,
@@ -39,6 +41,12 @@ class _Canon:
         self.shapes = {**OP_SHAPES, **API_OP_SHAPES} if api else dict(OP_SHAPES)
         self.shapes[ITERATE] = ITERATE_SHAPE  # P5 rejects it in API programs (L437)
         self.known = IMPORTABLE | API_AMBIENT if api else IMPORTABLE
+        # a program with procedures: call(...) / insert_many(...) are units, and
+        # procedures are known names (P4 types their calls)
+        self.procedures = frozenset(ctx.t2.procedures) if api and ctx.t2 is not None else None
+        if self.procedures is not None:
+            self.shapes.update(T2_T0_SHAPES)
+            self.known = self.known | T2_T0_NAMES | self.procedures
         self.endpoints = frozenset(fn.name for fn in endpoints_of(module)) if api else frozenset()
 
     def _unit(self, node: ast.AST) -> str | None:
@@ -191,6 +199,8 @@ class _Canon:
         match call.args[1]:
             case ast.Attribute(value=ast.Name(id=ns)) if ns == NATIVE_NS:
                 pass
+            case ast.Name(id=name) if self.procedures is not None and name in self.procedures:
+                pass  # an effectful procedure (P4 checks its effects and arguments)
             case other:
                 self.ctx.error(
                     "L303",

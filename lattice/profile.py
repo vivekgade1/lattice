@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
+from lattice.catalog import DEFAULT_FUEL
 from lattice.typesys import Scalar, Schema
 
 # page_shape keys: the JSON fields of a Page response envelope.
@@ -142,6 +143,9 @@ class ApiProfile:
     # T2: capabilities `@procedure(effects=[...])` may declare, besides the ones effect
     # natives name (see `effect_capabilities`).
     capabilities: frozenset[str] = frozenset()
+    # T2: the fuel budget of one request -- every procedure it runs shares it (loop
+    # iterations, calls and comprehension elements cost one each); exhausted: R620.
+    fuel: int = DEFAULT_FUEL
 
     def __post_init__(self) -> None:
         self._validate_page_shape()
@@ -166,6 +170,8 @@ class ApiProfile:
             raise ValueError(f"ApiProfile.datetime_wire must be one of {DATETIME_WIRES}")
         if self.null_order not in NULL_ORDERS:
             raise ValueError(f"ApiProfile.null_order must be one of {NULL_ORDERS}")
+        if isinstance(self.fuel, bool) or not isinstance(self.fuel, int) or self.fuel < 1:
+            raise ValueError("ApiProfile.fuel must be a positive int")
         if not all(isinstance(c, str) and c.isidentifier() for c in self.capabilities):
             raise ValueError("ApiProfile.capabilities must be identifiers, e.g. 'mail'")
 
