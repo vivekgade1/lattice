@@ -93,6 +93,47 @@ After the first pass, every route that isn't verified goes into an LLM-driven lo
 - **Language gaps:** when R3 or R4 is needed, the report classifies the gap (missing construct, missing type, unsupported framework feature). That record is the input for adding constructs (vision §5). Re-running the importer after the language gains the construct lifts the route fully.
 - **Coverage metric:** % of routes verified as Lattice (R0–R2), % with a carve-out (R3), % islands (R4). "100%" means every route verified at R0–R3.
 
+### 3.6 Evidence sources and the method experiment
+
+The importer can draw on six evidence sources. Each one is a pluggable layer that produces facts about the app. The lifters and the LLM consume those facts, and verification (§3.3) always decides whether a lift is accepted.
+
+| Layer | Source | Produces | Module |
+|---|---|---|---|
+| **S1 Source AST** | route and model code (current) | route IR, models, deps, raise sites | `extract.py` |
+| **S2 Code graph** | a symbol/call graph of the whole repo (Python `ast` backend first; tree-sitter backend optional for other languages) | per-route **dependency slice**: transitive callees, dependencies, models touched, effectful functions, dynamic-dispatch flags | `graph.py` |
+| **S3 Intent notes** | an LLM-written per-feature document (architecture, data model, auth, business rules), cached by commit + per-file hashes | "intent notes" for a route's feature, given to the LLM with the rule "code wins over notes when they disagree" | `intent.py` |
+| **S4 OpenAPI** | `app.openapi()` | endpoints, params + bounds, request/response models, declared errors | `outside.py` |
+| **S5 DB introspection** | the live schema (SQLite pragma; Postgres information_schema later) | tables, keys, FKs, unique, nullability, storage spellings | `outside.py` |
+| **S6 SQL trace** | statements the original app issues per request while the generated suite runs (sqlite3 `set_trace_callback`; a driver hook for others) | per-endpoint data logic as SQL, converted to Lattice read/write steps by `sql_lift.py` (the inverse of our SQL compiler); plus N+1 detection | `trace.py`, `sql_lift.py` |
+
+**Guards:**
+- Owner/auth decisions must come from code (S1/S2) or from a trace showing the ownership predicate (S6); never from notes alone.
+- Every place where the notes disagree with verified behaviour is reported, because it points to a bug in the original or in its docs.
+- Routes flagged for dynamic dispatch go to the carve-out rung R3 rather than being guessed.
+
+**The method experiment decides the default.** On the template and both held-out repos, the importer runs with each method arm under the same close-the-gap loop and the same budget:
+
+| Arm | Layers |
+|---|---|
+| M1 source only | S1 |
+| M2 source + graph | S1 + S2 |
+| M3 notes only | S3 (+ S4 for the endpoint list) |
+| M4 source + graph + notes | S1 + S2 + S3 |
+| M5 outside-in | S4 + S5 + S6 (no source) |
+| M6 full hybrid | S1–S6 |
+
+- **Metrics per arm:**
+  - first-pass verified %;
+  - rounds to verify;
+  - final coverage (R0–R2 / R3 / R4);
+  - cost and tokens per verified route;
+  - wall time;
+  - invented invariants (the Lattice followed a notes claim that the code contradicts);
+  - wrong owner/auth decisions caught by verification;
+  - notes/behaviour disagreements found.
+- **Selection rule, applied mechanically:** the highest final verified coverage (R0–R3) wins. Ties are broken by fewer R3 carve-outs, then lower cost per verified route. An arm with any unverified emission is disqualified (by construction there should be none).
+- **The winner becomes the CLI default.** The experiment is re-runnable (`bench`), and its results go to `docs/results/`.
+
 ### 3.5 Output — `lattice_import/`
 
 ```
@@ -146,6 +187,11 @@ This is the raw material for later learning work: mining new lifters and cluster
 | `lattice/importer/llm_lift.py` | prompt + checker/repair loop for unmatched routes |
 | `lattice/importer/suite.py` | request suite + seeded DB generation |
 | `lattice/importer/verify.py` | differential original vs Lattice (generalised from the template test) |
+| `lattice/importer/graph.py` | code graph + per-route dependency slice (S2) |
+| `lattice/importer/intent.py` | cached LLM intent notes per feature (S3) |
+| `lattice/importer/outside.py` | OpenAPI + DB introspection (S4, S5) |
+| `lattice/importer/trace.py`, `sql_lift.py` | SQL trace capture + SQL → Lattice steps (S6) |
+| `lattice/importer/experiment.py` | method arms M1–M6, metrics, selection rule |
 | `lattice/importer/report.py` | report.md / report.json |
 | `lattice/importer/cli.py` | `python -m lattice.importer <repo> --app module:app --out lattice_import [--strict-behaviour] [--no-llm]` |
 
