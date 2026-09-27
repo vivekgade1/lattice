@@ -1,0 +1,21 @@
+# ruff: noqa: B008 -- idiomatic FastAPI dependency injection
+from fastapi import Depends, HTTPException, Query
+from platform_kit import app, current_user, get_db
+
+
+@app.get("/orders/{order_id}/items")
+def order_items(
+    order_id: int,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    user=Depends(current_user),
+    db=Depends(get_db),
+):
+    if db.execute("SELECT id FROM orders WHERE id = ?", (order_id,)).fetchone() is None:
+        raise HTTPException(404, "order not found")
+    rows = db.execute(
+        "SELECT id, product_id, qty, unit_price FROM order_items WHERE order_id = ? "
+        "ORDER BY id LIMIT ? OFFSET ?",
+        (order_id, limit, offset),
+    ).fetchall()
+    return {"items": [dict(r) for r in rows], "limit": limit, "offset": offset}
