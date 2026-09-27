@@ -22,7 +22,7 @@ def test_no_hints_prompts_drop_all_pitfall_advice() -> None:
 
 def test_no_hints_keeps_language_reference_and_safety_rule() -> None:
     lattice, pandas = lattice_system_prompt(hints=False), baseline_system_prompt(hints=False)
-    for kept in ("fanout", "agg.last", "Write only the output file", "## Examples"):
+    for kept in ("fanout", "agg.at_max", "Write only the output file", "## Examples"):
         assert kept in lattice, kept
     for kept in ("Write only `out.parquet`", "parse_dates", "## Examples"):
         assert kept in pandas, kept

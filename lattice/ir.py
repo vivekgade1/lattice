@@ -235,8 +235,8 @@ class _Lowerer:
         return None if op == "write" else node_id
 
     def _aggs(self, call: ast.Call, subst: Subst) -> tuple[AggSpec, ...]:
-        """(name, func, argument, order) per aggregate; `order` is agg.first/last's
-        order= expression, else None."""
+        """(name, func, argument, order) per aggregate; `order` is agg.at_min/at_max's
+        of= expression, else None."""
         out: list[AggSpec] = []
         for kw in call.keywords:
             if kw.arg is None or kw.arg == "by":
@@ -249,7 +249,7 @@ class _Lowerer:
                     args=[a],
                     keywords=kws,
                 ):
-                    order = next((k.value for k in kws if k.arg == "order"), None)
+                    order = next((k.value for k in kws if k.arg == "of"), None)
                     out.append(
                         (
                             kw.arg,

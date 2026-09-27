@@ -13,6 +13,7 @@ import difflib
 from collections.abc import Collection, Mapping
 
 from lattice.catalog import (
+    AGG_ALIASES,
     AGG_FUNCS,
     DATE_ADD_DAYS_MAX,
     DATE_DIFF_UNITS,
@@ -560,6 +561,17 @@ class ExprTyper:
                     None,
                 )
                 return None
+        if attr in AGG_ALIASES:
+            new = AGG_ALIASES[attr]
+            side = "smallest" if new == "at_min" else "largest"
+            self.ctx.error(
+                "L702",
+                node,
+                f"agg.{attr} is not available: aggregates never depend on row order",
+                f'use agg.{new}(col("x"), of=col("date")) for x where date is {side}; '
+                "an earlier sort does not change which row is picked",
+            )
+            return None
         if attr not in AGG_FUNCS:
             self.ctx.error(
                 "L106", node, f"unknown aggregate agg.{attr}", did_you_mean(attr, sorted(AGG_FUNCS))
@@ -608,14 +620,14 @@ class ExprTyper:
         return Scalar.FLOAT if attr == "mean" else t.scalar
 
     def _order_agg(self, node: ast.Call, attr: str) -> Scalar | None:
-        """agg.first/agg.last(x, order=o): x's value on the row with the smallest /
+        """agg.at_min/agg.at_max(x, of=o): x's value on the row with the smallest /
         largest o. x may be any scalar type; o must be ordered."""
-        if len(node.args) != 1 or [kw.arg for kw in node.keywords] != ["order"]:
+        if len(node.args) != 1 or [kw.arg for kw in node.keywords] != ["of"]:
             self.ctx.error(
                 "L404",
                 node,
-                f"agg.{attr} takes one column expression and an order= column expression",
-                f'write agg.{attr}(col("x"), order=col("date"))',
+                f"agg.{attr} takes one column expression and an of= column expression",
+                f'write agg.{attr}(col("x"), of=col("date"))',
             )
             return None
         value = self.type_of(node.args[0])
@@ -626,7 +638,7 @@ class ExprTyper:
             self.ctx.error(
                 "L402",
                 node.keywords[0].value,
-                f"agg.{attr} order= expects {_scalars(ORDERED)}, got {order.scalar.value}",
+                f"agg.{attr} of= expects {_scalars(ORDERED)}, got {order.scalar.value}",
                 None,
             )
             return None

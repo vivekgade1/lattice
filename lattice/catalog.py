@@ -39,9 +39,18 @@ EXPR_FUNCS = frozenset({"col", "when", "coalesce", "is_null"})
 NAMESPACES = frozenset({"agg", "fn"})
 TYPE_NAMES = frozenset({"Table", "Int", "Float", "Str", "Bool", "Date"})
 IMPORTABLE = TABLE_OPS | EXPR_FUNCS | NAMESPACES | TYPE_NAMES | {"step"}
-AGG_FUNCS = frozenset({"sum", "mean", "min", "max", "count", "first", "last"})
-# aggregates that pick one row's value by an ordering expression: agg.first(x, order=o)
-ORDER_AGGS = frozenset({"first", "last"})
+AGG_FUNCS = frozenset({"sum", "mean", "min", "max", "count", "at_min", "at_max"})
+# aggregates that pick one row's value by an ordering expression: agg.at_max(x, of=o)
+ORDER_AGGS = frozenset({"at_min", "at_max"})
+# Rejected names: "first"/"last" read as "first row after a sort" (the pandas idiom), but
+# aggregates never see row order — models sorted newest-first and took agg.first, getting
+# the oldest value silently.
+AGG_ALIASES: Mapping[str, str] = {
+    "first": "at_min",
+    "last": "at_max",
+    "arg_min": "at_min",
+    "arg_max": "at_max",
+}
 
 
 @dataclass(frozen=True)
@@ -108,7 +117,7 @@ FN_DOCS: Mapping[str, str] = {
         'format="%Y-%m-%d"), col("signup_date"), unit="days")'
     ),
     "date_add": "the Date shifted by `days` (negative moves earlier)",
-    "to_date": "parse a string with a strftime `format` such as \"%Y-%m-%d\"; null if unparsable",
+    "to_date": 'parse a string with a strftime `format` such as "%Y-%m-%d"; null if unparsable',
     "to_int": "convert to Int; null if not convertible",
     "to_float": "convert to Float; null if not convertible",
     "to_str": "convert to Str",

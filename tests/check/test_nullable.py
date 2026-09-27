@@ -342,17 +342,17 @@ def _then_mean(agg: str, by: str = '"customer_id"') -> str:
     )
 
 
-@pytest.mark.parametrize("fn", ["first", "last"])
+@pytest.mark.parametrize("fn", ["at_min", "at_max"])
 def test_first_last_over_nullable_value_needs_no_policy(fn: str) -> None:
-    assert codes(grouped(f'agg.{fn}(col("discount"), order=col("amount"))')) == []
+    assert codes(grouped(f'agg.{fn}(col("discount"), of=col("amount"))')) == []
 
 
 @pytest.mark.parametrize(
     ("agg", "nullable"),
     [
-        ('agg.last(col("amount"), order=col("order_id"))', False),
-        ('agg.last(col("discount"), order=col("order_id"))', True),
-        ('agg.first(col("amount"), order=col("discount"))', True),
+        ('agg.at_max(col("amount"), of=col("order_id"))', False),
+        ('agg.at_max(col("discount"), of=col("order_id"))', True),
+        ('agg.at_min(col("amount"), of=col("discount"))', True),
     ],
 )
 def test_first_last_result_nullability(agg: str, nullable: bool) -> None:
@@ -361,7 +361,7 @@ def test_first_last_result_nullability(agg: str, nullable: bool) -> None:
 
 def test_first_last_whole_table_is_nullable() -> None:
     # by=[] over an empty input yields one row with a missing value
-    assert codes(_then_mean('agg.first(col("amount"), order=col("order_id"))', by="")) == ["L421"]
+    assert codes(_then_mean('agg.at_min(col("amount"), of=col("order_id"))', by="")) == ["L421"]
 
 
 def test_first_last_runtime(tmp_path: Path) -> None:
@@ -373,10 +373,10 @@ def test_first_last_runtime(tmp_path: Path) -> None:
     (tmp_path / "ratings.csv").write_text("customer_id,rating,region\n1,4.0,x\n")
     body = (
         'g = group(orders, by=["customer_id"], '
-        'f=agg.first(col("code"), order=col("order_id")), '
-        'l=agg.last(col("code"), order=col("order_id")), '
-        'fd=agg.first(col("code"), order=col("discount")), '
-        'la=agg.last(col("amount"), order=col("order_id") * -1))\n'
+        'f=agg.at_min(col("code"), of=col("order_id")), '
+        'l=agg.at_max(col("code"), of=col("order_id")), '
+        'fd=agg.at_min(col("code"), of=col("discount")), '
+        'la=agg.at_max(col("amount"), of=col("order_id") * -1))\n'
         'write(g, "out.parquet")\n'
     )
     result, run = run_source(H + LOADS + body, NULLABLE, tmp_path)

@@ -66,11 +66,11 @@ def test_lattice_prompt_has_new_rules() -> None:
     prompt = lattice_system_prompt()
     assert 'fanout="allow"' in prompt
     assert 'group(prices, by=["product_id"]' in prompt
-    assert 'agg.last(col("price"), order=col("valid_from"))' in prompt
+    assert 'agg.at_max(col("price"), of=col("valid_from"))' in prompt
     assert "latest = group(" not in prompt  # max price is not the latest price
     assert 'price=agg.max(col("price"))' not in prompt
     assert "unique by the task's meaning" in prompt
-    assert "`agg.first(x, order=o)`" in prompt and "`agg.last(x, order=o)`" in prompt
+    assert "`agg.at_min(x, of=o)`" in prompt and "`agg.at_max(x, of=o)`" in prompt
     assert 'nulls="skip"' in prompt
     assert 'agg.mean(coalesce(col("x"), 0.0))' in prompt
     assert "Write only the output file named in the task" in prompt
@@ -87,7 +87,7 @@ def test_baseline_prompt_has_equivalent_rules() -> None:
     assert "must be read as text" in BASELINE_SYSTEM
     assert "dtype=str" in BASELINE_SYSTEM and "leading zeros" in BASELINE_SYSTEM
     assert "parse_dates" in BASELINE_SYSTEM
-    assert 'keep="last"' in BASELINE_SYSTEM  # the pandas analogue of agg.last
+    assert 'keep="last"' in BASELINE_SYSTEM  # the pandas analogue of agg.at_max
     assert "Write only `out.parquet`: no other files, no network access, no shell" in (
         BASELINE_SYSTEM
     )
@@ -105,7 +105,7 @@ def test_lattice_rule_examples_check_clean() -> None:
         "# lattice: v1\n"
         'prices = load("product_prices.csv", schema=ProductPrices)\n'
         'current = group(prices, by=["product_id"], '
-        'price=agg.last(col("price"), order=col("valid_from")), '
+        'price=agg.at_max(col("price"), of=col("valid_from")), '
         'hi=agg.max(col("price"), nulls="skip"), m=agg.mean(coalesce(col("price"), 0.0)))\n'
         'write(current, "out.parquet")\n'
     )

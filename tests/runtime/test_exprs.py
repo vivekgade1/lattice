@@ -252,13 +252,13 @@ def test_first_last_aggregates():
         }
     )
     # ties -> earliest row; null order ignored; all-null order -> null; x may be null
-    assert run("first", df) == ["b", None, "h", "j"]
-    assert run("last", df) == ["a", None, None, "j"]
+    assert run("at_min", df) == ["b", None, "h", "j"]
+    assert run("at_max", df) == ["a", None, None, "j"]
     empty = df.drop("k").head(0)
-    assert run("first", empty) == [None] and run("last", empty) == [None]
-    assert run("last", df.drop("k"), x="7") == [7]  # a literal is broadcast per row
+    assert run("at_min", empty) == [None] and run("at_max", empty) == [None]
+    assert run("at_max", df.drop("k"), x="7") == [7]  # a literal is broadcast per row
     with pytest.raises(LatticeInternalError):
-        compile_agg("last", ast.parse('col("x")', mode="eval").body)
+        compile_agg("at_max", ast.parse('col("x")', mode="eval").body)
 
 
 def test_unknown_node_is_internal_error():

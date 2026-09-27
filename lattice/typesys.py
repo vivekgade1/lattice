@@ -59,9 +59,7 @@ class Schema:
         keys: Iterable[Iterable[str]] = (),
         nullable: Iterable[str] = (),
     ) -> Schema:
-        return Schema(
-            tuple(pairs), tuple(tuple(k) for k in keys), frozenset(nullable)
-        )
+        return Schema(tuple(pairs), tuple(tuple(k) for k in keys), frozenset(nullable))
 
     def names(self) -> tuple[str, ...]:
         return tuple(n for n, _ in self.columns)

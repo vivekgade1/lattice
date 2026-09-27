@@ -306,7 +306,7 @@ def compile_agg(func: str, arg: ast.expr | None, order: ast.expr | None = None) 
     """An aggregate over a group (or the whole frame). Literal-only arguments are
     broadcast to one value per row first, so agg.sum(1) counts rows like SQL.
     agg.count() counts rows; agg.count(x) counts the non-null values of x.
-    agg.first/agg.last(x, order=o) take x on the row with the smallest/largest
+    agg.at_min/agg.at_max(x, of=o) take x on the row with the smallest/largest
     non-null o (ties: the earliest row); null if every o is null."""
     if func == "count" and arg is None:
         return Compiled(pl.len().cast(pl.Int64))
@@ -314,15 +314,15 @@ def compile_agg(func: str, arg: ast.expr | None, order: ast.expr | None = None) 
         raise LatticeInternalError(f"agg.{func} needs an argument")
     inner = _per_row(arg)
     x = inner.expr
-    if func in ("first", "last"):
+    if func in ("at_min", "at_max"):
         if order is None:
-            raise LatticeInternalError(f"agg.{func} needs order=")
+            raise LatticeInternalError(f"agg.{func} needs of=")
         o = _per_row(order)
         present = o.expr.is_not_null()
         # a stable sort keeps tied rows in input order, so .first() is the earliest
         picked = (
             x.filter(present)
-            .sort_by(o.expr.filter(present), descending=func == "last", maintain_order=True)
+            .sort_by(o.expr.filter(present), descending=func == "at_max", maintain_order=True)
             .first()
         )
         return Compiled(picked, inner.guards + o.guards)

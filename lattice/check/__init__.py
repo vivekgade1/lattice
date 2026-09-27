@@ -38,8 +38,6 @@ def _sorted(diags: list[Diagnostic]) -> tuple[Diagnostic, ...]:
     return tuple(sorted(diags, key=sort_key))
 
 
-
-
 def _depth(module: ast.Module) -> int:
     deepest = 0
     stack: list[tuple[ast.AST, int]] = [(module, 0)]

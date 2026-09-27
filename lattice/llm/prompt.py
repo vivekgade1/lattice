@@ -108,8 +108,7 @@ _OP_DESCRIPTIONS: dict[str, str] = {
     "group": "group by zero or more columns and compute the given aggregates per group",
     "join": "combine two tables on shared key columns ('inner' or 'left')",
     "sort": "sort rows by one or more columns, ascending unless desc=True; "
-    "desc=[True, False] gives one direction per by= column (e.g. revenue descending, "
-    "ties by id ascending)",
+    "desc=[True, False] sets one direction per by= column",
     "limit": "keep only the first n rows",
     "write": "write the final table to a file (.csv or .parquet); must be the last statement",
 }
@@ -176,12 +175,12 @@ def _expression_library_section() -> str:
     lines.append(
         "Aggregate library `agg.*` (only valid as a `group()` keyword value): "
         + ", ".join(
-            f"`agg.{name}(x, order=o)`" if name in ORDER_AGGS else f"`agg.{name}(...)`"
+            f"`agg.{name}(x, of=o)`" if name in ORDER_AGGS else f"`agg.{name}(...)`"
             for name in sorted(AGG_FUNCS)
         )
         + ". `agg.count()` counts rows and `agg.count(x)` counts the non-null values of x; "
-        "first/last give x on the row with the smallest/largest non-null o "
-        "(ties: the earliest row); "
+        "at_min/at_max give x where o is smallest/largest (ties: earliest row); an "
+        "earlier sort does not change which row is picked; "
         "every other aggregate takes one column expression."
     )
     return "\n".join(lines)
@@ -220,8 +219,8 @@ every row of `l`; `r` must have at most one row, e.g. a total from \
 needs `r` to be unique on `K` when inputs declare a "unique key" (a declared key \
 of `r` inside `K`, or `r` built by `group(..., by=K, ...)`). Otherwise reduce `r` \
 to one row per key first, e.g. the current price per product: \
-`current = group(prices, by=["product_id"], price=agg.last(col("price"), \
-order=col("valid_from")))`. Pass `fanout="allow"` if repeating rows is really \
+`current = group(prices, by=["product_id"], price=agg.at_max(col("price"), \
+of=col("valid_from")))`. Pass `fanout="allow"` if repeating rows is really \
 intended, or if `r` is unique by the task's meaning though no key is declared \
 (e.g. filtered to one primary contact per customer).
 - `agg.mean`, `agg.min` and `agg.max` over a value that "may be missing" (a \

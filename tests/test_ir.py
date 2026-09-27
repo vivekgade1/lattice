@@ -198,7 +198,7 @@ def test_first_last_lower_order_with_step_params_substituted():
     src = """# lattice: v1
 @step
 def pick(orders: Table[Orders], k: Int) -> Table:
-    g = group(orders, by=["customer_id"], v=agg.last(col("qty") + k, order=col("qty") * k))
+    g = group(orders, by=["customer_id"], v=agg.at_max(col("qty") + k, of=col("qty") * k))
     return g
 raw = load("orders.csv", schema=Orders)
 r = pick(raw, k=3)
@@ -207,7 +207,7 @@ write(r, "out.parquet")
     plan = lower(_checked(src))
     by_id = {n.id: n for n in plan.nodes}
     ((name, func, arg, order),) = by_id["r/g"].params["aggs"]
-    assert (name, func) == ("v", "last")
+    assert (name, func) == ("v", "at_max")
     assert ast.unparse(arg) == "col('qty') + 3"
     assert order is not None and ast.unparse(order) == "col('qty') * 3"
 
