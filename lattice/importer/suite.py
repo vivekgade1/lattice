@@ -46,6 +46,8 @@ from lattice.importer.verify import Case, Login, form_login
 
 ColumnType = Literal["str", "int", "float", "bool", "uuid", "datetime", "email"]
 MISSING_ID = "00000000-0000-4000-8000-000000000000"
+MISSING_INT = 999_999  # an integer key no seeded row has
+NOT_A_CHOICE = "not-a-choice"
 MALFORMED = {"uuid": "not-a-uuid", "int": "not-an-int"}
 HUGE_LIMIT = 1_000_000
 SEED_EPOCH = datetime(2026, 1, 1, 9, 0, 0, tzinfo=UTC)
@@ -68,6 +70,7 @@ class ColumnSpec:
     max_len: int | None = None
     ge: float | None = None
     le: float | None = None
+    choices: tuple[str | int, ...] = ()  # an enum column's allowed values
 
 
 @dataclass(frozen=True)
@@ -102,8 +105,14 @@ class AuthSpec:
     password_field: str = "password"
     token_field: str = "access_token"
     hash_password: Callable[[str], str] | None = None
-    mint_token: Callable[[uuid.UUID], str] | None = None
+    mint_token: Callable[[Any], str] | None = None
     bad_token: str = "not-a-jwt"
+    key_type: ColumnType = "uuid"  # the users key: "uuid", or "int" (1, 2, ... in the seed)
+
+    @property
+    def missing_user(self) -> Any:
+        """A users key no seeded user has."""
+        return MISSING_INT if self.key_type == "int" else uuid.UUID(MISSING_ID)
 
 
 @dataclass(frozen=True)
@@ -123,6 +132,7 @@ class ParamSpec:
     le: float | None = None
     default: Any = None
     column: str | None = None
+    choices: tuple[str | int, ...] = ()  # an enum parameter's allowed values
 
 
 ErrorCause = Literal[
@@ -187,7 +197,7 @@ class SeedUser:
     password: str
     active: bool
     admin: bool
-    id: uuid.UUID
+    id: Any  # uuid.UUID, or an int for an integer users key
 
 
 @dataclass
@@ -240,8 +250,8 @@ def seed_plan(
     ns = uuid.uuid5(uuid.NAMESPACE_URL, f"https://lattice.invalid/importer-seed/{seed}")
     users = tuple(
         SeedUser(h, f"{h}@example.com", f"{h}-pass-{seed:04d}", active, admin,
-                 uuid.uuid5(ns, f"user/{h}"))
-        for h, admin, active in SEED_USERS
+                 k + 1 if auth.key_type == "int" else uuid.uuid5(ns, f"user/{h}"))
+        for k, (h, admin, active) in enumerate(SEED_USERS)
     )  # fmt: skip
     plan = SeedPlan(users, owner_columns={t.name: t.owner for t in tables if t.owner})
     by_name = {t.name: t for t in tables}
@@ -294,6 +304,8 @@ def _seed_value(
         return 1 + i % 2
     if c.nullable and i % 3 == 2:
         return None
+    if c.choices:
+        return c.choices[i % len(c.choices)]
     if c.type == "datetime":
         return SEED_EPOCH + timedelta(days=30 * (t.name != auth.users_table), hours=hour)
     if c.type == "bool":
@@ -384,11 +396,15 @@ def sqlmodel_insert_hook(
 
         engine = engine_factory(path)
         try:
-            SQLModel.metadata.create_all(engine)
+            # every model's own MetaData (an app may keep its tables in its own registry)
+            metadatas = {id(m.metadata): m.metadata for m in models.values()  # type: ignore[attr-defined]
+                         if getattr(m, "metadata", None) is not None}  # fmt: skip
+            for metadata in metadatas.values() or [SQLModel.metadata]:
+                metadata.create_all(engine)
             for table, model in models.items():
                 with Session(engine) as session:
                     for row in plan.rows[table]:
-                        session.add(model(**row))
+                        session.add(model(**_members(model, row)))
                     session.commit()
                     key = next(c for c in model.__table__.primary_key.columns)  # type: ignore[attr-defined]
                     for row in plan.rows[table]:
@@ -402,6 +418,30 @@ def sqlmodel_insert_hook(
             engine.dispose()
 
     return hook
+
+
+def _members(model: type, row: Mapping[str, Any]) -> dict[str, Any]:
+    """``row`` with every value of an Enum-typed field as that Enum's member (a table
+    model does not validate, and SQLAlchemy's Enum type wants members)."""
+    import enum
+    import types
+    import typing
+
+    fields = getattr(model, "model_fields", {})
+    out = dict(row)
+    for name, value in row.items():
+        info = fields.get(name)
+        if value is None or info is None:
+            continue
+        ann = info.annotation
+        if typing.get_origin(ann) in (typing.Union, types.UnionType):
+            ann = next((a for a in typing.get_args(ann) if a is not type(None)), ann)
+        if isinstance(ann, type) and issubclass(ann, enum.Enum) and not isinstance(value, ann):
+            try:
+                out[name] = ann(value)
+            except ValueError:
+                pass
+    return out
 
 
 # ----------------------------------------------------------------------------- the suite --
@@ -441,6 +481,8 @@ def _email_of_len(n: int, stem: str = "a") -> str:
 
 
 def _valid(p: ParamSpec, route: RouteSpec, i: int = 0) -> Any:
+    if p.choices:
+        return p.choices[i % len(p.choices)]
     if p.type == "email":
         return f"fresh.{route.name.replace('_', '.')}{i or ''}@example.com"
     if p.type == "str":
@@ -460,6 +502,10 @@ def _valid(p: ParamSpec, route: RouteSpec, i: int = 0) -> Any:
 
 def _boundaries(p: ParamSpec) -> list[tuple[str, Any]]:
     out: list[tuple[str, Any]] = []
+    if p.choices:
+        # a value outside the enum: the original refuses it (422)
+        other = NOT_A_CHOICE if p.type == "str" else max(int(c) for c in p.choices) + 1
+        return [("not_a_choice", other)]
     if p.type in ("str", "email"):
         make = _email_of_len if p.type == "email" else (lambda n: "b" * n)
         if p.min_len:
@@ -515,11 +561,15 @@ class _Builder:
     def other_id(self) -> str | None:
         return self.own_id(OTHER)
 
+    def missing_id(self) -> str:
+        p = self.route.id_param
+        return str(MISSING_INT) if p is not None and p.type == "int" else MISSING_ID
+
     def path(self, id_value: str | None) -> str:
         p = self.route.id_param
         if p is None:
             return self.route.path
-        return self.route.path.replace("{" + p.name + "}", id_value or MISSING_ID)
+        return self.route.path.replace("{" + p.name + "}", id_value or self.missing_id())
 
     def happy_actor(self) -> str | None:
         return None if self.route.auth == "public" else (
@@ -581,7 +631,7 @@ def _route_cases(b: _Builder, hypothesis_bodies: int, seed: int) -> None:
         if r.kind in ("me", "update_me", "list", "read"):
             b.add("other_user", user=OTHER)
     if idp is not None:
-        b.add("missing_id", id_value=MISSING_ID)
+        b.add("missing_id", id_value=b.missing_id())
         b.add("malformed_id", id_value=MALFORMED.get(idp.type, "%%"))
     happy = b.happy_body()
     # boundaries of query and body parameters
@@ -646,7 +696,7 @@ def _route_cases(b: _Builder, hypothesis_bodies: int, seed: int) -> None:
         if auth.mint_token is not None:
             b.add("inactive_token", token=auth.mint_token(plan.user(INACTIVE).id),
                   id_value=b.own_id(INACTIVE) if idp is not None else None)  # fmt: skip
-            b.add("unknown_user_token", token=auth.mint_token(uuid.UUID(MISSING_ID)))
+            b.add("unknown_user_token", token=auth.mint_token(auth.missing_user))
     for e in r.errors:
         _error_case(b, e, happy)
     if hypothesis_bodies and body_params and r.kind != "login":
@@ -658,7 +708,7 @@ def _error_case(b: _Builder, e: ErrorSpec, happy: dict[str, Any] | None) -> None
     r, plan = b.route, b.plan
     what = f"error.{e.status}.{e.cause}"
     if e.cause == "not_found":
-        b.add(what, id_value=MISSING_ID)
+        b.add(what, id_value=b.missing_id())
     elif e.cause == "not_owner":
         b.add(what, user=ACTOR, id_value=b.other_id())
     elif e.cause == "not_admin":
@@ -687,8 +737,10 @@ def hypothesis_bodies_for(route: RouteSpec, n: int, seed: int) -> list[dict[str,
     from hypothesis import strategies as st
 
     def field_strategy(p: ParamSpec) -> st.SearchStrategy[Any]:
-        if p.type == "str":
-            s: st.SearchStrategy[Any] = st.text(
+        if p.choices:
+            s: st.SearchStrategy[Any] = st.sampled_from(p.choices)
+        elif p.type == "str":
+            s = st.text(
                 st.characters(codec="utf-8", exclude_categories=("Cs",)),
                 min_size=p.min_len or 0,
                 max_size=p.max_len if p.max_len is not None else 64,

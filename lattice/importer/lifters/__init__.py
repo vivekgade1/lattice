@@ -137,6 +137,8 @@ def compose(route: RouteSource, fragments: Sequence[LiftFragment]) -> RouteLift:
             raise _Reject(f"parameter {p.name!r} is not read by any lifted statement")
         if p.source == "dependency" and p.name not in (route.session, route.user):
             raise _Reject(f"dependency parameter {p.name!r} is not the session or the caller")
+        if p.source == "framework":
+            raise _Reject(f"parameter {p.name!r} is the framework's {p.type}: not lifted")
     ordered = sorted(fragments, key=lambda f: min(f.stmts))
     ret = [f for f in ordered if f.returns is not None]
     if len(ret) != 1 or len(route.body) - 1 not in ret[0].stmts:

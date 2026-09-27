@@ -155,6 +155,30 @@ def test_owner_check_accepts_either_order(ctx):
 @pytest.mark.parametrize(
     "test",
     [
+        # De Morgan: neither the admin flag nor the owner
+        "not (current_user.is_superuser or item.owner_id == current_user.id)",
+        "not (current_user.id == item.owner_id or current_user.is_superuser)",
+        # "not the owner" as a negated equality
+        "not current_user.is_superuser and not (item.owner_id == current_user.id)",
+        "not (current_user.id == item.owner_id) and not current_user.is_superuser",
+    ],
+)
+def test_owner_check_accepts_equivalent_spellings(ctx, test):
+    body = READ_ITEM.replace(
+        "not current_user.is_superuser and (item.owner_id != current_user.id)", test
+    )
+    f = owner_check.match(route(ctx, "read_item", body), ctx[0])
+    assert f is not None and f.stmts == (2,) and f.errors == ("Forbidden",)
+    assert f.steps[0].args == ("{@item}", "owner_is(user)")
+
+
+@pytest.mark.parametrize(
+    "test",
+    [
+        "not (current_user.is_superuser and item.owner_id == current_user.id)",  # and
+        "not (current_user.is_active or item.owner_id == current_user.id)",  # not the flag
+        "not (current_user.is_superuser or item.owner_id != current_user.id)",  # inverted
+        "not current_user.is_superuser and not (item.owner_id != current_user.id)",
         "item.owner_id != current_user.id",  # no admin bypass: owner_is would admit admins
         "not current_user.is_superuser and (item.title != current_user.id)",  # not the owner
         "not current_user.is_superuser or (item.owner_id != current_user.id)",  # or

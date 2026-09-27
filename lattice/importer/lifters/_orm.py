@@ -193,7 +193,9 @@ def _field_call(
 
 def _now_function(route: RouteSource, node: ast.expr, module: str) -> bool:
     """``datetime.now`` / ``datetime.utcnow`` or a package function returning
-    ``datetime.now(...)`` / ``datetime.utcnow()``."""
+    ``datetime.now(...)`` / ``datetime.utcnow()`` -- also as a naive UTC value,
+    ``datetime.now(UTC).replace(tzinfo=None)`` (the same instant, stored and answered
+    without a zone, as a naive datetime wire spells every instant)."""
 
     def is_now(expr: ast.expr | None, mod: str) -> bool:
         return (
@@ -201,6 +203,19 @@ def _now_function(route: RouteSource, node: ast.expr, module: str) -> bool:
             and expr.attr in ("now", "utcnow")
             and route.index.resolve(mod, expr.value) == "datetime:datetime"
         )
+
+    def naive_utc_now(call: ast.expr, mod: str) -> bool:
+        """``datetime.now(<UTC>).replace(tzinfo=None)``."""
+        match call:
+            case ast.Call(
+                func=ast.Attribute(value=ast.Call(func=inner, args=[zone], keywords=[]),
+                                   attr="replace"),
+                args=[],
+                keywords=[ast.keyword(arg="tzinfo", value=ast.Constant(value=None))],
+            ):  # fmt: skip
+                utc = route.index.resolve(mod, zone)
+                return is_now(inner, mod) and utc in ("datetime:UTC", "datetime:timezone.utc")
+        return False
 
     if is_now(node, module):
         return True
@@ -211,14 +226,32 @@ def _now_function(route: RouteSource, node: ast.expr, module: str) -> bool:
     body = [
         s for s in fn.body if not (isinstance(s, ast.Expr) and isinstance(s.value, ast.Constant))
     ]
+    if not (len(body) == 1 and isinstance(body[0], ast.Return) and body[0].value is not None):
+        return False
+    value = body[0].value
+    if naive_utc_now(value, fmod):
+        return True
     return (
-        len(body) == 1
-        and isinstance(body[0], ast.Return)
-        and isinstance(body[0].value, ast.Call)
-        and is_now(body[0].value.func, fmod)
-        and not body[0].value.keywords
-        and len(body[0].value.args) <= 1
+        isinstance(value, ast.Call)
+        and is_now(value.func, fmod)
+        and not value.keywords
+        and len(value.args) <= 1
     )
+
+
+def has_default(route: RouteSource, table: TableModel, column: str) -> bool:
+    """Whether an insert that leaves ``column`` out stores something the class says (a
+    default or ``default_factory``), spellable in Lattice or not."""
+    found = _field_call(route, table, column)
+    if found is None or found[1] is None:
+        return False
+    module, value = found
+    if isinstance(value, ast.Call) and route.resolves_to(
+        value.func, "sqlmodel:Field", module=module
+    ):
+        kws = {k.arg for k in value.keywords if k.arg}
+        return bool(value.args) or bool(kws & {"default", "default_factory"})
+    return True
 
 
 def column_default(route: RouteSource, table: TableModel, column: str) -> tuple[str, object] | None:

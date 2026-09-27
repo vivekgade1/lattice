@@ -32,6 +32,7 @@ from pathlib import Path
 from pprint import pformat
 from typing import Any
 
+from lattice.importer.extract import route_function
 from lattice.importer.llm_lift import CloseResult, RouteOutcome
 
 __all__ = ["SCHEMA", "load_report", "render_markdown", "report_data", "write_import"]
@@ -49,8 +50,8 @@ def _size(close: CloseResult, o: RouteOutcome) -> tuple[int, int]:
     ctx = close.result.context
     if ctx is None or o.route.module not in ctx.index.modules:
         return 0, 0
-    fn = ctx.index.modules[o.route.module].defs.get(o.route.name)
-    if not isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef):
+    fn = route_function(ctx.index, o.route)
+    if fn is None:
         return 0, 0
     first = min([fn.lineno, *(d.lineno for d in fn.decorator_list)])
     return (fn.end_lineno or fn.lineno) - first + 1, sum(1 for _ in ast.walk(fn))

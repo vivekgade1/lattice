@@ -15,7 +15,18 @@ It finds:
 * native candidates: the non-ORM package functions routes call (directly or through ORM
   helpers such as ``crud``), typed from annotations and call sites, plus the token
   decoder synthesised from the current-user dependency;
-* the database URL / dialect, custom exception handlers and custom serialisation.
+* the database URL / dialect (from the package's URL literals, e.g. a settings default,
+  when the engine's URL is not a constant), custom exception handlers and custom
+  serialisation.
+
+Beyond the template's shapes: naive / aware datetimes are ``DateTime``; ``Enum`` and
+``Literal`` annotations are ``Str`` / ``Int`` with their ``choices``; an unannotated
+generator yielding a ``Session`` is the session dependency and one wrapping it in a
+package class (``return NoteCRUD(session)``) a ``repository`` whose methods are followed;
+the users table is what the current-user dependency returns, read from its return
+values when it has no annotation; the token decode may be PyJWT's or python-jose's, in
+the dependency or a helper; ``Request``-like parameters are ``framework`` parameters, and
+routes an app factory defines on its own local app are found (``enclosing``).
 
 ``RepoModel`` is a frozen dataclass tree of plain values; ``to_json()`` serialises it.
 """
@@ -23,6 +34,7 @@ It finds:
 from __future__ import annotations
 
 import ast
+import builtins
 import dataclasses
 import json
 import re
@@ -56,6 +68,8 @@ class FieldSpec:
     foreign_key: str | None = None  # "table.column"
     index: bool = False
     tz_aware: bool = False  # sa_type=DateTime(timezone=True)
+    # the allowed values of an Enum / Literal annotation (type Str or Int); () otherwise
+    choices: tuple[str | int, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -86,8 +100,9 @@ class RaiseSite:
 
 @dataclass(frozen=True)
 class Dependency:
-    """A FastAPI dependency. ``kind``: session, token, current_user, active_user, admin
-    or unknown (anything the extractor does not recognise)."""
+    """A FastAPI dependency. ``kind``: session, repository (a data-access object built
+    from the session only -- ``provides`` is its class), token, current_user,
+    active_user, admin or unknown (anything the extractor does not recognise)."""
 
     name: str
     module: str
@@ -103,11 +118,13 @@ class Dependency:
     admin_detail: str | None = None
     scheme: str | None = None  # token kind: the fastapi.security class
     reason: str = ""
+    provides: str | None = None  # repository kind: the class ("module:Name") it returns
 
 
 @dataclass(frozen=True)
 class RouteParam:
-    """``source``: path, query, body, form or dependency."""
+    """``source``: path, query, body, form, dependency or framework (``Request``,
+    ``Response``, ``BackgroundTasks``...: filled by FastAPI from the connection)."""
 
     name: str
     annotation: str
@@ -117,6 +134,7 @@ class RouteParam:
     required: bool = True
     dependency: str | None = None
     item: str | None = None
+    choices: tuple[str | int, ...] = ()  # an Enum / Literal parameter's allowed values
 
 
 @dataclass(frozen=True)
@@ -149,6 +167,8 @@ class Route:
     owner_uses: tuple[OwnerUse, ...]
     body_models: tuple[str, ...]
     line: int
+    # the function the route is defined in (an app factory's local app/router), if any
+    enclosing: str | None = None
 
 
 @dataclass(frozen=True)
@@ -264,6 +284,19 @@ EFFECT_CALLS = frozenset({"builtins:print", "builtins:open"})
 EFFECT_MODULES = ("smtplib", "requests", "httpx", "urllib", "subprocess", "socket", "emails")
 MUTATING_METHODS = frozenset({"append", "extend", "add", "update", "insert", "pop", "remove"})
 USER_DEP_KINDS = frozenset({"current_user", "active_user", "admin"})
+# The marker of a reason (an Unclear decision, an island) that is a gap in the language.
+LANGUAGE_GAP = "language gap"
+# pydantic's datetime aliases (naive / aware / past / future): all a DateTime.
+DATETIME_ALIASES = ("NaiveDatetime", "AwareDatetime", "PastDatetime", "FutureDatetime")
+ENUM_BASES = ("Enum", "StrEnum", "IntEnum")
+# parameters FastAPI fills from the connection itself, not from the request's data
+FRAMEWORK_PARAMS = (
+    "Request", "Response", "BackgroundTasks", "WebSocket", "HTTPConnection", "SecurityScopes",
+)  # fmt: skip
+JWT_MODULES = frozenset({"jwt", "jose", "authlib", "joserfc"})  # decode(token, ...) libraries
+BUILTIN_NAMES = frozenset(dir(builtins))
+# SQLAlchemy database URL schemes, for the dialect when the engine's URL is not a constant
+DB_URL = re.compile(r"\A(sqlite|postgres|postgresql|mysql|mariadb|mssql|oracle)(\+\w+)?://")
 
 
 # ---- the package index ----------------------------------------------------------------------
@@ -434,6 +467,7 @@ class _Type:
     type: str | None
     item: str | None = None
     nullable: bool = False
+    choices: tuple[str | int, ...] = ()
 
 
 class _Extractor:
@@ -542,6 +576,7 @@ class _Extractor:
             nullable=nullable,
             required=required,
             default=shown,
+            choices=t.choices,
             min_length=_num(kws.get("min_length")),
             max_length=_num(kws.get("max_length")),
             ge=_num(kws.get("ge")),
@@ -575,7 +610,9 @@ class _Extractor:
             args = list(ann.slice.elts) if isinstance(ann.slice, ast.Tuple) else [ann.slice]
             if _ends(head, "Optional"):
                 inner = self.type_of(mod, args[0])
-                return _Type(inner.type, inner.item, True)
+                return _Type(inner.type, inner.item, True, inner.choices)
+            if _ends(head, "Literal"):
+                return _choices_type([_lit(a) for a in args])
             if _ends(head, "Union"):
                 return self._union(mod, args)
             if _ends(head, "Annotated"):
@@ -596,6 +633,10 @@ class _Extractor:
             return _Type(SCALAR_TYPES[qual])
         if _ends(qual, "EmailStr"):
             return _Type("Email")
+        if _ends(qual, *DATETIME_ALIASES):
+            return _Type("DateTime")
+        if qual in self.classes and self._is_enum(qual):
+            return self._enum_type(qual)
         if qual in self.classes:
             return _Type(_short(qual))
         if qual == "builtins:None":
@@ -609,8 +650,30 @@ class _Extractor:
         nullable = any(t.type == "None" for t in types)
         rest = [t for t in types if t.type != "None"]
         if len(rest) == 1:
-            return _Type(rest[0].type, rest[0].item, nullable or rest[0].nullable)
+            only = rest[0]
+            return _Type(only.type, only.item, nullable or only.nullable, only.choices)
         return _Type(None, None, nullable)
+
+    def _is_enum(self, qual: str, depth: int = 0) -> bool:
+        mod, node = self.classes[qual]
+        for base in self._bases(mod, node):
+            if _ends(base, *ENUM_BASES):
+                return True
+            if base in self.classes and depth < 5 and self._is_enum(base, depth + 1):
+                return True
+        return False
+
+    def _enum_type(self, qual: str) -> _Type:
+        """An Enum class: its members' values (all text -> Str, all integers -> Int);
+        members that are not literals make it unreadable."""
+        _, node = self.classes[qual]
+        values: list[object] = []
+        for stmt in node.body:
+            if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1:
+                target = stmt.targets[0]
+                if isinstance(target, ast.Name) and not target.id.startswith("_"):
+                    values.append(_lit(stmt.value))
+        return _choices_type(values)
 
     # -- constants (settings, module constants) --
 
@@ -747,13 +810,19 @@ class _Extractor:
             _ends(ret_qual, "Session")
             or (ret.type == "Generator" and ret.item == "Session")
             or (ret.type == "Session")
+            or (node.returns is None and self._yields_session(mod, node))
         ):
             return Dependency(**base, kind="session", returns="Session")
         kinds = {d.kind for d in subs.values()}
         if "unknown" in kinds:
             bad = ", ".join(d.name for d in subs.values() if d.kind == "unknown")
             return Dependency(**base, kind="unknown", reason=f"depends on unknown {bad}")
+        provided = self._repository(mod, node, subs)
+        if provided is not None:
+            return Dependency(**base, kind="repository", provides=provided)
         returns = ret.type if ret.type in self.table_by_name else None
+        if node.returns is None:
+            returns = self._returned_table(mod, node)
         checks = self._flag_checks(mod, node)
         active = [c for c in checks if _hint(c[0]) == "active"]
         admin = [c for c in checks if _hint(c[0]) == "admin"]
@@ -784,6 +853,157 @@ class _Extractor:
         return Dependency(
             **base, kind="unknown", returns=returns, reason="not a recognised auth pattern"
         )
+
+    def _yields_session(self, mod: str, fn: ast.AST) -> bool:
+        """An unannotated generator dependency yielding a ``Session(...)`` (directly, or
+        a name bound to one by ``with`` / assignment)."""
+
+        def is_session(e: ast.expr | None) -> bool:
+            return isinstance(e, ast.Call) and _ends(
+                self.ix.resolve(mod, e.func), "Session", "AsyncSession"
+            )
+
+        bound: set[str] = set()
+        for node in ast.walk(fn):
+            if isinstance(node, ast.With | ast.AsyncWith):
+                for item in node.items:
+                    if is_session(item.context_expr) and isinstance(item.optional_vars, ast.Name):
+                        bound.add(item.optional_vars.id)
+            elif isinstance(node, ast.Assign) and is_session(node.value):
+                bound |= {t.id for t in node.targets if isinstance(t, ast.Name)}
+        for node in ast.walk(fn):
+            if isinstance(node, ast.Yield | ast.YieldFrom):
+                v = node.value
+                if is_session(v) or (isinstance(v, ast.Name) and v.id in bound):
+                    return True
+        return False
+
+    def _plain_class(self, qual: str | None) -> bool:
+        """A package class that is not a model, table or enum (a service / repository)."""
+        return qual in self.classes and not self._is_model(qual) and not self._is_enum(qual)
+
+    def _repository(
+        self, mod: str, fn: ast.FunctionDef | ast.AsyncFunctionDef, subs: dict[str, Dependency]
+    ) -> str | None:
+        """A dependency that only wraps the session in a package class (``return
+        NoteCRUD(session)``, or annotated to return one): the class."""
+        if not subs or any(d.kind != "session" for d in subs.values()):
+            return None
+        annotated = self.ix.resolve(mod, _ann_head(fn.returns))
+        if fn.returns is not None:
+            return annotated if self._plain_class(annotated) else None
+        body = [s for s in fn.body if not _is_doc(s)]
+        if len(body) == 1 and isinstance(body[0], ast.Return):
+            value = body[0].value
+            if isinstance(value, ast.Call):
+                cls = self.ix.resolve(mod, value.func)
+                if self._plain_class(cls):
+                    return cls
+        return None
+
+    def _receivers(
+        self, mod: str, fn: ast.AST, self_class: str | None = None
+    ) -> dict[str, str]:
+        """Parameter name -> the package class it holds: annotated with a plain package
+        class, or a repository dependency; ``self`` in a method."""
+        out: dict[str, str] = {}
+        if not isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef):
+            return out
+        for arg, default in _args_with_defaults(fn.args):
+            target = self.dep_target(mod, arg.annotation, default)
+            if target is not None:
+                dep = self.classify(target[0])
+                if dep.kind == "repository" and dep.provides:
+                    out[arg.arg] = dep.provides
+                    continue
+            ann = self.ix.resolve(mod, _ann_head(arg.annotation))
+            if target is not None and target[1] is not None:
+                ann = target[1]
+            if self._plain_class(ann):
+                out[arg.arg] = ann  # type: ignore[assignment]
+        if self_class is not None and fn.args.args:
+            out[fn.args.args[0].arg] = self_class
+        return out
+
+    def _method(
+        self, cls: str, name: str, depth: int = 0
+    ) -> tuple[str, ast.FunctionDef | ast.AsyncFunctionDef, str] | None:
+        """(module, method, class) of ``cls.name``, looked up through package bases."""
+        if cls not in self.classes or depth > 5:
+            return None
+        mod, node = self.classes[cls]
+        for stmt in node.body:
+            if isinstance(stmt, ast.FunctionDef | ast.AsyncFunctionDef) and stmt.name == name:
+                return mod, stmt, cls
+        for base in self._bases(mod, node):
+            found = self._method(base, name, depth + 1)
+            if found is not None:
+                return found
+        return None
+
+    def _receiver_call(
+        self, call: ast.Call, receivers: dict[str, str]
+    ) -> tuple[str, ast.FunctionDef | ast.AsyncFunctionDef, str] | None:
+        """``x.m(...)`` where ``x`` holds a package class: (module, method, class)."""
+        func = call.func
+        if (
+            isinstance(func, ast.Attribute)
+            and isinstance(func.value, ast.Name)
+            and func.value.id in receivers
+        ):
+            return self._method(receivers[func.value.id], func.attr)
+        return None
+
+    def _returned_table(
+        self, mod: str, fn: ast.AST, self_class: str | None = None, depth: int = 0
+    ) -> str | None:
+        """The table an unannotated function returns rows of, read from its ``return``
+        values (a name's assignment, a query, a typed helper or repository method)."""
+        if depth > 4:
+            return None
+        receivers = self._receivers(mod, fn, self_class)
+        for node in ast.walk(fn):
+            if not (isinstance(node, ast.Return) and node.value is not None):
+                continue
+            values: list[ast.expr] = [node.value]
+            if isinstance(node.value, ast.Name):
+                values = [
+                    a.value
+                    for a in ast.walk(fn)
+                    if isinstance(a, ast.Assign)
+                    and any(isinstance(t, ast.Name) and t.id == node.value.id for t in a.targets)
+                ]
+            for value in values:
+                table = self._value_table(mod, value, receivers, depth)
+                if table is not None:
+                    return table
+        return None
+
+    def _value_table(
+        self, mod: str, expr: ast.expr, receivers: dict[str, str], depth: int
+    ) -> str | None:
+        table = self._expr_table(mod, expr)
+        if table is not None:
+            return table
+        for node in ast.walk(expr):
+            if not isinstance(node, ast.Call):
+                continue
+            method = self._receiver_call(node, receivers)
+            if method is not None:
+                mmod, mfn, cls = method
+                if mfn.returns is not None:
+                    t = self.type_of(mmod, mfn.returns)
+                    return t.type if t.type in self.table_by_name else None
+                return self._returned_table(mmod, mfn, cls, depth + 1)
+            found = self.ix.node(self.ix.resolve(mod, node.func))
+            if (
+                found
+                and isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef)
+                and found[1].returns is None
+                and not _is_route(found[1])
+            ):
+                return self._returned_table(found[0], found[1], None, depth + 1)
+        return None
 
     def _flag_checks(self, mod: str, fn: ast.AST) -> list[tuple[str, int | None, str | None]]:
         """``if not <x>.<col>: raise HTTPException(status, detail)`` in ``fn``."""
@@ -849,15 +1069,33 @@ class _Extractor:
     # -- the app: engine, routers, handlers --
 
     def database(self) -> tuple[str | None, str | None]:
+        """The engine's URL and dialect. When ``create_engine`` gets a URL that is not a
+        constant (a settings field, a parameter), the database URL literals of the
+        package decide -- when they all name one dialect (typically the settings'
+        default)."""
+        engine = False
         for mod, m in self.ix.modules.items():
             for node in ast.walk(m.tree):
                 if isinstance(node, ast.Call) and _ends(
                     self.ix.resolve(mod, node.func), "create_engine"
                 ):
+                    engine = True
                     url = self.const(mod, node.args[0]) if node.args else None
                     if isinstance(url, str):
                         return url, _dialect(url)
-                    return None, None
+        if not engine:
+            return None, None
+        urls = [
+            node.value
+            for m in self.ix.modules.values()
+            for node in ast.walk(m.tree)
+            if isinstance(node, ast.Constant)
+            and isinstance(node.value, str)
+            and DB_URL.match(node.value)
+        ]
+        dialects = {_dialect(u) for u in urls}
+        if len(dialects) == 1:
+            return urls[0], dialects.pop()
         return None, None
 
     def exception_handlers(self) -> tuple[str, ...]:
@@ -965,6 +1203,37 @@ class _Extractor:
                     route = self._route(mod, stmt, dec, routers)
                     if route is not None:
                         out.append(route)
+                out += self._factory_routes(mod, stmt)
+        return out
+
+    def _factory_routes(
+        self, mod: str, outer: ast.FunctionDef | ast.AsyncFunctionDef
+    ) -> list[Route]:
+        """Routes an app factory defines on its own local ``FastAPI()`` / ``APIRouter()``
+        (``def create_app(): app = FastAPI(); @app.get(...) def health(): ...``)."""
+        local: dict[str, tuple[str, tuple[str, ...]]] = {}
+        for node in ast.walk(outer):
+            if (
+                isinstance(node, ast.Assign)
+                and isinstance(node.value, ast.Call)
+                and _ends(self.ix.resolve(mod, node.value.func), "APIRouter", "FastAPI")
+            ):
+                kws = {k.arg: k.value for k in node.value.keywords if k.arg}
+                prefix = self.const(mod, kws.get("prefix"))
+                deps = tuple(self._dep_list(mod, kws.get("dependencies")))
+                for t in node.targets:
+                    if isinstance(t, ast.Name):
+                        local[t.id] = (prefix if isinstance(prefix, str) else "", deps)
+        out = []
+        if not local:
+            return out
+        for node in ast.walk(outer):
+            if node is outer or not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+                continue
+            for dec in node.decorator_list:
+                route = self._route(mod, node, dec, {}, local=local, enclosing=outer.name)
+                if route is not None:
+                    out.append(route)
         return out
 
     def _route(
@@ -973,10 +1242,20 @@ class _Extractor:
         fn: ast.FunctionDef | ast.AsyncFunctionDef,
         dec: ast.expr,
         routers: dict[str, tuple[str, tuple[str, ...]]],
+        *,
+        local: dict[str, tuple[str, tuple[str, ...]]] | None = None,
+        enclosing: str | None = None,
     ) -> Route | None:
         if not (isinstance(dec, ast.Call) and isinstance(dec.func, ast.Attribute)):
             return None
-        router = self.ix.resolve(mod, dec.func.value)
+        receiver = dec.func.value
+        if local is not None:
+            if not (isinstance(receiver, ast.Name) and receiver.id in local):
+                return None
+            routers = {"<local>": local[receiver.id]}
+            router: str | None = "<local>"
+        else:
+            router = self.ix.resolve(mod, receiver)
         if router not in routers:
             return None
         kws = {k.arg: k.value for k in dec.keywords if k.arg}
@@ -1030,6 +1309,7 @@ class _Extractor:
             owner_uses=tuple(uses),
             body_models=tuple(p.type for p in params if p.source == "body" and p.type),
             line=fn.lineno,
+            enclosing=enclosing,
         )
 
     def _param(
@@ -1043,6 +1323,9 @@ class _Extractor:
     ) -> RouteParam:
         ann = arg.annotation
         shown = ast.unparse(ann) if ann is not None else ""
+        framework = self.ix.resolve(mod, _ann_head(ann))
+        if default is None and _ends(framework, *FRAMEWORK_PARAMS):
+            return RouteParam(arg.arg, shown, _short(framework), "framework")
         target = self.dep_target(mod, ann, default)
         if target is not None:
             dep_qual, base = target
@@ -1064,7 +1347,9 @@ class _Extractor:
             source = "body"
         else:
             source = "query"
-        return RouteParam(arg.arg, shown, t.type, source, default_src, required, None, t.item)
+        return RouteParam(
+            arg.arg, shown, t.type, source, default_src, required, None, t.item, t.choices
+        )
 
     def _model_name(self, mod: str, expr: ast.expr | None) -> str | None:
         if expr is None:
@@ -1085,14 +1370,25 @@ class _Extractor:
                         out.append(qual)  # type: ignore[arg-type]
         return out
 
-    def _tables(self, mod: str, fn: ast.AST, seen: set[str]) -> set[str]:
+    def _tables(
+        self, mod: str, fn: ast.AST, seen: set[str], self_class: str | None = None
+    ) -> set[str]:
         out: set[str] = set()
+        receivers = self._receivers(mod, fn, self_class)
         for node in ast.walk(fn):
             if isinstance(node, ast.Name | ast.Attribute):
                 qual = self.ix.resolve(mod, node)
                 if qual in self.tables:
                     out.add(self.tables[qual].name)
             if isinstance(node, ast.Call):
+                method = self._receiver_call(node, receivers)
+                if method is not None:
+                    mmod, mfn, cls = method
+                    mqual = f"{cls}.{mfn.name}"
+                    if mqual not in seen:
+                        seen.add(mqual)
+                        out |= self._tables(mmod, mfn, seen, cls)
+                    continue
                 qual = self.ix.resolve(mod, node.func)
                 found = self.ix.node(qual)
                 if (
@@ -1241,15 +1537,25 @@ class _Extractor:
         visited: set[str] = set()
         route_fns = []
         for route in routes:
-            m = self.ix.modules[route.module]
-            fn = m.defs.get(route.name)
-            if isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef):
+            fn = route_function(self.ix, route)
+            if fn is not None:
                 route_fns.append((route.module, fn))
-        queue = list(route_fns)
+        queue: list[tuple[str, ast.AST, str | None]] = [(m, f, None) for m, f in route_fns]
         while queue:
-            mod, fn = queue.pop(0)
+            mod, fn, self_class = queue.pop(0)
+            receivers = self._receivers(mod, fn, self_class)
             for node in ast.walk(fn):
                 if not isinstance(node, ast.Call):
+                    continue
+                method = self._receiver_call(node, receivers)
+                if method is not None:
+                    # a repository / service method: followed (its helpers may be
+                    # natives), never a native itself (it is bound to an instance)
+                    mmod, mfn, cls = method
+                    mqual = f"{cls}.{mfn.name}"
+                    if mqual not in visited:
+                        visited.add(mqual)
+                        queue.append((mmod, mfn, cls))
                     continue
                 qual = self.ix.resolve(mod, node.func)
                 found = self.ix.node(qual)
@@ -1262,7 +1568,7 @@ class _Extractor:
                 if self._is_orm(found[0], target):
                     if qual not in visited:
                         visited.add(qual)
-                        queue.append((found[0], target))
+                        queue.append((found[0], target, None))
                     continue
                 if qual not in sites:
                     sites[qual] = []
@@ -1447,6 +1753,11 @@ class _Extractor:
         return False, ""
 
     def _token_decoder(self) -> NativeCandidate | None:
+        """The decode step of the current-user dependency: a ``jwt.decode`` (PyJWT,
+        python-jose, ...) of the token parameter, in the dependency or in a package
+        helper it passes the token to. Not expressible (with the reason) when the decode
+        reads names a native cannot import (request or local state), or when the claim
+        it yields names a users column other than the key."""
         users = self.users_table()
         if users is None:
             return None
@@ -1469,27 +1780,49 @@ class _Extractor:
             ]
             if not token_params:
                 continue
-            decode = self._decode_call(mod, fn, token_params[0])
+            token = token_params[0]
+            decode = self._decode_call(mod, fn, token) or self._decode_helper(mod, fn, token)
             if decode is None:
                 continue
             call, catches = decode
-            names = {n.id for n in ast.walk(call) if isinstance(n, ast.Name)}
-            names |= set(catches)
-            imports = tuple(
-                sorted(line for n in names if (line := self.ix.import_line(mod, n)) is not None)
-            )
+            names = {n.id for n in ast.walk(call) if isinstance(n, ast.Name)} - {token}
+            names |= {c.split(".", 1)[0] for c in catches}
+            imports: list[str] = []
+            missing: list[str] = []
+            for n in sorted(names):
+                line = self.ix.import_line(mod, n)
+                if line is not None:
+                    imports.append(line)
+                elif n not in BUILTIN_NAMES:
+                    missing.append(n)
+            problems = []
+            if missing:
+                problems.append(
+                    f"the token decode reads {', '.join(missing)}, which a native cannot "
+                    "import (request or local state)"
+                )
+            claim = _claim(fn)
+            column = self._claim_column(mod, fn, claim, table)
+            if column is not None and column != keys[0].name:
+                problems.append(
+                    f"{LANGUAGE_GAP} (token subject is not the users key): the token's "
+                    f"{claim!r} claim names {table.name}.{column}, not the key {keys[0].name}; "
+                    "NativeToken decodes a token to the key"
+                )
             return NativeCandidate(
                 name="decode_token",
                 origin=f"{mod}:{fn.name}",
                 kind="token_decoder",
-                params=(NativeParam(token_params[0], "str", "Str"),),
+                params=(NativeParam(token, "str", "Str"),),
                 result_annotation=f"{keys[0].annotation} | None",
                 result_type=keys[0].type,
                 nullable=True,
-                imports=imports,
+                expressible=not problems,
+                reason="; ".join(problems),
+                imports=tuple(imports),
                 decode_expr=ast.unparse(call),
-                token_param=token_params[0],
-                claim=_claim(fn),
+                token_param=token,
+                claim=claim,
                 catches=catches,
             )
         return None
@@ -1517,18 +1850,189 @@ class _Extractor:
         call = self._find_decode(mod, fn, token)
         return (call, ()) if call is not None else None
 
+    def _decode_helper(
+        self, mod: str, fn: ast.AST, token: str
+    ) -> tuple[ast.Call, tuple[str, ...]] | None:
+        """``helper(token)``: a package function that decodes the parameter it gets the
+        token as (and so answers the payload, or None on a bad token)."""
+        for node in ast.walk(fn):
+            if not isinstance(node, ast.Call):
+                continue
+            at = [
+                i for i, a in enumerate(node.args) if isinstance(a, ast.Name) and a.id == token
+            ]
+            if not at:
+                continue
+            found = self.ix.node(self.ix.resolve(mod, node.func))
+            if found is None or not isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
+                continue
+            hmod, helper = found
+            positional = [*helper.args.posonlyargs, *helper.args.args]
+            if at[0] >= len(positional):
+                continue
+            if self._decode_call(hmod, helper, positional[at[0]].arg) is not None:
+                return node, ()
+        return None
+
     def _find_decode(self, mod: str, root: ast.AST, token: str) -> ast.Call | None:
         for node in ast.walk(root):
-            if (
-                isinstance(node, ast.Call)
-                and _ends(self.ix.resolve(mod, node.func), "decode")
-                and any(isinstance(a, ast.Name) and a.id == token for a in node.args)
-            ):
+            if not isinstance(node, ast.Call):
+                continue
+            qual = self.ix.resolve(mod, node.func) or ""
+            is_decode = _ends(qual, "decode") or (
+                qual.endswith(".decode") and qual.split(":")[0].split(".")[0] in JWT_MODULES
+            )
+            if is_decode and any(isinstance(a, ast.Name) and a.id == token for a in node.args):
                 return node
+        return None
+
+    def _claim_column(
+        self, mod: str, fn: ast.AST, claim: str, table: TableModel
+    ) -> str | None:
+        """The users column the token's claim is looked up by: ``session.get(T, v)`` is
+        the key; ``T.col == v`` (also inside a helper or repository method the claim is
+        passed to) is ``col``. None when the claim's use is not found."""
+        names: set[str] = set()
+        for _ in range(4):
+            for node in ast.walk(fn):
+                if isinstance(node, ast.Assign) and _mentions(node.value, claim, names):
+                    names |= {t.id for t in node.targets if isinstance(t, ast.Name)}
+                elif (
+                    isinstance(node, ast.AnnAssign)
+                    and node.value is not None
+                    and isinstance(node.target, ast.Name)
+                    and _mentions(node.value, claim, names)
+                ):
+                    names.add(node.target.id)
+        return self._column_of(mod, fn, names, table, None, 0, claim)
+
+    def _column_of(
+        self,
+        mod: str,
+        fn: ast.AST,
+        names: set[str],
+        table: TableModel,
+        self_class: str | None,
+        depth: int,
+        claim: str | None = None,
+    ) -> str | None:
+        if depth > 3:
+            return None
+        key = next((c.name for c in table.columns if c.primary_key), None)
+        receivers = self._receivers(mod, fn, self_class)
+
+        def uses(e: ast.expr) -> bool:
+            return _mentions(e, claim, names) if claim is not None else any(
+                isinstance(n, ast.Name) and n.id in names for n in ast.walk(e)
+            )
+
+        def is_users(e: ast.expr) -> bool:
+            qual = self.ix.resolve(mod, e)
+            return qual in self.tables and self.tables[qual].name == table.name
+
+        for node in ast.walk(fn):
+            if isinstance(node, ast.Compare) and len(node.ops) == 1:
+                for a, b in ((node.left, node.comparators[0]), (node.comparators[0], node.left)):
+                    if isinstance(a, ast.Attribute) and is_users(a.value) and uses(b):
+                        return a.attr
+            if not isinstance(node, ast.Call):
+                continue
+            func = node.func
+            if (
+                isinstance(func, ast.Attribute)
+                and func.attr == "get"
+                and len(node.args) == 2
+                and is_users(node.args[0])
+                and uses(node.args[1])
+            ):
+                return key
+            at = [i for i, a in enumerate(node.args) if uses(a)]
+            kw = [k.arg for k in node.keywords if k.arg and uses(k.value)]
+            if not (at or kw):
+                continue
+            target = self._receiver_call(node, receivers)
+            callee: tuple[str, ast.AST, str | None] | None = None
+            if target is not None:
+                callee = target
+                offset = 1  # the method's self
+            else:
+                found = self.ix.node(self.ix.resolve(mod, func))
+                if found and isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
+                    callee, offset = (found[0], found[1], None), 0
+            if callee is None:
+                continue
+            cmod, cfn, ccls = callee
+            assert isinstance(cfn, ast.FunctionDef | ast.AsyncFunctionDef)
+            positional = [a.arg for a in [*cfn.args.posonlyargs, *cfn.args.args]][offset:]
+            passed = {positional[i] for i in at if i < len(positional)} | set(kw)
+            if passed:
+                found_col = self._column_of(cmod, cfn, passed, table, ccls, depth + 1)
+                if found_col is not None:
+                    return found_col
         return None
 
 
 # ---- helpers ---------------------------------------------------------------------------------
+
+
+def _mentions(expr: ast.expr, claim: str, names: set[str]) -> bool:
+    """``expr`` reads the claim (``payload["sub"]`` / ``payload.get("sub")``) or a
+    name already holding it."""
+    for node in ast.walk(expr):
+        if isinstance(node, ast.Name) and node.id in names:
+            return True
+        if (
+            isinstance(node, ast.Subscript)
+            and isinstance(node.slice, ast.Constant)
+            and node.slice.value == claim
+        ):
+            return True
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "get"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and node.args[0].value == claim
+        ):
+            return True
+    return False
+
+
+def route_function(
+    index: _Index, route: Route
+) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+    """The route's function: top-level, or nested in its enclosing app factory."""
+    m = index.modules.get(route.module)
+    if m is None:
+        return None
+    if route.enclosing is None:
+        fn = m.defs.get(route.name)
+        return fn if isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef) else None
+    outer = m.defs.get(route.enclosing)
+    if outer is None:
+        return None
+    for node in ast.walk(outer):
+        if (
+            isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+            and node.name == route.name
+            and node.lineno == route.line
+        ):
+            return node
+    return None
+
+
+def _is_doc(stmt: ast.stmt) -> bool:
+    return isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant)
+
+
+def _choices_type(values: list[object]) -> _Type:
+    """Allowed values: all text -> Str, all integers -> Int, otherwise unreadable."""
+    if values and all(isinstance(v, str) for v in values):
+        return _Type("Str", choices=tuple(values))  # type: ignore[arg-type]
+    if values and all(isinstance(v, int) and not isinstance(v, bool) for v in values):
+        return _Type("Int", choices=tuple(values))  # type: ignore[arg-type]
+    return _Type(None)
 
 
 def _is_table(node: ast.ClassDef) -> bool:

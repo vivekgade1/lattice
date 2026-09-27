@@ -13,7 +13,7 @@ from __future__ import annotations
 import ast
 
 from lattice.importer.extract import RepoModel
-from lattice.importer.lifters._orm import column_default
+from lattice.importer.lifters._orm import column_default, has_default
 from lattice.importer.lifters.base import (
     USER,
     LiftFragment,
@@ -114,9 +114,9 @@ def match(route: RouteSource, model: RepoModel) -> LiftFragment | None:
                 continue
             d = column_default(route, table, c.name)
             if d is None:
-                if c.nullable:
+                if c.nullable and not has_default(route, table, c.name):
                     continue  # stored NULL, as the original stores it
-                return None
+                return None  # a default Lattice cannot spell: not guessed as NULL
             kind, value = d
             if kind == "key":
                 if not c.primary_key:

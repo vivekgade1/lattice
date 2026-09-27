@@ -23,6 +23,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from lattice.importer.extract import (
+    LANGUAGE_GAP,
     DataModel,
     Dependency,
     NativeCandidate,
@@ -64,7 +65,7 @@ OFFSET_NAMES = ("offset", "skip")
 class Unclear:
     """A decision the evidence does not settle. ``topic``: owner, private, auth, roles,
     route_auth, page_shape, storage, error_body, datetime_wire, users_table,
-    column_type; ``subject``: the table, route or app package concerned."""
+    column_type, profile; ``subject``: the table, route or app package concerned."""
 
     topic: str
     subject: str
@@ -184,6 +185,15 @@ class _Generator:
             for c in table.columns:
                 if c.type in SCALAR_ATTR:
                     columns.append((c.name, SCALAR_ATTR[c.type]))
+                    if c.choices:
+                        self.note(
+                            "column_type",
+                            f"{table.name}.{c.name}",
+                            f"{c.annotation} allows only {', '.join(map(str, c.choices))}; "
+                            f"kept as {c.type}: {LANGUAGE_GAP} (enum constraint) -- Lattice "
+                            "has no enum / pattern constraint on a column or parameter",
+                            tuple(map(str, c.choices)),
+                        )
                 else:
                     self.note(
                         "column_type",
@@ -411,13 +421,39 @@ def generate_profile(model: RepoModel) -> ProfileResult:
 
     decoder = next((n for n, _ in natives if n.kind == "token_decoder"), None)
     if decoder is None:
+        refused = next((n for n in model.natives if n.kind == "token_decoder"), None)
         g.note(
             "auth",
             users or model.app_package,
-            "no token-decoding step found in a current-user dependency",
+            f"the token decoder is not expressible: {refused.reason}"
+            if refused is not None
+            else "no token-decoding step found in a current-user dependency",
         )
+    users_cols = {c.name: c for c in g.tables[users].columns} if users in g.tables else {}
     if admin is None:
-        g.note("roles", model.app_package, "no superuser dependency: roles_from is not inferred")
+        role = users_cols.get("role")
+        if users is not None and (role is None or role.type != "Str"):
+            g.note(
+                "roles",
+                model.app_package,
+                f"{LANGUAGE_GAP} (single-role auth): no superuser dependency and no role "
+                f"column in {users}; ApiProfile.roles_from needs a role column or an admin "
+                "flag, so callers cannot be given a role",
+            )
+        else:
+            g.note(
+                "roles", model.app_package, "no superuser dependency: roles_from is not inferred"
+            )
+    # a users table only with a way to authenticate against it (the default token column
+    # would name a column the table does not have)
+    emit_users = users is not None and (decoder is not None or "token" in users_cols)
+    if users is not None and not emit_users:
+        g.note(
+            "users_table",
+            users,
+            f"{users} is the users table, but the profile has no auth for it: users_table "
+            "is left unset",
+        )
     token_dep = next((d for d in model.dependencies if d.kind == "token"), None)
 
     sqlite = model.dialect == "sqlite"
@@ -509,7 +545,7 @@ def generate_profile(model: RepoModel) -> ProfileResult:
         + "}",
         f"roles=frozenset({{'Public', {CUSTOMER!r}, {ADMIN!r}}})",
     ]
-    if users:
+    if emit_users:
         api.append(f"users_table={users!r}")
     if page_shape is not None:
         api.append(f"page_shape={page_shape!r}")
@@ -540,10 +576,50 @@ def generate_profile(model: RepoModel) -> ProfileResult:
     if sqlite and not model.custom_serialization:
         api.append("datetime_wire='naive'")
     out += ["def profile() -> Profile:", f'    """The Lattice profile of {model.app_package}."""']
-    out.append("    api = ApiProfile(")
+    source = _render_profile(out, api)
+    problem = _refused(source)
+    if problem is not None:
+        # never crash on an unfamiliar app: drop the auth settings the profile refuses
+        # (the routes needing them then have no auth) and say so
+        dropped = tuple(a.split("=", 1)[0] for a in api if a.startswith(AUTH_SETTINGS))
+        g.note(
+            "profile",
+            model.app_package,
+            f"the generated profile is refused ({problem}); its auth settings are left unset",
+            dropped,
+        )
+        api = [a for a in api if not a.startswith(AUTH_SETTINGS)]
+        source = _render_profile(out, api)
+    return ProfileResult(source, g.unclear)
+
+
+AUTH_SETTINGS = (
+    "users_table=", "auth=", "roles_from=", "active_column=", "inactive_status=",
+    "inactive_detail=", "unauthorized_detail=", "forbidden_detail=",
+)  # fmt: skip
+
+
+def _render_profile(head: list[str], api: list[str]) -> str:
+    out = [*head, "    api = ApiProfile("]
     out += [f"        {line}," for line in api]
     out += ["    )", "    return Profile(schemas={}, api=api)", ""]
-    return ProfileResult("\n".join(out), g.unclear)
+    return "\n".join(out)
+
+
+def _refused(source: str) -> str | None:
+    """Why building the generated profile fails (a ValueError of ApiProfile), or None."""
+    from types import ModuleType
+
+    module = ModuleType("lattice_import_profile_check")
+    try:
+        exec(compile(source, "<generated profile>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    except Exception:  # noqa: BLE001 -- the original is not importable here: not ours to judge
+        return None
+    try:
+        module.profile()
+    except ValueError as err:
+        return str(err)
+    return None
 
 
 __all__ = ["ProfileResult", "Unclear", "generate_profile"]

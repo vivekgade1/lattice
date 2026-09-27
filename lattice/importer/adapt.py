@@ -21,20 +21,27 @@ unverified, not accepted.
   ``inactive_login``; an Admin route adds the superuser dependency's ``not_admin``.
 * auth: the users table and its email / password-hash / active / admin columns, the
   login route, the native that hashes passwords (the one whose result the package
-  stores in the password-hash column) and the one the login route mints tokens with.
+  stores in the password-hash column) and the one the login route mints tokens with
+  (taking the users key: ``Uuid`` or ``Int``).
+
+Never a crash on an unfamiliar app: a table with a column type the suite cannot seed
+has no spec and the routes touching it are skipped with the reason; with no users
+table, no auth the profile can run or no role for callers (:func:`auth_blocker`),
+every authenticated route is skipped with the reason (a language gap is marked as
+one) while Public routes keep their suites.
 """
 
 from __future__ import annotations
 
 import ast
 import importlib
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from lattice.importer.extract import FieldSpec, RepoModel, Route, TableModel, _Index
-from lattice.importer.profile_gen import LIMIT_NAMES, OFFSET_NAMES
+from lattice.importer.profile_gen import LANGUAGE_GAP, LIMIT_NAMES, OFFSET_NAMES
 from lattice.importer.suite import (
     AuthSpec,
     ColumnSpec,
@@ -45,7 +52,7 @@ from lattice.importer.suite import (
     TableSpec,
     sqlmodel_insert_hook,
 )
-from lattice.profile import ApiProfile
+from lattice.profile import AdminFlag, ApiProfile, RoleColumn
 
 COLUMN_TYPES = {
     "Str": "str",
@@ -58,6 +65,8 @@ COLUMN_TYPES = {
 }
 AUTH_KINDS = {"Public": "public", "Customer": "user", "Admin": "admin"}
 FORM_FIELDS = ("username", "password")
+LOGIN_NAMES = ("email", "username", "login", "user_name")
+PASSWORD_HINT = "password"
 
 
 class Unsupported(ValueError):
@@ -103,11 +112,51 @@ def table_spec(t: TableModel, api: ApiProfile) -> TableSpec:
                 primary_key=c.primary_key,  # type: ignore[arg-type]
                 unique=c.unique,
                 foreign_key=c.foreign_key,
+                choices=c.choices,
                 **_bounds(c),
             )
         )
+    if sum(c.primary_key for c in cols) == 0:
+        raise Unsupported(f"{t.name}: no primary key column")
     schema = api.tables.get(t.name)
     return TableSpec(t.table_name, tuple(cols), owner=schema.owner if schema else None)
+
+
+def users_model(model: RepoModel, api: ApiProfile) -> TableModel | None:
+    """The users table: the profile's, else the one the current-user dependencies return
+    (the profile leaves ``users_table`` unset when it has no auth for it)."""
+    tables = {t.name: t for t in model.tables}
+    if api.users_table in tables:
+        return tables[api.users_table]
+    found = {d.returns for d in model.dependencies if d.kind == "current_user" and d.returns}
+    return tables.get(found.pop()) if len(found) == 1 else None
+
+
+def auth_blocker(model: RepoModel, api: ApiProfile) -> str | None:
+    """Why no authenticated route can be verified against this profile, or None: no
+    users table, no auth the profile can run, or no role for callers (a language gap)."""
+    users = users_model(model, api)
+    if users is None:
+        return "no users table: no current-user dependency names one"
+    problems = []
+    if api.users_table != users.name:
+        decoder = next((n for n in model.natives if n.kind == "token_decoder"), None)
+        why = (
+            f"the token decoder is not expressible: {decoder.reason}"
+            if decoder is not None and not decoder.expressible
+            else f"the profile has no way to authenticate a {users.name}"
+        )
+        problems.append(f"auth unclear: {why}")
+    names = {c.name for c in users.columns}
+    match api.roles_from:
+        case AdminFlag():
+            pass
+        case RoleColumn(column=column) if column not in names:
+            problems.append(
+                f"{LANGUAGE_GAP} (single-role auth): {users.name} has no role column and the "
+                "app no admin flag; ApiProfile.roles_from cannot give callers a role"
+            )
+    return "; ".join(problems) or None
 
 
 def _kind(model: RepoModel, route: Route, users: TableModel | None) -> str:
@@ -161,6 +210,20 @@ def _literal(text: str | None) -> Any:
         raise Unsupported(f"default {text!r} is not a literal") from err
 
 
+def _default(text: str | None, choices: tuple[str | int, ...]) -> Any:
+    """A parameter's default; an Enum member's (``Status.TODO``) is its value."""
+    if text is not None and choices:
+        try:
+            return _literal(text)
+        except Unsupported:
+            member = text.rsplit(".", 1)[-1]
+            by_name = [c for c in choices if str(c).upper() == member.upper()]
+            if len(by_name) == 1:
+                return by_name[0]
+            raise
+    return _literal(text)
+
+
 def _params(model: RepoModel, route: Route, table: TableModel | None) -> tuple[ParamSpec, ...]:
     out: list[ParamSpec] = []
     unique = {c.name for c in table.columns if c.unique} if table is not None else set()
@@ -175,7 +238,8 @@ def _params(model: RepoModel, route: Route, table: TableModel | None) -> tuple[P
                     kind,
                     p.source,
                     required=p.required,  # type: ignore[arg-type]
-                    default=_literal(p.default),
+                    default=_default(p.default, p.choices),
+                    choices=p.choices,
                 )
             )
         elif p.source == "body":
@@ -194,11 +258,13 @@ def _params(model: RepoModel, route: Route, table: TableModel | None) -> tuple[P
                         required=f.required,
                         nullable=f.nullable,  # type: ignore[arg-type]
                         column=f.name if f.name in unique else None,
+                        choices=f.choices,
                         **_bounds(f),
                     )
                 )
         elif p.source == "form":
             out += [ParamSpec(n, "str", "body") for n in FORM_FIELDS]
+        # dependency and framework parameters (Request...) are not request data
     return tuple(out)
 
 
@@ -229,11 +295,20 @@ def _errors(
     return tuple(out)
 
 
-def route_spec(model: RepoModel, route: Route, api: ApiProfile) -> RouteSpec:
+def route_spec(
+    model: RepoModel, route: Route, api: ApiProfile, blocker: str | None = None
+) -> RouteSpec:
     if route.auth not in AUTH_KINDS:
-        raise Unsupported(f"auth {route.auth}")
+        raise Unsupported(f"auth {route.auth}: {route.auth_reason}")
+    if route.auth != "Public" and blocker is not None:
+        raise Unsupported(blocker)
+    if route.enclosing is not None:
+        raise Unsupported(
+            f"defined inside {route.enclosing}(): the original cannot be referenced for "
+            "branch coverage"
+        )
     tables = {t.name: t for t in model.tables}
-    users = tables.get(api.users_table or "")
+    users = users_model(model, api)
     kind = _kind(model, route, users)
     if len(route.tables) == 1:
         table: TableModel | None = tables[route.tables[0]]
@@ -305,13 +380,25 @@ def auth_spec(
     natives: Mapping[str, Callable[..., Any]],
     specs: Mapping[str, RouteSpec],
 ) -> AuthSpec:
-    users = next((t for t in model.tables if t.name == api.users_table), None)
+    users = users_model(model, api)
     if users is None:
-        raise Unsupported("no users table")
-    email = next((c.name for c in users.columns if c.type == "Email" and c.unique), "email")
+        # no users table: only Public routes have a suite (see auth_blocker); the seed
+        # has no users rows
+        return AuthSpec(users_table="", active_column=None, admin_column=None)
+    key = next((c for c in users.columns if c.primary_key), None)
+    email = next((c.name for c in users.columns if c.type == "Email" and c.unique), None)
+    if email is None:
+        # the login name column: a unique text column, else the one named like it
+        texts = [c for c in users.columns if c.type in ("Str", "Email") and not c.primary_key]
+        email = next((c.name for c in texts if c.unique), None) or next(
+            (c.name for c in texts if c.name in LOGIN_NAMES), "email"
+        )
     schema = api.tables.get(users.name)
     private = list(schema.private) if schema is not None else []
-    password = private[0] if len(private) == 1 else "hashed_password"
+    password = private[0] if len(private) == 1 else None
+    if password is None:
+        hashed = [c.name for c in users.columns if c.type == "Str" and PASSWORD_HINT in c.name]
+        password = hashed[0] if len(hashed) == 1 else "hashed_password"
     admin = next((d.admin_column for d in model.dependencies if d.kind == "admin"), None)
     login = next(
         (
@@ -323,12 +410,13 @@ def auth_spec(
         None,
     )
     mint = None
+    key_scalar = "INT" if key is not None and key.type == "Int" else "UUID"
     if login is not None:
         found = index.node(f"{login.module}:{login.name}")
         sigs = api.natives
         for name in _natives_called(index, model, found[1], login.module) if found else []:
             sig = sigs.get(name)
-            if sig is not None and len(sig.params) == 1 and sig.params[0].name == "UUID":
+            if sig is not None and len(sig.params) == 1 and sig.params[0].name == key_scalar:
                 mint = natives.get(name)
                 break
     hasher = _hash_native(index, model, password)
@@ -338,17 +426,18 @@ def auth_spec(
         password_column=password,
         active_column=api.active_column,
         admin_column=admin,
+        key_type=COLUMN_TYPES.get(key.type or "", "uuid") if key is not None else "uuid",  # type: ignore[arg-type]
         login_path=login.path if login is not None else None,
         hash_password=natives.get(hasher) if hasher else None,
         mint_token=mint,
     )
 
 
-def _insert_hook(model: RepoModel) -> Callable[[Path, SeedPlan], None] | None:
+def _insert_hook(tables: Sequence[TableModel]) -> Callable[[Path, SeedPlan], None] | None:
     """The seed written through the original's own SQLModel classes."""
     try:
         classes = {
-            t.table_name: getattr(importlib.import_module(t.module), t.name) for t in model.tables
+            t.table_name: getattr(importlib.import_module(t.module), t.name) for t in tables
         }
     except (ImportError, AttributeError):
         return None
@@ -365,19 +454,46 @@ def adapt(
     model: RepoModel, api: ApiProfile, index: _Index, natives: Mapping[str, Callable[..., Any]]
 ) -> SuiteInputs:
     """Every route's :class:`RouteSpec` (or why not), the tables and the auth."""
-    tables = tuple(table_spec(t, api) for t in model.tables)
+    specs: list[TableSpec] = []
+    unseedable: dict[str, str] = {}  # table class -> why it has no spec
+    for t in model.tables:
+        try:
+            specs.append(table_spec(t, api))
+        except Unsupported as err:
+            unseedable[t.name] = str(err)
+    tables = tuple(specs)
+    blocker = auth_blocker(model, api)
+    users = users_model(model, api)
+    if users is not None and users.name in unseedable:
+        blocker = f"the users table cannot be seeded: {unseedable[users.name]}"
     routes: dict[str, RouteSpec] = {}
     skipped: dict[str, str] = {}
     keys: dict[tuple[str, str], str] = {}
     for r in model.routes:
         key = route_key(model, r)
         keys[(r.module, r.name)] = key
+        bad = [unseedable[t] for t in r.tables if t in unseedable]
+        if bad:
+            skipped[key] = "a table it touches cannot be seeded: " + "; ".join(bad)
+            continue
         try:
-            routes[key] = route_spec(model, r, api)
+            routes[key] = route_spec(model, r, api, blocker)
         except Unsupported as err:
             skipped[key] = str(err)
+        except Exception as err:  # noqa: BLE001 -- never crash on unfamiliar code
+            skipped[key] = f"the suite generator failed on the route: {type(err).__name__}: {err}"
     auth = auth_spec(model, api, index, natives, routes)
-    return SuiteInputs(routes, skipped, tables, auth, keys, _insert_hook(model))
+    seeded = [t for t in model.tables if t.name not in unseedable]
+    return SuiteInputs(routes, skipped, tables, auth, keys, _insert_hook(seeded))
 
 
-__all__ = ["SuiteInputs", "Unsupported", "adapt", "route_key", "route_spec", "table_spec"]
+__all__ = [
+    "SuiteInputs",
+    "Unsupported",
+    "adapt",
+    "auth_blocker",
+    "route_key",
+    "route_spec",
+    "table_spec",
+    "users_model",
+]

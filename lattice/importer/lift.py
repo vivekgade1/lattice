@@ -42,7 +42,7 @@ from lattice.api.runtime import build_app
 from lattice.check import check_source
 from lattice.diagnostics import Severity
 from lattice.importer.adapt import SuiteInputs, adapt
-from lattice.importer.extract import RepoModel, Route, _Index, extract
+from lattice.importer.extract import RepoModel, Route, _Index, extract, route_function
 from lattice.importer.lifters import RouteLift, lift_route
 from lattice.importer.lifters.base import RouteSource
 from lattice.importer.policy import Policy, auth_policies, deviations_for
@@ -224,28 +224,51 @@ def lift_repo(
     natives: dict[str, Callable[..., Any]] = dict(module.NATIVES)
     index = _Index(root, app_package)
     inputs = adapt(model, api, index, natives)
-    token_policies = auth_policies(model, index, api)
+    try:
+        token_policies = auth_policies(model, index, api)
+    except Exception:  # noqa: BLE001 -- an unfamiliar auth shape: no policy (cases then fail)
+        token_policies = ()
 
     results: list[LiftResult] = []
     for route in model.routes:
         key = inputs.keys[(route.module, route.name)]
         if only is not None and key not in only:
             continue
-        fn = index.modules[route.module].defs.get(route.name)
-        if fn is None:
+        fn = route_function(index, route)
+        if fn is None or route.enclosing is not None:
+            where = f"inside {route.enclosing}()" if route.enclosing else "where it cannot be found"
+            lifted = RouteLift(route.name, (), reason=f"the route is defined {where}: not lifted")
+            results.append(LiftResult(key, route, "no-lifter", lifted, reason=lifted.reason))
             continue
-        lifted = lift_route(RouteSource(route, fn, index, api, model), model)  # type: ignore[arg-type]
+        try:
+            lifted = lift_route(RouteSource(route, fn, index, api, model), model)  # type: ignore[arg-type]
+        except Exception as err:  # noqa: BLE001 -- never crash on unfamiliar code
+            why = f"a lifter failed: {type(err).__name__}: {err}"
+            lifted = RouteLift(route.name, (), reason=why)
         status: LiftStatus = "lifted-unverified" if lifted.ok else "no-lifter"
         results.append(LiftResult(key, route, status, lifted, reason=lifted.reason))
 
     lifted_results = [r for r in results if r.lift.ok]
     specs = [inputs.routes[r.key] for r in lifted_results if r.key in inputs.routes]
-    suite = _suite(specs, inputs, profile, hypothesis_bodies) if specs else None
+    suite = None
+    if specs:
+        try:
+            suite = _suite(specs, inputs, profile, hypothesis_bodies)
+        except Exception as err:  # noqa: BLE001 -- the routes are then unverifiable, not a crash
+            why = f"the suite generator failed: {type(err).__name__}: {err}"
+            for r in lifted_results:
+                if r.key in inputs.routes:
+                    inputs.skipped[r.key] = why
+                    del inputs.routes[r.key]
     rules = tuple(rules) if rules is not None else (ValidationEnvelope(),)
     ctx = VerifyContext(root, model, profile, natives, index, inputs, tuple(token_policies),
                         rules, app_factory, hypothesis_bodies, suite)  # fmt: skip
     for r in lifted_results:
-        _verify_route(r, ctx, suite)
+        try:
+            _verify_route(r, ctx, suite)
+        except Exception as err:  # noqa: BLE001 -- unverified with the reason, never a crash
+            r.status, r.verify = "lifted-unverified", None
+            r.reason = f"verification failed: {type(err).__name__}: {err}"
 
     programs = _emit(results, profile)
     return ImportResult(model, generated, results, programs, natives, profile, suite, ctx)

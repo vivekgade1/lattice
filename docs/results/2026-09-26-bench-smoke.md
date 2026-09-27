@@ -534,3 +534,28 @@ The P arm's silent failures are:
 **Verdict:** the importer's extraction and adaptation are shaped around the template, and they fail hard instead of degrading. The rule is that an unsupported piece should become "unclear" or an island, never a crash.
 
 The next step generalises them: it degrades gracefully, supports common types (naive datetimes, integer keys), and detects the users table from the auth dependency. From then on, these two repos are **no longer held out for the importer** (they remain held out for the language and for tickets t19–t24). Later importer claims need a third, untouched repo.
+
+## Importer on held-out repos — generic and gracefully degrading (no LLM, 2026-09-27)
+
+Same command as above, after the importer was generalised. The importer now degrades instead of crashing: an unsupported piece becomes an `Unclear` decision and/or a route with no request suite, which is an R4 island with a classified gap. No Lattice was written by hand, and no lifter targets these repos. Each generalisation has a synthetic test in `tests/importer/test_generic_import.py` / `test_import_int_keys.py`. `tests/importer/test_import_held_out.py` pins the coverage below.
+
+| repo | routes | verified | islands (R4) | need the LLM |
+|---|---:|---:|---:|---:|
+| TaskFlow | 10 | 0 | 8 | 2 (`register`, `login`: no lifter) |
+| JustNotes | 30 | 0 | 26 | 4 (`register`, `login`, `health`, `get_public_notes`: no lifter) |
+
+Island reasons:
+- **TaskFlow, 6 authenticated routes:** *language gap: single-role auth.* The app has no admin flag and no role column, and `ApiProfile.roles_from` cannot give a caller a role. The profile also has no auth: the token decode reads `request.app.state.settings.secret_key`, which a native cannot import.
+- **TaskFlow, 2 routes (`/`, `/health`):** defined inside the `create_app()` factory. They are found and reported, but not lifted.
+- **JustNotes, 26 authenticated routes:** *language gap: token subject is not the users key.* The JWT `sub` is `User.username`, while `NativeToken` decodes a token to the key. The single-role gap applies here too.
+
+Language gaps found, reported and not fixed here (`lattice/check` and `lattice/api` were not changed):
+1. **Single-role auth.** An app with no admin concept cannot be imported, because every authenticated caller needs a role from a role column or an admin flag.
+2. **Token subject is a non-key column.** The auth native must return the users key; a username subject would need a lookup by a unique column.
+3. **Enum constraint.** Enum and `Literal` columns and parameters are kept as `Str`/`Int`. The suite requests a value outside the enum, so a lift that drops the constraint fails verification instead of passing silently.
+
+Not gaps:
+- **Integer autoincrement keys.** Lattice's `insert` leaves a one-column `Int` key to the database. A synthetic app with `int` keys, an `int` token subject and `NaiveDatetime` columns verifies its read, create, update, delete and me routes end to end.
+- **403-vs-404 ordering.** JustNotes answers 404 before 403, which is expressible. Its 403 checks have no admin bypass, so they fall under the single-role gap.
+
+The template import is unchanged: 23 routes, 10 verified, 13 need the LLM, with byte-identical output.

@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import ast
 import json
+import re
 import time
 import uuid
 from collections.abc import Callable, Mapping, Sequence
@@ -75,6 +76,7 @@ from lattice.importer.lift import (
     program_source,
     verify_candidate,
 )
+from lattice.importer.profile_gen import LANGUAGE_GAP
 from lattice.llm.client import Generation, GenerationRefused, Generator, Usage, extract_code
 
 __all__ = [
@@ -505,7 +507,16 @@ def classify_gap(o: RouteOutcome, dynamic: bool = False) -> str:
     route = o.route
     if reason.startswith("budget"):
         return "budget"
+    gap = re.search(LANGUAGE_GAP + r" \(([^)]*)\)", reason)
+    if gap is not None:
+        return f"{LANGUAGE_GAP}: {gap.group(1)}"
     if "no request suite" in reason:
+        if "auth unclear" in reason or "no users table" in reason:
+            return "unverifiable: auth unclear"
+        if "cannot be seeded" in reason:
+            return "unverifiable: a table cannot be seeded"
+        if "defined inside" in reason:
+            return "unsupported framework feature: a route defined inside an app factory"
         return "unverifiable: no request suite"
     if "reached by no case" in reason or "unverified branch" in reason:
         return "unverifiable: a raise site no case reaches"
@@ -938,13 +949,22 @@ def _r0(r: LiftResult) -> RouteOutcome:
 
 
 def no_llm(result: ImportResult, *, corpus: CorpusLog | None = None) -> CloseResult:
-    """The import without the loop: the lifters' verified routes (R0); every other route
-    is reported as needing the LLM (never emitted)."""
+    """The import without the loop: the lifters' verified routes (R0); a route with no
+    request suite is an island at once (R4, with the classified gap: nothing could
+    verify it); every other route is reported as needing the LLM (never emitted)."""
     started = time.perf_counter()
     outcomes = []
+    skipped = result.context.inputs.skipped if result.context is not None else {}
     for r in result.results:
         if r.status == "lifted-verified":
             outcomes.append(_r0(r))
+        elif r.key in skipped:
+            # nothing could verify the route (no request suite): an island at once, as
+            # in the loop, with the classified gap
+            o = RouteOutcome(r.key, r, "island", "R4")
+            o.reason = f"no request suite: {skipped[r.key]}"
+            o.gap = classify_gap(o)
+            outcomes.append(o)
         else:
             o = RouteOutcome(r.key, r, "needs-llm", "needs-llm", reason=r.reason)
             outcomes.append(o)
