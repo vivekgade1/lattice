@@ -115,7 +115,9 @@ def join(left: pl.DataFrame, right: pl.DataFrame, on: Sequence[str], how: str) -
         return _cross_join(left, right, how)
     match how:
         case "inner" | "left":
-            return left.join(right, on=list(on), how=how, coalesce=True)
+            # Guarantee (spec §5.7): joins keep the left table's row order, so
+            # sort -> join -> limit is deterministic.
+            return left.join(right, on=list(on), how=how, coalesce=True, maintain_order="left")
         case _:
             raise LatticeInternalError(f"unsupported join how={how!r}")
 

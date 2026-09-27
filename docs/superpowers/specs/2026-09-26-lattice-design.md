@@ -207,7 +207,7 @@ Implementation follows the classic decorated-AST pattern: schema/type is a *synt
 | `null` in predicates | `where` treats `null` as false (SQL 3-valued logic) |
 | `and`/`or` in column exprs | Written as `&`/`|` on `Col[Bool]` only; checker rejects non-Bool operands |
 | Aggregates over empty group | `sum → 0`, `count → 0`, `mean/min/max → null` |
-| Evaluation order | Topological order of the step DAG; deterministic tie-break by source order |
+| Evaluation order | Topological order of the step DAG; deterministic tie-break by source order. `join` keeps the left table's row order (matches for one left row appear together, in right-table order) |
 | Equality | Value equality; float equality allowed but `L406` warning |
 
 ### 5.8 Versioning

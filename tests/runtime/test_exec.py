@@ -466,3 +466,15 @@ def test_execute_does_not_mutate_ast(root):
     before = ast.dump(result.program.module, include_attributes=True)
     execute(lower(result.program), root)
     assert ast.dump(result.program.module, include_attributes=True) == before
+
+
+def test_keyed_join_preserves_left_row_order():
+    import polars as pl
+
+    from lattice.runtime import ops
+
+    left = pl.DataFrame({"k": [5, 3, 9, 1, 7] * 40, "i": list(range(200))})
+    right = pl.DataFrame({"k": [1, 3, 5, 7, 9], "v": ["a", "b", "c", "d", "e"]})
+    for how in ("inner", "left"):
+        out = ops.join(left, right, ["k"], how)
+        assert out["i"].to_list() == list(range(200)), how
