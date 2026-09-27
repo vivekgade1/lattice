@@ -33,7 +33,9 @@
 | LLM write loop: in-context language guide + checker + repair | Built |
 | Benchmark harness with fair arms, silent/loud classification, cost and program metrics | Built |
 | **Evidence:** on claude-haiku-4-5 without pitfall advice Lattice cut silent wrong answers on trap tasks from 9–15 to 2–4 and raised accuracy from ~72–82% to 85–94% at equal cost per correct answer; on frontier models accuracy is at parity at 1.4–1.5× cost | Measured |
-| Lifting existing code into Lattice | **Not built** (§4) |
+| Real-app language extensions (Uuid/DateTime, page totals, response models, partial updates, natives, pluggable auth, backend capability model) | Built — the official FastAPI template's routes match on 49/53 requests; the other 4 are Lattice policy deviations (page cap, 401 for bad tokens) |
+| Loop constructs (`window`, `traverse`, `iterate`, `for_each` with outbox) | Built — 11/11 real-style loops equivalent, 1 documented native island |
+| Lifting existing code into Lattice | **In progress** (§4): extraction + profile generation and the generated-suite verifier are built; lifters, LLM close-the-gap loop and method experiment are under way |
 | Self-improvement loop | **Partly manual** (§5): every language fix so far came from benchmark failures, done by hand |
 
 ## 3. Design principles (learned, not assumed)
@@ -42,6 +44,7 @@
 - **Familiar surface, strict core.** Python syntax and SQL/dataframe vocabulary for the model; a precise checked semantics underneath.
 - **Diagnostics are part of the interface.** Every rejection says what is wrong and the exact fix; a model should fix any single mistake in one repair round.
 - **One plan, many targets.** Correctness is established once on the plan; each code target is a generator proven equal to the reference semantics by differential tests.
+- **The plan IR is the core, not Python.** Lattice source uses Python syntax only as its input format (parsed by Python's own parser, then checked). The checked program is lowered to a language-neutral plan; SQL, polars and generated FastAPI are targets of that plan.
 - **Escape hatches are typed.** Logic Lattice cannot express lives in native functions whose signatures (inputs, outputs, errors, effects) are checked; only their bodies are trusted.
 
 ## 4. Lattice as the interface for changing existing code
@@ -101,9 +104,9 @@ Tabular + API profiles, checker, plan IR, polars/SQL runtimes, FastAPI code gene
 
 | # | Sub-project | Delivers |
 |---|---|---|
-| 1 | **Language extensions for real apps** (in progress) | `Uuid`/`DateTime`, page + total and app page shapes, declared response models, partial updates (`UNSET`), faithful 403 ownership (`owner_is`, policy warning), typed pure native functions, pluggable auth, backend capability model + dialect-neutral SQL layer; proven on the official FastAPI template's items/users/login routes |
+| 1 | **Language extensions for real apps** (done) | `Uuid`/`DateTime`, page + total and app page shapes, declared response models, partial updates (`UNSET`), faithful 403 ownership (`owner_is`, policy warning), typed pure native functions, pluggable auth, backend capability model + dialect-neutral SQL layer; proven on the official FastAPI template's items/users/login routes |
 | 1b | **Loop-shaped constructs** (done) | window functions (running totals, rank, lag/lead), bounded `iterate(step, until=…, max=N)`, `traverse(edges, start=…, max_depth=N)` (recursive CTE / `$graphLookup`), batched side-effect natives (`for_each`, run after commit); each compiled to SQL, polars and generated FastAPI with differential tests. Unbounded loops stay out of checked Lattice by design — they live in native functions. **Evidence:** a 12-item loop corpus of real-style Python loops (`tests/fixtures/loops/`): all 11 expressible items are equivalent to their originals on generated inputs (polars and SQL for tabular items, runtime vs the original FastAPI + SQLModel app for API items), and the 12th, a state machine, is a documented native island (`docs/results/2026-09-26-bench-smoke.md`, "Loop constructs (1b)") |
-| 2 | **Importer** | FastAPI + SQLModel → Lattice + native islands; LLM-assisted with differential equivalence verification, deterministic lifters for recurring idioms; loop patterns mapped to 1b constructs; per-repo coverage + policy-deviation report |
+| 2 | **Importer** (in progress) | FastAPI + SQLModel → Lattice + native islands; LLM-assisted with differential equivalence verification, deterministic lifters for recurring idioms; loop patterns mapped to 1b constructs; per-repo coverage + policy-deviation report |
 | 3 | **SQLModel emitter + edit loop** | idiomatic SQLModel/FastAPI in the repo's style; import → LLM edits Lattice → emit minimal diff; emitter proven equal to the runtime |
 | 4 | **Backends** | Postgres + MySQL, then MongoDB (aggregation pipelines), then ClickHouse (reads first); capability model rejects programs a backend cannot run with full guarantees |
 
