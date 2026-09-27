@@ -77,13 +77,26 @@ def redefined_steps(module: ast.Module) -> frozenset[str]:
     return frozenset(dups)
 
 
+def has_endpoint_decorator(fn: ast.FunctionDef) -> bool:
+    """`@endpoint(...)` (API profile); P1 rejects it when the profile has no API."""
+    return any(
+        isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == "endpoint"
+        for d in fn.decorator_list
+    )
+
+
 def steps_of(module: ast.Module) -> dict[str, ast.FunctionDef]:
-    """Module-level step definitions by name (first definition wins)."""
+    """Module-level step definitions by name (first definition wins); endpoints are
+    not steps (they cannot be called)."""
     steps: dict[str, ast.FunctionDef] = {}
     for stmt in module.body:
-        if isinstance(stmt, ast.FunctionDef):
+        if isinstance(stmt, ast.FunctionDef) and not has_endpoint_decorator(stmt):
             steps.setdefault(stmt.name, stmt)
     return steps
+
+
+def endpoints_of(module: ast.Module) -> list[ast.FunctionDef]:
+    return [s for s in module.body if isinstance(s, ast.FunctionDef) and has_endpoint_decorator(s)]
 
 
 def call_name(call: ast.Call) -> str | None:

@@ -10,16 +10,29 @@ import ast
 import difflib
 
 from lattice.catalog import (
+    API_AMBIENT,
+    CURRENT_USER,
     FN_ALIASES,
     IMPORTABLE,
     NAMESPACES,
     OP_ALIASES,
     OPS_MODULE,
     SCHEMAS_MODULE,
+    USER_PARAM,
+)
+from lattice.check.api_info import (
+    Decl,
+    ParamType,
+    default_problem,
+    endpoint_decorator,
+    param_type,
+    parse_decl,
+    parse_returns,
 )
 from lattice.check.astutil import (
     INT64_MAX,
     INT64_MIN,
+    is_constant_expr,
     is_table_annotation,
     is_valid_annotation,
     literal_value,
@@ -93,11 +106,18 @@ def run(module: ast.Module, ctx: CheckContext) -> None:
             _check_import_from(stmt, ctx)
             continue
         seen_other = True
+        api = ctx.profile.api is not None
         match stmt:
+            case ast.Assign() if api and not is_constant_expr(stmt.value):
+                _top_level_statement(stmt, ctx)
+            case ast.Expr() if api:
+                _top_level_statement(stmt, ctx)
             case ast.Assign():
                 _check_assign(stmt, ctx)
             case ast.Expr():
                 _check_expr(stmt.value, ctx)
+            case ast.FunctionDef() if api and endpoint_decorator(stmt) is not None:
+                _check_endpoint(stmt, ctx)
             case ast.FunctionDef():
                 _check_step(stmt, ctx)
             case ast.Return():
@@ -163,7 +183,7 @@ def _check_import_from(stmt: ast.ImportFrom, ctx: CheckContext) -> None:
 
 def _check_ops_name(alias: ast.alias, ctx: CheckContext) -> None:
     name = alias.name
-    if name in IMPORTABLE:
+    if name in IMPORTABLE or (ctx.profile.api is not None and name in API_AMBIENT):
         return
     if name in OP_ALIASES:
         hint = f"the op is called '{OP_ALIASES[name]}'"
@@ -176,8 +196,9 @@ def _check_ops_name(alias: ast.alias, ctx: CheckContext) -> None:
 
 
 def _check_schema_name(alias: ast.alias, ctx: CheckContext) -> None:
-    schemas = sorted(ctx.profile.schemas)
-    if alias.name in ctx.profile.schemas:
+    api_tables = ctx.profile.api.tables if ctx.profile.api is not None else {}
+    schemas = sorted({*ctx.profile.schemas, *api_tables})
+    if alias.name in schemas:
         return
     ctx.error(
         "L112",
@@ -269,13 +290,13 @@ def _check_signature(fn: ast.FunctionDef, ctx: CheckContext) -> None:
         )
 
 
-def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext) -> None:
+def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext, kind: str = "step") -> None:
     body = fn.body
     if all(isinstance(s, ast.Expr) and isinstance(s.value, ast.Constant) for s in body):
         ctx.error(
             "L602",
             fn,
-            f"step '{fn.name}' has no body",
+            f"{kind} '{fn.name}' has no body",
             "write one or more op statements and end with 'return <name>'",
         )
         return
@@ -290,7 +311,7 @@ def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext) -> None:
                 ctx.error(
                     "L602",
                     stmt,
-                    "'return' must be the last statement of a step",
+                    f"'return' must be the last statement of a {kind}",
                     "remove the statements after it",
                 )
             case ast.Return():
@@ -298,7 +319,7 @@ def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext) -> None:
                     ctx.error(
                         "L602",
                         stmt,
-                        "a step must end with 'return <name>'",
+                        f"a {kind} must end with 'return <name>'",
                         "assign the result to a name first, then return that name",
                     )
             case ast.FunctionDef():
@@ -306,7 +327,7 @@ def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext) -> None:
                     "L111",
                     stmt,
                     "nested function definitions are not allowed",
-                    "define steps at module level",
+                    "define steps and endpoints at module level",
                 )
             case ast.ImportFrom():
                 ctx.error(
@@ -319,8 +340,10 @@ def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext) -> None:
                 ctx.error(
                     "L602",
                     stmt,
-                    "a step body may contain only assignments and a final 'return <name>'",
-                    "assign the result to a name; call write() outside the step",
+                    f"a {kind} body may contain only assignments and a final 'return <name>'",
+                    "assign the result to a name"
+                    if kind == "endpoint"
+                    else "assign the result to a name; call write() outside the step",
                 )
             case _:
                 _check_other_stmt(stmt, ctx)
@@ -330,16 +353,94 @@ def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext) -> None:
         ctx.error(
             "L602",
             fn,
-            f"step '{fn.name}' must end with 'return <name>'",
+            f"{kind} '{fn.name}' must end with 'return <name>'",
             "return the final table name",
         )
-    elif assigns == 0:
+    elif assigns == 0 and kind == "step":
         ctx.error(
             "L602",
             fn,
             f"step '{fn.name}' must contain at least one assignment before 'return'",
             "a step is a pipeline of one or more op statements",
         )
+
+
+# ---- endpoints (API profile) ----------------------------------------------------
+
+
+def _top_level_statement(stmt: ast.Assign | ast.Expr, ctx: CheckContext) -> None:
+    ctx.error(
+        "L840",
+        stmt,
+        "API programs contain only constants, @step and @endpoint functions",
+        "move this statement into an @endpoint function",
+    )
+
+
+def _check_endpoint(fn: ast.FunctionDef, ctx: CheckContext) -> None:
+    deco = endpoint_decorator(fn)
+    assert deco is not None
+    if len(fn.decorator_list) != 1:
+        ctx.error(
+            "L110",
+            fn,
+            f"endpoint '{fn.name}' must have exactly one decorator, '@endpoint(...)'",
+            "remove the other decorators",
+        )
+    decl = parse_decl(deco)
+    if not isinstance(decl, Decl):
+        ctx.error("L601", deco, decl[0], decl[1])
+    _check_endpoint_signature(fn, ctx)
+    _check_step_body(fn, ctx, "endpoint")
+
+
+def _check_endpoint_signature(fn: ast.FunctionDef, ctx: CheckContext) -> None:
+    args = fn.args
+    shape_problems = []
+    if args.posonlyargs:
+        shape_problems.append("positional-only parameters")
+    if args.kwonlyargs:
+        shape_problems.append("keyword-only parameters")
+    if args.vararg:
+        shape_problems.append("*args")
+    if args.kwarg:
+        shape_problems.append("**kwargs")
+    if fn.type_params:
+        shape_problems.append("type parameters")
+    if shape_problems:
+        ctx.error(
+            "L601",
+            fn,
+            f"endpoint '{fn.name}' uses " + ", ".join(shape_problems),
+            "list plain annotated parameters, e.g. (order_id: Int(ge=1), user: CurrentUser)",
+        )
+    first_default = len(args.args) - len(args.defaults)
+    for i, a in enumerate(args.args):
+        pt = param_type(a.arg, a.annotation)
+        if not isinstance(pt, ParamType):
+            ctx.error("L601", a, pt[0], pt[1])
+            continue
+        if pt.scalar is None and a.arg != USER_PARAM:
+            ctx.error(
+                "L601",
+                a,
+                f"the {CURRENT_USER} parameter must be named '{USER_PARAM}'",
+                f"write {USER_PARAM}: {CURRENT_USER}",
+            )
+        elif pt.scalar is not None and a.arg == USER_PARAM:
+            ctx.error(
+                "L601",
+                a,
+                f"parameter '{USER_PARAM}' is reserved for the caller",
+                f"write {USER_PARAM}: {CURRENT_USER}, or rename this parameter",
+            )
+        if i >= first_default:
+            problem = default_problem(a.arg, pt, args.defaults[i - first_default])
+            if problem is not None:
+                ctx.error("L601", args.defaults[i - first_default], problem[0], problem[1])
+    ret = parse_returns(fn.returns)
+    if not isinstance(ret[1], tuple):
+        ctx.error("L601", fn.returns if fn.returns is not None else fn, ret[0], ret[1])
 
 
 # ---- expressions ------------------------------------------------------------

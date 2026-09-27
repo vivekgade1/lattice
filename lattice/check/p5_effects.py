@@ -6,7 +6,8 @@ import ast
 import re
 from pathlib import PurePosixPath
 
-from lattice.catalog import IO_OPS
+from lattice.catalog import API_OPS, IO_OPS
+from lattice.check.astutil import has_endpoint_decorator
 from lattice.check.context import CheckContext
 from lattice.diagnostics import Span
 
@@ -39,6 +40,7 @@ class _Effects:
         self.ctx = ctx
 
     def run(self) -> None:
+        api = self.ctx.profile.api is not None
         writes = 0
         for stmt in self.module.body:
             match stmt:
@@ -52,6 +54,8 @@ class _Effects:
                     )
                 case ast.Expr(value=value) if _io_name(value) == "write":
                     writes += 1
+                case ast.FunctionDef() if api and has_endpoint_decorator(stmt):
+                    continue  # load/write inside an endpoint is P6's L841
                 case ast.FunctionDef():
                     self._step(stmt)
                     continue
@@ -59,7 +63,7 @@ class _Effects:
                     pass
             for node in ast.walk(stmt):
                 self._path(node)
-        if writes == 0:
+        if writes == 0 and not api:  # API programs respond instead of writing files
             last = self.module.body[-1] if self.module.body else None
             self.ctx.error(
                 "L504",
@@ -80,6 +84,19 @@ class _Effects:
                         f"move the {op}(...) call out of the step and pass tables in",
                     )
                 self._path(node)
+                if (
+                    self.ctx.profile.api is not None
+                    and isinstance(node, ast.Call)
+                    and isinstance(node.func, ast.Name)
+                    and node.func.id in API_OPS
+                ):
+                    self.ctx.error(
+                        "L503",
+                        node,
+                        f"steps must be pure: {node.func.id}() is only allowed in @endpoint "
+                        "functions",
+                        "call it in the endpoint and pass the table to the step",
+                    )
 
     def _path(self, node: ast.AST) -> None:
         op = _io_name(node)

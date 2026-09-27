@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import ast
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from lattice.check import p1_nodes, p2_names, p3_canon, p4_types, p5_effects
+from lattice.check import p1_nodes, p2_names, p3_canon, p4_types, p5_effects, p6_api
+from lattice.check.api_info import EndpointInfo
 from lattice.check.astutil import MAX_DEPTH
 from lattice.check.context import CheckContext
 from lattice.diagnostics import Diagnostic, has_errors, sort_key
@@ -22,6 +23,8 @@ class CheckedProgram:
     types: Mapping[int, Type]
     steps: Mapping[str, StepT]
     profile: Profile
+    # API profile: endpoint name -> metadata for lowering (empty for other programs)
+    endpoints: Mapping[str, EndpointInfo] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -77,9 +80,12 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
     p3_canon.run(module, ctx)
     steps = p4_types.run(module, ctx)
     p5_effects.run(module, ctx)
+    endpoints = p6_api.run(module, ctx)
 
     diags = _sorted(ctx.diagnostics)
     if has_errors(diags):
         return CheckResult(None, diags)
-    program = CheckedProgram(module, parsed.source, dict(ctx.types), dict(steps), profile)
+    program = CheckedProgram(
+        module, parsed.source, dict(ctx.types), dict(steps), profile, endpoints
+    )
     return CheckResult(program, diags)

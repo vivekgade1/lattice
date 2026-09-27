@@ -153,3 +153,53 @@ OP_ALIASES: Mapping[str, str] = {
     "save": "write",
     "columns": "select",
 }
+
+# ---- API profile (only in scope when Profile.api is set) ----------------------------
+
+# API-only ops. `fetch`/`insert` take a database table (schema) name positionally, so
+# their `tables` count is 0; `insert` takes `owner=user` plus one keyword per column.
+API_OP_SHAPES: Mapping[str, OpShape] = {
+    "fetch": OpShape(("table_name",), 0),
+    "owned": OpShape(("table",), 1, frozenset({"by"})),
+    "one": OpShape(("table",), 1, frozenset({"else_"})),
+    "require": OpShape(("table", "condition"), 1, frozenset({"else_"})),
+    "page": OpShape(("table",), 1, frozenset({"limit"}), frozenset({"offset"})),
+    "insert": OpShape(("table_name",), 0, var_kw=True),
+    "update": OpShape(("table",), 1, var_kw=True),
+    "delete": OpShape(("table",), 1),
+}
+API_OPS = frozenset(API_OP_SHAPES)
+API_WRITE_OPS = frozenset({"insert", "update", "delete"})
+# Table ops allowed inside an endpoint body (besides steps); anything else is L841.
+API_ENDPOINT_OPS = API_OPS | frozenset(
+    {"where", "derive", "select", "rename", "group", "join", "sort", "limit"}
+)
+API_METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
+QUERY_METHODS = frozenset({"GET", "DELETE"})  # other methods take non-path params from the body
+API_SUCCESS_KINDS = ("One", "Page", "Created", "NoContent")
+# Declarable errors and their HTTP status codes (401 and 422 are automatic).
+API_ERRORS: Mapping[str, int] = {
+    "NotFound": 404,
+    "Forbidden": 403,
+    "Conflict": 409,
+    "BadRequest": 400,
+}
+PUBLIC_ROLE = "Public"
+CURRENT_USER = "CurrentUser"
+USER_PARAM = "user"
+PAGE_LIMIT_MAX = 100
+# Parameter type constructors and their literal constraint keywords.
+PARAM_CONSTRAINTS: Mapping[str, frozenset[str]] = {
+    "Int": frozenset({"ge", "le"}),
+    "Float": frozenset({"ge", "le"}),
+    "Str": frozenset({"min_len", "max_len"}),
+}
+API_TYPE_NAMES = frozenset({"OneOf", CURRENT_USER})
+API_AMBIENT = (
+    API_OPS | frozenset(API_ERRORS) | frozenset(API_SUCCESS_KINDS) | API_TYPE_NAMES | {"endpoint"}
+)
+# The expression subset the API profile compiles to SQL (anything else is L841).
+API_FN_FUNCS = frozenset(
+    {"lower", "upper", "strip", "len", "contains", "starts_with", "year", "month", "day"}
+)
+API_AGG_FUNCS = frozenset({"sum", "count", "count_distinct", "min", "max", "mean"})

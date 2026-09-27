@@ -130,6 +130,25 @@ class TableT:
     # Columns that may hold missing values, used by the aggregate null policy (L421).
     # Not part of equality.
     nullable: frozenset[str] = field(default=frozenset(), compare=False)
+    # ---- API profile metadata (never set for tabular programs; not part of equality) ----
+    # Column holding the owning user's id (from Schema.owner), while it survives.
+    owner: str | None = field(default=None, compare=False)
+    # Database tables with an owner column whose rows this table derives from.
+    owned_from: frozenset[str] = field(default=frozenset(), compare=False)
+    # The rows passed through owned(..., by=user) (or are the caller's own insert).
+    owner_checked: bool = field(default=False, compare=False)
+    # Columns holding private data (Schema.private, and values computed from them).
+    private: frozenset[str] = field(default=frozenset(), compare=False)
+    # Database table (schema name) whose rows these are, while update()/delete() can
+    # still identify them: fetch/insert/user, kept by row filters and row-wise ops.
+    source: str | None = field(default=None, compare=False)
+    # The result of page(...) (kept by derive/select/rename).
+    paged: bool = field(default=False, compare=False)
+
+    @property
+    def unchecked_owned(self) -> frozenset[str]:
+        """Owned database tables whose rows reach this table without owned()."""
+        return frozenset() if self.owner_checked else self.owned_from
 
 
 @dataclass(frozen=True)

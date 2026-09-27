@@ -4,8 +4,16 @@ from __future__ import annotations
 
 import ast
 
-from lattice.catalog import IMPORTABLE, OP_SHAPES, TABLE_OPS, TERMINAL_OPS, OpShape
+from lattice.catalog import (
+    API_AMBIENT,
+    API_OP_SHAPES,
+    IMPORTABLE,
+    OP_SHAPES,
+    TERMINAL_OPS,
+    OpShape,
+)
 from lattice.check.astutil import (
+    endpoints_of,
     is_constant_expr,
     redefined_steps,
     step_param_kinds,
@@ -20,12 +28,17 @@ class _Canon:
         self.ctx = ctx
         self.steps = steps_of(module)
         self.redefined = redefined_steps(module)  # P2 reported L201; skip their call shapes
+        api = ctx.profile.api is not None
+        # API profile: the API ops are units too (P5 rejects them outside endpoints)
+        self.shapes = {**OP_SHAPES, **API_OP_SHAPES} if api else OP_SHAPES
+        self.known = IMPORTABLE | API_AMBIENT if api else IMPORTABLE
+        self.endpoints = frozenset(fn.name for fn in endpoints_of(module)) if api else frozenset()
 
     def _unit(self, node: ast.AST) -> str | None:
         """The op or step name if `node` is a unit call, else None."""
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             name = node.func.id
-            if name in TABLE_OPS or name in self.steps:
+            if name in self.shapes or name in self.steps:
                 return name
         return None
 
@@ -82,8 +95,8 @@ class _Canon:
                     inner,
                     "table ops cannot be nested; assign the inner result to its own name first",
                 )
-        if unit in TABLE_OPS:
-            self._op_shape(value, unit, OP_SHAPES[unit])
+        if unit in self.shapes:
+            self._op_shape(value, unit, self.shapes[unit])
         elif unit not in self.redefined:
             self._step_shape(value, self.steps[unit])
 
@@ -91,7 +104,8 @@ class _Canon:
         return (
             isinstance(value, ast.Call)
             and isinstance(value.func, ast.Name)
-            and value.func.id not in IMPORTABLE
+            and value.func.id not in self.known
+            and value.func.id not in self.endpoints
         )
 
     # ---- call shapes --------------------------------------------------------
@@ -184,7 +198,7 @@ class _Canon:
                     "'where' with a constant predicate is a no-op",
                     "remove this step or filter on a column expression",
                 )
-            case "derive" | "rename" if not kws:
+            case "derive" | "rename" | "update" if not kws:
                 self.ctx.error(
                     "L304", call, f"'{op}' without any columns is a no-op", "remove this step"
                 )

@@ -20,12 +20,33 @@ import copy
 import json
 from dataclasses import dataclass, field, replace
 
-from lattice.catalog import EXPR_FUNCS, NAMESPACES, OP_SHAPES, ORDER_AGGS, TABLE_OPS, TYPE_NAMES
+from lattice.catalog import (
+    API_AMBIENT,
+    API_ERRORS,
+    API_OP_SHAPES,
+    EXPR_FUNCS,
+    IO_OPS,
+    NAMESPACES,
+    OP_SHAPES,
+    ORDER_AGGS,
+    PUBLIC_ROLE,
+    TABLE_OPS,
+    TYPE_NAMES,
+    USER_PARAM,
+)
+from lattice.check.api_info import (
+    Decl,
+    endpoint_decorator,
+    endpoint_params,
+    parse_decl,
+    user_table,
+)
 from lattice.check.astutil import (
     MAX_DEPTH,
     MAX_EXPANDED_NODES,
     LiteralValue,
     annotation_schema_name,
+    has_endpoint_decorator,
     is_constant_expr,
     literal_value,
     redefined_steps,
@@ -151,12 +172,20 @@ class _Types:
     def __init__(self, module: ast.Module, ctx: CheckContext) -> None:
         self.module = module
         self.ctx = ctx
-        self.schemas = ctx.profile.schemas
+        self.api = ctx.profile.api
+        self.schemas = (
+            {**ctx.profile.schemas, **self.api.tables}
+            if self.api is not None
+            else ctx.profile.schemas
+        )
         self.step_defs = steps_of(module)
         self.redefined = redefined_steps(module)
         self.silent = TABLE_OPS | frozenset(self.step_defs)
+        if self.api is not None:
+            self.silent |= API_AMBIENT
         self.reported = reported_name_spans(ctx)
         self.sigs: dict[str, _Sig] = {}
+        self.in_endpoint = False  # typing an @endpoint body (API profile)
 
     def run(self) -> dict[str, StepT]:
         scope = _Scope()
@@ -166,6 +195,8 @@ class _Types:
                     self._assign(name, stmt.value, scope)
                 case ast.Expr():
                     self._unit(stmt.value, scope)
+                case ast.FunctionDef() if self.api is not None and has_endpoint_decorator(stmt):
+                    self._endpoint(stmt, scope.for_step())
                 case ast.FunctionDef():
                     self._step(stmt, scope.for_step())
                 case ast.ImportFrom():
@@ -273,6 +304,8 @@ class _Types:
             return "constant", "pass a table name here; constants are scalar values"
         if name in scope.scalars:
             return "scalar parameter", "pass a table name here"
+        if self.api is not None and name in self.api.tables:
+            return "database table", f"fetch it first: t = fetch({name})"
         if name in self.schemas:
             return "schema", f'load it first: t = load("file.csv", schema={name})'
         if name in self.step_defs:
@@ -343,6 +376,14 @@ class _Types:
             self.ctx.set_type(value, UNKNOWN)
             return UNKNOWN
         name = value.func.id
+        if self.api is not None:
+            # API ops outside an endpoint (P5's L503) and load/write inside one (P6's
+            # L841) are reported elsewhere
+            if name in API_OP_SHAPES and self.in_endpoint:
+                return self._api_op(value, name, scope)
+            if name in API_OP_SHAPES or (name in IO_OPS and self.in_endpoint):
+                self.ctx.set_type(value, UNKNOWN)
+                return None if name == "write" else UNKNOWN
         if name in OP_SHAPES:
             return self._op(value, name, scope)
         if name in self.step_defs:
@@ -366,6 +407,8 @@ class _Types:
             tables = [t for t in inputs if isinstance(t, TableT)]
             if len(tables) == len(inputs):
                 result = self._transfer(call, op, tables, kws, scope)
+                if self.api is not None and isinstance(result, TableT) and tables:
+                    result = self._api_meta(call, op, tables, result)
         self.ctx.set_type(call, result)
         return result
 
@@ -845,8 +888,11 @@ class _Types:
         scalar_params = {p: t.scalar for p, t in sig.params if isinstance(t, ScalarParamT)}
         if len(call.args) != len(tables):
             return UNKNOWN  # P3 reported the call shape
+        arg_types: list[TableT] = []
         for arg, (p, pt) in zip(call.args, tables, strict=True):
             at = self._table_arg(arg, scope)
+            if isinstance(at, TableT):
+                arg_types.append(at)
             if isinstance(at, TableT) and isinstance(pt, TableT) and at.schema != pt.schema:
                 self.ctx.error(
                     "L418",
@@ -859,6 +905,8 @@ class _Types:
             want = scalar_params.get(kw.arg or "")
             if want is not None:
                 self._scalar_arg(name, kw, want, scope)
+        if self.in_endpoint and isinstance(sig.result, TableT) and len(arg_types) == len(tables):
+            return self._api_meta(call, "step", arg_types, sig.result)
         return sig.result
 
     def _scalar_arg(self, step: str, kw: ast.keyword, want: Scalar, scope: _Scope) -> None:
@@ -899,6 +947,310 @@ class _Types:
             return
         if got is not None:
             self.ctx.set_type(value, LitT(got))
+
+    # ---- endpoints (API profile) ------------------------------------------------
+
+    def _endpoint(self, fn: ast.FunctionDef, scope: _Scope) -> None:
+        assert self.api is not None
+        deco = endpoint_decorator(fn)
+        decl = parse_decl(deco) if deco is not None else None
+        if not isinstance(decl, Decl):
+            return  # P1 reported it
+        caller = user_table(self.api)
+        params = endpoint_params(fn, decl.method, decl.path)
+        for spec in params:
+            scope.consts.pop(spec.name, None)
+            scope.shapes.pop(spec.name, None)
+            scope.nullconsts.pop(spec.name, None)
+            if spec.scalar is None:
+                scope.env[spec.name] = caller if caller is not None else UNKNOWN
+            else:
+                scope.scalars[spec.name] = spec.scalar
+        public = isinstance(decl.auth, ast.Name) and decl.auth.id == PUBLIC_ROLE
+        if not public and all(p.name != USER_PARAM for p in params):
+            # a missing `user` parameter is P6's L801; type its uses anyway
+            scope.env[USER_PARAM] = caller if caller is not None else UNKNOWN
+        self.in_endpoint = True
+        try:
+            for stmt in fn.body:
+                match stmt:
+                    case ast.Assign(targets=[ast.Name(id=name)]):
+                        self._assign(name, stmt.value, scope)
+                    case ast.Return(value=ast.Name(id=name) as ret):
+                        t = scope.env.get(name, UNKNOWN)
+                        kind = None if name in scope.env else self._non_table_kind(name, scope)
+                        if kind is not None and not self._silenced(ret):
+                            self.ctx.error(
+                                "L602",
+                                ret,
+                                f"an endpoint must return a table, got {kind[0]} '{name}'",
+                                "return the name of the table to respond with",
+                            )
+                        self.ctx.set_type(ret, t)
+                    case _:
+                        pass  # P1 reported it
+        finally:
+            self.in_endpoint = False
+
+    def _db_table(self, node: ast.expr) -> tuple[str, Schema] | None:
+        """The database table named by fetch()/insert()'s first argument."""
+        assert self.api is not None
+        if isinstance(node, ast.Name) and node.id in self.api.tables:
+            return node.id, self.api.tables[node.id]
+        if isinstance(node, ast.Name) and self._silenced(node):
+            return None
+        available = ", ".join(sorted(self.api.tables)) or "none"
+        self.ctx.error("L414", node, "expected a database table name", f"available: {available}")
+        return None
+
+    def _api_op(self, call: ast.Call, op: str, scope: _Scope) -> TableOrUnknown:
+        shape = API_OP_SHAPES[op]
+        kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
+        result: TableOrUnknown = UNKNOWN
+        if len(call.args) == len(shape.positional) and shape.required_kw <= kws.keys():
+            inputs = [self._table_arg(a, scope) for a in call.args[: shape.tables]]
+            tables = [t for t in inputs if isinstance(t, TableT)]
+            if len(tables) == len(inputs):
+                result = self._api_transfer(call, op, tables, kws, scope)
+        self.ctx.set_type(call, result)
+        return result
+
+    def _api_transfer(
+        self,
+        call: ast.Call,
+        op: str,
+        tables: list[TableT],
+        kws: dict[str, ast.expr],
+        scope: _Scope,
+    ) -> TableOrUnknown:
+        match op:
+            case "fetch":
+                found = self._db_table(call.args[0])
+                if found is None:
+                    return UNKNOWN
+                name, schema = found
+                return TableT(
+                    schema,
+                    keys=schema.keys,
+                    nullable=schema.nullable,
+                    owner=schema.owner,
+                    owned_from=frozenset({name}) if schema.owner is not None else frozenset(),
+                    private=schema.private,
+                    source=name,
+                )
+            case "owned":
+                return self._owned(call, tables[0], kws["by"])
+            case "one":
+                self._else(kws["else_"])
+                return replace(tables[0], at_most_one_row=True, paged=False)
+            case "require":
+                self._condition(call.args[1], tables[0], scope, "require()")
+                self._else(kws["else_"])
+                return tables[0]
+            case "page":
+                return replace(tables[0], paged=True)
+            case "insert":
+                return self._insert(call, scope)
+            case "update":
+                return self._update(call, tables[0], scope)
+            case "delete":
+                self._write_source(call, tables[0], "delete")
+                return tables[0]
+            case _:
+                raise TypeError(f"no transfer function for API op '{op}'")
+
+    def _condition(self, pred: ast.expr, t: TableT, scope: _Scope, what: str) -> None:
+        pt = self._typer(t.schema, scope).type_of(pred)
+        match pt:
+            case ColT(scalar=Scalar.BOOL) | UnknownT():
+                pass
+            case LitT(scalar=Scalar.BOOL):
+                self.ctx.error(
+                    "L304",
+                    pred,
+                    f"{what} condition does not reference any column",
+                    'compare a column, e.g. col("status") == "pending"',
+                )
+            case ColT(scalar=s) | LitT(scalar=s):
+                self.ctx.error(
+                    "L403",
+                    pred,
+                    f"{what} condition must be Bool, got {s.value}",
+                    'compare it, e.g. col("status") == "pending"',
+                )
+
+    def _else(self, node: ast.expr) -> None:
+        """else_= must construct a declarable error: NotFound("detail")."""
+        match node:
+            case ast.Call(func=ast.Name(id=name), args=args, keywords=[]) if (
+                name in API_ERRORS
+                and len(args) <= 1
+                and all(_str_constant(a) is not None for a in args)
+            ):
+                return
+            case ast.Call(func=ast.Name() as func) if self._silenced(func):
+                return
+        errs = ", ".join(API_ERRORS)
+        self.ctx.error(
+            "L404",
+            node,
+            f"else_= must be an error with an optional message: one of {errs}",
+            'e.g. else_=NotFound("order")',
+        )
+
+    def _owned(self, call: ast.Call, t: TableT, by: ast.expr) -> TableOrUnknown:
+        if not (isinstance(by, ast.Name) and by.id == USER_PARAM):
+            if not self._silenced(by):
+                self.ctx.error("L404", by, "owned() filters by the caller", "write by=user")
+            return UNKNOWN
+        if t.owner is None:
+            owned = sorted(n for n, s in self.schemas.items() if s.owner is not None)
+            self.ctx.error(
+                "L404",
+                call,
+                "owned() needs rows of a table with an owner column; this table has none",
+                "remove owned(): only " + (", ".join(owned) or "no tables") + " are per-user",
+            )
+            return UNKNOWN
+        return replace(t, owner_checked=True)
+
+    def _compatible(self, value: ast.expr, got: Scalar, want: Scalar, column: str) -> None:
+        if not (got is want or (want is Scalar.FLOAT and got is Scalar.INT)):
+            self.ctx.error(
+                "L402",
+                value,
+                f"column '{column}' is {want.value}, got {got.value}",
+                None,
+            )
+
+    def _insert(self, call: ast.Call, scope: _Scope) -> TableOrUnknown:
+        found = self._db_table(call.args[0])
+        if found is None:
+            return UNKNOWN
+        name, schema = found
+        typer = self._typer(Schema(()), scope)
+        for kw in call.keywords:
+            assert kw.arg is not None
+            if kw.arg == "owner":
+                if not (isinstance(kw.value, ast.Name) and kw.value.id == USER_PARAM):
+                    self.ctx.error("L404", kw.value, "insert() owner= must be user", "owner=user")
+                elif schema.owner is None:
+                    self.ctx.error(
+                        "L404",
+                        kw,
+                        f"'{name}' has no owner column",
+                        "remove owner=user",
+                    )
+                continue
+            if not self._require_columns([kw.arg], schema, kw):
+                continue
+            vt = typer.type_of(kw.value)
+            want = schema.get(kw.arg)
+            if not isinstance(vt, UnknownT) and want is not None:
+                self._compatible(kw.value, vt.scalar, want, kw.arg)
+        return TableT(
+            schema,
+            at_most_one_row=True,
+            keys=schema.keys,
+            nullable=schema.nullable,
+            owner=schema.owner,
+            owner_checked=True,  # the caller's own new row (P6 enforces owner=user)
+            private=schema.private,
+            source=name,
+        )
+
+    def _write_source(self, call: ast.Call, t: TableT, op: str) -> Schema | None:
+        """The database table update()/delete() writes, or None after one L841."""
+        assert self.api is not None
+        schema = self.api.tables.get(t.source) if t.source is not None else None
+        if schema is None:
+            self.ctx.error(
+                "L841",
+                call,
+                f"{op}() needs rows of one database table",
+                f"{op} the result of fetch/where/owned/one on that table, not of a join, "
+                "group, rename or step",
+            )
+            return None
+        names = set(t.schema.names())
+        if not any(set(k) <= names for k in schema.keys):
+            keys = " or ".join(_cols(k) for k in schema.keys) or "(none declared)"
+            self.ctx.error(
+                "L841",
+                call,
+                f"{op}() cannot identify the rows: the table lacks the key {keys}",
+                f"keep the key columns before calling {op}()",
+            )
+            return None
+        return schema
+
+    def _update(self, call: ast.Call, t: TableT, scope: _Scope) -> TableOrUnknown:
+        schema = self._write_source(call, t, "update")
+        typer = self._typer(t.schema, scope)
+        for kw in call.keywords:
+            assert kw.arg is not None
+            if schema is not None and not self._require_columns([kw.arg], schema, kw):
+                continue
+            vt = typer.type_of(kw.value)
+            want = schema.get(kw.arg) if schema is not None else None
+            if not isinstance(vt, UnknownT) and want is not None:
+                self._compatible(kw.value, vt.scalar, want, kw.arg)
+        return t
+
+    def _api_meta(self, call: ast.Call, op: str, inputs: list[TableT], out: TableT) -> TableT:
+        """Carry the API metadata (owner, ownership, private columns, source, page)
+        from an op's input tables to its result."""
+        t = inputs[0]
+        names = set(out.schema.names())
+        owned_from = frozenset().union(*(i.owned_from for i in inputs))
+        unchecked = frozenset().union(*(i.unchecked_owned for i in inputs))
+        private = frozenset().union(*(i.private for i in inputs)) & names
+        owner = next((i.owner for i in inputs if i.owner is not None and i.owner in names), None)
+        source: str | None = None
+        paged = False
+        kws = [kw for kw in call.keywords if kw.arg is not None]
+        match op:
+            case "where" | "sort" | "limit":
+                source = t.source
+            case "select":
+                source, paged = t.source, t.paged
+            case "derive":
+                overwritten = {kw.arg for kw in kws}
+                private = (t.private - overwritten) | {
+                    kw.arg for kw in kws if kw.arg and _reads(kw.value, t.private)
+                }
+                owner = t.owner if t.owner not in overwritten else None
+                source, paged = t.source, t.paged
+            case "rename":
+                mapping = {kw.arg: _str_constant(kw.value) or kw.arg for kw in kws if kw.arg}
+                private = frozenset(mapping.get(c, c) for c in t.private)
+                owner = mapping.get(t.owner, t.owner) if t.owner is not None else None
+                paged = t.paged
+            case "group":
+                private = (t.private & names) | {
+                    kw.arg for kw in kws if kw.arg != "by" and _reads(kw.value, t.private)
+                }
+            case "step":
+                # a step cannot read the database, so with one-row inputs every op in
+                # it (joins included) yields at most one row
+                if all(i.at_most_one_row for i in inputs):
+                    out = replace(out, at_most_one_row=True)
+            case _:
+                pass
+        return replace(
+            out,
+            owner=owner,
+            owned_from=owned_from,
+            owner_checked=bool(owned_from) and not unchecked,
+            private=private & names,
+            source=source,
+            paged=paged,
+        )
+
+
+def _reads(node: ast.expr, columns: frozenset[str]) -> bool:
+    """Whether an expression reads any of `columns` via col("...")."""
+    return any(_col_name(n) in columns for n in ast.walk(node) if isinstance(n, ast.Call))
 
 
 def run(module: ast.Module, ctx: CheckContext) -> dict[str, StepT]:

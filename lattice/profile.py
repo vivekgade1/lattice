@@ -31,10 +31,14 @@ class Profile:
     @property
     def enforce_keys(self) -> bool:
         """The join fan-out check (L420) applies only when some schema declares keys."""
-        return any(s.keys for s in self.schemas.values())
+        return any(s.keys for s in self._all_schemas())
 
     @property
     def enforce_nullable(self) -> bool:
         """The aggregate null policy (L421) applies only when some schema declares a
         nullable column."""
-        return any(s.nullable for s in self.schemas.values())
+        return any(s.nullable for s in self._all_schemas())
+
+    def _all_schemas(self) -> list[Schema]:
+        tables = list(self.api.tables.values()) if self.api is not None else []
+        return [*self.schemas.values(), *tables]

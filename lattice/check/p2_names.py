@@ -26,7 +26,16 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 from typing import Literal
 
-from lattice.catalog import FN_ALIASES, IMPORTABLE, OP_ALIASES
+from lattice.catalog import (
+    API_AMBIENT,
+    FN_ALIASES,
+    IMPORTABLE,
+    OP_ALIASES,
+    PUBLIC_ROLE,
+    TABLE_OPS,
+    USER_PARAM,
+)
+from lattice.check.api_info import endpoint_decorator
 from lattice.check.astutil import is_constant_expr
 from lattice.check.context import CheckContext
 
@@ -87,7 +96,13 @@ class _Resolver:
         self.module = module
         self.ctx = ctx
         self.globals_ = Scope(None)
-        for name in sorted(IMPORTABLE | frozenset(ctx.profile.schemas)):
+        ambient = IMPORTABLE | frozenset(ctx.profile.schemas)
+        api = ctx.profile.api
+        if api is not None:
+            # API profile: API ops, response kinds, errors, parameter types, roles and
+            # database table names
+            ambient |= API_AMBIENT | api.roles | frozenset(api.tables)
+        for name in sorted(ambient):
             self.globals_.bindings[name] = Binding(name, "ambient", module, 0, used=True)
         self.consts = Scope(self.globals_)
         self.tables = Scope(self.consts)
@@ -128,6 +143,34 @@ class _Resolver:
                     raise TypeError(f"P1 should have rejected {type(stmt).__name__}")
         self._report_unused()
 
+    def _endpoint_signature(self, fn: ast.FunctionDef, scope: Scope, where: _StepCtx) -> None:
+        """Resolve an endpoint's decorator and annotations, then bind its parameters.
+
+        The `auth=` role is not resolved here (P6 reports an unknown role as L801).
+        Parameters may be named like a table op (`limit`, `sort`); `user` is always
+        used. A non-Public endpoint without a `user` parameter still binds `user`
+        (P6 reports the missing parameter once, as L801)."""
+        deco = endpoint_decorator(fn)
+        assert deco is not None
+        auth = next((kw.value for kw in deco.keywords if kw.arg == "auth"), None)
+        for part in [*deco.args, *(kw.value for kw in deco.keywords if kw.value is not auth)]:
+            self._uses(part, scope, where)
+        for a in fn.args.args:
+            if a.annotation is not None:
+                self._uses(a.annotation, scope, where)
+        if fn.returns is not None:
+            self._uses(fn.returns, scope, where)
+        for a in fn.args.args:
+            if a.arg in TABLE_OPS and a.arg not in scope.bindings:
+                scope.bindings[a.arg] = Binding(a.arg, "param", a, fn.lineno)
+            else:
+                self._bind(scope, a.arg, "param", a, (scope, self.globals_))
+        user = scope.bindings.get(USER_PARAM)
+        if user is not None:
+            user.used = True
+        elif not (isinstance(auth, ast.Name) and auth.id == PUBLIC_ROLE):
+            scope.bindings[USER_PARAM] = Binding(USER_PARAM, "param", fn, fn.lineno, used=True)
+
     def _is_const(self, stmt: ast.Assign) -> bool:
         return is_constant_expr(stmt.value)
 
@@ -140,28 +183,39 @@ class _Resolver:
         for stmt in fn.body:
             if isinstance(stmt, ast.Assign):
                 scope.future.setdefault(_target(stmt), stmt.lineno)
-        # decorator and annotations are resolved before parameters are bound
-        for deco in fn.decorator_list:
-            self._uses(deco, scope, where)
-        for a in fn.args.args:
-            if a.annotation is not None:
-                self._uses(a.annotation, scope, where)
-        if fn.returns is not None:
-            self._uses(fn.returns, scope, where)
-        for a in fn.args.args:
-            self._bind(scope, a.arg, "param", a, (scope, self.globals_))
+        endpoint = self.ctx.profile.api is not None and endpoint_decorator(fn) is not None
+        if endpoint:
+            self._endpoint_signature(fn, scope, where)
+        else:
+            # decorator and annotations are resolved before parameters are bound
+            for deco in fn.decorator_list:
+                self._uses(deco, scope, where)
+            for a in fn.args.args:
+                if a.annotation is not None:
+                    self._uses(a.annotation, scope, where)
+            if fn.returns is not None:
+                self._uses(fn.returns, scope, where)
+            for a in fn.args.args:
+                self._bind(scope, a.arg, "param", a, (scope, self.globals_))
         for stmt in fn.body:
             match stmt:
                 case ast.Assign():
                     self._uses(stmt.value, scope, where)
                     kind: Kind = "const" if self._is_const(stmt) else "local"
                     self._bind(scope, _target(stmt), kind, stmt.targets[0], (scope, self.globals_))
+                    if endpoint and _is_effect(stmt.value):
+                        # a check or write is used for its effect even if never read
+                        b = scope.bindings.get(_target(stmt))
+                        if b is not None and b.node is stmt.targets[0]:
+                            b.used = True
                 case ast.Return(value=ast.Name() as value):
                     self._uses(value, scope, where)
                 case _:
                     raise TypeError(f"P1 should have rejected {type(stmt).__name__} in a step")
         # the step becomes visible only once its definition is complete
         self._bind(self.globals_, fn.name, "step", fn, (self.globals_, self.tables))
+        if endpoint and fn.name in self.globals_.bindings:
+            self.globals_.bindings[fn.name].used = True  # endpoints are called by HTTP
 
     # ---- bindings -----------------------------------------------------------
 
@@ -335,6 +389,17 @@ class _Resolver:
                         f"'{b.name}' is never used",
                         "remove it or use it in a later step",
                     )
+
+
+_EFFECT_OPS = frozenset({"one", "require", "insert", "update", "delete"})
+
+
+def _is_effect(value: ast.expr) -> bool:
+    return (
+        isinstance(value, ast.Call)
+        and isinstance(value.func, ast.Name)
+        and value.func.id in _EFFECT_OPS
+    )
 
 
 def _target(stmt: ast.Assign) -> str:
