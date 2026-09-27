@@ -50,7 +50,19 @@ IO_OPS = frozenset({"load", "write"})
 EXPR_FUNCS = frozenset({"col", "when", "coalesce", "is_null"})
 NAMESPACES = frozenset({"agg", "fn", "win"})
 TYPE_NAMES = frozenset({"Table", "Int", "Float", "Str", "Bool", "Date"})
-IMPORTABLE = TABLE_OPS | EXPR_FUNCS | NAMESPACES | TYPE_NAMES | {"step"}
+# Loop constructs (spec 1b §3.3, §3.4). Not table ops: iterate(step, t, ...) takes a
+# step first, and for_each(t, native.x, args...) is a statement with no result.
+ITERATE = "iterate"
+FOR_EACH = "for_each"
+# iterate(step, t, until="fixpoint" | <Col[Bool]>, max=N): the call shape (the step and
+# the table are positional), the fixpoint spelling of until=, the max= bound (L436)
+ITERATE_SHAPE = OpShape(("step", "table"), 0, frozenset({"until", "max"}))
+ITERATE_FIXPOINT = "fixpoint"
+ITERATE_MAX = 10_000
+# for_each(t, native.x, args...): the input of at most this many rows (page / limit, L439)
+FOR_EACH_MAX_ROWS = 100
+LOOP_CONSTRUCTS = frozenset({ITERATE, FOR_EACH})
+IMPORTABLE = TABLE_OPS | EXPR_FUNCS | NAMESPACES | TYPE_NAMES | LOOP_CONSTRUCTS | {"step"}
 AGG_FUNCS = frozenset({"sum", "mean", "min", "max", "count", "count_distinct", "at_min", "at_max"})
 # aggregates that pick one row's value by an ordering expression: agg.at_max(x, of=o)
 ORDER_AGGS = frozenset({"at_min", "at_max"})

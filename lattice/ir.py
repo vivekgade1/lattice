@@ -17,7 +17,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from lattice.catalog import OP_SHAPES, TRAVERSE_DEPTH, WINDOW_KW
+from lattice.catalog import ITERATE, ITERATE_FIXPOINT, OP_SHAPES, TRAVERSE_DEPTH, WINDOW_KW
 from lattice.check import CheckedProgram
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
 from lattice.diagnostics import Span, span_of
@@ -33,7 +33,10 @@ AggSpec = tuple[str, str, ast.expr | None, ast.expr | None]
 @dataclass(frozen=True)
 class Node:
     id: str  # module binding, "<call-site>/<local>" for inlined bodies, "_write<k>" for writes
-    op: str  # a TABLE_OPS name (never a step)
+    # a TABLE_OPS name (never a step), or "iterate": params {"body": the step's Plan,
+    # "param": the id the body reads the current round's table as, "result": the id of
+    # the body's output, "until": "fixpoint" or a Bool expression, "max": rounds}
+    op: str
     inputs: tuple[str, ...]  # ids of input nodes, in positional order
     params: Mapping[str, Any]
     schema: Schema | None  # statically predicted output schema; None for write
@@ -146,6 +149,10 @@ class _Lowerer:
         match call.func:
             case ast.Name(id=name) if name in OP_SHAPES:
                 return self._op(call, name, binding, env, subst, prefix)
+            case ast.Name(id=name) if name == ITERATE:
+                if binding is None:
+                    raise LatticeInternalError("iterate() result is not bound to a name")
+                return self._iterate(call, binding, env, subst, prefix)
             case ast.Name(id=name) if name in self.step_defs:
                 if binding is None:
                     raise LatticeInternalError(f"step call '{name}' is not bound to a name")
@@ -277,6 +284,49 @@ class _Lowerer:
                 case _:
                     raise LatticeInternalError(f"not an aggregate: {ast.dump(kw.value)}")
         return tuple(out)
+
+    def _iterate(
+        self,
+        call: ast.Call,
+        binding: str,
+        env: Mapping[str, str],
+        subst: Subst,
+        prefix: str,
+    ) -> str:
+        """iterate(step, t, until=, max=): one node whose body is the step inlined over
+        a placeholder input (`<binding>/@in`), lowered as its own Plan."""
+        step, table = call.args
+        if not (isinstance(step, ast.Name) and isinstance(table, ast.Name) and table.id in env):
+            raise LatticeInternalError("iterate() arguments are not a step and a table")
+        kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
+        node_id = prefix + binding
+        param = f"{node_id}/@in"
+        outer, self.nodes = self.nodes, []
+        try:
+            fn = self.step_defs[step.id]
+            local = fn.args.args[0].arg
+            inner_call = ast.Call(ast.Name(step.id), [ast.Name(local)], [])
+            result = self._inline(inner_call, step.id, binding, {local: param}, subst, prefix)
+            body = Plan(tuple(self.nodes))
+        finally:
+            self.nodes = outer
+        until = kws["until"]
+        t = self.program.types.get(id(call))
+        if not isinstance(t, TableT):
+            raise LatticeInternalError(f"no table type recorded for iterate() at {span_of(call)}")
+        params = {
+            "body": body,
+            "param": param,
+            "result": result,
+            "until": ITERATE_FIXPOINT
+            if isinstance(until, ast.Constant) and until.value == ITERATE_FIXPOINT
+            else self._expr(until, subst),
+            "max": _int(self._expr(kws["max"], subst)),
+        }
+        self.nodes.append(
+            Node(node_id, ITERATE, (env[table.id],), params, t.schema, span_of(call))
+        )
+        return node_id
 
     # ---- steps ----------------------------------------------------------------
 

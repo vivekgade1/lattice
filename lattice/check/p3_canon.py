@@ -7,7 +7,11 @@ import ast
 from lattice.catalog import (
     API_AMBIENT,
     API_OP_SHAPES,
+    FOR_EACH,
     IMPORTABLE,
+    ITERATE,
+    ITERATE_SHAPE,
+    NATIVE_NS,
     OP_SHAPES,
     TERMINAL_OPS,
     UNIQUE_OR,
@@ -32,7 +36,8 @@ class _Canon:
         self.redefined = redefined_steps(module)  # P2 reported L201; skip their call shapes
         api = ctx.profile.api is not None
         # API profile: the API ops are units too (P5 rejects them outside endpoints)
-        self.shapes = {**OP_SHAPES, **API_OP_SHAPES} if api else OP_SHAPES
+        self.shapes = {**OP_SHAPES, **API_OP_SHAPES} if api else dict(OP_SHAPES)
+        self.shapes[ITERATE] = ITERATE_SHAPE  # P5 rejects it in API programs (L437)
         self.known = IMPORTABLE | API_AMBIENT if api else IMPORTABLE
         self.endpoints = frozenset(fn.name for fn in endpoints_of(module)) if api else frozenset()
 
@@ -52,7 +57,7 @@ class _Canon:
                 case ast.FunctionDef():
                     for inner in stmt.body:
                         match inner:
-                            case ast.Assign():
+                            case ast.Assign() | ast.Expr():
                                 self._statement(inner)
                             case ast.Return():
                                 pass
@@ -68,6 +73,9 @@ class _Canon:
     def _statement(self, stmt: ast.Assign | ast.Expr) -> None:
         value = stmt.value
         self._check_when(value)
+        if isinstance(value, ast.Call) and _is_named(value, FOR_EACH):
+            self._for_each_shape(value)  # assigned: P5's L502
+            return
         unit = self._unit(value)
         if unit is None or not isinstance(value, ast.Call):
             if isinstance(stmt, ast.Assign) and is_constant_expr(value):
@@ -99,6 +107,8 @@ class _Canon:
                 )
         if unit in self.shapes:
             self._op_shape(value, unit, self.shapes[unit])
+            if unit == ITERATE and len(value.args) == len(ITERATE_SHAPE.positional):
+                self._table_args(value.args[1:])  # the step is P4's (L435)
         elif unit not in self.redefined:
             self._step_shape(value, self.steps[unit])
 
@@ -155,6 +165,46 @@ class _Canon:
                         f"allowed keywords: {expected}",
                     )
         self._no_op(call, op)
+
+    def _for_each_shape(self, call: ast.Call) -> None:
+        """for_each(t, native.<name>, <one column expression per argument>): a table
+        name, an effect native, the native's arguments; no keywords."""
+        usage = 'e.g. for_each(created, native.send_welcome, col("email"))'
+        for inner in ast.walk(call):
+            if inner is not call and self._unit(inner) is not None:
+                self.ctx.error(
+                    "L301",
+                    inner,
+                    "table ops cannot be nested; assign the inner result to its own name first",
+                )
+        if len(call.args) < 2:
+            self.ctx.error(
+                "L303",
+                call,
+                "'for_each' takes a table, a native and the native's arguments "
+                f"(got {len(call.args)} positional argument(s))",
+                usage,
+            )
+            self._table_args(call.args[:1])
+            return
+        self._table_args(call.args[:1])
+        match call.args[1]:
+            case ast.Attribute(value=ast.Name(id=ns)) if ns == NATIVE_NS:
+                pass
+            case other:
+                self.ctx.error(
+                    "L303",
+                    other,
+                    "for_each's second argument must name an effect native, native.<name>",
+                    usage,
+                )
+        for kw in call.keywords:
+            self.ctx.error(
+                "L303",
+                kw,
+                f"'for_each' has no keyword argument '{kw.arg}'",
+                "pass the native's arguments positionally, in its parameter order",
+            )
 
     def _step_shape(self, call: ast.Call, fn: ast.FunctionDef) -> None:
         kinds = step_param_kinds(fn)
@@ -263,6 +313,10 @@ class _Canon:
                     "nest when() only in 'otherwise'",
                     "invert the condition so the nested when() goes in otherwise=",
                 )
+
+
+def _is_named(node: ast.Call, name: str) -> bool:
+    return isinstance(node.func, ast.Name) and node.func.id == name
 
 
 def _is_when(node: ast.AST) -> bool:

@@ -32,12 +32,18 @@ class NativeSig:
     `nullable`: the result may be missing (null), e.g. a token decoder on a bad token.
     `reads_private`: a verifier (e.g. verify_password(plain, hash) -> Bool) whose
     arguments may be private columns: reading one through it is not an oracle (L803)
-    and its result does not carry the private value."""
+    and its result does not carry the private value.
+    `effect`: an effect native (send an email, call a webhook): it has no result
+    (`result` is None), is never called inside a query or an expression (L438) and runs
+    only through `for_each(t, native.<name>, args...)` -- once per row, after the
+    endpoint's transaction commits, from the outbox (at-least-once: it must be
+    idempotent)."""
 
     params: tuple[Scalar, ...]
-    result: Scalar
+    result: Scalar | None = None
     nullable: bool = False
     reads_private: bool = False
+    effect: bool = False
 
 
 @dataclass(frozen=True)
@@ -179,7 +185,13 @@ class ApiProfile:
                 raise ValueError(f"native {name!r} needs a NativeSig")
             if not all(isinstance(p, Scalar) for p in sig.params):
                 raise ValueError(f"native {name!r} parameters must be Scalars")
-            if not isinstance(sig.result, Scalar):
+            if sig.effect:
+                if sig.result is not None or sig.nullable or sig.reads_private:
+                    raise ValueError(
+                        f"effect native {name!r} has no result (result=None) and is "
+                        "neither nullable nor reads_private"
+                    )
+            elif not isinstance(sig.result, Scalar):
                 raise ValueError(f"native {name!r} result must be a Scalar")
 
     def _validate_auth(self) -> None:
@@ -194,6 +206,8 @@ class ApiProfile:
                 sig = self.natives.get(native)
                 if sig is None:
                     raise ValueError(f"NativeToken names unknown native {native!r}")
+                if sig.effect:
+                    raise ValueError(f"NativeToken native {native!r} is an effect native")
                 key = users.keys[0] if users is not None and users.keys else ()
                 if len(key) != 1:
                     raise ValueError(

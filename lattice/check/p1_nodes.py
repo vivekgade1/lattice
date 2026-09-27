@@ -13,6 +13,7 @@ from lattice.catalog import (
     API_AMBIENT,
     CURRENT_USER,
     FN_ALIASES,
+    FOR_EACH,
     IMPORTABLE,
     NAMESPACES,
     NATIVE_NS,
@@ -116,6 +117,14 @@ def run(module: ast.Module, ctx: CheckContext) -> None:
                 _top_level_statement(stmt, ctx)
             case ast.Expr() if api:
                 _top_level_statement(stmt, ctx)
+            case ast.Assign() | ast.Expr() if _is_for_each(stmt.value):
+                ctx.error(
+                    "L437",
+                    stmt.value,
+                    "for_each(...) is only available in API programs; a pipeline's only "
+                    "effect is write(...)",
+                    'write the rows out instead: write(table, "out.parquet")',
+                )
             case ast.Assign():
                 _check_assign(stmt, ctx)
             case ast.Expr():
@@ -340,6 +349,17 @@ def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext, kind: str = "step")
                     "imports must come first",
                     "move this import to the top of the file",
                 )
+            case ast.Expr(value=value) if _is_for_each(value) and i != last:
+                if kind == "endpoint":
+                    _check_expr(value, ctx)  # a statement: one outbox row per input row
+                else:
+                    ctx.error(
+                        "L503",
+                        stmt,
+                        "steps must be pure: for_each(...) is only allowed in @endpoint "
+                        "functions",
+                        "call for_each in the endpoint, after the writes it reports",
+                    )
             case ast.Expr():
                 ctx.error(
                     "L602",
@@ -367,6 +387,14 @@ def _check_step_body(fn: ast.FunctionDef, ctx: CheckContext, kind: str = "step")
             f"step '{fn.name}' must contain at least one assignment before 'return'",
             "a step is a pipeline of one or more op statements",
         )
+
+
+def _is_for_each(node: ast.expr) -> bool:
+    return (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == FOR_EACH
+    )
 
 
 # ---- endpoints (API profile) ----------------------------------------------------

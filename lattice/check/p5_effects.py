@@ -1,4 +1,6 @@
-"""P5 — effects: where load/write may appear and which paths they may touch."""
+"""P5 — effects: where load/write may appear and which paths they may touch, and the
+profile of each loop construct: `iterate` only in tabular programs and `for_each` (the
+API profile's effect) only in API ones (L437); for_each is a statement (L502)."""
 
 from __future__ import annotations
 
@@ -6,7 +8,7 @@ import ast
 import re
 from pathlib import PurePosixPath
 
-from lattice.catalog import API_OPS, IO_OPS
+from lattice.catalog import API_OPS, FOR_EACH, IO_OPS, ITERATE
 from lattice.check.astutil import has_endpoint_decorator
 from lattice.check.context import CheckContext
 from lattice.diagnostics import Span
@@ -41,6 +43,7 @@ class _Effects:
 
     def run(self) -> None:
         api = self.ctx.profile.api is not None
+        self._loop_profiles(api)
         writes = 0
         for stmt in self.module.body:
             match stmt:
@@ -71,6 +74,39 @@ class _Effects:
                 "program never writes a result",
                 'end with write(result, "out.parquet")',
             )
+
+    def _loop_profiles(self, api: bool) -> None:
+        """L437: iterate is tabular-only (an API read stays one statement), for_each
+        API-only (a tabular program's only effect is write). L502: for_each is a
+        statement, never a value."""
+        for node in ast.walk(self.module):
+            match node:
+                case ast.Call(func=ast.Name(id=name)) if name == ITERATE and api:
+                    self.ctx.error(
+                        "L437",
+                        node,
+                        "iterate(...) is not available in API programs: a read must stay "
+                        "one statement with bounded latency",
+                        "walk parent/child links with traverse(...); anything else is a "
+                        "native function",
+                    )
+                case ast.Call(func=ast.Name(id=name)) if name == FOR_EACH and not api:
+                    self.ctx.error(
+                        "L437",
+                        node,
+                        "for_each(...) is only available in API programs; a pipeline's only "
+                        "effect is write(...)",
+                        'write the rows out instead: write(table, "out.parquet")',
+                    )
+                case ast.Assign(value=ast.Call(func=ast.Name(id=name))) if name == FOR_EACH:
+                    self.ctx.error(
+                        "L502",
+                        node,
+                        "for_each(...) returns nothing; call it as its own statement",
+                        "remove the assignment: for_each(rows, native.<name>, ...)",
+                    )
+                case _:
+                    pass
 
     def _step(self, fn: ast.FunctionDef) -> None:
         for stmt in fn.body:

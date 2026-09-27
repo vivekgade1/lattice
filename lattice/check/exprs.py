@@ -422,6 +422,14 @@ class ExprTyper:
                 or ("available: " + ", ".join(known) if known else "the profile declares none"),
             )
         usage = f"native.{name}({', '.join(p.value for p in sig.params)})"
+        if sig.effect:
+            return self._err(
+                "L438",
+                node,
+                f"native.{name} has side effects; it cannot be called in an expression",
+                f"send it once per row after the writes commit: for_each(rows, native.{name}, "
+                "<one column expression per argument>)",
+            )
         if len(node.args) != len(sig.params) or node.keywords:
             return self._err(
                 "L404",

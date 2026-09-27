@@ -14,6 +14,8 @@ cannot run with the language's guarantees (spec §3).
 * L874 — `window(...)` needs `window_functions` (its columns are SQL window functions
   of the same statement).
 * L875 — `traverse(...)` needs `recursive_queries` (the walk is one recursive CTE).
+* L876 — `for_each(...)` needs `transactions` (its outbox rows must commit or roll back
+  with the endpoint's writes).
 
 The backend is `ApiProfile.backend` ("sqlite" when absent); every SQLite capability
 holds, so none of these fire for it. An unknown backend name is left to profile
@@ -113,6 +115,17 @@ class _Backend:
                     f"'{self.name}' backend has no transactions to make them atomic",
                     "make one write per endpoint, or use a backend with transactions",
                 )
+        if not self.caps.transactions:
+            for n in nodes:
+                if _called(n) == "for_each":
+                    self.ctx.error(
+                        "L876",
+                        n,
+                        f"for_each(...) writes its outbox rows in the endpoint's transaction, "
+                        f"but the '{self.name}' backend has no transactions",
+                        "use a backend with transactions, so effects are sent only for "
+                        "committed writes",
+                    )
         if not self.caps.window_functions:
             for n in nodes:
                 if _called(n) == "page" and _total(n):

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import time
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -9,6 +10,7 @@ from pathlib import Path
 
 import polars as pl
 
+from lattice.catalog import ITERATE
 from lattice.check import CheckResult, check_source
 from lattice.check.p5_effects import normalize_output
 from lattice.diagnostics import Span
@@ -21,7 +23,7 @@ from lattice.runtime import (
     is_panic,
     ops,
 )
-from lattice.runtime.exprs import DTYPES, Guard
+from lattice.runtime.exprs import DTYPES, Guard, compile_expr
 
 
 @dataclass(frozen=True)
@@ -157,6 +159,125 @@ def _run_op(
         ) from err
 
 
+def _same_rows(a: pl.DataFrame, b: pl.DataFrame) -> bool:
+    """Equal as multisets of rows (the schemas are equal: both are the step's)."""
+    if a.height != b.height:
+        return False
+    cols = a.columns
+    return a.sort(cols, nulls_last=True).equals(b.sort(cols, nulls_last=True))
+
+
+def _all_hold(df: pl.DataFrame, predicate: ast.expr) -> bool:
+    """Every row satisfies `predicate` (a null counts as not satisfied)."""
+    if df.height == 0:
+        return True
+    c = compile_expr(predicate)
+    return bool(df.select(c.expr.fill_null(False).all()).item())
+
+
+def _iterate(
+    node: Node,
+    current: pl.DataFrame,
+    root: Path,
+    max_rows: int,
+    deadline: tuple[float, float],
+) -> tuple[pl.DataFrame, list[RuntimeIssue]]:
+    """iterate(): apply the body (the step) round after round, at most `max` rounds.
+    until="fixpoint" stops at the first round whose output equals its input as a
+    multiset of rows; a predicate stops as soon as every row satisfies it (checked
+    before each round and after the last). Still running after `max` rounds: R610.
+    Warnings are the last round's."""
+    p = node.params
+    body: Plan = p["body"]
+    until = p["until"]
+    fixpoint = isinstance(until, str)
+    warnings: list[RuntimeIssue] = []
+    try:
+        for _ in range(p["max"]):
+            if not fixpoint and _all_hold(current, until):
+                return current, warnings
+            frames = {p["param"]: current}
+            warnings = _run_body(body, frames, root, max_rows, deadline, p["result"])
+            nxt = frames[p["result"]]
+            if fixpoint and _same_rows(current, nxt):
+                return nxt, warnings
+            current = nxt
+        if not fixpoint and _all_hold(current, until):
+            return current, warnings
+    except LatticeExprError as err:
+        raise LatticeRuntimeError(err.code, node.span, f"iterate() failed: {err.message}") from err
+    except pl.exceptions.PolarsError as err:
+        text = str(err).strip().splitlines()
+        raise LatticeRuntimeError(
+            "R103", node.span, f"iterate() failed: {text[0] if text else type(err).__name__}"
+        ) from err
+    raise LatticeRuntimeError(
+        "R610",
+        node.span,
+        f"iterate did not converge in {p['max']} rounds "
+        f"(until={'fixpoint' if fixpoint else 'the predicate'} still false; no partial result)",
+    )
+
+
+def _run_body(
+    plan: Plan,
+    frames: dict[str, pl.DataFrame],
+    root: Path,
+    max_rows: int,
+    deadline: tuple[float, float],
+    result: str,
+) -> list[RuntimeIssue]:
+    """Run an iterate body (an inlined step: no writes) over `frames`, which holds its
+    placeholder input; leaves the body's `result` frame in `frames`. `deadline` is
+    (start, time limit) of the whole run (R202)."""
+    last_use: dict[str, int] = {}
+    for i, node in enumerate(plan.nodes):
+        for inp in node.inputs:
+            last_use[inp] = i
+    warnings: list[RuntimeIssue] = []
+    for i, node in enumerate(plan.nodes):
+        _check_time(node, deadline)
+        try:
+            inputs = [frames[x] for x in node.inputs]
+        except KeyError as err:
+            raise LatticeInternalError(f"node '{node.id}' input {err} is not available") from err
+        df, issues = _run_node(node, inputs, root, max_rows, deadline)
+        warnings += issues
+        if node.id in last_use or node.id == result:
+            frames[node.id] = df
+        for inp in set(node.inputs):
+            if last_use.get(inp) == i and inp != result:
+                frames.pop(inp, None)
+    return warnings
+
+
+def _check_time(node: Node, deadline: tuple[float, float]) -> None:
+    start, limit = deadline
+    if time.perf_counter() - start > limit:
+        raise LatticeRuntimeError("R202", node.span, f"time limit of {limit:g}s exceeded")
+
+
+def _run_node(
+    node: Node,
+    inputs: list[pl.DataFrame],
+    root: Path,
+    max_rows: int,
+    deadline: tuple[float, float],
+) -> tuple[pl.DataFrame, list[RuntimeIssue]]:
+    """One non-write node: its frame (schema asserted, row limit checked) and warnings."""
+    if node.op == ITERATE:
+        df, warnings = _iterate(node, inputs[0], root, max_rows, deadline)
+    else:
+        df, guards = _run_op(node, inputs, root, max_rows)
+        warnings = _count_guards(inputs[0], guards, node.span) if guards else []
+    _assert_schema(node, df)
+    if df.height > max_rows:
+        raise LatticeRuntimeError(
+            "R201", node.span, f"{node.op}() produced {df.height} rows (limit {max_rows})"
+        )
+    return df, warnings
+
+
 def execute(
     plan: Plan,
     io_root: Path,
@@ -200,14 +321,8 @@ def execute(
             ops.write(inputs[0], path, shown, node.span)
             written[shown] = inputs[0]
         else:
-            df, guards = _run_op(node, inputs, root, max_rows)
-            _assert_schema(node, df)
-            if df.height > max_rows:
-                raise LatticeRuntimeError(
-                    "R201", node.span, f"{node.op}() produced {df.height} rows (limit {max_rows})"
-                )
-            if guards:
-                warnings += _count_guards(inputs[0], guards, node.span)
+            df, issues = _run_node(node, inputs, root, max_rows, (start, time_limit_s))
+            warnings += issues
             if node.id in last_use:
                 frames[node.id] = df
         for inp in set(node.inputs):

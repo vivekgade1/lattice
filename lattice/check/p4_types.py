@@ -25,7 +25,11 @@ from lattice.catalog import (
     API_ERRORS,
     API_OP_SHAPES,
     EXPR_FUNCS,
+    FOR_EACH,
     IO_OPS,
+    ITERATE,
+    ITERATE_FIXPOINT,
+    ITERATE_MAX,
     NAMESPACES,
     NATIVE_NS,
     OP_SHAPES,
@@ -463,6 +467,13 @@ class _Types:
             self.ctx.set_type(value, UNKNOWN)
             return UNKNOWN
         name = value.func.id
+        if name == ITERATE:
+            if self.api is not None:  # P5's L437
+                self.ctx.set_type(value, UNKNOWN)
+                return UNKNOWN
+            t = self._iterate(value, scope)
+            self.ctx.set_type(value, t)
+            return t
         if self.api is not None:
             # API ops outside an endpoint (P5's L503) and load/write inside one (P6's
             # L841) are reported elsewhere
@@ -1232,6 +1243,183 @@ class _Types:
         )
         return False
 
+    # ---- loop constructs ------------------------------------------------------
+
+    def _iterate(self, call: ast.Call, scope: _Scope) -> TableOrUnknown:
+        """iterate(step, t, until="fixpoint" | <Col[Bool]>, max=N): `step` applied to
+        `t` round after round (at most N rounds) until a round returns its own input
+        (as a multiset of rows) or every row satisfies the predicate. The step is a
+        `Table[S] -> Table[S]` (L435); the result has the schema S."""
+        kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
+        if len(call.args) != 2 or not {"until", "max"} <= kws.keys():
+            return UNKNOWN  # P3 reported the call shape
+        step_node, table_node = call.args
+        ok = self._iterate_max(kws["max"], scope)
+        schema = self._iterate_step(step_node)
+        t = self._table_arg(table_node, scope)
+        if schema is None or not isinstance(t, TableT):
+            return UNKNOWN
+        assert isinstance(step_node, ast.Name)
+        if t.schema != schema.schema:
+            self.ctx.error(
+                "L418",
+                table_node,
+                f"step '{step_node.id}' expects {schema.schema.render()}, "
+                f"got {t.schema.render()}",
+                "derive/select/rename the table to match first",
+            )
+            return UNKNOWN
+        ok = self._iterate_until(kws["until"], t, scope) and ok
+        if not ok:
+            return UNKNOWN
+        # the result is the input (a predicate already true) or a step output: only
+        # what both guarantee
+        keys = tuple(k for k in schema.keys if k in t.keys)
+        return TableT(t.schema, keys=keys, nullable=t.nullable | schema.nullable)
+
+    def _iterate_step(self, node: ast.expr) -> TableT | None:
+        """The result type of iterate's step, when it is a `Table[S] -> Table[S]` step
+        (else L435, or None silently when the step itself was reported)."""
+        hint = (
+            "define '@step def settle(t: Table[S]) -> Table[S]: ...' (one table "
+            "parameter, the same schema out) and pass its name"
+        )
+        if not (isinstance(node, ast.Name) and node.id in self.step_defs):
+            if isinstance(node, ast.Name) and self._silenced(node):
+                return None
+            self.ctx.error("L435", node, "iterate's first argument must name a @step", hint)
+            return None
+        sig = self.sigs.get(node.id)
+        if sig is None or node.id in self.redefined:
+            return None  # defined later / redefined: P2 reported it
+        tables = [pt for _, pt in sig.params if not isinstance(pt, ScalarParamT)]
+        if any(isinstance(pt, UnknownT) for _, pt in sig.params) or not isinstance(
+            sig.result, TableT
+        ):
+            return None  # the step's own signature or body was reported
+        if len(sig.params) != 1 or len(tables) != 1:
+            self.ctx.error(
+                "L435",
+                node,
+                f"iterate's step '{node.id}' must take exactly one table parameter (it takes "
+                f"{len(tables)} table(s) and {len(sig.params) - len(tables)} scalar(s))",
+                hint,
+            )
+            return None
+        param = tables[0]
+        assert isinstance(param, TableT)
+        if sig.result.schema != param.schema:
+            self.ctx.error(
+                "L435",
+                node,
+                f"iterate's step '{node.id}' maps {param.schema.render()} to "
+                f"{sig.result.schema.render()}; a round must keep the schema",
+                hint,
+            )
+            return None
+        return sig.result
+
+    def _iterate_max(self, node: ast.expr, scope: _Scope) -> bool:
+        """L436: max= is an Int literal (or a constant bound to one), 1..ITERATE_MAX."""
+        v = literal_value(node)
+        if v is None and isinstance(node, ast.Name):
+            if node.id in scope.consts and node.id not in scope.scalars:
+                return False  # an ill-typed constant: already reported
+            v = scope.consts.get(node.id)
+            if v is None and node.id not in scope.scalars and self._silenced(node):
+                return False
+        if isinstance(v, int) and not isinstance(v, bool) and 1 <= v <= ITERATE_MAX:
+            self.ctx.set_type(node, LitT(Scalar.INT))
+            return True
+        self.ctx.error(
+            "L436",
+            node,
+            f"iterate max= must be an Int literal between 1 and {ITERATE_MAX:,}",
+            "e.g. max=50: the most rounds the loop may take before it fails with R610",
+        )
+        return False
+
+    def _iterate_until(self, node: ast.expr, t: TableT, scope: _Scope) -> bool:
+        """until= is "fixpoint" or a Bool column expression over the step's schema."""
+        hint = f'until="{ITERATE_FIXPOINT}", or a Bool column expression such as col("x") >= 3'
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            if node.value == ITERATE_FIXPOINT:
+                return True
+            self.ctx.error(
+                "L404", node, f'iterate until= must be "{ITERATE_FIXPOINT}" or a predicate', hint
+            )
+            return False
+        vt = self._typer(t.schema, scope).type_of(node)
+        match vt:
+            case UnknownT():
+                return False
+            case ColT(scalar=Scalar.BOOL):
+                return True
+            case _:
+                self.ctx.error(
+                    "L404",
+                    node,
+                    f"iterate until= must be a Bool column expression, got "
+                    f"{'a constant' if isinstance(vt, LitT) else vt.scalar.value}",
+                    hint,
+                )
+                return False
+
+    def _for_each(self, call: ast.Call, scope: _Scope) -> None:
+        """for_each(t, native.<name>, args...): an effect native (L438) whose arguments
+        are typed like native.<name>(args...) against t's columns."""
+        if len(call.args) < 2 or call.keywords:
+            return  # P3 reported the call shape
+        t = self._table_arg(call.args[0], scope)
+        native = call.args[1]
+        if not (isinstance(native, ast.Attribute) and isinstance(native.value, ast.Name)):
+            return  # P3 reported it
+        name = native.attr
+        sig = self.natives.get(name)
+        if sig is None:
+            known = sorted(n for n, s in self.natives.items() if s.effect)
+            listed = "effect natives: " + ", ".join(known) if known else "the profile declares none"
+            self.ctx.error(
+                "L106",
+                native,
+                f"unknown native function native.{name}",
+                did_you_mean(name, known) or listed,
+            )
+            return
+        usage = f"for_each(rows, native.{name}, {', '.join(p.value for p in sig.params)})"
+        if not sig.effect:
+            self.ctx.error(
+                "L438",
+                native,
+                f"native.{name} is a pure function; for_each sends an effect native",
+                f"use native.{name}(...) in derive(...), or declare an effect native "
+                "(NativeSig(..., effect=True))",
+            )
+            return
+        args = call.args[2:]
+        if len(args) != len(sig.params):
+            self.ctx.error(
+                "L404",
+                call,
+                f"native.{name} takes {len(sig.params)} argument(s), got {len(args)}",
+                f"write {usage}",
+            )
+            return
+        if not isinstance(t, TableT):
+            return
+        typer = self._typer(t.schema, scope)
+        for i, (arg, want) in enumerate(zip(args, sig.params, strict=True), start=1):
+            vt = typer.type_of(arg)
+            if isinstance(vt, UnknownT):
+                continue
+            if not (vt.scalar is want or (want is Scalar.FLOAT and vt.scalar is Scalar.INT)):
+                self.ctx.error(
+                    "L402",
+                    arg,
+                    f"native.{name} expects {want.value} for argument {i}, got {vt.scalar.value}",
+                    f"write {usage}",
+                )
+
     def _write(self, call: ast.Call) -> None:
         if _str_constant(call.args[1]) is None:
             self.ctx.error(
@@ -1424,6 +1612,8 @@ class _Types:
                 match stmt:
                     case ast.Assign(targets=[ast.Name(id=name)]):
                         self._assign(name, stmt.value, scope)
+                    case ast.Expr(value=ast.Call(func=ast.Name(id=op)) as call) if op == FOR_EACH:
+                        self._for_each(call, scope)
                     case ast.Return(value=ast.Name(id=name) as ret):
                         t = scope.env.get(name, UNKNOWN)
                         kind = None if name in scope.env else self._non_table_kind(name, scope)

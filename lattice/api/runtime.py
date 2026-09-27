@@ -15,7 +15,11 @@ request starts.
 
 Natives (`native.<name>(...)`) are pure Python functions registered as SQL functions
 on every connection: `build_app`/`serve_source` take their implementations as
-`natives={name: callable}`.
+`natives={name: callable}`. Effect natives (`for_each(t, native.x, ...)`) come in the
+same mapping but are never SQL functions: a for_each step writes outbox rows in the
+request's transaction (`lattice.api.outbox`), and after COMMIT the request dispatches
+them in order, marking each done or failed; the response is decided before the
+dispatch and never depends on it.
 
 A new connection is opened per request and closed after it (no connection is held
 between requests). Every new connection is passed to the module attribute
@@ -52,6 +56,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
+from lattice.api import outbox
 from lattice.api.backend import (
     Dialect,
     NativeImpl,
@@ -64,6 +69,7 @@ from lattice.api.ir import (
     CheckStep,
     EndpointPlan,
     ErrorSpec,
+    ForEachStep,
     ReadStep,
     WriteStep,
     lower_api,
@@ -420,8 +426,11 @@ def _run_steps(
     is_admin: bool,
     caller: tuple[Any, ...] | None = None,
     now: dt.datetime | None = None,
+    pending: list[tuple[Any, ...]] | None = None,
 ) -> tuple[dict[str, Result], dict[str, int]]:
-    """Every step's rows, and the total of each page(total=True) read (by step id)."""
+    """Every step's rows, and the total of each page(total=True) read (by step id).
+    Outbox rows written by for_each steps are appended to `pending` (id, native, args)
+    for the dispatch after COMMIT."""
     results: dict[str, Result] = {}
     totals: dict[str, int] = {}
     if caller is not None:
@@ -498,6 +507,11 @@ def _run_steps(
                 run(step.sql)
                 names = step.schema.names()
                 results[step.id] = (names, _project(results[step.input], names))
+            case ForEachStep():
+                conn.execute(step.ddl)  # the outbox table, created in this transaction
+                written = run(step.sql)
+                if pending is not None:
+                    pending.extend(written)
             case _:
                 raise LatticeInternalError(f"unknown step {step!r}")
     return results, totals
@@ -578,9 +592,11 @@ def _serve(
     authorization: str | None,
     natives: Mapping[str, NativeImpl] | None = None,
     content_type: str | None = None,
+    effects: Mapping[str, Callable[..., object]] | None = None,
 ) -> Response:
     dialect = plan_dialect(plan)
     impls = natives or {}
+    pending: list[tuple[Any, ...]] = []
     now = dt.datetime.now(dt.UTC)  # fn.now(): one instant per request
     conn: Any = None
     in_txn = False
@@ -598,12 +614,16 @@ def _serve(
         values = _parse_params(plan, path, query, body, content_type)
         if conn is None:
             conn = _connect(dialect, db_path, impls)
-        dialect.begin(conn, writes=any(isinstance(s, WriteStep) for s in plan.steps))
+        dialect.begin(conn, writes=plan.writes)
         in_txn = True
-        results, totals = _run_steps(plan, dialect, conn, values, user_id, is_admin, caller, now)
+        results, totals = _run_steps(
+            plan, dialect, conn, values, user_id, is_admin, caller, now, pending
+        )
         response = _respond(plan, dialect, results, values, totals)
         dialect.commit(conn)
         in_txn = False
+        if pending:  # after COMMIT: the response is already decided
+            _dispatch(conn, pending, effects or {})
         return response
     except _ErrorResponse as err:
         return _json_error(plan.error_body, err.status, err.code, err.detail)
@@ -620,7 +640,23 @@ def _serve(
             conn.close()
 
 
-def _handler(plan: EndpointPlan, db_path: Path, natives: Mapping[str, NativeImpl]):
+def _dispatch(
+    conn: Any, pending: list[tuple[Any, ...]], effects: Mapping[str, Callable[..., object]]
+) -> None:
+    """Send a committed request's outbox rows; a failure is recorded in its row, never
+    raised (the response does not depend on it)."""
+    try:
+        outbox.dispatch(conn, pending, effects)
+    except Exception:  # e.g. the connection broke: the rows stay pending (retry)
+        pass
+
+
+def _handler(
+    plan: EndpointPlan,
+    db_path: Path,
+    natives: Mapping[str, NativeImpl],
+    effects: Mapping[str, Callable[..., object]] | None = None,
+):
     async def endpoint(request: Request) -> Response:
         body = await request.body()
         return await run_in_threadpool(
@@ -633,6 +669,7 @@ def _handler(plan: EndpointPlan, db_path: Path, natives: Mapping[str, NativeImpl
             request.headers.get("authorization"),
             natives,
             request.headers.get("content-type"),
+            effects,
         )
 
     endpoint.__name__ = plan.name
@@ -674,6 +711,23 @@ def native_impls(
     return impls
 
 
+def effect_impls(
+    plans: Sequence[EndpointPlan], natives: Mapping[str, Callable[..., object]] | None
+) -> dict[str, Callable[..., object]]:
+    """The effect natives the plans' for_each steps send, each with its implementation
+    (from the same `natives` mapping); a missing one is a ValueError."""
+    impls: dict[str, Callable[..., object]] = {}
+    for plan in plans:
+        for name, _ in plan.effects:
+            fn = (natives or {}).get(name)
+            if fn is None:
+                raise ValueError(
+                    f"effect native {name!r} has no implementation: pass natives={{{name!r}: ...}}"
+                )
+            impls[name] = fn
+    return impls
+
+
 def build_app(
     plans: Sequence[EndpointPlan],
     db_path: Path,
@@ -687,8 +741,9 @@ def build_app(
     request that differs only by a trailing slash is redirected (307) to it."""
     db = Path(db_path)
     impls = native_impls(plans, natives)
+    effects = effect_impls(plans, natives)
     routes = [
-        Route(plan.path, _handler(plan, db, impls), methods=[plan.method], name=plan.name)
+        Route(plan.path, _handler(plan, db, impls, effects), methods=[plan.method], name=plan.name)
         for plan in sorted(plans, key=_specificity)
     ]
     styles = {plan.error_body for plan in plans}

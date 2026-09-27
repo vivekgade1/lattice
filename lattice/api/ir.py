@@ -24,6 +24,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 from lattice.api.backend import dialect_for
+from lattice.api.outbox import CREATE_SQL, OUTBOX_TABLE
 from lattice.api.sql import (
     OwnerIs,
     ParamRef,
@@ -32,12 +33,14 @@ from lattice.api.sql import (
     SqlQuery,
     compile_delete,
     compile_insert,
+    compile_outbox,
     compile_select,
     compile_update,
     expr_sql,
 )
 from lattice.catalog import (
     API_ERRORS,
+    FOR_EACH,
     NATIVE_NS,
     OP_SHAPES,
     PUBLIC_ROLE,
@@ -59,6 +62,7 @@ __all__ = [
     "CheckStep",
     "EndpointPlan",
     "ErrorSpec",
+    "ForEachStep",
     "PageArgs",
     "ParamSpec",
     "ReadStep",
@@ -126,7 +130,23 @@ class WriteStep:
     conflict: ErrorSpec | None = None
 
 
-ApiStep = ReadStep | CheckStep | WriteStep
+@dataclass(frozen=True)
+class ForEachStep:
+    """for_each(t, native.x, args...): ONE INSERT (`sql`) of an outbox row per row of
+    step `input`, whose columns `args` hold the native's arguments (in its parameter
+    order), after creating the outbox table when it is missing (`ddl`). The INSERT
+    returns (id, native, args) per row; the rows are dispatched after COMMIT."""
+
+    id: str
+    native: str
+    input: str
+    args: tuple[str, ...]
+    sql: SqlQuery
+    span: Span
+    ddl: str = CREATE_SQL
+
+
+ApiStep = ReadStep | CheckStep | WriteStep | ForEachStep
 
 
 @dataclass(frozen=True)
@@ -202,6 +222,14 @@ class EndpointPlan:
     forbidden_detail: str | None = None
     # ApiProfile.datetime_wire: how responses spell DateTime values.
     datetime_wire: str = "iso_z"
+    # The effect natives the plan's for_each steps send (never SQL functions).
+    effects: tuple[tuple[str, NativeSig], ...] = ()
+
+    @property
+    def writes(self) -> bool:
+        """The plan writes (a write step, or an outbox row): its transaction takes the
+        write lock up front."""
+        return any(isinstance(s, WriteStep | ForEachStep) for s in self.steps)
 
 
 # ---- helpers ---------------------------------------------------------------------------
@@ -311,7 +339,17 @@ class _Return:
     span: Span
 
 
-_Event = _Check | _Write | _Return
+@dataclass(frozen=True)
+class _ForEach:
+    id: str
+    input: _Val
+    native: str
+    sig: NativeSig
+    args: tuple[ast.expr, ...]  # lowered (constants and parameters substituted)
+    span: Span
+
+
+_Event = _Check | _Write | _Return | _ForEach
 
 
 class _Endpoint:
@@ -411,10 +449,25 @@ class _Endpoint:
                     self._note_type(self.env[name], call)
                 case ast.Return(value=ast.Name(id=name)) if name in self.env:
                     self.events.append(_Return(self.env[name], span_of(stmt)))
+                case ast.Expr(value=ast.Call(func=ast.Name(id=op)) as call) if op == FOR_EACH:
+                    self._for_each(call)
                 case _:
                     raise LatticeInternalError(
                         f"unexpected statement in endpoint '{fn.name}' at {span_of(stmt)}"
                     )
+
+    def _for_each(self, call: ast.Call) -> None:
+        table, native = call.args[0], call.args[1]
+        if not (isinstance(table, ast.Name) and table.id in self.env):
+            raise LatticeInternalError("for_each() table is not a bound name")
+        if not isinstance(native, ast.Attribute):
+            raise LatticeInternalError("for_each() native is not native.<name>")
+        sig = self.api.natives[native.attr]
+        k = sum(isinstance(ev, _ForEach) for ev in self.events)
+        args = tuple(self._expr(a, self.subst) for a in call.args[2:])
+        self.events.append(
+            _ForEach(f"_for_each{k}", self.env[table.id], native.attr, sig, args, span_of(call))
+        )
 
     def _note_type(self, val: _Val, node: ast.expr) -> None:
         t = self.program.types.get(id(node))
@@ -707,6 +760,9 @@ class _Endpoint:
         for ev in self.events:
             if isinstance(ev, _Check) and ev.cond is not None and isinstance(ev.input, _RelVal):
                 flags.setdefault(ev.input.rel, []).append((_flag(ev.id), ev.cond))
+            if isinstance(ev, _ForEach) and _computed(ev.args) and isinstance(ev.input, _RelVal):
+                # computed arguments ride on the input's own SELECT, like require flags
+                flags.setdefault(ev.input.rel, []).extend(_arg_columns(ev))
         steps: list[ApiStep] = []
         materialized: dict[str, tuple[str, tuple[str, ...]]] = {}
         step_flags: dict[str, set[str]] = {}  # ReadStep id -> require flags it computes
@@ -792,6 +848,37 @@ class _Endpoint:
                     )
                 case _Write():
                     steps.append(self._write(ev, rows_of, materialized))
+                case _ForEach():
+                    source = rows_of(ev.input, ev.span)
+                    columns: tuple[str, ...]
+                    if not _computed(ev.args):
+                        columns = tuple(_col_name(a) or "" for a in ev.args)
+                    else:
+                        extra = _arg_columns(ev)
+                        columns = tuple(n for n, _ in extra)
+                        if not set(columns) <= step_flags.get(source, set()):
+                            # rows read earlier (a write, the caller, a view): one SELECT
+                            rid = self._rel_of(ev.input)
+                            args_step = f"{ev.id}#args"
+                            sql = compile_select(
+                                self.rels,
+                                rid,
+                                materialized=materialized,
+                                extra=extra,
+                                dialect=self.dialect,
+                            )
+                            schema = self._schema_of(ev.input)
+                            steps.append(ReadStep(args_step, sql, ev.span, schema, columns))
+                            source = args_step
+                    outbox = compile_outbox(
+                        OUTBOX_TABLE,
+                        self.info.name,
+                        ev.native,
+                        [p.value for p in ev.sig.params],
+                        (source, columns),
+                        dialect=self.dialect,
+                    )
+                    steps.append(ForEachStep(ev.id, ev.native, source, columns, outbox, ev.span))
                 case _Return():
                     returns = rows_of(ev.value, ev.span)
                     response = self._schema_of(ev.value)
@@ -856,6 +943,10 @@ class _Endpoint:
             unauthorized_detail=getattr(self.api, "unauthorized_detail", None),
             forbidden_detail=getattr(self.api, "forbidden_detail", None),
             datetime_wire=getattr(self.api, "datetime_wire", "iso_z"),
+            effects=tuple(
+                (name, self.api.natives[name])
+                for name in sorted({ev.native for ev in self.events if isinstance(ev, _ForEach)})
+            ),
         )
 
     def _natives(self, auth_native: str | None) -> tuple[tuple[str, NativeSig], ...]:
@@ -929,6 +1020,24 @@ def _reorder(schema: Schema, fields: tuple[str, ...]) -> Schema:
 
 def _flag(check_id: str) -> str:
     return f"__ok_{check_id}"
+
+
+def _col_name(node: ast.expr) -> str | None:
+    """The column a bare col("name") reads, else None."""
+    match node:
+        case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))], keywords=[]):
+            return name
+    return None
+
+
+def _computed(args: tuple[ast.expr, ...]) -> bool:
+    """Some for_each argument is more than a bare column (so SQL computes it)."""
+    return any(_col_name(a) is None for a in args)
+
+
+def _arg_columns(ev: _ForEach) -> list[tuple[str, ast.expr]]:
+    """The extra columns computing a for_each's arguments, in parameter order."""
+    return [(f"__arg{ev.id}_{i}", a) for i, a in enumerate(ev.args)]
 
 
 def _tables(op: str) -> int:

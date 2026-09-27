@@ -199,6 +199,11 @@ class Dialect(Protocol):
     def insert(self, table: str, cols: Sequence[str], vals: Sequence[str], ret: str) -> str: ...
     def update_from(self, table: str, sets: str, source: str, match: str, ret: str) -> str: ...
     def new_uuid(self) -> str: ...  # a fresh uuid4 (an omitted Uuid key on insert)
+    # for_each: INSERT one outbox row per bound row (lattice.api.outbox), RETURNING
+    # (id, native, args); the binds are named
+    def outbox_insert(
+        self, table: str, rows: str, types: str, endpoint: str, native: str, now: str
+    ) -> str: ...
     def native(self, name: str, args: Sequence[str]) -> str: ...  # native.<name>(args...)
 
     # ---- values ----------------------------------------------------------------------
@@ -383,6 +388,22 @@ class SqliteDialect:
 
     def native(self, name: str, args: Sequence[str]) -> str:
         return f"native_{name}({', '.join(args)})"
+
+    def outbox_insert(
+        self, table: str, rows: str, types: str, endpoint: str, native: str, now: str
+    ) -> str:
+        """Each element of the JSON array bound as `rows` (one row's argument values)
+        becomes an outbox row, in array order; its args are {"types", "values"}."""
+        q = self.quote
+        names = ("endpoint", "native", "args", "status", "error", "created_at", "attempts")
+        cols = ", ".join(q(c) for c in names)
+        args = f"json_object('types', json({self.bind(types)}), 'values', json(j.value))"
+        return (
+            f"INSERT INTO {q(table)} ({cols}) "
+            f"SELECT {self.bind(endpoint)}, {self.bind(native)}, {args}, 'pending', NULL, "
+            f"{self.bind(now)}, 0 FROM json_each({self.bind(rows)}) AS j ORDER BY j.key "
+            f"RETURNING {q('id')}, {q('native')}, {q('args')}"
+        )
 
     # ---- values ------------------------------------------------------------------------
 

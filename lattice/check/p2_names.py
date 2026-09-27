@@ -219,6 +219,8 @@ class _Resolver:
                             b.used = True
                 case ast.Return(value=ast.Name() as value):
                     self._uses(value, scope, where)
+                case ast.Expr(value=value):  # for_each(...) in an endpoint (P1)
+                    self._uses(value, scope, where)
                 case _:
                     raise TypeError(f"P1 should have rejected {type(stmt).__name__} in a step")
         # the step becomes visible only once its definition is complete

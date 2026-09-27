@@ -42,6 +42,13 @@ spellings become the prelude constants `UUID_STORAGE` / `DATETIME_STORAGE`, and 
 `body="form"` endpoint reads URL-encoded form fields (`Endpoint.form`), as the runtime
 does.
 
+Effect natives (`for_each`, sub-project 1b) are imported from the natives module too,
+into `EFFECTS` (never registered as SQL functions). A for_each step creates the outbox
+table when missing and INSERTs its rows in the request's transaction (the plan's SQL,
+verbatim); after COMMIT `serve` dispatches them in order with `dispatch_outbox` (a port
+of `lattice.api.outbox.dispatch`: done, or failed with the error; the response is
+already decided), and `retry_outbox()` re-sends failed rows from the app itself.
+
 The profile-wide Part B settings (sub-project 1b) become prelude constants as well:
 `ERROR_BODY` with `UNAUTHORIZED_DETAIL`/`FORBIDDEN_DETAIL` (the error body style and the
 automatic 401/403 texts), `DATETIME_WIRE` (how responses spell a DateTime), and
@@ -65,7 +72,24 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 from lattice.api.backend import SQLITE
-from lattice.api.ir import CheckStep, EndpointPlan, ErrorSpec, ReadStep, WriteStep, lower_api
+from lattice.api.ir import (
+    CheckStep,
+    EndpointPlan,
+    ErrorSpec,
+    ForEachStep,
+    ReadStep,
+    WriteStep,
+    lower_api,
+)
+from lattice.api.outbox import (
+    CREATE_SQL,
+    ERROR_LIMIT,
+    EXISTS_SQL,
+    MARK_DONE_SQL,
+    MARK_FAILED_SQL,
+    RETRY_PENDING_SQL,
+    RETRY_SQL,
+)
 from lattice.api.runtime import auth_sql
 from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, sent_bind
 from lattice.catalog import USER_PARAM
@@ -155,6 +179,7 @@ class Endpoint:
     admin_flag: str | None = None  # a Bool column: true -> admin_role, else flag_role
     flag_role: str = ""
     form: bool = False  # body parameters are URL-encoded form fields, not a JSON object
+    effects: bool = False  # for_each: the steps collect outbox rows, sent after COMMIT
 
 
 class Caller(NamedTuple):
@@ -396,6 +421,69 @@ def _native_function(name: str, native: Native) -> Callable[..., object]:
         return _native_result(name, out, native.result)
 
     return call
+
+
+# ---- the outbox (for_each; a port of lattice/api/outbox.py) ------------------------------
+
+# Effect natives: called once per outbox row after COMMIT, never inside SQL.
+EFFECTS: dict[str, Callable[..., object]] = {}  # filled below when the program sends any
+OUTBOX_DDL = ""
+OUTBOX_DONE = ""
+OUTBOX_FAILED = ""
+OUTBOX_EXISTS = ""
+OUTBOX_RETRY = ""
+OUTBOX_RETRY_PENDING = ""
+OUTBOX_ERROR_LIMIT = 500
+
+
+def _outbox_args(args: str) -> list[object]:
+    """The Python arguments of an outbox row ({"types": [...], "values": [...]})."""
+    data = json.loads(args)
+    return [
+        None if v is None else _native_arg(v, t)
+        for t, v in zip(data["types"], data["values"], strict=True)
+    ]
+
+
+def dispatch_outbox(conn: sqlite3.Connection, rows: Sequence[Sequence[Any]]) -> tuple[int, int]:
+    """Call each (id, native, args) row's effect native, in id order, and mark the row
+    done or failed with the error. Never raises. Returns (done, failed)."""
+    done = failed = 0
+    for row_id, native, args in sorted(rows, key=lambda r: r[0]):
+        fn = EFFECTS.get(native)
+        error: str | None = None
+        if fn is None:
+            error = f"no implementation for native {native!r}"
+        else:
+            try:
+                fn(*_outbox_args(args))
+            except Exception as err:  # the effect failed: recorded, retried later
+                error = f"{type(err).__name__}: {err}"[:OUTBOX_ERROR_LIMIT]
+        try:
+            if error is None:
+                conn.execute(OUTBOX_DONE, (row_id,))
+            else:
+                conn.execute(OUTBOX_FAILED, (error, row_id))
+        except sqlite3.Error:
+            pass  # the row keeps its status; a retry sends it again (at-least-once)
+        if error is None:
+            done += 1
+        else:
+            failed += 1
+    return done, failed
+
+
+def retry_outbox(pending: bool = False) -> tuple[int, int]:
+    """Re-send the failed outbox rows (with `pending`, also rows never dispatched), in
+    id order. Returns (done, failed)."""
+    conn = connect()
+    try:
+        if conn.execute(OUTBOX_EXISTS).fetchone() is None:
+            return 0, 0
+        sql = OUTBOX_RETRY_PENDING if pending else OUTBOX_RETRY
+        return dispatch_outbox(conn, conn.execute(sql).fetchall())
+    finally:
+        conn.close()
 
 
 def connect() -> sqlite3.Connection:
@@ -812,7 +900,7 @@ def _is_unique_violation(err: BaseException) -> bool:
     )
 
 
-Steps = Callable[[sqlite3.Connection, dict[str, object], Caller | None, dt.datetime], Response]
+Steps = Callable[..., Response]  # (conn, values, caller, now[, pending outbox rows])
 
 
 def serve(
@@ -842,9 +930,18 @@ def serve(
             conn = connect()
         conn.execute("BEGIN IMMEDIATE" if ep.writes else "BEGIN")
         in_txn = True
-        response = steps(conn, values, caller, now)
+        pending: list[tuple[Any, ...]] = []
+        if ep.effects:
+            response = steps(conn, values, caller, now, pending)
+        else:
+            response = steps(conn, values, caller, now)
         conn.execute("COMMIT")
         in_txn = False
+        if pending:  # after COMMIT: the response is already decided
+            try:
+                dispatch_outbox(conn, pending)
+            except Exception:  # e.g. the connection broke: the rows stay pending
+                pass
         return response
     except ErrorResponse as err:
         return json_error(err.status, err.code, err.detail)
@@ -1139,7 +1236,7 @@ class _EndpointGen:
 
     # ---- steps ----------------------------------------------------------------------------
 
-    def step(self, step: ReadStep | CheckStep | WriteStep) -> None:
+    def step(self, step: ReadStep | CheckStep | WriteStep | ForEachStep) -> None:
         match step:
             case ReadStep() if step.sql.total:
                 self.body.append(f"    # SELECT the rows of {step.id!r} and the page total (one")
@@ -1194,6 +1291,11 @@ class _EndpointGen:
                 cols = _strs(step.schema.names())
                 project = _Call("project", (self.result(step.input), cols))
                 self.emit(_Tuple((cols, project)), f"{self.result(step.id)} = ")
+            case ForEachStep():
+                self.comment(step.span.line, f"for_each native.{step.native}")
+                self.body.append("    # one outbox row per row, sent after COMMIT")
+                self.body.append("    conn.execute(OUTBOX_DDL)")
+                self.emit(_Call("pending.extend", (self.run(step.id, step.sql),)))
             case _:
                 raise LatticeInternalError(f"unknown step {step!r}")
 
@@ -1279,13 +1381,14 @@ class _EndpointGen:
                         tuple(_param(p, plan.null_ok) for p in plan.params if p.source != "user")
                     ),
                 ),
-                _Kw("writes", repr(any(isinstance(s, WriteStep) for s in plan.steps))),
+                _Kw("writes", repr(plan.writes)),
                 _Kw("auth_sql", _py_str(_auth_sql(plan))),
                 _Kw("user_columns", _strs(plan.user_columns)),
                 _Kw("user_key", _py_str(plan.user_key)),
                 _Kw("admin_role", _py_str(plan.admin_role)),
                 *self.role_source(),
                 *([_Kw("form", "True")] if plan.body == "form" else []),
+                *([_Kw("effects", "True")] if plan.effects else []),
             ),
         )
         rule = "# " + "-" * 86
@@ -1308,6 +1411,7 @@ class _EndpointGen:
             "    values: dict[str, object],",
             "    caller: Caller | None,",
             "    now: dt.datetime,",
+            *(["    pending: list[tuple[Any, ...]],"] if plan.effects else []),
             ") -> Response:",
             f'    """{doc}"""',
             *self.body,
@@ -1344,13 +1448,16 @@ connection and accepts only "Bearer ".
 
 
 def _natives_section(plans: Sequence[EndpointPlan], module: str, names: _Names) -> tuple[str, str]:
-    """(the import of the natives the plans call from `module`, their registration)."""
+    """(the import of the natives the plans call or send from `module`, their
+    registration: pure natives in NATIVES, effect natives in EFFECTS)."""
     natives: dict[str, NativeSig] = {}
+    effects: dict[str, NativeSig] = {}
     for plan in plans:
         natives.update(plan.natives)
-    if not natives:
+        effects.update(plan.effects)
+    if not natives and not effects:
         return "", ""
-    aliases = {name: names.take(f"native_{name}") for name in sorted(natives)}
+    aliases = {name: names.take(f"native_{name}") for name in sorted({*natives, *effects})}
     imported = [f"{name} as {alias}" for name, alias in aliases.items()]
     line = f"from {module} import {', '.join(imported)}"
     if len(line) > _WIDTH:
@@ -1370,10 +1477,18 @@ def _natives_section(plans: Sequence[EndpointPlan], module: str, names: _Names) 
         )
         for name, sig in sorted(natives.items())
     )
-    register = "\n".join(_render(_Call("NATIVES.update", (_Dict(entries),)), ""))
+    parts: list[str] = []
     rule = "# " + "-" * 86
-    header = f"{rule}\n# Natives (pure Python functions registered on every connection)\n{rule}"
-    return line + "\n", header + "\n\n" + register
+    if natives:
+        register = "\n".join(_render(_Call("NATIVES.update", (_Dict(entries),)), ""))
+        header = f"{rule}\n# Natives (pure Python functions registered on every connection)\n{rule}"
+        parts.append(header + "\n\n" + register)
+    if effects:
+        sent = tuple((_py_str(name), aliases[name]) for name in sorted(effects))
+        register = "\n".join(_render(_Call("EFFECTS.update", (_Dict(sent),)), ""))
+        header = f"{rule}\n# Effect natives (for_each: sent from the outbox after COMMIT)\n{rule}"
+        parts.append(header + "\n\n" + register)
+    return line + "\n", "\n\n\n".join(parts)
 
 
 # Prelude constants set from the (profile-wide) plan settings: (constant, plan field).
@@ -1426,6 +1541,17 @@ def generate_fastapi(
     imports, register = _natives_section(ordered, natives_module, names)
     kit = "from platform_kit import app, get_db\n"
     prelude = _PRELUDE.replace(kit, kit + imports, 1)
+    for name, value in (
+        ("OUTBOX_DDL", CREATE_SQL),
+        ("OUTBOX_DONE", MARK_DONE_SQL),
+        ("OUTBOX_FAILED", MARK_FAILED_SQL),
+        ("OUTBOX_EXISTS", EXISTS_SQL),
+        ("OUTBOX_RETRY", RETRY_SQL),
+        ("OUTBOX_RETRY_PENDING", RETRY_PENDING_SQL),
+        ("OUTBOX_ERROR_LIMIT", ERROR_LIMIT),
+    ):
+        literal = _sql_constant(value) if isinstance(value, str) else _literal(value)
+        prelude = _set_constant(prelude, name, literal)
     for name, field in _PROFILE_CONSTANTS:
         values = {getattr(p, field) for p in plans}
         if len(values) > 1:

@@ -19,6 +19,8 @@ from lattice.catalog import (
     API_ERRORS,
     API_FN_FUNCS,
     FN_SIGS,
+    FOR_EACH,
+    FOR_EACH_MAX_ROWS,
     PAGE_LIMIT_MAX,
     PUBLIC_ROLE,
     TABLE_OPS,
@@ -143,6 +145,9 @@ class _Api:
     def check_subset(self, fn: ast.FunctionDef, *, endpoint: bool) -> None:
         """L841: table ops and expressions outside what the API profile compiles to
         SQL, in an endpoint body and (transitively) in the steps it calls."""
+        for call in _for_each_calls(fn):  # its arguments are computed in SQL, too
+            for node in ast.walk(call):
+                self._subset_expr(node)
         for _, value in _assigns(fn):
             op = _call_name(value)
             if endpoint and op in TABLE_OPS and op not in API_ENDPOINT_OPS:
@@ -213,6 +218,7 @@ class _Endpoint:
         self._writes()
         self._errors()
         self._pages()
+        self._for_each_inputs()
         self._response()
         self._response_model()
 
@@ -246,6 +252,45 @@ class _Endpoint:
 
     def _arg(self, name: str) -> ast.AST:
         return next((a for a in self.fn.args.args if a.arg == name), self.fn)
+
+    # ---- L439 --------------------------------------------------------------------------
+
+    def _for_each_inputs(self) -> None:
+        """L439: for_each sends one effect per input row, so its input must be bounded:
+        the result of one(), insert(), an update() of one row, a page(), or limit(n=N)
+        with N <= FOR_EACH_MAX_ROWS -- or a row filter / row-wise op of such rows."""
+        for call in _for_each_calls(self.fn):
+            if len(call.args) < 2:
+                continue  # P3 reported the call shape
+            arg = call.args[0]
+            if not isinstance(arg, ast.Name) or self._name_type(arg.id) is None:
+                continue  # P3/P4 reported it
+            if not self._bounded(arg.id, set()):
+                self.ctx.error(
+                    "L439",
+                    arg,
+                    f"for_each over '{arg.id}' may send an unbounded number of effects",
+                    "pass rows of one(...), insert(...), an update of one row, page(...) or "
+                    f"limit(t, n=N) with N <= {FOR_EACH_MAX_ROWS}",
+                )
+
+    def _bounded(self, name: str, seen: set[str]) -> bool:
+        t = self._name_type(name)
+        if t is not None and (t.at_most_one_row or t.paged):
+            return True
+        value = self.locals.get(name)
+        if value is None or name in seen or not isinstance(value, ast.Call) or not value.args:
+            return False
+        seen.add(name)
+        op = _call_name(value)
+        if op == "limit":
+            n = literal_value(_kw(value, "n")) if _kw(value, "n") is not None else None
+            if isinstance(n, int) and not isinstance(n, bool) and 0 < n <= FOR_EACH_MAX_ROWS:
+                return True
+        if op in _ROW_WISE | _ROW_FILTERS | {"one", "page"}:
+            src = value.args[0]
+            return isinstance(src, ast.Name) and self._bounded(src.id, seen)
+        return False
 
     # ---- L801 / L804 ----------------------------------------------------------------
 
@@ -470,9 +515,25 @@ class _Endpoint:
 
     def _private_reads(self) -> None:
         """Outside Admin endpoints no filter, sort, join, aggregate, check or written
-        value may read a private column: the response (or its status) would reveal it."""
+        value may read a private column: the response (or its status) would reveal it.
+        Nor may a for_each argument: the effect would carry it out of the database."""
         if self.admin:
             return
+        for call in _for_each_calls(self.fn):
+            table = call.args[0] if call.args else None
+            t = self._name_type(table.id) if isinstance(table, ast.Name) else None
+            if t is None or not t.private:
+                continue
+            read = frozenset().union(*(cols_read(a) for a in call.args[2:])) & t.private
+            if read:
+                self.ctx.error(
+                    "L803",
+                    call,
+                    f"for_each sends private column(s) {', '.join(sorted(read))} to an effect "
+                    "native, outside the database",
+                    "pass the other columns; only Admin endpoints may read private columns",
+                )
+                return
         for _, value in _assigns(self.fn):
             op = _call_name(value)
             if op is None:
@@ -1128,6 +1189,16 @@ class _Endpoint:
 def _is_table_param(a: ast.arg) -> bool:
     """A step parameter annotated Table[...] (scalar parameters are keywords)."""
     return isinstance(a.annotation, ast.Subscript)
+
+
+def _for_each_calls(fn: ast.FunctionDef) -> Iterator[ast.Call]:
+    """The for_each(...) statements of an endpoint body."""
+    for stmt in fn.body:
+        match stmt:
+            case ast.Expr(value=ast.Call(func=ast.Name(id=name)) as call) if name == FOR_EACH:
+                yield call
+            case _:
+                pass
 
 
 def _strs(node: ast.expr | None) -> list[str]:

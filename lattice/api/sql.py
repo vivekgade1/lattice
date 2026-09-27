@@ -844,6 +844,36 @@ def compile_delete(
     return dialect.compile_write(DeleteWrite(table, key, source))
 
 
+OUTBOX_ENDPOINT = "__ob_endpoint"  # bind names of the for_each outbox INSERT
+OUTBOX_NATIVE = "__ob_native"
+OUTBOX_TYPES = "__ob_types"
+OUTBOX_ROWS = "__ob_rows"
+
+
+def compile_outbox(
+    table: str,
+    endpoint: str,
+    native: str,
+    types: Sequence[str],
+    source: tuple[str, tuple[str, ...]],
+    *,
+    dialect: Dialect = SQLITE,
+) -> SqlQuery:
+    """for_each: ONE INSERT of an outbox row per row of `source` (a materialized step:
+    (step id, the argument columns, in the native's parameter order)), each with the
+    endpoint, the native, the arguments' scalar `types`, and the request's instant.
+    RETURNING (id, native, args), dispatched after COMMIT."""
+    text = dialect.outbox_insert(
+        table, OUTBOX_ROWS, OUTBOX_TYPES, OUTBOX_ENDPOINT, OUTBOX_NATIVE, NOW
+    )
+    binds = (
+        (OUTBOX_ENDPOINT, endpoint),
+        (OUTBOX_NATIVE, native),
+        (OUTBOX_TYPES, json.dumps(list(types))),
+    )
+    return SqlQuery(text, binds=binds, rows=((OUTBOX_ROWS, source[0], source[1]),), now=True)
+
+
 def compile_lookup(
     table: str,
     columns: Sequence[str],

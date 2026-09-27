@@ -51,7 +51,7 @@ from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import loops, partb, realapps
+from tests.api import effects, loops, partb, realapps
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -630,6 +630,77 @@ LOOPS_CASES: tuple[HttpCase, ...] = (
 )
 
 
+# ---- the effects program (sub-project 1b N3: for_each through the outbox) ---------------------
+
+_ET = effects.TOKENS
+_OUTBOX = effects.OUTBOX_AFTER  # the outbox rows, without id and created_at
+_HAS_OUTBOX = "SELECT COUNT(*) FROM sqlite_master WHERE name = 'lattice_outbox'"
+_ITEMS = "SELECT id, owner_id, title, due, done FROM items ORDER BY id"
+
+
+def _ecase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _ET[who], **kw)
+
+
+EFFECTS_CASES: tuple[HttpCase, ...] = (
+    _ecase(
+        "signup",
+        "POST",
+        "/users/signup",
+        None,
+        json={"email": "new@example.com", "full_name": "New"},
+        status=201,
+        after_sql=_OUTBOX,
+    ),
+    _ecase(
+        "signup taken (rolled back)",
+        "POST",
+        "/users/signup",
+        None,
+        json={"email": "alice@example.com", "full_name": "Dup"},
+        status=409,
+        after_sql=_HAS_OUTBOX,
+    ),
+    _ecase(
+        "create", "POST", "/items", "alice", json={"title": "Fresh"}, status=201, after_sql=_OUTBOX
+    ),
+    _ecase(
+        "create, dispatch fails",
+        "POST",
+        "/items",
+        "alice",
+        json={"title": "boom"},
+        status=201,
+        after_sql=_OUTBOX,
+    ),
+    _ecase(
+        "create refused after the outbox insert",
+        "POST",
+        "/items",
+        "alice",
+        json={"title": "forbidden"},
+        status=400,
+        after_sql=_HAS_OUTBOX,
+    ),
+    _ecase("recent alice", "GET", "/items/recent", "alice", after_sql=_OUTBOX),
+    _ecase(
+        "recent alice 2",
+        "GET",
+        "/items/recent",
+        "alice",
+        query={"note": "hi", "limit": 2},
+        after_sql=_OUTBOX,
+    ),
+    _ecase("recent carol (none)", "GET", "/items/recent", "carol", after_sql=_OUTBOX),
+    _ecase(
+        "recent admin", "GET", "/items/recent", "admin", query={"limit": 100}, after_sql=_OUTBOX
+    ),
+    _ecase("finish", "PATCH", "/items/1/done", "alice", after_sql=_OUTBOX),
+    _ecase("finish null due", "PATCH", "/items/2/done", "alice", after_sql=_OUTBOX),
+    _ecase("finish not mine", "PATCH", "/items/3/done", "alice", status=404, after_sql=_ITEMS),
+)
+
+
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
     _R.PROGRAM,
@@ -643,9 +714,15 @@ PROGRAMS["loops"] = (
     loops.PROGRAM,
     ApiTask("loops", "control", "window and traverse", LOOPS_CASES + _probes(LOOPS_CASES)),
 )
+PROGRAMS["effects"] = (
+    effects.PROGRAM,
+    ApiTask(
+        "effects", "control", "for_each and the outbox", EFFECTS_CASES + _probes(EFFECTS_CASES)
+    ),
+)
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
-EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb", "loops"]
+EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb", "loops", "effects"]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -664,6 +741,7 @@ SETUPS = {
     "realapps": Setup(_R.PROFILE, _R.build_db, _R.NATIVES, _R.NATIVES_FILE),
     "partb": Setup(_PB.PROFILE, _PB.build_db, _PB.NATIVES, _PB.NATIVES_FILE),
     "loops": Setup(loops.PROFILE, loops.build_db),
+    "effects": Setup(effects.PROFILE, effects.build_db, effects.NATIVES, effects.NATIVES_FILE),
 }
 
 
@@ -1100,3 +1178,40 @@ def test_the_loops_program_passes_its_cases(differential_runs):
     assert [alice[i]["running"] for i in (8, 1, 4, 2)] == [6, 16, 16, 20]
     assert [alice[i]["avg2"] for i in (8, 1, 4, 2)] == [6.0, 8.0, 10.0, 4.0]
     assert [alice[i]["day_rank"] for i in (2, 3, 1, 4, 6, 5, 8)] == [1, 2, 3, 3, 5, 6, 7]
+
+
+def test_the_effects_program_passes_its_cases(differential_runs):
+    """Every for_each case gets its expected status on both backends, and both leave the
+    same outbox rows (compared above through after_sql and the DB digest): dispatched in
+    order and marked done, failed with the error, or -- rolled back -- absent."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs["effects"]
+    want = {c.name: c.expect_status for c in EFFECTS_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want
+    for captured in (rt_captured, gen_captured):
+        after = {c["name"]: c["after"] for c in captured}
+        assert after["signup"] == [
+            [
+                "signup",
+                "send_welcome",
+                '{"types":["Str","Str"],"values":["new@example.com","New"]}',
+                "done",
+                None,
+                1,
+            ]
+        ]
+        assert after["signup taken (rolled back)"] == [[0]]
+        assert after["create refused after the outbox insert"] == [[0]]
+        assert [r[3:] for r in after["create, dispatch fails"]] == [
+            ["failed", "ValueError: boom refused", 1]
+        ]
+        assert [r[2] for r in after["recent alice"]] == [
+            '{"types":["Int","Str","Str"],"values":[4,"BOOM","seen"]}',
+            '{"types":["Int","Str","Str"],"values":[2,"BETA","seen"]}',
+            '{"types":["Int","Str","Str"],"values":[1,"ALPHA","seen"]}',
+        ]
+        assert after["recent carol (none)"] == []
+        assert [r[2] for r in after["finish null due"]] == [
+            '{"types":["Int","Date"],"values":[2,null]}'
+        ]
