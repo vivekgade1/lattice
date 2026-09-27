@@ -1023,9 +1023,10 @@ _WIDE: tuple[Task, ...] = (
     _t(
         "w02",
         "wide",
-        "For each order placed in 2024 (any status; order_date in 2024), its net amount "
-        "per unit (the amount_net column of the order financials, not the order's total "
-        "net amount). Return exactly two columns: order_id, unit_net. "
+        "For each order placed in 2024 (any status; order_date in 2024), the value of the "
+        "amount_net column of the order financials, taken as-is (amount_net already holds "
+        "the net amount per unit; it is not the order's total net amount). Return exactly "
+        "two columns: order_id, unit_net. "
         f"{_UNORDERED}",
         ("orders2", "order_financials"),
         _w02,
