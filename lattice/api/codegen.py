@@ -359,6 +359,40 @@ def _uuid4() -> str:
     return stored_uuid(uuid.uuid4()) or ""
 
 
+def _datetime_add(
+    x: object, days: object, hours: object, minutes: object, seconds: object
+) -> object:
+    """fn.datetime_add: null for a null/unparsable value or amount, or out of range."""
+    value = parse_datetime(x)
+    amounts = (days, hours, minutes, seconds)
+    if value is None or not all(isinstance(a, int) for a in amounts):
+        return None
+    try:
+        shifted = value + dt.timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
+    except OverflowError:
+        return None
+    return stored_datetime(shifted)
+
+
+_DATETIME_UNITS_US = {
+    "days": 86_400_000_000,
+    "hours": 3_600_000_000,
+    "minutes": 60_000_000,
+    "seconds": 1_000_000,
+}
+
+
+def _datetime_diff(end: object, start: object, unit: object) -> object:
+    """fn.datetime_diff: end minus start in whole units, truncated toward zero."""
+    a, b = parse_datetime(end), parse_datetime(start)
+    size = _DATETIME_UNITS_US.get(unit) if isinstance(unit, str) else None
+    if a is None or b is None or size is None:
+        return None
+    micros = (a - b) // dt.timedelta(microseconds=1)
+    whole = abs(micros) // size
+    return whole if micros >= 0 else -whole
+
+
 # ---- natives: pure Python functions callable from the SQL ---------------------------------
 
 
@@ -573,6 +607,8 @@ def connect() -> sqlite3.Connection:
     conn.create_function("lattice_mod", 2, _mod, deterministic=True)
     conn.create_function("lattice_to_uuid", 1, _to_uuid, deterministic=True)
     conn.create_function("lattice_to_datetime", 2, _to_datetime, deterministic=True)
+    conn.create_function("lattice_datetime_add", 5, _datetime_add, deterministic=True)
+    conn.create_function("lattice_datetime_diff", 3, _datetime_diff, deterministic=True)
     conn.create_function("lattice_uuid4", 0, _uuid4)  # not deterministic
     for name, native in NATIVES.items():
         conn.create_function(

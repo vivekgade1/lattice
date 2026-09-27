@@ -124,7 +124,7 @@ def _run_op(
                     )
                 return ops.join(inputs[0], inputs[1], p["on"], p["how"], right_on), []
             case "sort":
-                return ops.sort(inputs[0], p["by"], p["desc"]), []
+                return ops.sort(inputs[0], p["by"], p["desc"], p.get("nulls", "last")), []
             case "limit":
                 return ops.limit(inputs[0], p["n"]), []
             case "window":

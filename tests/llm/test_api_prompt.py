@@ -640,3 +640,86 @@ def signup(
 """
     result = check_source(source, profile)
     assert result.ok and not result.diagnostics, [d.render() for d in result.diagnostics]
+
+
+# ---------------------------------- optional values, search, time, ordering --
+
+
+def test_both_arms_document_optional_values_search_time_and_ordering() -> None:
+    from lattice.llm.api_prompt import _BASELINE_OPTIONAL_SECTION, _LATTICE_OPTIONAL_SECTION
+
+    for hints in (True, False):  # reference, not removable advice
+        assert _LATTICE_OPTIONAL_SECTION in api_lattice_system_prompt(hints=hints)
+        assert _BASELINE_OPTIONAL_SECTION in api_baseline_system_prompt(hints=hints)
+    lattice, baseline = _LATTICE_OPTIONAL_SECTION, _BASELINE_OPTIONAL_SECTION
+    assert 0.7 <= len(baseline) / len(lattice) <= 1.3
+    # one bullet per feature in each arm
+    assert lattice.count("\n- ") == baseline.count("\n- ") == 6
+    for needle in (
+        "| None = None",
+        "is_null(",
+        "`sent(p)`",
+        "ignore_case=True",
+        "fn.datetime_add(",
+        "fn.datetime_diff(",
+        "=None)",
+        'nulls="smallest"',
+    ):
+        assert needle in lattice, needle
+    for needle in (
+        "| None = None",
+        "IS NULL OR",
+        "model_fields_set",
+        "exclude_unset=True",
+        "timedelta(hours=24)",
+        "= NULL",
+        '"DESC"',
+    ):
+        assert needle in baseline, needle
+    # the same facts in both arms
+    for needle in (
+        '"not given"',
+        "(even as null)",
+        "an empty",
+        "once per request",
+        "truncated toward zero",
+        "first ascending",
+        "last descending",
+    ):
+        needle_l = "`sub=\"\"` matches" if needle == "an empty" else needle
+        needle_l = "one instant per request" if needle == "once per request" else needle_l
+        assert needle_l in lattice and needle in baseline, needle
+
+
+def test_api_optional_examples_check_clean() -> None:
+    from lattice.llm.api_prompt import _LATTICE_OPTIONAL_SECTION, API_OPTIONAL_EXAMPLES
+    from tests.api.gaps import PROFILE
+
+    for example in API_OPTIONAL_EXAMPLES:
+        assert f"`{example}`" in _LATTICE_OPTIONAL_SECTION, example
+    where, require, contains, diff, update, sort = API_OPTIONAL_EXAMPLES
+    source = f"""# lattice: v1
+@endpoint("PUT", "/items/{{id}}", auth=Customer)
+def example(
+    id: Uuid,
+    user: CurrentUser,
+    since: DateTime | None = None,
+    title: Str(min_len=1, max_len=9) = UNSET,
+    q: Str(max_len=20) = "",
+    order: OneOf("newest", "oldest") = "newest",
+) -> One | NotFound | Forbidden:
+    items = fetch(Item)
+    mine = owned(items, by=user)
+    found = where(mine, col("id") == id)
+    t = one(found, else_=NotFound("item"))
+    a = {where}
+    b = where(mine, {contains})
+    c = derive(mine, hours={diff})
+    e = {sort}
+    r = {require}
+    d = {update}
+    return d
+"""
+    result = check_source(source, PROFILE)
+    errors = [d.render() for d in result.diagnostics if d.severity.value == "error"]
+    assert result.ok and errors == [], errors

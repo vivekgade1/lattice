@@ -250,6 +250,9 @@ _SQLITE_FN: Mapping[str, Callable[[str, Mapping[str, str]], str]] = {
     "strip": lambda x, k: f"lattice_strip({x})",
     "len": lambda x, k: f"length({x})",
     "contains": lambda x, k: f"(instr({x}, {k['sub']}) > 0)",
+    # fn.contains(..., ignore_case=True): both sides through lattice_lower (Python's
+    # str.lower, the Unicode lowercase polars' to_lowercase applies too)
+    "icontains": lambda x, k: f"(instr(lattice_lower({x}), lattice_lower({k['sub']})) > 0)",
     "starts_with": lambda x, k: f"(substr({x}, 1, length({k['prefix']})) = {k['prefix']})",
     "year": _date_part("%Y"),
     "month": _date_part("%m"),
@@ -257,7 +260,49 @@ _SQLITE_FN: Mapping[str, Callable[[str, Mapping[str, str]], str]] = {
     "to_uuid": lambda x, k: f"lattice_to_uuid({x})",
     "date": lambda x, k: f"substr({x}, 1, 10)",  # stored DateTime text starts YYYY-MM-DD
     "to_datetime": lambda x, k: f"lattice_to_datetime({x}, {k['format']})",
+    "datetime_add": lambda x, k: (
+        f"lattice_datetime_add({x}, "
+        + ", ".join(k.get(u, "0") for u in ("days", "hours", "minutes", "seconds"))
+        + ")"
+    ),
+    "datetime_diff": lambda x, k: f"lattice_datetime_diff({x}, {k['start']}, {k['unit']})",
 }
+
+# fn.datetime_diff units, in microseconds
+DATETIME_UNITS_US: Mapping[str, int] = {
+    "days": 86_400_000_000,
+    "hours": 3_600_000_000,
+    "minutes": 60_000_000,
+    "seconds": 1_000_000,
+}
+
+
+def datetime_add(
+    x: object, days: object, hours: object, minutes: object, seconds: object
+) -> dt.datetime | None:
+    """fn.datetime_add: a stored DateTime shifted by whole days/hours/minutes/seconds;
+    None for a null or unparsable value, a null amount, or a result out of range."""
+    value = parse_datetime(x)
+    amounts = (days, hours, minutes, seconds)
+    if value is None or not all(isinstance(a, int) for a in amounts):
+        return None
+    d, h, m, s = amounts
+    try:
+        return value + dt.timedelta(days=d, hours=h, minutes=m, seconds=s)  # type: ignore[arg-type]
+    except OverflowError:
+        return None
+
+
+def datetime_diff(end: object, start: object, unit: object) -> int | None:
+    """fn.datetime_diff: end minus start in whole `unit`s, truncated toward zero; None
+    for a null or unparsable value."""
+    a, b = parse_datetime(end), parse_datetime(start)
+    size = DATETIME_UNITS_US.get(unit) if isinstance(unit, str) else None
+    if a is None or b is None or size is None:
+        return None
+    micros = (a - b) // dt.timedelta(microseconds=1)
+    whole = abs(micros) // size
+    return whole if micros >= 0 else -whole
 
 
 def _to_datetime(x: object, fmt: object) -> dt.datetime | None:
@@ -523,8 +568,14 @@ class SqliteDialect:
         def uuid4() -> str:
             return stored_uuid(uuid.uuid4(), us) or ""
 
+        def add(x: object, d: object, h: object, m: object, s: object) -> object:
+            value = datetime_add(x, d, h, m, s)
+            return None if value is None else stored_datetime(value, ds)
+
         conn.create_function("lattice_to_uuid", 1, to_uuid, deterministic=True)
         conn.create_function("lattice_to_datetime", 2, to_datetime, deterministic=True)
+        conn.create_function("lattice_datetime_add", 5, add, deterministic=True)
+        conn.create_function("lattice_datetime_diff", 3, datetime_diff, deterministic=True)
         conn.create_function("lattice_uuid4", 0, uuid4)  # not deterministic
 
     def register_natives(self, conn: sqlite3.Connection, natives: Mapping[str, NativeImpl]) -> None:

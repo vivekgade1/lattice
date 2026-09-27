@@ -119,7 +119,8 @@ rows before paging.
 - Parameter types also include `Uuid` and `DateTime` (ISO 8601; a `DateTime` default is \
 a string with a timezone, e.g. `"2024-01-01T00:00:00Z"`).
 - `p: Str(...) = UNSET` is an optional body field: not sent, the column keeps its \
-value. It may be used only directly as an `update()` value or an `insert()` value.
+value. It may be used only directly as an `update()` value or an `insert()` value, or \
+in `sent(p)`.
 - `require(t, owner_is(user), else_=Forbidden("..."))`: every row of t belongs to the \
 caller (Admin callers pass).
 - `native.<name>(...)` calls a function the profile declares in `natives`.

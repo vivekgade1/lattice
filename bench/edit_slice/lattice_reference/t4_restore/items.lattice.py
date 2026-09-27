@@ -67,11 +67,10 @@ def delete_item(id: Uuid, user: CurrentUser) -> One | NotFound | Forbidden:
 
 @endpoint("POST", "/api/v1/items/{id}/restore", auth=Admin, response="ItemPublic")
 def restore_item(id: Uuid, user: CurrentUser) -> One | NotFound | BadRequest:
-    not_deleted = fn.to_datetime("", format="%Y-%m-%d")
     items = fetch(Item)
     found = where(items, col("id") == id)
     item = one(found, else_=NotFound("Item not found"))
     deleted = require(item, ~is_null(col("deleted_at")), else_=BadRequest("Item is not deleted"))
-    restored = update(deleted, deleted_at=not_deleted)
+    restored = update(deleted, deleted_at=None)
     shown = select(restored, cols=ITEM_PUBLIC)
     return shown

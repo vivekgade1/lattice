@@ -7,8 +7,8 @@ the complete ``profile.py``. Each is the imported file with the ticket's edit ap
 (plus a wider ``ruff: noqa`` line). A ticket built on another (``Ticket.base``) takes the
 base's files first, as the Python references do.
 
-They prove each ticket is expressible and give arm L's dry run. The tickets current
-Lattice cannot express are in :data:`GAPS` (no solution is written for them).
+They prove each ticket is expressible and give arm L's dry run. A ticket Lattice cannot
+express would be listed in :data:`GAPS` (no solution is written for it); none is.
 """
 
 from __future__ import annotations
@@ -19,22 +19,11 @@ from bench.edit_slice.tickets import ticket
 
 LATTICE_REFERENCE_ROOT = Path(__file__).resolve().parent
 
-# ticket -> what current Lattice is missing to express it (see the E3 report).
-GAPS: dict[str, str] = {
-    "t1_search": (
-        "case-insensitive substring match against a parameter: fn.contains(x, sub=) takes "
-        "only a literal, a parameter or a constant bound to a literal, so the needle cannot "
-        "be case-folded (sub=fn.lower(q) is L404 'computed'), and there is no "
-        "case-insensitive contains/LIKE"
-    ),
-    "t5_title_window": (
-        "(a) a condition on whether an optional body field was sent: `title: ... = UNSET` "
-        "may only be an update()/insert() value (L404), so 'the request sets title' cannot "
-        "be tested; (b) DateTime arithmetic: 'created more than 24 hours ago' needs "
-        "fn.now() minus a duration ('-' on DateTime is L402; no interval/date_add for "
-        "DateTime in API programs)"
-    ),
-}
+# ticket -> what current Lattice is missing to express it. Empty since the gap features
+# (case-insensitive contains, sent(), DateTime arithmetic, `| None` parameters, null
+# writes, the sort direction from a parameter) closed the E3 report's two gaps
+# (t1_search, t5_title_window).
+GAPS: dict[str, str] = {}
 
 
 def _own_files(ticket_id: str) -> dict[str, Path]:

@@ -12,7 +12,7 @@ import ast
 import datetime as dt
 import re
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal
 
 from lattice.catalog import (
@@ -96,6 +96,9 @@ class ParamSpec:
     one_of: tuple[str, ...] | None = None
     default: object = MISSING
     optional: bool = False  # default is UNSET
+    # `p: T | None = None`: the parameter may be left out (or be JSON null) and is then
+    # None -- "not given", a value like any other (is_null(p) tests it); never UNSET
+    nullable: bool = False
     # Str(pattern=...): a regular expression the whole value must match; `Email`
     # parameters carry EMAIL_PATTERN with email=True (only the 422 message differs).
     pattern: str | None = None
@@ -264,6 +267,7 @@ class ParamType:
     one_of: tuple[str, ...] | None = None
     pattern: str | None = None
     email: bool = False
+    nullable: bool = False  # `T | None` (its default must be None)
 
 
 _TYPE_HINT = (
@@ -283,9 +287,14 @@ def _number(node: ast.expr, *, integer: bool) -> int | float | None:
 
 
 def param_type(name: str, ann: ast.expr | None) -> ParamType | Problem:
-    """The type of one endpoint parameter annotation."""
+    """The type of one endpoint parameter annotation; `T | None` is T, nullable."""
     need = (f"parameter '{name}' needs an API parameter type", _TYPE_HINT)
     match ann:
+        case ast.BinOp(left=inner, op=ast.BitOr(), right=ast.Constant(value=None)):
+            pt = param_type(name, inner)
+            if not isinstance(pt, ParamType) or pt.scalar is None or pt.nullable:
+                return need
+            return replace(pt, nullable=True)
         case ast.Name(id=type_name) if type_name in SCALAR_NAMES:
             return ParamType(SCALAR_NAMES[type_name])
         case ast.Name(id=type_name) if type_name == CURRENT_USER:
@@ -376,9 +385,26 @@ def pattern_problem(spec: ParamType | ParamSpec, value: str) -> str | None:
     return "must be an email address" if spec.email else f"must match the pattern {spec.pattern!r}"
 
 
-def default_problem(name: str, pt: ParamType, node: ast.expr) -> Problem | None:
+def default_problem(name: str, pt: ParamType, node: ast.expr | None) -> Problem | None:
     """Whether a parameter default is a literal of the parameter's type within its
-    constraints, or UNSET (an optional parameter of any scalar type)."""
+    constraints, or UNSET (an optional parameter of any scalar type). A nullable
+    parameter (`T | None`) defaults to None, and only it does (`node` None: no default)."""
+    is_none = isinstance(node, ast.Constant) and node.value is None
+    if pt.nullable:
+        if is_none:
+            return None
+        return (
+            f"default of '{name}' must be None: a `| None` parameter is None when not given",
+            f"write {name}: ... | None = None (UNSET is for update fields that may be left "
+            "out)",
+        )
+    if node is None:
+        return None
+    if is_none and pt.scalar is not None:
+        return (
+            f"default of '{name}' is None, but its type does not allow None",
+            f"declare it {name}: {_type_name(pt)} | None = None",
+        )
     if is_unset(node):
         if pt.scalar is None:
             return (f"'{name}: CurrentUser' cannot have a default", "remove the default")
@@ -426,6 +452,10 @@ def default_problem(name: str, pt: ParamType, node: ast.expr) -> Problem | None:
         if (pt.ge is not None and v < pt.ge) or (pt.le is not None and v > pt.le):
             return (f"default of '{name}' is outside its bounds", None)
     return None
+
+
+def _type_name(pt: ParamType) -> str:
+    return pt.scalar.value if pt.scalar is not None else "..."
 
 
 def is_unset(node: ast.AST | None) -> bool:
@@ -515,6 +545,7 @@ def endpoint_params(fn: ast.FunctionDef, method: str, path: str) -> tuple[ParamS
                 optional=default is UNSET,
                 pattern=pt.pattern,
                 email=pt.email,
+                nullable=pt.nullable,
             )
         )
     return tuple(specs)

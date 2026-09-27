@@ -227,6 +227,8 @@ class _Lowerer:
                     case _:
                         raise LatticeInternalError("sort desc= is not a bool literal or list")
                 params = {"by": _strs(kws["by"]), "desc": flag}
+                if "nulls" in kws:  # absent: "last"
+                    params["nulls"] = _str(kws["nulls"])
             case "limit":
                 match kws["n"]:
                     case ast.Constant(value=int(n)) if not isinstance(n, bool):

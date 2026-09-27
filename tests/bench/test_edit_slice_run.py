@@ -16,7 +16,11 @@ from collections.abc import Mapping, Sequence
 import pytest
 
 from bench.edit_slice import prompts, run, tickets
-from bench.edit_slice.lattice_reference import GAPS, lattice_reference_files
+from bench.edit_slice.lattice_reference import (
+    GAPS,
+    has_lattice_reference,
+    lattice_reference_files,
+)
 from bench.edit_slice.oracle import ticket_oracle
 from bench.edit_slice.reference import reference_files
 from bench.edit_slice.report import render, summary
@@ -236,8 +240,9 @@ def test_the_dry_run_scores_every_reference_correct(arm, ticket_id):
     assert r.model == "reference" and r.dry_run and r.cost_usd == 0
 
 
-def test_the_gaps_are_the_two_inexpressible_tickets():
-    assert set(GAPS) == {"t1_search", "t5_title_window"}
+def test_every_ticket_is_expressible_in_lattice():
+    assert GAPS == {}
+    assert all(has_lattice_reference(t) for t in TICKET_IDS)
 
 
 # ---- nothing hidden reaches a prompt --------------------------------------------------------
