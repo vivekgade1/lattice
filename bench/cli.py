@@ -17,13 +17,20 @@ from pathlib import Path
 
 from bench.datasets import load_fixtures, write_fixtures
 from bench.envfile import load_env_file
-from bench.report import append_outcome, evaluate_gate, render_markdown, summarize
+from bench.report import (
+    append_outcome,
+    evaluate_gate,
+    render_markdown,
+    render_markdown_step2,
+    summarize,
+)
 from bench.runners import (
     Arm,
     TaskOutcome,
     harness_error_outcome,
     prepare_workdir,
     run_baseline,
+    run_baseline_repair,
     run_lattice,
 )
 from bench.tasks import Task, suite
@@ -31,6 +38,7 @@ from lattice.llm.client import ClaudeGenerator, Generator, ScriptedGenerator
 from lattice.runtime import is_panic
 
 _SEPARATOR_RE = re.compile(r"(?m)^=====$")
+_KNOWN_ARMS = ("A", "P", "B", "C")
 
 
 def _offline_generator(offline_dir: Path, arm: str, task_id: str) -> Generator:
@@ -50,8 +58,10 @@ def _build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run_parser = subparsers.add_parser("run", help="run the benchmark and write a report")
-    run_parser.add_argument("--arms", default="A", help="comma-separated arms, e.g. A,B,C")
-    run_parser.add_argument("--suite", default="seed", choices=("seed", "deep", "all"))
+    run_parser.add_argument("--arms", default="A", help="comma-separated arms, e.g. A,P,B,C")
+    run_parser.add_argument(
+        "--suite", default="seed", choices=("seed", "deep", "all", "bench2")
+    )
     run_parser.add_argument(
         "--tasks", default=None, help="comma-separated task ids to restrict to"
     )
@@ -88,6 +98,10 @@ def _run_one(
 
     if arm == "A":
         return run_baseline(task, generator, workdir, fixtures_frames)
+    if arm == "P":
+        return run_baseline_repair(
+            task, generator, workdir, fixtures_frames, max_repairs=max_repairs
+        )
     if arm in ("B", "C"):
         return run_lattice(
             task,
@@ -116,14 +130,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     fixtures_dir = out_dir / "fixtures"
-    write_fixtures(fixtures_dir)
-    fixtures_frames = load_fixtures(fixtures_dir)
+    if args.suite == "bench2":
+        # Lazily imported: nothing outside a bench2 run touches this module.
+        import bench.bench2_datasets as bench2
+
+        bench2.write_fixtures2(fixtures_dir)
+        fixtures_frames = bench2.load_fixtures2(fixtures_dir)
+    else:
+        write_fixtures(fixtures_dir)
+        fixtures_frames = load_fixtures(fixtures_dir)
 
     work_root = out_dir / "work"
     offline_dir = Path(args.offline) if args.offline else None
 
     for arm in arms:
-        if arm not in ("A", "B", "C"):
+        if arm not in _KNOWN_ARMS:
             parser.error(f"unknown arm: {arm!r}")
 
     outcomes_path = out_dir / "outcomes.jsonl"
@@ -161,11 +182,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
             outcomes = list(pool.map(lambda job: run_task(*job), jobs))
 
-    summary = summarize(outcomes)
-    gate = evaluate_gate(summary) if outcomes else None
-
     report_path = out_dir / "report.md"
-    report_path.write_text(render_markdown(summary, gate))
+    if args.suite == "bench2":
+        report_path.write_text(render_markdown_step2(outcomes))
+    else:
+        summary = summarize(outcomes)
+        gate = evaluate_gate(summary) if outcomes else None
+        report_path.write_text(render_markdown(summary, gate))
 
     print(str(report_path))
     return 0

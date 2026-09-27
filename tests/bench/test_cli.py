@@ -173,6 +173,48 @@ def test_cli_offline_run_over_three_arms_produces_a_report(tmp_path: Path) -> No
     ]
 
 
+def test_cli_offline_run_over_four_arms_including_p_produces_a_report(tmp_path: Path) -> None:
+    offline_dir = tmp_path / "offline"
+    _write_offline_all_arms(offline_dir)
+    # Arm P (pandas + repair) round 1 is scripted identically to arm A: the
+    # script is correct first try, so no repair round is ever requested.
+    (offline_dir / "P").mkdir(parents=True, exist_ok=True)
+    (offline_dir / "P" / "s01.txt").write_text(_S01_SOLUTION)
+    (offline_dir / "P" / "m01.txt").write_text(_M01_PANDAS_SOLUTION)
+    out_dir = tmp_path / "out4"
+
+    exit_code = main(
+        [
+            "run",
+            "--arms",
+            "A,P,B,C",
+            "--tasks",
+            "s01,m01",
+            "--offline",
+            str(offline_dir),
+            "--out",
+            str(out_dir),
+        ]
+    )
+
+    assert exit_code == 0
+
+    report = (out_dir / "report.md").read_text()
+    assert "| A |" in report
+    assert "| P |" in report
+    assert "| B |" in report
+    assert "| C |" in report
+
+    outcomes = read_outcomes(out_dir / "outcomes.jsonl")
+    arms = {o.arm for o in outcomes}
+    assert arms == {"A", "P", "B", "C"}
+    assert all(o.correct for o in outcomes), [
+        (o.arm, o.task_id, o.failure, o.detail) for o in outcomes if not o.correct
+    ]
+    p_outcomes = [o for o in outcomes if o.arm == "P"]
+    assert all(o.rounds == 1 and o.check_passed is None for o in p_outcomes)
+
+
 # --- Regression tests for review finding M2 -------------------------------
 
 
