@@ -10,6 +10,7 @@ from lattice.catalog import (
     IMPORTABLE,
     OP_SHAPES,
     TERMINAL_OPS,
+    UNIQUE_OR,
     OpShape,
 )
 from lattice.check.astutil import (
@@ -190,6 +191,8 @@ class _Canon:
 
     def _no_op(self, call: ast.Call, op: str) -> None:
         kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
+        if op == "update":
+            kws.pop(UNIQUE_OR, None)  # not a column
         match op:
             case "where" if isinstance(call.args[1], ast.Constant):
                 self.ctx.error(

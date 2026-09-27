@@ -51,7 +51,7 @@ from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import realapps
+from tests.api import partb, realapps
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -493,14 +493,124 @@ REALAPPS_CASES: tuple[HttpCase, ...] = (
 )
 
 
+# ---- the Part B program (sub-project 1b: active check, error bodies, DateTime wire,
+# Email / pattern= parameters, unique_or, list constants) -------------------------------
+
+_PB = partb
+
+
+def _pbcase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _PB.TOKENS[who], **kw)
+
+
+PARTB_CASES: tuple[HttpCase, ...] = (
+    # B1: inactive (carol) before the role check and before validation
+    _pbcase("inactive items", "GET", "/items/", "carol", status=400),
+    _pbcase("inactive admin list", "GET", "/users/", "carol", status=400),
+    _pbcase("inactive bad limit", "GET", "/items/", "carol", query={"limit": "x"}, status=400),
+    _pbcase(
+        "inactive bad email",
+        "PATCH",
+        "/users/me",
+        "carol",
+        json={"email": "nope"},
+        status=400,
+        after_sql=_USERS_AFTER,
+    ),
+    _case("unknown user", "GET", "/users/me", f"tok-{_rid(777)}", status=401),
+    # B2: {"detail": ...} bodies, configured 401/403 texts
+    _pbcase("no token", "GET", "/items/", None, status=401),
+    _case("bad token", "GET", "/items/", "garbage", status=401),
+    _pbcase("customer admin list", "GET", "/users/", "alice", status=403),
+    _pbcase("declared 403", "GET", f"/items/{_rid(103)}", "alice", status=403),
+    _pbcase("declared 404", "GET", f"/items/{_rid(999)}", "alice", status=404),
+    _pbcase("validation", "GET", "/items/", "alice", query={"limit": 0, "skip": -1}, status=422),
+    # B3: naive DateTime wire
+    _pbcase("items", "GET", "/items/", "alice"),
+    _pbcase("item", "GET", f"/items/{_rid(101)}", "alice"),
+    _pbcase("admin list", "GET", "/users/", "admin", query={"limit": 3}),
+    # B4: Email, pattern=
+    _pbcase(
+        "bad email",
+        "PATCH",
+        "/users/me",
+        "bob",
+        json={"email": "not-an-email"},
+        status=422,
+        after_sql=_USERS_AFTER,
+    ),
+    _pbcase(
+        "good email",
+        "PATCH",
+        "/users/me",
+        "bob",
+        json={"email": "bob.new@example.org"},
+        after_sql=_USERS_AFTER,
+    ),
+    _pbcase(
+        "signup bad email",
+        "POST",
+        "/users/signup",
+        None,
+        json={"email": "a@b", "password": "longpassword"},
+        status=422,
+    ),
+    _pbcase("pattern miss", "POST", "/items/", "alice", json={"title": "lower"}, status=422),
+    _pbcase(
+        "pattern hit",
+        "POST",
+        "/items/",
+        "alice",
+        json={"title": "Upper Case"},
+        status=201,
+        after_sql=_ITEMS_AFTER,
+    ),
+    # B5: unique_or on update and insert
+    _pbcase(
+        "email taken",
+        "PATCH",
+        "/users/me",
+        "bob",
+        json={"email": "alice@example.com"},
+        status=409,
+        after_sql=_USERS_AFTER,
+    ),
+    _pbcase(
+        "signup taken",
+        "POST",
+        "/users/signup",
+        None,
+        json={"email": "alice@example.com", "password": "longpassword"},
+        status=409,
+        after_sql=_USERS_AFTER,
+    ),
+    _pbcase(
+        "signup",
+        "POST",
+        "/users/signup",
+        None,
+        json={"email": "new@example.com", "password": "longpassword"},
+        status=201,
+        after_sql=_USERS_AFTER,
+    ),
+    # B6: list constants
+    _pbcase("me", "GET", "/users/me", "alice"),
+    _pbcase("brief", "GET", f"/items/{_rid(101)}/brief", "alice"),
+)
+
+
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
     _R.PROGRAM,
     ApiTask("realapps", "control", "real-app features", REALAPPS_CASES + _probes(REALAPPS_CASES)),
 )
+PROGRAMS["partb"] = (
+    _PB.PROGRAM,
+    ApiTask("partb", "control", "Part B features", PARTB_CASES + _probes(PARTB_CASES)),
+)
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
-EXTRA_IDS = ["numeric", "mapped_join", "realapps"]
+EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb"]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -517,6 +627,7 @@ class Setup:
 DEFAULT_SETUP = Setup(api_profile(), build_db)
 SETUPS = {
     "realapps": Setup(_R.PROFILE, _R.build_db, _R.NATIVES, _R.NATIVES_FILE),
+    "partb": Setup(_PB.PROFILE, _PB.build_db, _PB.NATIVES, _PB.NATIVES_FILE),
 }
 
 
@@ -527,8 +638,8 @@ def setup_of(pid: str) -> Setup:
 def normalize(value: object) -> object:
     """`value` (JSON or rows) with values generated per request replaced by
     placeholders: a UUID not seeded (tests/api/realapps.py seeds only ids with the
-    prefix 00000000-0000-4000-8000-) is "<uuid>", a stored DateTime not in the seeded
-    year 2000 is "<now>"."""
+    prefix 00000000-0000-4000-8000-) is "<uuid>", a DateTime (stored, or answered in
+    either wire spelling) not in the seeded year 2000 is "<now>"."""
     if isinstance(value, dict):
         return {k: normalize(v) for k, v in value.items()}
     if isinstance(value, list | tuple):
@@ -539,8 +650,8 @@ def normalize(value: object) -> object:
             lambda m: m.group(0) if m.group(0).startswith("00000000-0000-4000-8000-") else "<uuid>",
             value,
         )
-        value = re.sub(
-            r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z",
+        value = re.sub(  # "...Z", or naive (ApiProfile.datetime_wire="naive")
+            r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{6})?Z?",
             lambda m: m.group(0) if m.group(0).startswith("2000-") else "<now>",
             value,
         )
@@ -896,3 +1007,28 @@ def test_the_generated_realapps_app_imports_its_natives():
     assert "from natives import " in code and "native_decode_token" in code
     check, code = compile_source_to_fastapi(realapps.PROGRAM, realapps.PROFILE, "my.natives")
     assert code is not None and "from my.natives import " in code
+
+
+def test_the_partb_program_passes_its_cases(differential_runs):
+    """Every Part B case gets its expected status on both backends, and the bodies show
+    each Part B feature (equal on both, by the differential above)."""
+    rt_results, rt_captured, gen_results, _ = differential_runs["partb"]
+    want = {c.name: c.expect_status for c in PARTB_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want
+    bodies = {c["name"]: c["body"] for c in rt_captured}
+    assert bodies["inactive admin list"] == {"detail": "Inactive user"}
+    assert bodies["inactive bad limit"] == {"detail": "Inactive user"}
+    assert bodies["no token"] == {"detail": partb.UNAUTHORIZED}
+    assert bodies["customer admin list"] == {"detail": partb.FORBIDDEN}
+    assert bodies["declared 404"] == {"detail": "Item not found"}
+    assert [d["loc"] for d in bodies["validation"]["detail"]] == [
+        ["query", "skip"],
+        ["query", "limit"],
+    ]
+    assert bodies["item"]["created_at"] == "2000-01-05T10:00:00"
+    assert bodies["bad email"]["detail"][0]["msg"] == "must be an email address"
+    assert bodies["email taken"] == {"detail": partb.EMAIL_TAKEN}
+    assert bodies["signup taken"] == {"detail": partb.SIGNUP_TAKEN}
+    assert list(bodies["brief"]) == ["id", "title", "created_at"]

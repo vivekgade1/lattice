@@ -4,7 +4,10 @@
 the template's SQLModel metadata creates them on SQLite (``bench/template_app``): Uuid
 keys stored as 32 hex digits (SQLAlchemy's ``CHAR(32)``), ``created_at`` stored as naive
 UTC ``"YYYY-MM-DD HH:MM:SS.ffffff"`` text, ``Item.owner_id`` the owner column,
-``User.hashed_password`` private and ``User.is_superuser`` the Admin flag. Its page
+``User.hashed_password`` private, ``User.is_superuser`` the Admin flag and
+``User.is_active`` the active column (checked by auth, as ``get_current_active_user``
+does). Responses use FastAPI's ``{"detail": ...}`` error bodies and pydantic's naive
+datetime spelling. Its page
 shape, response models and natives mirror the template's ``ItemsPublic``/``UsersPublic``
 envelopes, ``ItemPublic``/``UserPublic``/``Token``/``Message`` models and
 ``core/security.py``.
@@ -141,6 +144,18 @@ def template_profile() -> Profile:
         # SQLAlchemy's SQLite spellings (CHAR(32) ids, naive "YYYY-MM-DD HH:MM:SS.ffffff")
         uuid_storage="hex32",
         datetime_storage="sql_space",
+        # api/deps.get_current_active_user: an inactive caller is a 400 before the
+        # superuser check and before any parameter is validated
+        active_column="is_active",
+        inactive_status=400,
+        inactive_detail="Inactive user",
+        # FastAPI's HTTPException bodies; OAuth2PasswordBearer's and
+        # get_current_active_superuser's texts for the automatic 401 / 403
+        error_body="fastapi",
+        unauthorized_detail="Not authenticated",
+        forbidden_detail="The user doesn't have enough privileges",
+        # pydantic's spelling of the naive datetimes SQLite hands back
+        datetime_wire="naive",
     )
     return Profile(schemas={}, api=api)
 

@@ -36,7 +36,7 @@ from lattice.catalog import (
     USER_PARAM,
 )
 from lattice.check.api_info import endpoint_decorator
-from lattice.check.astutil import is_constant_expr
+from lattice.check.astutil import is_constant_expr, is_list_constant_assign
 from lattice.check.context import CheckContext
 
 Kind = Literal["ambient", "step", "table", "param", "local", "const"]
@@ -178,6 +178,9 @@ class _Resolver:
             scope.bindings[USER_PARAM] = Binding(USER_PARAM, "param", fn, fn.lineno, used=True)
 
     def _is_const(self, stmt: ast.Assign) -> bool:
+        """A named constant: a scalar expression, or (API programs) a list constant."""
+        if self.ctx.profile.api is not None and is_list_constant_assign(stmt):
+            return True
         return is_constant_expr(stmt.value)
 
     def _step(self, fn: ast.FunctionDef) -> None:
@@ -207,7 +210,7 @@ class _Resolver:
             match stmt:
                 case ast.Assign():
                     self._uses(stmt.value, scope, where)
-                    kind: Kind = "const" if self._is_const(stmt) else "local"
+                    kind: Kind = "const" if is_constant_expr(stmt.value) else "local"
                     self._bind(scope, _target(stmt), kind, stmt.targets[0], (scope, self.globals_))
                     if endpoint and _is_effect(stmt.value):
                         # a check or write is used for its effect even if never read

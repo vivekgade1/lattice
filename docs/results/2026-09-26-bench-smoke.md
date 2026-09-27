@@ -286,35 +286,34 @@ The FastAPI app Lattice generates from a B program is ~428 lines, almost all of 
 
 Hand-written Lattice (`tests/fixtures/template/{login,items,users}.lattice.py`, profile `bench/template_profile.py`) against the vendored official FastAPI template (`bench/template_app`). The routes covered are `read_items`, `read_item`, `create_item`, `update_item`, `delete_item`, `read_users` (admin list), `read_user_me`, `update_user_me` and `login_access_token`. The request suite is `bench/template_suite.py` (53 cases), plus 9 extra cases in the test: an inactive user (including on the admin list and with an invalid parameter), and a valid token for a user that does not exist. Each case runs on a fresh copy of the same seeded SQLite database: the template's own schema, 32-hex ids and naive `YYYY-MM-DD HH:MM:SS.ffffff` datetimes. The comparison covers status, JSON body and the tables after the request, with placeholders for generated UUIDs, timestamps and tokens. A placeholder keeps the value's spelling class (`<uuid:1:hex32>` vs `<uuid:1:dashed>`, `<datetime:1:space>` vs `<datetime:1:TZ>`), so a backend that stores a new id or instant in another spelling than the database's fails on the table snapshots. Test: `tests/template/test_template_differential.py`.
 
-**Result**
+**Result** (re-run with sub-project 1b Part B, spec `2026-09-27-lattice-loops-design.md` §4)
 
 | Comparison | Cases | Identical | Identical up to a representation rule | Named deviations |
 |---|---|---|---|---|
-| Lattice runtime vs template, suite | 53 | 6 | 38 | 9 (7 policy, 2 gap) |
-| Lattice runtime vs template, extra | 9 | 0 | 6 | 3 (1 policy, 2 gap) |
+| Lattice runtime vs template, suite | 53 | 40 | 9 | 4 (all policy) |
+| Lattice runtime vs template, extra | 9 | 8 | 0 | 1 (policy) |
 | Generated FastAPI app vs Lattice runtime | 62 | **62** | — | — |
 
-So **44/53** suite cases match (status, DB effects, and body). Every DB effect matches except `users_update_me_bad_email`, and every status matches except the bad-token, unbounded-limit and bad-email cases. (`item_create` and `item_create_title_only` need `DATETIME_WIRE` for their generated `created_at`: the spelling-keeping placeholders no longer hide that the template answers it naive.)
+So **49/53** suite cases match (status, DB effects, and body), and 8/9 extra cases. Every DB effect matches, and every status matches except the bad-token, unbounded-limit and unknown-user cases. Before Part B the proof stood at 44/53 (6 identical, 38 under three representation rules, 9 deviations of which 2 were language gaps) and 6/9 extra cases (2 more gaps). The profile and programs now use:
 
-**Representation rules.** Each rule is named and asserted in the test, and each is needed by at least one case:
+- B1 `active_column="is_active"` (400 "Inactive user", checked by auth before the role check and before parameter validation): removes the `inactive-before-role` and `inactive-before-validation` gaps and the 8 repeated `require(user, col("is_active"), ...)` lines. Login keeps its own `require`, like the template's route, because a Public endpoint has no caller.
+- B2 `error_body="fastapi"` with `unauthorized_detail="Not authenticated"` and `forbidden_detail="The user doesn't have enough privileges"`: removes the `ERROR_ENVELOPE` rule and the `automatic-401-body`/`automatic-403-body` deviations.
+- B3 `datetime_wire="naive"`: removes the `DATETIME_WIRE` rule (pydantic's spelling of the naive values SQLite returns, e.g. `2026-02-02T06:00:00`).
+- B4 `email: Email(max_len=255) = UNSET`: removes the `email-format` gap (422 for `not-an-email`, nothing stored).
+- B5 `update(user, ..., unique_or=Conflict("User with this email already exists"))`: removes the `email-conflict-detail` gap (the store's UNIQUE violation answers the declared 409).
+- B6 `USER_PUBLIC = [...]` used by three `select(cols=USER_PUBLIC)`: removes the duplicated column lists.
 
-- `DATETIME_WIRE`: same instant, different spelling. Lattice answers `2026-02-02T06:00:00.000000Z`. The template on SQLite answers the naive stored value, `2026-02-02T06:00:00`, because SQLite keeps no zone. In a body, a generated datetime's placeholder is mapped the same way (`<datetime:1:T>` to `<datetime:1:TZ>`); in the tables the spellings must match.
-- `ERROR_ENVELOPE`: same status and detail message. Lattice adds the error code: `{"error": "not_found", "detail": "Item not found"}` vs `{"detail": "Item not found"}`.
-- `VALIDATION_ENVELOPE`: both answer 422 and flag the same fields (same `loc` lists). The envelope and message wording differ.
+**Representation rule.** It is named and asserted in the test, and needed by at least one case:
 
-**Deviations**
+- `VALIDATION_ENVELOPE`: both answer 422 with a `{"detail": [...]}` body flagging the same fields (same `loc` lists, in order). Each entry's wording differs: Lattice `{"loc", "msg"}`, pydantic `{"type", "loc", "msg", "input", "ctx"}`.
+
+**Deviations** (the test asserts each is still real: Lattice's answer, and that it differs from the template's)
 
 | Case(s) | Id | Kind | Lattice answers | Reason |
 |---|---|---|---|---|
 | `items_list_unbounded_limit`, `users_list_unbounded_limit` | bounded-page-size | policy | 422 | The template accepts `limit=1000000`. Lattice requires a bound (L831), so the programs declare `limit: Int(ge=0, le=100)`. |
-| `items_list_bad_token`, `users_me_bad_token` | invalid-token-401 | policy | 401 | The template answers 403 "Could not validate credentials". Lattice answers 401 for any missing or invalid credential (RFC 6750). |
-| `items_list_no_token`, `users_me_no_token` | automatic-401-body | policy | 401 `{"error": "unauthorized"}` | Same status. The template's body is `{"detail": "Not authenticated"}`. |
-| `users_list_normal_user` | automatic-403-body | policy | 403 `{"error": "forbidden"}` | Same status. Lattice's automatic role check has no detail; the template says "The user doesn't have enough privileges". |
-| `token_for_unknown_user` (extra) | unknown-user-token | policy | 401 | The template answers 404 "User not found". For Lattice, a token that identifies no caller is a 401. |
-| `users_update_me_email_taken` | email-conflict-detail | **gap** | 409 `{"error": "conflict", "detail": <generic>}`, rolled back | Same status and DB. The template pre-checks email uniqueness and answers 409 "User with this email already exists". In Lattice, `email` is an `UNSET` partial-update parameter, so any expression over it is L404. The UPDATE hits the UNIQUE index instead, which the runtime and generated apps answer with a generic 409 naming no table or column. |
-| `inactive_users_list` (extra) | inactive-before-role | **gap** | 403 `{"error": "forbidden"}` | The template rejects the inactive caller first (400 "Inactive user"). Lattice has no auth-level active predicate (planned for sub-project 1b), so the automatic `auth=Admin` check answers before the body's `require`. |
-| `inactive_items_list_bad_limit` (extra) | inactive-before-validation | **gap** | 422 | The template answers 400 "Inactive user" (its dependency runs first). Lattice validates parameters before the body's `require` runs; same missing auth-level active predicate. |
-| `users_update_me_bad_email` | email-format | **gap** | 200, stores `not-an-email` | The template validates with pydantic `EmailStr`. Lattice has no email (or pattern) parameter type. |
+| `items_list_bad_token`, `users_me_bad_token` | invalid-token-401 | policy | 401 `{"detail": "Not authenticated"}` | The template answers 403 "Could not validate credentials". Lattice answers 401 for any missing or invalid credential (RFC 6750). |
+| `token_for_unknown_user` (extra) | unknown-user-token | policy | 401 `{"detail": "Not authenticated"}` | The template answers 404 "User not found". For Lattice, a token that identifies no caller is a 401. |
 
 Not covered by any case, and noted for completeness:
 
@@ -330,10 +329,10 @@ Not covered by any case, and noted for completeness:
 
 | | lines | AST nodes |
 |---|---|---|
-| Lattice program (3 files, 9 endpoints) | **93** | 968 |
+| Lattice program (3 files, 9 endpoints; 93 / 968 before Part B) | **81** | 802 |
 | Template route functions (the same 9, with docstrings) | 153 | 968 |
 | Template route functions + the auth and crud support they call (`deps.get_db/get_current_user/get_current_active_superuser`, `crud.get_user_by_email/authenticate`) | 197 | 1278 |
 | Lattice profile tables and models (`bench/template_profile.py`) vs the template's SQLModel classes used | 53 vs 54 | 319 vs 394 |
-| FastAPI app generated from the Lattice program | 1646 | 8348 |
+| FastAPI app generated from the Lattice program | 1427 | 8154 |
 
-For these nine routes, Lattice is about 40% fewer lines than the route functions alone, with the same AST size. It is about 50% fewer lines (and 25% fewer AST nodes) once the auth and crud code the routes depend on is counted, since Lattice gets that from the language and profile. Lattice also repeats the inactive-user check in each endpoint (8 lines); the template has it once in `get_current_user`.
+For these nine routes, Lattice is about 47% fewer lines (17% fewer AST nodes) than the route functions alone, and about 59% fewer lines (37% fewer AST nodes) once the auth and crud code the routes depend on is counted, since Lattice gets that from the language and profile. The inactive-user check is now in the profile, once, as the template has it once in `get_current_active_user`.

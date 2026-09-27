@@ -42,8 +42,13 @@ spellings become the prelude constants `UUID_STORAGE` / `DATETIME_STORAGE`, and 
 `body="form"` endpoint reads URL-encoded form fields (`Endpoint.form`), as the runtime
 does.
 
-The 401/403 bodies (`{"error": "unauthorized"}` / `{"error": "forbidden"}`), the
-precedence (401, then 403, then 422 validation) and the Admin rule are the runtime's.
+The profile-wide Part B settings (sub-project 1b) become prelude constants as well:
+`ERROR_BODY` with `UNAUTHORIZED_DETAIL`/`FORBIDDEN_DETAIL` (the error body style and the
+automatic 401/403 texts), `DATETIME_WIRE` (how responses spell a DateTime), and
+`ACTIVE_COLUMN`/`INACTIVE_STATUS`/`INACTIVE_DETAIL` (the active check in auth). A write
+with `unique_or=Conflict(...)` runs through `write(...)`, which answers the declared 409
+on a UNIQUE violation. Every error body, the precedence (401, then the inactive status,
+then 403, then 422 validation) and the Admin rule are the runtime's.
 Every connection still comes from the kit's `get_db`, so the harness's statement
 counting applies identically.
 """
@@ -60,7 +65,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 from lattice.api.backend import SQLITE
-from lattice.api.ir import CheckStep, EndpointPlan, ReadStep, WriteStep, lower_api
+from lattice.api.ir import CheckStep, EndpointPlan, ErrorSpec, ReadStep, WriteStep, lower_api
 from lattice.api.runtime import auth_sql
 from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, sent_bind
 from lattice.catalog import USER_PARAM
@@ -85,6 +90,7 @@ import urllib.parse
 import uuid
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
+from http import HTTPStatus
 from typing import Any, NamedTuple
 
 from fastapi import Request
@@ -131,6 +137,8 @@ class Param:
     default: object = MISSING
     optional: bool = False
     nullable: bool = False
+    pattern: str | None = None  # a regular expression the whole Str value must match
+    email: bool = False  # the pattern is Email's (only the message differs)
 
 
 @dataclass(frozen=True)
@@ -159,10 +167,14 @@ Result = tuple[tuple[str, ...], list[tuple[Any, ...]]]  # (columns, rows)
 
 
 class ErrorResponse(Exception):
-    def __init__(self, status: int, body: Mapping[str, object]) -> None:
+    """An error response: status, JSON error code and detail (None: no detail),
+    rendered in the ERROR_BODY style."""
+
+    def __init__(self, status: int, code: str, detail: object = None) -> None:
         super().__init__(status)
         self.status = status
-        self.body = body
+        self.code = code
+        self.detail = detail
 
 
 class Failure(Exception):
@@ -170,7 +182,34 @@ class Failure(Exception):
 
 
 def error(status: int, code: str, detail: str) -> ErrorResponse:
-    return ErrorResponse(status, {"error": code, "detail": detail})
+    return ErrorResponse(status, code, detail)
+
+
+# The error body style: "lattice" ({"error": code} plus "detail" when there is one) or
+# "fastapi" ({"detail": ...}, the HTTP status phrase when there is no detail); the
+# automatic 401/403 details (None: none in the "lattice" style).
+ERROR_BODY = "lattice"
+UNAUTHORIZED_DETAIL: str | None = None
+FORBIDDEN_DETAIL: str | None = None
+# Auth refuses a caller whose ACTIVE_COLUMN (a Bool column of the users table) is not
+# true with INACTIVE_STATUS / INACTIVE_DETAIL (None: no active check).
+ACTIVE_COLUMN: str | None = None
+INACTIVE_STATUS = 400
+INACTIVE_DETAIL = "Inactive user"
+STATUS_CODES = {400: "bad_request", 401: "unauthorized", 403: "forbidden"}
+
+
+def error_body(status: int, code: str, detail: object = None) -> dict[str, object]:
+    if ERROR_BODY == "fastapi":
+        return {"detail": HTTPStatus(status).phrase if detail is None else detail}
+    body: dict[str, object] = {"error": code}
+    if detail is not None:
+        body["detail"] = detail
+    return body
+
+
+def json_error(status: int, code: str, detail: object = None) -> JSONResponse:
+    return JSONResponse(error_body(status, code, detail), status_code=status)
 
 
 # ---- SQLite functions the compiled SQL calls ------------------------------------------
@@ -237,6 +276,17 @@ def datetime_text(value: dt.datetime) -> str:
     if value.tzinfo is not None:
         value = value.astimezone(dt.UTC)
     return value.replace(tzinfo=None).isoformat(timespec="microseconds") + "Z"
+
+
+# How responses spell a DateTime: "iso_z" (datetime_text) or "naive" (the UTC value
+# without a zone, as pydantic serializes a naive datetime).
+DATETIME_WIRE = "iso_z"
+
+
+def wire_datetime(value: dt.datetime) -> str:
+    if DATETIME_WIRE == "naive":
+        return value.astimezone(dt.UTC).replace(tzinfo=None).isoformat()
+    return datetime_text(value)
 
 
 def stored_uuid(value: object) -> str | None:
@@ -478,6 +528,10 @@ def _constrain(spec: Param, value: object) -> None:
             raise ValueError(f"must have at least {spec.min_len} characters")
         if spec.max_len is not None and len(value) > spec.max_len:
             raise ValueError(f"must have at most {spec.max_len} characters")
+        if spec.pattern is not None and not re.fullmatch(spec.pattern, value):
+            if spec.email:
+                raise ValueError("must be an email address")
+            raise ValueError(f"must match the pattern {spec.pattern!r}")
 
 
 def _default(spec: Param) -> object:
@@ -519,7 +573,7 @@ def parse_params(
                 parsed = None
         if not isinstance(parsed, dict):
             detail.append({"loc": ["body"], "msg": "the body must be a JSON object"})
-            raise ErrorResponse(422, {"error": "validation", "detail": detail})
+            raise ErrorResponse(422, "validation", detail)
         data = parsed
     for spec in params:
         source: Mapping[str, object] = {"path": path, "query": query, "body": data}[spec.source]
@@ -546,7 +600,7 @@ def parse_params(
             continue
         values[spec.name] = value
     if detail:
-        raise ErrorResponse(422, {"error": "validation", "detail": detail})
+        raise ErrorResponse(422, "validation", detail)
     return values
 
 
@@ -568,14 +622,16 @@ def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
     not call the endpoint (the admin role may call every endpoint)."""
     row = conn.execute(ep.auth_sql, (token,)).fetchone()
     if row is None:
-        raise ErrorResponse(401, {"error": "unauthorized"})
+        raise ErrorResponse(401, "unauthorized", UNAUTHORIZED_DETAIL)
     user_id = row[ep.user_columns.index(ep.user_key)]
+    if ACTIVE_COLUMN is not None and not row[ep.user_columns.index(ACTIVE_COLUMN)]:
+        raise ErrorResponse(INACTIVE_STATUS, STATUS_CODES[INACTIVE_STATUS], INACTIVE_DETAIL)
     if ep.admin_flag is not None:
         role = ep.admin_role if row[ep.user_columns.index(ep.admin_flag)] else ep.flag_role
     else:
         role = str(row[ep.user_columns.index(ep.role_column)])
     if not (ep.auth == "Public" or role == ep.auth or role == ep.admin_role):
-        raise ErrorResponse(403, {"error": "forbidden"})
+        raise ErrorResponse(403, "forbidden", FORBIDDEN_DETAIL)
     return Caller(user_id, int(role == ep.admin_role), tuple(row))
 
 
@@ -612,6 +668,18 @@ def rows_json(result: Result, columns: Sequence[str]) -> str:
 
 def run(conn: sqlite3.Connection, sql: str, binds: Mapping[str, object]) -> list[tuple[Any, ...]]:
     return conn.execute(sql, binds).fetchall()
+
+
+def write(
+    conn: sqlite3.Connection, sql: str, binds: Mapping[str, object], conflict: ErrorResponse
+) -> list[tuple[Any, ...]]:
+    """A write with unique_or=Conflict(...): a UNIQUE violation answers `conflict`."""
+    try:
+        return run(conn, sql, binds)
+    except sqlite3.Error as err:
+        if _is_unique_violation(err):
+            raise conflict from None
+        raise
 
 
 def split_total(rows: list[tuple[Any, ...]]) -> tuple[list[tuple[Any, ...]], int]:
@@ -683,7 +751,7 @@ def _decode(v: object, scalar: str) -> object:
         return uuid_text(v) or v
     if scalar == "DateTime":  # canonical text
         parsed = parse_datetime(v)
-        return v if parsed is None else datetime_text(parsed)
+        return v if parsed is None else wire_datetime(parsed)
     return v  # Str; Date stays ISO text
 
 
@@ -708,7 +776,7 @@ def respond_one(
     """One / Created: the single returned row as an object."""
     items = _items(result, columns)
     if not items:
-        raise ErrorResponse(404, {"error": "not_found", "detail": "no such row"})
+        raise ErrorResponse(404, "not_found", "no such row")
     if len(items) > 1:
         raise Failure(
             f"{where}: error R310: the response has {len(items)} rows; expected exactly one"
@@ -732,7 +800,7 @@ def respond_page(
 
 
 def _internal(detail: str) -> JSONResponse:
-    return JSONResponse({"error": "internal", "detail": detail[:500]}, status_code=500)
+    return json_error(500, "internal", detail[:500])
 
 
 UNIQUE_CONFLICT = "a row with the same unique value already exists"
@@ -766,7 +834,7 @@ def serve(
         if ep.auth != "Public":
             token = _token(authorization)
             if token is None:
-                raise ErrorResponse(401, {"error": "unauthorized"})
+                raise ErrorResponse(401, "unauthorized", UNAUTHORIZED_DETAIL)
             conn = connect()
             caller = authenticate(ep, conn, token)
         values = parse_params(ep.params, path, query, body, ep.form, content_type)
@@ -779,12 +847,12 @@ def serve(
         in_txn = False
         return response
     except ErrorResponse as err:
-        return JSONResponse(dict(err.body), status_code=err.status)
+        return json_error(err.status, err.code, err.detail)
     except Failure as err:
         return _internal(str(err))
     except Exception as err:  # loud: any unexpected failure is a 500
         if _is_unique_violation(err):  # a 409 naming no table or column; rolled back below
-            return JSONResponse({"error": "conflict", "detail": UNIQUE_CONFLICT}, status_code=409)
+            return json_error(409, "conflict", UNIQUE_CONFLICT)
         return _internal(f"{type(err).__name__}: {err}")
     finally:
         if conn is not None:
@@ -815,7 +883,7 @@ async def dispatch(request: Request, ep: Endpoint, steps: Steps) -> Response:
 async def http_error(request: Request, exc: Exception) -> Response:
     status = getattr(exc, "status_code", 500)
     code = {404: "not_found", 405: "method_not_allowed"}.get(status, "internal")
-    return JSONResponse({"error": code}, status_code=status)
+    return json_error(status, code)
 '''
 
 
@@ -985,7 +1053,7 @@ def _param(spec: ParamSpec, null_ok: Sequence[str] = ()) -> _Call:
     if spec.scalar is None:
         raise LatticeInternalError(f"parameter '{spec.name}' has no scalar type")
     args: list[_Node] = [_py_str(spec.name), _py_str(spec.source), _py_str(spec.scalar.value)]
-    for name in ("ge", "le", "min_len", "max_len", "one_of"):
+    for name in ("ge", "le", "min_len", "max_len", "one_of", "pattern"):
         value = getattr(spec, name)
         if value is not None:
             args.append(_Kw(name, _literal(value)))
@@ -997,6 +1065,8 @@ def _param(spec: ParamSpec, null_ok: Sequence[str] = ()) -> _Call:
         args.append(_Kw("optional", "True"))
         if spec.name in null_ok:
             args.append(_Kw("nullable", "True"))
+    if spec.email:
+        args.append(_Kw("email", "True"))
     return _Call("Param", tuple(args))
 
 
@@ -1052,15 +1122,19 @@ class _EndpointGen:
             items += [(_py_str(NOW), _Call("sql_value", ("now",)))]
         return _Dict(tuple(items))
 
-    def run(self, step_id: str, sql: SqlQuery) -> _Call:
+    def run(self, step_id: str, sql: SqlQuery, conflict: ErrorSpec | None = None) -> _Call:
         const = self.constant(f"{_ident(step_id).upper()}_SQL", _sql_constant(sql.text))
+        if conflict is not None:  # unique_or=Conflict(...)
+            return _Call("write", ("conn", const, self.binds(sql), self.error_call(conflict)))
         return _Call("run", ("conn", const, self.binds(sql)))
 
     def result(self, step_id: str) -> str:
         return f"results[{_py_str(step_id)}]"
 
     def error(self, step: CheckStep) -> _Call:
-        e = step.error
+        return self.error_call(step.error)
+
+    def error_call(self, e: ErrorSpec) -> _Call:
         return _Call("error", (str(e.status), _py_str(e.code), _py_str(e.detail)))
 
     # ---- steps ----------------------------------------------------------------------------
@@ -1099,11 +1173,12 @@ class _EndpointGen:
                 cols = self.constant(
                     f"{_ident(step.id).upper()}_COLUMNS", _strs(step.schema.names())
                 )
-                self.emit(_Tuple((cols, self.run(step.id, step.sql))), f"{self.result(step.id)} = ")
+                run = self.run(step.id, step.sql, step.conflict)
+                self.emit(_Tuple((cols, run)), f"{self.result(step.id)} = ")
             case WriteStep(kind="update"):
                 assert step.input is not None
                 self.comment(step.span.line, f"update {step.table}")
-                self.emit(self.run(step.id, step.sql), "returned = ")
+                self.emit(self.run(step.id, step.sql, step.conflict), "returned = ")
                 args = (
                     self.result(step.input),
                     "returned",
@@ -1301,6 +1376,29 @@ def _natives_section(plans: Sequence[EndpointPlan], module: str, names: _Names) 
     return line + "\n", header + "\n\n" + register
 
 
+# Prelude constants set from the (profile-wide) plan settings: (constant, plan field).
+_PROFILE_CONSTANTS = (
+    ("UUID_STORAGE", "uuid_storage"),
+    ("DATETIME_STORAGE", "datetime_storage"),
+    ("DATETIME_WIRE", "datetime_wire"),
+    ("ERROR_BODY", "error_body"),
+    ("UNAUTHORIZED_DETAIL", "unauthorized_detail"),
+    ("FORBIDDEN_DETAIL", "forbidden_detail"),
+    ("ACTIVE_COLUMN", "active_column"),
+    ("INACTIVE_STATUS", "inactive_status"),
+    ("INACTIVE_DETAIL", "inactive_detail"),
+)
+
+
+def _set_constant(prelude: str, name: str, value: str) -> str:
+    """The prelude with module constant `name` (one `NAME[: type] = ...` line) set."""
+    pattern = re.compile(rf"^({re.escape(name)}(?:: [^=]+)? = ).*$", re.MULTILINE)
+    new, n = pattern.subn(lambda m: m.group(1) + value, prelude, count=1)
+    if n != 1:
+        raise LatticeInternalError(f"the prelude has no constant {name}")
+    return new
+
+
 def generate_fastapi(
     plans: Sequence[EndpointPlan], source: str | None = None, natives_module: str = "natives"
 ) -> str:
@@ -1328,16 +1426,12 @@ def generate_fastapi(
     imports, register = _natives_section(ordered, natives_module, names)
     kit = "from platform_kit import app, get_db\n"
     prelude = _PRELUDE.replace(kit, kit + imports, 1)
-    storages = {(p.uuid_storage, p.datetime_storage) for p in plans}
-    if len(storages) > 1:
-        raise LatticeInternalError(f"plans disagree on Uuid/DateTime storage: {storages}")
-    if storages:
-        ((uuid_storage, datetime_storage),) = storages
-        prelude = prelude.replace(
-            'UUID_STORAGE = "canonical"\n', f"UUID_STORAGE = {_py_str(uuid_storage)}\n", 1
-        ).replace(
-            'DATETIME_STORAGE = "iso_z"\n', f"DATETIME_STORAGE = {_py_str(datetime_storage)}\n", 1
-        )
+    for name, field in _PROFILE_CONSTANTS:
+        values = {getattr(p, field) for p in plans}
+        if len(values) > 1:
+            raise LatticeInternalError(f"plans disagree on {field}: {sorted(map(repr, values))}")
+        if values:
+            prelude = _set_constant(prelude, name, _literal(values.pop()))
     parts = [header + "\n".join(routes) + "\n\n" + prelude.rstrip("\n")]
     if register:
         parts.append(register)

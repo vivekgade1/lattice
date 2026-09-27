@@ -18,24 +18,29 @@ Comparison, per case:
 
 * **Generated app vs runtime:** identical records, every case.
 * **Lattice vs template:** identical status and DB effects, and an identical body up to
-  three named, asserted *representation rules* (``DATETIME_WIRE``, ``ERROR_ENVELOPE``,
-  ``VALIDATION_ENVELOPE``) -- unless the case is listed in ``DEVIATIONS``, where the
-  Lattice status, body and DB outcome are asserted exactly, together with the fact
-  that they really differ from the template's. Nothing is skipped or tolerated
-  silently: a case that starts matching (or diverging) fails the test.
+  one named, asserted *representation rule* (``VALIDATION_ENVELOPE``) -- unless the case
+  is listed in ``DEVIATIONS``, where the Lattice status, body and DB outcome are
+  asserted exactly, together with the fact that they really differ from the
+  template's. Nothing is skipped or tolerated silently: a case that starts matching
+  (or diverging) fails the test.
+
+The profile uses the sub-project 1b Part B settings (``bench/template_profile.py``):
+the active check in auth (``active_column``), FastAPI error bodies with the template's
+automatic 401/403 texts (``error_body="fastapi"``), pydantic's naive datetime spelling
+(``datetime_wire="naive"``); the programs use ``Email`` parameters, ``unique_or=`` and a
+list constant. What remains are Lattice's policy deviations (the page-size bound, 401
+for a bad token or a token naming no user) and the 422 wording.
 """
 
 from __future__ import annotations
 
 import importlib
-import re
 import shutil
 import sqlite3
 import sys
 import uuid
 from collections.abc import Iterator
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -57,12 +62,10 @@ from bench.template_suite import (
     TEMPLATE_SUITE,
     CaseRecord,
     TemplateCase,
-    datetime_spelling,
     run_template_suite,
 )
-from lattice.api.backend import datetime_text, parse_datetime
 from lattice.api.codegen import compile_source_to_fastapi
-from lattice.api.runtime import UNIQUE_CONFLICT, build_app
+from lattice.api.runtime import build_app
 
 REPO = Path(__file__).resolve().parents[2]
 KIT_PATH = REPO / "bench" / "api_kit" / "platform_kit.py"
@@ -94,56 +97,14 @@ EXTRA_CASES: list[TemplateCase] = [
 
 # ---- representation rules ------------------------------------------------------------------
 
-DATETIME_WIRE = "DATETIME_WIRE"
-ERROR_ENVELOPE = "ERROR_ENVELOPE"
 VALIDATION_ENVELOPE = "VALIDATION_ENVELOPE"
 RULES: dict[str, str] = {
-    DATETIME_WIRE: (
-        "A DateTime is the same instant, spelled differently. Lattice always answers UTC "
-        "ISO-8601 with microseconds and 'Z' ('2026-02-02T06:00:00.000000Z'); the template "
-        "on SQLite answers the naive stored value with pydantic's shortest fraction "
-        "('2026-02-02T06:00:00') because SQLite keeps no zone (on Postgres it would say "
-        "'...:00Z'). The rule maps each template datetime to Lattice's spelling of it as "
-        "UTC, and a generated one's placeholder to Lattice's spelling class "
-        "('<datetime:1:T>' -> '<datetime:1:TZ>'); in the database the spellings must "
-        "match."
-    ),
-    ERROR_ENVELOPE: (
-        "Same status and the same detail message; Lattice's declared errors add the error "
-        'code: {"error": "not_found", "detail": "Item not found"} where FastAPI\'s '
-        'HTTPException answers {"detail": "Item not found"}.'
-    ),
     VALIDATION_ENVELOPE: (
-        "Both answer 422 flagging the same fields (the same loc lists, in order); the "
-        'envelope and wording differ: Lattice {"error": "validation", "detail": [{"loc", '
-        '"msg"}]}, pydantic {"detail": [{"type", "loc", "msg", "input", "ctx"}]}.'
+        "Both answer 422 flagging the same fields (the same loc lists, in order) in a "
+        '{"detail": [...]} body; each entry\'s wording differs: Lattice {"loc", "msg"}, '
+        'pydantic {"type", "loc", "msg", "input", "ctx"}.'
     ),
 }
-ERROR_CODES = {
-    400: "bad_request",
-    401: "unauthorized",
-    403: "forbidden",
-    404: "not_found",
-    409: "conflict",
-}
-_DATETIME = re.compile(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?")
-_DATETIME_PLACEHOLDER = re.compile(r"<datetime:(\d+):[^>]*>")
-_WIRE_SPELLING = datetime_spelling(datetime_text(datetime(2000, 1, 1)))  # "TZ"
-
-
-def _wire_datetimes(value: Any) -> Any:
-    """DATETIME_WIRE: every (seeded) datetime string re-spelled as Lattice answers it."""
-    if isinstance(value, dict):
-        return {k: _wire_datetimes(v) for k, v in value.items()}
-    if isinstance(value, list):
-        return [_wire_datetimes(v) for v in value]
-    if isinstance(value, str) and _DATETIME.fullmatch(value):
-        parsed = parse_datetime(value)
-        assert parsed is not None
-        return datetime_text(parsed)
-    if isinstance(value, str) and (m := _DATETIME_PLACEHOLDER.fullmatch(value)):
-        return f"<datetime:{m.group(1)}:{_WIRE_SPELLING}>"
-    return value
 
 
 def agreement(template: CaseRecord, lattice: CaseRecord) -> tuple[str, ...]:
@@ -153,16 +114,12 @@ def agreement(template: CaseRecord, lattice: CaseRecord) -> tuple[str, ...]:
     assert lattice.db == template.db, "database effects differ"
     t, b = template.body, lattice.body
     if template.status == 422:
-        assert isinstance(b, dict) and set(b) == {"error", "detail"}
-        assert b["error"] == "validation"
+        assert isinstance(b, dict) and set(b) == {"detail"}
         assert [d["loc"] for d in b["detail"]] == [d["loc"] for d in t["detail"]]
+        assert all(set(d) == {"loc", "msg"} for d in b["detail"])
         return (VALIDATION_ENVELOPE,)
-    if template.status >= 400 and isinstance(t, dict) and set(t) == {"detail"}:
-        assert b == {"error": ERROR_CODES[template.status], "detail": t["detail"]}, b
-        return (ERROR_ENVELOPE,)
-    expected = _wire_datetimes(t)
-    assert b == expected
-    return (DATETIME_WIRE,) if expected != t else ()
+    assert b == t, (t, b)
+    return ()
 
 
 # ---- deviations ---------------------------------------------------------------------------
@@ -180,7 +137,7 @@ class Deviation:
     db_same: bool = True  # Lattice's database effects equal the template's
 
 
-_UNAUTHORIZED = {"error": "unauthorized"}
+_UNAUTHORIZED = {"detail": "Not authenticated"}
 _BOUNDED_LIMIT = Deviation(
     "bounded-page-size",
     "policy",
@@ -188,22 +145,15 @@ _BOUNDED_LIMIT = Deviation(
     "requires a page size bound (L831: an Int parameter with le <= 100), so the "
     "programs declare limit: Int(ge=0, le=100) = 100 and a larger limit is a 422.",
     422,
-    {"error": "validation", "detail": [{"loc": ["query", "limit"], "msg": "must be <= 100"}]},
+    {"detail": [{"loc": ["query", "limit"], "msg": "must be <= 100"}]},
 )
 _BAD_TOKEN = Deviation(
     "invalid-token-401",
     "policy",
     "The template answers an invalid bearer token with 403 'Could not validate "
     "credentials'; Lattice's auth answers every missing or invalid credential with 401 "
-    "(RFC 6750 invalid_token), keeping 403 for a caller without the required role.",
-    401,
-    _UNAUTHORIZED,
-)
-_NO_TOKEN = Deviation(
-    "automatic-401-body",
-    "policy",
-    "Same status. Lattice's automatic 401 body is {'error': 'unauthorized'} without a "
-    "detail; the template's OAuth2PasswordBearer says {'detail': 'Not authenticated'}.",
+    "(RFC 6750 invalid_token), keeping 403 for a caller without the required role. The "
+    "body is the profile's automatic 401 text.",
     401,
     _UNAUTHORIZED,
 )
@@ -212,17 +162,6 @@ DEVIATIONS: dict[str, Deviation] = {
     "users_list_unbounded_limit": _BOUNDED_LIMIT,
     "items_list_bad_token": _BAD_TOKEN,
     "users_me_bad_token": _BAD_TOKEN,
-    "items_list_no_token": _NO_TOKEN,
-    "users_me_no_token": _NO_TOKEN,
-    "users_list_normal_user": Deviation(
-        "automatic-403-body",
-        "policy",
-        "Same status. Lattice's automatic role check (auth=Admin) answers "
-        "{'error': 'forbidden'} without a detail; the template's "
-        "get_current_active_superuser says 'The user doesn't have enough privileges'.",
-        403,
-        {"error": "forbidden"},
-    ),
     "token_for_unknown_user": Deviation(
         "unknown-user-token",
         "policy",
@@ -232,61 +171,6 @@ DEVIATIONS: dict[str, Deviation] = {
         401,
         _UNAUTHORIZED,
     ),
-    "users_update_me_email_taken": Deviation(
-        "email-conflict-detail",
-        "gap",
-        "Same status (409) and database (unchanged). The template checks `if "
-        "user_in.email:` for another user with that email and answers 409 'User with "
-        "this email already exists'. Lattice cannot express this check: `email` is an "
-        "UNSET-able partial-update parameter and any expression over it is L404, so the "
-        "program cannot compare it with other rows before the update. The UPDATE hits "
-        "the UNIQUE index instead, which Lattice answers with a generic 409 (rolled back) "
-        "whose detail names no table or column -- so not the template's message.",
-        409,
-        {"error": "conflict", "detail": UNIQUE_CONFLICT},
-    ),
-    "inactive_users_list": Deviation(
-        "inactive-before-role",
-        "gap",
-        "An inactive non-superuser lists users: the template's get_current_active_user "
-        "rejects the caller as inactive (400 'Inactive user') before the superuser check. "
-        "Lattice has no auth-level active predicate: `is_active` is checked by a require() "
-        "in the program body, which runs after the automatic auth=Admin role check, so "
-        "the caller gets that check's 403. (An auth-level active predicate is planned "
-        "for sub-project 1b.)",
-        403,
-        {"error": "forbidden"},
-    ),
-    "inactive_items_list_bad_limit": Deviation(
-        "inactive-before-validation",
-        "gap",
-        "An inactive user sends an invalid parameter (limit=many): the template resolves "
-        "the active-user dependency first and answers 400 'Inactive user'. In Lattice "
-        "the active check is a require() in the program body, which runs only after the "
-        "parameters validate, so the caller gets 422. Lattice has no auth-level active "
-        "predicate (planned for sub-project 1b).",
-        422,
-        {
-            "error": "validation",
-            "detail": [{"loc": ["query", "limit"], "msg": "must be an integer"}],
-        },
-    ),
-    "users_update_me_bad_email": Deviation(
-        "email-format",
-        "gap",
-        "The template's UserUpdateMe.email is a pydantic EmailStr (422 for 'not-an-email'). "
-        "Lattice has no email (or pattern) parameter type, so the value is stored as given.",
-        200,
-        {
-            "email": "not-an-email",
-            "is_active": True,
-            "is_superuser": False,
-            "full_name": "Carol Chen",
-            "id": "b33cbfa5-3598-5545-b110-d26f8f619d1e",
-            "created_at": "2026-01-04T09:00:00.000000Z",
-        },
-        db_same=False,
-    ),
 }
 
 ALL_CASES = [*TEMPLATE_SUITE, *EXTRA_CASES]
@@ -295,7 +179,7 @@ CASE_NAMES = [c.name for c in ALL_CASES]
 # The expected tally over the 53 suite cases and the 9 extra ones (documented in
 # docs/results/2026-09-26-bench-smoke.md): exact matches, matches that need a
 # representation rule, and deviations.
-EXPECTED_TALLY = {"suite": (6, 38, 9), "extra": (0, 6, 3)}
+EXPECTED_TALLY = {"suite": (40, 9, 4), "extra": (8, 0, 1)}
 
 # ---- fixtures -----------------------------------------------------------------------------
 
@@ -385,8 +269,7 @@ def test_a_customer_cannot_update_their_own_admin_columns(column):
     from lattice.check import check_source
 
     src = template_program().replace(
-        "update(user, full_name=full_name, email=email)",
-        f"update(user, full_name=full_name, email=email, {column}=True)",
+        "        email=email,\n", f"        email=email,\n        {column}=True,\n"
     )
     assert src != template_program()
     result = check_source(src, template_profile())
@@ -432,6 +315,8 @@ def test_every_deviation_names_a_case():
     assert set(DEVIATIONS) <= set(CASE_NAMES)
     assert len(set(CASE_NAMES)) == len(CASE_NAMES)
     assert all(d.kind in ("policy", "gap") and d.reason for d in DEVIATIONS.values())
+    # sub-project 1b Part B closed every language gap: only policy deviations remain
+    assert {d.kind for d in DEVIATIONS.values()} == {"policy"}
 
 
 def test_a_write_in_another_spelling_is_caught(dbs, template_records):

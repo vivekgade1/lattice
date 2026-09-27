@@ -34,6 +34,7 @@ from lattice.catalog import (
     PUBLIC_ROLE,
     TABLE_OPS,
     TYPE_NAMES,
+    UNIQUE_OR,
     UNSET_NAME,
     USER_PARAM,
 )
@@ -1327,6 +1328,25 @@ class _Types:
                     'compare it, e.g. col("status") == "pending"',
                 )
 
+    def _unique_or(self, node: ast.expr) -> None:
+        """unique_or= must construct a Conflict: Conflict("detail") (or Conflict())."""
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "Conflict"
+            and not node.keywords
+            and len(node.args) <= 1
+            and all(_str_constant(a) is not None for a in node.args)
+        ):
+            return
+        self.ctx.error(
+            "L404",
+            node,
+            "unique_or= must be a Conflict with an optional message: the 409 answered "
+            "when the write hits a UNIQUE constraint",
+            'e.g. unique_or=Conflict("email already registered")',
+        )
+
     def _else(self, node: ast.expr) -> None:
         """else_= must construct a declarable error: NotFound("detail")."""
         match node:
@@ -1379,6 +1399,9 @@ class _Types:
         typer = self._typer(Schema(()), scope)
         for kw in call.keywords:
             assert kw.arg is not None
+            if kw.arg == UNIQUE_OR:
+                self._unique_or(kw.value)
+                continue
             if kw.arg == "owner":
                 if not (isinstance(kw.value, ast.Name) and kw.value.id == USER_PARAM):
                     self.ctx.error("L404", kw.value, "insert() owner= must be user", "owner=user")
@@ -1490,6 +1513,9 @@ class _Types:
         key_cols = {c for k in schema.keys for c in k} if schema is not None else set()
         for kw in call.keywords:
             assert kw.arg is not None
+            if kw.arg == UNIQUE_OR:
+                self._unique_or(kw.value)
+                continue
             if schema is not None and not self._require_columns([kw.arg], schema, kw):
                 continue
             if kw.arg in key_cols:

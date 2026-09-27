@@ -6,7 +6,16 @@ import ast
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
-from lattice.check import p1_nodes, p2_names, p3_canon, p4_types, p5_effects, p6_api, p7_backend
+from lattice.check import (
+    list_consts,
+    p1_nodes,
+    p2_names,
+    p3_canon,
+    p4_types,
+    p5_effects,
+    p6_api,
+    p7_backend,
+)
 from lattice.check.api_info import EndpointInfo
 from lattice.check.astutil import MAX_DEPTH
 from lattice.check.context import CheckContext
@@ -77,6 +86,10 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
         return CheckResult(None, _sorted(ctx.diagnostics))
 
     p2_names.run(module, ctx)
+    before = ctx.error_count()
+    list_consts.run(module, ctx)  # B6: select(cols=NAME) -> the list; NAME dropped
+    if ctx.error_count() > before:
+        return CheckResult(None, _sorted(ctx.diagnostics))
     p3_canon.run(module, ctx)
     steps = p4_types.run(module, ctx)
     p5_effects.run(module, ctx)

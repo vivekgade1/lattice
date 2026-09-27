@@ -34,6 +34,7 @@ from lattice.check.astutil import (
     INT64_MAX,
     INT64_MIN,
     is_constant_expr,
+    is_list_constant_assign,
     is_table_annotation,
     is_valid_annotation,
     literal_value,
@@ -109,7 +110,9 @@ def run(module: ast.Module, ctx: CheckContext) -> None:
         seen_other = True
         api = ctx.profile.api is not None
         match stmt:
-            case ast.Assign() if api and not is_constant_expr(stmt.value):
+            case ast.Assign() if (
+                api and not is_constant_expr(stmt.value) and not is_list_constant_assign(stmt)
+            ):
                 _top_level_statement(stmt, ctx)
             case ast.Expr() if api:
                 _top_level_statement(stmt, ctx)
@@ -373,7 +376,8 @@ def _top_level_statement(stmt: ast.Assign | ast.Expr, ctx: CheckContext) -> None
     ctx.error(
         "L840",
         stmt,
-        "API programs contain only constants, @step and @endpoint functions",
+        "API programs contain only constants (a scalar, or a list of column names), "
+        "@step and @endpoint functions",
         "move this statement into an @endpoint function",
     )
 

@@ -12,6 +12,12 @@ PAGE_SHAPE_KEYS = frozenset({"items", "total", "limit", "offset"})
 # Stored spellings of Uuid / DateTime values (lattice.api.backend implements them).
 UUID_STORAGES = ("canonical", "hex32")
 DATETIME_STORAGES = ("iso_z", "sql_space")
+# ApiProfile.error_body: the JSON shape of every error response.
+ERROR_BODIES = ("lattice", "fastapi")
+# ApiProfile.datetime_wire: how DateTime values are spelled in responses.
+DATETIME_WIRES = ("iso_z", "naive")
+# ApiProfile.inactive_status: the statuses an inactive caller may be answered with.
+INACTIVE_STATUSES = (400, 401, 403)
 
 
 def _default_page_shape() -> Mapping[str, str]:
@@ -98,6 +104,24 @@ class ApiProfile:
     # and natives are unaffected.
     uuid_storage: str = "canonical"
     datetime_storage: str = "iso_z"
+    # B1: a Bool column of the users table marking an active account. When set, auth
+    # refuses a caller whose value is not true with `inactive_status` /
+    # `inactive_detail` -- after the caller lookup (401), before the role check (403)
+    # and before parameter validation (422). Public endpoints have no caller.
+    active_column: str | None = None
+    inactive_status: int = 400
+    inactive_detail: str = "Inactive user"
+    # B2: the error body shape (ERROR_BODIES). "lattice": {"error": code, "detail": ...}
+    # (the automatic 401/403 carry a detail only when one is configured below);
+    # "fastapi": FastAPI's {"detail": ...} for every error, the automatic 401/403
+    # saying the texts below (default: the HTTP status phrase).
+    error_body: str = "lattice"
+    unauthorized_detail: str | None = None
+    forbidden_detail: str | None = None
+    # B3: how responses spell DateTime values (DATETIME_WIRES): "iso_z" UTC ISO-8601
+    # with microseconds and "Z"; "naive" the UTC value without a zone, as pydantic
+    # serializes a naive datetime ("2026-02-02T06:00:00", microseconds only when set).
+    datetime_wire: str = "iso_z"
 
     def __post_init__(self) -> None:
         self._validate_page_shape()
@@ -111,6 +135,15 @@ class ApiProfile:
             raise ValueError(f"ApiProfile.uuid_storage must be one of {UUID_STORAGES}")
         if self.datetime_storage not in DATETIME_STORAGES:
             raise ValueError(f"ApiProfile.datetime_storage must be one of {DATETIME_STORAGES}")
+        self._validate_active()
+        if self.error_body not in ERROR_BODIES:
+            raise ValueError(f"ApiProfile.error_body must be one of {ERROR_BODIES}")
+        for name in ("unauthorized_detail", "forbidden_detail"):
+            value = getattr(self, name)
+            if value is not None and not (isinstance(value, str) and value):
+                raise ValueError(f"ApiProfile.{name} must be a non-empty text or None")
+        if self.datetime_wire not in DATETIME_WIRES:
+            raise ValueError(f"ApiProfile.datetime_wire must be one of {DATETIME_WIRES}")
 
     @staticmethod
     def default_page_shape() -> Mapping[str, str]:
@@ -176,6 +209,20 @@ class ApiProfile:
                     )
             case _:
                 raise ValueError("ApiProfile.auth must be TokenColumn(...) or NativeToken(...)")
+
+    def _validate_active(self) -> None:
+        if self.inactive_status not in INACTIVE_STATUSES:
+            raise ValueError(f"ApiProfile.inactive_status must be one of {INACTIVE_STATUSES}")
+        if not (isinstance(self.inactive_detail, str) and self.inactive_detail):
+            raise ValueError("ApiProfile.inactive_detail must be a non-empty text")
+        if self.active_column is None:
+            return
+        users = self.tables.get(self.users_table)
+        if users is None or users.get(self.active_column) is not Scalar.BOOL:
+            raise ValueError(
+                f"ApiProfile.active_column {self.active_column!r} must be a Bool column "
+                f"of {self.users_table}"
+            )
 
     def _validate_roles_from(self) -> None:
         users = self.tables.get(self.users_table)

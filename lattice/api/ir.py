@@ -36,7 +36,14 @@ from lattice.api.sql import (
     compile_update,
     expr_sql,
 )
-from lattice.catalog import API_ERRORS, NATIVE_NS, OP_SHAPES, PUBLIC_ROLE, USER_PARAM
+from lattice.catalog import (
+    API_ERRORS,
+    NATIVE_NS,
+    OP_SHAPES,
+    PUBLIC_ROLE,
+    UNIQUE_OR,
+    USER_PARAM,
+)
 from lattice.check import CheckedProgram
 from lattice.check.api_info import EndpointInfo, ParamSpec, user_table
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
@@ -113,6 +120,9 @@ class WriteStep:
     sql: SqlQuery = field(default_factory=lambda: SqlQuery(""))
     schema: Schema = field(default_factory=lambda: Schema(()))
     key: tuple[str, ...] = ()
+    # insert/update(..., unique_or=Conflict("...")): the error answered when the
+    # statement hits a UNIQUE constraint (else the generic 409, UNIQUE_CONFLICT).
+    conflict: ErrorSpec | None = None
 
 
 ApiStep = ReadStep | CheckStep | WriteStep
@@ -180,6 +190,17 @@ class EndpointPlan:
     # the plan's SQL literals are already in these spellings.
     uuid_storage: str = "canonical"
     datetime_storage: str = "iso_z"
+    # ApiProfile.active_column / inactive_status / inactive_detail: the users-table Bool
+    # column auth checks after the caller lookup (None: no active check).
+    active_column: str | None = None
+    inactive_status: int = 400
+    inactive_detail: str = "Inactive user"
+    # ApiProfile.error_body and the automatic 401/403 detail texts.
+    error_body: str = "lattice"
+    unauthorized_detail: str | None = None
+    forbidden_detail: str | None = None
+    # ApiProfile.datetime_wire: how responses spell DateTime values.
+    datetime_wire: str = "iso_z"
 
 
 # ---- helpers ---------------------------------------------------------------------------
@@ -280,6 +301,7 @@ class _Write:
     owner: bool
     schema: Schema
     span: Span
+    conflict: ErrorSpec | None = None  # unique_or=Conflict(...)
 
 
 @dataclass(frozen=True)
@@ -446,6 +468,8 @@ class _Endpoint:
         op = call.func.id
         kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
         rid = prefix + binding
+        unique_or = kws.pop(UNIQUE_OR, None) if op in ("insert", "update") else None
+        conflict = _error(unique_or) if unique_or is not None else None
 
         def table_arg(node: ast.expr) -> _Val:
             if isinstance(node, ast.Name) and node.id in env:
@@ -472,7 +496,15 @@ class _Endpoint:
                 self.step_schemas[rid] = self._schema(call)
                 self.events.append(
                     _Write(
-                        rid, "insert", table.id, None, values, "owner" in kws, schema, span_of(call)
+                        rid,
+                        "insert",
+                        table.id,
+                        None,
+                        values,
+                        "owner" in kws,
+                        schema,
+                        span_of(call),
+                        conflict,
                     )
                 )
                 return _StepVal(rid)
@@ -494,6 +526,7 @@ class _Endpoint:
                         False,
                         self.api.tables[t.source],
                         span_of(call),
+                        conflict,
                     )
                 )
                 return _StepVal(rid)
@@ -811,6 +844,13 @@ class _Endpoint:
             body=self.info.body,
             uuid_storage=getattr(self.api, "uuid_storage", "canonical"),
             datetime_storage=getattr(self.api, "datetime_storage", "iso_z"),
+            active_column=getattr(self.api, "active_column", None),
+            inactive_status=getattr(self.api, "inactive_status", 400),
+            inactive_detail=getattr(self.api, "inactive_detail", "Inactive user"),
+            error_body=getattr(self.api, "error_body", "lattice"),
+            unauthorized_detail=getattr(self.api, "unauthorized_detail", None),
+            forbidden_detail=getattr(self.api, "forbidden_detail", None),
+            datetime_wire=getattr(self.api, "datetime_wire", "iso_z"),
         )
 
     def _natives(self, auth_native: str | None) -> tuple[tuple[str, NativeSig], ...]:
@@ -852,7 +892,9 @@ class _Endpoint:
                 dialect=self.dialect,
             )
             schema = self.step_schemas[ev.id]
-            return WriteStep(ev.id, "insert", table, None, values, ev.span, sql, schema)
+            return WriteStep(
+                ev.id, "insert", table, None, values, ev.span, sql, schema, conflict=ev.conflict
+            )
         assert ev.input is not None
         source = rows_of(ev.input, ev.span)
         schema = self._schema_of(ev.input)
@@ -865,7 +907,9 @@ class _Endpoint:
             sql = compile_update(table, key, src, ev.values, dialect=self.dialect)
         else:
             sql = compile_delete(table, key, src, dialect=self.dialect)
-        return WriteStep(ev.id, ev.kind, table, source, values, ev.span, sql, schema, key)
+        return WriteStep(
+            ev.id, ev.kind, table, source, values, ev.span, sql, schema, key, ev.conflict
+        )
 
 
 def _reorder(schema: Schema, fields: tuple[str, ...]) -> Schema:

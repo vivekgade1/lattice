@@ -185,6 +185,9 @@ API_OP_SHAPES: Mapping[str, OpShape] = {
     "delete": OpShape(("table",), 1),
 }
 API_OPS = frozenset(API_OP_SHAPES)
+# insert(..., unique_or=Conflict("...")) / update(..., unique_or=...): the declared 409
+# answered when the write hits a UNIQUE constraint (a reserved keyword, not a column).
+UNIQUE_OR = "unique_or"
 API_WRITE_OPS = frozenset({"insert", "update", "delete"})
 # Table ops allowed inside an endpoint body (besides steps); anything else is L841.
 API_ENDPOINT_OPS = API_OPS | frozenset(
@@ -205,13 +208,23 @@ CURRENT_USER = "CurrentUser"
 USER_PARAM = "user"
 PAGE_LIMIT_MAX = 100
 # Parameter type constructors and their literal constraint keywords.
+# `pattern=` is a string literal (a Python regular expression the whole value must match).
 PARAM_CONSTRAINTS: Mapping[str, frozenset[str]] = {
     "Int": frozenset({"ge", "le"}),
     "Float": frozenset({"ge", "le"}),
-    "Str": frozenset({"min_len", "max_len"}),
+    "Str": frozenset({"min_len", "max_len", "pattern"}),
+    "Email": frozenset({"min_len", "max_len"}),
 }
+# `Email`: a Str parameter that must be an email address (EMAIL_PATTERN, a syntactic
+# check: a dot-atom local part, "@", and a domain of dot-separated labels ending in a
+# 2-63 letter top-level label; ASCII only, no quoted local parts or IP literals).
+EMAIL_TYPE = "Email"
+EMAIL_PATTERN = (
+    r"[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
+    r"@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}"
+)
 # `Uuid` and `DateTime` are scalar types only API programs have (tabular data has none).
-API_TYPE_NAMES = frozenset({"OneOf", CURRENT_USER, "Uuid", "DateTime"})
+API_TYPE_NAMES = frozenset({"OneOf", CURRENT_USER, "Uuid", "DateTime", EMAIL_TYPE})
 # `UNSET`: an endpoint parameter default meaning "not sent" (partial updates).
 UNSET_NAME = "UNSET"
 # `owner_is(user)`: the whole condition of require(t, owner_is(user), else_=Forbidden(..)).

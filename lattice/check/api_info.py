@@ -20,6 +20,8 @@ from lattice.catalog import (
     API_METHODS,
     API_SUCCESS_KINDS,
     CURRENT_USER,
+    EMAIL_PATTERN,
+    EMAIL_TYPE,
     PARAM_CONSTRAINTS,
     QUERY_METHODS,
     UNSET_NAME,
@@ -94,6 +96,10 @@ class ParamSpec:
     one_of: tuple[str, ...] | None = None
     default: object = MISSING
     optional: bool = False  # default is UNSET
+    # Str(pattern=...): a regular expression the whole value must match; `Email`
+    # parameters carry EMAIL_PATTERN with email=True (only the 422 message differs).
+    pattern: str | None = None
+    email: bool = False
 
     @property
     def bounded(self) -> bool:
@@ -256,11 +262,14 @@ class ParamType:
     min_len: int | None = None
     max_len: int | None = None
     one_of: tuple[str, ...] | None = None
+    pattern: str | None = None
+    email: bool = False
 
 
 _TYPE_HINT = (
-    'use Int(ge=, le=), Float(ge=, le=), Str(min_len=, max_len=), OneOf("a", "b"), Bool, '
-    "Date, DateTime, Uuid (or a bare Int/Float/Str), or user: CurrentUser"
+    'use Int(ge=, le=), Float(ge=, le=), Str(min_len=, max_len=, pattern=), OneOf("a", "b"), '
+    "Email(max_len=), Bool, Date, DateTime, Uuid (or a bare Int/Float/Str/Email), or "
+    "user: CurrentUser"
 )
 
 
@@ -281,6 +290,8 @@ def param_type(name: str, ann: ast.expr | None) -> ParamType | Problem:
             return ParamType(SCALAR_NAMES[type_name])
         case ast.Name(id=type_name) if type_name == CURRENT_USER:
             return ParamType(None)
+        case ast.Name(id=type_name) if type_name == EMAIL_TYPE:
+            return ParamType(Scalar.STR, pattern=EMAIL_PATTERN, email=True)
         case ast.Call(func=ast.Name(id="OneOf"), args=args, keywords=[]) if args:
             values = [literal_value(a) for a in args]
             strs = [v for v in values if isinstance(v, str)]
@@ -302,31 +313,67 @@ def param_type(name: str, ann: ast.expr | None) -> ParamType | Problem:
 
 def _constrained(name: str, type_name: str, kws: list[ast.keyword]) -> ParamType | Problem:
     allowed = PARAM_CONSTRAINTS[type_name]
+    text = type_name in ("Str", EMAIL_TYPE)  # length bounds, not value bounds
     values: dict[str, int | float] = {}
+    pattern: str | None = None
     for kw in kws:
         if kw.arg not in allowed:
             return (
                 f"{type_name}(...) has no constraint '{kw.arg}'",
                 f"allowed: {', '.join(sorted(allowed))}",
             )
+        if kw.arg == "pattern":
+            found = _pattern(name, kw.value)
+            if not isinstance(found, str):
+                return found
+            pattern = found
+            continue
         integer = type_name != "Float"
         v = _number(kw.value, integer=integer)
         kind = "an integer" if integer else "a number"
         if v is None:
             return (f"constraint {kw.arg}= of '{name}' must be {kind} literal", f"e.g. {kw.arg}=1")
-        if type_name == "Str" and v < 0:
+        if text and v < 0:
             return (f"constraint {kw.arg}= of '{name}' cannot be negative", f"e.g. {kw.arg}=1")
         values[kw.arg] = v
-    lo, hi = ("min_len", "max_len") if type_name == "Str" else ("ge", "le")
+    lo, hi = ("min_len", "max_len") if text else ("ge", "le")
     if lo in values and hi in values and values[lo] > values[hi]:
         return (f"'{name}' has {lo}= greater than {hi}=", "swap or fix the bounds")
-    if type_name == "Str":
+    if text:
+        email = type_name == EMAIL_TYPE
         return ParamType(
             Scalar.STR,
             min_len=int(values["min_len"]) if "min_len" in values else None,
             max_len=int(values["max_len"]) if "max_len" in values else None,
+            pattern=EMAIL_PATTERN if email else pattern,
+            email=email,
         )
     return ParamType(SCALAR_NAMES[type_name], ge=values.get("ge"), le=values.get("le"))
+
+
+def _pattern(name: str, node: ast.expr) -> str | Problem:
+    """A pattern= constraint: a string literal that compiles as a regular expression."""
+    v = literal_value(node)
+    if not isinstance(v, str):
+        return (
+            f"constraint pattern= of '{name}' must be a string literal (a regular expression)",
+            'e.g. pattern="[A-Z]{2}[0-9]{4}"',
+        )
+    try:
+        re.compile(v)
+    except re.error as err:
+        return (
+            f"constraint pattern= of '{name}' is not a valid regular expression: {err}",
+            "fix the pattern (Python `re` syntax; the whole value must match)",
+        )
+    return v
+
+
+def pattern_problem(spec: ParamType | ParamSpec, value: str) -> str | None:
+    """The 422 message when a Str value does not match the parameter's pattern."""
+    if spec.pattern is None or re.fullmatch(spec.pattern, value):
+        return None
+    return "must be an email address" if spec.email else f"must match the pattern {spec.pattern!r}"
 
 
 def default_problem(name: str, pt: ParamType, node: ast.expr) -> Problem | None:
@@ -352,6 +399,8 @@ def default_problem(name: str, pt: ParamType, node: ast.expr) -> Problem | None:
                 pt.max_len is not None and len(v) > pt.max_len
             ):
                 return (f"default of '{name}' violates its length bounds", None)
+            if (mismatch := pattern_problem(pt, v)) is not None:
+                return (f"default of '{name}' {mismatch}", None)
         case Scalar.BOOL if isinstance(v, bool):
             pass
         case Scalar.DATE if isinstance(v, str):
@@ -464,6 +513,8 @@ def endpoint_params(fn: ast.FunctionDef, method: str, path: str) -> tuple[ParamS
                 pt.one_of,
                 default,
                 optional=default is UNSET,
+                pattern=pt.pattern,
+                email=pt.email,
             )
         )
     return tuple(specs)

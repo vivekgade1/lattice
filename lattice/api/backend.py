@@ -103,6 +103,19 @@ def datetime_text(value: dt.datetime) -> str:
     return value.replace(tzinfo=None).isoformat(timespec="microseconds") + "Z"
 
 
+def wire_datetime(text: str, wire: str) -> str:
+    """A DateTime as a response spells it (`ApiProfile.datetime_wire`): "iso_z" is
+    Lattice's canonical text (`datetime_text`); "naive" the UTC value without a zone
+    as pydantic serializes a naive datetime -- `datetime.isoformat()`, microseconds only
+    when they are not zero. Text that is not a date-time is returned unchanged."""
+    parsed = parse_datetime(text)
+    if parsed is None:
+        return text
+    if wire == "naive":
+        return parsed.astimezone(dt.UTC).replace(tzinfo=None).isoformat()
+    return datetime_text(parsed)
+
+
 # How Uuid and DateTime values are stored (`ApiProfile.uuid_storage` /
 # `ApiProfile.datetime_storage`). The default is Lattice's canonical text; the others
 # let a program run on an existing database written by another stack (e.g. SQLAlchemy

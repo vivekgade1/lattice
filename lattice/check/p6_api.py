@@ -22,6 +22,7 @@ from lattice.catalog import (
     PAGE_LIMIT_MAX,
     PUBLIC_ROLE,
     TABLE_OPS,
+    UNIQUE_OR,
     UNSET_NAME,
     USER_PARAM,
 )
@@ -811,9 +812,14 @@ class _Endpoint:
                     f"declare it: -> {shown}; or respond with exactly one row "
                     '(one(..., else_=NotFound("...")), insert(), user, group(..., by=[]))',
                 )
-        for op in ("one", "require"):
+        for op, keyword in (
+            ("one", "else_"),
+            ("require", "else_"),
+            ("insert", UNIQUE_OR),
+            ("update", UNIQUE_OR),
+        ):
             for call in self._calls(op):
-                err = _kw(call, "else_")
+                err = _kw(call, keyword)
                 name = _call_name(err) if err is not None else None
                 if err is None or name not in API_ERRORS:
                     continue
@@ -832,7 +838,8 @@ class _Endpoint:
                     "L822",
                     self.fn.returns if self.fn.returns is not None else self.fn,
                     f"{name} is declared but never raised",
-                    f"remove {name} from the response, or raise it with one()/require()",
+                    f"remove {name} from the response, or raise it with one()/require()"
+                    + (" or unique_or=" if name == "Conflict" else ""),
                 )
 
     def _may_respond_empty(self) -> ast.Return | None:

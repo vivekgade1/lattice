@@ -2,12 +2,16 @@
 
 Per request: authenticate (`Authorization: Bearer <token>`, one statement: the token
 is looked up in the users table's token column, or decoded to the caller's key by a
-native -- `ApiProfile.auth`), check the role, parse and validate the parameters, then
+native -- `ApiProfile.auth`), refuse an inactive caller (`ApiProfile.active_column`),
+check the role, parse and validate the parameters, then
 run the plan's steps in order inside one transaction — each read pipeline is one
 SELECT, each write one statement, checks cost nothing — and serialize the returned
 rows (a response model's fields in its order; a Page in the profile's page shape, with
-the total when the page has one). Any error response rolls back. `fn.now()` is the
-request's one instant, taken when the request starts.
+the total when the page has one; DateTime values in `ApiProfile.datetime_wire`). Any
+error response rolls back; its body has the `ApiProfile.error_body` shape. A write with
+`unique_or=Conflict(...)` answers that 409 when it hits a UNIQUE constraint (others get
+the generic `UNIQUE_CONFLICT`). `fn.now()` is the request's one instant, taken when the
+request starts.
 
 Natives (`native.<name>(...)`) are pure Python functions registered as SQL functions
 on every connection: `build_app`/`serve_source` take their implementations as
@@ -37,6 +41,7 @@ import re
 import urllib.parse
 import uuid
 from collections.abc import Callable, Mapping, Sequence
+from http import HTTPStatus
 from pathlib import Path
 from typing import Any
 
@@ -47,7 +52,14 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
-from lattice.api.backend import Dialect, NativeImpl, dialect_for, parse_datetime, uuid_text
+from lattice.api.backend import (
+    Dialect,
+    NativeImpl,
+    dialect_for,
+    parse_datetime,
+    uuid_text,
+    wire_datetime,
+)
 from lattice.api.ir import (
     CheckStep,
     EndpointPlan,
@@ -59,12 +71,24 @@ from lattice.api.ir import (
 from lattice.api.sql import bind_values, compile_lookup, decode
 from lattice.catalog import PUBLIC_ROLE, USER_PARAM
 from lattice.check import CheckResult, check_source
-from lattice.check.api_info import MISSING, ParamSpec
+from lattice.check.api_info import MISSING, ParamSpec, pattern_problem
 from lattice.profile import Profile
 from lattice.runtime import LatticeInternalError, LatticeRuntimeError
 from lattice.typesys import Scalar
 
-__all__ = ["ApiRuntimeError", "build_app", "on_connect", "serve_source"]
+__all__ = ["ApiRuntimeError", "build_app", "error_body", "on_connect", "serve_source"]
+
+# The JSON error code of each status an error response may have.
+STATUS_CODES = {
+    400: "bad_request",
+    401: "unauthorized",
+    403: "forbidden",
+    404: "not_found",
+    405: "method_not_allowed",
+    409: "conflict",
+    422: "validation",
+    500: "internal",
+}
 
 
 def on_connect(conn: Any) -> None:
@@ -77,10 +101,30 @@ class ApiRuntimeError(LatticeRuntimeError):
 
 
 class _ErrorResponse(Exception):
-    def __init__(self, status: int, body: Mapping[str, object]) -> None:
+    """An error response: its status, JSON error code and detail (None: no detail),
+    rendered in the plan's error body style (`error_body`)."""
+
+    def __init__(self, status: int, code: str, detail: object = None) -> None:
         super().__init__(status)
         self.status = status
-        self.body = body
+        self.code = code
+        self.detail = detail
+
+
+def error_body(style: str, status: int, code: str, detail: object = None) -> dict[str, object]:
+    """The JSON body of an error response (`ApiProfile.error_body`): "lattice" is
+    {"error": code} plus "detail" when there is one; "fastapi" is FastAPI's
+    {"detail": ...}, the HTTP status phrase when there is no detail."""
+    if style == "fastapi":
+        return {"detail": HTTPStatus(status).phrase if detail is None else detail}
+    body: dict[str, object] = {"error": code}
+    if detail is not None:
+        body["detail"] = detail
+    return body
+
+
+def _json_error(style: str, status: int, code: str, detail: object = None) -> JSONResponse:
+    return JSONResponse(error_body(style, status, code, detail), status_code=status)
 
 
 def plan_dialect(plan: EndpointPlan) -> Dialect:
@@ -211,6 +255,8 @@ def _constrain(spec: ParamSpec, value: object) -> None:
             raise ValueError(f"must have at least {spec.min_len} characters")
         if spec.max_len is not None and len(value) > spec.max_len:
             raise ValueError(f"must have at most {spec.max_len} characters")
+        if (mismatch := pattern_problem(spec, value)) is not None:
+            raise ValueError(mismatch)
 
 
 def _num(v: float) -> str:
@@ -259,7 +305,7 @@ def _parse_params(
                 parsed = None
         if not isinstance(parsed, dict):
             detail.append({"loc": ["body"], "msg": "the body must be a JSON object"})
-            raise _ErrorResponse(422, {"error": "validation", "detail": detail})
+            raise _ErrorResponse(422, "validation", detail)
         data = parsed
     for spec in plan.params:
         if spec.source == "user":
@@ -288,7 +334,7 @@ def _parse_params(
             continue
         values[spec.name] = value
     if detail:
-        raise _ErrorResponse(422, {"error": "validation", "detail": detail})
+        raise _ErrorResponse(422, "validation", detail)
     return values
 
 
@@ -330,14 +376,19 @@ def caller_role(plan: EndpointPlan, row: Sequence[Any]) -> str:
 def _authenticate(
     plan: EndpointPlan, dialect: Dialect, conn: Any, token: str
 ) -> tuple[object, str, tuple[Any, ...]]:
-    """(caller id, role, the caller's row as `plan.user_columns`): one statement."""
+    """(caller id, role, the caller's row as `plan.user_columns`): one statement.
+    Unknown caller: 401; an inactive one (`plan.active_column` not true): the plan's
+    inactive status; a role that may not call the endpoint: 403 -- in that order."""
     row = conn.execute(auth_sql(plan, dialect), (token,)).fetchone()
     if row is None:
-        raise _ErrorResponse(401, {"error": "unauthorized"})
+        raise _unauthorized(plan)
     user_id = row[plan.user_columns.index(plan.user_key)]
+    if plan.active_column is not None and not row[plan.user_columns.index(plan.active_column)]:
+        status = plan.inactive_status
+        raise _ErrorResponse(status, STATUS_CODES[status], plan.inactive_detail)
     role = caller_role(plan, row)
     if not (plan.auth == PUBLIC_ROLE or role == plan.auth or role == plan.admin_role):
-        raise _ErrorResponse(403, {"error": "forbidden"})
+        raise _ErrorResponse(403, "forbidden", plan.forbidden_detail)
     return user_id, role, tuple(row)
 
 
@@ -352,8 +403,12 @@ def _project(result: Result, columns: Sequence[str]) -> list[tuple[Any, ...]]:
     return [tuple(r[i] for i in index) for r in rows]
 
 
+def _unauthorized(plan: EndpointPlan) -> _ErrorResponse:
+    return _ErrorResponse(401, "unauthorized", plan.unauthorized_detail)
+
+
 def _error(err: ErrorSpec) -> _ErrorResponse:
-    return _ErrorResponse(err.status, {"error": err.code, "detail": err.detail})
+    return _ErrorResponse(err.status, err.code, err.detail)
 
 
 def _run_steps(
@@ -371,6 +426,16 @@ def _run_steps(
     totals: dict[str, int] = {}
     if caller is not None:
         results[USER_PARAM] = (plan.user_columns, [caller])
+
+    def write(step: WriteStep) -> list[tuple[Any, ...]]:
+        """A write statement; with unique_or=Conflict(...), a UNIQUE violation answers
+        the declared 409 (the transaction is rolled back by the caller)."""
+        try:
+            return run(step.sql)
+        except Exception as err:
+            if step.conflict is not None and dialect.is_unique_violation(err):
+                raise _error(step.conflict) from None
+            raise
 
     def run(sql: Any) -> list[tuple[Any, ...]]:
         binds = bind_values(
@@ -407,10 +472,10 @@ def _run_steps(
                 if any(not f[0] for f in flags):  # false or null fails
                     raise _error(step.error)
             case WriteStep(kind="insert"):
-                results[step.id] = (step.schema.names(), run(step.sql))
+                results[step.id] = (step.schema.names(), write(step))
             case WriteStep(kind="update"):
                 assert step.input is not None
-                returned = run(step.sql)
+                returned = write(step)
                 k = len(step.key)
                 new = {tuple(r[:k]): r[k:] for r in returned}
                 names = step.schema.names()
@@ -450,7 +515,10 @@ def _respond(
     names = plan.schema.names()
     types = dict(plan.schema.columns)
     items = [
-        {c: _finite(decode(v, types[c], dialect)) for c, v in zip(names, row, strict=True)}
+        {
+            c: _wire(plan, decode(v, types[c], dialect), types[c])
+            for c, v in zip(names, row, strict=True)
+        }
         for row in _project(results[plan.returns], names)
     ]
     if plan.success == "Page":
@@ -464,12 +532,20 @@ def _respond(
         envelope = {name: parts[key] for key, name in plan.page_shape if name and key in parts}
         return JSONResponse(envelope)
     if not items:
-        raise _ErrorResponse(404, {"error": "not_found", "detail": "no such row"})
+        raise _ErrorResponse(404, "not_found", "no such row")
     if len(items) > 1:
         raise ApiRuntimeError(
             "R310", plan.span, f"the response has {len(items)} rows; expected exactly one"
         )
     return JSONResponse(items[0], status_code=201 if plan.success == "Created" else 200)
+
+
+def _wire(plan: EndpointPlan, value: object, scalar: Scalar) -> object:
+    """A decoded value as the response carries it: a DateTime in the plan's wire
+    spelling, a non-finite float as null."""
+    if scalar is Scalar.DATETIME and isinstance(value, str) and plan.datetime_wire != "iso_z":
+        return wire_datetime(value, plan.datetime_wire)
+    return _finite(value)
 
 
 def _finite(value: object) -> object:
@@ -480,8 +556,8 @@ def _finite(value: object) -> object:
     return value
 
 
-def _internal(detail: str) -> JSONResponse:
-    return JSONResponse({"error": "internal", "detail": detail[:500]}, status_code=500)
+def _internal(style: str, detail: str) -> JSONResponse:
+    return _json_error(style, 500, "internal", detail[:500])
 
 
 # The 409 body of a write that hits a UNIQUE constraint (or a duplicate key). The detail
@@ -489,8 +565,8 @@ def _internal(detail: str) -> JSONResponse:
 UNIQUE_CONFLICT = "a row with the same unique value already exists"
 
 
-def _unique_conflict() -> JSONResponse:
-    return JSONResponse({"error": "conflict", "detail": UNIQUE_CONFLICT}, status_code=409)
+def _unique_conflict(style: str) -> JSONResponse:
+    return _json_error(style, 409, "conflict", UNIQUE_CONFLICT)
 
 
 def _serve(
@@ -515,7 +591,7 @@ def _serve(
         if plan.auth != PUBLIC_ROLE:
             token = _token(authorization)
             if token is None:
-                raise _ErrorResponse(401, {"error": "unauthorized"})
+                raise _unauthorized(plan)
             conn = _connect(dialect, db_path, impls)
             user_id, role, caller = _authenticate(plan, dialect, conn, token)
             is_admin = role == plan.admin_role
@@ -530,13 +606,13 @@ def _serve(
         in_txn = False
         return response
     except _ErrorResponse as err:
-        return JSONResponse(dict(err.body), status_code=err.status)
+        return _json_error(plan.error_body, err.status, err.code, err.detail)
     except LatticeRuntimeError as err:
-        return _internal(err.render())
+        return _internal(plan.error_body, err.render())
     except Exception as err:  # loud: any unexpected failure is a 500
         if dialect.is_unique_violation(err):
-            return _unique_conflict()  # rolled back below
-        return _internal(f"{type(err).__name__}: {err}")
+            return _unique_conflict(plan.error_body)  # rolled back below
+        return _internal(plan.error_body, f"{type(err).__name__}: {err}")
     finally:
         if conn is not None:
             if in_txn:
@@ -568,10 +644,17 @@ def _specificity(plan: EndpointPlan) -> list[int]:
     return [1 if seg.startswith("{") else 0 for seg in plan.path.split("/")]
 
 
-async def _http_error(request: Request, exc: Exception) -> Response:
-    status = exc.status_code if isinstance(exc, HTTPException) else 500
-    code = {404: "not_found", 405: "method_not_allowed"}.get(status, "internal")
-    return JSONResponse({"error": code}, status_code=status)
+def _http_error(style: str):
+    """Routing errors (unknown path 404, wrong method 405) in the error body style:
+    no detail in the "lattice" style, the status phrase in the "fastapi" style (as
+    FastAPI answers them)."""
+
+    async def handler(request: Request, exc: Exception) -> Response:
+        status = exc.status_code if isinstance(exc, HTTPException) else 500
+        code = {404: "not_found", 405: "method_not_allowed"}.get(status, "internal")
+        return _json_error(style, status, code)
+
+    return handler
 
 
 def native_impls(
@@ -608,7 +691,11 @@ def build_app(
         Route(plan.path, _handler(plan, db, impls), methods=[plan.method], name=plan.name)
         for plan in sorted(plans, key=_specificity)
     ]
-    return Starlette(routes=routes, exception_handlers={HTTPException: _http_error})
+    styles = {plan.error_body for plan in plans}
+    if len(styles) > 1:
+        raise ValueError(f"the plans disagree on the error body style: {sorted(styles)}")
+    style = styles.pop() if styles else "lattice"
+    return Starlette(routes=routes, exception_handlers={HTTPException: _http_error(style)})
 
 
 def serve_source(

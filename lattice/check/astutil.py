@@ -136,6 +136,26 @@ def is_constant_expr(node: ast.expr) -> bool:
     return True
 
 
+def is_list_constant(node: ast.expr) -> bool:
+    """A list constant of an API program (B6): a non-empty list literal of string
+    literals, e.g. `PUBLIC = ["id", "email"]`, usable only as `select(cols=PUBLIC)`."""
+    return (
+        isinstance(node, ast.List)
+        and bool(node.elts)
+        and all(isinstance(e, ast.Constant) and isinstance(e.value, str) for e in node.elts)
+    )
+
+
+def is_list_constant_assign(stmt: ast.stmt) -> bool:
+    """`NAME = ["a", ...]` at module level (see `is_list_constant`)."""
+    return (
+        isinstance(stmt, ast.Assign)
+        and len(stmt.targets) == 1
+        and isinstance(stmt.targets[0], ast.Name)
+        and is_list_constant(stmt.value)
+    )
+
+
 def step_mentions(steps: dict[str, ast.FunctionDef], name: str) -> frozenset[str]:
     """Every column name a step body (and the steps it calls) may read or produce:
     its string constants and keyword names. A conservative over-approximation used to
