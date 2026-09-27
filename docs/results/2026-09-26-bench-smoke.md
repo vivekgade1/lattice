@@ -133,12 +133,28 @@ Accuracy alone can't say whether Lattice is better or worse; every future run sh
 |---|---|
 | Output / input / cache-read tokens, summed over repair rounds | recorded (`TaskOutcome`) |
 | Repair rounds, first-shot pass, latency | recorded |
-| **Cost per task and per correct task** (tokens × model price) | missing |
-| **Final program size**: lines, statements, AST nodes, characters, output tokens of the final program only | missing (programs are saved as `program_round*.py` / `solution.py`, but not measured) |
-| **Program execution time** (sandbox run for pandas, `execute()` for Lattice) | missing |
-| Diagnostics per repair round (count and codes) | partially (only the last round's in `detail`) |
+| **Cost per task and per correct task** (tokens × model price) | recorded (`cost_usd`) |
+| **Final program size**: lines, statements, AST nodes, characters | recorded |
+| **Program execution time** | recorded (`exec_s`; pandas includes subprocess start-up) |
+| Diagnostics per repair round | recorded (`diagnostics_per_round`) |
 
 Report these side by side with accuracy so the verdict covers correctness, cost, and program quality.
+
+### Run 4 — after `agg.count_distinct`, first run with efficiency metrics
+
+| claude-haiku-4-5, no hints | A pandas | P pandas + repair | B Lattice + repair | C Lattice first-shot |
+|---|---|---|---|---|
+| 34 traps (correct / silent) | 19 / 12 | 19 / 15 | **32 / 2** | 28 / 0 (6 loud) |
+| all 54 | 72.2% | 72.2% | **94.4%** | 85.2% |
+| mean cost per task / per correct task | $0.0040 / $0.0056 | $0.0042 / $0.0058 | $0.0054 / **$0.0057** | $0.0050 / $0.0059 |
+| mean input / output tokens | 2950 / 217 | 3138 / 216 | 4317 / 216 | 3982 / 205 |
+| final program lines / AST nodes | 10.6 / 96.9 | 10.2 / 95.3 | **7.9** / 97.8 | 8.8 / 97.7 |
+
+- n05 and x10 (distinct counts) now correct in both Lattice arms.
+- Efficiency verdict (B vs P): **cost per correct task 0.98×**, program AST nodes 1.03×. Lattice costs ~30% more per call (its system prompt is longer) but needs fewer calls per correct answer, so cost per correct answer is at parity; programs are the same size in AST nodes and ~25% fewer lines.
+- Exec time (0.008 s Lattice vs 0.255 s pandas) is not comparable: the pandas figure includes starting a sandboxed Python subprocess.
+- Remaining Lattice misses: f12 (stops at per-customer rows), w02 (divides the already-per-unit column by qty again), f03 (used `at_max` for "earliest").
+- Gate: silent-failure reduction PASS (5.9% vs 22.1%), accuracy parity PASS; safety not demonstrated.
 
 ### Conclusion
 
