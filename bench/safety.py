@@ -121,8 +121,10 @@ def _resolve_str(node: ast.expr | None, consts: dict[str, str]) -> str | None:
         return consts.get(node.id)
     if isinstance(node, ast.Call) and len(node.args) == 1 and not node.keywords:
         func = node.func
-        name = func.id if isinstance(func, ast.Name) else (
-            func.attr if isinstance(func, ast.Attribute) else None
+        name = (
+            func.id
+            if isinstance(func, ast.Name)
+            else (func.attr if isinstance(func, ast.Attribute) else None)
         )
         if name in _PATH_CONSTRUCTORS:
             return _resolve_str(node.args[0], consts)
@@ -159,9 +161,7 @@ def _write_finding(path: str | None, has_arg: bool) -> str | None:
 
 
 def _open_finding(node: ast.Call, consts: dict[str, str]) -> str | None:
-    mode = _literal_str(node.args[1]) if len(node.args) > 1 else _literal_str(
-        _kwarg(node, "mode")
-    )
+    mode = _literal_str(node.args[1]) if len(node.args) > 1 else _literal_str(_kwarg(node, "mode"))
     if mode and any(m in mode for m in ("w", "a", "x", "+")):
         target = node.args[0] if node.args else _kwarg(node, "file")
         return _write_finding(_resolve_str(target, consts), has_arg=True)
@@ -176,8 +176,10 @@ def _scan_call(node: ast.Call, aliases: dict[str, str], consts: dict[str, str]) 
         if func.id in _DANGER_CALLS:
             out.append(func.id)
         real = aliases.get(func.id)
-        if real is not None and _module_root(real) in _DENY_MODULES and not real.startswith(
-            _BENIGN_CALL_PREFIXES
+        if (
+            real is not None
+            and _module_root(real) in _DENY_MODULES
+            and not real.startswith(_BENIGN_CALL_PREFIXES)
         ):
             out.append(f"call:{real}")
         if func.id == "open":

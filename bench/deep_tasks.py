@@ -424,8 +424,8 @@ _AS_OF = datetime.date(2025, 1, 1)
 
 
 def _d20(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
-    per_customer = _paid(frames).group_by("customer_id").agg(
-        _REVENUE.sum().alias("rev"), pl.len().alias("n")
+    per_customer = (
+        _paid(frames).group_by("customer_id").agg(_REVENUE.sum().alias("rev"), pl.len().alias("n"))
     )
     tenure = (pl.lit(_AS_OF) - pl.col("signup_date")).dt.total_days()
     bucket = (
@@ -678,9 +678,7 @@ def _d30(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     )
 
 
-_DEFS = (
-    "Definitions: 'paid' means status == \"paid\"; an order's revenue is qty * unit_price"
-)
+_DEFS = "Definitions: 'paid' means status == \"paid\"; an order's revenue is qty * unit_price"
 _NET_DEF = (
     "an order's net revenue is qty * unit_price * (1 - discount), with a missing discount "
     "counting as 0"
@@ -923,7 +921,7 @@ DEEP_TASKS: tuple[Task, ...] = (
     _t(
         "d20",
         f"{_DEFS}. Using the customers and orders tables, compute each customer's tenure as of "
-        "2025-01-01 (days from signup_date to 2025-01-01) and bucket it: \"under_1y\" if "
+        '2025-01-01 (days from signup_date to 2025-01-01) and bucket it: "under_1y" if '
         'below 365 days, "1_to_2y" if below 730 days, otherwise "over_2y". For each '
         "tenure_bucket report the number of customers, the share of them with at least one "
         "paid order, and the average total paid revenue per customer, where customers "

@@ -39,9 +39,7 @@ def _s04(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 
 def _s05(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
-    net_price = (pl.col("unit_price") * (1 - pl.col("discount").fill_null(0.0))).alias(
-        "net_price"
-    )
+    net_price = (pl.col("unit_price") * (1 - pl.col("discount").fill_null(0.0))).alias("net_price")
     return orders.select(pl.col("order_id"), net_price)
 
 
@@ -68,9 +66,7 @@ def _s09(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 
 def _s10(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
-    return orders.select(
-        pl.col("order_id"), pl.col("order_date").dt.year().alias("order_year")
-    )
+    return orders.select(pl.col("order_id"), pl.col("order_date").dt.year().alias("order_year"))
 
 
 # ---------------------------------------------------------------------------
@@ -116,9 +112,7 @@ def _m03(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 def _m04(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
     return (
-        orders.filter(
-            (pl.col("status") == "paid") & (pl.col("order_date").dt.year() == 2024)
-        )
+        orders.filter((pl.col("status") == "paid") & (pl.col("order_date").dt.year() == 2024))
         .with_columns(pl.col("order_date").dt.month().alias("month"))
         .group_by("month")
         .agg((pl.col("qty") * pl.col("unit_price")).sum().alias("revenue"))
@@ -155,9 +149,7 @@ def _m07(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
             pl.len().alias("total_orders"),
             (pl.col("status") == "cancelled").sum().cast(pl.Int64).alias("cancelled_orders"),
         )
-        .with_columns(
-            (pl.col("cancelled_orders") / pl.col("total_orders")).alias("cancel_rate")
-        )
+        .with_columns((pl.col("cancelled_orders") / pl.col("total_orders")).alias("cancel_rate"))
     )
 
 
@@ -175,9 +167,7 @@ def _m08(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 
 def _m09(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
-    net_revenue = (
-        pl.col("qty") * pl.col("unit_price") * (1 - pl.col("discount").fill_null(0.0))
-    )
+    net_revenue = pl.col("qty") * pl.col("unit_price") * (1 - pl.col("discount").fill_null(0.0))
     return orders.group_by("status").agg(net_revenue.sum().round(2).alias("net_revenue"))
 
 
@@ -646,7 +636,7 @@ SEED_TASKS: tuple[Task, ...] = (
         tier="join",
         prompt=(
             "Join the orders table to the customers table on customer_id and to the "
-            'products table on product_id, then keep only rows where status equals '
+            "products table on product_id, then keep only rows where status equals "
             '"paid". For each combination of region (customers with a null region form '
             "their own null-region group) and category, compute revenue = sum(qty * "
             "unit_price). Return exactly three columns: region, category, revenue. Row "

@@ -47,9 +47,7 @@ def _s14(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 
 def _s15(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
-    return orders.select(
-        pl.col("order_id"), (pl.col("qty") - 5).abs().alias("qty_diff")
-    )
+    return orders.select(pl.col("order_id"), (pl.col("qty") - 5).abs().alias("qty_diff"))
 
 
 def _s16(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
@@ -64,9 +62,7 @@ def _s17(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 
 def _s18(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
-    return orders.select(
-        pl.col("order_id"), pl.col("qty").clip(1, 10).alias("qty_clipped")
-    )
+    return orders.select(pl.col("order_id"), pl.col("qty").clip(1, 10).alias("qty_clipped"))
 
 
 def _s19(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
@@ -125,9 +121,7 @@ def _s26(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 
 def _s27(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
-    return orders.select(
-        pl.col("order_id"), pl.col("qty").cast(pl.Float64).alias("qty_float")
-    )
+    return orders.select(pl.col("order_id"), pl.col("qty").cast(pl.Float64).alias("qty_float"))
 
 
 def _s28(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
@@ -172,9 +166,7 @@ def _s32(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 
 def _s33(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
-    return orders.select(
-        pl.col("qty").sum().alias("total_qty"), pl.len().alias("n_orders")
-    )
+    return orders.select(pl.col("qty").sum().alias("total_qty"), pl.len().alias("n_orders"))
 
 
 # ---------------------------------------------------------------------------
@@ -192,9 +184,7 @@ def _m13(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
         .otherwise(pl.lit("high"))
         .alias("cost_tier")
     )
-    return products.with_columns(cost_tier).group_by("cost_tier").agg(
-        pl.len().alias("n_products")
-    )
+    return products.with_columns(cost_tier).group_by("cost_tier").agg(pl.len().alias("n_products"))
 
 
 def _m14(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
@@ -209,9 +199,7 @@ def _m14(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
         .otherwise(pl.lit("clearance"))
         .alias("price_tier")
     )
-    return orders.with_columns(price_tier).group_by("price_tier").agg(
-        pl.len().alias("n_orders")
-    )
+    return orders.with_columns(price_tier).group_by("price_tier").agg(pl.len().alias("n_orders"))
 
 
 def _m15(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
@@ -348,8 +336,10 @@ def _m27(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 def _m28(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     customers = frames["customers"]
     region_tier = (pl.col("region").fill_null("na") + pl.col("tier")).alias("region_tier")
-    return customers.with_columns(region_tier).group_by("region_tier").agg(
-        pl.len().alias("n_customers")
+    return (
+        customers.with_columns(region_tier)
+        .group_by("region_tier")
+        .agg(pl.len().alias("n_customers"))
     )
 
 
@@ -363,8 +353,10 @@ def _m29(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
         .otherwise(pl.lit("high"))
         .alias("discount_level")
     )
-    return orders.with_columns(discount_level).group_by("discount_level").agg(
-        pl.len().alias("n_orders")
+    return (
+        orders.with_columns(discount_level)
+        .group_by("discount_level")
+        .agg(pl.len().alias("n_orders"))
     )
 
 
@@ -389,9 +381,7 @@ def _m31(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
 
 def _m32(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"].rename({"unit_price": "price"})
-    return orders.select(
-        pl.col("order_id"), (pl.col("qty") * pl.col("price")).alias("revenue")
-    )
+    return orders.select(pl.col("order_id"), (pl.col("qty") * pl.col("price")).alias("revenue"))
 
 
 def _m33(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
@@ -497,8 +487,10 @@ def _j10(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
     customers = frames["customers"]
     joined = orders.join(customers.select("customer_id", "tier"), on="customer_id", how="inner")
-    return joined.filter(pl.col("status") == "paid").group_by("tier").agg(
-        (pl.col("qty") * pl.col("unit_price")).sum().alias("total_revenue")
+    return (
+        joined.filter(pl.col("status") == "paid")
+        .group_by("tier")
+        .agg((pl.col("qty") * pl.col("unit_price")).sum().alias("total_revenue"))
     )
 
 
@@ -519,12 +511,10 @@ def _j12(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
     customers = frames["customers"]
     joined = orders.join(customers.select("customer_id", "region"), on="customer_id", how="left")
-    net = (
-        pl.col("qty") * pl.col("unit_price") * (1 - pl.col("discount").fill_null(0.0))
-    ).alias("net")
-    return joined.with_columns(net).group_by("region").agg(
-        pl.col("net").sum().alias("net_revenue")
+    net = (pl.col("qty") * pl.col("unit_price") * (1 - pl.col("discount").fill_null(0.0))).alias(
+        "net"
     )
+    return joined.with_columns(net).group_by("region").agg(pl.col("net").sum().alias("net_revenue"))
 
 
 def _j13(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
@@ -575,8 +565,8 @@ def _j16(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     customers = frames["customers"]
     joined = orders.join(customers.select("customer_id", "region"), on="customer_id", how="left")
     region_label = pl.col("region").fill_null("unknown").str.to_uppercase().alias("region_label")
-    return joined.with_columns(region_label).group_by("region_label").agg(
-        pl.len().alias("n_orders")
+    return (
+        joined.with_columns(region_label).group_by("region_label").agg(pl.len().alias("n_orders"))
     )
 
 
@@ -596,8 +586,10 @@ def _j18(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     customers = frames["customers"]
     joined = orders.join(customers.select("customer_id", "tier"), on="customer_id", how="left")
     rounded_value = (pl.col("qty") * pl.col("unit_price")).round(1).alias("rounded_value")
-    return joined.with_columns(rounded_value).group_by("tier").agg(
-        pl.col("rounded_value").mean().round(2).alias("mean_order_value")
+    return (
+        joined.with_columns(rounded_value)
+        .group_by("tier")
+        .agg(pl.col("rounded_value").mean().round(2).alias("mean_order_value"))
     )
 
 
@@ -630,8 +622,10 @@ def _j21(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     products = frames["products"]
     joined = orders.join(products.select("product_id", "category"), on="product_id", how="left")
     category_label = (pl.col("category") + pl.lit(" goods")).alias("category_label")
-    return joined.with_columns(category_label).group_by("category_label").agg(
-        pl.col("qty").sum().alias("total_qty")
+    return (
+        joined.with_columns(category_label)
+        .group_by("category_label")
+        .agg(pl.col("qty").sum().alias("total_qty"))
     )
 
 
@@ -639,8 +633,10 @@ def _j22(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
     orders = frames["orders"]
     customers = frames["customers"]
     joined = orders.join(customers.select("customer_id", "region"), on="customer_id", how="left")
-    return joined.filter(pl.col("status") == "refunded").group_by("region").agg(
-        pl.len().alias("n_orders")
+    return (
+        joined.filter(pl.col("status") == "refunded")
+        .group_by("region")
+        .agg(pl.len().alias("n_orders"))
     )
 
 
@@ -685,8 +681,8 @@ def _j25(frames: Mapping[str, pl.DataFrame]) -> pl.DataFrame:
         .otherwise(pl.col("region"))
         .alias("region_group")
     )
-    return joined.with_columns(region_group).group_by("region_group").agg(
-        pl.len().alias("n_orders")
+    return (
+        joined.with_columns(region_group).group_by("region_group").agg(pl.len().alias("n_orders"))
     )
 
 
@@ -854,7 +850,7 @@ MORE_TASKS: tuple[Task, ...] = (
         id="s22",
         tier="single",
         prompt=(
-            'Using the products table, keep only rows where product_name contains the '
+            "Using the products table, keep only rows where product_name contains the "
             'letter "o" (lowercase, anywhere in the name). Return all product columns '
             "unchanged (product_id, product_name, category, cost). Row order does not "
             "matter."
@@ -866,7 +862,7 @@ MORE_TASKS: tuple[Task, ...] = (
         id="s23",
         tier="single",
         prompt=(
-            'Using the products table, keep only rows where product_name starts with the '
+            "Using the products table, keep only rows where product_name starts with the "
             'letter "N". Return all product columns unchanged (product_id, product_name, '
             "category, cost). Row order does not matter."
         ),
@@ -921,7 +917,7 @@ MORE_TASKS: tuple[Task, ...] = (
         id="s28",
         tier="single",
         prompt=(
-            'Using the orders table, compute qty_label = qty converted to text, '
+            "Using the orders table, compute qty_label = qty converted to text, "
             'concatenated with the literal text " units" (e.g. qty 3 becomes "3 units"). '
             "Return exactly two columns: order_id, qty_label. Row order does not matter."
         ),
@@ -1004,7 +1000,7 @@ MORE_TASKS: tuple[Task, ...] = (
         id="m14",
         tier="multi",
         prompt=(
-            'Using the orders table, classify every order into a price_tier by unit_price: '
+            "Using the orders table, classify every order into a price_tier by unit_price: "
             '"premium" if unit_price >= 100, otherwise "standard" if unit_price >= 50, '
             'otherwise "budget" if unit_price >= 20, otherwise "clearance". Count the '
             "number of orders in each price_tier. Return exactly two columns: price_tier, "
@@ -1167,7 +1163,7 @@ MORE_TASKS: tuple[Task, ...] = (
         id="m27",
         tier="multi",
         prompt=(
-            'Using the customers table, compute tier_label = tier with every occurrence of '
+            "Using the customers table, compute tier_label = tier with every occurrence of "
             '"gold" replaced by "premium" (other tier values are unchanged). Count the '
             "number of customers for each tier_label. Return exactly two columns: "
             "tier_label, n_customers. Row order does not matter."
@@ -1192,7 +1188,7 @@ MORE_TASKS: tuple[Task, ...] = (
         tier="multi",
         prompt=(
             'Using the orders table, compute discount_level for every order: "none" if '
-            "discount is null or equal to 0, otherwise \"low\" if discount is less than "
+            'discount is null or equal to 0, otherwise "low" if discount is less than '
             '0.15, otherwise "high". Count the number of orders for each discount_level. '
             "Return exactly two columns: discount_level, n_orders. Row order does not "
             "matter."
@@ -1314,7 +1310,7 @@ MORE_TASKS: tuple[Task, ...] = (
         id="m39",
         tier="multi",
         prompt=(
-            'Using the products table, compute clean_name = product_name with every '
+            "Using the products table, compute clean_name = product_name with every "
             'lowercase "a" replaced by uppercase "A". Keep only rows where clean_name '
             'contains "A". Count the number of remaining products for each category. '
             "Return exactly two columns: category, n_products. Row order does not matter."
@@ -1354,8 +1350,8 @@ MORE_TASKS: tuple[Task, ...] = (
         prompt=(
             "Join the orders table to the customers table on customer_id, keeping only "
             "orders whose customer_id matches a customer (an inner join; every order in "
-            'this dataset has a matching customer), then keep only rows where status '
-            "equals \"paid\". For each tier compute total_revenue = sum(qty * "
+            "this dataset has a matching customer), then keep only rows where status "
+            'equals "paid". For each tier compute total_revenue = sum(qty * '
             "unit_price). Return exactly two columns: tier, total_revenue. Row order does "
             "not matter."
         ),
@@ -1392,7 +1388,7 @@ MORE_TASKS: tuple[Task, ...] = (
         id="j13",
         tier="join",
         prompt=(
-            'Join the orders table to the products table on product_id, then keep only '
+            "Join the orders table to the products table on product_id, then keep only "
             'rows where status equals "paid". Compute margin = (unit_price - cost) * qty '
             "for each order. Over all such orders together (no grouping), compute "
             "total_margin = sum(margin). Return exactly one column: total_margin (a single "
@@ -1489,7 +1485,7 @@ MORE_TASKS: tuple[Task, ...] = (
         tier="join",
         prompt=(
             "Join the orders table to the customers table on customer_id and to the "
-            'products table on product_id, then keep only rows where status equals '
+            "products table on product_id, then keep only rows where status equals "
             '"paid". For each combination of region (customers with a null region form '
             "their own null-region group) and category, count the number of orders. "
             "Return exactly three columns: region, category, n_orders. Row order does not "
@@ -1503,7 +1499,7 @@ MORE_TASKS: tuple[Task, ...] = (
         tier="join",
         prompt=(
             "Join the orders table to the products table on product_id, using all orders "
-            'regardless of status. Compute category_label = category concatenated with '
+            "regardless of status. Compute category_label = category concatenated with "
             'the literal text " goods". For each category_label compute total_qty = '
             "sum(qty). Return exactly two columns: category_label, total_qty. Row order "
             "does not matter."
@@ -1585,7 +1581,7 @@ MORE_TASKS: tuple[Task, ...] = (
         tier="join",
         prompt=(
             "Join the orders table to the customers table on customer_id and to the "
-            'products table on product_id, then keep only rows where status equals '
+            "products table on product_id, then keep only rows where status equals "
             '"paid". Compute margin = (unit_price - cost) * qty for each order. Find the '
             "5 orders with the highest margin. Break ties by order_id descending (higher "
             "order_id first). Return exactly four columns: order_id, region, category, "

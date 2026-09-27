@@ -194,9 +194,7 @@ def _generate_customers(rng: random.Random) -> list[dict[str, object]]:
         last = rng.choice(_LAST_NAMES)
         name = _maybe_pad(rng, f"{first} {last}")
         region = None if i in null_region_indices else rng.choice(_REGIONS)
-        signup_date = _random_date(
-            rng, datetime.date(2022, 1, 1), datetime.date(2024, 12, 31)
-        )
+        signup_date = _random_date(rng, datetime.date(2022, 1, 1), datetime.date(2024, 12, 31))
         tier = rng.choice(_TIERS)
         rows.append(
             {
@@ -234,9 +232,7 @@ def _generate_orders(
     eligible_customer_ids = list(range(1, _NUM_CUSTOMERS - _NO_ORDER_CUSTOMER_COUNT + 1))
     rows: list[dict[str, object]] = []
     zero_qty_indices = set(rng.sample(range(_NUM_ORDERS), 6))
-    null_discount_indices = set(
-        i for i in range(_NUM_ORDERS) if rng.random() < 0.20
-    )
+    null_discount_indices = set(i for i in range(_NUM_ORDERS) if rng.random() < 0.20)
     for i in range(_NUM_ORDERS):
         order_id = i + 1
         customer_id = rng.choice(eligible_customer_ids)

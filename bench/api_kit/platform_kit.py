@@ -75,9 +75,7 @@ def current_user(
     token = authorization.removeprefix("Bearer ").strip()
     if not token:
         raise AuthError(401, "unauthorized")
-    row = db.execute(
-        "SELECT id, role, email, name FROM users WHERE token = ?", (token,)
-    ).fetchone()
+    row = db.execute("SELECT id, role, email, name FROM users WHERE token = ?", (token,)).fetchone()
     if row is None:
         raise AuthError(401, "unauthorized")
     return dict(row)

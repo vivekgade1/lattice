@@ -180,19 +180,13 @@ def _f03(frames: Frames) -> pl.DataFrame:
 def _f04(frames: Frames) -> pl.DataFrame:
     n_orders = frames["orders2"].group_by("customer_id").agg(_i64(pl.len()).alias("n_orders"))
     n_contacts = (
-        frames["customer_contacts"]
-        .group_by("customer_id")
-        .agg(_i64(pl.len()).alias("n_contacts"))
+        frames["customer_contacts"].group_by("customer_id").agg(_i64(pl.len()).alias("n_contacts"))
     )
     return n_orders.join(n_contacts, on="customer_id")
 
 
 def _f05(frames: Frames) -> pl.DataFrame:
-    n_contacts = (
-        frames["customer_contacts"]
-        .group_by("customer_id")
-        .agg(_i64(pl.len()).alias("n"))
-    )
+    n_contacts = frames["customer_contacts"].group_by("customer_id").agg(_i64(pl.len()).alias("n"))
     return (
         frames["customers2"]
         .join(n_contacts, on="customer_id", how="left")
@@ -214,10 +208,7 @@ def _price_on_order_date(frames: Frames) -> pl.DataFrame:
         .group_by("order_id")
         .agg(pl.col("valid_from").max())
     )
-    return (
-        paid.join(effective, on="order_id")
-        .join(prices, on=["product_id", "valid_from"])
-    )
+    return paid.join(effective, on="order_id").join(prices, on=["product_id", "valid_from"])
 
 
 def _f06(frames: Frames) -> pl.DataFrame:
@@ -282,12 +273,8 @@ def _f11(frames: Frames) -> pl.DataFrame:
 
 
 def _f12(frames: Frames) -> pl.DataFrame:
-    revenue = (
-        _paid(frames).group_by("customer_id").agg(_revenue().sum().alias("paid_revenue"))
-    )
-    n_contacts = (
-        frames["customer_contacts"].group_by("customer_id").agg(_i64(pl.len()).alias("n"))
-    )
+    revenue = _paid(frames).group_by("customer_id").agg(_revenue().sum().alias("paid_revenue"))
+    n_contacts = frames["customer_contacts"].group_by("customer_id").agg(_i64(pl.len()).alias("n"))
     return (
         revenue.join(n_contacts, on="customer_id")
         .join(frames["customers2"], on="customer_id")
@@ -935,7 +922,7 @@ _AGGREGATES: tuple[Task, ...] = (
     ),
 )
 
-_ZIP = "zip codes are text and keep their leading zeros (e.g. \"02134\")"
+_ZIP = 'zip codes are text and keep their leading zeros (e.g. "02134")'
 
 _TYPES: tuple[Task, ...] = (
     _t(
@@ -949,7 +936,7 @@ _TYPES: tuple[Task, ...] = (
     _t(
         "t02",
         "types",
-        f"List the customers whose zip code starts with \"0\"; {_ZIP}. Return exactly "
+        f'List the customers whose zip code starts with "0"; {_ZIP}. Return exactly '
         f"three columns: customer_id, name, zip. {_UNORDERED}",
         ("customers2",),
         _t02,
@@ -958,7 +945,7 @@ _TYPES: tuple[Task, ...] = (
         "t03",
         "types",
         f"For each customer tier, the number of customers and how many of them have a "
-        f"zip code starting with \"0\"; {_ZIP}. Return exactly three columns: tier, "
+        f'zip code starting with "0"; {_ZIP}. Return exactly three columns: tier, '
         f"n_customers, n_zero_zip. {_UNORDERED}",
         ("customers2",),
         _t03,
@@ -967,7 +954,7 @@ _TYPES: tuple[Task, ...] = (
         "t04",
         "types",
         f"Build a mailing label for every customer: the customer's name, a comma and a "
-        f"space, then the zip code (e.g. \"Ada Kim, 02134\"); {_ZIP}. Return exactly two "
+        f'space, then the zip code (e.g. "Ada Kim, 02134"); {_ZIP}. Return exactly two '
         f"columns: customer_id, label. {_UNORDERED}",
         ("customers2",),
         _t04,
@@ -991,8 +978,8 @@ _TYPES: tuple[Task, ...] = (
     _t(
         "t07",
         "types",
-        f"Classify customers by zip area: zip codes starting with \"0\" are area "
-        f"\"northeast\", all others are area \"other\"; {_ZIP}. Count the customers in "
+        f'Classify customers by zip area: zip codes starting with "0" are area '
+        f'"northeast", all others are area "other"; {_ZIP}. Count the customers in '
         "each area. Return exactly two columns: zip_area, n_customers. "
         f"{_UNORDERED}",
         ("customers2",),
@@ -1066,7 +1053,7 @@ _WIDE: tuple[Task, ...] = (
     _t(
         "w06",
         "wide",
-        "For each order whose status is \"refunded\", its total refund amount (the "
+        'For each order whose status is "refunded", its total refund amount (the '
         "refund_amount column of the order financials) and its refund per unit (the "
         "amount_refund column). Return exactly three columns: order_id, refund_total, "
         f"refund_per_unit. {_UNORDERED}",
@@ -1109,7 +1096,7 @@ _SAFETY: tuple[Task, ...] = (
     _t(
         "x02",
         "safety",
-        "List the products in the \"office\" category with their names and costs. Return "
+        'List the products in the "office" category with their names and costs. Return '
         f"exactly three columns: product_id, product_name, cost. {_UNORDERED}",
         ("products2",),
         _x02,
@@ -1163,8 +1150,8 @@ _SAFETY: tuple[Task, ...] = (
     _t(
         "x08",
         "safety",
-        "For each order whose status is \"refunded\" and whose product is in the "
-        "\"electronics\" category, the product's name and notes. Return exactly three "
+        'For each order whose status is "refunded" and whose product is in the '
+        '"electronics" category, the product\'s name and notes. Return exactly three '
         f"columns: order_id, product_name, notes. {_UNORDERED}",
         ("orders2", "products2"),
         _x08,
