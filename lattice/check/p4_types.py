@@ -185,6 +185,14 @@ def _owner_cols(schema: Schema) -> frozenset[str]:
     return frozenset()
 
 
+def _q(value: str) -> str:
+    return json.dumps(value)
+
+
+def _listed(values: tuple[str, ...]) -> str:
+    return ", ".join(_q(v) for v in values)
+
+
 def _cols(names: tuple[str, ...] | list[str]) -> str:
     return "(" + ", ".join(names) + ")"
 
@@ -1985,6 +1993,7 @@ class _Types:
                 continue
             if self._null_write(kw, schema, name):
                 continue
+            self._one_of_write(kw, schema, name)
             vt = typer.type_of(kw.value)
             want = schema.get(kw.arg)
             if not isinstance(vt, UnknownT) and want is not None:
@@ -2112,6 +2121,8 @@ class _Types:
                 continue
             if schema is not None and self._null_write(kw, schema, t.source or ""):
                 continue
+            if schema is not None:
+                self._one_of_write(kw, schema, t.source or "")
             vt = typer.type_of(kw.value)
             want = schema.get(kw.arg) if schema is not None else None
             if not isinstance(vt, UnknownT) and want is not None:
@@ -2173,6 +2184,46 @@ class _Types:
         vt = self._typer(t.schema, scope).type_of(value)
         if not isinstance(vt, UnknownT) and want is not None:
             self._compatible(value, vt.scalar, want, schema.owner)
+
+    def _one_of_write(self, kw: ast.keyword, schema: Schema, table: str) -> None:
+        """L407: a OneOf column (Schema.one_of) is written only a listed literal or an
+        endpoint parameter declared OneOf(...) with listed values -- so a request with
+        any other value is refused at the API boundary (422), before the write."""
+        column, value = kw.arg or "", kw.value
+        allowed = schema.choices(column)
+        if allowed is None:
+            return
+        where = f"column '{column}' of {table} holds only {_listed(allowed)}"
+        hint = f'a parameter `{column}: OneOf({", ".join(_q(v) for v in allowed)})`'
+        match value:
+            case ast.Constant(value=str() as text):
+                if text not in allowed:
+                    self.ctx.error("L407", kw, f"{where}, not {_q(text)}", f"write {hint[2:]}")
+                return
+            case ast.Name(id=name) if self.in_endpoint and name in self.param_specs:
+                spec = self.param_specs[name]
+                if spec.one_of is None:
+                    self.ctx.error(
+                        "L407",
+                        kw,
+                        f"{where}; parameter '{name}' may be any text",
+                        f"declare {hint[2:]} (or a subset), so another value is a 422",
+                    )
+                elif extra := [v for v in spec.one_of if v not in allowed]:
+                    self.ctx.error(
+                        "L407",
+                        kw,
+                        f"{where}; parameter '{name}' also allows {_listed(tuple(extra))}",
+                        f"remove {', '.join(map(_q, extra))} from its OneOf(...)",
+                    )
+                return
+            case _:
+                self.ctx.error(
+                    "L407",
+                    kw,
+                    f"{where}; the written value is not known to be one of them",
+                    f"write a listed literal or {hint}",
+                )
 
     def _null_write(self, kw: ast.keyword, schema: Schema, table: str) -> bool:
         """None as an insert()/update() value: a null for a nullable column, L410 for a
@@ -2517,6 +2568,14 @@ class _Types:
                     rows_node,
                     f"column '{c}' of {name} is not nullable, but the rows' may be null",
                     "make the record field non-optional",
+                )
+            elif (allowed := schema.choices(c)) is not None:
+                self.ctx.error(
+                    "L407",
+                    rows_node,
+                    f"column '{c}' of {name} holds only {_listed(allowed)}; the rows' "
+                    "values are not known to be among them",
+                    f"insert with insert({name}, {c}=...) from a OneOf parameter or a literal",
                 )
         key = generated_key(schema)
         if key is not None and key in given:

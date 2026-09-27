@@ -8,11 +8,16 @@ repos' code:
   the users table from what the current-user dependency returns (a repository method,
   ``session.get``) rather than from a table's name;
 * the token decoder through python-jose as well as PyJWT, in the dependency or in a
-  helper; not expressible (with the reason) when it reads request state or when its
-  claim names a users column other than the key (a language gap);
-* graceful degradation: unsupported columns, no users table, single-role apps, framework
-  parameters (``Request``) and routes an app factory defines are reported (unclear /
-  skipped with the reason), never a crash.
+  helper; app configuration it reads through ``request.app.state`` becomes a
+  NativeContext setting (other request state is not expressible, with the reason); a
+  claim naming a unique users column is a ``NativeToken(lookup=)``, a non-unique one a
+  language gap;
+* Str Enum / ``Literal`` columns are ``OneOf`` columns (an Enum's member names as their
+  stored spellings); Int enums remain a language gap;
+* single-role apps (no admin flag, no role column) get ``roles_from=NoRoles()``;
+* graceful degradation: unsupported columns, no users table, framework parameters
+  (``Request``) and routes an app factory defines are reported (unclear / skipped with
+  the reason), never a crash.
 """
 
 from __future__ import annotations
@@ -20,7 +25,7 @@ from __future__ import annotations
 import sys
 import textwrap
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 
 import pytest
 
@@ -42,7 +47,8 @@ from lattice.importer.suite import (
     hypothesis_bodies_for,
     seed_plan,
 )
-from lattice.profile import NativeToken
+from lattice.profile import NativeToken, NoRoles
+from lattice.typesys import Scalar
 
 MODELS = """
 import datetime as dt
@@ -321,13 +327,26 @@ def test_enum_and_literal_columns_keep_their_values(tmp_path: Path) -> None:
     assert (p.type, p.source, p.choices, p.required) == ("Str", "query", ("open", "done"), False)
 
 
-def test_enum_columns_are_str_with_a_language_gap_note(tmp_path: Path) -> None:
+def test_str_enum_columns_are_one_of_and_int_enums_a_language_gap(tmp_path: Path) -> None:
     result = generate_profile(model_of(tmp_path))
     source = result.source
     assert "('status', Scalar.STR)" in source and "('level', Scalar.INT)" in source
+    ticket = load(result).profile().api.tables["Ticket"]
+    assert ticket.choices("status") == ("open", "done")
+    # SQLAlchemy stores an Enum column by member name
+    assert ticket.stored_spellings() == (("status", (("open", "OPEN"), ("done", "DONE"))),)
+    assert ticket.choices("level") is None  # an Int enum: no OneOf spelling
     notes = [u for u in result.unclear if u.topic == "column_type"]
-    assert {u.subject for u in notes} == {"Ticket.status", "Ticket.level"}
+    assert {u.subject for u in notes} == {"Ticket.level"}
     assert all(f"{LANGUAGE_GAP} (enum constraint)" in u.reason for u in notes)
+
+
+def test_a_literal_column_is_stored_as_its_values(tmp_path: Path) -> None:
+    models = MODELS.replace("    status: Status = Field(default=Status.OPEN)\n",
+                            '    status: Literal["open", "done"] = "open"\n')  # fmt: skip
+    ticket = load(generate_profile(model_of(tmp_path, models=models))).profile().api
+    assert ticket.tables["Ticket"].choices("status") == ("open", "done")
+    assert ticket.tables["Ticket"].stored_spellings() == ()
 
 
 def test_a_mixed_enum_is_not_a_scalar(tmp_path: Path) -> None:
@@ -474,12 +493,30 @@ def get_caller(""",
     assert f"from {package_name(tmp_path)}.deps import read_token" in decoder.imports
 
 
-def test_a_decode_reading_request_state_is_not_expressible(tmp_path: Path) -> None:
+def _request_deps(read: str) -> str:
     deps = DEPS.replace("def get_caller(token", "def get_caller(request: Request, token").replace(
-        "settings.secret, algorithms", "request.app.state.secret, algorithms"
+        "settings.secret, algorithms", f"{read}, algorithms"
     )
-    deps = deps.replace("from fastapi import Depends", "from fastapi import Depends, Request")
-    model = model_of(tmp_path, deps=deps)
+    return deps.replace("from fastapi import Depends", "from fastapi import Depends, Request")
+
+
+def test_a_decode_reading_app_state_reads_a_native_context_setting(tmp_path: Path) -> None:
+    model = model_of(tmp_path, deps=_request_deps("request.app.state.config.secret"))
+    decoder = next(n for n in model.natives if n.kind == "token_decoder")
+    assert decoder.expressible, decoder.reason
+    # the Settings class annotates `secret: str`: a Str setting, read from app.state
+    assert decoder.settings == (("secret", "Str", "state.config.secret"),)
+    assert decoder.decode_expr == "jwt.decode(token, ctx['secret'], algorithms=['HS256'])"
+    module = load(generate_profile(model))
+    api = module.profile().api
+    assert api.settings == {"secret": Scalar.STR} and api.users_table == "Account"
+    assert api.natives["decode_token"].settings == ("secret",)
+    app = SimpleNamespace(state=SimpleNamespace(config=SimpleNamespace(secret="k")))
+    assert module.settings_from_app(app) == {"secret": "k"}
+
+
+def test_a_decode_reading_other_request_state_is_not_expressible(tmp_path: Path) -> None:
+    model = model_of(tmp_path, deps=_request_deps("request.headers['x-key']"))
     decoder = next(n for n in model.natives if n.kind == "token_decoder")
     assert not decoder.expressible and "request" in decoder.reason
     result = generate_profile(model)
@@ -488,41 +525,64 @@ def test_a_decode_reading_request_state_is_not_expressible(tmp_path: Path) -> No
     assert api.users_table != "Account"
 
 
-def test_a_claim_naming_a_non_key_column_is_a_language_gap(tmp_path: Path) -> None:
-    deps = DEPS.replace(
-        "account = repo.by_id(int(account_id))", "account = repo.by_login(account_id)"
-    )
-    model = model_of(tmp_path, deps=deps)
+BY_LOGIN = ("account = repo.by_id(int(account_id))", "account = repo.by_login(account_id)")
+
+
+def test_a_claim_naming_a_unique_column_is_a_token_lookup(tmp_path: Path) -> None:
+    model = model_of(tmp_path, deps=DEPS.replace(*BY_LOGIN))
+    decoder = next(n for n in model.natives if n.kind == "token_decoder")
+    assert decoder.expressible, decoder.reason
+    assert (decoder.lookup, decoder.result_type) == ("login", "Str")
+    api = load(generate_profile(model)).profile().api
+    assert api.auth == NativeToken("decode_token", lookup="login")
+    assert api.tables["Account"].keys == (("id",), ("login",))
+    assert api.natives["decode_token"].result is Scalar.STR
+
+
+def test_a_claim_naming_a_non_unique_column_is_a_language_gap(tmp_path: Path) -> None:
+    models = MODELS.replace("login: str = Field(unique=True, max_length=50)",
+                            "login: str = Field(max_length=50)")  # fmt: skip
+    model = model_of(tmp_path, deps=DEPS.replace(*BY_LOGIN), models=models)
     decoder = next(n for n in model.natives if n.kind == "token_decoder")
     assert not decoder.expressible
-    assert f"{LANGUAGE_GAP} (token subject is not the users key)" in decoder.reason
+    assert f"{LANGUAGE_GAP} (token subject is not a unique users column)" in decoder.reason
     assert "Account.login" in decoder.reason
 
 
 # ---- graceful degradation ------------------------------------------------------------------
 
 
-def test_a_single_role_app_reports_the_roles_gap_and_islands_its_user_routes(
+def test_a_single_role_app_gets_no_roles_and_suites_for_its_user_routes(
     tmp_path: Path,
 ) -> None:
     model = model_of(tmp_path)
     result = generate_profile(model)
-    assert any(f"{LANGUAGE_GAP} (single-role auth)" in r for r in unclear(result, "roles"))
+    assert not any("single-role" in r for r in unclear(result, "roles"))
     module = load(result)
     api = module.profile().api
-    blocker = auth_blocker(model, api)
-    assert blocker is not None and "single-role auth" in blocker
+    assert api.roles_from == NoRoles("Customer")
+    assert auth_blocker(model, api) is None
     inputs = adapt(model, api, index_of(tmp_path), module.NATIVES)
-    assert "single-role auth" in inputs.skipped["me"]
-    assert "single-role auth" in inputs.skipped["mine"]
-    me = next(r for r in model.routes if r.name == "me")
-    result = LiftResult("me", me, "no-lifter", RouteLift("me", ()))
-    o = RouteOutcome(
-        "me", result, "island", "R4", reason=f"no request suite: {inputs.skipped['me']}"
-    )
-    assert classify_gap(o) == f"{LANGUAGE_GAP}: single-role auth"
+    assert "me" in inputs.routes and "mine" in inputs.routes
     assert inputs.auth.users_table == "accounts" and inputs.auth.key_type == "int"
     assert inputs.auth.email_column == "login" and inputs.auth.password_column == "password_digest"
+    assert inputs.auth.admin_column is None
+
+
+def test_an_app_with_a_role_column_keeps_its_roles(tmp_path: Path) -> None:
+    role = "    password_digest: str\n    role: str\n"
+    models = MODELS.replace("    password_digest: str\n", role)
+    api = load(generate_profile(model_of(tmp_path, models=models))).profile().api
+    assert not isinstance(api.roles_from, NoRoles)
+
+
+def test_the_gap_classifier_still_names_a_language_gap(tmp_path: Path) -> None:
+    model = model_of(tmp_path)
+    me = next(r for r in model.routes if r.name == "me")
+    result = LiftResult("me", me, "no-lifter", RouteLift("me", ()))
+    why = f"no request suite: {LANGUAGE_GAP} (token subject is not a unique users column): x"
+    o = RouteOutcome("me", result, "island", "R4", reason=why)
+    assert classify_gap(o) == f"{LANGUAGE_GAP}: token subject is not a unique users column"
 
 
 def test_framework_parameters_are_not_request_data(tmp_path: Path) -> None:
@@ -563,16 +623,15 @@ def test_unsupported_columns_and_a_missing_users_table_never_crash(tmp_path: Pat
 def test_the_users_table_is_found_from_the_model_when_the_profile_has_none(
     tmp_path: Path,
 ) -> None:
-    deps = DEPS.replace(
-        "account = repo.by_id(int(account_id))", "account = repo.by_login(account_id)"
-    )
-    model = model_of(tmp_path, deps=deps)
+    models = MODELS.replace("login: str = Field(unique=True, max_length=50)",
+                            "login: str = Field(max_length=50)")  # fmt: skip
+    model = model_of(tmp_path, deps=DEPS.replace(*BY_LOGIN), models=models)
     module = load(generate_profile(model))
     api = module.profile().api
     assert api.users_table != "Account"  # no auth: left unset
     inputs = adapt(model, api, index_of(tmp_path), module.NATIVES)
     assert inputs.auth.users_table == "accounts"
-    assert "token subject is not the users key" in inputs.skipped["me"]
+    assert "token subject is not a unique users column" in inputs.skipped["me"]
 
 
 def test_a_profile_the_language_refuses_falls_back_without_its_auth(tmp_path: Path) -> None:
@@ -635,3 +694,47 @@ def test_insert_defaults_naive_utc_now_and_unspellable_factories(tmp_path: Path)
     assert column_default(src, ticket, "code") is None and has_default(src, ticket, "code")
     assert column_default(src, ticket, "due") == ("literal", None)
     assert not has_default(src, ticket, "plain")  # no default: the insert stores NULL
+
+
+# ---- FastAPI's credentials_exception idiom ----------------------------------------------------
+
+CREDENTIALS = DEPS.replace(
+    "def get_caller(token: str = Depends(oauth2), repo: AccountRepo = Depends(get_accounts)):\n",
+    "def get_caller(token: str = Depends(oauth2), repo: AccountRepo = Depends(get_accounts)):\n"
+    '    credentials_exception = HTTPException(status_code=401, detail="Could not validate")\n',
+).replace(
+    '        raise HTTPException(status_code=401, detail="bad token")\n',
+    "        raise credentials_exception\n",
+).replace(
+    '    if account is None:\n        raise HTTPException(status_code=401, detail="unknown")\n',
+    "    if account is None or not account.is_active:\n        raise credentials_exception\n",
+)
+ACTIVE_MODELS = MODELS.replace(
+    "    joined: NaiveDatetime\n", "    joined: NaiveDatetime\n    is_active: bool = True\n"
+)
+
+
+def test_a_raised_exception_variable_is_a_raise_site(tmp_path: Path) -> None:
+    """``raise credentials_exception`` (assigned an HTTPException once) is read like the
+    call it holds: its status and detail, and an ``or``-ed active check."""
+    model = model_of(tmp_path, deps=CREDENTIALS, models=ACTIVE_MODELS)
+    caller = next(d for d in model.dependencies if d.name == "get_caller")
+    assert caller.kind == "current_user"
+    assert {(r.status, r.detail) for r in caller.raises} == {(401, "Could not validate")}
+    assert (caller.active_column, caller.active_status, caller.active_detail) == (
+        "is_active", 401, "Could not validate",
+    )  # fmt: skip
+    api = load(generate_profile(model)).profile().api
+    assert (api.active_column, api.inactive_status) == ("is_active", 401)
+
+
+def test_an_exception_variable_assigned_twice_is_not_resolved(tmp_path: Path) -> None:
+    deps = CREDENTIALS.replace(
+        "        raise credentials_exception\n",
+        '        credentials_exception = HTTPException(status_code=403, detail="x")\n'
+        "        raise credentials_exception\n",
+        1,
+    )
+    model = model_of(tmp_path, deps=deps, models=ACTIVE_MODELS)
+    caller = next(d for d in model.dependencies if d.name == "get_caller")
+    assert caller.raises == () and caller.active_column is None

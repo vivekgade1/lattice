@@ -50,8 +50,9 @@ from bench.api_model import ApiTask, HttpCase
 from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases_lattice
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
+from lattice.diagnostics import Severity
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import effects, gaps, loops, mine_owner, partb, realapps, round2, t2prog
+from tests.api import effects, gaps, loops, mine_owner, partb, realapps, round2, solo, t2prog
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -980,6 +981,61 @@ T2_CASES: tuple[HttpCase, ...] = (
 )
 
 
+# ---- the held-out import gaps: NoRoles, NativeToken(lookup=), NativeContext, OneOf columns
+# (tests/api/solo.py)
+
+_SO = solo
+_STASKS = "SELECT id, owner_id, title, status, priority FROM tasks ORDER BY id"
+
+
+def _socase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _SO.TOKENS[who], **kw)
+
+
+SOLO_CASES: tuple[HttpCase, ...] = (
+    *(
+        _socase(f"{path} {who}", "GET", path, who)
+        for path in ("/tasks", "/tasks/mine", "/me")
+        for who in ("alice", "bob")
+    ),
+    _socase("filter status", "GET", "/tasks", "alice", query={"status": "doing"}),
+    _socase("filter bad status", "GET", "/tasks", "alice", query={"status": "x"}, status=422),
+    _socase("ghost 401", "GET", "/me", "ghost", status=401),
+    _socase("forged 401", "GET", "/me", "forged", status=401),
+    _socase("inactive", "GET", "/me", "carol", status=400),
+    _socase("read own", "GET", "/tasks/1", "alice"),
+    _socase("read other 403", "GET", "/tasks/3", "alice", status=403),
+    _socase("read missing", "GET", "/tasks/99", "alice", status=404),
+    _socase(
+        "create default", "POST", "/tasks", "alice", json={"title": "New"},
+        status=201, after_sql=_STASKS,
+    ),  # fmt: skip
+    _socase(
+        "create full", "POST", "/tasks", "bob",
+        json={"title": "N2", "status": "doing", "priority": "high"},
+        status=201, after_sql=_STASKS,
+    ),  # fmt: skip
+    _socase(
+        "create bad status", "POST", "/tasks", "alice", json={"title": "x", "status": "later"},
+        status=422, after_sql=_STASKS,
+    ),  # fmt: skip
+    _socase(
+        "create bad priority", "POST", "/tasks", "alice",
+        json={"title": "x", "priority": "urgent"}, status=422,
+    ),  # fmt: skip
+    _socase(
+        "patch", "PATCH", "/tasks/2", "alice", json={"status": "done"}, after_sql=_STASKS
+    ),  # fmt: skip
+    _socase(
+        "patch bad", "PATCH", "/tasks/2", "alice", json={"priority": "mid"},
+        status=422, after_sql=_STASKS,
+    ),  # fmt: skip
+    _socase("patch other", "PATCH", "/tasks/3", "alice", json={"status": "done"}, status=403),
+    _socase("finish", "POST", "/tasks/1/finish", "alice", after_sql=_STASKS),
+    _socase("finish other", "POST", "/tasks/3/finish", "alice", status=404),
+)
+
+
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
     _R.PROGRAM,
@@ -1011,6 +1067,10 @@ PROGRAMS["round2"] = (
     _R2.PROGRAM,
     ApiTask("round2", "control", "round-2 fixes", ROUND2_CASES + _probes(ROUND2_CASES)),
 )
+PROGRAMS["solo"] = (
+    _SO.PROGRAM,
+    ApiTask("solo", "control", "held-out import gaps", SOLO_CASES + _probes(SOLO_CASES)),
+)
 PROGRAMS["t2"] = (
     _T2.PROGRAM,
     ApiTask("t2", "control", "procedures in endpoints", T2_CASES + _probes(T2_CASES)),
@@ -1028,6 +1088,7 @@ EXTRA_IDS = [
     "mine",
     "round2",
     "t2",
+    "solo",
 ]
 
 
@@ -1040,6 +1101,7 @@ class Setup:
     build: Any
     natives: Mapping[str, Any] | None = None
     natives_file: Path | None = None
+    settings: Mapping[str, Any] | None = None  # NativeContext values (the runtime's)
 
 
 DEFAULT_SETUP = Setup(api_profile(), build_db)
@@ -1052,6 +1114,7 @@ SETUPS = {
     "mine": Setup(_M.PROFILE, _M.build_db, _M.NATIVES, _M.NATIVES_FILE),
     "round2": Setup(_R2.PROFILE, _R2.build_db, _R2.NATIVES, _R2.NATIVES_FILE),
     "t2": Setup(_T2.PROFILE, _T2.build_db, _T2.NATIVES, _T2.NATIVES_FILE),
+    "solo": Setup(_SO.PROFILE, _SO.build_db, _SO.NATIVES, _SO.NATIVES_FILE, _SO.SETTINGS),
 }
 
 
@@ -1233,7 +1296,9 @@ def _run_runtime(
     calls = [0]
 
     def serve(src: str, profile: Any, db_path: Path):
-        check, app = runtime.serve_source(src, profile, db_path, natives=setup.natives)
+        check, app = runtime.serve_source(
+            src, profile, db_path, natives=setup.natives, settings=setup.settings
+        )
         case = task.cases[calls[0]]
         calls[0] += 1
         return check, (None if app is None else _Shim(app, db_path, case, captured))
@@ -1666,8 +1731,26 @@ def test_the_t2_program_passes_its_cases(differential_runs):
 def test_a_procedure_filter_before_page_is_rejected_by_both_backends(tmp_path: Path):
     """L880: the t2 program with its procedure filter moved before page()."""
     result, code = compile_source_to_fastapi(_T2.L880_PROGRAM, _T2.PROFILE)
-    assert code is None and [d.code for d in result.diagnostics] == ["L880"]
+    errors = [d.code for d in result.diagnostics if d.severity is Severity.ERROR]
+    assert code is None and errors == ["L880"]
     db = tmp_path / "app.db"
     _T2.build_db(db)
     check, app = runtime.serve_source(_T2.L880_PROGRAM, _T2.PROFILE, db, natives=_T2.NATIVES)
     assert app is None and not check.ok
+
+
+def test_the_solo_program_passes_its_cases(differential_runs):
+    """NoRoles, a username token lookup, NativeContext natives and OneOf columns give the
+    same results on both backends (compared above) and the expected ones."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs["solo"]
+    want = {c.name: c.expect_status for c in SOLO_CASES}
+    for results in (rt_results, gen_results):
+        assert {c.name: c.status for c in results.cases if c.name in want} == want
+    for captured in (rt_captured, gen_captured):
+        body = {c["name"]: c["body"] for c in captured}
+        assert body["/me alice"]["greeting"] == "Hello, alice!"
+        assert body["/me bob"]["admin"] is False
+        assert body["/tasks alice"] == body["/tasks/mine alice"]
+        after = {c["name"]: c["after"] for c in captured}
+        assert after["finish"][0][3] == "DONE"  # stored by name, answered as "done"
+        assert body["finish"]["status"] == "done"

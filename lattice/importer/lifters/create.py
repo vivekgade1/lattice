@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import ast
 
-from lattice.importer.extract import RepoModel
+from lattice.importer.extract import FieldSpec, RepoModel
 from lattice.importer.lifters._orm import column_default, has_default
 from lattice.importer.lifters.base import (
     USER,
@@ -51,6 +51,20 @@ def _update_owner(route: RouteSource, call: ast.Call) -> str | None | bool:
     if attr_of(v, route.user) != key.name:
         return False
     return k.value
+
+
+def _literal_default(f: FieldSpec) -> object | None:
+    """A body field's default as a literal: a Python literal, or an Enum member
+    (``Status.OPEN``) -- its value; None when it has no literal spelling."""
+    assert f.default is not None
+    try:
+        return ast.literal_eval(f.default)
+    except (ValueError, SyntaxError):
+        pass
+    member = f.default.rsplit(".", 1)[-1]
+    if member in f.choice_names:
+        return f.choices[f.choice_names.index(member)]
+    return None
 
 
 def match(route: RouteSource, model: RepoModel) -> LiftFragment | None:
@@ -101,9 +115,8 @@ def match(route: RouteSource, model: RepoModel) -> LiftFragment | None:
             elif f.default in (None, "None"):
                 default = "UNSET"
             else:
-                try:
-                    value = ast.literal_eval(f.default)
-                except (ValueError, SyntaxError):
+                value = _literal_default(f)
+                if value is None:
                     return None
                 default = lit(value)
             params.append(Param(f.name, "body", ann, default))

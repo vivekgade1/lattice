@@ -62,6 +62,14 @@ class Schema:
     # filter on and aggregate in a non-Admin endpoint (e.g. review ratings per product).
     # Every other column keeps such an aggregate owner-private (checker rule L802).
     public_group: frozenset[str] = field(default=frozenset(), compare=False)
+    # Enum columns: (Str column, its allowed values) -- every write must pass a listed
+    # literal or a OneOf parameter whose values are all listed (checker rule L407).
+    one_of: tuple[tuple[str, tuple[str, ...]], ...] = field(default=(), compare=False)
+    # How a OneOf column's values are spelled in the database, when not as themselves
+    # (column, the stored spelling of each value, in one_of's order) -- e.g. an ORM that
+    # stores a Python Enum by member name ("IN_PROGRESS" for "in_progress"). Reads
+    # decode and writes encode them in SQL; programs see the values only.
+    one_of_stored: tuple[tuple[str, tuple[str, ...]], ...] = field(default=(), compare=False)
 
     def __post_init__(self) -> None:
         names = [n for n, _ in self.columns]
@@ -95,6 +103,44 @@ class Schema:
         if self.public_group & identity_columns(self):
             ids = sorted(self.public_group & identity_columns(self))
             raise ValueError(f"public_group columns {ids} identify a row or its owner")
+        self._validate_one_of(known)
+
+    def _validate_one_of(self, known: set[str]) -> None:
+        seen: set[str] = set()
+        for column, values in self.one_of:
+            if column not in known:
+                raise ValueError(f"one_of column {column!r} not in schema")
+            if column in seen:
+                raise ValueError(f"one_of lists column {column!r} twice")
+            seen.add(column)
+            if self.get(column) is not Scalar.STR:
+                raise ValueError(f"one_of column {column!r} must be a Str column")
+            if not values or not all(isinstance(v, str) for v in values):
+                raise ValueError(f"one_of column {column!r} needs at least one text value")
+            if len(set(values)) != len(values):
+                raise ValueError(f"one_of column {column!r} lists a value twice")
+        for column, stored in self.one_of_stored:
+            values = self.choices(column)
+            if values is None:
+                raise ValueError(f"one_of_stored column {column!r} is not a one_of column")
+            if len(stored) != len(values) or len(set(stored)) != len(stored):
+                raise ValueError(
+                    f"one_of_stored column {column!r} needs one distinct spelling per value"
+                )
+            if not all(isinstance(v, str) for v in stored):
+                raise ValueError(f"one_of_stored column {column!r} spellings must be text")
+
+    def choices(self, column: str) -> tuple[str, ...] | None:
+        """The values a OneOf column allows, or None (any value of its type)."""
+        return next((values for c, values in self.one_of if c == column), None)
+
+    def stored_spellings(self) -> tuple[tuple[str, tuple[tuple[str, str], ...]], ...]:
+        """Each OneOf column stored differently from its values: (column, ((value,
+        stored spelling), ...))."""
+        return tuple(
+            (c, tuple(zip(self.choices(c) or (), stored, strict=True)))
+            for c, stored in self.one_of_stored
+        )
 
     @staticmethod
     def from_pairs(
@@ -107,6 +153,8 @@ class Schema:
         owner_via: tuple[str, str] | None = None,
         admin_write: Iterable[str] = (),
         public_group: Iterable[str] = (),
+        one_of: Mapping[str, Iterable[str]] | None = None,
+        one_of_stored: Mapping[str, Iterable[str]] | None = None,
     ) -> Schema:
         return Schema(
             tuple(pairs),
@@ -117,6 +165,8 @@ class Schema:
             owner_via,
             frozenset(admin_write),
             frozenset(public_group),
+            tuple((c, tuple(v)) for c, v in (one_of or {}).items()),
+            tuple((c, tuple(v)) for c, v in (one_of_stored or {}).items()),
         )
 
     def names(self) -> tuple[str, ...]:

@@ -375,6 +375,12 @@ def field_annotation(f: FieldSpec) -> str | None:
     }.get(f.type or "")
     if name is None:
         return None
+    if f.choices:
+        # an Enum / Literal field: OneOf of its values (the length bounds a Str field
+        # may also carry are implied by the listed values)
+        if name != "Str" or not all(isinstance(c, str) for c in f.choices):
+            return None
+        return f"OneOf({', '.join(lit(c) for c in f.choices)})"
     bounds: list[str] = []
     if name in ("Str", "Email"):
         if f.ge is not None or f.le is not None or f.gt is not None or f.lt is not None:

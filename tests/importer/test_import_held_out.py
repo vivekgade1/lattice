@@ -27,22 +27,27 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # repo -> (routes, verified, islands, needs-llm, {gap: islands})
 COVERAGE = {
     "taskflow": (
-        10, 0, 8, 2,
-        {
-            f"{LANGUAGE_GAP}: single-role auth": 6,
-            "unsupported framework feature: a route defined inside an app factory": 2,
-        },
+        10, 1, 2, 7,
+        {"unsupported framework feature: a route defined inside an app factory": 2},
     ),
     "justnotes": (
         30, 0, 26, 4,
-        {f"{LANGUAGE_GAP}: token subject is not the users key": 26},
+        {f"{LANGUAGE_GAP}: token subject is not a unique users column": 26},
     ),
 }  # fmt: skip
 # the gaps each repo's profile records as unclear decisions
-PROFILE_GAPS = {
-    "taskflow": {"single-role auth", "enum constraint"},
-    "justnotes": {"single-role auth", "token subject is not the users key"},
+PROFILE_GAPS: dict[str, set[str]] = {
+    "taskflow": set(),
+    "justnotes": {"token subject is not a unique users column"},
 }
+# the language gaps the first run recorded, closed since (single-role auth: NoRoles; a
+# non-key token subject: NativeToken(lookup=); natives reading app configuration:
+# NativeContext settings; enum columns: OneOf) -- none may come back
+CLOSED_GAPS = (
+    "single-role auth",
+    "token subject is not the users key",
+    "enum constraint",
+)
 
 
 @pytest.fixture(scope="module", params=sorted(COVERAGE))
@@ -109,3 +114,13 @@ def test_the_language_gaps_are_recorded_as_unclear_decisions(run):
     reasons = " ".join(u["reason"] for u in report["unclear"])
     for gap in PROFILE_GAPS[repo]:
         assert f"{LANGUAGE_GAP} ({gap})" in reasons, gap
+
+
+def test_the_closed_gaps_stay_closed(run):
+    _, _, report = run
+    reasons = " ".join(
+        [u["reason"] for u in report["unclear"]] + [r.get("reason") or "" for r in report["routes"]]
+    )
+    for gap in CLOSED_GAPS:
+        assert f"{LANGUAGE_GAP} ({gap})" not in reasons, gap
+    assert "which a native cannot import" not in reasons  # the TaskFlow secret: a setting

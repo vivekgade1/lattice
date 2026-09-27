@@ -69,7 +69,15 @@ from lattice.check.t2.types import T2Type
 from lattice.check.t2_calls import column_type
 from lattice.diagnostics import Span, span_of
 from lattice.ir import traverse_params, window_params
-from lattice.profile import AdminFlag, ApiProfile, NativeSig, NativeToken, RoleColumn, TokenColumn
+from lattice.profile import (
+    AdminFlag,
+    ApiProfile,
+    NativeSig,
+    NativeToken,
+    NoRoles,
+    RoleColumn,
+    TokenColumn,
+)
 from lattice.runtime import LatticeInternalError
 from lattice.t2.compile import T2Code, compile_program
 from lattice.typesys import (
@@ -307,6 +315,14 @@ class EndpointPlan:
     fuel: int = DEFAULT_FUEL
     t2_caller: tuple[tuple[str, str], ...] = ()
     t2_effects: tuple[tuple[str, tuple[str, ...]], ...] = ()
+    # ApiProfile.roles_from=NoRoles(role): every caller's role (no column is read).
+    fixed_role: str | None = None
+    # NativeToken(lookup=col): the unique users column the decoded token is matched
+    # against (None: the key, `user_key`).
+    token_lookup: str | None = None
+    # NativeContext: every profile native that reads settings -- (native, ((setting,
+    # scalar), ...)) -- by name, so the natives of steps and procedures are bound too.
+    native_settings: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = ()
 
     @property
     def t2_post_reads(self) -> tuple[str, ...]:
@@ -327,6 +343,23 @@ class EndpointPlan:
 
 
 # ---- helpers ---------------------------------------------------------------------------
+
+
+def _stored_param(schema: Schema) -> dict[str, Any]:
+    """A read's `stored` parameter: the table's OneOf columns spelled differently in the
+    database (decoded in the SELECT), or nothing."""
+    stored = schema.stored_spellings()
+    return {"stored": stored} if stored else {}
+
+
+def native_settings(api: ApiProfile) -> tuple[tuple[str, tuple[tuple[str, str], ...]], ...]:
+    """Every native of the profile that reads settings, with each setting's scalar."""
+    settings = getattr(api, "settings", {})
+    return tuple(
+        (name, tuple((s, settings[s].value) for s in sig.settings))
+        for name, sig in sorted(api.natives.items())
+        if getattr(sig, "settings", ())
+    )
 
 
 class _Substitute(ast.NodeTransformer):
@@ -543,7 +576,11 @@ class _Endpoint:
                 USER_PARAM,
                 "user",
                 (),
-                {"table": api.table_names[api.users_table], "key": key},
+                {
+                    "table": api.table_names[api.users_table],
+                    "key": key,
+                    **_stored_param(users),
+                },
                 users,
             )
             self.env[USER_PARAM] = _RelVal(USER_PARAM)
@@ -1036,7 +1073,11 @@ class _Endpoint:
                     raise LatticeInternalError("fetch() table is not a name")
                 schema = self.api.tables[name.id]
                 order = schema.keys[0] if schema.keys else ()
-                return {"table": self.api.table_names[name.id], "order": order}
+                return {
+                    "table": self.api.table_names[name.id],
+                    "order": order,
+                    **_stored_param(schema),
+                }
             case "accessible" | "owned" | "mine":
                 owner, via = self._owner(self._type(call))
                 return {"owner": owner} if via is None else {"via": via}
@@ -1345,18 +1386,20 @@ class _Endpoint:
         if self.info.response is not None:
             response = _reorder(response, self.api.responses[self.info.response])
         users = self.api.tables.get(self.api.users_table)
-        token_column, auth_native = "token", None
+        token_column, auth_native, token_lookup = "token", None, None
         match self.api.auth:
             case TokenColumn(column=column):
                 token_column = column
-            case NativeToken(native=native):
-                auth_native = native
-        role_column, admin_flag, flag_role = "role", None, ""
+            case NativeToken(native=native, lookup=lookup):
+                auth_native, token_lookup = native, lookup
+        role_column, admin_flag, flag_role, fixed_role = "role", None, "", None
         match self.api.roles_from:
             case RoleColumn(column=column):
                 role_column = column
             case AdminFlag(column=column, role=role):
                 admin_flag, flag_role = column, role
+            case NoRoles(role=role):
+                fixed_role = role
         return EndpointPlan(
             self.info.name,
             self.info.method,
@@ -1403,6 +1446,9 @@ class _Endpoint:
             fuel=getattr(self.api, "fuel", DEFAULT_FUEL),
             t2_caller=self._t2_caller(),
             t2_effects=self._t2_effects(),
+            fixed_role=fixed_role,
+            token_lookup=token_lookup,
+            native_settings=native_settings(self.api),
         )
 
     def _t2_caller(self) -> tuple[tuple[str, str], ...]:
@@ -1486,6 +1532,7 @@ class _Endpoint:
                 owner=owner,
                 generate=key if key is not None and key not in given else None,
                 dialect=self.dialect,
+                stored=ev.schema.stored_spellings(),
             )
             schema = self.step_schemas[ev.id]
             return WriteStep(
@@ -1511,7 +1558,15 @@ class _Endpoint:
             if ev.missing is not None and ev.schema.owner is not None:
                 users = self.api.table_names[self.api.users_table]
                 exists = (users, self.user_key, ev.schema.owner)
-            sql = compile_update(table, key, src, written, exists=exists, dialect=self.dialect)
+            sql = compile_update(
+                table,
+                key,
+                src,
+                written,
+                exists=exists,
+                dialect=self.dialect,
+                stored=ev.schema.stored_spellings(),
+            )
         else:
             sql = compile_delete(table, key, src, dialect=self.dialect)
         return WriteStep(

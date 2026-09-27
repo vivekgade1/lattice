@@ -7,7 +7,11 @@ the profile's admin column, the compared column the table's owner column (from t
 profile), the other side the caller's key. The two conjuncts and the two sides of the
 comparison may come in either order, and the check may be spelled ``not (<caller>.<admin
 flag> or <row>.<owner> == <caller>.<key>)`` or with ``not (... == ...)`` for ``!=``;
-anything else (no admin bypass, another column, ``or``) is not this idiom."""
+anything else (no admin bypass, another column, ``or``) is not this idiom.
+
+In a single-role app (``roles_from=NoRoles()``) no caller is an Admin, so the plain
+owner guard ``if <row>.<owner> != <caller>.<key>: raise HTTPException(403, ...)`` is
+exactly ``owner_is(user)`` too; with admins it is not (an Admin would pass)."""
 
 from __future__ import annotations
 
@@ -23,6 +27,7 @@ from lattice.importer.lifters.base import (
     attr_of,
     error,
 )
+from lattice.profile import NoRoles
 
 IDIOM = "if not caller.is_superuser and row.owner != caller.id: raise 403 -> require(owner_is)"
 
@@ -79,14 +84,19 @@ def _denied(route: RouteSource, test: ast.expr, caller: str, flag: str) -> tuple
 
 def match(route: RouteSource, model: RepoModel) -> LiftFragment | None:
     caller, flag = route.user, route.admin_column
-    if caller is None or flag is None:
+    single_role = isinstance(route.api.roles_from, NoRoles)
+    if caller is None or (flag is None and not single_role):
         return None
     for i, stmt in enumerate(route.body):
         guard = route.guard_raise(stmt)
         if guard is None:
             continue
         test, status, detail = guard
-        found = _denied(route, test, caller, flag)
+        if single_role:  # no admins: "not the owner" is the whole guard
+            found = _not_owner(route, test, caller)
+        else:
+            assert flag is not None
+            found = _denied(route, test, caller, flag)
         if found is None:
             continue
         var, column = found

@@ -183,6 +183,36 @@ class ReadPipeline:
     total_of: str | None = None
 
 
+# Schema.stored_spellings(): (column, ((value, stored spelling), ...)) per OneOf column
+# the database spells differently from its values.
+Stored = tuple[tuple[str, tuple[tuple[str, str], ...]], ...]
+
+
+def _text(v: str) -> str:
+    return "'" + v.replace("'", "''") + "'"
+
+
+def stored_case(expr: str, pairs: tuple[tuple[str, str], ...], *, encode: bool) -> str:
+    """`expr` mapped between a OneOf column's values and its stored spellings: `encode`
+    value -> stored (a write), else stored -> value (a read). Anything else (NULL, a
+    spelling the program never writes) passes through unchanged."""
+    arms = " ".join(
+        f"WHEN {_text(a)} THEN {_text(b)}"
+        for value, stored in pairs
+        for a, b in [(value, stored) if encode else (stored, value)]
+    )
+    return f"CASE {expr} {arms} ELSE {expr} END"
+
+
+def _decoded(q: Any, columns: Sequence[str], stored: Stored) -> str:
+    """The column list of a read of a table: each stored-spelling column decoded."""
+    by_col = dict(stored)
+    return ", ".join(
+        f"{stored_case(q(c), by_col[c], encode=False)} AS {q(c)}" if c in by_col else q(c)
+        for c in columns
+    )
+
+
 @dataclass(frozen=True)
 class InsertWrite:
     """INSERT one row (column-free value expressions) returning `returning`; with
@@ -194,6 +224,7 @@ class InsertWrite:
     returning: Sequence[str]
     owner: str | None = None
     generate: str | None = None
+    stored: Stored = ()  # OneOf columns stored as other spellings (see `stored_case`)
 
 
 @dataclass(frozen=True)
@@ -208,6 +239,7 @@ class UpdateWrite:
     source: tuple[str, tuple[str, ...]]
     values: Sequence[tuple[str, ast.expr]]
     exists: tuple[str, str, str] | None = None
+    stored: Stored = ()
 
 
 @dataclass(frozen=True)
@@ -456,11 +488,11 @@ class _Builder:
                     ordexpr = self.d.row_number(", ".join(q(c) for c in order))
                 else:
                     ordexpr = self.d.natural_order()
-                listed = ", ".join(q(c) for c in cols)
+                listed = _decoded(q, cols, p.get("stored", ()))
                 return f"SELECT {listed}, {ordexpr} AS {ORD} FROM {q(p['table'])}"
             case "user":
                 uid, _ = self.user_ref()
-                listed = ", ".join(q(c) for c in cols)
+                listed = _decoded(q, cols, p.get("stored", ()))
                 return (
                     f"SELECT {listed}, 0 AS {ORD} FROM {q(p['table'])} WHERE {q(p['key'])} = {uid}"
                 )
@@ -857,10 +889,19 @@ def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
     q = b.q
     match step:
         case InsertWrite(
-            table=table, values=values, returning=returning, owner=owner, generate=generate
+            table=table,
+            values=values,
+            returning=returning,
+            owner=owner,
+            generate=generate,
+            stored=stored,
         ):
+            by_col = dict(stored)
             cols = [q(c) for c, _ in values]
-            exprs = [b.expr(e) for _, e in values]
+            exprs = [
+                stored_case(b.expr(e), by_col[c], encode=True) if c in by_col else b.expr(e)
+                for c, e in values
+            ]
             if owner is not None:
                 uid, _ = b.user_ref()
                 cols.append(q(owner))
@@ -868,12 +909,19 @@ def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
             if generate is not None:
                 cols.append(q(generate))
                 exprs.append(dialect.new_uuid())
-            ret = ", ".join(q(c) for c in returning)
+            ret = _decoded(q, returning, stored)
             return b.query(dialect.insert(q(table), cols, exprs, ret))
-        case UpdateWrite(table=table, key=key, source=source, values=values, exists=exists):
+        case UpdateWrite(
+            table=table, key=key, source=source, values=values, exists=exists, stored=stored
+        ):
+            by_col = dict(stored)
             src = b.rows_cte(*source)
             keys = [f"{q(k)} AS {q(f'__k{i}')}" for i, k in enumerate(key)]
-            vals = [f"{b.expr(e)} AS {q(f'__v{i}')}" for i, (_, e) in enumerate(values)]
+            vals = [
+                f"{stored_case(b.expr(e), by_col[c], encode=True) if c in by_col else b.expr(e)}"
+                f" AS {q(f'__v{i}')}"
+                for i, (c, e) in enumerate(values)
+            ]
             sets = ", ".join(_set(b, table, c, e, i) for i, (c, e) in enumerate(values))
             match = " AND ".join(f"{q(table)}.{q(k)} = s.{q(f'__k{i}')}" for i, k in enumerate(key))
             if exists is not None:
@@ -884,7 +932,7 @@ def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
                     f" AND EXISTS (SELECT 1 FROM {q(users)} WHERE {q(users)}.{q(users_key)} "
                     f"= s.{q(f'__v{i}')})"
                 )
-            ret = ", ".join(q(c) for c in [*key, *(c for c, _ in values)])
+            ret = _decoded(q, [*key, *(c for c, _ in values)], stored)
             select = f"SELECT {', '.join(keys + vals)} FROM {src}"
             return b.query(dialect.update_from(q(table), sets, select, match, ret))
         case InsertManyWrite(
@@ -958,11 +1006,13 @@ def compile_insert(
     owner: str | None = None,
     generate: str | None = None,
     dialect: Dialect = SQLITE,
+    stored: Stored = (),
 ) -> SqlQuery:
     """INSERT one row (values are column-free expressions) RETURNING `returning`.
     With `owner`, that column is set to the caller's id; with `generate`, that (Uuid
-    key) column to a fresh uuid4."""
-    return dialect.compile_write(InsertWrite(table, values, returning, owner, generate))
+    key) column to a fresh uuid4; `stored` columns are written (and returned) through
+    their stored spellings."""
+    return dialect.compile_write(InsertWrite(table, values, returning, owner, generate, stored))
 
 
 def compile_insert_many(
@@ -986,11 +1036,13 @@ def compile_update(
     *,
     exists: tuple[str, str, str] | None = None,
     dialect: Dialect = SQLITE,
+    stored: Stored = (),
 ) -> SqlQuery:
     """UPDATE the rows of `table` whose key matches a row of `source` (a materialized
     step: (step id, columns)); each value is evaluated against that source row.
-    RETURNING the key and the updated columns. `exists`: see `UpdateWrite`."""
-    return dialect.compile_write(UpdateWrite(table, key, source, values, exists))
+    RETURNING the key and the updated columns. `exists`: see `UpdateWrite`; `stored`:
+    see `compile_insert`."""
+    return dialect.compile_write(UpdateWrite(table, key, source, values, exists, stored))
 
 
 def compile_delete(

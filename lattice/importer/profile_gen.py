@@ -88,6 +88,8 @@ class _TablePlan:
     owner: str | None = None
     private: list[str] = field(default_factory=list)
     admin_write: list[str] = field(default_factory=list)
+    one_of: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    one_of_stored: dict[str, tuple[str, ...]] = field(default_factory=dict)
 
 
 class _Generator:
@@ -182,16 +184,23 @@ class _Generator:
         users_name = self.tables[users].table_name if users in self.tables else None
         for table in self.m.tables:
             columns = []
+            one_of: dict[str, tuple[str, ...]] = {}
+            stored: dict[str, tuple[str, ...]] = {}
             for c in table.columns:
                 if c.type in SCALAR_ATTR:
                     columns.append((c.name, SCALAR_ATTR[c.type]))
-                    if c.choices:
+                    if c.choices and c.type == "Str":
+                        one_of[c.name] = tuple(map(str, c.choices))
+                        # an Enum column: the ORM stores its members' names
+                        if c.choice_names and c.choice_names != one_of[c.name]:
+                            stored[c.name] = c.choice_names
+                    elif c.choices:
                         self.note(
                             "column_type",
                             f"{table.name}.{c.name}",
                             f"{c.annotation} allows only {', '.join(map(str, c.choices))}; "
-                            f"kept as {c.type}: {LANGUAGE_GAP} (enum constraint) -- Lattice "
-                            "has no enum / pattern constraint on a column or parameter",
+                            f"kept as {c.type}: {LANGUAGE_GAP} (enum constraint) -- Lattice's "
+                            "OneOf constraint is on Str columns and parameters only",
                             tuple(map(str, c.choices)),
                         )
                 else:
@@ -208,6 +217,7 @@ class _Generator:
                 [k for k in keys if k],
                 [c.name for c in table.columns if c.nullable and c.name in kept],
             )
+            plan.one_of, plan.one_of_stored = one_of, stored
             plan.private = self.private(table, responses, kept)
             if table.name != users:
                 plan.owner = self.owner(table, users_name)
@@ -334,6 +344,8 @@ class _Generator:
                     parts.append("nullable=True")
                 if any(set(p.passed_columns) & private for p in n.params):
                     parts.append("reads_private=True")
+                if n.settings:
+                    parts.append(f"settings={tuple(name for name, _, _ in n.settings)!r}")
             out.append((n, f"NativeSig({', '.join(parts)})"))
         return out
 
@@ -385,9 +397,11 @@ def _decoder(n: NativeCandidate) -> list[str]:
     token = n.token_param or "token"
     catches = tuple(dict.fromkeys([*n.catches, "ValueError", "TypeError"]))
     convert = KEY_CONVERT.get(n.result_type or "Uuid", "str")
+    ctx = "ctx: Mapping[str, object], " if n.settings else ""
+    what = f" (the users column {n.lookup!r})" if n.lookup else ""
     return [
-        f"def {n.name}({token}: str) -> {PY_TYPE[n.result_type or 'Uuid']} | None:",
-        f'    """The decode step of {n.origin}: the {n.claim!r} claim of a valid token, '
+        f"def {n.name}({ctx}{token}: str) -> {PY_TYPE[n.result_type or 'Uuid']} | None:",
+        f'    """The decode step of {n.origin}: the {n.claim!r} claim of a valid token{what}, '
         'or None."""',
         "    try:",
         f"        payload = {n.decode_expr}",
@@ -430,16 +444,12 @@ def generate_profile(model: RepoModel) -> ProfileResult:
             else "no token-decoding step found in a current-user dependency",
         )
     users_cols = {c.name: c for c in g.tables[users].columns} if users in g.tables else {}
+    no_roles = False
     if admin is None:
         role = users_cols.get("role")
         if users is not None and (role is None or role.type != "Str"):
-            g.note(
-                "roles",
-                model.app_package,
-                f"{LANGUAGE_GAP} (single-role auth): no superuser dependency and no role "
-                f"column in {users}; ApiProfile.roles_from needs a role column or an admin "
-                "flag, so callers cannot be given a role",
-            )
+            # no admin concept: every caller is a Customer (single-role auth)
+            no_roles = True
         else:
             g.note(
                 "roles", model.app_package, "no superuser dependency: roles_from is not inferred"
@@ -502,9 +512,13 @@ def generate_profile(model: RepoModel) -> ProfileResult:
         for p in n.params:
             imports.extend(p.bound_imports)
     out.extend(sorted(dict.fromkeys(imports)))
+    settings = decoder.settings if decoder is not None else ()
+    if settings:
+        out += ["from collections.abc import Mapping"]
+    names = "AdminFlag, ApiProfile, NativeSig, NativeToken, " + ("NoRoles, " if no_roles else "")
     out += [
         "",
-        "from lattice.profile import AdminFlag, ApiProfile, NativeSig, NativeToken, Profile",
+        f"from lattice.profile import {names}Profile",
         "from lattice.typesys import Scalar, Schema",
         "",
         "# ---- natives: typed wrappers over the original functions ----",
@@ -517,13 +531,39 @@ def generate_profile(model: RepoModel) -> ProfileResult:
             out += [*_wrapper(n, aliases[n.origin.split(":", 1)[0]]), "", ""]
     out.append("NATIVES = {")
     out += [f"    {n.name!r}: {n.name}," for n, _ in natives]
-    out += ["}", "", "# ---- tables ----", ""]
+    out += ["}", ""]
+    if settings:
+        paths = "".join(f"    {name!r}: {path!r},\n" for name, _, path in settings)
+        out += [
+            "# ---- settings: the app configuration natives read (their NativeContext) ----",
+            "",
+            "# setting -> where the original app keeps it (an attribute path from the app object)",
+            "SETTINGS_FROM_APP = {\n" + paths + "}",
+            "",
+            "",
+            "def settings_from_app(app: object) -> dict[str, object]:",
+            '    """The settings\' values, read from the running original app (built by its',
+            '    factory): pass them to the Lattice app at start-up."""',
+            "    out = {}",
+            "    for name, path in SETTINGS_FROM_APP.items():",
+            "        value = app",
+            "        for attr in path.split('.'):",
+            "            value = getattr(value, attr)",
+            "        out[name] = value",
+            "    return out",
+            "",
+            "",
+        ]
+    out += ["# ---- tables ----", ""]
     for plan in plans:
         out.append(f"{_const_name(plan.table.name)} = Schema.from_pairs(")
         out.append("    [")
         out += [f"        ({name!r}, Scalar.{attr})," for name, attr in plan.columns]
         out.append("    ],")
-        out.append(f"    keys={plan.keys!r},")
+        keys = plan.keys
+        if decoder is not None and decoder.lookup and plan.table.name == users:
+            keys = [*keys, (decoder.lookup,)]  # the unique column the token names
+        out.append(f"    keys={keys!r},")
         out.append(f"    nullable={plan.nullable!r},")
         if plan.owner:
             out.append(f"    owner={plan.owner!r},")
@@ -531,6 +571,10 @@ def generate_profile(model: RepoModel) -> ProfileResult:
             out.append(f"    private={plan.private!r},")
         if plan.admin_write:
             out.append(f"    admin_write={plan.admin_write!r},")
+        if plan.one_of:
+            out.append(f"    one_of={plan.one_of!r},")
+        if plan.one_of_stored:
+            out.append(f"    one_of_stored={plan.one_of_stored!r},")
         out += [")", ""]
     out.append("RESPONSES: dict[str, tuple[str, ...]] = {")
     out += [f"    {name!r}: {fields!r}," for name, fields in responses.items()]
@@ -552,10 +596,18 @@ def generate_profile(model: RepoModel) -> ProfileResult:
     api.append("responses=RESPONSES")
     entries = "".join(f"            {n.name!r}: {sig},\n" for n, sig in natives)
     api.append("natives={\n" + entries + "        }")
+    if decoder is not None and decoder.settings:
+        declared = ", ".join(
+            f"{name!r}: Scalar.{SCALAR_ATTR[t]}" for name, t, _ in decoder.settings
+        )
+        api.append(f"settings={{{declared}}}")
     if decoder is not None:
-        api.append(f"auth=NativeToken({decoder.name!r})")
+        lookup = f", lookup={decoder.lookup!r}" if decoder.lookup else ""
+        api.append(f"auth=NativeToken({decoder.name!r}{lookup})")
     if admin is not None and admin.admin_column:
         api.append(f"roles_from=AdminFlag({admin.admin_column!r}, {CUSTOMER!r})")
+    elif no_roles:
+        api.append(f"roles_from=NoRoles({CUSTOMER!r})")
     if sqlite:
         api += ["backend='sqlite'", "uuid_storage='hex32'", "datetime_storage='sql_space'"]
         # SQLite's own ORDER BY puts NULLs first ascending and last descending: the

@@ -24,6 +24,8 @@ INACTIVE_STATUSES = (400, 401, 403)
 # "smallest": null is the smallest value -- first ascending, last descending (SQLite's
 # own order, so an imported SQLite app keeps its behaviour).
 NULL_ORDERS = ("last", "smallest")
+# ApiProfile.settings: the scalar types a setting may have (a NativeContext value).
+SETTING_SCALARS = (Scalar.STR, Scalar.INT, Scalar.FLOAT, Scalar.BOOL)
 
 
 def _default_page_shape() -> Mapping[str, str]:
@@ -53,6 +55,10 @@ class NativeSig:
     # T2: the profile capability an effect native needs (`@procedure(effects=[...])`
     # names it); None means the native's own name.
     capability: str | None = None
+    # App configuration the native reads (names of `ApiProfile.settings`): its
+    # implementation takes a read-only NativeContext -- a mapping of exactly these
+    # settings, supplied when the app starts -- as its first argument.
+    settings: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -65,10 +71,14 @@ class TokenColumn:
 
 @dataclass(frozen=True)
 class NativeToken:
-    """Auth: the bearer token is decoded to the caller's users-table key by a native
-    (`Str -> <key scalar>`; a null result or a missing row answers 401)."""
+    """Auth: the bearer token is decoded by a native (a null result or a missing row
+    answers 401) to the caller's users-table key (`Str -> <key scalar>`) -- or, with
+    `lookup`, to the value of that users column (`Str -> <its scalar>`), e.g. a JWT
+    whose subject is the username. The lookup column must be unique (a declared key of
+    the users table), so the one authentication statement finds at most one row."""
 
     native: str
+    lookup: str | None = None
 
 
 AuthScheme = TokenColumn | NativeToken
@@ -91,7 +101,18 @@ class AdminFlag:
     role: str
 
 
-RoleSource = RoleColumn | AdminFlag
+@dataclass(frozen=True)
+class NoRoles:
+    """Single-role auth, for an app with no admin concept (no role column, no admin
+    flag): every authenticated caller has `role`, no caller is ever the admin role.
+    So `owned()`/`accessible()` equal `mine()`, `is_admin(user)` is false, no users
+    column is read for a role, and an endpoint requiring any other role -- `auth=Admin`
+    included -- could never be called: the checker refuses it (L801)."""
+
+    role: str = "Customer"
+
+
+RoleSource = RoleColumn | AdminFlag | NoRoles
 
 
 @dataclass(frozen=True)
@@ -146,10 +167,17 @@ class ApiProfile:
     # T2: the fuel budget of one request -- every procedure it runs shares it (loop
     # iterations, calls and comprehension elements cost one each); exhausted: R620.
     fuel: int = DEFAULT_FUEL
+    # App configuration natives may read (setting name -> Str/Int/Float/Bool): a native
+    # names the ones it reads (`NativeSig.settings`) and gets them in its NativeContext.
+    # The values are the deployment's, supplied when the app starts
+    # (`lattice.api.runtime.build_app(..., settings=)`; a generated app reads its
+    # natives module's `SETTINGS`), never part of the program.
+    settings: Mapping[str, Scalar] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self._validate_page_shape()
         self._validate_responses()
+        self._validate_settings()
         self._validate_natives()
         self._validate_auth()
         self._validate_roles_from()
@@ -223,12 +251,26 @@ class ApiProfile:
                     )
             elif not isinstance(sig.result, Scalar):
                 raise ValueError(f"native {name!r} result must be a Scalar")
+            unknown = [s for s in sig.settings if s not in self.settings]
+            if unknown or len(set(sig.settings)) != len(sig.settings):
+                raise ValueError(
+                    f"native {name!r} reads an undeclared setting (or one twice): "
+                    f"{list(sig.settings)}; declare each in ApiProfile.settings"
+                )
             if sig.capability is not None and not (
                 sig.effect and isinstance(sig.capability, str) and sig.capability.isidentifier()
             ):
                 raise ValueError(
                     f"native {name!r}: only an effect native names a capability (an identifier)"
                 )
+
+    def _validate_settings(self) -> None:
+        for name, scalar in self.settings.items():
+            if not (isinstance(name, str) and name.isidentifier()):
+                raise ValueError(f"setting name {name!r} is not an identifier")
+            if scalar not in SETTING_SCALARS:
+                shown = ", ".join(s.value for s in SETTING_SCALARS)
+                raise ValueError(f"ApiProfile.settings[{name!r}] must be one of {shown}")
 
     def _validate_auth(self) -> None:
         users = self.tables.get(self.users_table)
@@ -238,7 +280,7 @@ class ApiProfile:
                     raise ValueError(
                         f"token column {column!r} is not a column of {self.users_table}"
                     )
-            case NativeToken(native=native):
+            case NativeToken(native=native, lookup=lookup):
                 sig = self.natives.get(native)
                 if sig is None:
                     raise ValueError(f"NativeToken names unknown native {native!r}")
@@ -250,12 +292,25 @@ class ApiProfile:
                         f"NativeToken needs a users table ({self.users_table}) "
                         "with a one-column key"
                     )
-                want = users.get(key[0]) if users is not None else None
+                assert users is not None
+                column, what = key[0], "the key"
+                if lookup is not None:
+                    if lookup not in users:
+                        raise ValueError(
+                            f"NativeToken lookup {lookup!r} is not a column of {self.users_table}"
+                        )
+                    if (lookup,) not in users.keys:
+                        raise ValueError(
+                            f"NativeToken lookup {lookup!r} must be a unique column of "
+                            f"{self.users_table} (declare it a key: keys=[..., ({lookup!r},)])"
+                        )
+                    column, what = lookup, f"the unique column {lookup!r}"
+                want = users.get(column)
                 if sig.params != (Scalar.STR,) or sig.result is not want:
                     shown = want.value if want is not None else "?"
                     raise ValueError(
                         f"NativeToken native {native!r} must map Str -> {shown} "
-                        f"(the key of {self.users_table})"
+                        f"({what} of {self.users_table})"
                     )
             case _:
                 raise ValueError("ApiProfile.auth must be TokenColumn(...) or NativeToken(...)")
@@ -279,6 +334,11 @@ class ApiProfile:
         match self.roles_from:
             case RoleColumn():
                 pass  # today's behaviour: not validated (the column is read at runtime)
+            case NoRoles(role=role):
+                if role not in self.roles or role == self.admin_role:
+                    raise ValueError(
+                        f"NoRoles role {role!r} must be a non-admin role of the profile"
+                    )
             case AdminFlag(column=column, role=role):
                 if users is not None and users.get(column) is not Scalar.BOOL:
                     raise ValueError(
@@ -289,7 +349,9 @@ class ApiProfile:
                         f"AdminFlag role {role!r} must be a non-admin role of the profile"
                     )
             case _:
-                raise ValueError("ApiProfile.roles_from must be RoleColumn(...) or AdminFlag(...)")
+                raise ValueError(
+                    "ApiProfile.roles_from must be RoleColumn(...), AdminFlag(...) or NoRoles()"
+                )
 
 
 @dataclass(frozen=True)

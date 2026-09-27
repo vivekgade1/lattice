@@ -77,6 +77,7 @@ from lattice.api.ir import (
     WriteStep,
     lower_api,
 )
+from lattice.api.native_context import bind_settings
 from lattice.api.sql import bind_values, compile_lookup, decode
 from lattice.catalog import EMAIL_MAX_LEN, LIST_KIND, PUBLIC_ROLE, T2_EFFECT_PREFIX, USER_PARAM
 from lattice.check import CheckResult, check_source
@@ -364,13 +365,13 @@ def _token(header: str | None) -> str | None:
 
 
 def auth_sql(plan: EndpointPlan, dialect: Dialect) -> str:
-    """The authentication statement: the caller's row by token column, or by key =
-    the auth native applied to the token."""
+    """The authentication statement: the caller's row by token column, or by key (or
+    the NativeToken lookup column) = the auth native applied to the token."""
     if plan.auth_native is not None:
         return compile_lookup(
             plan.users_table,
             plan.user_columns,
-            plan.user_key,
+            plan.token_lookup or plan.user_key,
             native=plan.auth_native,
             dialect=dialect,
         )
@@ -378,7 +379,10 @@ def auth_sql(plan: EndpointPlan, dialect: Dialect) -> str:
 
 
 def caller_role(plan: EndpointPlan, row: Sequence[Any]) -> str:
-    """The caller's role, from the role column or the admin flag column."""
+    """The caller's role: the profile's one role (NoRoles), else from the role column
+    or the admin flag column."""
+    if plan.fixed_role is not None:
+        return plan.fixed_role
     if plan.admin_flag is not None:
         flagged = row[plan.user_columns.index(plan.admin_flag)]
         return plan.admin_role if flagged else plan.flag_role
@@ -821,18 +825,38 @@ def load_procedures(
     return t2s.t2_load(code.source, impls)
 
 
+def bind_native_settings(
+    plans: Sequence[EndpointPlan],
+    natives: Mapping[str, Callable[..., object]] | None,
+    settings: Mapping[str, object] | None,
+) -> dict[str, Callable[..., object]]:
+    """`natives` with each one the plans use (in SQL, as an effect or from a procedure)
+    that reads settings bound to its NativeContext (lattice.api.native_context); a
+    missing or mistyped setting is a ValueError."""
+    used = {n for plan in plans for n, _ in (*plan.natives, *plan.effects)}
+    used |= {n for plan in plans if plan.t2 is not None for n in plan.t2.natives}
+    declared = {name: wanted for plan in plans for name, wanted in plan.native_settings}
+    wanted = tuple((n, w) for n, w in sorted(declared.items()) if n in used)
+    bound = bind_settings(dict(natives or {}), wanted, settings or {})
+    return bound  # type: ignore[return-value]
+
+
 def build_app(
     plans: Sequence[EndpointPlan],
     db_path: Path,
     natives: Mapping[str, Callable[..., object]] | None = None,
+    settings: Mapping[str, object] | None = None,
 ) -> Starlette:
     """A Starlette app serving `plans` against the database at `db_path` (each plan's
     backend dialect opens it). `natives` maps each native the plans call to its
-    Python implementation (registered as a SQL function on every connection).
+    Python implementation (registered as a SQL function on every connection);
+    `settings` holds the values of the profile's settings the natives read (each such
+    native is called with its read-only NativeContext first).
 
     Routing is Starlette's (FastAPI's): a path is matched exactly as declared, and a
     request that differs only by a trailing slash is redirected (307) to it."""
     db = Path(db_path)
+    natives = bind_native_settings(plans, natives, settings)
     impls = native_impls(plans, natives)
     effects = effect_impls(plans, natives)
     t2 = load_procedures(plans, natives)
@@ -862,9 +886,10 @@ def serve_source(
     profile: Profile,
     db_path: Path,
     natives: Mapping[str, Callable[..., object]] | None = None,
+    settings: Mapping[str, object] | None = None,
 ) -> tuple[CheckResult, Starlette | None]:
     """Check -> lower -> build. (check result, None) when the program is rejected."""
     result = check_source(source, profile)
     if result.program is None:
         return result, None
-    return result, build_app(lower_api(result.program), db_path, natives)
+    return result, build_app(lower_api(result.program), db_path, natives, settings)

@@ -74,6 +74,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from lattice.api import native_context as native_context_module
 from lattice.api.backend import SQLITE
 from lattice.api.ir import (
     CallStep,
@@ -193,6 +194,7 @@ class Endpoint:
     role_column: str = "role"  # the caller's role column, unless admin_flag is set
     admin_flag: str | None = None  # a Bool column: true -> admin_role, else flag_role
     flag_role: str = ""
+    fixed_role: str | None = None  # NoRoles: every caller's role (no column is read)
     form: bool = False  # body parameters are URL-encoded form fields, not a JSON object
     effects: bool = False  # for_each: the steps collect outbox rows, sent after COMMIT
 
@@ -835,7 +837,9 @@ def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
     user_id = row[ep.user_columns.index(ep.user_key)]
     if ACTIVE_COLUMN is not None and not row[ep.user_columns.index(ACTIVE_COLUMN)]:
         raise ErrorResponse(INACTIVE_STATUS, STATUS_CODES[INACTIVE_STATUS], INACTIVE_DETAIL)
-    if ep.admin_flag is not None:
+    if ep.fixed_role is not None:
+        role = ep.fixed_role
+    elif ep.admin_flag is not None:
         role = ep.admin_role if row[ep.user_columns.index(ep.admin_flag)] else ep.flag_role
     else:
         role = str(row[ep.user_columns.index(ep.role_column)])
@@ -1150,7 +1154,9 @@ def t2_begin(
     the caller's row and role, fn.now()."""
     row = None if caller is None else dict(zip(ep.user_columns, caller.row, strict=True))
     role = ""
-    if caller is not None:
+    if caller is not None and ep.fixed_role is not None:
+        role = ep.fixed_role
+    elif caller is not None:
         role = t2_role(
             ep.user_columns, caller.row, ep.role_column, ep.admin_flag, ep.admin_role, ep.flag_role
         )
@@ -1176,11 +1182,17 @@ def t2_rows(
 '''
 if _module_names(_T2_SUPPORT) & (_module_names(_PRELUDE) - set(dir(builtins))):
     raise LatticeInternalError("the T2 support code clashes with the generated prelude")
+# lattice/api/native_context.py after its begin marker: the NativeContext binding,
+# copied verbatim into apps whose natives read settings.
+_CONTEXT_TEXT = Path(native_context_module.__file__).read_text()
+_CONTEXT_SUPPORT = _CONTEXT_TEXT[_CONTEXT_TEXT.index(_T2_MARKER) :]
+_NATIVE_SETTINGS = "NATIVE_SETTINGS"  # the natives module's SETTINGS, as imported
 _RESERVED = (
     _module_names(_PRELUDE)
     | _module_names(_T2_SUPPORT)
     | _module_names(_T2_HELPERS)
-    | {"T2", "T2_SOURCE", "T2_FUEL", "T2_CALLER"}
+    | _module_names(_CONTEXT_SUPPORT)
+    | {"T2", "T2_SOURCE", "T2_FUEL", "T2_CALLER", _NATIVE_SETTINGS}
 )
 
 
@@ -1598,6 +1610,8 @@ class _EndpointGen:
         if plan.admin_flag is not None:
             out.append(_Kw("admin_flag", _py_str(plan.admin_flag)))
             out.append(_Kw("flag_role", _py_str(plan.flag_role)))
+        if plan.fixed_role is not None:
+            out.append(_Kw("fixed_role", _py_str(plan.fixed_role)))
         return out
 
     def render(self) -> str:
@@ -1724,7 +1738,11 @@ def _natives_section(
         return "", ""
     for name in sorted({*natives, *effects, *t2_natives}):
         aliases[name] = names.take(f"native_{name}")
+    declared = {n: w for plan in plans for n, w in plan.native_settings}
+    contexts = [(n, declared[n]) for n in aliases if n in declared]
     imported = [f"{name} as {alias}" for name, alias in aliases.items()]
+    if contexts:
+        imported.append(f"SETTINGS as {_NATIVE_SETTINGS}")
     line = f"from {module} import {', '.join(imported)}"
     if len(line) > _WIDTH:
         line = "\n".join([f"from {module} import (", *(f"    {i}," for i in imported), ")"])
@@ -1745,6 +1763,18 @@ def _natives_section(
     )
     parts: list[str] = []
     rule = "# " + "-" * 86
+    if contexts:
+        binds = []
+        for name, wanted in contexts:
+            pairs = _Tuple(tuple(_Tuple((_py_str(s), _py_str(t))) for s, t in wanted))
+            ctx = _Call("native_context", (_py_str(name), pairs, _NATIVE_SETTINGS))
+            binds.append("\n".join(_render(_Call("with_context", (aliases[name], ctx)), "",
+                                              f"{aliases[name]} = ")))  # fmt: skip
+        header = (
+            f"{rule}\n# NativeContext: natives that read settings get them first (the natives "
+            f"module's\n# SETTINGS, checked at start-up; lattice.api.native_context)\n{rule}"
+        )
+        parts.append(header + "\n\n" + _CONTEXT_SUPPORT.rstrip("\n") + "\n\n\n" + "\n".join(binds))
     if natives:
         register = "\n".join(_render(_Call("NATIVES.update", (_Dict(entries),)), ""))
         header = f"{rule}\n# Natives (pure Python functions registered on every connection)\n{rule}"

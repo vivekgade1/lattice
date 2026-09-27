@@ -559,3 +559,39 @@ Not gaps:
 - **403-vs-404 ordering.** JustNotes answers 404 before 403, which is expressible. Its 403 checks have no admin bypass, so they fall under the single-role gap.
 
 The template import is unchanged: 23 routes, 10 verified, 13 need the LLM, with byte-identical output.
+
+## Importer on held-out repos — the four language gaps closed (no LLM, 2026-09-27)
+
+The four gaps above are closed in the language, and the importer uses them generically. No Lattice was written for these repos and no rule matches only their code. Each feature has positive and negative tests on synthetic code: `tests/api/test_import_gap_features.py` and `tests/api/solo.py`, which is also a codegen differential program with 0 mismatches. The importer side is covered by `tests/importer/test_import_single_role.py` (end to end) and `test_generic_import.py`.
+
+| feature | surface | semantics |
+|---|---|---|
+| single-role auth | `ApiProfile(roles_from=NoRoles())` (role defaults to `Customer`) | Every authenticated caller has that one role and none is Admin. No users column is read for a role. `owned()`/`accessible()` equal `mine()`, and `is_admin(user)` is false. **Decision:** `auth=<any other role>`, `auth=Admin` included, is **L801**, because no caller could ever reach that endpoint. Admin-only columns (`admin_write`) are then unwritable. The importer chooses `NoRoles` when the app has no superuser dependency and no `Str` role column. |
+| non-key token subject | `NativeToken(native, lookup="username")` | The decoded claim is matched against that users column in the same single authentication statement (`WHERE "username" = native_decode_token(?)`). The column must be a declared key of the users table (`keys=[("id",), ("username",)]`), and the native must map `Str ->` that column's type. Otherwise the profile raises `ValueError`. The importer uses it when the claim's column is the primary key or `unique=True`, and adds the key. |
+| natives needing app configuration | `ApiProfile(settings={"secret_key": Scalar.STR})` with `NativeSig(..., settings=("secret_key",))` | The native is called as `fn(ctx, *args)`. `ctx` is a read-only `NativeContext` (a `MappingProxyType`) holding exactly the settings it declared, bound once at start-up: `build_app(..., settings=)`, or the natives module's `SETTINGS` in a generated app. A missing or mistyped setting fails at start-up. The binding code (`lattice/api/native_context.py`) is copied verbatim into generated apps. |
+| enum columns | `Schema.from_pairs(..., one_of={"status": ("todo", ...)}, one_of_stored={"status": ("TODO", ...)})` | Every write to the column must be a listed literal or an endpoint parameter declared `OneOf(...)` with listed values (else **L407**), so any other value is a 422 at the API boundary. `one_of_stored` gives the database spellings: reads decode and writes encode them in SQL, and programs only see the values. The importer maps `Str` Enum/`Literal` columns to `one_of`, Enum columns also to `one_of_stored` (SQLAlchemy stores an Enum by member name), and body fields to `OneOf(...)` parameters. |
+
+**Why a `NativeContext` rather than an importer-generated native reading the settings module's default:** TaskFlow's factory passes its secret into `create_app(Settings(secret_key=...))`, so the settings class default (`"development-only-change-me"`) is not the running app's secret. Only the running app has the right value. The generated profile therefore records where the original keeps the setting (`SETTINGS_FROM_APP = {"secret_key": "state.settings.secret_key"}`, from the decode's `request.app.state.settings.secret_key`) and a `settings_from_app(app)` reader. The importer reads the value from an app its factory builds and passes it to the Lattice app at start-up. The mechanism is generic: a program never contains a value, and a deployment supplies its own.
+
+**Other generic importer fixes the re-run needed:**
+- `raise credentials_exception` (an `HTTPException` assigned once: FastAPI's own tutorial idiom) is read as a raise site, a token policy and an or-ed active check (`if user is None or not user.is_active`).
+- The superuser-free owner guard `if row.owner_id != caller.id: raise 403` lifts to `owner_is(user)` under `NoRoles`, where no Admin exists.
+- An Enum member default (`Shelf.UNREAD`) is a literal default.
+- With no single-argument token mint, the Lattice side is logged in with the token the original's own login route returns. This is the same credential, decoded by the import's auth.
+
+| repo | routes | verified | islands (R4) | need the LLM |
+|---|---:|---:|---:|---:|
+| TaskFlow | 10 | **1** (`read_current_user`, 1 declared token-policy deviation) | 2 | 7 |
+| JustNotes | 30 | 0 | 26 | 4 |
+
+**Remaining gap classes:**
+- **TaskFlow, 7 needing the LLM: no lifter, not a language gap.**
+  - `register` and `login` have no lifter for their shapes.
+  - The five task routes go through package helpers the lifters do not follow: `crud.create_task`, `require_task` → `crud.get_task(…, owner_id)`, and `crud.list_tasks` with an `ilike` search and optional enum filters.
+  - For the same reason, owner inference leaves `Task.owner_id` unset (an unclear decision).
+- **TaskFlow, 2 islands:** `/` and `/health` are defined inside the `create_app()` factory, an unsupported framework feature.
+- **JustNotes, 26 islands: *language gap: the token subject is not a unique users column.*** `User.username` is the JWT subject, but it has no unique constraint: `create_user` checks for duplicates in code only. `NativeToken(lookup=)` requires a declared unique column, because the authentication statement must find at most one row. This is by design, not relaxed.
+- **JustNotes counterfactual (scratch copy only, not the record):** with `username` declared unique, all 26 routes stop being islands and become needs-LLM. 25 have no matching lifter (repository classes, `dict` responses, nested owner objects). `read_users_me` lifts, but the original's login fails on the seed (500), because `password=hashed_password` hides the hasher from `_hash_native`, so the seed stores the raw password.
+- **JustNotes, 4 needing the LLM:** no lifter for `register`, `login`, `health` and `get_public_notes`.
+
+The template import is unchanged: 23 routes, 10 verified, and byte-identical `profile.py`, `natives.py` and `routes/` compared with HEAD.

@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import ast
 import builtins
+import copy
 import dataclasses
 import json
 import re
@@ -70,6 +71,10 @@ class FieldSpec:
     tz_aware: bool = False  # sa_type=DateTime(timezone=True)
     # the allowed values of an Enum / Literal annotation (type Str or Int); () otherwise
     choices: tuple[str | int, ...] = ()
+    # an Enum annotation's member names, in ``choices``' order (SQLAlchemy stores a
+    # table column of an Enum type by member name); () for a Literal or an explicit
+    # ``sa_type`` / ``sa_column``
+    choice_names: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -210,6 +215,11 @@ class NativeCandidate:
     token_param: str | None = None
     claim: str | None = None
     catches: tuple[str, ...] = ()
+    # the unique users column the claim names when it is not the key (NativeToken lookup)
+    lookup: str | None = None
+    # app configuration the decode reads (``request.app.state.<path>``), as NativeContext
+    # settings: (setting name, scalar type, the attribute path from the app object)
+    settings: tuple[tuple[str, str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -468,6 +478,7 @@ class _Type:
     item: str | None = None
     nullable: bool = False
     choices: tuple[str | int, ...] = ()
+    names: tuple[str, ...] = ()  # an Enum's member names, in ``choices``' order
 
 
 class _Extractor:
@@ -577,6 +588,7 @@ class _Extractor:
             required=required,
             default=shown,
             choices=t.choices,
+            choice_names=t.names if not (sa_type or kws.get("sa_column")) else (),
             min_length=_num(kws.get("min_length")),
             max_length=_num(kws.get("max_length")),
             ge=_num(kws.get("ge")),
@@ -610,7 +622,7 @@ class _Extractor:
             args = list(ann.slice.elts) if isinstance(ann.slice, ast.Tuple) else [ann.slice]
             if _ends(head, "Optional"):
                 inner = self.type_of(mod, args[0])
-                return _Type(inner.type, inner.item, True, inner.choices)
+                return dataclasses.replace(inner, nullable=True)
             if _ends(head, "Literal"):
                 return _choices_type([_lit(a) for a in args])
             if _ends(head, "Union"):
@@ -651,7 +663,7 @@ class _Extractor:
         rest = [t for t in types if t.type != "None"]
         if len(rest) == 1:
             only = rest[0]
-            return _Type(only.type, only.item, nullable or only.nullable, only.choices)
+            return dataclasses.replace(only, nullable=nullable or only.nullable)
         return _Type(None, None, nullable)
 
     def _is_enum(self, qual: str, depth: int = 0) -> bool:
@@ -668,12 +680,15 @@ class _Extractor:
         members that are not literals make it unreadable."""
         _, node = self.classes[qual]
         values: list[object] = []
+        names: list[str] = []
         for stmt in node.body:
             if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1:
                 target = stmt.targets[0]
                 if isinstance(target, ast.Name) and not target.id.startswith("_"):
                     values.append(_lit(stmt.value))
-        return _choices_type(values)
+                    names.append(target.id)
+        t = _choices_type(values)
+        return dataclasses.replace(t, names=tuple(names)) if t.choices else t
 
     # -- constants (settings, module constants) --
 
@@ -1006,30 +1021,40 @@ class _Extractor:
         return None
 
     def _flag_checks(self, mod: str, fn: ast.AST) -> list[tuple[str, int | None, str | None]]:
-        """``if not <x>.<col>: raise HTTPException(status, detail)`` in ``fn``."""
+        """``if not <x>.<col>: raise HTTPException(status, detail)`` in ``fn`` -- also as
+        an operand of ``or`` (``if user is None or not user.is_active: raise ...``)."""
         out = []
         for node in ast.walk(fn):
             if not isinstance(node, ast.If):
                 continue
-            test = node.test
-            if not (
-                isinstance(test, ast.UnaryOp)
-                and isinstance(test.op, ast.Not)
-                and isinstance(test.operand, ast.Attribute)
-                and isinstance(test.operand.value, ast.Name)
-            ):
-                continue
-            sites = [s for stmt in node.body for s in self.raise_sites(mod, stmt)]
-            if sites:
-                out.append((test.operand.attr, sites[0].status, sites[0].detail))
+            tests = [node.test]
+            if isinstance(node.test, ast.BoolOp) and isinstance(node.test.op, ast.Or):
+                tests = list(node.test.values)
+            for test in tests:
+                if not (
+                    isinstance(test, ast.UnaryOp)
+                    and isinstance(test.op, ast.Not)
+                    and isinstance(test.operand, ast.Attribute)
+                    and isinstance(test.operand.value, ast.Name)
+                ):
+                    continue
+                sites = [s for stmt in node.body for s in self.raise_sites(mod, stmt, fn)]
+                if sites:
+                    out.append((test.operand.attr, sites[0].status, sites[0].detail))
         return out
 
-    def raise_sites(self, mod: str, fn: ast.AST) -> list[RaiseSite]:
+    def raise_sites(self, mod: str, fn: ast.AST, scope: ast.AST | None = None) -> list[RaiseSite]:
+        """``raise HTTPException(...)`` in ``fn`` -- and ``raise <name>`` where ``name``
+        is assigned an ``HTTPException(...)`` once in ``scope`` (default ``fn``)."""
         out = []
         for node in ast.walk(fn):
-            if not (isinstance(node, ast.Raise) and isinstance(node.exc, ast.Call)):
+            if not isinstance(node, ast.Raise):
                 continue
             call = node.exc
+            if isinstance(call, ast.Name):
+                call = _single_assignment(scope if scope is not None else fn, call.id)
+            if not isinstance(call, ast.Call):
+                continue
             if not _ends(self.ix.resolve(mod, call.func), "HTTPException"):
                 continue
             kws = {k.arg: k.value for k in call.keywords if k.arg}
@@ -1785,7 +1810,10 @@ class _Extractor:
             if decode is None:
                 continue
             call, catches = decode
+            call, settings = self._app_settings(mod, fn, call)
             names = {n.id for n in ast.walk(call) if isinstance(n, ast.Name)} - {token}
+            if settings:
+                names.discard("ctx")  # the NativeContext the settings are read from
             names |= {c.split(".", 1)[0] for c in catches}
             imports: list[str] = []
             missing: list[str] = []
@@ -1803,19 +1831,25 @@ class _Extractor:
                 )
             claim = _claim(fn)
             column = self._claim_column(mod, fn, claim, table)
+            subject, lookup = keys[0], None
             if column is not None and column != keys[0].name:
-                problems.append(
-                    f"{LANGUAGE_GAP} (token subject is not the users key): the token's "
-                    f"{claim!r} claim names {table.name}.{column}, not the key {keys[0].name}; "
-                    "NativeToken decodes a token to the key"
-                )
+                spec = next((c for c in table.columns if c.name == column), None)
+                if spec is not None and spec.unique:
+                    subject, lookup = spec, column  # NativeToken(lookup=column)
+                else:
+                    problems.append(
+                        f"{LANGUAGE_GAP} (token subject is not a unique users column): the "
+                        f"token's {claim!r} claim names {table.name}.{column}, which is "
+                        "neither the key nor declared unique; NativeToken(lookup=) needs a "
+                        "unique column (one row per token)"
+                    )
             return NativeCandidate(
                 name="decode_token",
                 origin=f"{mod}:{fn.name}",
                 kind="token_decoder",
                 params=(NativeParam(token, "str", "Str"),),
-                result_annotation=f"{keys[0].annotation} | None",
-                result_type=keys[0].type,
+                result_annotation=f"{subject.annotation} | None",
+                result_type=subject.type,
                 nullable=True,
                 expressible=not problems,
                 reason="; ".join(problems),
@@ -1824,8 +1858,65 @@ class _Extractor:
                 token_param=token,
                 claim=claim,
                 catches=catches,
+                lookup=lookup,
+                settings=settings,
             )
         return None
+
+    def _app_settings(
+        self, mod: str, fn: ast.AST, call: ast.Call
+    ) -> tuple[ast.Call, tuple[tuple[str, str, str], ...]]:
+        """The decode call with each read of app configuration through the request
+        (``request.app.state.<path>``, ``request`` a ``Request`` parameter of ``fn``)
+        replaced by ``ctx[<setting>]``, and those settings: (name, scalar type, path from
+        the app). The name is the path's last attribute; its type is the scalar a
+        package class annotates a field of that name with (a settings class), else Str
+        (checked against the app's value at start-up)."""
+        assert isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef)
+        requests = {
+            a.arg
+            for a in [*fn.args.posonlyargs, *fn.args.args, *fn.args.kwonlyargs]
+            if _ends(self.ix.resolve(mod, _ann_head(a.annotation)), "Request")
+        }
+        found: dict[str, tuple[str, str, str]] = {}
+
+        class Swap(ast.NodeTransformer):
+            def visit_Attribute(self, node: ast.Attribute) -> ast.AST:
+                chain, cur = [], node
+                while isinstance(cur, ast.Attribute):
+                    chain.append(cur.attr)
+                    cur = cur.value
+                chain.reverse()
+                if not (isinstance(cur, ast.Name) and cur.id in requests):
+                    return self.generic_visit(node)
+                if len(chain) < 3 or chain[:2] != ["app", "state"]:
+                    return self.generic_visit(node)
+                path = ".".join(chain[1:])
+                name = chain[-1]
+                if name in found and found[name][2] != path:
+                    name = "_".join(chain[2:])
+                found[name] = (name, outer.setting_type(chain[-1]), path)
+                return ast.Subscript(ast.Name("ctx", ast.Load()), ast.Constant(name), ast.Load())
+
+        outer = self
+        swapped = Swap().visit(copy.deepcopy(call))
+        return swapped, tuple(found.values())
+
+    def setting_type(self, attr: str) -> str:
+        """The scalar a package class annotates its field ``attr`` with (one reading),
+        else Str."""
+        types = set()
+        for mod, node in self.classes.values():
+            for stmt in node.body:
+                if (
+                    isinstance(stmt, ast.AnnAssign)
+                    and isinstance(stmt.target, ast.Name)
+                    and stmt.target.id == attr
+                ):
+                    t = self.type_of(mod, stmt.annotation)
+                    if t.type in ("Str", "Int", "Float", "Bool") and not t.nullable:
+                        types.add(t.type)
+        return types.pop() if len(types) == 1 else "Str"
 
     def _decode_call(
         self, mod: str, fn: ast.AST, token: str

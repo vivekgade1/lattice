@@ -35,6 +35,7 @@ from lattice.importer.lifters import (
 from lattice.importer.lifters.base import RouteSource
 from lattice.importer.policy import NotNull, PageBound
 from lattice.importer.profile_gen import generate_profile
+from lattice.profile import NoRoles
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = "bench.template_app.app"
@@ -191,6 +192,21 @@ def test_owner_check_refuses_other_conditions(ctx, test):
         "not current_user.is_superuser and (item.owner_id != current_user.id)", test
     )
     assert owner_check.match(route(ctx, "read_item", body), ctx[0]) is None
+
+
+def test_owner_check_without_admins_lifts_the_plain_owner_guard(ctx):
+    """With roles_from=NoRoles() no caller is an Admin: ``row.owner != caller.id`` alone
+    is owner_is(user) (refused above, where admins exist)."""
+    model, index, api = ctx
+    single = (model, index, replace(api, roles_from=NoRoles()))
+    body = READ_ITEM.replace(
+        "not current_user.is_superuser and (item.owner_id != current_user.id)",
+        "item.owner_id != current_user.id",
+    )
+    f = owner_check.match(route(single, "read_item", body), model)
+    assert f is not None and f.steps[0].op == "require"
+    # the superuser-or-owner spelling is not a single-role guard
+    assert owner_check.match(route(single, "read_item", READ_ITEM), model) is None
 
 
 def test_owner_check_needs_a_403(ctx):

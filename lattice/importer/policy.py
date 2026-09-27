@@ -190,16 +190,27 @@ def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[Tok
     return tuple(out)
 
 
-def _raise_of(stmt: ast.stmt, module: str, index: _Index) -> tuple[int, str] | None:
+def _raise_of(
+    stmt: ast.stmt, module: str, index: _Index, fn: ast.AST | None = None
+) -> tuple[int, str] | None:
+    """(status, detail) of ``raise HTTPException(...)`` -- or of ``raise <name>`` where
+    ``name`` is assigned an ``HTTPException(...)`` once in ``fn`` (FastAPI's
+    ``credentials_exception`` idiom)."""
+    from lattice.importer.extract import _single_assignment
     from lattice.importer.lifters.base import status_of
 
-    if not (isinstance(stmt, ast.Raise) and isinstance(stmt.exc, ast.Call)):
+    if not isinstance(stmt, ast.Raise):
         return None
-    q = index.resolve(module, stmt.exc.func)
+    exc = stmt.exc
+    if isinstance(exc, ast.Name) and fn is not None:
+        exc = _single_assignment(fn, exc.id)
+    if not isinstance(exc, ast.Call):
+        return None
+    q = index.resolve(module, exc.func)
     if q is None or not q.endswith(":HTTPException"):
         return None
-    kw: Mapping[str | None, ast.expr] = {k.arg: k.value for k in stmt.exc.keywords}
-    args = stmt.exc.args
+    kw: Mapping[str | None, ast.expr] = {k.arg: k.value for k in exc.keywords}
+    args = exc.args
     status = status_of(kw.get("status_code", args[0] if args else None))
     detail = kw.get("detail", args[1] if len(args) > 1 else None)
     if status is None or not (isinstance(detail, ast.Constant) and isinstance(detail.value, str)):
@@ -211,7 +222,7 @@ def _handler_raise(fn: ast.AST, module: str, index: _Index) -> tuple[int, str] |
     for node in ast.walk(fn):
         if isinstance(node, ast.Try) and len(node.handlers) == 1:
             body = node.handlers[0].body
-            if len(body) == 1 and (r := _raise_of(body[0], module, index)) is not None:
+            if len(body) == 1 and (r := _raise_of(body[0], module, index, fn)) is not None:
                 return r
     return None
 
@@ -235,7 +246,7 @@ def _missing_user_raise(
                     and len(nxt.body) == 1
                     and is_falsy_test(nxt.test, var)
                 ):
-                    return _raise_of(nxt.body[0], module, index)
+                    return _raise_of(nxt.body[0], module, index, fn)
     return None
 
 

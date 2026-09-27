@@ -53,7 +53,7 @@ from lattice.check.astutil import (
 from lattice.check.context import CheckContext
 from lattice.check.exprs import did_you_mean
 from lattice.check.p4_types import cols_read, is_owner_is
-from lattice.profile import AdminFlag
+from lattice.profile import AdminFlag, NoRoles
 from lattice.typesys import Scalar, TableT, generated_key, uuid_key, via_parent_key
 
 _WRITES = ("insert", "update", "delete")
@@ -373,6 +373,20 @@ class _Endpoint:
                 auth,
                 f"unknown role '{auth.id}'",
                 f"{close} (roles: {roles})" if close else f"roles: {roles}",
+            )
+            return
+        if isinstance(self.api.roles_from, NoRoles) and auth.id not in (
+            PUBLIC_ROLE,
+            self.api.roles_from.role,
+        ):
+            only = self.api.roles_from.role
+            self.ctx.error(
+                "L801",
+                auth,
+                f"no caller has the role '{auth.id}': the profile has one role "
+                f"(roles_from=NoRoles(): every caller is {only}, none is {self.api.admin_role})",
+                f"use auth={only} (and mine()/owner_is() for the caller's own rows) or "
+                f"auth={PUBLIC_ROLE}",
             )
             return
         has_user = USER_PARAM in self.params
@@ -751,7 +765,7 @@ class _Endpoint:
             return
         admin_write = set(schema.admin_write)
         given = {kw.arg for kw in call.keywords if kw.arg is not None}
-        if table == self.api.users_table:
+        if table == self.api.users_table and not isinstance(self.api.roles_from, NoRoles):
             # the column callers' roles come from (AdminFlag / RoleColumn) is always
             # admin-only: writing it would let a caller grant themselves Admin. Only a
             # literal non-admin value (a signup's is_superuser=False) is harmless.

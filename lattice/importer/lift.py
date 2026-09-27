@@ -22,7 +22,16 @@ emitted as Lattice.
 
 Verification logs the Lattice side in with a token minted by the original's own token
 function (the profile's auth decodes it like a login's), so a route is verified without
-the login route being part of its program.
+the login route being part of its program. When no such function takes the users key
+alone, the token is the one the original's own login route answers (on a scratch copy
+of the seed database): the same credential, decoded by the import's auth.
+
+Natives that read app configuration (the token decoder reading
+``request.app.state.settings.secret_key``) get it from their NativeContext: the
+generated profile declares the settings and where the original app keeps them
+(``SETTINGS_FROM_APP``); their values are read once from an original app the factory
+builds, and passed to the Lattice app at start-up -- exactly the configuration the
+original runs with, never a guessed default.
 """
 
 from __future__ import annotations
@@ -110,6 +119,10 @@ class VerifyContext:
     hypothesis_bodies: int = 5
     suite: GeneratedSuite | None = None
     _full: GeneratedSuite | None = field(default=None, repr=False)
+    # the NativeContext settings' values (read from the original app), for build_app
+    settings: dict[str, Any] = field(default_factory=dict)
+    # tokens the original's login answered, per suite and user handle (see _login_tokens)
+    _tokens: dict[tuple[int, str], str] = field(default_factory=dict, repr=False)
 
     def full_suite(self) -> GeneratedSuite | None:
         if self._full is None and self.inputs.routes:
@@ -222,6 +235,7 @@ def lift_repo(
     if api is None:
         raise ValueError("the generated profile has no API settings")
     natives: dict[str, Callable[..., Any]] = dict(module.NATIVES)
+    settings = app_settings(module, app_factory)
     index = _Index(root, app_package)
     inputs = adapt(model, api, index, natives)
     try:
@@ -262,7 +276,8 @@ def lift_repo(
                     del inputs.routes[r.key]
     rules = tuple(rules) if rules is not None else (ValidationEnvelope(),)
     ctx = VerifyContext(root, model, profile, natives, index, inputs, tuple(token_policies),
-                        rules, app_factory, hypothesis_bodies, suite)  # fmt: skip
+                        rules, app_factory, hypothesis_bodies, suite,
+                        settings=settings)  # fmt: skip
     for r in lifted_results:
         try:
             _verify_route(r, ctx, suite)
@@ -272,6 +287,55 @@ def lift_repo(
 
     programs = _emit(results, profile)
     return ImportResult(model, generated, results, programs, natives, profile, suite, ctx)
+
+
+def app_settings(module: ModuleType, app_factory: Callable[[Path], Any]) -> dict[str, Any]:
+    """The values of the generated profile's NativeContext settings, read from an
+    original app built by ``app_factory`` (``SETTINGS_FROM_APP``); {} when the profile
+    declares none or the app cannot be built (the routes needing them then fail to
+    start, with the reason)."""
+    if not getattr(module, "SETTINGS_FROM_APP", None):
+        return {}
+    import tempfile
+
+    with tempfile.TemporaryDirectory(prefix="lattice-settings-") as tmp:
+        try:
+            app = app_factory(Path(tmp) / "settings.db")
+            values = dict(module.settings_from_app(app))
+        except Exception:  # noqa: BLE001 -- an unfamiliar factory: no values, not a crash
+            return {}
+        engine = getattr(getattr(app, "state", None), "engine", None)
+        if engine is not None:
+            engine.dispose()
+    return values
+
+
+def _login_tokens(ctx: VerifyContext, suite: GeneratedSuite) -> Callable[[Any, str], str]:
+    """A Lattice-side login: the token the original's own login route answers for the
+    handle, on a scratch copy of the seed database (once per handle)."""
+    import tempfile
+
+    from fastapi.testclient import TestClient
+
+    login = suite.login
+    assert login is not None
+
+    def lattice_login(client: Any, handle: str) -> str:
+        key = (id(suite), handle)
+        if key not in ctx._tokens:
+            with tempfile.TemporaryDirectory(prefix="lattice-login-") as tmp:
+                db = Path(suite.db_factory("seed", Path(tmp) / "login.db"))
+                app = ctx.app_factory(db)
+                try:
+                    with TestClient(app) as original:
+                        ctx._tokens[key] = login(original, handle)
+                finally:
+                    engine = getattr(getattr(app, "state", None), "engine", None)
+                    if engine is not None:
+                        engine.dispose()
+        return ctx._tokens[key]
+
+    return lattice_login
 
 
 def _suite(
@@ -343,15 +407,19 @@ def _verify_route(
         assert mint is not None
         return mint(suite.plan.user(handle).id)
 
+    login_as = lattice_login if mint is not None else None
+    if login_as is None and suite.login is not None:
+        login_as = _login_tokens(ctx, suite)  # the original's own token
+    settings = ctx.settings
     result = verify(
         app_factory,
-        lambda path: build_app(plans, path, natives=natives),
+        lambda path: build_app(plans, path, natives=natives, settings=settings),
         suite.db_factory,
         cases,
         rules,
         r.deviations,
         login=suite.login,
-        lattice_login=lattice_login if mint is not None else None,
+        lattice_login=login_as,
         branches={r.key: _functions(model, r.route)},
     )
     r.verify = result
