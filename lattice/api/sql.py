@@ -329,12 +329,16 @@ class _Builder:
 
     def _join(self, rel: Rel, left: str, right: str) -> str:
         on: tuple[str, ...] = tuple(rel.params["on"])
+        # on={"a": "b"}: the right key columns have other names; the output keeps
+        # the left key columns only
+        right_on: tuple[str, ...] = tuple(rel.params.get("right_on", on))
         how = rel.params.get("how", "inner")
         if how not in ("inner", "left"):
             raise LatticeInternalError(f"unsupported join how={how!r}")
         left_cols = set(self.cols_of(rel.inputs[0]))
         listed = [f"{'l' if c in on or c in left_cols else 'r'}.{q(c)}" for c in rel.schema.names()]
-        cond = " AND ".join(f"l.{q(c)} = r.{q(c)}" for c in on) or "1"
+        pairs = zip(on, right_on, strict=True)
+        cond = " AND ".join(f"l.{q(a)} = r.{q(b)}" for a, b in pairs) or "1"
         kind = "LEFT JOIN" if how == "left" else "JOIN"
         return (
             f"SELECT {', '.join(listed)}, ROW_NUMBER() OVER (ORDER BY l.{ORD}, r.{ORD}) "

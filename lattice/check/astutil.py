@@ -160,3 +160,26 @@ def step_mentions(steps: dict[str, ast.FunctionDef], name: str) -> frozenset[str
                     case _:
                         pass
     return frozenset(found)
+
+
+def join_on_pairs(node: ast.expr | None) -> tuple[tuple[str, str], ...] | None:
+    """The key pairs (left column, right column) of a join's on= argument: a list of
+    names pairs each name with itself, a dict literal maps a left column to a right
+    column. None when `node` is not a literal list/dict of strings."""
+    match node:
+        case ast.List(elts=elts) | ast.Tuple(elts=elts):
+            names = [literal_value(e) for e in elts]
+            if all(isinstance(n, str) for n in names):
+                return tuple((n, n) for n in names if isinstance(n, str))
+        case ast.Dict(keys=keys, values=values):
+            lefts = [literal_value(k) if k is not None else None for k in keys]
+            rights = [literal_value(v) for v in values]
+            if all(isinstance(n, str) for n in lefts + rights):
+                return tuple(
+                    (a, b)
+                    for a, b in zip(lefts, rights, strict=True)
+                    if isinstance(a, str) and isinstance(b, str)
+                )
+        case _:
+            pass
+    return None

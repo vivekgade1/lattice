@@ -89,35 +89,60 @@ def group(
     return df.group_by(list(by), maintain_order=True).agg(exprs), guards
 
 
-def join_size(left: pl.DataFrame, right: pl.DataFrame, on: Sequence[str], how: str) -> int:
+def join_size(
+    left: pl.DataFrame,
+    right: pl.DataFrame,
+    on: Sequence[str],
+    how: str,
+    right_on: Sequence[str] | None = None,
+) -> int:
     """Exact output row count of `join(left, right, on, how)`, from per-key counts
     (cheap: two group-bys and a join of the count tables; null keys never match).
     With on=[] (a single-row right table) every left row pairs with every right row;
-    a left join keeps a left row even when the right table is empty."""
+    a left join keeps a left row even when the right table is empty. `right_on`
+    names the right key columns when they differ from the left ones (on={"a": "b"})."""
     if not on:
         per_left = right.height if how == "inner" else max(right.height, 1)
         return left.height * per_left
     keys = list(on)
+    rkeys = list(right_on) if right_on is not None else keys
     lc = left.group_by(keys).agg(pl.len().cast(pl.Int64).alias("__lattice_nl"))
-    rc = right.group_by(keys).agg(pl.len().cast(pl.Int64).alias("__lattice_nr"))
+    rc = right.group_by(rkeys).agg(pl.len().cast(pl.Int64).alias("__lattice_nr"))
     if how == "left":
-        m = lc.join(rc, on=keys, how="left", coalesce=True)
+        m = lc.join(rc, left_on=keys, right_on=rkeys, how="left", coalesce=True)
         r = pl.col("__lattice_nr").fill_null(1)
     else:
-        m = lc.join(rc, on=keys, how="inner", coalesce=True)
+        m = lc.join(rc, left_on=keys, right_on=rkeys, how="inner", coalesce=True)
         r = pl.col("__lattice_nr")
     total = m.select((pl.col("__lattice_nl") * r).sum()).item()
     return int(total or 0)
 
 
-def join(left: pl.DataFrame, right: pl.DataFrame, on: Sequence[str], how: str) -> pl.DataFrame:
+def join(
+    left: pl.DataFrame,
+    right: pl.DataFrame,
+    on: Sequence[str],
+    how: str,
+    right_on: Sequence[str] | None = None,
+) -> pl.DataFrame:
+    """Join on the key columns `on` (left names); `right_on` names the right key
+    columns when they differ. The output keeps the left key columns and drops the
+    right ones."""
     if not on:
         return _cross_join(left, right, how)
     match how:
         case "inner" | "left":
             # Guarantee (spec §5.7): joins keep the left table's row order, so
             # sort -> join -> limit is deterministic.
-            return left.join(right, on=list(on), how=how, coalesce=True, maintain_order="left")
+            rkeys = list(right_on) if right_on is not None else list(on)
+            return left.join(
+                right,
+                left_on=list(on),
+                right_on=rkeys,
+                how=how,
+                coalesce=True,
+                maintain_order="left",
+            )
         case _:
             raise LatticeInternalError(f"unsupported join how={how!r}")
 

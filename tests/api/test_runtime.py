@@ -757,3 +757,62 @@ def test_items_owned_through_their_order(db: Path):
         admin = client.get("/items", headers=auth("admin"))
     every = rows(db, "SELECT id FROM order_items ORDER BY id LIMIT 100")
     assert [i["id"] for i in admin.json()["items"]] == [e[0] for e in every]
+
+
+# ---- joins on differently-named keys ----------------------------------------------------
+
+MAPPED_F01 = """
+@endpoint("GET", "/orders", auth=Customer)
+def list_orders(user: CurrentUser, limit: Int(ge=1, le=100) = 20, offset: Int(ge=0) = 0) -> Page:
+    orders = fetch(Orders)
+    mine = owned(orders, by=user)
+    items = fetch(OrderItems)
+    my_items = owned(items, by=user)
+    units_per_order = group(my_items, by=["order_id"], units=agg.sum(col("qty")))
+    joined = join(mine, units_per_order, on={"id": "order_id"}, how="left")
+    filled = derive(joined, units=coalesce(col("units"), 0))
+    shown = select(filled, cols=["id", "status", "created_at", "total", "units"])
+    ordered = sort(shown, by=["id"])
+    result = page(ordered, limit=limit, offset=offset)
+    return result
+"""
+
+
+def test_mapped_join_is_one_statement_with_the_mapped_condition():
+    from lattice.api.ir import ReadStep, lower_api
+    from tests.api.conftest import checked
+
+    (plan,) = lower_api(checked(MAPPED_F01))
+    (read,) = plan.steps
+    assert isinstance(read, ReadStep)
+    assert 'ON l."id" = r."order_id"' in read.sql.text
+    assert plan.schema.names() == ("id", "status", "created_at", "total", "units")
+
+
+def test_mapped_join_returns_each_order_with_its_units(db: Path):
+    with app_for(MAPPED_F01, db) as client:
+        resp = client.get("/orders", headers=auth("bob"), params={"limit": 100})
+    assert resp.status_code == 200
+    got = [(r["id"], r["units"]) for r in resp.json()["items"]]
+    want = rows(
+        db,
+        "SELECT o.id, COALESCE(SUM(i.qty), 0) FROM orders o "
+        "LEFT JOIN order_items i ON i.order_id = o.id WHERE o.customer_id = ? "
+        "GROUP BY o.id ORDER BY o.id",
+        USER_IDS["bob"],
+    )
+    assert got == [tuple(r) for r in want] and got
+
+
+def test_mapped_join_passes_every_f01_case(tmp_path: Path):
+    from bench.api_datasets import build_db
+    from bench.api_runner import run_cases_lattice
+    from bench.api_tasks import API_TASKS
+
+    task = next(t for t in API_TASKS if t.id == "f01")
+    results = run_cases_lattice(
+        source(MAPPED_F01), tmp_path / "w", task, db_builder=build_db, profile=api_profile()
+    )
+    assert results.cases and all(c.passed for c in results.cases), [
+        (c.name, c.reason) for c in results.cases if not c.passed
+    ]

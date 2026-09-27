@@ -150,3 +150,13 @@ def test_rule_snippets_check_clean() -> None:
     result = check_source(source, bench_profile())
     assert result.ok, [d.render() for d in result.diagnostics]
     assert not result.diagnostics
+
+
+def test_prompts_document_joins_on_differently_named_keys() -> None:
+    from lattice.llm.api_prompt import api_lattice_system_prompt
+    from lattice.llm.prompt import baseline_system_prompt
+
+    for hints in (True, False):
+        assert 'on={"id": "order_id"}' in lattice_system_prompt(hints=hints)
+        assert 'on={"id": "order_id"}' in api_lattice_system_prompt(hints=hints)
+        assert "left_on=[...], right_on=[...]" in baseline_system_prompt(hints=hints)

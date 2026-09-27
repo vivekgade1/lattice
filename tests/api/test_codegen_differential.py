@@ -208,7 +208,34 @@ def _programs() -> dict[str, tuple[str, ApiTask]]:
         NUMERIC_PROGRAM,
         dataclasses.replace(task, cases=task.cases + _probes(task.cases)),
     )
+    f01 = next(t for t in API_TASKS if t.id == "f01")
+    out["mapped_join"] = (
+        MAPPED_JOIN_PROGRAM,
+        dataclasses.replace(f01, id="mapped_join", cases=f01.cases + _probes(f01.cases)),
+    )
     return out
+
+
+# f01 written with a join on differently-named keys (orders.id = per-order totals'
+# order_id): the plan's SQL joins ON l."id" = r."order_id"; both backends must agree
+# and pass every f01 case.
+MAPPED_JOIN_PROGRAM = """# lattice: v1
+@endpoint("GET", "/orders", auth=Customer)
+def list_orders(
+    user: CurrentUser, limit: Int(ge=1, le=100) = 20, offset: Int(ge=0) = 0
+) -> Page:
+    orders = fetch(Orders)
+    mine = owned(orders, by=user)
+    items = fetch(OrderItems)
+    my_items = owned(items, by=user)
+    units_per_order = group(my_items, by=["order_id"], units=agg.sum(col("qty")))
+    joined = join(mine, units_per_order, on={"id": "order_id"}, how="left")
+    filled = derive(joined, units=coalesce(col("units"), 0))
+    shown = select(filled, cols=["id", "status", "created_at", "total", "units"])
+    ordered = sort(shown, by=["id"])
+    result = page(ordered, limit=limit, offset=offset)
+    return result
+"""
 
 
 # A program whose responses contain non-finite floats (price * 1e308 * 10 overflows to
@@ -249,7 +276,7 @@ NUMERIC_CASES = (
 PROGRAMS = _programs()
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
-EXTRA_IDS = ["numeric"]
+EXTRA_IDS = ["numeric", "mapped_join"]
 
 
 # ---- capture ---------------------------------------------------------------------------------
@@ -485,10 +512,21 @@ def test_generated_app_passes_every_case_the_runtime_passes(pid: str, differenti
 
 
 def test_the_differential_covers_every_task_and_example(differential_runs):
-    assert set(differential_runs) == {t.id for t in API_TASKS} | set(EXAMPLE_IDS) | {"numeric"}
+    assert set(differential_runs) == {t.id for t in API_TASKS} | set(EXAMPLE_IDS) | set(EXTRA_IDS)
     assert len(API_TASKS) == 40 and len(EXAMPLE_IDS) == 3
     probes = sum(len(PROGRAMS[p][1].cases) for p in PROGRAMS)
     assert probes > sum(len(t.cases) for t in API_TASKS)
+
+
+def test_the_mapped_join_program_passes_f01(differential_runs):
+    """f01 with on={"id": "order_id"}: every f01 case passes on both backends."""
+    rt_results, _, gen_results, _ = differential_runs["mapped_join"]
+    f01 = next(t for t in API_TASKS if t.id == "f01")
+    names = {c.name for c in f01.cases}
+    for results in (rt_results, gen_results):
+        own = [c for c in results.cases if c.name in names]
+        assert len(own) == len(f01.cases)
+        assert all(c.passed for c in own), [(c.name, c.reason) for c in own if not c.passed]
 
 
 def test_db_digest_sees_writes(tmp_path: Path):

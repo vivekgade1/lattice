@@ -102,7 +102,9 @@ _OP_DESCRIPTIONS: dict[str, str] = {
     "select": "keep exactly the listed columns, in that order",
     "rename": "rename columns",
     "group": "one row per `by` group (by=[]: one row overall) with the aggregates",
-    "join": "on shared key columns; how 'inner' or 'left'",
+    "join": 'on shared key columns (`on=["customer_id"]`), or `on={"id": "order_id"}` '
+    "to match a left column with a differently named right one (the left name is kept); "
+    "how 'inner' or 'left'",
     "sort": "ascending unless desc=True; desc=[True, False] sets each by= column's direction",
     "limit": "first n rows",
     "write": "write the result (.csv or .parquet)",
@@ -413,7 +415,8 @@ columns, to avoid chained-assignment warnings.
 using `sum`, `mean`, `min`, `max` or `size`/`count`. `groupby` drops rows whose \
 key is null unless you pass `dropna=False`; keep or drop null keys exactly as \
 the task says.
-- Join with `left.merge(right, on=[...], how="inner")` or `how="left"`. For \
+- Join with `left.merge(right, on=[...], how="inner")` or `how="left"` (keys named \
+differently on each side: `left_on=[...], right_on=[...]`, then drop the right key). For \
 "rows with no match" use `~left["key"].isin(right["key"])` (or a left merge \
 followed by an `isna()` test on a right-hand column).
 - A merge must not silently repeat left rows: pass \

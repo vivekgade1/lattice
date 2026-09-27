@@ -231,6 +231,24 @@ CASES = {
         'b0 = group(t, by=["grp"], n=agg.count())\n'
         'x = join(a, b0, on=["grp"], how="left")'
     ),
+    "join_mapped_left": (
+        TAGS_LOAD + 'k = rename(t, id="item_id")\nx = join(g, k, on={"id": "item_id"}, how="left")'
+    ),
+    "join_mapped_inner_fanout": (
+        TAGS_LOAD + 'h = rename(g, id="item_id")\n'
+        'x = join(t, h, on={"id": "item_id"}, how="inner", fanout="allow")'
+    ),
+    "join_mapped_per_parent_totals": (
+        TAGS_LOAD + 'h = rename(g, id="item_id")\n'
+        'w = group(h, by=["item_id"], weight=agg.sum(col("weight")), n=agg.count())\n'
+        'x = join(t, w, on={"id": "item_id"}, how="left")'
+    ),
+    "join_mapped_two_keys_null": (
+        'a = select(t, cols=["id", "grp", "name"])\n'
+        'b0 = group(t, by=["grp", "id"], n=agg.count())\n'
+        'b = rename(b0, grp="g2", id="i2")\n'
+        'x = join(a, b, on={"grp": "g2", "id": "i2"}, how="left")'
+    ),
     "join_cross_one_row": (
         'tot = group(t, by=[], all_qty=agg.sum(col("qty")))\n'
         'j = join(t, tot, on=[], how="inner")\n'
@@ -290,6 +308,21 @@ def test_differential_cases_return_rows(data: tuple[Path, sqlite3.Connection]) -
         LOAD + 'x = group(t, by=["grp"], n=agg.count())\nwrite(x, "out.csv")\n', root, conn
     )
     assert df.rows() == [("a", 3), ("b", 2), (None, 2), ("c", 1)]
+
+
+def test_mapped_join_sql_pairs_left_and_right_names(data: tuple[Path, sqlite3.Connection]) -> None:
+    root, conn = data
+    body = LOAD + CASES["join_mapped_left"] + '\nwrite(x, "out.csv")\n'
+    df = differential(body, root, conn)
+    assert df.columns == ["id", "tag", "weight", "name", "grp", "qty", "price", "day", "flag"]
+    assert df.height == len(TAG_ROWS)
+    check, _ = run_source(program(body), PROFILE, root)
+    assert check.program is not None
+    plan = lower(check.program)
+    join = next(n for n in plan.nodes if n.op == "join")
+    rels = rels_from_plan(plan.nodes, TABLES)
+    text = compile_select(rels, join.id).text
+    assert 'ON l."id" = r."item_id"' in text
 
 
 # ---- the benchmark database ------------------------------------------------------------

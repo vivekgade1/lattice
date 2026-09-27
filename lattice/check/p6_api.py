@@ -36,6 +36,7 @@ from lattice.check.api_info import (
 from lattice.check.astutil import (
     endpoints_of,
     is_constant_expr,
+    join_on_pairs,
     literal_value,
     step_mentions,
     steps_of,
@@ -356,9 +357,11 @@ class _Endpoint:
         match op:
             case "where" | "require" if len(call.args) > 1:
                 return _cols_read(call.args[1]) & private
-            case "sort" | "join":
-                key = kws.get("by" if op == "sort" else "on")
-                return frozenset(_strs(key)) & private
+            case "sort":
+                return frozenset(_strs(kws.get("by"))) & private
+            case "join":
+                pairs = join_on_pairs(kws.get("on")) or ()
+                return frozenset(c for pair in pairs for c in pair) & private
             case "group":
                 read = frozenset(_strs(kws.get("by")))
                 for name, v in kws.items():
@@ -726,7 +729,7 @@ class _Endpoint:
                 if len(value.args) < 2 or _kw(value, "fanout") is not None:
                     return False
                 how = literal_value(_kw(value, "how"))
-                if _strs(_kw(value, "on")):
+                if join_on_pairs(_kw(value, "on")):
                     return how == "left" and one(first)
                 return one(first) and (how == "left" or one(value.args[1]))
             case _ if op in _ROW_WISE:

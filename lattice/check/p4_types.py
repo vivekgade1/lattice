@@ -48,6 +48,7 @@ from lattice.check.astutil import (
     annotation_schema_name,
     has_endpoint_decorator,
     is_constant_expr,
+    join_on_pairs,
     literal_value,
     redefined_steps,
     step_mentions,
@@ -155,6 +156,56 @@ def _owner_cols(schema: Schema) -> frozenset[str]:
 
 def _cols(names: tuple[str, ...] | list[str]) -> str:
     return "(" + ", ".join(names) + ")"
+
+
+def _on_dict(pairs: list[tuple[str, str]]) -> str:
+    """on={"a": "b", ...} as source text."""
+    return "on={" + ", ".join(f"{json.dumps(a)}: {json.dumps(b)}" for a, b in pairs) + "}"
+
+
+def _counterparts(name: str, own: TableT, other: TableT) -> list[str]:
+    """Columns of `other` that likely hold the same key as `own`'s column `name` under
+    another name: a parent's `id` and a child's `<parent>_id` (either way round), of
+    the same type. A `*_id` column `own` has as well is an ordinary shared column."""
+    scalar = own.schema.get(name)
+    if name == "id":
+        return [
+            c
+            for c, s in other.schema.columns
+            if c.endswith("_id") and s is scalar and c not in own.schema
+        ]
+    if name.endswith("_id") and other.schema.get("id") is scalar:
+        return ["id"]
+    return []
+
+
+def _dict_hint(
+    name: str, own: TableT, missing: TableT, own_arg: ast.expr, side: str, on: list[str]
+) -> str | None:
+    """The hint for on=[..., name, ...] where `name` is a column of one table (`own`)
+    but not of the other (`missing`, the `side` table): the dict form pairing it with
+    the likely differently-named key of `missing`."""
+    found = _counterparts(name, own, missing)
+    if len(found) > 1:
+        # prefer the one named after the table: orders.id <-> items.order_id
+        words = [own_arg.id.lower()] if isinstance(own_arg, ast.Name) else []
+        if own.source is not None:
+            words.append(own.source.lower())
+        named = [c for c in found if any(w.startswith(c[: -len("_id")]) for w in words)]
+        found = named if len(named) == 1 else found
+    if not found:
+        return None
+
+    def pairs(partner: str) -> list[tuple[str, str]]:
+        # `side` is where `name` is missing: `partner` belongs there
+        pair = (partner, name) if side == "left" else (name, partner)
+        return [pair if n == name else (n, n) for n in on]
+
+    if len(found) == 1:
+        return f"keys have different names? use {_on_dict(pairs(found[0]))}"
+    choices = ", ".join(json.dumps(c) for c in found)
+    placeholder = f"<{side} column>"
+    return f"keys have different names? use {_on_dict(pairs(placeholder))} with one of {choices}"
 
 
 @dataclass(frozen=True)
@@ -683,28 +734,37 @@ class _Types:
                 'pass fanout="allow" only if repeating left rows is intended',
             )
         on_node = kws["on"]
-        on = self._str_list(on_node, "on")
-        if on is None:
+        pairs = self._join_pairs(on_node)
+        if pairs is None:
             return UNKNOWN
-        if not on:
+        if not pairs:
             return self._cross_join(call, left, right, on_node)
-        ok = self._require_columns(on, left.schema, on_node, "left")
-        ok = self._require_columns(on, right.schema, on_node, "right") and ok
-        ok = self._no_dups(on, on_node) and ok
+        left_on = [a for a, _ in pairs]
+        right_on = [b for _, b in pairs]
+        mapped = isinstance(on_node, ast.Dict)
+        if mapped:
+            ok = self._mapped_columns(pairs, left, right, on_node)
+            ok = self._no_dups(left_on, on_node) and ok
+            ok = self._no_dups(right_on, on_node) and ok
+        else:
+            ok = self._join_columns(call, left_on, left, right, on_node)
+            ok = self._no_dups(left_on, on_node) and ok
         if not ok:
             return UNKNOWN
-        for key in on:
-            a, b = left.schema.get(key), right.schema.get(key)
-            if a is not b:
+        for a, b in pairs:
+            ta, tb = left.schema.get(a), right.schema.get(b)
+            if ta is not tb:
                 ok = False
-                self.ctx.error(
-                    "L402",
-                    on_node,
-                    f"join key '{key}' is {a.value if a else '?'} on the left "
-                    f"and {b.value if b else '?'} on the right",
-                    "convert one side with derive + fn.to_* first",
+                lt, rt = ta.value if ta else "?", tb.value if tb else "?"
+                message = (
+                    f"join key '{a}' is {lt} on the left and '{b}' is {rt} on the right"
+                    if mapped
+                    else f"join key '{a}' is {lt} on the left and {rt} on the right"
                 )
-        extra = [(n, s) for n, s in right.schema.columns if n not in on]
+                self.ctx.error(
+                    "L402", on_node, message, "convert one side with derive + fn.to_* first"
+                )
+        extra = [(n, s) for n, s in right.schema.columns if n not in right_on]
         clashes = [n for n, _ in extra if n in left.schema]
         if clashes:
             ok = False
@@ -718,7 +778,7 @@ class _Types:
             )
         if not ok:
             return UNKNOWN
-        unique = any(set(k) <= set(on) for k in right.keys)
+        unique = any(set(k) <= set(right_on) for k in right.keys)
         if not unique and fanout is None and self.ctx.profile.enforce_keys:
             r_name = call.args[1].id if isinstance(call.args[1], ast.Name) else "right"
             known = ", ".join(_cols(k) for k in right.keys) or "none"
@@ -726,9 +786,9 @@ class _Types:
                 "L420",
                 call,
                 f"join can repeat rows of the left table: '{r_name}' is not unique on "
-                f"{_cols(on)}; known keys of it: {known}",
-                f"reduce it to one row per {_cols(on)} first, e.g. group({r_name}, by=[...], "
-                '...), or pass fanout="allow" if repeating rows is intended',
+                f"{_cols(right_on)}; known keys of it: {known}",
+                f"reduce it to one row per {_cols(right_on)} first, e.g. group({r_name}, "
+                'by=[...], ...), or pass fanout="allow" if repeating rows is intended',
             )
             return UNKNOWN
         extra_names = {n for n, _ in extra}
@@ -739,6 +799,111 @@ class _Types:
             keys=left.keys if unique else (),
             nullable=left.nullable | right_null,
         )
+
+    def _join_pairs(self, node: ast.expr) -> tuple[tuple[str, str], ...] | None:
+        """join on=: a list of column names (the same name on both sides) or a dict
+        literal mapping a left column name to a right column name."""
+        pairs = join_on_pairs(node)
+        if pairs is not None:
+            return pairs
+        if isinstance(node, ast.Dict):
+            self.ctx.error(
+                "L404",
+                node,
+                "join on= must map left column names to right column names, as strings",
+                'e.g. on={"id": "order_id"}',
+            )
+            return None
+        self.ctx.error(
+            "L404",
+            node,
+            "'on' must be a list of column names as strings",
+            'e.g. on=["region"], or on={"id": "order_id"} when the key names differ',
+        )
+        return None
+
+    def _mapped_columns(
+        self,
+        pairs: tuple[tuple[str, str], ...],
+        left: TableT,
+        right: TableT,
+        node: ast.expr,
+    ) -> bool:
+        """on={left: right}: every left name in the left table, every right name in the
+        right table. When the dict reads the wrong way round, the hint swaps it."""
+        swapped = all(b in left.schema and a in right.schema for a, b in pairs)
+        swap_hint = (
+            "the dict maps a left column to a right column: use "
+            + _on_dict([(b, a) for a, b in pairs])
+            if swapped
+            else None
+        )
+        ok = True
+        for side, names, t in (
+            ("left", [a for a, _ in pairs], left),
+            ("right", [b for _, b in pairs], right),
+        ):
+            for n in names:
+                if n not in t.schema:
+                    ok = False
+                    self.ctx.error(
+                        "L401",
+                        node,
+                        f"unknown column '{n}' in the {side} table; "
+                        f"table has {{{', '.join(t.schema.names())}}}",
+                        swap_hint or did_you_mean(n, t.schema.names()),
+                    )
+        return ok
+
+    def _join_columns(
+        self, call: ast.Call, on: list[str], left: TableT, right: TableT, node: ast.expr
+    ) -> bool:
+        """on=[...]: every name in both tables. A key missing on one side whose partner
+        on the other side has a different name (orders.id = items.order_id) gets a hint
+        naming the dict form."""
+        ls, rs = left.schema, right.schema
+        only_left = [n for n in on if n in ls and n not in rs]
+        only_right = [n for n in on if n in rs and n not in ls]
+        neither = [n for n in on if n not in ls and n not in rs]
+        if (
+            only_left
+            and not neither
+            and len(only_left) == len(only_right)
+            and all(ls.get(a) is rs.get(b) for a, b in zip(only_left, only_right, strict=True))
+        ):
+            # on=["id", "order_id"]: one pair of names, SQL-style, split over the sides
+            partner = dict(zip(only_left, only_right, strict=True))
+            pairs = [(n, partner[n]) for n in on if n not in only_right]
+            listed = ", ".join(
+                [f"'{n}' (only in the left table)" for n in only_left]
+                + [f"'{n}' (only in the right table)" for n in only_right]
+            )
+            self.ctx.error(
+                "L401",
+                node,
+                f"join on= lists {listed}; a list names key columns that both tables have",
+                f"keys have different names? use {_on_dict(pairs)}",
+            )
+            return False
+        ok = True
+        for side, t, other in (("left", left, right), ("right", right, left)):
+            for n in on:
+                if n in t.schema:
+                    continue
+                ok = False
+                hint = did_you_mean(n, t.schema.names())
+                if n in other.schema:
+                    own_arg = call.args[1 if side == "left" else 0]
+                    found = _dict_hint(n, other, t, own_arg, side, on)
+                    hint = found or hint
+                self.ctx.error(
+                    "L401",
+                    node,
+                    f"unknown column '{n}' in the {side} table; "
+                    f"table has {{{', '.join(t.schema.names())}}}",
+                    hint,
+                )
+        return ok
 
     def _cross_join(
         self, call: ast.Call, left: TableT, right: TableT, on_node: ast.expr
@@ -1277,6 +1442,14 @@ class _Types:
     def _api_meta(self, call: ast.Call, op: str, inputs: list[TableT], out: TableT) -> TableT:
         """Carry the API metadata (owner, ownership, private columns, source, page)
         from an op's input tables to its result."""
+        if op == "join":
+            # on={"id": "order_id"}: the right key columns are dropped, their values
+            # live on in the left key columns -- carry the right table's metadata over
+            # under the left names, exactly as a rename + list-form join would
+            on_node = next((kw.value for kw in call.keywords if kw.arg == "on"), None)
+            back = {b: a for a, b in join_on_pairs(on_node) or () if a != b}
+            if back and len(inputs) == 2:
+                inputs = [inputs[0], _rename_meta(inputs[1], back)]
         t = inputs[0]
         names = set(out.schema.names())
         owned_from = frozenset().union(*(i.owned_from for i in inputs))
@@ -1351,7 +1524,8 @@ class _Types:
                         kw.arg for kw in kws if kw.arg != "by" and _reads(kw.value, t.owner_cols)
                     }
             case "join":
-                on = _str_list_of(next((kw.value for kw in kws if kw.arg == "on"), None))
+                pairs = join_on_pairs(next((kw.value for kw in kws if kw.arg == "on"), None))
+                on = [a for a, _ in pairs or ()]
                 if owned_from and not set(on) <= plain:
                     narrowed = True
             case "step":
@@ -1418,6 +1592,22 @@ class _Types:
         if not set(_str_list_of(by_node)) <= t.plain:
             return True
         return any(_reads_other(kw.value, t.plain) for kw in kws if kw.arg != "by")
+
+
+def _rename_meta(t: TableT, mapping: dict[str, str]) -> TableT:
+    """`t` with the column names in its API metadata renamed by `mapping`."""
+
+    def m(c: str) -> str:
+        return mapping.get(c, c)
+
+    return replace(
+        t,
+        owner=m(t.owner) if t.owner is not None else None,
+        owner_via=(m(t.owner_via[0]), t.owner_via[1]) if t.owner_via is not None else None,
+        owner_cols=frozenset(map(m, t.owner_cols)),
+        private=frozenset(map(m, t.private)),
+        plain=frozenset(map(m, t.plain)),
+    )
 
 
 def _str_list_of(node: ast.expr | None) -> list[str]:

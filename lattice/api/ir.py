@@ -37,7 +37,7 @@ from lattice.api.sql import (
 from lattice.catalog import API_ERRORS, OP_SHAPES, USER_PARAM
 from lattice.check import CheckedProgram
 from lattice.check.api_info import EndpointInfo, ParamSpec
-from lattice.check.astutil import is_constant_expr, literal_value, steps_of
+from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
 from lattice.diagnostics import Span, span_of
 from lattice.profile import ApiProfile
 from lattice.runtime import LatticeInternalError
@@ -172,6 +172,18 @@ def _strs(node: ast.expr) -> tuple[str, ...]:
             return tuple(_str(e) for e in elts)
         case _:
             raise LatticeInternalError(f"expected a list of strings, got {ast.dump(node)}")
+
+
+def _join_keys(node: ast.expr) -> dict[str, tuple[str, ...]]:
+    """join on=: {"on": left key names}, plus "right_on" (the right key names, in the
+    same order) when a dict literal pairs differently-named columns."""
+    pairs = join_on_pairs(node)
+    if pairs is None:
+        raise LatticeInternalError(f"expected join keys, got {ast.dump(node)}")
+    out = {"on": tuple(a for a, _ in pairs)}
+    if any(a != b for a, b in pairs):
+        out["right_on"] = tuple(b for _, b in pairs)
+    return out
 
 
 def _bool(node: ast.expr) -> bool:
@@ -460,7 +472,7 @@ class _Endpoint:
                 return {"by": _strs(kws["by"]), "aggs": self._aggs(call, subst)}
             case "join":
                 how = _str(kws["how"]) if "how" in kws else "inner"
-                return {"on": _strs(kws["on"]), "how": how}
+                return {**_join_keys(kws["on"]), "how": how}
             case "sort":
                 desc = kws.get("desc")
                 flag: bool | tuple[bool, ...]

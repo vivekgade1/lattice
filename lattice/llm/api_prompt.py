@@ -153,7 +153,9 @@ _TABLE_OP_DOCS: dict[str, str] = {
     "select": "keep exactly the listed columns, in that order",
     "rename": "rename columns",
     "group": "one row per `by` group (by=[]: one row overall) with the aggregates",
-    "join": "on shared column names; how 'inner' or 'left'",
+    "join": 'on shared column names (`on=["product_id"]`), or `on={"id": "order_id"}` '
+    "to match a left column with a differently named right one (the left name is kept); "
+    "how 'inner' or 'left'",
     "sort": "ascending unless desc=True",
     "limit": "first n rows",
 }
@@ -206,7 +208,8 @@ so parameters may also be named like a Python builtin (`zip`, `id`, `type`) or `
 column (after `fetch`, `owned`, `where`, `one`, `select`, ...; not after `join`, `group` \
 or `rename`).
 - `join(l, r, on=K)` needs `r` unique on `K` (a table key inside `K`, or `r` from \
-`group(..., by=K)`); `join(l, r, on=[])` attaches a one-row `r` to every row of `l`.
+`group(..., by=K)`; with `on={"id": "order_id"}`, unique on the right names); \
+`join(l, r, on=[])` attaches a one-row `r` to every row of `l`.
 - Columns listed as private never appear in a response: `select` the others."""
 
 # Pitfall advice, removable for the no-hints condition (the reference stays).

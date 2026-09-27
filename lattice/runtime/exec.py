@@ -114,12 +114,13 @@ def _run_op(
             case "join":
                 # estimate first: a many-to-many join could exhaust memory before the
                 # row limit is checked on its output
-                n = ops.join_size(inputs[0], inputs[1], p["on"], p["how"])
+                right_on = p.get("right_on")
+                n = ops.join_size(inputs[0], inputs[1], p["on"], p["how"], right_on)
                 if n > max_rows:
                     raise LatticeRuntimeError(
                         "R201", node.span, f"join() would produce {n} rows (limit {max_rows})"
                     )
-                return ops.join(inputs[0], inputs[1], p["on"], p["how"]), []
+                return ops.join(inputs[0], inputs[1], p["on"], p["how"], right_on), []
             case "sort":
                 return ops.sort(inputs[0], p["by"], p["desc"]), []
             case "limit":

@@ -544,5 +544,22 @@ def _check_call(node: ast.Call, ctx: CheckContext) -> None:
     for kw in node.keywords:
         if kw.arg is None:
             ctx.error("L101", kw, "'**' arguments are not allowed", "pass each keyword explicitly")
+        elif kw.arg == "on" and isinstance(kw.value, ast.Dict) and _is_join(func):
+            _check_join_mapping(kw.value, ctx)
         else:
             _check_expr(kw.value, ctx)
+
+
+def _is_join(func: ast.expr) -> bool:
+    return isinstance(func, ast.Name) and func.id == "join"
+
+
+def _check_join_mapping(node: ast.Dict, ctx: CheckContext) -> None:
+    """join(..., on={"left_col": "right_col"}): the one place a dict literal is allowed
+    (P4 checks that every key and value is a column name string)."""
+    for key, value in zip(node.keys, node.values, strict=True):
+        if key is None:
+            ctx.error("L101", value, "'**' is not allowed in on=", "write each key pair")
+            continue
+        _check_expr(key, ctx)
+        _check_expr(value, ctx)
