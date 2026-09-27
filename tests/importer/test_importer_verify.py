@@ -21,6 +21,7 @@ from lattice.importer.verify import (
     DatetimeWire,
     Deviation,
     ErrorEnvelope,
+    Normalizer,
     ValidationEnvelope,
     raise_sites,
     verify,
@@ -220,6 +221,22 @@ def test_a_deviation_with_another_answer_is_a_mismatch():
     assert out.kind == "mismatch" and "declared" in out.reason
 
 
+def test_an_accept_original_deviation_accepts_either_answer():
+    dev = Deviation("hide-existence", "policy", "either is fine", 404,
+                    {"detail": "Thing not found"}, accept_original=True)  # fmt: skip
+    agrees = run(lattice_factory(), deviations={"read_other": dev})
+    assert agrees.outcomes["read_other"].kind == "equal"
+    assert agrees.outcomes["read_other"].deviation is None
+    assert agrees.ok
+    differs = run(lattice_factory(forbid_as_404=True), deviations={"read_other": dev})
+    assert differs.outcomes["read_other"].kind == "deviation"
+    assert differs.outcomes["read_other"].deviation == "hide-existence"
+    other = Deviation("hide-existence", "policy", "r", 404, {"detail": "Gone"},
+                      accept_original=True)  # fmt: skip
+    wrong = run(lattice_factory(forbid_as_404=True), deviations={"read_other": other})
+    assert wrong.outcomes["read_other"].kind == "mismatch"
+
+
 def test_a_deviation_naming_no_case_is_reported():
     dev = Deviation("x", "policy", "r", 404, None)
     result = run(lattice_factory(), deviations={"no_such_case": dev})
@@ -298,3 +315,11 @@ def test_a_crash_in_the_original_is_recorded_as_a_500():
     result = verify(crashing, crashing, make_db, [case], (), {})
     assert result.original["boom"].status == 500
     assert result.outcomes["boom"].kind == "equal"
+
+
+def test_the_normaliser_keeps_an_impossible_datetime_shaped_string(tmp_path):
+    db = make_db("seed", tmp_path / "seed.db")
+    n = Normalizer(db).fresh()
+    body = {"detail": [{"input": "2026-02-30T00:00:00", "loc": ["query", "since"]}]}
+    assert n.value(body) == body
+    assert n.value("2026-02-01T00:00:00Z") == "<datetime:1:TZ>"

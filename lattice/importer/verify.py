@@ -131,6 +131,15 @@ def dt_key(s: str) -> datetime:
     return dt
 
 
+def _dt_key_or_none(s: str) -> datetime | None:
+    """:func:`dt_key`, or None for a datetime-shaped text naming no instant (an
+    impossible date such as ``2026-02-30T00:00:00`` echoed back in a 422 body)."""
+    try:
+        return dt_key(s)
+    except ValueError:
+        return None
+
+
 class Normalizer:
     """Knows the values of a seed database; :meth:`fresh` numbers one case's new values.
 
@@ -157,8 +166,8 @@ class Normalizer:
                             self.seed_hashes.add(v)
                         elif UUID_RE.match(v):
                             self.known_uuids.add(uuid.UUID(v))
-                        elif DT_RE.match(v):
-                            self.known_dts.add(dt_key(v))
+                        elif DT_RE.match(v) and (d := _dt_key_or_none(v)) is not None:
+                            self.known_dts.add(d)
         finally:
             conn.close()
 
@@ -187,8 +196,7 @@ class CaseNormalizer:
                 return v
             n = self.uuids.setdefault(u, len(self.uuids) + 1)
             return f"<uuid:{n}:{uuid_spelling(v)}>"
-        if DT_RE.match(v):
-            d = dt_key(v)
+        if DT_RE.match(v) and (d := _dt_key_or_none(v)) is not None:
             if d in self.base.known_dts:
                 return v
             n = self.dts.setdefault(d, len(self.dts) + 1)
@@ -405,8 +413,8 @@ class DatetimeWire:
             m = DT_PLACEHOLDER_RE.match(body)
             if m:
                 return f"<datetime:{m.group(1)}>"
-            if DT_RE.match(body):
-                return dt_key(body).isoformat()
+            if DT_RE.match(body) and (d := _dt_key_or_none(body)) is not None:
+                return d.isoformat()
         return body
 
 
@@ -483,7 +491,11 @@ def agreement(
 @dataclass(frozen=True)
 class Deviation:
     """An intentional difference (``policy``) or a known language gap (``gap``): what the
-    import answers instead of the original."""
+    import answers instead of the original.
+
+    ``accept_original``: either answer is acceptable -- the original's (the case is then
+    ``equal``/``equal_under_rule`` as usual) or the declared one (``deviation``); without
+    it the import must answer as declared and agreeing is a mismatch."""
 
     id: str
     kind: str
@@ -491,6 +503,7 @@ class Deviation:
     status: int
     body: Any
     db_same: bool = True
+    accept_original: bool = False
 
 
 # ------------------------------------------------------------------------ branch coverage --
@@ -703,7 +716,7 @@ def classify(
                 diff=m.diff,
             )
         return CaseOutcome(name, "deviation", deviation=deviation.id, reason=deviation.reason)
-    if deviation is not None:
+    if deviation is not None and not deviation.accept_original:
         return CaseOutcome(
             name,
             "mismatch",

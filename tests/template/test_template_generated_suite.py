@@ -274,7 +274,26 @@ EXPECTED_SIZES = {
 def test_the_generated_suite_covers_every_route(suite):
     sizes = Counter(c.route for c in suite.cases)
     assert dict(sizes) == EXPECTED_SIZES
-    assert suite.cases == generated().cases  # deterministic, hypothesis bodies included
+    # deterministic, hypothesis bodies included; a minted token carries its expiry time
+    # (which moves when the two suites straddle a second boundary): compare what it names
+    assert _modulo_tokens(suite.cases) == _modulo_tokens(generated().cases)
+
+
+def _modulo_tokens(cases: list[Case]) -> list[Case]:
+    import dataclasses
+
+    import jwt
+
+    def claims(token: str | None) -> str | None:
+        if token is None or token.count(".") != 2:
+            return token
+        try:
+            payload = jwt.decode(token, options={"verify_signature": False})
+        except jwt.InvalidTokenError:
+            return token
+        return "claims:" + repr(sorted((k, v) for k, v in payload.items() if k != "exp"))
+
+    return [dataclasses.replace(c, token=claims(c.token)) for c in cases]
 
 
 def test_the_seed_has_nulls_and_values_through_the_templates_models(suite, tmp_path):

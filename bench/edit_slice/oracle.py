@@ -13,9 +13,10 @@ Per ticket (:mod:`bench.edit_slice.tickets`) the acceptance suite is
 * the **pre-declared Lattice policy deviations**, reused from the template proof
   (``tests/template/test_template_generated_suite.py``): 401 for a bad token or a token
   naming no user, a bounded non-negative page window (422), and 422 for a null written
-  into a NOT NULL column. A declared deviation is *accepted*, not required: a candidate
-  may answer as the reference does or as declared (a Python-edited app keeps the
-  template's behaviour, a Lattice-emitted one has the policy).
+  into a NOT NULL column. A declared deviation is *accepted*, not required
+  (``Deviation(accept_original=True)``): a candidate may answer as the reference does or
+  as declared (a Python-edited app keeps the template's behaviour, a Lattice-emitted one
+  has the policy).
 
 :func:`evaluate` runs the suite with :func:`lattice.importer.verify.verify`, the reference
 app as the original and the candidate as the import, each case on a fresh copy of the
@@ -428,13 +429,13 @@ INVALID_TOKEN = Deviation(
     "invalid-token-401", "policy",
     "The template answers an invalid bearer token with 403 'Could not validate "
     "credentials'; Lattice's auth answers every missing or invalid credential with 401.",
-    401, _UNAUTHORIZED,
+    401, _UNAUTHORIZED, accept_original=True,
 )  # fmt: skip
 UNKNOWN_USER = Deviation(
     "unknown-user-token", "policy",
     "A valid token naming a user that does not exist: the template answers 404 'User not "
     "found'; Lattice's NativeToken auth answers 401 like any token naming no caller.",
-    401, _UNAUTHORIZED,
+    401, _UNAUTHORIZED, accept_original=True,
 )  # fmt: skip
 
 
@@ -443,7 +444,7 @@ def _page_deviation(name: str, loc: str, msg: str) -> Deviation:
         name, "policy",
         "Lattice requires a bounded, non-negative page window (limit: Int(ge=0, le=100), "
         "skip: Int(ge=0)); the template passes any integer to SQL, so it answers 200.",
-        422, {"detail": [{"loc": ["query", loc], "msg": msg}]},
+        422, {"detail": [{"loc": ["query", loc], "msg": msg}]}, accept_original=True,
     )  # fmt: skip
 
 
@@ -459,6 +460,7 @@ def _null_deviation(field: str) -> Deviation:
         "Optional): the template writes it and crashes with 500 (IntegrityError); Lattice "
         "refuses it with 422 and writes nothing.",
         422, {"detail": [{"loc": ["body", field], "msg": "must not be null"}]},
+        accept_original=True,
     )  # fmt: skip
 
 
@@ -468,6 +470,7 @@ TITLE_LOCKED = Deviation(
     "check for a null title and crashes like the template (500); refusing it with the "
     "window's 403 first is an equally valid reading of the ticket.",
     403, {"detail": "Title can only be changed within 24 hours of creation"},
+    accept_original=True,
 )  # fmt: skip
 
 NOT_NULL = {("update_item", "title")}
@@ -475,7 +478,9 @@ NOT_NULL = {("update_item", "title")}
 
 def accepted_for(ticket_id: str, cases: Sequence[Case]) -> dict[str, tuple[Deviation, ...]]:
     """The alternative answers accepted per case (besides the reference's own): the
-    template proof's policy deviations, by kind of case, plus ticket ambiguities."""
+    template proof's policy deviations, by kind of case, plus ticket ambiguities. Each
+    is an ``accept_original`` deviation; the first is declared to :func:`verify`, the
+    others are tried when the candidate matches neither."""
     out: dict[str, tuple[Deviation, ...]] = {}
     for c in cases:
         what = c.name.removeprefix(f"{c.route}.")
@@ -638,6 +643,7 @@ def evaluate(ticket_id: str, candidate_app_factory: AppFactory) -> Outcome:
     except Exception as e:  # noqa: BLE001 -- any import/startup failure is loud
         return Outcome(ticket_id, "loud", specific_names=o.specific,
                        error=f"app failed to start: {type(e).__name__}: {e}")  # fmt: skip
+    declared = {name: alts[0] for name, alts in o.accepted.items()}
     try:
         result = verify(
             o.reference_factory,
@@ -645,7 +651,7 @@ def evaluate(ticket_id: str, candidate_app_factory: AppFactory) -> Outcome:
             o.db_factory,
             o.cases,
             RULES,
-            {},
+            declared,
             login=o.login,
             branches=o.branches,
         )
@@ -655,14 +661,16 @@ def evaluate(ticket_id: str, candidate_app_factory: AppFactory) -> Outcome:
     cases: dict[str, CaseVerdict] = {}
     for name, oc in result.outcomes.items():
         if oc.kind != "mismatch":
-            cases[name] = CaseVerdict(name, oc.kind, reason=oc.reason)
+            cases[name] = CaseVerdict(name, oc.kind, deviation=oc.deviation, reason=oc.reason)
             continue
         original, candidate = result.original[name], result.lattice[name]
-        for dev in o.accepted.get(name, ()):
+        for dev in o.accepted.get(name, ())[1:]:
             if classify(original, candidate, RULES, dev).kind == "deviation":
                 cases[name] = CaseVerdict(name, "deviation", deviation=dev.id, reason=dev.reason)
                 break
         else:
+            if name in declared:  # the reason and diff of the plain comparison
+                oc = classify(original, candidate, RULES, None)
             diff = oc.diff.render() if oc.diff else ""
             verdict: Verdict = "loud" if candidate.status >= 500 else "silent"
             cases[name] = CaseVerdict(name, verdict, reason=oc.reason, diff=diff)
