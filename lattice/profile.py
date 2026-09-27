@@ -9,6 +9,9 @@ from lattice.typesys import Scalar, Schema
 
 # page_shape keys: the JSON fields of a Page response envelope.
 PAGE_SHAPE_KEYS = frozenset({"items", "total", "limit", "offset"})
+# Stored spellings of Uuid / DateTime values (lattice.api.backend implements them).
+UUID_STORAGES = ("canonical", "hex32")
+DATETIME_STORAGES = ("iso_z", "sql_space")
 
 
 def _default_page_shape() -> Mapping[str, str]:
@@ -89,6 +92,12 @@ class ApiProfile:
     backend: str = "sqlite"  # lattice.api.backend dialect name
     # Where an authenticated caller's role comes from.
     roles_from: RoleSource = field(default_factory=RoleColumn)
+    # How Uuid / DateTime values are stored (lattice.api.backend.UUID_STORAGES /
+    # DATETIME_STORAGES): Lattice's canonical text by default; e.g. "hex32" and
+    # "sql_space" for a database written by SQLAlchemy on SQLite. Responses, parameters
+    # and natives are unaffected.
+    uuid_storage: str = "canonical"
+    datetime_storage: str = "iso_z"
 
     def __post_init__(self) -> None:
         self._validate_page_shape()
@@ -98,6 +107,10 @@ class ApiProfile:
         self._validate_roles_from()
         if not isinstance(self.backend, str) or not self.backend:
             raise ValueError("ApiProfile.backend must name a backend, e.g. 'sqlite'")
+        if self.uuid_storage not in UUID_STORAGES:
+            raise ValueError(f"ApiProfile.uuid_storage must be one of {UUID_STORAGES}")
+        if self.datetime_storage not in DATETIME_STORAGES:
+            raise ValueError(f"ApiProfile.datetime_storage must be one of {DATETIME_STORAGES}")
 
     @staticmethod
     def default_page_shape() -> Mapping[str, str]:

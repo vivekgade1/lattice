@@ -174,6 +174,12 @@ class EndpointPlan:
     # Optional (UNSET) parameters an explicit JSON null may set (every column they are
     # written to is nullable); a null for any other optional parameter is a 422.
     null_ok: tuple[str, ...] = ()
+    # @endpoint(..., body="form"): body parameters are form fields, not a JSON object.
+    body: str = "json"
+    # How Uuid / DateTime values are stored (ApiProfile.uuid_storage/datetime_storage);
+    # the plan's SQL literals are already in these spellings.
+    uuid_storage: str = "canonical"
+    datetime_storage: str = "iso_z"
 
 
 # ---- helpers ---------------------------------------------------------------------------
@@ -296,7 +302,11 @@ class _Endpoint:
     ) -> None:
         self.program = program
         self.api = api
-        self.dialect = dialect_for(getattr(api, "backend", "sqlite"))
+        self.dialect = dialect_for(
+            getattr(api, "backend", "sqlite"),
+            uuid_storage=getattr(api, "uuid_storage", "canonical"),
+            datetime_storage=getattr(api, "datetime_storage", "iso_z"),
+        )
         self.info = info
         self.step_defs = steps_of(program.module)
         self.step_consts = step_consts
@@ -798,6 +808,9 @@ class _Endpoint:
             flag_role,
             self._natives(auth_native),
             tuple(name for name, ok in self.null_uses.items() if ok),
+            body=self.info.body,
+            uuid_storage=getattr(self.api, "uuid_storage", "canonical"),
+            datetime_storage=getattr(self.api, "datetime_storage", "iso_z"),
         )
 
     def _natives(self, auth_native: str | None) -> tuple[tuple[str, NativeSig], ...]:

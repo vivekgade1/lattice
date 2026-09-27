@@ -37,7 +37,10 @@ models (the plan's schema is the model's fields in order), the role from a role 
 or an Admin flag column, and natives: `generate_fastapi(..., natives_module="natives")`
 imports the natives the plans call from that module (which must sit next to the app)
 and registers them, like the runtime's functions, on every connection (NativeToken auth
-decodes the bearer token with one of them).
+decodes the bearer token with one of them). The profile's Uuid/DateTime storage
+spellings become the prelude constants `UUID_STORAGE` / `DATETIME_STORAGE`, and a
+`body="form"` endpoint reads URL-encoded form fields (`Endpoint.form`), as the runtime
+does.
 
 The 401/403 bodies (`{"error": "unauthorized"}` / `{"error": "forbidden"}`), the
 precedence (401, then 403, then 422 validation) and the Admin rule are the runtime's.
@@ -78,6 +81,7 @@ import json
 import math
 import re
 import sqlite3
+import urllib.parse
 import uuid
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
@@ -142,6 +146,7 @@ class Endpoint:
     role_column: str = "role"  # the caller's role column, unless admin_flag is set
     admin_flag: str | None = None  # a Bool column: true -> admin_role, else flag_role
     flag_role: str = ""
+    form: bool = False  # body parameters are URL-encoded form fields, not a JSON object
 
 
 class Caller(NamedTuple):
@@ -189,8 +194,12 @@ def _mod(a: object, b: object) -> object:
     return a % b  # type: ignore[operator]
 
 
-# Uuid values are stored as canonical lowercase hyphenated text; DateTime values as
-# fixed-width ISO-8601 UTC text with microseconds and a "Z" (text order is time order).
+# Uuid values are stored as canonical lowercase hyphenated text ("canonical") or 32 hex
+# digits ("hex32"); DateTime values as fixed-width UTC text with microseconds, ISO-8601
+# with a "Z" ("iso_z") or "YYYY-MM-DD HH:MM:SS.ffffff" ("sql_space"): text order is
+# time order. Responses always carry the canonical spellings.
+UUID_STORAGE = "canonical"
+DATETIME_STORAGE = "iso_z"
 _UUID_TEXT = re.compile(
     r"[0-9a-fA-F]{8}(-?)[0-9a-fA-F]{4}\\1[0-9a-fA-F]{4}\\1[0-9a-fA-F]{4}\\1[0-9a-fA-F]{12}"
 )
@@ -227,8 +236,25 @@ def datetime_text(value: dt.datetime) -> str:
     return value.replace(tzinfo=None).isoformat(timespec="microseconds") + "Z"
 
 
+def stored_uuid(value: object) -> str | None:
+    """A UUID as UUID_STORAGE keeps it, or None."""
+    text = uuid_text(value)
+    if text is None or UUID_STORAGE == "canonical":
+        return text
+    return text.replace("-", "")
+
+
+def stored_datetime(value: dt.datetime) -> str:
+    """A DateTime as DATETIME_STORAGE keeps it."""
+    if DATETIME_STORAGE == "iso_z":
+        return datetime_text(value)
+    if value.tzinfo is not None:
+        value = value.astimezone(dt.UTC)
+    return value.replace(tzinfo=None).isoformat(sep=" ", timespec="microseconds")
+
+
 def _to_uuid(x: object) -> object:
-    return uuid_text(x)
+    return stored_uuid(x)
 
 
 def _to_datetime(x: object, fmt: object) -> object:
@@ -238,11 +264,11 @@ def _to_datetime(x: object, fmt: object) -> object:
         value = dt.datetime.strptime(x, fmt)
     except ValueError:
         return None
-    return datetime_text(value)
+    return stored_datetime(value)
 
 
 def _uuid4() -> str:
-    return str(uuid.uuid4())
+    return stored_uuid(uuid.uuid4()) or ""
 
 
 # ---- natives: pure Python functions callable from the SQL ---------------------------------
@@ -293,9 +319,9 @@ def _native_result(name: str, v: object, scalar: str) -> object:
         parsed = parse_datetime(v)
         if parsed is None:
             raise bad
-        return datetime_text(parsed)
+        return stored_datetime(parsed)
     if scalar == "Uuid" and isinstance(v, uuid.UUID | str):
-        text = uuid_text(v)
+        text = stored_uuid(v)
         if text is None:
             raise bad
         return text
@@ -419,7 +445,7 @@ def _convert(spec: Param, raw: object, *, text: bool) -> object:
         text_uuid = uuid_text(raw) if isinstance(raw, str) else None
         if text_uuid is None:
             raise bad
-        return text_uuid
+        return uuid.UUID(text_uuid)  # bound in UUID_STORAGE
     if isinstance(raw, str):  # Date
         try:
             return dt.date.fromisoformat(raw)
@@ -451,14 +477,37 @@ def _constrain(spec: Param, value: object) -> None:
             raise ValueError(f"must have at most {spec.max_len} characters")
 
 
+def _default(spec: Param) -> object:
+    """A parameter's default value (a Uuid default as a uuid.UUID, like a sent one)."""
+    if spec.scalar == "Uuid" and isinstance(spec.default, str):
+        return uuid.UUID(spec.default)
+    return spec.default
+
+
+def form_fields(body: bytes, content_type: str | None) -> dict[str, str]:
+    """A URL-encoded form body's fields (a repeated field keeps its last value); any
+    other content type has no fields."""
+    media = (content_type or "").partition(";")[0].strip().lower()
+    if media != "application/x-www-form-urlencoded":
+        return {}
+    return dict(urllib.parse.parse_qsl(body.decode("latin-1"), keep_blank_values=True))
+
+
 def parse_params(
-    params: Sequence[Param], path: Mapping[str, str], query: Mapping[str, str], body: bytes
+    params: Sequence[Param],
+    path: Mapping[str, str],
+    query: Mapping[str, str],
+    body: bytes,
+    form: bool = False,
+    content_type: str | None = None,
 ) -> dict[str, object]:
     """Every parameter converted and validated; else 422 listing each problem in order."""
     detail: list[dict[str, object]] = []
     values: dict[str, object] = {}
     data: Mapping[str, object] = {}
-    if any(p.source == "body" for p in params):
+    if form:
+        data = form_fields(body, content_type)
+    elif any(p.source == "body" for p in params):
         parsed: object = {}
         if body.strip():
             try:
@@ -481,12 +530,13 @@ def parse_params(
             continue
         if spec.name not in source or source[spec.name] is None:
             if spec.default is not MISSING:
-                values[spec.name] = spec.default
+                values[spec.name] = _default(spec)
             else:
                 detail.append({"loc": loc, "msg": "field required"})
             continue
         try:
-            value = _convert(spec, source[spec.name], text=spec.source != "body")
+            # form fields are text, like a query string
+            value = _convert(spec, source[spec.name], text=spec.source != "body" or form)
             _constrain(spec, value)
         except ValueError as err:
             detail.append({"loc": loc, "msg": str(err)})
@@ -530,18 +580,18 @@ def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
 
 
 def sql_value(v: object) -> object:
-    """A parameter value as SQLite stores it (Bool 0/1, Date ISO text, DateTime UTC text
-    with "Z", Uuid canonical text; an optional parameter that was not sent is null)."""
+    """A parameter value as SQLite stores it (Bool 0/1, Date ISO text, DateTime and Uuid
+    in DATETIME_STORAGE / UUID_STORAGE; an optional parameter that was not sent is null)."""
     if v is UNSET:
         return None
     if isinstance(v, bool):
         return int(v)
     if isinstance(v, dt.datetime):
-        return datetime_text(v)
+        return stored_datetime(v)
     if isinstance(v, dt.date):
         return v.isoformat()
     if isinstance(v, uuid.UUID):
-        return str(v)
+        return stored_uuid(v)
     return v
 
 
@@ -692,6 +742,7 @@ def serve(
     query: Mapping[str, str],
     body: bytes,
     authorization: str | None,
+    content_type: str | None = None,
 ) -> Response:
     """Authenticate, validate, then run the steps in one transaction; any error
     response rolls back. fn.now() is one instant per request, taken first."""
@@ -706,7 +757,7 @@ def serve(
                 raise ErrorResponse(401, {"error": "unauthorized"})
             conn = connect()
             caller = authenticate(ep, conn, token)
-        values = parse_params(ep.params, path, query, body)
+        values = parse_params(ep.params, path, query, body, ep.form, content_type)
         if conn is None:
             conn = connect()
         conn.execute("BEGIN IMMEDIATE" if ep.writes else "BEGIN")
@@ -741,6 +792,7 @@ async def dispatch(request: Request, ep: Endpoint, steps: Steps) -> Response:
         dict(request.query_params),
         body,
         request.headers.get("authorization"),
+        request.headers.get("content-type"),
     )
 
 
@@ -1144,6 +1196,7 @@ class _EndpointGen:
                 _Kw("user_key", _py_str(plan.user_key)),
                 _Kw("admin_role", _py_str(plan.admin_role)),
                 *self.role_source(),
+                *([_Kw("form", "True")] if plan.body == "form" else []),
             ),
         )
         rule = "# " + "-" * 86
@@ -1261,6 +1314,16 @@ def generate_fastapi(
     imports, register = _natives_section(ordered, natives_module, names)
     kit = "from platform_kit import app, get_db\n"
     prelude = _PRELUDE.replace(kit, kit + imports, 1)
+    storages = {(p.uuid_storage, p.datetime_storage) for p in plans}
+    if len(storages) > 1:
+        raise LatticeInternalError(f"plans disagree on Uuid/DateTime storage: {storages}")
+    if storages:
+        ((uuid_storage, datetime_storage),) = storages
+        prelude = prelude.replace(
+            'UUID_STORAGE = "canonical"\n', f"UUID_STORAGE = {_py_str(uuid_storage)}\n", 1
+        ).replace(
+            'DATETIME_STORAGE = "iso_z"\n', f"DATETIME_STORAGE = {_py_str(datetime_storage)}\n", 1
+        )
     parts = [header + "\n".join(routes) + "\n\n" + prelude.rstrip("\n")]
     if register:
         parts.append(register)

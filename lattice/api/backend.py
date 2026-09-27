@@ -20,6 +20,7 @@ names to dialects and `dialect_for(name)` resolves one.
 from __future__ import annotations
 
 import datetime as dt
+import functools
 import re
 import sqlite3
 import uuid
@@ -28,7 +29,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
-from lattice.profile import NativeSig
+from lattice.profile import DATETIME_STORAGES, UUID_STORAGES, NativeSig
 from lattice.typesys import Scalar
 
 if TYPE_CHECKING:
@@ -42,9 +43,13 @@ __all__ = [
     "Dialect",
     "NativeImpl",
     "SqliteDialect",
+    "DATETIME_STORAGES",
+    "UUID_STORAGES",
     "datetime_text",
     "dialect_for",
     "parse_datetime",
+    "stored_datetime",
+    "stored_uuid",
     "uuid_text",
 ]
 
@@ -93,6 +98,39 @@ def datetime_text(value: dt.datetime) -> str:
     if value.tzinfo is not None:
         value = value.astimezone(dt.UTC)
     return value.replace(tzinfo=None).isoformat(timespec="microseconds") + "Z"
+
+
+# How Uuid and DateTime values are stored (`ApiProfile.uuid_storage` /
+# `ApiProfile.datetime_storage`). The default is Lattice's canonical text; the others
+# let a program run on an existing database written by another stack (e.g. SQLAlchemy
+# on SQLite: `CHAR(32)` hex ids and "YYYY-MM-DD HH:MM:SS.ffffff" naive-UTC datetimes).
+# Only the stored spelling changes: every spelling is fixed-width (text order is value
+# order), responses and natives see the canonical values, and parameters are accepted
+# exactly as before.
+# UUID_STORAGES: "canonical" ("5b3e...-...", lowercase, hyphenated) | "hex32";
+# DATETIME_STORAGES: "iso_z" ("...T09:00:00.000000Z") | "sql_space" ("... 09:00:00.000000").
+
+
+def stored_uuid(value: object, storage: str = "canonical") -> str | None:
+    """A UUID (object, or text hyphenated or 32 hex digits) as `storage` keeps it."""
+    text = uuid_text(value)
+    if text is None or storage == "canonical":
+        return text
+    if storage == "hex32":
+        return text.replace("-", "")
+    raise ValueError(f"unknown uuid_storage {storage!r}")
+
+
+def stored_datetime(value: dt.datetime, storage: str = "iso_z") -> str:
+    """A DateTime (a naive one is UTC) as `storage` keeps it: both spellings are UTC,
+    fixed-width, with microseconds."""
+    if storage == "iso_z":
+        return datetime_text(value)
+    if storage == "sql_space":
+        if value.tzinfo is not None:
+            value = value.astimezone(dt.UTC)
+        return value.replace(tzinfo=None).isoformat(sep=" ", timespec="microseconds")
+    raise ValueError(f"unknown datetime_storage {storage!r}")
 
 
 @dataclass(frozen=True)
@@ -191,28 +229,21 @@ _SQLITE_FN: Mapping[str, Callable[[str, Mapping[str, str]], str]] = {
 }
 
 
-def _to_uuid(x: object) -> object:
-    return uuid_text(x)
-
-
-def _to_datetime(x: object, fmt: object) -> object:
+def _to_datetime(x: object, fmt: object) -> dt.datetime | None:
     if not isinstance(x, str) or not isinstance(fmt, str):
         return None
     try:
-        value = dt.datetime.strptime(x, fmt)
+        return dt.datetime.strptime(x, fmt)
     except ValueError:
         return None
-    return datetime_text(value)
-
-
-def _uuid4() -> str:
-    return str(uuid.uuid4())
 
 
 class SqliteDialect:
     """SQLite: the reference backend. Every capability holds; four deterministic
     Python functions (Unicode-correct lower/upper/strip, floored modulo) are
-    registered on each connection; Bool is stored 0/1 and Date as ISO text."""
+    registered on each connection; Bool is stored 0/1 and Date as ISO text. Uuid and
+    DateTime values are stored in the given spellings (`UUID_STORAGES`,
+    `DATETIME_STORAGES`; canonical text by default)."""
 
     name = "sqlite"
     capabilities = Capabilities(
@@ -225,8 +256,24 @@ class SqliteDialect:
         native_functions=True,
     )
 
+    def __init__(self, uuid_storage: str = "canonical", datetime_storage: str = "iso_z") -> None:
+        if uuid_storage not in UUID_STORAGES:
+            raise ValueError(f"unknown uuid_storage {uuid_storage!r} (known: {UUID_STORAGES})")
+        if datetime_storage not in DATETIME_STORAGES:
+            raise ValueError(
+                f"unknown datetime_storage {datetime_storage!r} (known: {DATETIME_STORAGES})"
+            )
+        self.uuid_storage = uuid_storage
+        self.datetime_storage = datetime_storage
+
+    def with_storage(self, uuid_storage: str, datetime_storage: str) -> SqliteDialect:
+        """This dialect storing Uuid/DateTime values in the given spellings."""
+        return _sqlite_with_storage(uuid_storage, datetime_storage)
+
     def __repr__(self) -> str:
-        return f"<dialect {self.name}>"
+        if (self.uuid_storage, self.datetime_storage) == ("canonical", "iso_z"):
+            return f"<dialect {self.name}>"
+        return f"<dialect {self.name} uuid={self.uuid_storage} datetime={self.datetime_storage}>"
 
     # ---- identifiers and binds ---------------------------------------------------------
 
@@ -298,16 +345,16 @@ class SqliteDialect:
     # ---- values ------------------------------------------------------------------------
 
     def to_db(self, v: object) -> object:
-        """Bool is 0/1; Date ISO text; DateTime fixed-width UTC text with `Z`; Uuid its
-        canonical lowercase hyphenated text."""
+        """Bool is 0/1; Date ISO text; DateTime fixed-width UTC text (`Z`-suffixed ISO
+        by default); Uuid its canonical lowercase hyphenated text by default."""
         if isinstance(v, bool):
             return int(v)
         if isinstance(v, dt.datetime):
-            return datetime_text(v)
+            return stored_datetime(v, self.datetime_storage)
         if isinstance(v, dt.date):
             return v.isoformat()
         if isinstance(v, uuid.UUID):
-            return str(v)
+            return stored_uuid(v, self.uuid_storage)
         return v
 
     def from_db(self, v: object, scalar: Scalar) -> object:
@@ -367,9 +414,9 @@ class SqliteDialect:
                 parsed = parse_datetime(v)
                 if parsed is None:
                     raise bad
-                return datetime_text(parsed)
+                return stored_datetime(parsed, self.datetime_storage)
             case Scalar.UUID if isinstance(v, uuid.UUID | str):
-                text = uuid_text(v)
+                text = stored_uuid(v, self.uuid_storage)
                 if text is None:
                     raise bad
                 return text
@@ -401,9 +448,21 @@ class SqliteDialect:
         conn.create_function("lattice_upper", 1, _upper, deterministic=True)
         conn.create_function("lattice_strip", 1, _strip, deterministic=True)
         conn.create_function("lattice_mod", 2, _mod, deterministic=True)
-        conn.create_function("lattice_to_uuid", 1, _to_uuid, deterministic=True)
-        conn.create_function("lattice_to_datetime", 2, _to_datetime, deterministic=True)
-        conn.create_function("lattice_uuid4", 0, _uuid4)  # not deterministic
+        us, ds = self.uuid_storage, self.datetime_storage
+
+        def to_uuid(x: object) -> object:
+            return stored_uuid(x, us)
+
+        def to_datetime(x: object, fmt: object) -> object:
+            value = _to_datetime(x, fmt)
+            return None if value is None else stored_datetime(value, ds)
+
+        def uuid4() -> str:
+            return stored_uuid(uuid.uuid4(), us) or ""
+
+        conn.create_function("lattice_to_uuid", 1, to_uuid, deterministic=True)
+        conn.create_function("lattice_to_datetime", 2, to_datetime, deterministic=True)
+        conn.create_function("lattice_uuid4", 0, uuid4)  # not deterministic
 
     def register_natives(self, conn: sqlite3.Connection, natives: Mapping[str, NativeImpl]) -> None:
         """Install each native as the SQL function `native.<name>` compiles to."""
@@ -451,10 +510,26 @@ SQLITE = SqliteDialect()  # satisfies Dialect
 DIALECTS: dict[str, Dialect] = {"sqlite": SQLITE}
 
 
-def dialect_for(name: str) -> Dialect:
-    """The dialect registered as `name` (an `ApiProfile.backend`)."""
+@functools.cache
+def _sqlite_with_storage(uuid_storage: str, datetime_storage: str) -> SqliteDialect:
+    if (uuid_storage, datetime_storage) == ("canonical", "iso_z"):
+        return SQLITE
+    return SqliteDialect(uuid_storage, datetime_storage)
+
+
+def dialect_for(
+    name: str, *, uuid_storage: str = "canonical", datetime_storage: str = "iso_z"
+) -> Dialect:
+    """The dialect registered as `name` (an `ApiProfile.backend`), storing Uuid and
+    DateTime values in the given spellings (`ApiProfile.uuid_storage` /
+    `ApiProfile.datetime_storage`)."""
     dialect = DIALECTS.get(name)
     if dialect is None:
         known = ", ".join(sorted(DIALECTS))
         raise ValueError(f"unknown backend {name!r} (known: {known})")
-    return dialect
+    if (uuid_storage, datetime_storage) == ("canonical", "iso_z"):
+        return dialect
+    with_storage = getattr(dialect, "with_storage", None)
+    if with_storage is None:
+        raise ValueError(f"backend {name!r} supports only the canonical Uuid/DateTime storage")
+    return with_storage(uuid_storage, datetime_storage)

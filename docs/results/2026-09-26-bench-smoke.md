@@ -281,3 +281,58 @@ The FastAPI app Lattice generates from a B program is ~428 lines, almost all of 
 
 - Lattice programs are ~60% shorter (lines/chars) and ~45% smaller in AST nodes than equivalent model-written FastAPI, which is where its lower cost per correct task on Sonnet/Opus comes from.
 - Generated apps are ~14% faster per request than model-written FastAPI on the same stack, with the same number of SQL statements (one statement per read pipeline). Latencies are small-DB, single-client, in-process TestClient timings — indicative of per-request overhead, not a load test.
+
+## Template proof (sub-project 1, realapps spec §4)
+
+Hand-written Lattice (`tests/fixtures/template/{login,items,users}.lattice.py`, profile `bench/template_profile.py`) against the vendored official FastAPI template (`bench/template_app`). The routes covered are `read_items`, `read_item`, `create_item`, `update_item`, `delete_item`, `read_users` (admin list), `read_user_me`, `update_user_me` and `login_access_token`. The request suite is `bench/template_suite.py` (53 cases), plus 7 extra cases in the test: an inactive user, and a valid token for a user that does not exist. Each case runs on a fresh copy of the same seeded SQLite database: the template's own schema, 32-hex ids and naive `YYYY-MM-DD HH:MM:SS.ffffff` datetimes. The comparison covers status, JSON body and the tables after the request, with placeholders for generated UUIDs, timestamps and tokens. Test: `tests/template/test_template_differential.py`.
+
+**Result**
+
+| Comparison | Cases | Identical | Identical up to a representation rule | Named deviations |
+|---|---|---|---|---|
+| Lattice runtime vs template, suite | 53 | 8 | 36 | 9 (7 policy, 2 gap) |
+| Lattice runtime vs template, extra | 7 | 0 | 6 | 1 (policy) |
+| Generated FastAPI app vs Lattice runtime | 60 | **60** | — | — |
+
+So **44/53** suite cases match (status, DB effects, and body). Every DB effect matches except `users_update_me_bad_email`, and every status matches except the bad-token, unbounded-limit, email-taken and bad-email cases.
+
+**Representation rules.** Each rule is named and asserted in the test, and each is needed by at least one case:
+
+- `DATETIME_WIRE`: same instant, different spelling. Lattice answers `2026-02-02T06:00:00.000000Z`. The template on SQLite answers the naive stored value, `2026-02-02T06:00:00`, because SQLite keeps no zone.
+- `ERROR_ENVELOPE`: same status and detail message. Lattice adds the error code: `{"error": "not_found", "detail": "Item not found"}` vs `{"detail": "Item not found"}`.
+- `VALIDATION_ENVELOPE`: both answer 422 and flag the same fields (same `loc` lists). The envelope and message wording differ.
+
+**Deviations**
+
+| Case(s) | Id | Kind | Lattice answers | Reason |
+|---|---|---|---|---|
+| `items_list_unbounded_limit`, `users_list_unbounded_limit` | bounded-page-size | policy | 422 | The template accepts `limit=1000000`. Lattice requires a bound (L831), so the programs declare `limit: Int(ge=0, le=100)`. |
+| `items_list_bad_token`, `users_me_bad_token` | invalid-token-401 | policy | 401 | The template answers 403 "Could not validate credentials". Lattice answers 401 for any missing or invalid credential (RFC 6750). |
+| `items_list_no_token`, `users_me_no_token` | automatic-401-body | policy | 401 `{"error": "unauthorized"}` | Same status. The template's body is `{"detail": "Not authenticated"}`. |
+| `users_list_normal_user` | automatic-403-body | policy | 403 `{"error": "forbidden"}` | Same status. Lattice's automatic role check has no detail; the template says "The user doesn't have enough privileges". |
+| `token_for_unknown_user` (extra) | unknown-user-token | policy | 401 | The template answers 404 "User not found". For Lattice, a token that identifies no caller is a 401. |
+| `users_update_me_email_taken` | email-conflict-409 | **gap** | 500, rolled back | The template pre-checks email uniqueness and answers 409. In Lattice, `email` is an `UNSET` partial-update parameter, so any expression over it is L404. The UPDATE then hits the UNIQUE index. |
+| `users_update_me_bad_email` | email-format | **gap** | 200, stores `not-an-email` | The template validates with pydantic `EmailStr`. Lattice has no email (or pattern) parameter type. |
+
+Not covered by any case, and noted for completeness:
+
+- The template runs a dummy Argon2 verify for unknown emails (timing hardening). Lattice's login does not, because `one()` fails first.
+- `verify_and_update` can rehash a password during login. Lattice natives cannot write.
+- On an inactive user with invalid parameters, the template answers 400 (its dependency runs first). Lattice answers 422 (validation runs before the body's `require`).
+
+**Two blockers, resolved in the language.**
+
+- *Storage format:* `ApiProfile.uuid_storage` (`"canonical"` | `"hex32"`) and `ApiProfile.datetime_storage` (`"iso_z"` | `"sql_space"`). The SQLite dialect uses them for binds, literals, `fn.to_uuid`/`fn.to_datetime`, generated keys and native results. Generated apps get them as the prelude constants `UUID_STORAGE`/`DATETIME_STORAGE`. Responses, parameters and natives are unchanged, so a program answers the same whichever spelling its database uses. This is tested by running the real-apps program on both spellings, on the runtime and the generated app.
+- *Form login:* `@endpoint(..., body="form")` reads URL-encoded form fields, converted like query text. It is validated by L601 (unknown value, or GET/DELETE) and served identically by the runtime and generated apps.
+
+**Size** (`bench.metrics.program_metrics`: non-blank, non-comment lines / AST nodes)
+
+| | lines | AST nodes |
+|---|---|---|
+| Lattice program (3 files, 9 endpoints) | **93** | 968 |
+| Template route functions (the same 9, with docstrings) | 153 | 968 |
+| Template route functions + the auth and crud support they call (`deps.get_db/get_current_user/get_current_active_superuser`, `crud.get_user_by_email/authenticate`) | 197 | 1278 |
+| Lattice profile tables and models (`bench/template_profile.py`) vs the template's SQLModel classes used | 53 vs 54 | 319 vs 394 |
+| FastAPI app generated from the Lattice program | 1636 | 8284 |
+
+For these nine routes, Lattice is about 40% fewer lines than the route functions alone, with the same AST size. It is about 50% fewer lines (and 25% fewer AST nodes) once the auth and crud code the routes depend on is counted, since Lattice gets that from the language and profile. Lattice also repeats the inactive-user check in each endpoint (8 lines); the template has it once in `get_current_user`.

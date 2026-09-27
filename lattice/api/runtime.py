@@ -19,8 +19,13 @@ between requests). Every new connection is passed to the module attribute
 statements.
 
 Everything backend-specific (opening a connection, registering the functions the SQL
-calls, starting/ending transactions, value decoding) is delegated to the plan's
-`lattice.api.backend.Dialect` (`EndpointPlan.backend`; SQLite by default).
+calls, starting/ending transactions, value encoding and decoding) is delegated to the
+plan's `lattice.api.backend.Dialect` (`EndpointPlan.backend`; SQLite by default), which
+also stores Uuid/DateTime values in the plan's spellings (`EndpointPlan.uuid_storage` /
+`datetime_storage`, from the profile).
+
+Body parameters come from a JSON object, or -- for `@endpoint(..., body="form")` --
+from URL-encoded form fields, converted like query-string text.
 """
 
 from __future__ import annotations
@@ -29,6 +34,8 @@ import datetime as dt
 import json
 import math
 import re
+import urllib.parse
+import uuid
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -74,6 +81,13 @@ class _ErrorResponse(Exception):
         super().__init__(status)
         self.status = status
         self.body = body
+
+
+def plan_dialect(plan: EndpointPlan) -> Dialect:
+    """The dialect a plan's SQL was compiled for (backend and Uuid/DateTime storage)."""
+    return dialect_for(
+        plan.backend, uuid_storage=plan.uuid_storage, datetime_storage=plan.datetime_storage
+    )
 
 
 def _connect(dialect: Dialect, db_path: Path, natives: Mapping[str, NativeImpl]) -> Any:
@@ -175,7 +189,7 @@ def _convert(spec: ParamSpec, raw: object, *, text: bool) -> object:
             text_uuid = uuid_text(raw) if isinstance(raw, str) else None
             if text_uuid is None:
                 raise bad
-            return text_uuid
+            return uuid.UUID(text_uuid)  # bound in the dialect's Uuid storage
         case _:
             raise LatticeInternalError(f"parameter '{spec.name}' has no scalar type")
 
@@ -203,16 +217,40 @@ def _num(v: float) -> str:
     return str(int(v)) if float(v).is_integer() else str(v)
 
 
+def _default(spec: ParamSpec) -> object:
+    """A parameter's default value (a Uuid default as a `uuid.UUID`, like a sent one)."""
+    if spec.scalar is Scalar.UUID and isinstance(spec.default, str):
+        return uuid.UUID(spec.default)
+    return spec.default
+
+
+FORM_TYPE = "application/x-www-form-urlencoded"
+
+
+def form_fields(body: bytes, content_type: str | None) -> dict[str, str]:
+    """The fields of a form body (`@endpoint(..., body="form")`): a URL-encoded body is
+    parsed (a repeated field keeps its last value); any other content type has no
+    fields, so its required parameters are missing (422)."""
+    media = (content_type or "").partition(";")[0].strip().lower()
+    if media != FORM_TYPE:
+        return {}
+    return dict(urllib.parse.parse_qsl(body.decode("latin-1"), keep_blank_values=True))
+
+
 def _parse_params(
     plan: EndpointPlan,
     path: Mapping[str, str],
     query: Mapping[str, str],
     body: bytes,
+    content_type: str | None = None,
 ) -> dict[str, object]:
     detail: list[dict[str, object]] = []
     values: dict[str, object] = {}
     data: Mapping[str, object] = {}
-    if any(p.source == "body" for p in plan.params):
+    form = plan.body == "form"
+    if form:
+        data = form_fields(body, content_type)
+    elif any(p.source == "body" for p in plan.params):
         parsed: object = {}
         if body.strip():
             try:
@@ -237,12 +275,13 @@ def _parse_params(
             continue
         if spec.name not in source or source[spec.name] is None:
             if spec.default is not MISSING:
-                values[spec.name] = spec.default
+                values[spec.name] = _default(spec)
             else:
                 detail.append({"loc": loc, "msg": "field required"})
             continue
         try:
-            value = _convert(spec, source[spec.name], text=spec.source != "body")
+            text = spec.source != "body" or form  # form fields are text, like a query
+            value = _convert(spec, source[spec.name], text=text)
             _constrain(spec, value)
         except ValueError as err:
             detail.append({"loc": loc, "msg": str(err)})
@@ -453,8 +492,9 @@ def _serve(
     body: bytes,
     authorization: str | None,
     natives: Mapping[str, NativeImpl] | None = None,
+    content_type: str | None = None,
 ) -> Response:
-    dialect = dialect_for(plan.backend)
+    dialect = plan_dialect(plan)
     impls = natives or {}
     now = dt.datetime.now(dt.UTC)  # fn.now(): one instant per request
     conn: Any = None
@@ -470,7 +510,7 @@ def _serve(
             conn = _connect(dialect, db_path, impls)
             user_id, role, caller = _authenticate(plan, dialect, conn, token)
             is_admin = role == plan.admin_role
-        values = _parse_params(plan, path, query, body)
+        values = _parse_params(plan, path, query, body, content_type)
         if conn is None:
             conn = _connect(dialect, db_path, impls)
         dialect.begin(conn, writes=any(isinstance(s, WriteStep) for s in plan.steps))
@@ -505,6 +545,7 @@ def _handler(plan: EndpointPlan, db_path: Path, natives: Mapping[str, NativeImpl
             body,
             request.headers.get("authorization"),
             natives,
+            request.headers.get("content-type"),
         )
 
     endpoint.__name__ = plan.name

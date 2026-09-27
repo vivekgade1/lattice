@@ -131,6 +131,8 @@ class EndpointInfo:
     # envelope carries ApiProfile.page_shape["total"] (set by P6 from the returned
     # table's TableT.page_total).
     page_total: bool = False
+    # @endpoint(..., body="form"): body parameters are form fields (BODY_FORMATS)
+    body: str = "json"
 
 
 Problem = tuple[str, str | None]  # (message, hint)
@@ -155,12 +157,18 @@ def is_endpoint(fn: ast.AST) -> bool:
     return isinstance(fn, ast.FunctionDef) and endpoint_decorator(fn) is not None
 
 
+BODY_FORMATS = ("json", "form")  # @endpoint(..., body=...): how body parameters arrive
+
+
 @dataclass(frozen=True)
 class Decl:
     method: str
     path: str
     auth: ast.expr | None  # the auth= value, if given
     response: str | None = None  # the response= model name, if given
+    # body="form": body parameters arrive as form fields (application/x-www-form-urlencoded
+    # or multipart/form-data, e.g. an OAuth2 password login) instead of a JSON object
+    body: str = "json"
 
 
 def parse_decl(deco: ast.Call) -> Decl | Problem:
@@ -169,11 +177,12 @@ def parse_decl(deco: ast.Call) -> Decl | Problem:
     if (
         len(deco.args) != 2
         or any(isinstance(a, ast.Starred) for a in deco.args)
-        or any(n not in ("auth", "response") for n in names)
+        or any(n not in ("auth", "response", "body") for n in names)
         or len(names) != len(set(names))
     ):
         return (
-            'an endpoint is declared as @endpoint(METHOD, PATH, auth=Role[, response="Model"])',
+            "an endpoint is declared as "
+            '@endpoint(METHOD, PATH, auth=Role[, response="Model"][, body="form"])',
             f"e.g. {usage}",
         )
     response_node = next((kw.value for kw in deco.keywords if kw.arg == "response"), None)
@@ -191,8 +200,20 @@ def parse_decl(deco: ast.Call) -> Decl | Problem:
             f"unknown HTTP method {method!r}",
             "use one of " + ", ".join(f'"{m}"' for m in API_METHODS),
         )
+    body_node = next((kw.value for kw in deco.keywords if kw.arg == "body"), None)
+    body = literal_value(body_node) if body_node is not None else "json"
+    if body not in BODY_FORMATS:
+        return (
+            'body= must be "json" (the default) or "form"',
+            'e.g. body="form" for form fields such as an OAuth2 password login',
+        )
+    if body == "form" and method in QUERY_METHODS:
+        return (
+            f'body="form" needs a method with a request body, not {method}',
+            'use "POST", "PUT" or "PATCH", or drop body=',
+        )
     auth = next((kw.value for kw in deco.keywords if kw.arg == "auth"), None)
-    return Decl(method, path, auth, response if isinstance(response, str) else None)
+    return Decl(method, path, auth, response if isinstance(response, str) else None, str(body))
 
 
 _SEGMENT = re.compile(r"[A-Za-z0-9_.~-]+")
@@ -536,4 +557,5 @@ def endpoint_info(fn: ast.FunctionDef) -> EndpointInfo | None:
         fn,
         span_of(fn),
         response=decl.response,
+        body=decl.body,
     )
