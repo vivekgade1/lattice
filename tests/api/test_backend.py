@@ -189,6 +189,7 @@ def test_sqlite_has_every_capability() -> None:
         "json_params",
         "mutations_sync",
         "native_functions",
+        "recursive_queries",
     ]
     assert all(getattr(caps, f.name) is True for f in dataclasses.fields(caps))
 

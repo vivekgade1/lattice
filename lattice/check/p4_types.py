@@ -33,13 +33,19 @@ from lattice.catalog import (
     OWNER_IS,
     PUBLIC_ROLE,
     TABLE_OPS,
+    TRAVERSE_DEPTH,
+    TRAVERSE_DIRECTIONS,
+    TRAVERSE_MAX_DEPTH,
     TYPE_NAMES,
     UNIQUE_OR,
     UNSET_NAME,
     USER_PARAM,
+    WIN_TIE_SAFE,
+    WINDOW_KW,
 )
 from lattice.check.api_info import (
     Decl,
+    ParamSpec,
     endpoint_decorator,
     endpoint_params,
     parse_decl,
@@ -255,6 +261,8 @@ class _Types:
         self.reported = reported_name_spans(ctx)
         self.sigs: dict[str, _Sig] = {}
         self.in_endpoint = False  # typing an @endpoint body (API profile)
+        # the parameters of the endpoint being typed (their bounds: L433)
+        self.param_specs: dict[str, ParamSpec] = {}
         self.natives = self.api.natives if self.api is not None else {}
         # natives whose result may be missing (L421 nullability)
         self.null_natives = frozenset(n for n, sig in self.natives.items() if sig.nullable)
@@ -518,6 +526,10 @@ class _Types:
                 return self._sort(tables[0], kws)
             case "limit":
                 return self._limit(tables[0], kws["n"])
+            case "window":
+                return self._window(call, tables[0], kws, scope)
+            case "traverse":
+                return self._traverse(call, tables[0], tables[1], kws, scope)
             case _:
                 raise TypeError(f"no transfer function for op '{op}'")
 
@@ -978,6 +990,248 @@ class _Types:
             return replace(t, at_most_one_row=True)
         return t
 
+    def _window(
+        self, call: ast.Call, t: TableT, kws: dict[str, ast.expr], scope: _Scope
+    ) -> TableOrUnknown:
+        """window(t, by=[...], order=[...], desc=[...], name=win.<f>(...), ...): t's rows
+        in t's order, plus one column per window function, computed over the rows of
+        each `by` partition sorted by `order` (nulls last; `desc` names the descending
+        order columns)."""
+        ok = True
+        lists: dict[str, list[str]] = {}
+        for key in ("by", "order"):
+            node = kws.get(key)
+            if node is None:
+                lists[key] = []
+                continue
+            names = self._str_list(node, key)
+            if names is None:
+                ok = False
+                continue
+            ok = self._require_columns(names, t.schema, node) and ok
+            ok = self._no_dups(names, node) and ok
+            lists[key] = names
+        by, order = lists.get("by", []), lists.get("order", [])
+        desc = kws.get("desc")
+        if desc is not None and "order" in lists:
+            names = _str_list_of(desc) if isinstance(desc, ast.List | ast.Tuple) else None
+            if (
+                names is None
+                or len(names) != len(desc.elts)  # type: ignore[attr-defined]
+                or not set(names) <= set(order)
+            ):
+                ok = False
+                self.ctx.error(
+                    "L404",
+                    desc,
+                    "window desc= must list the order= columns sorted descending",
+                    'e.g. order=["created_at", "id"], desc=["created_at"]',
+                )
+        typer = self._typer(t.schema, scope)
+        new: list[tuple[str, Scalar]] = []
+        nullable = set(t.nullable)
+        funcs: list[str] = []
+        for kw in call.keywords:
+            if kw.arg is None or kw.arg in WINDOW_KW:
+                continue
+            typed = typer.type_win(kw.value)
+            if kw.arg in t.schema:
+                ok = False
+                self.ctx.error(
+                    "L405",
+                    kw,
+                    f"column '{kw.arg}' already exists",
+                    "choose a new name for the window column",
+                )
+            if typed is None:
+                ok = False
+                continue
+            func, scalar = typed
+            funcs.append(func)
+            new.append((kw.arg, scalar))
+            if self._win_nullable(kw.value, func, t, scope):
+                nullable.add(kw.arg)
+        if funcs and "order" in lists and not order:
+            ok = False
+            self.ctx.error(
+                "L430",
+                call,
+                "window functions need an order: which row comes before which",
+                'add order=[...] with the columns that order the rows, e.g. order=["day", "id"]',
+            )
+        elif ok and order and any(f not in WIN_TIE_SAFE for f in funcs):
+            self._window_ties(call, t, by, order, [f for f in funcs if f not in WIN_TIE_SAFE])
+        if not ok:
+            return UNKNOWN
+        return TableT(t.schema.extend(new), t.at_most_one_row, t.keys, frozenset(nullable))
+
+    def _window_ties(
+        self, call: ast.Call, t: TableT, by: list[str], order: list[str], funcs: list[str]
+    ) -> None:
+        """L431: tie-sensitive window functions need `by + order` to identify a row."""
+        cols = set(by) | set(order)
+        if any(set(k) <= cols for k in t.keys):
+            return
+        names = list(dict.fromkeys(funcs))
+        shown = ", ".join(f"win.{f}" for f in names)
+        verb = "depends" if len(names) == 1 else "depend"
+        key = next(iter(t.keys), None)
+        if key is not None:
+            extra = [c for c in key if c not in cols]
+            listed = ", ".join(json.dumps(c) for c in [*order, *extra])
+            hint = f"add a key column to order=, e.g. order=[{listed}]"
+        else:
+            hint = "add a key column (columns that identify a row) to order="
+        message = (
+            f"by + order {_cols(by + order)} may have ties, so {shown} {verb} on how tied "
+            "rows are ordered"
+        )
+        if self.api is not None:
+            self.ctx.error("L431", call, message + " (not deterministic in SQL)", hint)
+        else:
+            self.ctx.warn("L431", call, message + " (here: their input order)", hint)
+
+    def _win_nullable(self, node: ast.expr, func: str, t: TableT, scope: _Scope) -> bool:
+        """Whether a window column may be missing: lag/lead past the partition edge;
+        cum_min/cum_max/mean of a nullable argument (until/unless a value is seen)."""
+        if func in ("lag", "lead"):
+            return True
+        if func in ("cum_min", "cum_max", "mean"):
+            assert isinstance(node, ast.Call)
+            return expr_nullable(node.args[0], t.nullable, scope.nullconsts, self.null_natives)
+        return False
+
+    def _traverse(
+        self,
+        call: ast.Call,
+        edges: TableT,
+        start: TableT,
+        kws: dict[str, ast.expr],
+        scope: _Scope,
+    ) -> TableOrUnknown:
+        """traverse(edges, start, parent=, child=, max_depth=N, direction="down"): the
+        rows of `edges` reachable from the `child` values of `start` (depth 0) by
+        following parent -> child links (child -> parent for "up") at most N times,
+        each node once at its minimum depth, plus a `depth` column."""
+        ok = True
+        names: dict[str, str] = {}
+        for key in ("parent", "child"):
+            name = _str_constant(kws[key])
+            if name is None:
+                ok = False
+                self.ctx.error(
+                    "L404",
+                    kws[key],
+                    f"traverse {key}= must be a column name as a string",
+                    f'e.g. {key}="{"parent_id" if key == "parent" else "id"}"',
+                )
+            else:
+                names[key] = name
+        direction = kws.get("direction")
+        if direction is not None and _str_constant(direction) not in TRAVERSE_DIRECTIONS:
+            ok = False
+            self.ctx.error(
+                "L404",
+                direction,
+                'traverse direction= must be "down" (towards children) or "up" '
+                "(towards ancestors)",
+                'e.g. direction="up"',
+            )
+        ok = self._max_depth(kws["max_depth"], scope) and ok
+        if not ok or len(names) != 2:
+            return UNKNOWN
+        parent, child = names["parent"], names["child"]
+        if not self._require_columns([parent, child], edges.schema, call):
+            return UNKNOWN
+        pt, ct = edges.schema.get(parent), edges.schema.get(child)
+        assert pt is not None and ct is not None
+        if pt is not ct:
+            self.ctx.error(
+                "L434",
+                call,
+                f"traverse links parent '{parent}' ({pt.value}) to child '{child}' "
+                f"({ct.value}); they must have the same type",
+                "name the column holding the parent's key as parent= and the key as child=",
+            )
+            return UNKNOWN
+        if (child,) not in edges.keys:
+            known = ", ".join(_cols(k) for k in edges.keys) or "none"
+            self.ctx.error(
+                "L434",
+                call,
+                f"traverse child '{child}' must be a key of the edges table (one row per "
+                f"node); known keys: {known}",
+                "walk a table whose child column is its key, e.g. child=\"id\"",
+            )
+            return UNKNOWN
+        st = start.schema.get(child)
+        if st is not ct:
+            has = f"has it as {st.value}" if st is not None else "lacks it"
+            self.ctx.error(
+                "L434",
+                call.args[1],
+                f"the start table must have the child column '{child}' ({ct.value}); it {has}",
+                "start from rows of the edges table, e.g. root = where(edges, col(...) == ...)",
+            )
+            return UNKNOWN
+        if TRAVERSE_DEPTH in edges.schema:
+            self.ctx.error(
+                "L405",
+                call,
+                f"column '{TRAVERSE_DEPTH}' already exists; traverse adds it",
+                f'rename it first, e.g. rename(t, {TRAVERSE_DEPTH}="level")',
+            )
+            return UNKNOWN
+        return TableT(
+            edges.schema.extend([(TRAVERSE_DEPTH, Scalar.INT)]),
+            keys=edges.keys,
+            nullable=edges.nullable,
+        )
+
+    def _max_depth(self, node: ast.expr, scope: _Scope) -> bool:
+        """L433: max_depth= is an Int literal (or a constant bound to one) between 1 and
+        TRAVERSE_MAX_DEPTH, or an endpoint Int parameter bounded within that range."""
+        hint = f"e.g. max_depth=10, or a parameter depth: Int(ge=1, le={TRAVERSE_MAX_DEPTH})"
+        what = "max_depth"
+        if isinstance(node, ast.Name) and self.in_endpoint and node.id in self.param_specs:
+            spec = self.param_specs[node.id]
+            if (
+                spec.scalar is Scalar.INT
+                and not spec.optional
+                and spec.ge is not None
+                and spec.ge >= 1
+                and spec.le is not None
+                and spec.le <= TRAVERSE_MAX_DEPTH
+            ):
+                self.ctx.set_type(node, LitT(Scalar.INT))
+                return True
+            what = f"parameter '{node.id}'"
+        else:
+            v = literal_value(node)
+            if v is None and isinstance(node, ast.Name):
+                if node.id in scope.consts and node.id not in scope.scalars:
+                    return False  # an ill-typed constant: already reported
+                v = scope.consts.get(node.id)
+                if node.id in scope.scalars and node.id not in scope.consts:
+                    what = f"parameter '{node.id}'"
+                elif v is None and self._silenced(node):
+                    return False
+            if (
+                isinstance(v, int)
+                and not isinstance(v, bool)
+                and 1 <= v <= TRAVERSE_MAX_DEPTH
+            ):
+                self.ctx.set_type(node, LitT(Scalar.INT))
+                return True
+        self.ctx.error(
+            "L433",
+            node,
+            f"traverse {what} must be an Int between 1 and {TRAVERSE_MAX_DEPTH} "
+            "known before the walk starts",
+            hint,
+        )
+        return False
+
     def _write(self, call: ast.Call) -> None:
         if _str_constant(call.args[1]) is None:
             self.ctx.error(
@@ -1151,6 +1405,7 @@ class _Types:
             return  # P1 reported it
         caller = user_table(self.api)
         params = endpoint_params(fn, decl.method, decl.path)
+        self.param_specs = {p.name: p for p in params}
         for spec in params:
             scope.consts.pop(spec.name, None)
             scope.shapes.pop(spec.name, None)
@@ -1579,6 +1834,19 @@ class _Types:
                     narrowed = narrowed or not set(by) <= t.plain
             case "select":
                 source, paged, page_total = t.source, t.paged, t.page_total
+            case "window":
+                # new columns only (the input's metadata carries over, like derive); a
+                # window over a page is not that page any more (page it again)
+                new = {kw.arg for kw in kws if kw.arg not in WINDOW_KW}
+                private = t.private | {
+                    kw.arg
+                    for kw in kws
+                    if kw.arg in new and _reads(kw.value, t.private, self._verifiers)
+                }
+                owner_cols = t.owner_cols | {
+                    kw.arg for kw in kws if kw.arg in new and _reads(kw.value, t.owner_cols)
+                }
+                source = t.source
             case "derive":
                 overwritten = {kw.arg for kw in kws}
                 private = (t.private - overwritten) | {

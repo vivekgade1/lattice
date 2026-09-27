@@ -49,6 +49,7 @@ from lattice.check.api_info import EndpointInfo, ParamSpec, user_table
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
 from lattice.check.p4_types import is_owner_is
 from lattice.diagnostics import Span, span_of
+from lattice.ir import traverse_params, window_params
 from lattice.profile import AdminFlag, ApiProfile, NativeSig, NativeToken, RoleColumn, TokenColumn
 from lattice.runtime import LatticeInternalError
 from lattice.typesys import Scalar, ScalarParamT, Schema, TableT, uuid_key, via_parent_key
@@ -607,6 +608,10 @@ class _Endpoint:
                 return {"by": _strs(kws["by"]), "desc": flag}
             case "limit":
                 return {"n": _int(self._expr(kws["n"], subst))}
+            case "window":
+                return window_params(call, kws, lambda e: self._expr(e, subst))
+            case "traverse":
+                return traverse_params(kws, self._page_value(kws["max_depth"], subst))
             case _:
                 raise LatticeInternalError(f"no API lowering for op '{op}'")
 

@@ -13,11 +13,11 @@ from __future__ import annotations
 
 import ast
 import copy
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from lattice.catalog import OP_SHAPES
+from lattice.catalog import OP_SHAPES, TRAVERSE_DEPTH, WINDOW_KW
 from lattice.check import CheckedProgram
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
 from lattice.diagnostics import Span, span_of
@@ -226,6 +226,10 @@ class _Lowerer:
                         params = {"n": n}
                     case _:
                         raise LatticeInternalError("limit n= is not an int literal")
+            case "window":
+                params = window_params(call, kws, lambda e: self._expr(e, subst))
+            case "traverse":
+                params = traverse_params(kws, _int(self._expr(kws["max_depth"], subst)))
             case "write":
                 params = {"path": _str(call.args[1])}
             case _:
@@ -344,3 +348,54 @@ def _bool_literal(node: ast.expr) -> bool:
             return v
         case _:
             raise LatticeInternalError("sort desc= list element is not a bool literal")
+
+
+def _int(node: ast.expr) -> int:
+    v = literal_value(node)
+    if isinstance(v, int) and not isinstance(v, bool):
+        return v
+    raise LatticeInternalError(f"expected an int literal, got {ast.dump(node)}")
+
+
+# one window() column: (name, win function, argument or None, offset= / rows= or None)
+WinSpec = tuple[str, str, ast.expr | None, int | None]
+
+
+def window_params(
+    call: ast.Call, kws: Mapping[str, ast.expr], expr: Callable[[ast.expr], ast.expr]
+) -> dict[str, Any]:
+    """window(): {"by", "order", "desc" (one bool per order column), "columns"
+    (WinSpec per window column, in keyword order)}. `expr` substitutes an argument's
+    constants (and, in the API IR, its parameters)."""
+    order = _strs(kws["order"]) if "order" in kws else ()
+    descending = set(_strs(kws["desc"])) if "desc" in kws else set()
+    columns: list[WinSpec] = []
+    for kw in call.keywords:
+        if kw.arg is None or kw.arg in WINDOW_KW:
+            continue
+        match kw.value:
+            case ast.Call(func=ast.Attribute(value=ast.Name(id="win"), attr=func), args=args):
+                arg = expr(args[0]) if args else None
+                count = next((_int(k.value) for k in kw.value.keywords), None)
+                columns.append((kw.arg, func, arg, count))
+            case _:
+                raise LatticeInternalError(f"not a window function: {ast.dump(kw.value)}")
+    return {
+        "by": _strs(kws["by"]) if "by" in kws else (),
+        "order": order,
+        "desc": tuple(c in descending for c in order),
+        "columns": tuple(columns),
+    }
+
+
+def traverse_params(kws: Mapping[str, ast.expr], max_depth: object) -> dict[str, Any]:
+    """traverse(): {"parent", "child", "max_depth" (an int, or an API parameter
+    reference), "direction", "depth" (the added column)}."""
+    direction = _str(kws["direction"]) if "direction" in kws else "down"
+    return {
+        "parent": _str(kws["parent"]),
+        "child": _str(kws["child"]),
+        "max_depth": max_depth,
+        "direction": direction,
+        "depth": TRAVERSE_DEPTH,
+    }

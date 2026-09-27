@@ -133,7 +133,8 @@ def _render_op_shape(op: str) -> str:
 def _op_catalog_section() -> str:
     header = "Call each table op exactly this way (positional vs keyword):"
     lines = ["## Op catalog", "", header, ""]
-    for op in OP_SHAPES:
+    # the ops this guide documents (window/traverse get their sections in N4)
+    for op in (o for o in OP_SHAPES if o in _OP_DESCRIPTIONS):
         lines.append(f"- `{_render_op_shape(op)}`: {_OP_DESCRIPTIONS[op]}")
     return "\n".join(lines)
 

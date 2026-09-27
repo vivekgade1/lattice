@@ -11,6 +11,9 @@ cannot run with the language's guarantees (spec §3).
 * L873 — a `native.<name>(...)` call needs `native_functions` (natives run inside the
   query); so does every authenticated endpoint under `NativeToken` auth (the caller
   lookup's query calls the token native).
+* L874 — `window(...)` needs `window_functions` (its columns are SQL window functions
+  of the same statement).
+* L875 — `traverse(...)` needs `recursive_queries` (the walk is one recursive CTE).
 
 The backend is `ApiProfile.backend` ("sqlite" when absent); every SQLite capability
 holds, so none of these fire for it. An unknown backend name is left to profile
@@ -120,6 +123,27 @@ class _Backend:
                         f"'{self.name}' backend lacks (the total must come from the "
                         f"same statement as the page)",
                         "drop total=True, or use a backend with window functions",
+                    )
+        if not self.caps.window_functions:
+            for n in nodes:
+                if _called(n) == "window":
+                    self.ctx.error(
+                        "L874",
+                        n,
+                        f"window() needs window functions, which the '{self.name}' backend "
+                        "lacks",
+                        "compute the values another way (e.g. group + join), or use a "
+                        "backend with window functions",
+                    )
+        if not self.caps.recursive_queries:
+            for n in nodes:
+                if _called(n) == "traverse":
+                    self.ctx.error(
+                        "L875",
+                        n,
+                        f"traverse() needs recursive queries, which the '{self.name}' "
+                        "backend lacks (the walk must be one statement)",
+                        "use a backend with recursive queries (WITH RECURSIVE)",
                     )
         if not self.caps.returning:
             for write in self._returned_writes(fn):

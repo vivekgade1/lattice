@@ -20,6 +20,9 @@ class OpShape:
     var_kw: bool = False  # accepts arbitrary extra keywords (new columns / aggregates / renames)
 
 
+# window()'s own keywords (every other keyword names a new column)
+WINDOW_KW = frozenset({"by", "order", "desc"})
+
 OP_SHAPES: Mapping[str, OpShape] = {
     "load": OpShape(("path",), 0, frozenset({"schema"})),
     "where": OpShape(("table", "predicate"), 1),
@@ -30,13 +33,22 @@ OP_SHAPES: Mapping[str, OpShape] = {
     "join": OpShape(("left", "right"), 2, frozenset({"on"}), frozenset({"how", "fanout"})),
     "sort": OpShape(("table",), 1, frozenset({"by"}), frozenset({"desc"})),
     "limit": OpShape(("table",), 1, frozenset({"n"})),
+    # window(t, by=[...], order=[...], desc=[...], name=win.<f>(...), ...)
+    "window": OpShape(("table",), 1, optional_kw=WINDOW_KW, var_kw=True),
+    # traverse(edges, start, parent="...", child="...", max_depth=N, direction="down")
+    "traverse": OpShape(
+        ("edges", "start"),
+        2,
+        frozenset({"parent", "child", "max_depth"}),
+        frozenset({"direction"}),
+    ),
     "write": OpShape(("table", "path"), 1),
 }
 TABLE_OPS = frozenset(OP_SHAPES)
 TERMINAL_OPS = frozenset({"write"})
 IO_OPS = frozenset({"load", "write"})
 EXPR_FUNCS = frozenset({"col", "when", "coalesce", "is_null"})
-NAMESPACES = frozenset({"agg", "fn"})
+NAMESPACES = frozenset({"agg", "fn", "win"})
 TYPE_NAMES = frozenset({"Table", "Int", "Float", "Str", "Bool", "Date"})
 IMPORTABLE = TABLE_OPS | EXPR_FUNCS | NAMESPACES | TYPE_NAMES | {"step"}
 AGG_FUNCS = frozenset({"sum", "mean", "min", "max", "count", "count_distinct", "at_min", "at_max"})
@@ -51,6 +63,20 @@ AGG_ALIASES: Mapping[str, str] = {
     "arg_min": "at_min",
     "arg_max": "at_max",
 }
+
+# win.* -- window functions, only as window() keyword values (spec 1b §3.1).
+WIN_RANKINGS = frozenset({"row_number", "rank", "dense_rank"})
+WIN_OFFSETS = frozenset({"lag", "lead"})
+WIN_CUMULATIVE = frozenset({"cum_sum", "cum_count", "cum_min", "cum_max"})
+WIN_MOVING = frozenset({"mean", "sum"})
+WIN_FUNCS = WIN_RANKINGS | WIN_OFFSETS | WIN_CUMULATIVE | WIN_MOVING
+# Functions whose value on a row does not depend on how rows tied in `order` are
+# ordered among themselves (tied rows share a rank); every other one does (L431).
+WIN_TIE_SAFE = frozenset({"rank", "dense_rank"})
+# traverse(): the added depth column, the directions, the max_depth= bounds (L433)
+TRAVERSE_DEPTH = "depth"
+TRAVERSE_DIRECTIONS = ("down", "up")
+TRAVERSE_MAX_DEPTH = 1000
 
 
 @dataclass(frozen=True)
@@ -191,7 +217,7 @@ UNIQUE_OR = "unique_or"
 API_WRITE_OPS = frozenset({"insert", "update", "delete"})
 # Table ops allowed inside an endpoint body (besides steps); anything else is L841.
 API_ENDPOINT_OPS = API_OPS | frozenset(
-    {"where", "derive", "select", "rename", "group", "join", "sort", "limit"}
+    {"where", "derive", "select", "rename", "group", "join", "sort", "limit", "window", "traverse"}
 )
 API_METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
 QUERY_METHODS = frozenset({"GET", "DELETE"})  # other methods take non-path params from the body

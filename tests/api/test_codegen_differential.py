@@ -51,7 +51,7 @@ from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import partb, realapps
+from tests.api import loops, partb, realapps
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -599,6 +599,37 @@ PARTB_CASES: tuple[HttpCase, ...] = (
 )
 
 
+# ---- the loops program (sub-project 1b N2: window + win.*, traverse) -----------------------
+
+_LT = loops.TOKENS
+
+
+def _lcase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _LT[who], **kw)
+
+
+LOOPS_CASES: tuple[HttpCase, ...] = (
+    _lcase("running alice", "GET", "/expenses/running", "alice"),
+    _lcase("running bob", "GET", "/expenses/running", "bob"),
+    _lcase("running admin", "GET", "/expenses/running", "admin"),
+    _lcase("running page 2", "GET", "/expenses/running", "alice", query={"limit": 2, "offset": 2}),
+    _lcase("running anonymous", "GET", "/expenses/running", None, status=401),
+    _lcase("tree root", "GET", "/categories/1/tree", None),
+    _lcase("tree depth 1", "GET", "/categories/1/tree", None, query={"depth": 1}),
+    _lcase("tree depth 0", "GET", "/categories/1/tree", None, query={"depth": 0}, status=422),
+    _lcase("tree depth 11", "GET", "/categories/1/tree", None, query={"depth": 11}, status=422),
+    _lcase("tree cycle", "GET", "/categories/21/tree", None),
+    _lcase("tree leaf", "GET", "/categories/6/tree", None),
+    _lcase("tree missing", "GET", "/categories/99/tree", None),
+    _lcase("path leaf", "GET", "/categories/5/path", None),
+    _lcase("path cycle", "GET", "/categories/20/path", None),
+    _lcase("folders alice", "GET", "/folders/1/subtree", "alice"),
+    _lcase("folders bob in alice's", "GET", "/folders/1/subtree", "bob"),
+    _lcase("folders bob", "GET", "/folders/4/subtree", "bob"),
+    _lcase("folders admin", "GET", "/folders/1/subtree", "admin"),
+)
+
+
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
     _R.PROGRAM,
@@ -608,9 +639,13 @@ PROGRAMS["partb"] = (
     _PB.PROGRAM,
     ApiTask("partb", "control", "Part B features", PARTB_CASES + _probes(PARTB_CASES)),
 )
+PROGRAMS["loops"] = (
+    loops.PROGRAM,
+    ApiTask("loops", "control", "window and traverse", LOOPS_CASES + _probes(LOOPS_CASES)),
+)
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
-EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb"]
+EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb", "loops"]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -628,6 +663,7 @@ DEFAULT_SETUP = Setup(api_profile(), build_db)
 SETUPS = {
     "realapps": Setup(_R.PROFILE, _R.build_db, _R.NATIVES, _R.NATIVES_FILE),
     "partb": Setup(_PB.PROFILE, _PB.build_db, _PB.NATIVES, _PB.NATIVES_FILE),
+    "loops": Setup(loops.PROFILE, loops.build_db),
 }
 
 
@@ -1032,3 +1068,35 @@ def test_the_partb_program_passes_its_cases(differential_runs):
     assert bodies["email taken"] == {"detail": partb.EMAIL_TAKEN}
     assert bodies["signup taken"] == {"detail": partb.SIGNUP_TAKEN}
     assert list(bodies["brief"]) == ["id", "title", "created_at"]
+
+
+def test_the_loops_program_passes_its_cases(differential_runs):
+    """Every window/traverse case gets its expected status on both backends; the bodies
+    (equal on both, by the differential above) show the window values and each tree
+    node once, at its minimum depth, in (depth, id) order."""
+    rt_results, rt_captured, gen_results, _ = differential_runs["loops"]
+    want = {c.name: c.expect_status for c in LOOPS_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want
+    bodies = {c["name"]: c["body"] for c in rt_captured}
+
+    def walk(name: str) -> list[tuple[int, int]]:
+        return [(row["id"], row["depth"]) for row in bodies[name]["items"]]
+
+    assert walk("tree root") == [(1, 0), (2, 1), (3, 1), (4, 2), (7, 2), (5, 3), (6, 3)]
+    assert walk("tree depth 1") == [(1, 0), (2, 1), (3, 1)]
+    assert walk("tree cycle") == [(21, 0), (22, 1), (20, 2)]
+    assert walk("tree missing") == []
+    assert walk("path leaf") == [(5, 0), (4, 1), (2, 2), (1, 3)]
+    assert walk("path cycle") == [(20, 0), (22, 1), (21, 2)]
+    assert walk("folders alice") == [(1, 0), (2, 1), (3, 2)]
+    assert walk("folders bob in alice's") == []
+    assert walk("folders admin") == [(1, 0), (2, 1), (3, 2), (6, 2)]
+    alice = {row["id"]: row for row in bodies["running alice"]["items"]}
+    # category 5, newest first: 8 (01-06), 1 (01-03), 4 (01-03, null amount), 2 (01-01)
+    assert [alice[i]["n"] for i in (8, 1, 4, 2)] == [1, 2, 3, 4]
+    assert [alice[i]["prev_amount"] for i in (8, 1, 4, 2)] == [None, 6, 10, None]
+    assert [alice[i]["running"] for i in (8, 1, 4, 2)] == [6, 16, 16, 20]
+    assert [alice[i]["avg2"] for i in (8, 1, 4, 2)] == [6.0, 8.0, 10.0, 4.0]
+    assert [alice[i]["day_rank"] for i in (2, 3, 1, 4, 6, 5, 8)] == [1, 2, 3, 3, 5, 6, 7]

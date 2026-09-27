@@ -125,6 +125,19 @@ def _run_op(
                 return ops.sort(inputs[0], p["by"], p["desc"]), []
             case "limit":
                 return ops.limit(inputs[0], p["n"]), []
+            case "window":
+                return ops.window(inputs[0], p["by"], p["order"], p["desc"], p["columns"])
+            case "traverse":
+                out = ops.traverse(
+                    inputs[0],
+                    inputs[1],
+                    p["parent"],
+                    p["child"],
+                    p["max_depth"],
+                    p["direction"],
+                    p["depth"],
+                )
+                return out, []
             case _:
                 raise LatticeInternalError(f"no runtime implementation for op '{node.op}'")
     except LatticeExprError as err:

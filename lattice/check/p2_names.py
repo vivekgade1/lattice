@@ -233,7 +233,7 @@ class _Resolver:
         endpoint parameter may use one."""
         for node in ast.walk(self.module):
             match node:
-                case ast.Call(func=ast.Name(id="derive" | "group")):
+                case ast.Call(func=ast.Name(id="derive" | "group" | "window")):
                     for kw in node.keywords:
                         if kw.arg is not None and kw.arg.startswith("__"):
                             self._reserved(kw, kw.arg)

@@ -158,6 +158,8 @@ class Capabilities:
     json_params: bool  # binding a JSON array as a relation (json_each / equivalent)
     mutations_sync: bool  # UPDATE/DELETE visible immediately
     native_functions: bool  # user functions callable inside queries
+    # WITH RECURSIVE (traverse); conservatively absent unless a backend declares it
+    recursive_queries: bool = False
 
 
 @runtime_checkable
@@ -184,6 +186,11 @@ class Dialect(Protocol):
     def rows_relation(self, bind: str, columns: Sequence[str], ord_col: str) -> str: ...
     def natural_order(self) -> str: ...  # a table's insertion order (no key)
     def row_number(self, order_by: str) -> str: ...  # a fresh 1-based row number
+    # `call OVER (PARTITION BY partition ORDER BY order frame)` (empty parts omitted)
+    def window(self, call: str, partition: str, order: str, frame: str | None) -> str: ...
+    # a ROWS frame ending at the current row: `preceding` rows back (None: unbounded)
+    def rows_frame(self, preceding: str | None) -> str: ...
+    def with_clause(self, recursive: bool) -> str: ...  # WITH (RECURSIVE) opening CTEs
     def true_condition(self) -> str: ...  # a condition that always holds
     def flag(self, expr: str) -> str: ...  # a bound 0/1 flag as a condition
     def divide(self, a: str, b: str) -> str: ...  # true division, null on a zero divisor
@@ -273,6 +280,7 @@ class SqliteDialect:
         json_params=True,
         mutations_sync=True,
         native_functions=True,
+        recursive_queries=True,
     )
 
     def __init__(self, uuid_storage: str = "canonical", datetime_storage: str = "iso_z") -> None:
@@ -329,6 +337,21 @@ class SqliteDialect:
 
     def row_number(self, order_by: str) -> str:
         return f"ROW_NUMBER() OVER (ORDER BY {order_by})"
+
+    def window(self, call: str, partition: str, order: str, frame: str | None) -> str:
+        parts = [
+            *([f"PARTITION BY {partition}"] if partition else []),
+            *([f"ORDER BY {order}"] if order else []),
+            *([frame] if frame else []),
+        ]
+        return f"{call} OVER ({' '.join(parts)})"
+
+    def rows_frame(self, preceding: str | None) -> str:
+        start = "UNBOUNDED" if preceding is None else preceding
+        return f"ROWS BETWEEN {start} PRECEDING AND CURRENT ROW"
+
+    def with_clause(self, recursive: bool) -> str:
+        return "WITH RECURSIVE" if recursive else "WITH"
 
     def true_condition(self) -> str:
         return "1"

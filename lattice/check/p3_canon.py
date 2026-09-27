@@ -11,6 +11,7 @@ from lattice.catalog import (
     OP_SHAPES,
     TERMINAL_OPS,
     UNIQUE_OR,
+    WINDOW_KW,
     OpShape,
 )
 from lattice.check.astutil import (
@@ -230,6 +231,13 @@ class _Canon:
             case "select" if _is_empty_list(kws.get("cols")):
                 self.ctx.error(
                     "L304", call, "'select' with cols=[] is a no-op", "list the columns to keep"
+                )
+            case "window" if not set(kws) - WINDOW_KW:
+                self.ctx.error(
+                    "L304",
+                    call,
+                    "'window' without any columns is a no-op",
+                    'add a column, e.g. n=win.row_number(), or remove this step',
                 )
             case "group" if _is_empty_list(kws.get("by")) and set(kws) == {"by"}:
                 self.ctx.error(

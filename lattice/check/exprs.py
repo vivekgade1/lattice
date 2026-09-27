@@ -25,6 +25,11 @@ from lattice.catalog import (
     OWNER_IS,
     ROUND_DIGITS_MAX,
     UNSET_NAME,
+    WIN_CUMULATIVE,
+    WIN_FUNCS,
+    WIN_MOVING,
+    WIN_OFFSETS,
+    WIN_RANKINGS,
 )
 from lattice.check.astutil import LiteralValue, literal_value
 from lattice.check.context import CheckContext
@@ -168,6 +173,14 @@ class ExprTyper:
                 ns == NATIVE_NS and self.api
             ):
                 return self._native(node, attr)
+            case ast.Call(func=ast.Attribute(value=ast.Name(id="win"), attr=attr)):
+                return self._err(
+                    "L432",
+                    node,
+                    f"win.{attr} is only allowed as a window() column",
+                    f'compute it with window(t, order=[...], name=win.{attr}(...)) and read '
+                    'the new column with col("name")',
+                )
             case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"))):
                 return self._err(
                     "L413",
@@ -636,6 +649,15 @@ class ExprTyper:
         match node:
             case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"), attr=attr)):
                 pass
+            case ast.Call(func=ast.Attribute(value=ast.Name(id="win"), attr=attr)):
+                self.ctx.error(
+                    "L432",
+                    node,
+                    f"win.{attr} is a window function, not an aggregate",
+                    f"use window(t, order=[...], name=win.{attr}(...)) for a per-row value, "
+                    "or an agg.* function to aggregate groups",
+                )
+                return None
             case _:
                 self.ctx.error(
                     "L413",
@@ -737,3 +759,127 @@ class ExprTyper:
             )
             return None
         return value.scalar
+
+    # ---- window functions (win.*) -------------------------------------------------------
+
+    def type_win(self, node: ast.expr) -> tuple[str, Scalar] | None:
+        """A window() column value: (function, result scalar), or None after a
+        diagnostic. `win.*` calls only; an aggregate or a plain expression is L432."""
+        result = self._win(node)
+        self.ctx.set_type(node, UNKNOWN if result is None else ColT(result[1]))
+        return result
+
+    def _win(self, node: ast.expr) -> tuple[str, Scalar] | None:
+        match node:
+            case ast.Call(func=ast.Attribute(value=ast.Name(id="win"), attr=attr)):
+                pass
+            case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"), attr=attr)):
+                self.ctx.error(
+                    "L432",
+                    node,
+                    f"agg.{attr} is not allowed in window(): aggregates collapse rows",
+                    "use a window function: win.cum_sum(x) for a running total, "
+                    "win.sum(x, rows=N) / win.mean(x, rows=N) for a moving one; "
+                    "or group(...) to aggregate",
+                )
+                return None
+            case _:
+                self.ctx.error(
+                    "L432",
+                    node,
+                    "window() columns must be window functions",
+                    'e.g. n=win.row_number() or prev=win.lag(col("x")); compute other '
+                    "values with derive",
+                )
+                return None
+        if attr not in WIN_FUNCS:
+            self.ctx.error(
+                "L106",
+                node,
+                f"unknown window function win.{attr}",
+                did_you_mean(attr, sorted(WIN_FUNCS)),
+            )
+            return None
+        kws = {kw.arg: kw.value for kw in node.keywords if kw.arg is not None}
+        if attr in WIN_RANKINGS:
+            if node.args or node.keywords:
+                return self._win_usage(node, attr, f"win.{attr}()")
+            return attr, Scalar.INT
+        if attr in WIN_OFFSETS:
+            usage = f'win.{attr}(col("x"), offset=1)'
+            if len(node.args) != 1 or set(kws) - {"offset"} or len(kws) != len(node.keywords):
+                return self._win_usage(node, attr, usage)
+            if "offset" in kws and not self._win_count(kws["offset"], attr, "offset"):
+                return None
+            arg = self._win_arg(node, attr)
+            return None if arg is None else (attr, arg)
+        if attr == "cum_count":
+            if node.keywords or len(node.args) > 1:
+                return self._win_usage(node, attr, 'win.cum_count() or win.cum_count(col("x"))')
+            if node.args and self._win_arg(node, attr) is None:
+                return None
+            return attr, Scalar.INT
+        if attr in WIN_CUMULATIVE:
+            if len(node.args) != 1 or node.keywords:
+                return self._win_usage(node, attr, f'win.{attr}(col("x"))')
+            allowed = NUMERIC if attr == "cum_sum" else ORDERED
+            arg = self._win_arg(node, attr, allowed)
+            return None if arg is None else (attr, arg)
+        assert attr in WIN_MOVING
+        usage = f'win.{attr}(col("x"), rows=3)'
+        if len(node.args) != 1 or set(kws) != {"rows"} or len(node.keywords) != 1:
+            return self._win_usage(node, attr, usage)
+        if not self._win_count(kws["rows"], attr, "rows"):
+            return None
+        arg = self._win_arg(node, attr, NUMERIC)
+        if arg is None:
+            return None
+        return attr, Scalar.FLOAT if attr == "mean" else arg
+
+    def _win_usage(self, node: ast.Call, attr: str, usage: str) -> None:
+        self.ctx.error("L404", node, f"win.{attr} has the wrong arguments", f"write {usage}")
+        return None
+
+    def _win_count(self, value: ast.expr, attr: str, kw: str) -> bool:
+        """offset= / rows=: a positive integer literal."""
+        v = literal_value(value)
+        if isinstance(v, int) and not isinstance(v, bool) and 1 <= v <= WIN_COUNT_MAX:
+            self.ctx.set_type(value, LitT(Scalar.INT))
+            return True
+        self.ctx.error(
+            "L404",
+            value,
+            f"win.{attr} {kw}= must be a positive integer literal (at most {WIN_COUNT_MAX})",
+            f"e.g. {kw}={3 if kw == 'rows' else 1}",
+        )
+        return False
+
+    def _win_arg(
+        self, node: ast.Call, attr: str, allowed: frozenset[Scalar] | None = None
+    ) -> Scalar | None:
+        """The type of a window function's argument: a column expression."""
+        arg = node.args[0]
+        t = self.type_of(arg)
+        if isinstance(t, UnknownT):
+            return None
+        if isinstance(t, LitT):
+            self.ctx.error(
+                "L404",
+                arg,
+                f"win.{attr} must read a column",
+                f'e.g. win.{attr}(col("amount"))',
+            )
+            return None
+        if allowed is not None and t.scalar not in allowed:
+            self.ctx.error(
+                "L402",
+                node,
+                f"win.{attr} expects {_scalars(allowed)}, got {t.scalar.value}",
+                None,
+            )
+            return None
+        return t.scalar
+
+
+# win.lag/lead offset= and win.mean/sum rows= upper bound
+WIN_COUNT_MAX = 1_000_000

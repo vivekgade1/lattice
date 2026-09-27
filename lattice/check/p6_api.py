@@ -59,7 +59,9 @@ _PIN_CHAIN = frozenset(
     {"fetch", "owned", "where", "sort", "select", "limit", "one", "require", "derive"}
 )
 # ops whose result has exactly as many rows as their (first) input
-_ROW_WISE = frozenset({"derive", "select", "rename", "sort", "require", "update", "delete"})
+_ROW_WISE = frozenset(
+    {"derive", "select", "rename", "sort", "require", "update", "delete", "window"}
+)
 
 
 def _call_name(node: ast.AST) -> str | None:
@@ -510,6 +512,15 @@ class _Endpoint:
                     if name != "by" and v is not None:
                         read |= cols_read(v, verifiers)
                 return read & private
+            case "window":
+                read = frozenset(_strs(kws.get("by"))) | frozenset(_strs(kws.get("order")))
+                for name, v in kws.items():
+                    if name not in ("by", "order", "desc") and v is not None:
+                        read |= cols_read(v, verifiers)
+                return read & private
+            case "traverse":
+                links = {_str_value(kws.get("parent")), _str_value(kws.get("child"))}
+                return frozenset(c for c in links if c is not None) & private
             case "update":
                 read = frozenset()
                 for v in kws.values():
@@ -1125,6 +1136,12 @@ def _strs(node: ast.expr | None) -> list[str]:
             e.value for e in node.elts if isinstance(e, ast.Constant) and isinstance(e.value, str)
         ]
     return []
+
+
+def _str_value(node: ast.expr | None) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    return None
 
 
 def _cols_read(node: ast.expr) -> frozenset[str]:

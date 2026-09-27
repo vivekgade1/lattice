@@ -258,6 +258,7 @@ class _Builder:
     user: bool = False
     now: bool = False
     sent: list[str] = field(default_factory=list)
+    recursive: bool = False  # some CTE refers to itself (traverse)
 
     def q(self, name: str) -> str:
         return self.d.quote(name)
@@ -267,7 +268,8 @@ class _Builder:
     def query(self, final: str, *, total: bool = False) -> SqlQuery:
         text = final
         if self.ctes:
-            text = "WITH " + ",\n".join(f"{n} AS ({s})" for n, s in self.ctes) + "\n" + final
+            ctes = ",\n".join(f"{n} AS ({s})" for n, s in self.ctes)
+            text = f"{self.d.with_clause(self.recursive)} {ctes}\n{final}"
         return SqlQuery(
             text,
             tuple(self.params),
@@ -415,6 +417,10 @@ class _Builder:
                 listed = ", ".join(q(c) for c in cols)
                 rownum = self.d.row_number(f"{keys}, {ORD}")
                 return f"SELECT {listed}, {rownum} AS {ORD} FROM {ins[0]}"
+            case "window":
+                return self._window(rel, ins[0])
+            case "traverse":
+                return self._traverse(rel, ins[0], ins[1])
             case "limit":
                 return f"SELECT {keep} FROM {ins[0]} ORDER BY {ORD} LIMIT {self.lit(int(p['n']))}"
             case "page":
@@ -442,6 +448,109 @@ class _Builder:
         return (
             f"SELECT {', '.join(listed)}, {rownum} "
             f"AS {ORD} FROM {left} AS l {kind} {right} AS r ON {cond}"
+        )
+
+    def _window(self, rel: Rel, source: str) -> str:
+        """window(): one window function per new column, over the partition `by`,
+        ordered by `order` (nulls last) and then by the input order (`__ord`: tied rows
+        keep their input order, as polars' stable sort). rank/dense_rank order by
+        `order` alone, so tied rows are peers. The rows keep the input order."""
+        q = self.q
+        p = rel.params
+        partition = ", ".join(q(c) for c in p["by"])
+        keys = ", ".join(
+            f"({q(c)} IS NULL), {q(c)}{' DESC' if d else ''}"
+            for c, d in zip(p["order"], p["desc"], strict=True)
+        )
+        stable = f"{keys}, {ORD}" if keys else ORD
+        new = {name for name, _, _, _ in p["columns"]}
+        listed = [q(c) for c in rel.schema.names() if c not in new]
+        for name, func, arg, count in p["columns"]:
+            x = None if arg is None else self.expr(arg)
+            zero = 0.0 if rel.schema.get(name) is Scalar.FLOAT else 0
+            listed.append(
+                f"{self._win(func, x, count, zero, partition, keys, stable)} AS {q(name)}"
+            )
+        return f"SELECT {', '.join(listed)}, {ORD} FROM {source}"
+
+    def _win(
+        self,
+        func: str,
+        x: str | None,
+        count: int | None,
+        zero: float,
+        partition: str,
+        keys: str,
+        stable: str,
+    ) -> str:
+        over = self.d.window
+        running = self.d.rows_frame(None)
+        match func:
+            case "row_number":
+                return over("ROW_NUMBER()", partition, stable, None)
+            case "rank":
+                return over("RANK()", partition, keys, None)
+            case "dense_rank":
+                return over("DENSE_RANK()", partition, keys, None)
+            case "cum_count" if x is None:
+                return over("COUNT(*)", partition, stable, running)
+        if x is None:
+            raise LatticeInternalError(f"win.{func} needs an argument")
+        match func:
+            case "lag" | "lead":
+                return over(f"{func.upper()}({x}, {self.lit(count or 1)})", partition, stable, None)
+            case "cum_sum":
+                total = over(f"SUM({x})", partition, stable, running)
+                return f"COALESCE({total}, {self.lit(zero)})"
+            case "cum_count":
+                return over(f"COUNT({x})", partition, stable, running)
+            case "cum_min" | "cum_max":
+                return over(f"{func[4:].upper()}({x})", partition, stable, running)
+            case "mean" | "sum":
+                if count is None or count < 1:
+                    raise LatticeInternalError("a moving window needs rows >= 1")
+                frame = self.d.rows_frame(self.lit(count - 1))
+                if func == "mean":
+                    return over(f"AVG({x})", partition, stable, frame)
+                total = over(f"SUM({x})", partition, stable, frame)
+                return f"COALESCE({total}, {self.lit(zero)})"
+            case _:
+                raise LatticeInternalError(f"win.{func} has no SQL translation")
+
+    def _traverse(self, rel: Rel, edges: str, start: str) -> str:
+        """traverse(): a recursive CTE walks (node, depth) pairs from the start rows'
+        child values -- UNION drops repeated pairs and the depth counter stops at
+        max_depth, so cycles end -- then MIN(depth) per node, and the edges rows of the
+        reached nodes in (depth, child) order."""
+        q = self.q
+        p = rel.params
+        parent, child, depth = q(p["parent"]), q(p["child"]), p["depth"]
+        node, level = q("__node"), q("__depth")
+        limit = self.value(p["max_depth"])
+        walk = f"t{len(self.ctes)}"  # the name _add gives the recursive CTE below
+        anchor = f"SELECT {child} AS {node}, 0 AS {level} FROM {start} WHERE {child} IS NOT NULL"
+        if p["direction"] == "down":
+            follow, to = parent, child
+        elif p["direction"] == "up":
+            follow, to = child, parent
+        else:
+            raise LatticeInternalError(f"unknown traverse direction {p['direction']!r}")
+        step = (
+            f"SELECT e.{to} AS {node}, w.{level} + 1 AS {level} FROM {walk} AS w "
+            f"JOIN {edges} AS e ON e.{follow} = w.{node} "
+            f"WHERE w.{level} < {limit} AND e.{to} IS NOT NULL"
+        )
+        self.recursive = True
+        if self._add(f"{anchor} UNION {step}") != walk:
+            raise LatticeInternalError("recursive CTE name mismatch")
+        best = self._add(f"SELECT {node}, MIN({level}) AS {level} FROM {walk} GROUP BY {node}")
+        listed = ", ".join(
+            f"b.{level} AS {q(c)}" if c == depth else f"e.{q(c)}" for c in rel.schema.names()
+        )
+        rownum = self.d.row_number(f"b.{level}, e.{child}")
+        return (
+            f"SELECT {listed}, {rownum} AS {ORD} FROM {edges} AS e "
+            f"JOIN {best} AS b ON e.{child} = b.{node}"
         )
 
     def cols_of(self, rel_id: str) -> tuple[str, ...]:
