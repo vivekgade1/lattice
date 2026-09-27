@@ -1,6 +1,6 @@
 """The thin emitter (thin-slice plan 2026-09-27, node E2): Lattice programs -> a generated
 FastAPI router package, mounted into the vendored FastAPI template in place of the
-template's own login / users / items routers.
+template routes the program lifted (the others are kept).
 
 ``emit_into_template(lattice_sources, profile, out_dir)`` checks and lowers the program
 and generates its routes with the existing codegen (``lattice.api.codegen``, proven equal
@@ -18,19 +18,47 @@ to the runtime), then writes ``out_dir`` as a relocatable Python package:
   ``lattice.importer.profile_gen`` output) the source is written as ``profile.py`` and
   its ``NATIVES`` are re-exported;
 * ``schema.json`` -- the profile's tables (SQL name, columns, scalar types, nullability,
-  keys) and the routes, read back by :func:`make_emitted_app`.
+  keys), the emitted routes and the lifted ones, read back by :func:`make_emitted_app`.
 
 Mounting. ``make_emitted_app(out_dir, db_path)`` builds the template app itself
-(``bench.template_app.make_app``: settings, CORS, the other routers, docs and error
-handling untouched), removes the routes whose endpoint belongs to the template's
-``login``/``users``/``items`` routers, and includes the generated router. Lattice paths
-are absolute (``/api/v1/items/``), so the router is included without a prefix; each
-route is tagged with its first path segment after the API prefix, so the template's
-``custom_generate_unique_id`` (``f"{tag}-{name}"``) gives the template's own operation
-ids. The generated routes therefore sit next to the template's remaining routes in one
-app instead of a sub-application mount, which would bring its own 404/405 handling and
-OpenAPI document. Every call loads a fresh copy of the package, so each app has its own
-database path.
+(``bench.template_app.make_app``: settings, CORS, docs and error handling) and merges the
+template's API routes with the generated ones (:func:`merge_routes`) with import
+semantics: the emitted program replaces only the template routes it lifted, and every
+other template route stays, unchanged, as a native island. Each merged route is included
+in a router of its own, in the merged order (a template route under the API prefix, as
+``create_app`` includes it; FastAPI keeps an included router as one entry, so this is
+what orders them).
+
+* **Matching.** A route's key is its method and its *normalized* path: every path
+  parameter ``{name}`` (or ``{name:conv}``) becomes ``{}``, so ``{id}`` matches
+  ``{item_id}``; nothing else is normalized (``/items/`` and ``/items`` differ, as they do
+  in Starlette). The *replaced* keys are those of the emitted routes plus those of the
+  ``lifted`` routes :func:`emit_into_template` was given (the routes of the program the
+  edit started from: a lifted route the edited program no longer defines is removed from
+  the app, not handed back to the template). A template route is removed when its keys
+  are all replaced; the rest are kept.
+* **Precedence** (Starlette routes a request to the first route in list order whose path
+  *and* method match; a path match with another method does not stop the search). An
+  emitted route that replaces a template route takes that route's place in the list, so
+  the lifted routes keep the template's own order. An emitted route with no template
+  counterpart (a new route) is inserted relative to every route it *overlaps* (same
+  method, same number of segments, each segment pair equal or one side a parameter):
+  before the first one it is *more specific* than (it has a literal segment wherever the
+  two differ, e.g. ``/users/item-counts`` vs ``/users/{user_id}``), and after every other
+  one (more specific, equally specific or incomparable: the route already there keeps
+  precedence); should the two conflict (the list already has an inversion), not being
+  shadowed wins. With no route it is more specific than, it goes at the end. The new
+  routes are placed in the router's order, which the codegen sorts by specificity. So a
+  new literal route is never shadowed by a kept or lifted parameter route, and a new
+  route never shadows a kept one.
+
+Lattice paths are absolute (``/api/v1/items/``), so the router is included without a
+prefix; each route is tagged with its first path segment after the API prefix, so the
+template's ``custom_generate_unique_id`` (``f"{tag}-{name}"``) gives the template's own
+operation ids. The generated routes therefore sit next to the template's remaining
+routes in one app instead of a sub-application mount, which would bring its own 404/405
+handling and OpenAPI document. Every call loads a fresh copy of the package, so each app
+has its own database path.
 
 Schema evolution (:func:`evolve_schema`, run by :func:`make_emitted_app` after the
 template's ``create_all``). A Lattice edit may add to the profile's schemas; the emitted
@@ -56,18 +84,21 @@ import importlib
 import importlib.util
 import itertools
 import json
+import re
 import sqlite3
 import sys
-from collections.abc import Mapping, Sequence
+from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 from fastapi import APIRouter, FastAPI
+from fastapi.routing import APIRoute
 
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.api.ir import lower_api
+from lattice.check import check_source
 from lattice.diagnostics import Diagnostic
 from lattice.profile import Profile
 from lattice.typesys import Scalar
@@ -79,12 +110,12 @@ __all__ = [
     "emit_into_template",
     "evolve_schema",
     "make_emitted_app",
+    "merge_routes",
+    "program_routes",
 ]
 
 HEADER = "# lattice: v1\n"
 API_PREFIX = "/api/v1"
-# The template routers the emitted routes replace (bench/template_app/app/api/routes).
-REPLACED_ROUTERS = ("login", "users", "items")
 DEFAULT_NATIVES = "bench.template_profile"
 SCHEMA_FILE = "schema.json"
 
@@ -146,6 +177,7 @@ class EmitResult:
     ast_nodes: int  # AST nodes of the emitted Python files
     routes_emitted: tuple[str, ...]  # "METHOD /path" of the generated routes
     routes_replaced: tuple[str, ...]  # "METHOD /path" of the template routes removed
+    routes_kept: tuple[str, ...] = ()  # "METHOD /path" of the template routes kept
 
 
 # ---- emitting -------------------------------------------------------------------------------
@@ -219,16 +251,55 @@ def _schema_manifest(profile: Profile) -> dict[str, Any]:
     return {"uuid_storage": api.uuid_storage, "tables": tables}
 
 
-def _template_routes() -> tuple[str, ...]:
-    """ "METHOD /path" of every route of the template's replaced routers."""
-    from bench.template_app.app.api.routes import items, login, users
+def _template_routes() -> tuple[tuple[str, str], ...]:
+    """(method, full path) of every route of the template's API router, in order."""
+    from bench.template_app.app.api.main import api_router
 
-    out = []
-    for router in (login.router, users.router, items.router):
-        for route in router.routes:
-            for method in sorted(getattr(route, "methods", ()) or ()):
-                out.append(f"{method} {API_PREFIX}{route.path}")
-    return tuple(out)
+    return tuple(
+        (method, f"{API_PREFIX}{route.path}")
+        for route in _leaf_routes(api_router)
+        for method in sorted(route.methods)
+    )
+
+
+def _leaf_routes(router: APIRouter) -> list[APIRoute]:
+    """The routes of ``router`` and of the routers it includes, in order. FastAPI keeps an
+    included router as one entry (``original_router``; the template includes its routers
+    without extra arguments); the routes carry their own router's prefix, tags and
+    dependencies."""
+    out: list[APIRoute] = []
+    for route in router.routes:
+        sub = getattr(route, "original_router", None)
+        if sub is not None:
+            out.extend(_leaf_routes(sub))
+        elif isinstance(route, APIRoute):
+            out.append(route)
+        else:
+            raise TypeError(f"cannot merge the route {route!r} (not an APIRoute)")
+    return out
+
+
+def _split_routes(routes: Iterable[str]) -> set[tuple[str, str]]:
+    out = set()
+    for r in routes:
+        method, _, path = r.partition(" ")
+        out.add((method.upper(), _normalize(path)))
+    return out
+
+
+def _replaced_keys(emitted: Iterable[str], lifted: Iterable[str]) -> set[tuple[str, str]]:
+    return _split_routes(emitted) | _split_routes(lifted)
+
+
+def program_routes(
+    lattice_sources: Mapping[str, str] | Sequence[str] | str, profile: Profile
+) -> tuple[str, ...]:
+    """ "METHOD /path" of the endpoints of a Lattice program (e.g. the lifted routes of
+    the program an edit starts from); a rejected program is an :class:`EmitError`."""
+    result = check_source(join_sources(lattice_sources), profile)
+    if result.program is None:
+        raise EmitError(result.diagnostics)
+    return tuple(f"{p.method} {p.path}" for p in lower_api(result.program))
 
 
 def _size(files: Sequence[Path]) -> tuple[int, int]:
@@ -247,13 +318,20 @@ def emit_into_template(
     out_dir: str | Path,
     *,
     natives_from: str = DEFAULT_NATIVES,
+    lifted: Iterable[str] | None = None,
 ) -> EmitResult:
     """Generate the program's routes and write them, with their natives and database
     kit, as a package in ``out_dir``. ``lattice_sources``: one source, a list, or a
     mapping file name -> source (joined in order). ``profile_source_or_obj``: a
     :class:`Profile` (its natives are re-exported from ``natives_from``) or a profile
     module's source (written as ``profile.py``; ``profile()`` gives the Profile and its
-    ``NATIVES`` are re-exported). A rejected program is an :class:`EmitError`."""
+    ``NATIVES`` are re-exported). A rejected program is an :class:`EmitError`.
+
+    ``lifted``: "METHOD /path" of the routes the program lifted from the template (the
+    routes of the program the edit started from, e.g. :func:`program_routes` of it);
+    the template routes they match are removed from the app even when the edited program
+    no longer defines them. Default: none beyond the emitted routes. The result reports
+    the template routes replaced and kept (see the module docstring)."""
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     files: list[Path] = []
@@ -286,9 +364,14 @@ def emit_into_template(
     emitted = tuple(f"{p.method} {p.path}" for p in lower_api(result.program))
     manifest = _schema_manifest(profile)
     manifest["routes_emitted"] = list(emitted)
+    manifest["routes_lifted"] = list(lifted or ())
     write(SCHEMA_FILE, json.dumps(manifest, indent=2) + "\n")
     lines, nodes = _size(files)
-    return EmitResult(out, tuple(files), lines, nodes, emitted, _template_routes())
+    replaced = _replaced_keys(emitted, lifted or ())
+    template = _template_routes()
+    gone = tuple(f"{m} {p}" for m, p in template if (m, _normalize(p)) in replaced)
+    kept = tuple(f"{m} {p}" for m, p in template if (m, _normalize(p)) not in replaced)
+    return EmitResult(out, tuple(files), lines, nodes, emitted, gone, kept)
 
 
 # ---- loading and mounting -------------------------------------------------------------------
@@ -311,22 +394,24 @@ def _load_package(out_dir: Path) -> ModuleType:
 
 
 def make_emitted_app(out_dir: str | Path, db_path: str | Path) -> FastAPI:
-    """The template app on ``db_path`` with the emitted routes in place of its login /
-    users / items routers. The database is first brought in line with the profile's
-    schema (:func:`evolve_schema`; the changes made are on ``app.state.schema_changes``).
-    The template's engine is on ``app.state.engine`` (dispose it when done)."""
+    """The template app on ``db_path`` with the emitted routes in place of the template
+    routes they replace (see the module docstring: matching and precedence). The
+    database is first brought in line with the profile's schema (:func:`evolve_schema`;
+    the changes made are on ``app.state.schema_changes``). The template's engine is on
+    ``app.state.engine`` (dispose it when done)."""
     from bench.template_app import make_app
     from bench.template_app.app import main as template_main
-    from bench.template_app.app.api.routes import items, login, users
 
     out = Path(out_dir)
     manifest = json.loads((out / SCHEMA_FILE).read_text())
+    replaced = _replaced_keys(manifest["routes_emitted"], manifest.get("routes_lifted", ()))
 
     # The template's create_app() includes the module-global api_router; for this app it
-    # includes a copy without the replaced routers (the template module is restored).
-    replaced = (login.router, users.router, items.router)
+    # includes an empty one (the template module is restored), and the merged API routes
+    # are included below, each in a router of its own, in their merged order.
     original = template_main.api_router
-    template_main.api_router = _without(original, replaced)
+    template_routes = _leaf_routes(original)
+    template_main.api_router = APIRouter()
     try:
         app = make_app(db_path)  # the template's tables (create_all) and everything else
     finally:
@@ -341,34 +426,126 @@ def make_emitted_app(out_dir: str | Path, db_path: str | Path) -> FastAPI:
     finally:  # the app holds what it needs; keep sys.modules from growing per app
         for name in [n for n in sys.modules if n.split(".")[0] == package.__name__]:
             del sys.modules[name]
-    for route in routes.router.routes:
+    lattice_routes = _leaf_routes(routes.router)
+    for route in lattice_routes:
         route.tags = [_tag(route.path)]
-    app.include_router(routes.router)  # Lattice paths are absolute: no prefix
+    order = _merge_order(
+        [(r.methods, f"{API_PREFIX}{r.path}") for r in template_routes],
+        [(r.methods, r.path) for r in lattice_routes],
+        replaced,
+    )
+    for side, i in order:
+        single = APIRouter()
+        if side == "o":  # as create_app includes it: under the API prefix
+            single.routes.append(template_routes[i])
+            app.include_router(single, prefix=API_PREFIX)
+        else:  # Lattice paths are absolute: no prefix
+            single.routes.append(lattice_routes[i])
+            app.include_router(single)
     app.state.schema_changes = changes
     app.state.emitted = package
     return app
 
 
-def _without(router: APIRouter, replaced: Sequence[APIRouter]) -> APIRouter:
-    """A copy of ``router`` without what it included from the ``replaced`` routers:
-    an included router (FastAPI keeps it as one entry naming ``original_router``) or,
-    where FastAPI copies an included router's routes, each route whose endpoint is one
-    of theirs."""
-    endpoints = {getattr(r, "endpoint", None) for sub in replaced for r in sub.routes}
-    endpoints.discard(None)
-    copy = APIRouter()
-    copy.routes.extend(
-        r
-        for r in router.routes
-        if not any(getattr(r, "original_router", None) is sub for sub in replaced)
-        and getattr(r, "endpoint", None) not in endpoints
-    )
-    return copy
-
-
 def _tag(path: str) -> str:
     rest = path.removeprefix(API_PREFIX).strip("/")
     return rest.split("/", 1)[0] or "root"
+
+
+# ---- merging the route lists ----------------------------------------------------------------
+
+_PARAM = re.compile(r"\{[^{}]*\}")
+
+
+def _normalize(path: str) -> str:
+    """The path with every parameter spelled ``{}`` (``{id}`` matches ``{item_id}``)."""
+    return _PARAM.sub("{}", path)
+
+
+def _is_param(segment: str) -> bool:
+    return _PARAM.fullmatch(segment) is not None
+
+
+def _overlap(a: str, b: str) -> bool:
+    """Some request path matches both route paths (parameters match a non-empty segment)."""
+    sa, sb = a.split("/"), b.split("/")
+    return len(sa) == len(sb) and all(
+        x == y or (_is_param(x) and y != "") or (_is_param(y) and x != "")
+        for x, y in zip(sa, sb, strict=True)
+    )
+
+
+def _more_specific(a: str, b: str) -> bool:
+    """``a`` overlaps ``b`` and has a literal segment wherever they differ (parameter
+    names aside), and they do."""
+    if not _overlap(a, b):
+        return False
+    pairs = zip(_normalize(a).split("/"), _normalize(b).split("/"), strict=True)
+    diffs = [(x, y) for x, y in pairs if x != y]
+    return bool(diffs) and all(y == "{}" for _, y in diffs)
+
+
+def _merge_order(
+    original: Sequence[tuple[Collection[str], str]],
+    lattice: Sequence[tuple[Collection[str], str]],
+    replaced: Collection[tuple[str, str]],
+) -> list[tuple[str, int]]:
+    """The merged route list as ``("o", i)`` (original ``i``) / ``("l", j)`` (Lattice
+    ``j``) entries; routes are (methods, path). See the module docstring."""
+
+    def is_replaced(methods: Collection[str], path: str) -> bool:
+        return bool(methods) and all((m, _normalize(path)) in replaced for m in methods)
+
+    merged: list[tuple[str, int]] = []
+    slots: dict[tuple[str, str], int] = {}  # replaced key -> its original's position
+    for i, (methods, path) in enumerate(original):
+        if is_replaced(methods, path):
+            for m in methods:
+                slots.setdefault((m, _normalize(path)), len(merged))
+            merged.append(("gone", i))
+        else:
+            merged.append(("o", i))
+    new: list[int] = []
+    for j, (methods, path) in enumerate(lattice):
+        at = next((slots[k] for m in methods if (k := (m, _normalize(path))) in slots), None)
+        if at is not None and merged[at][0] == "gone":
+            merged[at] = ("l", j)
+        else:
+            new.append(j)
+    merged = [e for e in merged if e[0] != "gone"]
+
+    def key(entry: tuple[str, int]) -> tuple[Collection[str], str]:
+        side, i = entry
+        return original[i] if side == "o" else lattice[i]
+
+    for j in new:
+        methods, path = lattice[j]
+        hi = None  # the first route this one is more specific than (else: the end)
+        for idx, entry in enumerate(merged):
+            other_methods, other = key(entry)
+            if not set(methods) & set(other_methods) or not _overlap(path, other):
+                continue
+            if _more_specific(path, other):
+                hi = idx
+                break
+        merged.insert(len(merged) if hi is None else hi, ("l", j))
+    return merged
+
+
+def merge_routes(
+    original: Sequence[tuple[str, str]],
+    lattice: Sequence[tuple[str, str]],
+    replaced: Collection[tuple[str, str]],
+) -> list[tuple[str, str]]:
+    """The merged (method, path) route list of ``original`` (the template's) and
+    ``lattice`` (the emitted router's), where ``replaced`` are the (method, path) keys the
+    program replaces (paths normalized here); see the module docstring for the rule."""
+    order = _merge_order(
+        [({m}, p) for m, p in original],
+        [({m}, p) for m, p in lattice],
+        {(m, _normalize(p)) for m, p in replaced},
+    )
+    return [original[i] if side == "o" else lattice[i] for side, i in order]
 
 
 # ---- schema evolution -----------------------------------------------------------------------

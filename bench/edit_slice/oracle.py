@@ -598,10 +598,11 @@ def _t10_cases(plan: SeedPlan) -> list[Case]:
         c("admin_tail", skip=5),
         c("admin_no_items_anywhere", db="no_items"),
         c("alice_not_admin", user=ACTOR),
-        # no "GET /users/{user_id} still works" case (t6 has one for /items/{id}): that
-        # route is not lifted, so arm L's emitted app never has it; the shadowing trap
-        # is caught by the cases above (a shadowed route answers 422)
-    ]
+        # the new literal route must not take over /users/{user_id} either (as t6 checks
+        # for /items/{id}); arm L's emitted app keeps that template route as it is
+        Case("t10.user_route_still_works", "GET", f"{API}/users/{plan.user(ACTOR).id}",
+             user=ADMIN, route="read_user_item_counts"),
+    ]  # fmt: skip
 
 
 def _t11_cases(plan: SeedPlan) -> list[Case]:

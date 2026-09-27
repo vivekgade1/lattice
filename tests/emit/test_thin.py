@@ -92,10 +92,12 @@ def test_emit_reports_size_and_routes(emitted: EmitResult):
         "PUT /api/v1/items/{id}",
         "DELETE /api/v1/items/{id}",
     }
-    # every route of the template's login, users and items routers is replaced
-    assert "POST /api/v1/users/signup" in emitted.routes_replaced
-    assert "POST /api/v1/password-recovery/{email}" in emitted.routes_replaced
-    assert "DELETE /api/v1/items/{id}" in emitted.routes_replaced
+    # only the template routes the program defines are replaced; the rest are kept
+    assert set(emitted.routes_replaced) == set(emitted.routes_emitted)
+    assert "POST /api/v1/users/signup" in emitted.routes_kept
+    assert "POST /api/v1/password-recovery/{email}" in emitted.routes_kept
+    assert "GET /api/v1/users/{user_id}" in emitted.routes_kept
+    assert "GET /api/v1/utils/health-check/" in emitted.routes_kept
     assert not any("/utils/" in r or "/private/" in r for r in emitted.routes_replaced)
 
 
@@ -137,13 +139,14 @@ def test_the_mounted_app_keeps_the_rest_of_the_template(emitted: EmitResult, tmp
             assert client.get("/api/v1/nowhere").json() == {"detail": "Not Found"}
         paths = {(m.upper(), p) for p, ops in doc["paths"].items() for m in ops}
         assert ("GET", "/api/v1/utils/health-check/") in paths  # an untouched router
-        assert ("POST", "/api/v1/users/signup") not in paths  # replaced, not emitted
+        assert ("POST", "/api/v1/users/signup") in paths  # not lifted: kept
         assert {tuple(r.split(" ")) for r in emitted.routes_emitted} <= paths
-        replaced_only = {tuple(r.split(" ")) for r in emitted.routes_replaced} - paths
-        assert ("POST", "/api/v1/login/test-token") in replaced_only
+        assert {tuple(r.split(" ")) for r in emitted.routes_kept} <= paths
+        assert len(paths) == len(emitted.routes_kept) + len(emitted.routes_emitted)
         ids = {op["operationId"] for ops in doc["paths"].values() for op in ops.values()}
         # the template's operation ids (custom_generate_unique_id: f"{tag}-{name}")
         assert {"items-read_items", "login-login_access_token", "users-read_user_me"} <= ids
+        assert {"users-register_user", "login-test_token"} <= ids  # kept template routes
     finally:
         app.state.engine.dispose()
 

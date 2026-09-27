@@ -45,7 +45,7 @@ EXPECTED_COUNTS = {
     "t7_deactivate": (18, 11),
     "t8_user_filter": (15, 14),
     "t9_item_quota": (20, 7),
-    "t10_owner_counts": (15, 6),
+    "t10_owner_counts": (15, 7),
     "t11_title_trim": (45, 13),
     "t12_transfer": (17, 14),
 }

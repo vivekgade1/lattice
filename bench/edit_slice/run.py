@@ -15,7 +15,9 @@ candidate with the hidden oracle (:func:`bench.edit_slice.oracle.evaluate`):
   router's Lattice program and the profile source, with the Lattice API guide, and
   returns edited program(s) (and the profile when it changes); the candidate is checked,
   emitted (:func:`lattice.emit.thin.emit_into_template`) and mounted
-  (:func:`lattice.emit.thin.make_emitted_app`).
+  (:func:`lattice.emit.thin.make_emitted_app`): its routes replace the template routes
+  the start programs lifted (a lifted route the edit drops is gone), and every other
+  template route (``/users/signup``, ``/users/{user_id}``, ...) is kept as it is.
 
 Both arms have the same repair budget (``max_repairs``, default 2). A round is repaired
 when its answer has no file blocks (or names a file the arm cannot take), when the app
@@ -400,6 +402,18 @@ class _LatticeArm:
         programs, profile = l_start(t)
         self.start = {**programs, prompts.PROFILE_FILE: profile}
         self.state = dict(self.start)
+        self._lifted: tuple[str, ...] | None = None
+
+    def lifted(self) -> tuple[str, ...]:
+        """The routes of the start programs: the template routes the edit may replace or
+        drop (lattice.emit.thin keeps every other template route)."""
+        if self._lifted is None:
+            from lattice.emit.thin import program_routes
+
+            start = {n: s for n, s in self.start.items() if n != prompts.PROFILE_FILE}
+            profile = load_profile_source(self.start[prompts.PROFILE_FILE])
+            self._lifted = program_routes(start, profile)
+        return self._lifted
 
     def edited(self) -> tuple[dict[str, str | None], dict[str, str]]:
         after = {n: s for n, s in self.state.items() if s != self.start.get(n)}
@@ -453,7 +467,7 @@ class _LatticeArm:
             shutil.rmtree(root, ignore_errors=True)
 
         try:
-            emitted = emit_into_template(programs, profile_src, out)
+            emitted = emit_into_template(programs, profile_src, out, lifted=self.lifted())
         except EmitError as exc:
             cleanup()
             errors = [d for d in exc.diagnostics if d.severity is Severity.ERROR]
