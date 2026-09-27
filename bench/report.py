@@ -9,6 +9,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from bench.metrics import cost_usd
 from bench.runners import TaskOutcome
 from bench.safety import outcome_class
 
@@ -26,11 +27,138 @@ class ArmTierStats:
 
 
 @dataclass(frozen=True)
+class Efficiency:
+    """Cost and program-size metrics for one group of outcomes. A metric is
+    None ("n/a") when no outcome in the group recorded it (e.g. outcomes
+    written before the field existed, or an unpriced model)."""
+
+    n: int
+    correct: int
+    mean_cost_usd: float | None
+    cost_per_correct_usd: float | None
+    mean_input_tokens: float
+    mean_output_tokens: float
+    mean_program_lines: float | None  # over outcomes that produced a program
+    mean_program_ast_nodes: float | None  # over outcomes with a parseable program
+    mean_exec_s: float | None  # over outcomes whose final program ran
+
+
+def outcome_cost(o: TaskOutcome) -> float:
+    """Recorded ``cost_usd``, or -- for outcomes written before it existed --
+    recomputed from the tokens and the first served model (0 if unpriced)."""
+    if o.cost_usd:
+        return o.cost_usd
+    model = o.model.split(",")[0]
+    return cost_usd(
+        model,
+        input_tokens=o.input_tokens,
+        output_tokens=o.output_tokens,
+        cache_read_tokens=o.cache_read_tokens,
+        cache_creation_tokens=o.cache_creation_tokens,
+    )
+
+
+def _mean(values: Sequence[float]) -> float | None:
+    return sum(values) / len(values) if values else None
+
+
+def efficiency(group: Sequence[TaskOutcome]) -> Efficiency:
+    n = len(group)
+    correct = sum(1 for o in group if o.correct)
+    costs = [outcome_cost(o) for o in group]
+    priced = any(c > 0 for c in costs)
+    total_cost = sum(costs)
+    return Efficiency(
+        n=n,
+        correct=correct,
+        mean_cost_usd=total_cost / n if priced and n else None,
+        cost_per_correct_usd=total_cost / correct if priced and correct else None,
+        mean_input_tokens=sum(o.input_tokens for o in group) / n if n else 0.0,
+        mean_output_tokens=sum(o.output_tokens for o in group) / n if n else 0.0,
+        mean_program_lines=_mean([o.program_lines for o in group if o.program_chars > 0]),
+        mean_program_ast_nodes=_mean(
+            [o.program_ast_nodes for o in group if o.program_ast_nodes > 0]
+        ),
+        mean_exec_s=_mean([o.exec_s for o in group if o.exec_s > 0]),
+    )
+
+
+def _ratio(num: float | None, den: float | None) -> str:
+    if num is None or den is None or den == 0:
+        return "n/a"
+    return f"{num / den:.2f}×"
+
+
+def efficiency_verdicts(outcomes: Sequence[TaskOutcome]) -> tuple[str, ...]:
+    """One line per served model: arm B vs arm P (or A when P is absent) on
+    cost per correct task and mean final-program AST nodes."""
+    by_model: dict[str, list[TaskOutcome]] = defaultdict(list)
+    for o in outcomes:
+        by_model[o.model.split(",")[0] or "(unrecorded model)"].append(o)
+    verdicts: list[str] = []
+    for model, group in sorted(by_model.items()):
+        arms = {o.arm for o in group}
+        base = "P" if "P" in arms else "A" if "A" in arms else None
+        if "B" not in arms or base is None:
+            continue
+        b = efficiency([o for o in group if o.arm == "B"])
+        x = efficiency([o for o in group if o.arm == base])
+        verdicts.append(
+            f"**{model}** — B vs {base}: cost per correct task "
+            f"{_ratio(b.cost_per_correct_usd, x.cost_per_correct_usd)}, program AST nodes "
+            f"{_ratio(b.mean_program_ast_nodes, x.mean_program_ast_nodes)}"
+        )
+    return tuple(verdicts)
+
+
+def _fmt(value: float | None, spec: str, prefix: str = "") -> str:
+    return "n/a" if value is None else f"{prefix}{value:{spec}}"
+
+
+def _efficiency_lines(
+    label: str, rows: Sequence[tuple[str, str, Efficiency]], verdicts: Sequence[str]
+) -> list[str]:
+    lines = [
+        "",
+        "## Efficiency",
+        "",
+        f"| Arm | {label} | n | Correct | Mean cost / task | Cost / correct task "
+        "| Mean input tokens | Mean output tokens | Mean program lines | Mean AST nodes "
+        "| Mean exec (s) |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for arm, key, e in rows:
+        lines.append(
+            f"| {arm} | {key} | {e.n} | {e.correct} | {_fmt(e.mean_cost_usd, '.4f', '$')} | "
+            f"{_fmt(e.cost_per_correct_usd, '.4f', '$')} | {e.mean_input_tokens:.0f} | "
+            f"{e.mean_output_tokens:.0f} | {_fmt(e.mean_program_lines, '.1f')} | "
+            f"{_fmt(e.mean_program_ast_nodes, '.1f')} | {_fmt(e.mean_exec_s, '.3f')} |"
+        )
+    lines.append("")
+    lines.append(
+        "Cost = tokens × list price (bench.metrics.PRICES; cache reads 0.1×, cache writes "
+        "1.25× the input price), recomputed from tokens for outcomes that predate cost_usd. "
+        "Program size is the final round's program (lines exclude blanks and comments; AST "
+        "nodes = ast.walk count). Exec = wall time running the final program. n/a = not "
+        "recorded for any outcome in the group."
+    )
+    if verdicts:
+        lines.append("")
+        lines.append("### Efficiency verdict")
+        lines.append("")
+        lines.extend(f"- {v}" for v in verdicts)
+    return lines
+
+
+@dataclass(frozen=True)
 class Summary:
     stats: Mapping[tuple[str, str], ArmTierStats]
     failures: Mapping[str, Mapping[str, int]]
     # arm -> sorted distinct models that actually served its requests
     models: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    # (arm, tier) -> efficiency metrics, and one efficiency verdict per model
+    efficiency: Mapping[tuple[str, str], Efficiency] = field(default_factory=dict)
+    verdicts: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -74,9 +202,7 @@ def _stats_for(outcomes: Sequence[TaskOutcome]) -> ArmTierStats:
     # refusal) counts against the pass rate instead of dropping out of it.
     checked = [o for o in outcomes if o.check_passed is not None or o.arm != "A"]
     if checked:
-        first_shot_pass = sum(1 for o in checked if o.check_passed and o.rounds == 1) / len(
-            checked
-        )
+        first_shot_pass = sum(1 for o in checked if o.check_passed and o.rounds == 1) / len(checked)
         check_pass_rate = sum(1 for o in checked if o.check_passed) / len(checked)
     else:
         first_shot_pass = None
@@ -115,13 +241,19 @@ def summarize(outcomes: Sequence[TaskOutcome]) -> Summary:
     stats: dict[tuple[str, str], ArmTierStats] = {
         key: _stats_for(group) for key, group in by_arm_tier.items()
     }
+    eff: dict[tuple[str, str], Efficiency] = {
+        key: efficiency(group) for key, group in by_arm_tier.items()
+    }
     for arm, group in by_arm.items():
         stats[(arm, "all")] = _stats_for(group)
+        eff[(arm, "all")] = efficiency(group)
 
     return Summary(
         stats=stats,
         failures={arm: dict(labels) for arm, labels in failures.items()},
         models={arm: tuple(sorted(names)) for arm, names in models.items() if names},
+        efficiency=eff,
+        verdicts=efficiency_verdicts(outcomes),
     )
 
 
@@ -273,6 +405,15 @@ def render_markdown(summary: Summary, gate: GateResult | None) -> str:
         lines.append(
             f"| {arm} | {tier} | {stat.n} | {stat.accuracy:.2%} | {fsp} | {cpr} | "
             f"{stat.mean_rounds:.2f} | {stat.mean_output_tokens:.1f} | {stat.mean_latency_s:.2f} |"
+        )
+
+    if summary.efficiency:
+        lines.extend(
+            _efficiency_lines(
+                "Tier",
+                [(arm, tier, e) for (arm, tier), e in sorted(summary.efficiency.items())],
+                summary.verdicts,
+            )
         )
 
     lines.append("")
@@ -548,6 +689,14 @@ def render_markdown_step2(outcomes: Sequence[TaskOutcome]) -> str:
         "First-shot pass (Lattice arms) = passed checks on round 1 with no repair."
     )
 
+    if outcomes:
+        eff_rows = [
+            (arm, family or "(none)", efficiency(group))
+            for (arm, family), group in sorted(by_arm_family.items())
+        ]
+        eff_rows += [(arm, "all", efficiency(group)) for arm, group in sorted(by_arm.items())]
+        lines.extend(_efficiency_lines("Family", eff_rows, efficiency_verdicts(outcomes)))
+
     flag_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for o in outcomes:
         for flag in o.static_flags:
@@ -604,5 +753,9 @@ def read_outcomes(path: Path) -> list[TaskOutcome]:
             for name in ("unsafe", "static_flags", "blocked"):
                 if name in fields:  # JSON has no tuples; restore the dataclass's type
                     fields[name] = tuple(fields[name])
+            if "diagnostics_per_round" in fields:
+                fields["diagnostics_per_round"] = tuple(
+                    tuple(codes) for codes in fields["diagnostics_per_round"]
+                )
             outcomes.append(TaskOutcome(**fields))
     return outcomes

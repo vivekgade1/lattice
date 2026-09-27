@@ -5,6 +5,7 @@ from __future__ import annotations
 import dataclasses
 import glob
 import shutil
+import time
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -14,12 +15,13 @@ import polars as pl
 
 from bench.compare import frames_match
 from bench.datasets import DATASETS, Dataset, bench_profile
+from bench.metrics import cost_usd, program_metrics
 from bench.safety import extra_files, sandbox_denials, scan_lattice, scan_pandas
 from bench.sandbox import ScriptResult, run_python_script
 from bench.tasks import Task
 from lattice.check import check_source
 from lattice.diagnostics import Diagnostic, Severity, Span, render_for_llm, sort_key
-from lattice.llm.client import Generation, GenerationRefused, Generator, extract_code
+from lattice.llm.client import Generation, GenerationRefused, Generator, Usage, extract_code
 from lattice.llm.prompt import (
     baseline_system_prompt,
     baseline_task_message,
@@ -152,6 +154,21 @@ class TaskOutcome:
     # Lattice arms: safety-relevant checker codes (L501/L506) that rejected a
     # program in some round -- the unsafe action was blocked before running.
     blocked: tuple[str, ...] = ()
+    # Efficiency / program-quality metrics (defaults keep old JSONL readable).
+    cache_creation_tokens: int = 0  # cache-write share of input_tokens, summed over rounds
+    # Size of the final round's program (0 when the final round had no code);
+    # see bench.metrics.program_metrics.
+    program_lines: int = 0
+    program_statements: int = 0
+    program_ast_nodes: int = 0
+    program_chars: int = 0
+    # Wall time of executing the final round's program (sandbox run for pandas
+    # arms, run_source for Lattice arms); 0 when the final round did not run.
+    exec_s: float = 0.0
+    # One entry per round: Lattice error codes (static, or the runtime code),
+    # pandas failure labels; () for a round that ran and wrote output.
+    diagnostics_per_round: tuple[tuple[str, ...], ...] = ()
+    cost_usd: float = 0.0  # tokens x bench.metrics.PRICES; 0 for an unknown model
 
 
 def _wrote_exact(workdir: Path, name: str) -> bool:
@@ -219,8 +236,10 @@ class _Totals:
     output_tokens: int
     input_tokens: int
     cache_read_tokens: int
+    cache_creation_tokens: int
     latency_s: float
     models: tuple[str, ...]
+    cost_usd: float
 
 
 class _Ledger:
@@ -234,6 +253,14 @@ class _Ledger:
         self.unsafe: list[str] = []
         self.static_flags: list[str] = []
         self.blocked: list[str] = []
+        # Final-round program and its execution time, reset every round.
+        self.final_code: str | None = None
+        self.exec_s = 0.0
+        self.diagnostics: list[tuple[str, ...]] = []
+
+    def start_round(self, code: str | None) -> None:
+        self.final_code = code
+        self.exec_s = 0.0
 
     def totals(self) -> _Totals:
         g = self.generations
@@ -241,14 +268,17 @@ class _Ledger:
             output_tokens=sum(x.usage.output_tokens for x in g),
             input_tokens=sum(x.usage.total_input_tokens for x in g),
             cache_read_tokens=sum(x.usage.cache_read_input_tokens for x in g),
+            cache_creation_tokens=sum(x.usage.cache_creation_input_tokens for x in g),
             latency_s=sum(x.latency_s for x in g),
             models=tuple(x.model for x in g),
+            cost_usd=sum(_generation_cost(x.model, x.usage) for x in g),
         )
 
     def outcome(
         self, *, correct: bool, check_passed: bool | None, failure: str | None, detail: str
     ) -> TaskOutcome:
         t = self.totals()
+        size = program_metrics(self.final_code or "")
         return TaskOutcome(
             task_id=self.task.id,
             arm=self.arm,
@@ -267,10 +297,20 @@ class _Ledger:
             family=self.task.family,
             static_flags=_dedup(self.static_flags),
             blocked=_dedup(self.blocked),
+            cache_creation_tokens=t.cache_creation_tokens,
+            program_lines=size.lines,
+            program_statements=size.statements,
+            program_ast_nodes=size.ast_nodes,
+            program_chars=size.chars,
+            exec_s=self.exec_s,
+            diagnostics_per_round=tuple(self.diagnostics),
+            cost_usd=t.cost_usd,
         )
 
     def refused(self, exc: GenerationRefused, *, check_passed: bool | None) -> TaskOutcome:
         """Outcome for a refusal: earlier rounds' accounting plus the refused call."""
+        self.start_round(None)
+        self.diagnostics.append(("refused",))
         t = self.totals()
         return dataclasses.replace(
             self.outcome(
@@ -281,8 +321,20 @@ class _Ledger:
             input_tokens=t.input_tokens + exc.usage.total_input_tokens,
             latency_s=t.latency_s + exc.latency_s,
             cache_read_tokens=t.cache_read_tokens + exc.usage.cache_read_input_tokens,
+            cache_creation_tokens=t.cache_creation_tokens + exc.usage.cache_creation_input_tokens,
             model=_join_models([*t.models, exc.model]),
+            cost_usd=t.cost_usd + _generation_cost(exc.model, exc.usage),
         )
+
+
+def _generation_cost(model: str, usage: Usage) -> float:
+    return cost_usd(
+        model,
+        input_tokens=usage.total_input_tokens,
+        output_tokens=usage.output_tokens,
+        cache_read_tokens=usage.cache_read_input_tokens,
+        cache_creation_tokens=usage.cache_creation_input_tokens,
+    )
 
 
 def _score(
@@ -399,6 +451,7 @@ def _run_lattice(
         index = len(ledger.generations)
 
         code = extract_code(generation.text)
+        ledger.start_round(code)
         check_passed = False
         if code is None:
             diagnostics: tuple[Diagnostic, ...] = (_NO_CODE_DIAGNOSTIC,)
@@ -415,6 +468,15 @@ def _run_lattice(
             )
 
         if not check_passed:
+            ledger.diagnostics.append(
+                _dedup(
+                    [
+                        d.code
+                        for d in sorted(diagnostics, key=sort_key)
+                        if d.severity is Severity.ERROR
+                    ]
+                )
+            )
             failure = classify_failure(diagnostics)
             detail = render_for_llm(diagnostics)
             feedback = _static_repair_message(diagnostics)
@@ -423,20 +485,25 @@ def _run_lattice(
             _clear_outputs(workdir)
             before = _snapshot(workdir)
             runtime_error: LatticeRuntimeError | None = None
+            started = time.perf_counter()
             try:
                 run_source(code, profile, workdir)
             except LatticeRuntimeError as exc:
                 runtime_error = exc
+            ledger.exec_s = time.perf_counter() - started
             ledger.unsafe.extend(_executed_unsafe(workdir, before, allowed))
             if runtime_error is not None:
                 if runtime_error.code in _UNSAFE_RUNTIME_CODES:
                     ledger.unsafe.append(f"runtime:{runtime_error.code}")
                 failure = "runtime_error"
                 detail = runtime_error.render()
+                ledger.diagnostics.append((runtime_error.code,))
             elif not _wrote_exact(workdir, "out.parquet"):
                 failure = "no_output"
                 detail = "program did not write out.parquet"
+                ledger.diagnostics.append((failure,))
             else:
+                ledger.diagnostics.append(())
                 return _score(ledger, workdir, fixtures_frames, check_passed=True)
             feedback = _runtime_repair_message(detail)
 
@@ -498,6 +565,7 @@ def _run_pandas(
         ledger.generations.append(generation)
 
         code = extract_code(generation.text)
+        ledger.start_round(code)
         stderr = ""
         if code is None:
             failure = "no_code"
@@ -506,7 +574,9 @@ def _run_pandas(
             ledger.static_flags.extend(scan_pandas(code))
             _clear_outputs(workdir)
             before = _snapshot(workdir)
+            started = time.perf_counter()
             result: ScriptResult = run_python_script(code, workdir)
+            ledger.exec_s = time.perf_counter() - started
             stderr = result.stderr
             ledger.unsafe.extend(_executed_unsafe(workdir, before, allowed, stderr))
             if result.timed_out:
@@ -516,8 +586,10 @@ def _run_pandas(
             elif not _wrote_exact(workdir, "out.parquet"):
                 failure, detail = "no_output", "script did not write out.parquet"
             else:
+                ledger.diagnostics.append(())
                 return _score(ledger, workdir, fixtures_frames, check_passed=None)
 
+        ledger.diagnostics.append((failure,))
         if attempt == max_repairs:
             return ledger.outcome(correct=False, check_passed=None, failure=failure, detail=detail)
         messages.append({"role": "assistant", "content": generation.text})

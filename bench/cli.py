@@ -1,5 +1,9 @@
 """``python -m bench.cli run [...]`` — the benchmark driver.
 
+``python -m bench.cli report <out_dir> [--merge other.jsonl ...]`` re-renders
+``<out_dir>/report.md`` from existing outcomes (no model calls), so metrics
+added to the report later can be recomputed for past runs.
+
 Live model runs cost money: don't invoke this without ``--offline`` unless a
 human has approved a live run against the real API (see the plan's global
 constraints).
@@ -20,6 +24,7 @@ from bench.envfile import load_env_file
 from bench.report import (
     append_outcome,
     evaluate_gate,
+    read_outcomes,
     render_markdown,
     render_markdown_step2,
     summarize,
@@ -76,7 +81,39 @@ def _build_parser() -> argparse.ArgumentParser:
         "--workers", type=int, default=1, help="tasks to run concurrently (default 1)"
     )
 
+    report_parser = subparsers.add_parser(
+        "report", help="re-render report.md from an existing outcomes.jsonl"
+    )
+    report_parser.add_argument("out_dir", help="run directory holding outcomes.jsonl")
+    report_parser.add_argument(
+        "--merge",
+        nargs="+",
+        default=[],
+        metavar="OUTCOMES_JSONL",
+        help="extra outcomes.jsonl files to merge into the report",
+    )
+
     return parser
+
+
+def _render_report(outcomes: Sequence[TaskOutcome], *, bench2: bool) -> str:
+    if bench2:
+        return render_markdown_step2(outcomes)
+    summary = summarize(outcomes)
+    gate = evaluate_gate(summary) if outcomes else None
+    return render_markdown(summary, gate)
+
+
+def _report(out_dir: Path, merge: Sequence[str]) -> int:
+    outcomes = read_outcomes(out_dir / "outcomes.jsonl")
+    for extra in merge:
+        outcomes.extend(read_outcomes(Path(extra)))
+    # bench2 outcomes carry a family; the other suites never do.
+    bench2 = any(o.family for o in outcomes)
+    report_path = out_dir / "report.md"
+    report_path.write_text(_render_report(outcomes, bench2=bench2))
+    print(str(report_path))
+    return 0
 
 
 def _run_one(
@@ -121,6 +158,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     load_env_file()
     parser = _build_parser()
     args = parser.parse_args(argv)
+    if args.command == "report":
+        return _report(Path(args.out_dir), args.merge)
 
     arms: tuple[Arm, ...] = tuple(a.strip() for a in args.arms.split(",") if a.strip())  # type: ignore[assignment]
 
@@ -187,12 +226,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             outcomes = list(pool.map(lambda job: run_task(*job), jobs))
 
     report_path = out_dir / "report.md"
-    if args.suite == "bench2":
-        report_path.write_text(render_markdown_step2(outcomes))
-    else:
-        summary = summarize(outcomes)
-        gate = evaluate_gate(summary) if outcomes else None
-        report_path.write_text(render_markdown(summary, gate))
+    report_path.write_text(_render_report(outcomes, bench2=args.suite == "bench2"))
 
     print(str(report_path))
     return 0
