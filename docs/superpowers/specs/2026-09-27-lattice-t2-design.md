@@ -88,7 +88,12 @@ def digest(rows: list[Row[Item]], caller: Caller) -> list[str]:
 5. Importer: the carve-out rung R3 emits a T2 procedure instead of a native where the code fits the subset.
 6. All existing tests pass. The dry run (t1–t12) is correct in both arms, including t12, now expressible.
 7. Prompt guide: one concise T2 section, with equal-information baseline notes. Size delta reported.
-8. Then **round 3** of the thin slice: the 12 tickets plus **6 fresh held-out tickets (t13–t18)**, 216 runs, with prompt caching enabled in both arms.
+8. Then **round 3** of the thin slice:
+   - the 12 template tickets;
+   - **6 fresh held-out template tickets (t13–t18)**;
+   - **6 tickets on the held-out repositories** (3 on TaskFlow, 3 on JustNotes; `bench/import_repos/`), to test whether the language and profile mechanisms are generic rather than shaped by the template.
+   
+   Arm L's starting state on the held-out repos comes from the importer (lifters + the LLM close-the-gap loop, importer node I5), never from hand-written Lattice. Prompt caching is enabled in both arms. That makes 24 tickets × 2 arms × 2 models × 3 reps = 288 runs.
 
 ## 8. Build order
 
@@ -98,4 +103,5 @@ def digest(rows: list[Row[Item]], caller: Caller) -> list[str]:
 4. Tier reporting, hints, guide.
 5. Loop corpus l12 + importer R3 → T2.
 6. Review.
-7. Round 3.
+7. Importer I5 (LLM close-the-gap loop), needed to import the held-out repos for round 3.
+8. Round 3.
