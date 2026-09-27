@@ -156,6 +156,19 @@ Report these side by side with accuracy so the verdict covers correctness, cost,
 - Remaining Lattice misses: f12 (stops at per-customer rows), w02 (divides the already-per-unit column by qty again), f03 (used `at_max` for "earliest").
 - Gate: silent-failure reduction PASS (5.9% vs 22.1%), accuracy parity PASS; safety not demonstrated.
 
+### Model trend — no hints, after the prompt cut (Lattice system prompt 10.6k → 7.8k chars)
+
+| Model | P pandas + repair: correct / silent on 34 traps | B Lattice + repair: correct / silent | All 54: P vs B | Cost per correct task, B vs P |
+|---|---|---|---|---|
+| claude-haiku-4-5 (run 4) | 19 / 15 | **32 / 2** | 72.2% vs **94.4%** | 0.98× |
+| claude-sonnet-5 | **34 / 0** | 33 / 1 | **100%** vs 98.1% | 1.40× |
+| claude-opus-5 | **34 / 0** | 34 / 0 | 100% vs 100% | 1.54× |
+
+- Sonnet 5 and Opus 5 fall into none of the pandas traps even without advice; Lattice's structural guarantees add nothing there and it costs more: ~25% more input tokens (4.5k vs 3.6k per task) and more output tokens (Opus 384 vs 211 per task — adaptive thinking spent on the less familiar language).
+- Lattice programs are consistently shorter (7.4–7.9 vs 9.1–9.8 lines) with about the same AST size (0.98–0.99×).
+- Sonnet's single Lattice miss (n08) and all C-arm misses were first-shot static errors or one logic slip; 0 refusals across 432 calls.
+- Safety remains not demonstrated.
+
 ### Conclusion
 
 - The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
