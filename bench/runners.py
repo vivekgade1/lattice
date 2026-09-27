@@ -822,6 +822,45 @@ def _run_api_baseline(
     raise AssertionError("unreachable")  # pragma: no cover
 
 
+def _backend_detail(backend: str, detail: str) -> str:
+    """Arms B/C on the generated app record the backend in the outcome detail."""
+    if backend == "runtime":
+        return detail
+    return f"backend={backend}" + (f"; {detail}" if detail else "")
+
+
+def _run_generated_cases(
+    code: str,
+    workdir: Path,
+    task: Any,
+    *,
+    db_builder: Any,
+    profile: Profile,
+    kit_path: Path | None,
+) -> Any:
+    """Check -> lower -> generate the FastAPI app, then run the task's cases on it in
+    the sandbox (``run_cases_fastapi``). A rejected program yields the same result
+    shape as ``run_cases_lattice`` (not started, with the checker's diagnostics)."""
+    from bench.api_runner import CaseResults, run_cases_fastapi
+    from lattice.api.codegen import compile_source_to_fastapi
+
+    if kit_path is None:
+        raise ValueError("the generated backend needs kit_path")
+    try:
+        check, app_source = compile_source_to_fastapi(code, profile)
+    except Exception as exc:
+        return CaseResults(cases=(), started=False, start_error=f"{type(exc).__name__}: {exc}")
+    if app_source is None:
+        return CaseResults(
+            cases=(),
+            started=False,
+            start_error=render_for_llm(check.diagnostics),
+            diagnostics=tuple(check.diagnostics),
+        )
+    workdir.mkdir(parents=True, exist_ok=True)
+    return run_cases_fastapi(app_source, workdir, task, db_builder=db_builder, kit_path=kit_path)
+
+
 def _run_api_lattice(
     task: Any,
     generator: Generator,
@@ -835,6 +874,8 @@ def _run_api_lattice(
     prompts: Any = None,
     serve: Any = None,
     hooks: Any = None,
+    backend: Literal["runtime", "generated"] = "runtime",
+    kit_path: Path | None = None,
 ) -> TaskOutcome:
     """Arms B (repair) and C (single shot): a Lattice API program, checked and
     served by the runtime, run against the task's HTTP cases in process.
@@ -842,7 +883,12 @@ def _run_api_lattice(
     B repairs on the checker's diagnostics (the same message as bench2's static
     repair) and on the same visible run-time failures arm P repairs on (start
     error, a crashed happy case, every happy case failing) -- never on a trap
-    case."""
+    case.
+
+    ``backend="generated"`` serves the checked program through the FastAPI app
+    ``lattice.api.codegen`` generates from it (run in the sandbox over the
+    platform kit at ``kit_path``, like arms A/P) instead of the runtime; the
+    outcome's detail then starts with ``backend=generated``."""
     from bench.api_runner import run_cases_lattice
 
     if arm == "C":
@@ -875,15 +921,25 @@ def _run_api_lattice(
         else:
             (workdir / f"program_round{index}.py").write_text(code)
             started = time.perf_counter()
-            results = run_cases_lattice(
-                code,
-                workdir,
-                task,
-                db_builder=db_builder,
-                profile=profile,
-                serve=serve,
-                hooks=hooks,
-            )
+            if backend == "generated":
+                results = _run_generated_cases(
+                    code,
+                    workdir / f"generated_round{index}",
+                    task,
+                    db_builder=db_builder,
+                    profile=profile,
+                    kit_path=kit_path,
+                )
+            else:
+                results = run_cases_lattice(
+                    code,
+                    workdir,
+                    task,
+                    db_builder=db_builder,
+                    profile=profile,
+                    serve=serve,
+                    hooks=hooks,
+                )
             elapsed = time.perf_counter() - started
             if results.diagnostics:
                 ordered = sorted(results.diagnostics, key=sort_key)
@@ -907,7 +963,7 @@ def _run_api_lattice(
                         correct=correct,
                         check_passed=True,
                         failure=label,
-                        detail=detail,
+                        detail=_backend_detail(backend, detail),
                     )
                 failure = label or visible[0]
                 ledger.diagnostics.append((failure,))
@@ -920,7 +976,7 @@ def _run_api_lattice(
                 correct=False,
                 check_passed=check_passed,
                 failure=failure,
-                detail=detail,
+                detail=_backend_detail(backend, detail),
             )
         messages.append({"role": "assistant", "content": generation.text})
         messages.append({"role": "user", "content": feedback})

@@ -91,6 +91,12 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument(
         "--workers", type=int, default=1, help="tasks to run concurrently (default 1)"
     )
+    run_parser.add_argument(
+        "--lattice-backend",
+        default="runtime",
+        choices=("runtime", "generated"),
+        help="api suite: serve Lattice arms (B/C) with the runtime or the generated FastAPI app",
+    )
 
     report_parser = subparsers.add_parser(
         "report", help="re-render report.md from an existing outcomes.jsonl"
@@ -205,6 +211,7 @@ def _run_one_api(
     model: str,
     max_repairs: int,
     hints: bool = True,
+    lattice_backend: str = "runtime",
 ) -> TaskOutcome:
     workdir = _prepare_api_workdir(work_root / arm, task.id)
     if offline_dir is not None:
@@ -232,6 +239,8 @@ def _run_one_api(
             arm=arm,
             max_repairs=max_repairs if arm == "B" else 0,
             hints=hints,
+            backend=lattice_backend,
+            kit_path=context.kit_path,
         )
     raise ValueError(f"unknown arm: {arm!r}")
 
@@ -295,6 +304,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     model=args.model,
                     max_repairs=args.max_repairs,
                     hints=not args.no_hints,
+                    lattice_backend=args.lattice_backend,
                 )
             else:
                 outcome = _run_one(

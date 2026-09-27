@@ -1,0 +1,918 @@
+"""Phase B of the API profile: compile lowered endpoint plans to a standalone FastAPI app.
+
+`generate_fastapi(plans)` emits the source of an `app.py` that imports only the standard
+library, FastAPI and the benchmark's `platform_kit` (`app`, `get_db`), and serves the
+same endpoints as the Phase A runtime (`lattice.api.runtime`) with identical observable
+behaviour: statuses, JSON bodies, database effects and the number of SQL statements.
+
+Design of the generated module:
+
+* A fixed prelude — a line-for-line port of the runtime's request pipeline (parameter
+  conversion and validation, bearer-token authentication, the per-request transaction,
+  the step helpers, response serialization and the four SQLite functions the compiled
+  SQL calls).
+* Per endpoint: its parameter specs, one module constant per statement holding the
+  plan's precompiled SQL text verbatim, a steps function that executes the plan's steps
+  in order (every value reaches SQLite as a named bind parameter), and a route decorated
+  on the kit's `app`. Routes are registered in the runtime's order (literal path
+  segments before parameters).
+
+Authentication is generated inline rather than through the kit's `current_user` /
+`require_role` dependencies, because the kit differs from the runtime observably:
+
+1. The kit accepts only the exact prefix `"Bearer "`; the runtime strips the header and
+   matches the scheme case-insensitively (`bearer x` and ` Bearer x` authenticate).
+2. The kit selects the fixed columns `id, role, email, name`; the runtime reads the
+   users table's full row, which a plan binds as the caller's rows (`user`). Reusing the
+   kit would need a second SELECT, changing the statement count.
+3. The kit resolves the caller on a separate connection opened by its own `get_db`
+   dependency (never closed) and before the handler runs; the runtime authenticates on
+   the request's single connection, and a missing/malformed header is rejected with 401
+   before any connection is opened.
+
+The 401/403 bodies (`{"error": "unauthorized"}` / `{"error": "forbidden"}`), the
+precedence (401, then 403, then 422 validation) and the Admin rule are the runtime's.
+Every connection still comes from the kit's `get_db`, so the harness's statement
+counting applies identically.
+"""
+
+from __future__ import annotations
+
+import ast
+import builtins
+import datetime as dt
+import keyword
+import math
+import re
+from collections.abc import Sequence
+from dataclasses import dataclass
+
+from lattice.api.ir import CheckStep, EndpointPlan, ReadStep, WriteStep, lower_api
+from lattice.api.sql import IS_ADMIN, USER_ID, SqlQuery, q
+from lattice.catalog import USER_PARAM
+from lattice.check import CheckResult, check_source
+from lattice.check.api_info import MISSING, ParamSpec
+from lattice.profile import Profile
+from lattice.runtime import LatticeInternalError
+
+__all__ = ["compile_source_to_fastapi", "generate_fastapi"]
+
+_METHODS = {"GET": "get", "POST": "post", "PUT": "put", "PATCH": "patch", "DELETE": "delete"}
+
+_PRELUDE = '''\
+from __future__ import annotations
+
+import datetime as dt
+import json
+import math
+import re
+import sqlite3
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
+from typing import Any, NamedTuple
+
+from fastapi import Request
+from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import JSONResponse, Response
+
+from platform_kit import app, get_db
+
+# ======================================================================================
+# Shared request pipeline (a port of lattice/api/runtime.py)
+# ======================================================================================
+
+
+class _Missing:
+    def __repr__(self) -> str:
+        return "MISSING"
+
+
+MISSING: Any = _Missing()  # a parameter without a default value
+
+
+@dataclass(frozen=True)
+class Param:
+    """One endpoint parameter; `scalar` is Int | Float | Str | Bool | Date."""
+
+    name: str
+    source: str  # "path" | "query" | "body"
+    scalar: str
+    ge: float | None = None
+    le: float | None = None
+    min_len: int | None = None
+    max_len: int | None = None
+    one_of: tuple[str, ...] | None = None
+    default: object = MISSING
+
+
+@dataclass(frozen=True)
+class Endpoint:
+    name: str
+    auth: str  # the role allowed to call it ("Public": anyone, without a token)
+    params: tuple[Param, ...]
+    writes: bool  # BEGIN IMMEDIATE when the endpoint writes, else BEGIN
+    auth_sql: str  # the caller's row by token
+    user_columns: tuple[str, ...]
+    user_key: str
+    admin_role: str
+
+
+class Caller(NamedTuple):
+    id: object
+    is_admin: int  # bound as :__is_admin
+    row: tuple[Any, ...]  # the caller's row (Endpoint.user_columns)
+
+
+Result = tuple[tuple[str, ...], list[tuple[Any, ...]]]  # (columns, rows)
+
+
+class ErrorResponse(Exception):
+    def __init__(self, status: int, body: Mapping[str, object]) -> None:
+        super().__init__(status)
+        self.status = status
+        self.body = body
+
+
+class Failure(Exception):
+    """A data-dependent failure (one() matched several rows): 500 with the message."""
+
+
+def error(status: int, code: str, detail: str) -> ErrorResponse:
+    return ErrorResponse(status, {"error": code, "detail": detail})
+
+
+# ---- SQLite functions the compiled SQL calls ------------------------------------------
+
+
+def _lower(x: object) -> object:
+    return x.lower() if isinstance(x, str) else x
+
+
+def _upper(x: object) -> object:
+    return x.upper() if isinstance(x, str) else x
+
+
+def _strip(x: object) -> object:
+    return x.strip() if isinstance(x, str) else x
+
+
+def _mod(a: object, b: object) -> object:
+    if a is None or b is None or b == 0:
+        return None
+    return a % b  # type: ignore[operator]
+
+
+def connect() -> sqlite3.Connection:
+    """The kit's connection, in autocommit mode (transactions are explicit)."""
+    conn = get_db()
+    conn.row_factory = None
+    conn.isolation_level = None
+    conn.create_function("lattice_lower", 1, _lower, deterministic=True)
+    conn.create_function("lattice_upper", 1, _upper, deterministic=True)
+    conn.create_function("lattice_strip", 1, _strip, deterministic=True)
+    conn.create_function("lattice_mod", 2, _mod, deterministic=True)
+    return conn
+
+
+# ---- parameters -------------------------------------------------------------------------
+
+_INT = re.compile(r"[+-]?\\d+")
+_TRUE = frozenset({"true", "1", "yes", "on"})
+_FALSE = frozenset({"false", "0", "no", "off"})
+_TYPE_NAMES = {
+    "Int": "an integer",
+    "Float": "a number",
+    "Str": "a string",
+    "Bool": "a boolean",
+    "Date": "an ISO date (YYYY-MM-DD)",
+}
+
+
+def _convert(spec: Param, raw: object, *, text: bool) -> object:
+    """The typed value of one parameter, or raise ValueError(message). `text`: the raw
+    value comes from the path or the query string (always a string)."""
+    bad = ValueError(f"must be {_TYPE_NAMES[spec.scalar]}")
+    if spec.scalar == "Int":
+        if text and isinstance(raw, str) and _INT.fullmatch(raw.strip()):
+            return int(raw)
+        if not text and isinstance(raw, int) and not isinstance(raw, bool):
+            return raw
+        if not text and isinstance(raw, float) and raw.is_integer():
+            return int(raw)
+        raise bad
+    if spec.scalar == "Float":
+        value: float
+        if text and isinstance(raw, str):
+            try:
+                value = float(raw)
+            except ValueError:
+                raise bad from None
+        elif not text and isinstance(raw, int | float) and not isinstance(raw, bool):
+            value = float(raw)
+        else:
+            raise bad
+        if not math.isfinite(value):
+            raise bad
+        return value
+    if spec.scalar == "Str":
+        if isinstance(raw, str):
+            return raw
+        raise bad
+    if spec.scalar == "Bool":
+        if text and isinstance(raw, str) and raw.lower() in _TRUE | _FALSE:
+            return raw.lower() in _TRUE
+        if not text and isinstance(raw, bool):
+            return raw
+        raise bad
+    if isinstance(raw, str):  # Date
+        try:
+            return dt.date.fromisoformat(raw)
+        except ValueError:
+            raise bad from None
+    raise bad
+
+
+def _num(v: float) -> str:
+    return str(int(v)) if float(v).is_integer() else str(v)
+
+
+def _constrain(spec: Param, value: object) -> None:
+    if spec.one_of is not None and value not in spec.one_of:
+        raise ValueError("must be one of " + ", ".join(repr(v) for v in spec.one_of))
+    if isinstance(value, int | float) and not isinstance(value, bool):
+        if spec.ge is not None and value < spec.ge:
+            raise ValueError(f"must be >= {_num(spec.ge)}")
+        if spec.le is not None and value > spec.le:
+            raise ValueError(f"must be <= {_num(spec.le)}")
+    if isinstance(value, str):
+        if spec.min_len is not None and len(value) < spec.min_len:
+            raise ValueError(f"must have at least {spec.min_len} characters")
+        if spec.max_len is not None and len(value) > spec.max_len:
+            raise ValueError(f"must have at most {spec.max_len} characters")
+
+
+def parse_params(
+    params: Sequence[Param], path: Mapping[str, str], query: Mapping[str, str], body: bytes
+) -> dict[str, object]:
+    """Every parameter converted and validated; else 422 listing each problem in order."""
+    detail: list[dict[str, object]] = []
+    values: dict[str, object] = {}
+    data: Mapping[str, object] = {}
+    if any(p.source == "body" for p in params):
+        parsed: object = {}
+        if body.strip():
+            try:
+                parsed = json.loads(body)
+            except ValueError:
+                parsed = None
+        if not isinstance(parsed, dict):
+            detail.append({"loc": ["body"], "msg": "the body must be a JSON object"})
+            raise ErrorResponse(422, {"error": "validation", "detail": detail})
+        data = parsed
+    for spec in params:
+        source: Mapping[str, object] = {"path": path, "query": query, "body": data}[spec.source]
+        loc = [spec.source, spec.name]
+        if spec.name not in source or source[spec.name] is None:
+            if spec.default is not MISSING:
+                values[spec.name] = spec.default
+            else:
+                detail.append({"loc": loc, "msg": "field required"})
+            continue
+        try:
+            value = _convert(spec, source[spec.name], text=spec.source != "body")
+            _constrain(spec, value)
+        except ValueError as err:
+            detail.append({"loc": loc, "msg": str(err)})
+            continue
+        values[spec.name] = value
+    if detail:
+        raise ErrorResponse(422, {"error": "validation", "detail": detail})
+    return values
+
+
+# ---- auth ---------------------------------------------------------------------------------
+
+
+def _token(header: str | None) -> str | None:
+    if header is None:
+        return None
+    scheme, _, token = header.strip().partition(" ")
+    token = token.strip()
+    if scheme.lower() != "bearer" or not token:
+        return None
+    return token
+
+
+def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
+    """The caller by bearer token (one statement): 401 if unknown, 403 if the role may
+    not call the endpoint (the admin role may call every endpoint)."""
+    row = conn.execute(ep.auth_sql, (token,)).fetchone()
+    if row is None:
+        raise ErrorResponse(401, {"error": "unauthorized"})
+    user_id = row[ep.user_columns.index(ep.user_key)]
+    role = str(row[ep.user_columns.index("role")])
+    if not (ep.auth == "Public" or role == ep.auth or role == ep.admin_role):
+        raise ErrorResponse(403, {"error": "forbidden"})
+    return Caller(user_id, int(role == ep.admin_role), tuple(row))
+
+
+# ---- steps --------------------------------------------------------------------------------
+
+
+def sql_value(v: object) -> object:
+    """A parameter value as SQLite stores it (Bool 0/1, Date ISO text)."""
+    if isinstance(v, bool):
+        return int(v)
+    if isinstance(v, dt.date):
+        return v.isoformat()
+    return v
+
+
+def rows_json(result: Result, columns: Sequence[str]) -> str:
+    """Rows of an earlier step, restricted to `columns`, bound as one JSON parameter."""
+    cols, rows = result
+    index = [list(cols).index(c) for c in columns]
+    return json.dumps([[r[i] for i in index] for r in rows])
+
+
+def run(conn: sqlite3.Connection, sql: str, binds: Mapping[str, object]) -> list[tuple[Any, ...]]:
+    return conn.execute(sql, binds).fetchall()
+
+
+def project(result: Result, columns: Sequence[str]) -> list[tuple[Any, ...]]:
+    cols, rows = result
+    index = [cols.index(c) for c in columns]
+    return [tuple(r[i] for i in index) for r in rows]
+
+
+def check_one(result: Result, err: ErrorResponse, where: str) -> None:
+    """one(): exactly one row; none -> the declared error; several -> 500 (R310)."""
+    n = len(result[1])
+    if n == 0:
+        raise err
+    if n > 1:
+        raise Failure(f"{where}: error R310: one() matched {n} rows; expected exactly one")
+
+
+def check_require(result: Result, flag: str, err: ErrorResponse) -> None:
+    """require(): the condition (computed as column `flag`) holds on every row."""
+    if any(not f[0] for f in project(result, [flag])):  # false or null fails
+        raise err
+
+
+def merge_update(
+    source: Result,
+    returned: list[tuple[Any, ...]],
+    columns: tuple[str, ...],
+    key: tuple[str, ...],
+    set_cols: tuple[str, ...],
+) -> Result:
+    """The updated rows: `source` with the new values RETURNING gave (key, values...)."""
+    k = len(key)
+    new = {tuple(r[:k]): r[k:] for r in returned}
+    key_idx = [columns.index(c) for c in key]
+    rows = []
+    for row in project(source, columns):
+        updated = new.get(tuple(row[i] for i in key_idx))
+        if updated is None:
+            rows.append(row)
+            continue
+        cells = list(row)
+        for c, v in zip(set_cols, updated, strict=True):
+            if c in columns:
+                cells[columns.index(c)] = v
+        rows.append(tuple(cells))
+    return columns, rows
+
+
+# ---- responses ----------------------------------------------------------------------------
+
+
+def _decode(v: object, scalar: str) -> object:
+    if v is None:
+        return None
+    if scalar == "Int":
+        return int(v)  # type: ignore[call-overload]
+    if scalar == "Float":
+        return float(v)  # type: ignore[arg-type]
+    if scalar == "Bool":
+        return bool(v)
+    return v  # Str; Date stays ISO text
+
+
+def _items(result: Result, columns: Sequence[tuple[str, str]]) -> list[dict[str, object]]:
+    names = [c for c, _ in columns]
+    return [
+        {c: _decode(v, t) for (c, t), v in zip(columns, row, strict=True)}
+        for row in project(result, names)
+    ]
+
+
+def respond_one(
+    result: Result, columns: Sequence[tuple[str, str]], *, status: int, where: str
+) -> Response:
+    """One / Created: the single returned row as an object."""
+    items = _items(result, columns)
+    if not items:
+        raise ErrorResponse(404, {"error": "not_found", "detail": "no such row"})
+    if len(items) > 1:
+        raise Failure(
+            f"{where}: error R310: the response has {len(items)} rows; expected exactly one"
+        )
+    return JSONResponse(items[0], status_code=status)
+
+
+def respond_page(
+    result: Result, columns: Sequence[tuple[str, str]], limit: object, offset: object
+) -> Response:
+    return JSONResponse({"items": _items(result, columns), "limit": limit, "offset": offset})
+
+
+def _internal(detail: str) -> JSONResponse:
+    return JSONResponse({"error": "internal", "detail": detail[:500]}, status_code=500)
+
+
+Steps = Callable[[sqlite3.Connection, dict[str, object], Caller | None], Response]
+
+
+def serve(
+    ep: Endpoint,
+    steps: Steps,
+    path: Mapping[str, str],
+    query: Mapping[str, str],
+    body: bytes,
+    authorization: str | None,
+) -> Response:
+    """Authenticate, validate, then run the steps in one transaction; any error
+    response rolls back."""
+    conn: sqlite3.Connection | None = None
+    in_txn = False
+    try:
+        caller: Caller | None = None
+        if ep.auth != "Public":
+            token = _token(authorization)
+            if token is None:
+                raise ErrorResponse(401, {"error": "unauthorized"})
+            conn = connect()
+            caller = authenticate(ep, conn, token)
+        values = parse_params(ep.params, path, query, body)
+        if conn is None:
+            conn = connect()
+        conn.execute("BEGIN IMMEDIATE" if ep.writes else "BEGIN")
+        in_txn = True
+        response = steps(conn, values, caller)
+        conn.execute("COMMIT")
+        in_txn = False
+        return response
+    except ErrorResponse as err:
+        return JSONResponse(dict(err.body), status_code=err.status)
+    except Failure as err:
+        return _internal(str(err))
+    except Exception as err:  # loud: any unexpected failure is a 500
+        return _internal(f"{type(err).__name__}: {err}")
+    finally:
+        if conn is not None:
+            if in_txn:
+                try:
+                    conn.execute("ROLLBACK")
+                except sqlite3.Error:
+                    pass
+            conn.close()
+
+
+async def dispatch(request: Request, ep: Endpoint, steps: Steps) -> Response:
+    body = await request.body()
+    return await run_in_threadpool(
+        serve,
+        ep,
+        steps,
+        dict(request.path_params),
+        dict(request.query_params),
+        body,
+        request.headers.get("authorization"),
+    )
+
+
+@app.exception_handler(404)
+@app.exception_handler(405)
+async def http_error(request: Request, exc: Exception) -> Response:
+    status = getattr(exc, "status_code", 500)
+    code = {404: "not_found", 405: "method_not_allowed"}.get(status, "internal")
+    return JSONResponse({"error": code}, status_code=status)
+'''
+
+
+def _module_names(src: str) -> frozenset[str]:
+    """Names bound at module level by `src` (plus the builtins it may call)."""
+    names: set[str] = set(dir(builtins))
+    for node in ast.parse(src).body:
+        match node:
+            case ast.FunctionDef(name=n) | ast.AsyncFunctionDef(name=n) | ast.ClassDef(name=n):
+                names.add(n)
+            case ast.Assign(targets=targets):
+                names.update(t.id for t in targets if isinstance(t, ast.Name))
+            case ast.AnnAssign(target=ast.Name(id=n)):
+                names.add(n)
+            case ast.Import(names=aliases) | ast.ImportFrom(names=aliases):
+                names.update((a.asname or a.name).split(".")[0] for a in aliases)
+    return frozenset(names)
+
+
+# generated module-level names must not shadow the prelude's (or a builtin)
+_RESERVED = _module_names(_PRELUDE)
+
+
+# ---- rendering helpers -------------------------------------------------------------------
+#
+# Generated expressions are small trees (calls, dicts, tuples over atoms) rendered in the
+# style of `ruff format` (line length 100): on one line when it fits, else exploded one
+# element per line with a trailing comma — a form the formatter leaves unchanged.
+
+_WIDTH = 100
+
+
+@dataclass(frozen=True)
+class _Call:
+    func: str
+    args: tuple[_Node, ...]
+
+
+@dataclass(frozen=True)
+class _Kw:
+    name: str
+    value: _Node
+
+
+@dataclass(frozen=True)
+class _Dict:
+    items: tuple[tuple[_Node, _Node], ...]
+
+
+@dataclass(frozen=True)
+class _Tuple:
+    items: tuple[_Node, ...]
+
+
+_Node = str | _Call | _Kw | _Dict | _Tuple  # a str is an atom (already Python source)
+
+
+def _flat(node: _Node) -> str:
+    match node:
+        case str():
+            return node
+        case _Kw(name=name, value=value):
+            return f"{name}={_flat(value)}"
+        case _Call(func=func, args=args):
+            return f"{func}({', '.join(_flat(a) for a in args)})"
+        case _Dict(items=items):
+            return "{" + ", ".join(f"{_flat(k)}: {_flat(v)}" for k, v in items) + "}"
+        case _Tuple(items=items):
+            if len(items) == 1:
+                return f"({_flat(items[0])},)"
+            return "(" + ", ".join(_flat(i) for i in items) + ")"
+    raise LatticeInternalError(f"not a code node: {node!r}")
+
+
+def _render(node: _Node, indent: str, prefix: str = "", suffix: str = "") -> list[str]:
+    """Lines of `prefix + node + suffix` at `indent`, exploded as needed."""
+    line = f"{indent}{prefix}{_flat(node)}{suffix}"
+    if len(line) <= _WIDTH or isinstance(node, str):
+        return [line]
+    inner = indent + "    "
+    match node:
+        case _Kw(name=name, value=value):
+            return _render(value, indent, f"{prefix}{name}=", suffix)
+        case _Call(func=func, args=args) if args:
+            head, close = f"{prefix}{func}(", ")"
+            body = [ln for a in args for ln in _render(a, inner, "", ",")]
+        case _Dict(items=items) if items:
+            head, close = prefix + "{", "}"
+            body = [ln for k, v in items for ln in _render(v, inner, f"{_flat(k)}: ", ",")]
+        case _Tuple(items=items) if items:
+            head, close = prefix + "(", ")"
+            body = [ln for i in items for ln in _render(i, inner, "", ",")]
+        case _:
+            return [line]
+    return [indent + head, *body, indent + close + suffix]
+
+
+def _py_str(s: str) -> str:
+    """A string literal as `ruff format` writes it (double quotes unless that needs
+    more escapes)."""
+    quote = "'" if s.count('"') > s.count("'") else '"'
+    out = []
+    for ch in s:
+        if ch == "\\" or ch == quote:
+            out.append("\\" + ch)
+        elif ch.isprintable():
+            out.append(ch)
+        else:
+            out.append(repr(ch)[1:-1])
+    return quote + "".join(out) + quote
+
+
+def _literal(v: object) -> str:
+    """Python source for a constant value (bind values, defaults, bounds)."""
+    if isinstance(v, str):
+        return _py_str(v)
+    if v is None or isinstance(v, bool | int):
+        return repr(v)
+    if isinstance(v, float):
+        return repr(v) if math.isfinite(v) else f'float("{v}")'
+    if isinstance(v, dt.date):
+        return f"dt.date({v.year}, {v.month}, {v.day})"
+    if isinstance(v, tuple):
+        return _flat(_Tuple(tuple(_literal(x) for x in v)))
+    raise LatticeInternalError(f"no Python literal for {v!r}")
+
+
+def _strs(names: Sequence[str]) -> _Tuple:
+    return _Tuple(tuple(_py_str(n) for n in names))
+
+
+def _sql_constant(text: str) -> str:
+    """The SQL text verbatim as a Python string literal (triple-quoted when possible)."""
+    for quote in ('"""', "'''"):
+        if quote not in text and "\\" not in text and not text.endswith(quote[0]):
+            return quote + text + quote
+    return _py_str(text)
+
+
+def _ident(text: str) -> str:
+    out = re.sub(r"\W+", "_", text).strip("_")
+    return out or "step"
+
+
+class _Names:
+    """Unique module-level names."""
+
+    def __init__(self) -> None:
+        self.used: set[str] = set(_RESERVED)
+
+    def take(self, base: str) -> str:
+        name, n = base, 2
+        while name in self.used or keyword.iskeyword(name):
+            name, n = f"{base}_{n}", n + 1
+        self.used.add(name)
+        return name
+
+
+# ---- per-endpoint generation ---------------------------------------------------------------
+
+
+def _param(spec: ParamSpec) -> _Call:
+    if spec.scalar is None:
+        raise LatticeInternalError(f"parameter '{spec.name}' has no scalar type")
+    args: list[_Node] = [_py_str(spec.name), _py_str(spec.source), _py_str(spec.scalar.value)]
+    for name in ("ge", "le", "min_len", "max_len", "one_of"):
+        value = getattr(spec, name)
+        if value is not None:
+            args.append(_Kw(name, _literal(value)))
+    if spec.default is not MISSING:
+        args.append(_Kw("default", _literal(spec.default)))
+    return _Call("Param", tuple(args))
+
+
+def _auth_sql(plan: EndpointPlan) -> str:
+    """The runtime's authentication statement (identifiers quoted as sql.q does)."""
+    cols = ", ".join(q(c) for c in plan.user_columns)
+    return f"SELECT {cols} FROM {q(plan.users_table)} WHERE {q('token')} = ?"
+
+
+class _EndpointGen:
+    def __init__(self, plan: EndpointPlan, names: _Names, lines: Sequence[str] | None) -> None:
+        self.plan = plan
+        self.names = names
+        self.lines = lines
+        self.base = _ident(plan.name).upper()
+        self.constants: list[str] = []  # module-level constants (SQL text, columns)
+        self.body: list[str] = []  # the steps function body
+
+    # ---- pieces ---------------------------------------------------------------------------
+
+    def comment(self, line: int, fallback: str) -> None:
+        text = ""
+        if self.lines is not None and 1 <= line <= len(self.lines):
+            text = self.lines[line - 1].strip()
+        self.body.append(f"    # line {line}: {text or fallback}")
+
+    def constant(self, base: str, value: _Node | str) -> str:
+        name = self.names.take(f"{self.base}_{base}")
+        if isinstance(value, str):
+            self.constants.append(f"{name} = {value}")
+        else:
+            self.constants.append("\n".join(_render(value, "", f"{name} = ")))
+        return name
+
+    def emit(self, node: _Node, prefix: str = "") -> None:
+        self.body.extend(_render(node, "    ", prefix))
+
+    def binds(self, sql: SqlQuery) -> _Dict:
+        """The named parameters of a statement: every value is bound, never spliced."""
+        items: list[tuple[_Node, _Node]] = [
+            (_py_str(name), _literal(value)) for name, value in sql.binds
+        ]
+        items += [
+            (_py_str(f"p_{p}"), _Call("sql_value", (f"values[{_py_str(p)}]",))) for p in sql.params
+        ]
+        items += [
+            (_py_str(bind), _Call("rows_json", (f"results[{_py_str(step)}]", _strs(cols))))
+            for bind, step, cols in sql.rows
+        ]
+        if sql.user:
+            items += [(_py_str(USER_ID), "user_id"), (_py_str(IS_ADMIN), "is_admin")]
+        return _Dict(tuple(items))
+
+    def run(self, step_id: str, sql: SqlQuery) -> _Call:
+        const = self.constant(f"{_ident(step_id).upper()}_SQL", _sql_constant(sql.text))
+        return _Call("run", ("conn", const, self.binds(sql)))
+
+    def result(self, step_id: str) -> str:
+        return f"results[{_py_str(step_id)}]"
+
+    def error(self, step: CheckStep) -> _Call:
+        e = step.error
+        return _Call("error", (str(e.status), _py_str(e.code), _py_str(e.detail)))
+
+    # ---- steps ----------------------------------------------------------------------------
+
+    def step(self, step: ReadStep | CheckStep | WriteStep) -> None:
+        match step:
+            case ReadStep():
+                self.body.append(f"    # SELECT the rows of {step.id!r} (one statement)")
+                cols = self.constant(
+                    f"{_ident(step.id).upper()}_COLUMNS", _strs(step.schema.names() + step.flags)
+                )
+                self.emit(_Tuple((cols, self.run(step.id, step.sql))), f"{self.result(step.id)} = ")
+            case CheckStep(kind="one"):
+                self.comment(step.span.line, f"one({step.input})")
+                where = _py_str(f"{step.span.line}:{step.span.col}")
+                self.emit(_Call("check_one", (self.result(step.input), self.error(step), where)))
+            case CheckStep(kind="require"):
+                if step.flag_step is None or step.flag is None:
+                    raise LatticeInternalError(f"require '{step.id}' has no condition flags")
+                self.comment(step.span.line, f"require({step.input})")
+                args = (self.result(step.flag_step), _py_str(step.flag), self.error(step))
+                self.emit(_Call("check_require", args))
+            case WriteStep(kind="insert"):
+                self.comment(step.span.line, f"insert into {step.table}")
+                cols = self.constant(
+                    f"{_ident(step.id).upper()}_COLUMNS", _strs(step.schema.names())
+                )
+                self.emit(_Tuple((cols, self.run(step.id, step.sql))), f"{self.result(step.id)} = ")
+            case WriteStep(kind="update"):
+                assert step.input is not None
+                self.comment(step.span.line, f"update {step.table}")
+                self.emit(self.run(step.id, step.sql), "returned = ")
+                args = (
+                    self.result(step.input),
+                    "returned",
+                    _strs(step.schema.names()),
+                    _strs(step.key),
+                    _strs([c for c, _ in step.values]),
+                )
+                self.emit(_Call("merge_update", args), f"{self.result(step.id)} = ")
+            case WriteStep(kind="delete"):
+                assert step.input is not None
+                self.comment(step.span.line, f"delete from {step.table}")
+                self.emit(self.run(step.id, step.sql))
+                cols = _strs(step.schema.names())
+                project = _Call("project", (self.result(step.input), cols))
+                self.emit(_Tuple((cols, project)), f"{self.result(step.id)} = ")
+            case _:
+                raise LatticeInternalError(f"unknown step {step!r}")
+
+    def respond(self) -> None:
+        plan = self.plan
+        if plan.success == "NoContent":
+            self.body.append("    return Response(status_code=204)")
+            return
+        pairs = tuple(_Tuple((_py_str(c), _py_str(t.value))) for c, t in plan.schema.columns)
+        columns = self.constant("RESPONSE", _Tuple(pairs))
+        result = self.result(plan.returns)
+        if plan.success == "Page":
+            if plan.page is None:
+                raise LatticeInternalError(f"Page endpoint '{plan.name}' returns no page()")
+
+            def arg(v: int | str) -> str:
+                return f"values[{_py_str(v)}]" if isinstance(v, str) else repr(v)
+
+            args: tuple[_Node, ...] = (result, columns, arg(plan.page.limit), arg(plan.page.offset))
+            self.emit(_Call("respond_page", args), "return ")
+            return
+        status = "201" if plan.success == "Created" else "200"
+        where = _py_str(f"{plan.span.line}:{plan.span.col}")
+        args = (result, columns, _Kw("status", status), _Kw("where", where))
+        self.emit(_Call("respond_one", args), "return ")
+
+    # ---- the whole endpoint ---------------------------------------------------------------
+
+    def render(self) -> str:
+        plan = self.plan
+        ep_name = self.names.take(f"{self.base}_ENDPOINT")
+        steps_name = self.names.take(f"_{_ident(plan.name)}_steps")
+        route_name = self.names.take(_ident(plan.name))
+        self.body.append("    results: dict[str, Result] = {}")
+        if any(isinstance(s, ReadStep | WriteStep) and s.sql.user for s in plan.steps):
+            self.body += [
+                "    user_id, is_admin = (None, 0) if caller is None else (caller.id, "
+                "caller.is_admin)",
+            ]
+        self.body.append("    if caller is not None:")
+        self.body += _render(
+            _Tuple((_strs(plan.user_columns), "[caller.row]")),
+            "        ",
+            f"{self.result(USER_PARAM)} = ",
+        )
+        for step in plan.steps:
+            self.step(step)
+        self.respond()
+
+        endpoint = _Call(
+            "Endpoint",
+            (
+                _Kw("name", _py_str(plan.name)),
+                _Kw("auth", _py_str(plan.auth)),
+                _Kw("params", _Tuple(tuple(_param(p) for p in plan.params if p.source != "user"))),
+                _Kw("writes", repr(any(isinstance(s, WriteStep) for s in plan.steps))),
+                _Kw("auth_sql", _py_str(_auth_sql(plan))),
+                _Kw("user_columns", _strs(plan.user_columns)),
+                _Kw("user_key", _py_str(plan.user_key)),
+                _Kw("admin_role", _py_str(plan.admin_role)),
+            ),
+        )
+        rule = "# " + "-" * 86
+        out = [
+            rule,
+            f"# {plan.name}: {plan.method} {plan.path} "
+            f"(auth={plan.auth}; Lattice source line {plan.span.line})",
+            rule,
+            "",
+            *_render(endpoint, "", f"{ep_name} = "),
+        ]
+        for const in self.constants:
+            out += ["", const]
+        doc = f"{plan.method} {plan.path}: the plan's steps, in order."
+        out += [
+            "",
+            "",
+            f"def {steps_name}(",
+            "    conn: sqlite3.Connection, values: dict[str, object], caller: Caller | None",
+            ") -> Response:",
+            f'    """{doc}"""',
+            *self.body,
+            "",
+            "",
+            f"@app.{_METHODS[plan.method]}({_py_str(plan.path)}, name={_py_str(plan.name)})",
+            f"async def {route_name}(request: Request) -> Response:",
+            f"    return await dispatch(request, {ep_name}, {steps_name})",
+        ]
+        return "\n".join(out)
+
+
+def _specificity(plan: EndpointPlan) -> list[int]:
+    """Literal segments before parameters, so /orders/mine wins over /orders/{id}
+    (the runtime's route order)."""
+    return [1 if seg.startswith("{") else 0 for seg in plan.path.split("/")]
+
+
+_HEADER = '''\
+"""Generated from a Lattice API program by lattice.api.codegen -- do not edit.
+
+A standalone FastAPI app over the benchmark's platform_kit (app, get_db) that reproduces
+the Lattice API runtime exactly: authentication, parameter validation, one transaction
+per request, the plan's precompiled SQL with every value bound as a parameter, error
+responses and serialization.
+
+Authentication is inline rather than the kit's current_user/require_role: the runtime
+reads the caller's full row on the request's own connection (one statement) and
+accepts the scheme "bearer" in any case; the kit reads fixed columns on a second
+connection and accepts only "Bearer ".
+"""
+
+'''
+
+
+def generate_fastapi(plans: Sequence[EndpointPlan], source: str | None = None) -> str:
+    """The source of a standalone FastAPI `app.py` serving `plans` exactly as the
+    Phase A runtime does. With the Lattice `source`, each check and write is annotated
+    with the source line it was lowered from."""
+    for plan in plans:
+        if plan.method not in _METHODS:
+            raise LatticeInternalError(f"unsupported method {plan.method!r}")
+    lines = source.splitlines() if source is not None else None
+    names = _Names()
+    ordered = sorted(plans, key=_specificity)
+    routes = [f"#   line {p.span.line:>4}: {p.method:<6} {p.path} -> {p.name}" for p in ordered]
+    header = _HEADER + "# Routes in registration order (Lattice source line of each endpoint):\n"
+    parts = [header + "\n".join(routes) + "\n\n" + _PRELUDE.rstrip("\n")]
+    parts += [_EndpointGen(plan, names, lines).render() for plan in ordered]
+    return "\n\n\n".join(parts) + "\n"
+
+
+def compile_source_to_fastapi(source: str, profile: Profile) -> tuple[CheckResult, str | None]:
+    """Check -> lower -> generate. (check result, None) when the program is rejected."""
+    result = check_source(source, profile)
+    if result.program is None:
+        return result, None
+    return result, generate_fastapi(lower_api(result.program), source)
