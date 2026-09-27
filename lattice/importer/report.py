@@ -15,9 +15,11 @@ import, and every file agrees with ``report.json``: the programs hold exactly th
 routes the report calls verified, and every route of the app is in the report once.
 
 ``report.json`` (schema :data:`SCHEMA`): per route -- how it was lifted (lifter or LLM,
-the rung), the verification tally and declared deviations, the island reason and gap,
-LLM rounds and cost; the coverage (routes, and the original's lines and AST nodes, by
-rung); behaviour changes needing human acceptance; unclear profile decisions; notes-vs-
+the rung), its tier (T0-T3, or island) and R3 carve kind (procedure / native / none)
+with its procedures (count and lines), the verification tally and declared deviations,
+the island reason and gap, LLM rounds and cost; the coverage (routes, and the
+original's lines and AST nodes, by rung; the tier mix and the carve kinds); behaviour
+changes needing human acceptance; unclear profile decisions; notes-vs-
 behaviour disagreements; the budget; tokens, cost and wall time.
 """
 
@@ -39,6 +41,8 @@ __all__ = ["SCHEMA", "load_report", "render_markdown", "report_data", "write_imp
 
 SCHEMA = "lattice-import-report/1"
 RUNGS = ("R0", "R1", "R2", "R3", "R4", "needs-llm")
+TIERS = ("T0", "T1", "T2", "T3", "island", "needs-llm")
+KINDS = ("procedure", "native")  # R3 carve kinds
 
 
 def _pct(n: int, d: int) -> float:
@@ -105,6 +109,11 @@ def _route(close: CloseResult, o: RouteOutcome) -> dict[str, Any]:
         "cost_usd": round(o.cost_usd, 6),
         "attempts": [a.to_dict() for a in o.attempts],
         "natives": [n.to_dict() for n in o.natives],
+        "tier": o.tier or "needs-llm",
+        "carve_kind": o.carve,
+        "procedure_count": len(o.procedures),
+        "procedure_lines": sum(p.lines for p in o.procedures),
+        "procedures": [p.to_dict() for p in o.procedures],
         "notes": list(o.notes),
         "original": {"lines": lines, "ast_nodes": nodes},
     }
@@ -159,6 +168,8 @@ def report_data(
             "complete": verified == n,
             "lines": size["lines"],
             "ast_nodes": size["ast_nodes"],
+            "tiers": {t: sum(1 for r in routes if r["tier"] == t) for t in TIERS},
+            "carve_kinds": {k: sum(1 for r in routes if r["carve_kind"] == k) for k in KINDS},
         },
         "budget": close.budget.to_dict() if close.budget is not None else None,
         "cost": {
@@ -195,6 +206,25 @@ def _cell(text: Any) -> str:
     return str(text if text is not None else "").replace("|", "\\|").replace("\n", " ")
 
 
+def _tier_line(cov: Mapping[str, Any]) -> str:
+    tiers = cov.get("tiers") or {}
+    kinds = cov.get("carve_kinds") or {}
+    mix = ", ".join(f"{t} {tiers.get(t, 0)}" for t in ("T0", "T1", "T2", "T3"))
+    return (
+        f"- tier mix: {mix} (islands {tiers.get('island', 0)}); R3 carve-outs: "
+        f"{kinds.get('procedure', 0)} procedure, {kinds.get('native', 0)} native"
+    )
+
+
+def _carve_cell(r: Mapping[str, Any]) -> str:
+    kind = r.get("carve_kind", "none")
+    if kind == "procedure":
+        return f"procedure ({r['procedure_count']}, {r['procedure_lines']} lines)"
+    if kind == "native":
+        return f"native ({len(r['natives'])})"
+    return ""
+
+
 def render_markdown(data: Mapping[str, Any]) -> str:
     cov = data["coverage"]
     lines = [
@@ -210,6 +240,7 @@ def render_markdown(data: Mapping[str, Any]) -> str:
         f"- by rung: R0 {cov['R0']}, R1 {cov['R1']}, R2 {cov['R2']}, R3 {cov['R3']}, "
         f"R4 {cov['R4']}",
         f"- original lines by outcome: {cov['lines']}; AST nodes: {cov['ast_nodes']}",
+        _tier_line(cov),
         f"- cost: ${data['cost']['usd']:.4f} (notes ${data['cost']['notes_usd']:.4f}), "
         f"{data['cost']['llm_rounds']} LLM rounds, {data['cost']['input_tokens']} input / "
         f"{data['cost']['output_tokens']} output tokens, {data['cost']['wall_s']} s",
@@ -222,15 +253,17 @@ def render_markdown(data: Mapping[str, Any]) -> str:
         "",
         "## Routes",
         "",
-        "| route | request | status | rung | by | tally eq/rule/dev/mis | rounds | cost | reason |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "| route | request | status | rung | by | tier | carve | tally eq/rule/dev/mis | rounds "
+        "| cost | reason |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in data["routes"]:
         t = r["tally"]
         tally = "/".join(str(v) for v in t.values()) if t else ""
         lines.append(
             f"| {_cell(r['key'])} | {_cell(r['method'] + ' ' + r['path'])} | {r['status']} | "
-            f"{r['rung']} | {_cell(r['by'])} | {tally} | {r['rounds']} | "
+            f"{r['rung']} | {_cell(r['by'])} | {r.get('tier', '')} | {_carve_cell(r)} | "
+            f"{tally} | {r['rounds']} | "
             f"${r['cost_usd']:.4f} | {_cell((r['reason'] or r['lifter_reason'])[:160])} |"
         )
     if data["behaviour_changes"]:

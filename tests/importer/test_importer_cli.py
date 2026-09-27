@@ -97,11 +97,13 @@ def test_the_report_json_schema(no_llm_run):
     assert set(report["coverage"]) >= {
         "routes", "R0", "R1", "R2", "R3", "R4", "needs-llm", "verified", "lattice_pct",
         "carve_out_pct", "island_pct", "verified_pct", "complete", "lines", "ast_nodes",
+        "tiers", "carve_kinds",
     }  # fmt: skip
     route_keys = {
         "key", "name", "module", "router", "method", "path", "auth", "status", "rung", "by",
         "lifters", "lifter_reason", "reason", "gap", "tally", "deviations", "rounds",
-        "cost_usd", "attempts", "natives", "notes", "original",
+        "cost_usd", "attempts", "natives", "notes", "original", "tier", "carve_kind",
+        "procedure_count", "procedure_lines", "procedures",
     }  # fmt: skip
     for r in report["routes"]:
         assert set(r) == route_keys

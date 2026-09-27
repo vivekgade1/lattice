@@ -26,7 +26,7 @@ import pytest
 
 from bench.template_app import make_app
 from bench.template_app.app import utils as template_utils
-from lattice.importer.carve import CarveNative, NativeCarveOut
+from lattice.importer.carve import SKIP_TODO, CarveNative, NativeCarveOut
 from lattice.importer.lift import ImportResult, check_program, lift_repo
 from lattice.importer.lifters import get_or_404, owner_check
 from lattice.importer.lifters.base import Step
@@ -129,6 +129,7 @@ def wrong(buggy: ImportResult, key: str = "read_item") -> str:
 
 def _run(result: ImportResult, gen: FakeLLM, tmp_path: Path, **kw: Any) -> CloseResult:
     config = kw.pop("config", LoopConfig(method="M1"))
+    kw.setdefault("carve", NativeCarveOut())  # the I5 tests; the T2 carve-out has its own
     corpus = CorpusLog(tmp_path / "imports.jsonl", repo="template")
     return close_gap(result, gen, config=config, corpus=corpus, **kw)
 
@@ -269,7 +270,7 @@ def test_r3_is_skipped_with_the_reason_without_a_simple_helper(buggy, tmp_path):
     assert len(gen.calls) == 5  # R1 x3, R2 x2; no R3 call
     skipped = [a for a in o.attempts if a.outcome == "skipped"]
     assert [a.rung for a in skipped] == ["R3"]
-    assert "TODO(I5b)" in skipped[0].reason
+    assert SKIP_TODO in skipped[0].reason
     assert any(n.startswith("R3 skipped") for n in o.notes)
 
 

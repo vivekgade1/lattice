@@ -10,16 +10,22 @@ verify_candidate`).
 * **R2 re-lift**: the LLM writes the route again from scratch, given the diff history, on
   the strong generator (a stronger model or higher effort), up to ``relift_attempts``
   fresh conversations -> Lattice.
-* **R3 carve-out**: Lattice plus small typed natives wrapping original helpers
-  (:mod:`lattice.importer.carve`; skipped with the reason when the strategy has none)
-  -> Lattice + natives.
+* **R3 carve-out** (:mod:`lattice.importer.carve`): the strategy's plans, in order --
+  by default first **T2**: the route as T0 plus ``@procedure`` functions holding the logic T0
+  cannot express, translated by the LLM from the original route or helper code within
+  the T2 subset (helpers already in the subset are carved mechanically and added to a
+  candidate that calls them); then, only when a helper needs something outside the T2
+  subset, a **typed native** over it -> Lattice + procedures (tier T2) or + natives
+  (T3); skipped with the reason when the strategy offers no plan.
 * **R4 island**: the whole route stays the original code, with the reason and a
   classified language gap (counted as not reaching 100%).
 
 **Soundness.** A candidate is accepted only when it passes the route's differential
 (and the checker, and branch coverage) -- exactly the gate the lifters' output passed.
 Before verification it must be one ``@endpoint`` named after the route with the route's
-method and path, plus constants or ``@step`` helpers (nothing else is emitted with it).
+method and path, plus constants or ``@step`` helpers -- and at R3 ``@procedure`` functions,
+``@record`` classes and imports, which the T2 checker holds to its subset (nothing else is
+emitted with it).
 After the loop the verified routes are joined per router file and checked again against
 the final profile; a route whose file is refused becomes an island. Nothing unverified is
 ever emitted as Lattice.
@@ -57,12 +63,18 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
+from lattice.catalog import T2_STDLIB
 from lattice.importer.carve import (
+    CarvedProcedure,
     CarveNative,
     CarveOut,
-    NativeCarveOut,
+    CarvePlan,
+    PlannedCarveOut,
+    ProcedureCarveOut,
     carve_profile_source,
+    program_carve,
     used_natives,
+    with_procedures,
 )
 from lattice.importer.context import Evidence, assemble
 from lattice.importer.graph import route_slice
@@ -85,10 +97,12 @@ __all__ = [
     "CloseResult",
     "CorpusLog",
     "LoopConfig",
+    "ProcedureInfo",
     "RouteOutcome",
     "close_gap",
     "no_llm",
     "parse_candidate",
+    "route_tier",
     "system_prompt",
 ]
 
@@ -150,6 +164,32 @@ def system_prompt(profile_source: str, *, hints: bool = True) -> str:
     return f"{body}\n\n{profile}\n"
 
 
+T2_CARVE = f"""Earlier attempts at this route failed (see above): Lattice's declarative \
+operations alone did not reproduce it. Carve it out with T2: keep the route an \
+`@endpoint` in T0 and move only the logic T0 cannot express into one or more \
+`@procedure` functions, translated from the original route or helper code above \
+within the T2 subset.
+
+The T2 subset: ordinary Python with annotated parameters and result (`Int Float Str \
+Bool Date DateTime Duration Uuid`, `T | None`, `list[T]`, `dict[K, V]`, `tuple[...]`, \
+`Row[Table]` for a row, `Caller` for the caller -- `caller.id`, `caller.is_admin`, \
+`caller.role` -- and `@record` classes of annotated fields); locals, `if`/`elif`/`else`, \
+`for` over finite values, bounded `while`, comprehensions, f-strings, `try`/`except` \
+of specific errors; imports only from {", ".join(sorted(T2_STDLIB))}; no I/O, no \
+database access (the endpoint reads with T0 and passes the rows in), no mutation of \
+parameters. An endpoint calls a procedure row by row as the whole value of a \
+`derive` column, a `where` predicate or a `require` condition \
+(`derive(t, x=proc(col("a"), user))`, `require(t, proc(row(), user), else_=...)`), \
+whole-value with `x = call(proc, rows=t, ...)` on a bounded table, writes its rows \
+with `insert_many(T, rows=x)`, and runs an effectful one with `for_each`. Ownership \
+checks stay in T0 (`owner_is`, `accessible`, `mine`)."""
+T2_ANSWER = (
+    "Answer with one ```python block: the `@endpoint` (named as asked, with the route's "
+    "method and path) plus the `@procedure`s, `@record`s, allowlisted imports and "
+    "constants it needs; no prose outside the block."
+)
+
+
 def _repair_message(feedback: str) -> str:
     return f"{feedback}\n\nReturn the complete corrected endpoint in one ```python block."
 
@@ -166,10 +206,14 @@ def _decorator_name(d: ast.expr) -> str | None:
     return None
 
 
-def parse_candidate(text: str, name: str, method: str, path: str) -> tuple[str | None, str]:
+def parse_candidate(
+    text: str, name: str, method: str, path: str, *, t2: bool = False
+) -> tuple[str | None, str]:
     """The endpoint source of an answer (header comments dropped), or None and the
     problem: no code block, a syntax error, or anything but one ``@endpoint`` ``name``
-    for ``method path`` plus constants and ``@step`` functions."""
+    for ``method path`` plus constants and ``@step`` functions -- and, with ``t2`` (the
+    R3 carve-out), ``@procedure`` functions, ``@record`` classes and imports (the T2
+    checker holds them to the subset and the import allowlist)."""
     code = extract_code(text)
     if code is None:
         return None, "The answer has no ```python code block."
@@ -184,6 +228,8 @@ def parse_candidate(text: str, name: str, method: str, path: str) -> tuple[str |
             names = [_decorator_name(d) for d in node.decorator_list]
             if "endpoint" in names:
                 endpoints.append(node)
+            elif t2 and "procedure" in names:
+                continue
             elif "step" not in names:
                 problems.append(f"line {node.lineno}: `{node.name}` is neither @endpoint nor @step")
         elif isinstance(node, ast.Assign | ast.AnnAssign):
@@ -191,6 +237,14 @@ def parse_candidate(text: str, name: str, method: str, path: str) -> tuple[str |
             if not all(isinstance(t, ast.Name) for t in targets):
                 problems.append(f"line {node.lineno}: only simple constants are allowed")
         elif isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant):
+            continue
+        elif (
+            t2
+            and isinstance(node, ast.ClassDef)
+            and "record" in [_decorator_name(d) for d in node.decorator_list]
+        ):
+            continue
+        elif t2 and isinstance(node, ast.Import | ast.ImportFrom):
             continue
         else:
             problems.append(f"line {node.lineno}: {type(node).__name__} is not allowed here")
@@ -284,7 +338,7 @@ class Attempt:
     route: str
     rung: str
     round: int
-    kind: str  # lift | repair | relift | carve
+    kind: str  # lift | repair | relift | carve-procedure | carve-native
     model: str
     outcome: str
     stop_reason: str | None = None
@@ -315,10 +369,78 @@ class Attempt:
         }
 
 
+@dataclass(frozen=True)
+class ProcedureInfo:
+    """A ``@procedure`` of a verified route: ``origin`` is the helper it was carved from
+    mechanically, None when the LLM wrote it."""
+
+    name: str
+    lines: int
+    origin: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"name": self.name, "lines": self.lines, "origin": self.origin}
+
+
+def procedure_infos(
+    source: str, carved: Sequence[CarvedProcedure] = ()
+) -> tuple[ProcedureInfo, ...]:
+    """The procedures of a Lattice source (a mechanically carved one keeps its
+    origin when its text is unchanged)."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return ()
+    mech = {p.name: p for p in carved}
+    out = []
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef) and "procedure" in [
+            _decorator_name(d) for d in node.decorator_list
+        ]:
+            first = min([node.lineno, *(d.lineno for d in node.decorator_list)])
+            lines = (node.end_lineno or node.lineno) - first + 1
+            p = mech.get(node.name)
+            origin = p.origin if p is not None and ast.dump(ast.parse(p.source).body[0]) == (
+                ast.dump(node)
+            ) else None  # fmt: skip
+            out.append(ProcedureInfo(node.name, lines, origin))
+    return tuple(out)
+
+
+T1_OPS = frozenset({"window", "traverse", "iterate", "for_each"})
+
+
+def route_tier(o: RouteOutcome) -> str | None:
+    """The route's tier (spec 1c §1): ``T3`` when it calls carve-out natives, ``T2``
+    with procedures, ``T1`` with a T1 op, else ``T0``; ``island`` for an island (R4);
+    None when not attempted."""
+    if o.status == "island":
+        return "island"
+    if o.status != "verified" or o.source is None:
+        return None
+    if o.natives:
+        return "T3"
+    if o.procedures or program_carve(o.source)[0]:
+        return "T2"
+    try:
+        tree = ast.parse(o.source)
+    except SyntaxError:
+        return "T0"
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in T1_OPS
+        ):
+            return "T1"
+    return "T0"
+
+
 @dataclass
 class RouteOutcome:
     """Where a route ended: ``status`` verified (``rung`` R0-R3), island (R4, with
-    ``reason`` and ``gap``) or needs-llm (not attempted: ``--no-llm``)."""
+    ``reason`` and ``gap``) or needs-llm (not attempted: ``--no-llm``). An R3 route's
+    ``carve`` is ``procedure`` (T2: ``procedures``) or ``native`` (T3: ``natives``)."""
 
     key: str
     result: LiftResult
@@ -331,6 +453,12 @@ class RouteOutcome:
     attempts: list[Attempt] = field(default_factory=list)
     natives: tuple[CarveNative, ...] = ()
     notes: list[str] = field(default_factory=list)  # rung skips and other remarks
+    carve: str = "none"  # procedure | native | none
+    procedures: tuple[ProcedureInfo, ...] = ()
+
+    @property
+    def tier(self) -> str | None:
+        return route_tier(self)
 
     @property
     def by(self) -> str | None:
@@ -561,7 +689,7 @@ class _Loop:
         *,
         strong_generator: Generator | None,
         evidence: Evidence,
-        carve: CarveOut | None,
+        carve: CarveOut | PlannedCarveOut | None,
         corpus: CorpusLog | None,
         artefacts: Path | None,
     ) -> None:
@@ -594,6 +722,8 @@ class _Loop:
         *,
         profile: Any = None,
         natives: dict[str, Callable[..., Any]] | None = None,
+        t2: bool = False,
+        procedures: Sequence[CarvedProcedure] = (),
     ) -> tuple[Attempt, Generation | None, LiftResult | None]:
         r = o.result
         route = r.route
@@ -616,7 +746,10 @@ class _Loop:
             if gen.stop_reason == "max_tokens":
                 att.outcome, att.reason, att.feedback = "truncated", "cut off", TRUNCATED
             else:
-                source, problem = parse_candidate(gen.text, route.name, route.method, route.path)
+                source, problem = parse_candidate(gen.text, route.name, route.method,
+                                                  route.path, t2=t2)  # fmt: skip
+                if source is not None and procedures:
+                    source = with_procedures(source, procedures)
                 att.source = source
                 if source is None:
                     att.outcome = "no_code" if "no ```python" in problem else "invalid"
@@ -794,45 +927,98 @@ class _Loop:
             return None
         known = {n.origin for n in self.result.model.natives}
         try:
-            natives, why = self.carve.natives(
-                self.evidence.graph, f"{r.route.module}:{r.route.name}", known
-            )
+            plans, why = self._plans(f"{r.route.module}:{r.route.name}", known)
         except KeyError as exc:
-            natives, why = (), f"the route is not in the code graph ({exc})"
-        if not natives:
+            plans, why = (), f"the route is not in the code graph ({exc})"
+        if not plans:
             o.notes.append(f"R3 skipped: {why}")
             o.attempts.append(Attempt(r.key, "R3", 0, "carve", "", "skipped", reason=why))
             if self.corpus is not None:
                 self.corpus.append({"type": "round", "route": r.key, "rung": "R3",
                                     "outcome": "skipped", "reason": why})  # fmt: skip
             return None
-        profile_source = carve_profile_source(self.result.profile.source, natives)
-        module = load_profile_source(profile_source)
-        profile, all_natives = module.profile(), dict(module.NATIVES)
-        system = system_prompt(profile_source, hints=self.config.hints)
-        listed = "\n".join(f"- `{n.signature()}` wraps `{n.target}`" for n in natives)
-        ask = (
-            "Earlier attempts at this route failed (see above). Carve it out: keep the "
-            "route in Lattice and call these natives (typed wrappers over the original's "
-            f"own helpers, added to the profile) for what Lattice cannot express:\n{listed}"
-        )
+        if why:
+            o.notes.append(f"R3: {why}")
+        for plan in plans:
+            done = self._carve(o, history, plan)
+            if done is not None:
+                return done
+        return None
+
+    def _plans(self, route: str, known: set[str]) -> tuple[Sequence[CarvePlan], str]:
+        """The strategy's plans; a plain :class:`CarveOut` offers one native plan."""
+        carve = self.carve
+        if hasattr(carve, "plans"):
+            planned: PlannedCarveOut = carve  # type: ignore[assignment]
+            return planned.plans(self.evidence.graph, route, known, self.result.lattice_profile)
+        natives, why = carve.natives(self.evidence.graph, route, known)  # type: ignore[union-attr]
+        return ((CarvePlan("native", natives=tuple(natives)),) if natives else ()), why
+
+    def _carve(self, o: RouteOutcome, history: list[str], plan: CarvePlan) -> RouteOutcome | None:
+        """The attempts of one plan: a verified candidate is accepted (with the natives
+        and procedures it uses); otherwise None (the next plan, or R4)."""
+        r = o.result
+        profile = None
+        natives: dict[str, Callable[..., Any]] | None = None
+        system = self.system
+        if plan.kind == "native":
+            profile_source = carve_profile_source(self.result.profile.source, plan.natives)
+            module = load_profile_source(profile_source)
+            profile, natives = module.profile(), dict(module.NATIVES)
+            system = system_prompt(profile_source, hints=self.config.hints)
+            listed = "\n".join(f"- `{n.signature()}` wraps `{n.target}`" for n in plan.natives)
+            ask = (
+                "Earlier attempts at this route failed (see above). Carve it out: keep the "
+                "route in Lattice and call these natives (typed wrappers over the original's "
+                f"own helpers, added to the profile) for what Lattice cannot express:\n{listed}"
+            )
+            if plan.why:
+                ask += f"\n\nNatives are offered because {plan.why}."
+        else:
+            ask = self._procedure_ask(plan)
         for k in range(self.config.carve_attempts):
             blocked = self._blocked(o)
             if blocked is not None:
                 return blocked
             content = self.context(r, history, partial=False) + "\n" + ask
             att, _, verdict = self.round(
-                o, "R3", k + 1, "carve", self.strong,
+                o, "R3", k + 1, f"carve-{plan.kind}", self.strong,
                 self.config.strong_model or self.config.model, system,
-                [{"role": "user", "content": content}], profile=profile, natives=all_natives,
+                [{"role": "user", "content": content}], profile=profile, natives=natives,
+                t2=True, procedures=plan.procedures,
             )  # fmt: skip
             if att.outcome == "verified" and verdict is not None and att.source is not None:
-                o.natives = used_natives(att.source, natives)
+                o.natives = used_natives(att.source, plan.natives)
+                o.procedures = procedure_infos(att.source, plan.procedures)
+                o.carve = "native" if o.natives else "procedure" if o.procedures else "none"
                 return self._accept(o, "R3", att, verdict)
             history.append(self._history(att))
             if att.outcome == "suite_gap":
                 return self._island(o, "unverified branch: " + att.feedback)
         return None
+
+    def _procedure_ask(self, plan: CarvePlan) -> str:
+        parts = [T2_CARVE]
+        if plan.procedures:
+            code = "\n\n\n".join(
+                "\n".join([*p.support, "", p.source.strip()]) if p.support else p.source.strip()
+                for p in plan.procedures
+            )  # fmt: skip
+            parts.append(
+                "These procedures were carved mechanically from the original's helpers "
+                "(already in the T2 subset; each keeps its helper's name). Call them by name: "
+                "one you call without defining it is added to your answer with the imports "
+                f"and constants it needs.\n\n```python\n{code}\n```"
+            )
+        if plan.translate:
+            helpers = "\n\n".join(
+                f"- `{h.origin}` (not carved mechanically: {h.why})\n\n```python\n"
+                f"{h.source.rstrip()}\n```"
+                for h in plan.translate
+            )
+            parts.append(f"These helpers of the original need translating by you:\n\n{helpers}")
+        parts.append(T2_ANSWER)
+        return "\n\n".join(parts)
 
     def _history(self, att: Attempt) -> str:
         head = f"### Attempt {att.rung} round {att.round} ({att.kind}): {att.outcome}"
@@ -856,7 +1042,7 @@ def _part(name: str) -> str:
 def _top_names(source: str) -> dict[str, str]:
     out: dict[str, str] = {}
     for node in ast.parse(source).body:
-        if isinstance(node, ast.FunctionDef):
+        if isinstance(node, ast.FunctionDef | ast.ClassDef):
             out[node.name] = ast.unparse(node)
         elif isinstance(node, ast.Assign | ast.AnnAssign):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
@@ -866,7 +1052,37 @@ def _top_names(source: str) -> dict[str, str]:
     return out
 
 
+def _dedupe(sources: Sequence[str]) -> list[str]:
+    """``sources`` with a top-level statement identical to one of an earlier source
+    removed (two routes carrying the same procedure, record, import or constant)."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for source in sources:
+        try:
+            tree = ast.parse(source)
+        except SyntaxError:
+            out.append(source)
+            continue
+        lines = source.split("\n")
+        drop: set[int] = set()
+        for node in tree.body:
+            is_endpoint = isinstance(node, ast.FunctionDef) and "endpoint" in [
+                _decorator_name(d) for d in node.decorator_list
+            ]
+            text = ast.unparse(node)
+            if not is_endpoint and text in seen:
+                first = min([node.lineno, *(d.lineno for d in getattr(node, "decorator_list", []))])
+                drop |= set(range(first - 1, node.end_lineno or node.lineno))
+            seen.add(text)
+        if drop:
+            kept = [line for i, line in enumerate(lines) if i not in drop]
+            source = re.sub(r"\n{4,}", "\n\n\n", "\n".join(kept)).strip("\n") + "\n"
+        out.append(source)
+    return out
+
+
 def _router_source(sources: Sequence[str], module: str, llm: Sequence[str]) -> str:
+    sources = _dedupe(sources)
     if not llm:
         return program_source(sources, module)
     comment = (
@@ -931,7 +1147,7 @@ def _join(
 
 def _demote(o: RouteOutcome, reason: str) -> None:
     o.status, o.rung, o.reason = "island", "R4", reason
-    o.natives = ()
+    o.natives, o.procedures, o.carve = (), (), "none"
     o.gap = classify_gap(o)
 
 
@@ -981,7 +1197,7 @@ def close_gap(
     config: LoopConfig | None = None,
     strong_generator: Generator | None = None,
     intent: IntentNotes | None = None,
-    carve: CarveOut | None = None,
+    carve: CarveOut | PlannedCarveOut | None = None,
     corpus: CorpusLog | None = None,
     artefacts: Path | None = None,
     evidence: Evidence | None = None,
@@ -989,7 +1205,8 @@ def close_gap(
 ) -> CloseResult:
     """Run the ladder over every route of ``result`` the lifters did not verify (in route
     order; ``only`` limits them) and join the verified routes (see the module
-    docstring). ``carve`` defaults to :class:`~lattice.importer.carve.NativeCarveOut`;
+    docstring). ``carve`` defaults to :class:`~lattice.importer.carve.ProcedureCarveOut`
+    (a T2 procedure, then a typed native only for logic outside the T2 subset);
     ``intent`` supplies S3 for the arms that use it. ``result`` is not modified."""
     started = time.perf_counter()
     config = config or LoopConfig()
@@ -1000,7 +1217,7 @@ def close_gap(
         config,
         strong_generator=strong_generator,
         evidence=ev,
-        carve=carve if carve is not None else NativeCarveOut(),
+        carve=carve if carve is not None else ProcedureCarveOut(),
         corpus=corpus,
         artefacts=artefacts,
     )
@@ -1102,4 +1319,8 @@ def _log_routes(close: CloseResult, corpus: CorpusLog | None) -> None:
             "rounds": o.rounds,
             "cost_usd": round(o.cost_usd, 6),
             "method": close.method,
+            "tier": o.tier,
+            "carve": o.carve,
+            "procedures": len(o.procedures),
+            "procedure_lines": sum(p.lines for p in o.procedures),
         })  # fmt: skip
