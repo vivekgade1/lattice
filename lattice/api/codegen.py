@@ -176,7 +176,12 @@ def connect() -> sqlite3.Connection:
 
 # ---- parameters -------------------------------------------------------------------------
 
-_INT = re.compile(r"[+-]?\\d+")
+# ASCII digits only; a float also allows a fraction and an exponent (no inf/nan/_).
+_INT = re.compile(r"[+-]?[0-9]+", re.ASCII)
+_FLOAT = re.compile(r"[+-]?(?:[0-9]+\\.?[0-9]*|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?", re.ASCII)
+# SQLite INTEGER is a signed 64-bit value: an int outside it cannot be bound.
+INT_MIN = -(2**63)
+INT_MAX = 2**63 - 1
 _TRUE = frozenset({"true", "1", "yes", "on"})
 _FALSE = frozenset({"false", "0", "no", "off"})
 _TYPE_NAMES = {
@@ -193,29 +198,41 @@ def _convert(spec: Param, raw: object, *, text: bool) -> object:
     value comes from the path or the query string (always a string)."""
     bad = ValueError(f"must be {_TYPE_NAMES[spec.scalar]}")
     if spec.scalar == "Int":
+        number: int
         if text and isinstance(raw, str) and _INT.fullmatch(raw.strip()):
-            return int(raw)
-        if not text and isinstance(raw, int) and not isinstance(raw, bool):
-            return raw
-        if not text and isinstance(raw, float) and raw.is_integer():
-            return int(raw)
-        raise bad
-    if spec.scalar == "Float":
-        value: float
-        if text and isinstance(raw, str):
             try:
-                value = float(raw)
-            except ValueError:
-                raise bad from None
-        elif not text and isinstance(raw, int | float) and not isinstance(raw, bool):
-            value = float(raw)
+                number = int(raw.strip())
+            except ValueError:  # beyond Python's int-from-string digit limit
+                raise _out_of_range() from None
+        elif not text and isinstance(raw, int) and not isinstance(raw, bool):
+            number = raw
+        elif not text and isinstance(raw, float) and raw.is_integer():
+            number = int(raw)
         else:
             raise bad
+        if not INT_MIN <= number <= INT_MAX:
+            raise _out_of_range()
+        return number
+    if spec.scalar == "Float":
+        value: float
+        try:
+            if text and isinstance(raw, str) and _FLOAT.fullmatch(raw.strip()):
+                value = float(raw.strip())
+            elif not text and isinstance(raw, int | float) and not isinstance(raw, bool):
+                value = float(raw)  # a huge JSON integer overflows here
+            else:
+                raise bad
+        except OverflowError:
+            raise bad from None
         if not math.isfinite(value):
             raise bad
         return value
     if spec.scalar == "Str":
         if isinstance(raw, str):
+            try:
+                raw.encode("utf-8")
+            except UnicodeEncodeError:  # a lone surrogate from a JSON body
+                raise ValueError("must be valid UTF-8 text") from None
             return raw
         raise bad
     if spec.scalar == "Bool":
@@ -230,6 +247,10 @@ def _convert(spec: Param, raw: object, *, text: bool) -> object:
         except ValueError:
             raise bad from None
     raise bad
+
+
+def _out_of_range() -> ValueError:
+    return ValueError(f"must be an integer between {INT_MIN} and {INT_MAX}")
 
 
 def _num(v: float) -> str:
@@ -400,10 +421,17 @@ def _decode(v: object, scalar: str) -> object:
     return v  # Str; Date stays ISO text
 
 
+def _finite(value: object) -> object:
+    """A non-finite float (an arithmetic overflow) serializes as JSON null."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
 def _items(result: Result, columns: Sequence[tuple[str, str]]) -> list[dict[str, object]]:
     names = [c for c, _ in columns]
     return [
-        {c: _decode(v, t) for (c, t), v in zip(columns, row, strict=True)}
+        {c: _finite(_decode(v, t)) for (c, t), v in zip(columns, row, strict=True)}
         for row in project(result, names)
     ]
 

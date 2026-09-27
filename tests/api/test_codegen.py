@@ -60,6 +60,16 @@ PROGRAM = source(
         product = one(slim, else_=NotFound("product"))
         updated = update(product, stock=stock)
         return updated
+
+    @endpoint("PATCH", "/products/{product_id}/details", auth=Admin)
+    def set_details(product_id: Int(ge=1), name: Str(min_len=1, max_len=100),
+                    price: Float(ge=0, le=100000), user: CurrentUser) -> One | NotFound:
+        products = fetch(Products)
+        found = where(products, col("id") == product_id)
+        slim = select(found, cols=["id", "name", "price"])
+        product = one(slim, else_=NotFound("product"))
+        updated = update(product, name=name, price=price)
+        return updated
     """
 )
 
@@ -138,6 +148,7 @@ def test_routes_are_decorated_in_the_runtime_order(tree: ast.Module, plans):
         ("GET", "/orders/{order_id}", "show"),
         ("POST", "/orders/{order_id}/cancel", "cancel"),
         ("PATCH", "/products/{product_id}/stock", "set_stock"),
+        ("PATCH", "/products/{product_id}/details", "set_details"),
     ]
     assert len(routes) == len(plans)
 
@@ -257,6 +268,24 @@ RAW_REQUESTS = [
     ("PATCH", "/products/1/stock", ADMIN_H, b'{"stock": 1e2}'),
     ("PATCH", "/products/1/stock", ADMIN_H, b'{"stock": NaN}'),
     ("PATCH", "/products/1/stock", ADMIN_H, b'{"stock": "5"}'),
+    # JSON a harness case cannot send: NaN/Infinity, lone surrogates, huge numbers
+    ("PATCH", "/products/1/stock", ADMIN_H, b'{"stock": Infinity}'),
+    ("PATCH", "/products/1/stock", ADMIN_H, b'{"stock": 1e400}'),
+    ("PATCH", "/products/1/stock", ADMIN_H, b'{"stock": 9223372036854775808}'),
+    ("PATCH", "/products/1/stock", ADMIN_H, b'{"stock": 9223372036854775807.0}'),
+    ("PATCH", "/products/1/details", ADMIN_H, b'{"name": "ab\\ud800", "price": 1}'),
+    ("PATCH", "/products/1/details", ADMIN_H, b'{"name": "\\udc00", "price": 1e999}'),
+    ("PATCH", "/products/1/details", ADMIN_H, b'{"name": "ok", "price": NaN}'),
+    ("PATCH", "/products/1/details", ADMIN_H, b'{"name": "ok", "price": -Infinity}'),
+    ("PATCH", "/products/1/details", ADMIN_H, b'{"name": "ok", "price": 1' + b"0" * 400 + b"}"),
+    ("PATCH", "/products/1/details", ADMIN_H, b'{"name": "\\ud83d\\ude00", "price": 2.5}'),
+    ("PATCH", "/products/1/details", ADMIN_H, b'{"name": "\xc3\xa9t\xc3\xa9", "price": 3}'),
+    ("PATCH", "/products/1/details", ADMIN_H, b'{"name": "x", "price": true}'),
+    ("PATCH", "/products/9223372036854775808/details", ADMIN_H, b'{"name": "x", "price": 1}'),
+    ("GET", "/orders/mine?offset=9223372036854775808", {"Authorization": f"Bearer {ALICE}"}, None),
+    ("GET", "/orders/mine?offset=%D9%A1", {"Authorization": f"Bearer {ALICE}"}, None),
+    ("GET", "/orders/mine?offset=" + "9" * 5000, {"Authorization": f"Bearer {ALICE}"}, None),
+    ("GET", "/orders/mine?offset=%FF%FE", {"Authorization": f"Bearer {ALICE}"}, None),
     ("DELETE", "/products/1/stock", {}, None),
     ("GET", "/nowhere", {}, None),
     ("GET", "/orders/mine/", {"Authorization": f"Bearer {ALICE}"}, None),
@@ -270,3 +299,20 @@ def test_raw_requests_match_the_runtime(apps, method, url, headers, body):
     b = gen.request(method, url, headers=headers, content=body, follow_redirects=False)
     assert (a.status_code, a.content) == (b.status_code, b.content)
     assert a.headers.get("content-type") == b.headers.get("content-type")
+
+
+def test_raw_requests_reach_the_runtimes_input_rules(apps):
+    """The raw probes above exercise every new input rule (so their equality matters)."""
+    rt, _ = apps
+    msgs = set()
+    for method, url, headers, body in RAW_REQUESTS:
+        response = rt.request(method, url, headers=headers, content=body, follow_redirects=False)
+        payload = response.json() if response.content else None
+        if isinstance(payload, dict) and payload.get("error") == "validation":
+            msgs |= {d["msg"] for d in payload["detail"]}
+    assert {
+        "must be valid UTF-8 text",
+        "must be a number",
+        "must be an integer",
+        "must be an integer between -9223372036854775808 and 9223372036854775807",
+    } <= msgs, msgs

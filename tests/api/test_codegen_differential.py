@@ -108,6 +108,42 @@ EXAMPLE_CASES: tuple[tuple[HttpCase, ...], ...] = (
 )
 
 
+# Input rules of the runtime (signed 64-bit Int, strict ASCII numerals, finite Float,
+# UTF-8-encodable Str), probed in the path, the query string and the JSON body.
+TEXT_VALUES: tuple[tuple[str, str], ...] = (
+    ("int max", "9223372036854775807"),
+    ("int max+1", "9223372036854775808"),
+    ("int min-1", "-9223372036854775809"),
+    ("5000 digits", "9" * 5000),  # beyond int()'s digit limit
+    ("arabic digits", "\u0661\u0662"),
+    ("fullwidth digit", "\uff17"),
+    ("padded", " 7 "),
+    ("plus", "+3"),
+    ("underscore", "1_0"),
+    ("inf", "inf"),
+    ("nan", "nan"),
+    ("-Infinity", "-Infinity"),
+    ("1e999", "1e999"),
+    ("exponent", "2.5e2"),
+    ("dot", ".5"),
+    ("hex", "0x10"),
+)
+BODY_VALUES: tuple[tuple[str, object], ...] = (
+    ("int max", 2**63 - 1),
+    ("int max+1", 2**63),
+    ("int min-1", -(2**63) - 1),
+    ("10**400", 10**400),  # overflows float()
+    ("integral float", 3.0),
+    ("fraction", 2.5),
+    ("1e300", 1e300),
+    ("bool", True),
+    ("digits text", "12"),
+    ("emoji", "ok \U0001f600"),
+)
+# (NaN, infinities and lone surrogates cannot be sent through the harness's `json=`:
+# the HTTP client refuses to encode them. test_codegen.py sends them as raw bodies.)
+
+
 def _probes(cases: tuple[HttpCase, ...]) -> tuple[HttpCase, ...]:
     """Auth, validation and routing probes for each distinct endpoint the cases call."""
     out: list[HttpCase] = []
@@ -136,13 +172,22 @@ def _probes(cases: tuple[HttpCase, ...]) -> tuple[HttpCase, ...]:
             probe("strings", json={k: "abc" for k in base.json})
             probe("nulls", json={k: None for k in base.json})
             probe("negatives", json={k: -1 for k in base.json})
+            for key in base.json:  # one parameter at a time: every input rule
+                for tag, value in BODY_VALUES:
+                    probe(f"body {key} {tag}", json={**base.json, key: value})
         if base.query:
             probe("bad query", query={k: "abc" for k in base.query})
             probe("huge query", query={k: "1000000000" for k in base.query})
+            for key in base.query:
+                for tag, text in TEXT_VALUES:
+                    probe(f"query {key} {tag}", query={**base.query, key: text})
         if re.search(r"\d", base.path):
             probe("text id", path=re.sub(r"\d+", "abc", base.path, count=1))
             probe("zero id", path=re.sub(r"\d+", "0", base.path, count=1))
             probe("big id", path=re.sub(r"\d+", "987654", base.path, count=1))
+            for tag, text in TEXT_VALUES:
+                if "/" not in text and text.strip():
+                    probe(f"path {tag}", path=re.sub(r"\d+", text, base.path, count=1))
         other = "PUT" if base.method != "PUT" else "PATCH"
         probe("wrong method", method=other)
         probe("unknown path", path=base.path.rstrip("/") + "/no-such-route")
@@ -158,12 +203,53 @@ def _programs() -> dict[str, tuple[str, ApiTask]]:
     for i, (source, cases) in enumerate(zip(LATTICE_EXAMPLES, EXAMPLE_CASES, strict=True), 1):
         task = ApiTask(f"example{i}", "control", f"worked example {i}", cases + _probes(cases))
         out[task.id] = (source, task)
+    task = ApiTask("numeric", "control", "non-finite results", NUMERIC_CASES)
+    out[task.id] = (
+        NUMERIC_PROGRAM,
+        dataclasses.replace(task, cases=task.cases + _probes(task.cases)),
+    )
     return out
 
+
+# A program whose responses contain non-finite floats (price * 1e308 * 10 overflows to
+# inf in SQLite): the runtime serializes them as JSON null. It also takes a Float query
+# parameter and an Int offset, so the numeric probes reach both.
+NUMERIC_PROGRAM = """# lattice: v1
+@endpoint("GET", "/products/{product_id}/overflow", auth=Public)
+def overflow(product_id: Int(ge=1)) -> One | NotFound:
+    products = fetch(Products)
+    found = where(products, col("id") == product_id)
+    big = derive(found, huge=col("price") * 1e308 * 10.0, tiny=col("price") * 2.0)
+    slim = select(big, cols=["id", "huge", "tiny"])
+    product = one(slim, else_=NotFound("product"))
+    return product
+
+
+@endpoint("GET", "/products/pricey", auth=Public)
+def pricey(
+    min_price: Float(ge=-1e300, le=1e300) = 0.0,
+    limit: Int(ge=1, le=100) = 5,
+    offset: Int(ge=0) = 0,
+) -> Page:
+    products = fetch(Products)
+    found = where(products, col("price") >= min_price)
+    big = derive(found, huge=col("price") * 1e308 * 10.0)
+    slim = select(big, cols=["id", "price", "huge"])
+    ordered = sort(slim, by=["id"])
+    result = page(ordered, limit=limit, offset=offset)
+    return result
+"""
+NUMERIC_CASES = (
+    _case("overflow 1", "GET", "/products/1/overflow", None),
+    _case("overflow 2", "GET", "/products/2/overflow", None),
+    _case("pricey", "GET", "/products/pricey", None, query={"min_price": 10, "offset": 1}),
+    _case("pricey big offset", "GET", "/products/pricey", None, query={"offset": 2**63 - 1}),
+)
 
 PROGRAMS = _programs()
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
+EXTRA_IDS = ["numeric"]
 
 
 # ---- capture ---------------------------------------------------------------------------------
@@ -380,7 +466,7 @@ def _mismatches(pid: str, runs: tuple) -> list[str]:
     return problems
 
 
-@pytest.mark.parametrize("pid", TASK_IDS + EXAMPLE_IDS)
+@pytest.mark.parametrize("pid", TASK_IDS + EXAMPLE_IDS + EXTRA_IDS)
 def test_generated_app_matches_the_runtime(pid: str, differential_runs):
     problems = _mismatches(pid, differential_runs[pid])
     assert problems == [], "\n".join(problems[:20])
@@ -399,7 +485,7 @@ def test_generated_app_passes_every_case_the_runtime_passes(pid: str, differenti
 
 
 def test_the_differential_covers_every_task_and_example(differential_runs):
-    assert set(differential_runs) == {t.id for t in API_TASKS} | set(EXAMPLE_IDS)
+    assert set(differential_runs) == {t.id for t in API_TASKS} | set(EXAMPLE_IDS) | {"numeric"}
     assert len(API_TASKS) == 40 and len(EXAMPLE_IDS) == 3
     probes = sum(len(PROGRAMS[p][1].cases) for p in PROGRAMS)
     assert probes > sum(len(t.cases) for t in API_TASKS)
@@ -414,3 +500,22 @@ def test_db_digest_sees_writes(tmp_path: Path):
     conn.commit()
     conn.close()
     assert db_digest(str(path)) != before
+
+
+def test_the_probes_reach_the_new_input_rules_and_non_finite_results(differential_runs):
+    """The differential exercised each new runtime rule (on both backends, equally)."""
+    msgs, bodies = set(), []
+    for pid in differential_runs:
+        _, rt_captured, _, gen_captured = differential_runs[pid]
+        for captured in (rt_captured, gen_captured):
+            for c in captured:
+                bodies.append(c["body"])
+                if isinstance(c["body"], dict) and c["body"].get("error") == "validation":
+                    msgs |= {d["msg"] for d in c["body"]["detail"]}
+    assert "must be an integer between -9223372036854775808 and 9223372036854775807" in msgs
+    assert {"must be an integer", "must be a number"} <= msgs
+    _, rt_captured, _, gen_captured = differential_runs["numeric"]
+    for captured in (rt_captured, gen_captured):
+        first = captured[0]["body"]
+        assert first["huge"] is None and isinstance(first["tiny"], float)
+        assert all(item["huge"] is None for item in captured[2]["body"]["items"])
