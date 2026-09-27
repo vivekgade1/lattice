@@ -83,13 +83,16 @@ def parse_datetime(text: object) -> dt.datetime | None:
     elif isinstance(text, str):
         try:
             value = dt.datetime.fromisoformat(text)
-        except ValueError:
+        except (ValueError, OverflowError):
             return None
     else:
         return None
     if value.tzinfo is None:
         return value.replace(tzinfo=dt.UTC)
-    return value.astimezone(dt.UTC)
+    try:
+        return value.astimezone(dt.UTC)
+    except (ValueError, OverflowError):  # e.g. 0001-01-01T00:00:00+01:00 is before year 1
+        return None
 
 
 def datetime_text(value: dt.datetime) -> str:
@@ -186,6 +189,9 @@ class Dialect(Protocol):
     def begin(self, conn: Connection, writes: bool) -> None: ...
     def commit(self, conn: Connection) -> None: ...
     def rollback(self, conn: Connection) -> None: ...  # never raises
+
+    # ---- errors ----------------------------------------------------------------------
+    def is_unique_violation(self, exc: BaseException) -> bool: ...  # a UNIQUE / key conflict
 
 
 # ---- SQLite ----------------------------------------------------------------------------
@@ -503,6 +509,12 @@ class SqliteDialect:
             conn.execute("ROLLBACK")
         except sqlite3.Error:
             pass
+
+    def is_unique_violation(self, exc: BaseException) -> bool:
+        # UNIQUE columns and primary keys alike ("UNIQUE constraint failed: t.c")
+        return isinstance(exc, sqlite3.IntegrityError) and str(exc).startswith(
+            "UNIQUE constraint failed"
+        )
 
 
 SQLITE = SqliteDialect()  # satisfies Dialect

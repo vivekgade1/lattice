@@ -10,15 +10,19 @@ the request, read with plain ``sqlite3`` (raw stored values, rows in ``rowid`` o
 Values generated during the request are replaced by placeholders so two backends can be
 compared exactly:
 
-* UUIDs (dashed or 32-hex) not present in the seed database -> ``<uuid:N>``;
-* datetimes not present in the seed database -> ``<datetime:N>``;
+* UUIDs (dashed or 32-hex) not present in the seed database -> ``<uuid:N:SPELLING>``;
+* datetimes not present in the seed database -> ``<datetime:N:SPELLING>``;
 * JWT-shaped strings -> ``<token>``;
 * ``hashed_password`` values -> ``<hash:seed>`` if unchanged from the seed, else
   ``<hash:new>``.
 
 ``N`` numbers distinct values in order of first appearance (body first, then tables in
 case order), and the same value gets the same number in the body and in the tables
-(a dashed UUID in JSON and its 32-hex form in SQLite are the same value).
+(a dashed UUID in JSON and its 32-hex form in SQLite are the same value). ``SPELLING``
+keeps how the value was written, so two backends must also agree on it: ``dashed`` /
+``hex32`` (``-upper`` when not lowercase) for a UUID; ``T`` / ``space`` (the date-time
+separator) then ``Z`` / ``+offset`` / nothing (the zone) for a datetime, e.g.
+``<uuid:1:hex32>``, ``<datetime:1:space>``, ``<datetime:2:TZ>``.
 """
 
 from __future__ import annotations
@@ -196,6 +200,21 @@ _DT_RE = re.compile(
 _JWT_RE = re.compile(r"^eyJ[\w-]*\.[\w-]+\.[\w-]+$")
 
 
+def uuid_spelling(s: str) -> str:
+    """The spelling class of a UUID text: ``dashed`` or ``hex32``, ``-upper`` if not
+    lowercase."""
+    return ("dashed" if "-" in s else "hex32") + ("" if s == s.lower() else "-upper")
+
+
+def datetime_spelling(s: str) -> str:
+    """The spelling class of a datetime text: the separator (``T`` / ``space``) and the
+    zone (``Z``, ``+offset`` or nothing for a naive value)."""
+    sep = "space" if s[10] == " " else "T"
+    if s.endswith("Z"):
+        return sep + "Z"
+    return sep + ("+offset" if re.search(r"[+-]\d{2}:?\d{2}$", s[19:]) else "")
+
+
 def _dt_key(s: str) -> datetime:
     dt = datetime.fromisoformat(s)
     if dt.tzinfo is not None:
@@ -251,12 +270,14 @@ class _CaseNormalizer:
             u = uuid.UUID(v)
             if u in self.base.known_uuids:
                 return v
-            return f"<uuid:{self.uuids.setdefault(u, len(self.uuids) + 1)}>"
+            n = self.uuids.setdefault(u, len(self.uuids) + 1)
+            return f"<uuid:{n}:{uuid_spelling(v)}>"
         if _DT_RE.match(v):
             d = _dt_key(v)
             if d in self.base.known_dts:
                 return v
-            return f"<datetime:{self.dts.setdefault(d, len(self.dts) + 1)}>"
+            n = self.dts.setdefault(d, len(self.dts) + 1)
+            return f"<datetime:{n}:{datetime_spelling(v)}>"
         if _JWT_RE.match(v):
             return "<token>"
         return v

@@ -221,13 +221,16 @@ def parse_datetime(text: object) -> dt.datetime | None:
     elif isinstance(text, str):
         try:
             value = dt.datetime.fromisoformat(text)
-        except ValueError:
+        except (ValueError, OverflowError):
             return None
     else:
         return None
     if value.tzinfo is None:
         return value.replace(tzinfo=dt.UTC)
-    return value.astimezone(dt.UTC)
+    try:
+        return value.astimezone(dt.UTC)
+    except (ValueError, OverflowError):  # e.g. 0001-01-01T00:00:00+01:00 is before year 1
+        return None
 
 
 def datetime_text(value: dt.datetime) -> str:
@@ -732,6 +735,15 @@ def _internal(detail: str) -> JSONResponse:
     return JSONResponse({"error": "internal", "detail": detail[:500]}, status_code=500)
 
 
+UNIQUE_CONFLICT = "a row with the same unique value already exists"
+
+
+def _is_unique_violation(err: BaseException) -> bool:
+    return isinstance(err, sqlite3.IntegrityError) and str(err).startswith(
+        "UNIQUE constraint failed"
+    )
+
+
 Steps = Callable[[sqlite3.Connection, dict[str, object], Caller | None, dt.datetime], Response]
 
 
@@ -771,6 +783,8 @@ def serve(
     except Failure as err:
         return _internal(str(err))
     except Exception as err:  # loud: any unexpected failure is a 500
+        if _is_unique_violation(err):  # a 409 naming no table or column; rolled back below
+            return JSONResponse({"error": "conflict", "detail": UNIQUE_CONFLICT}, status_code=409)
         return _internal(f"{type(err).__name__}: {err}")
     finally:
         if conn is not None:

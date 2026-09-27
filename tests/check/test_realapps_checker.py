@@ -15,7 +15,15 @@ from lattice.catalog import API_FN_FUNCS, API_ONLY_FNS, FN_DOCS, FN_SIGS
 from lattice.check import check_source
 from lattice.check.api_info import MISSING, UNSET
 from lattice.diagnostics import Severity
-from lattice.profile import ApiProfile, NativeSig, NativeToken, Profile, TokenColumn
+from lattice.profile import (
+    AdminFlag,
+    ApiProfile,
+    NativeSig,
+    NativeToken,
+    Profile,
+    RoleColumn,
+    TokenColumn,
+)
 from lattice.typesys import ORDERED, SCALAR_NAMES, Scalar, Schema, TableT
 
 S = Scalar
@@ -333,6 +341,8 @@ def test_uuid_and_datetime_params_and_defaults() -> None:
     assert since.default == dt.datetime(2024, 1, 1, tzinfo=dt.UTC)
     bad = src.replace('"2024-01-01T00:00:00Z"', '"yesterday"')
     assert errors(bad) == ["L601"]
+    for overflow in ("0001-01-01T00:00:00+01:00", "9999-12-31T23:00:00-05:00"):
+        assert errors(src.replace("2024-01-01T00:00:00Z", overflow)) == ["L601"]
 
 
 def test_uuid_param_default_must_be_a_uuid() -> None:
@@ -739,6 +749,57 @@ def test_returning_the_unchecked_row_is_still_l802() -> None:
     assert "L802" in errors(src)
 
 
+NOTES = Schema.from_pairs(
+    [("id", S.INT), ("order_id", S.INT), ("author_id", S.UUID), ("body", S.STR)],
+    keys=[("id",)],
+    owner="author_id",
+)
+ORDERS = Schema.from_pairs(
+    [("id", S.INT), ("customer_id", S.UUID), ("total", S.FLOAT)],
+    keys=[("id",)],
+    owner="customer_id",
+)
+JOINED = Profile(
+    schemas={},
+    api=replace(
+        API,
+        tables={**API.tables, "Notes": NOTES, "Orders": ORDERS},
+        table_names={**API.table_names, "Notes": "notes", "Orders": "orders"},
+    ),
+)
+
+
+def test_owner_is_over_a_join_of_owned_tables_is_l404() -> None:
+    # the SQL checks one owner column: the other table's rows would leak
+    src = """
+    @endpoint("GET", "/notes", auth=Customer)
+    def list_notes(user: CurrentUser) -> Page | Forbidden:
+        notes = fetch(Notes)
+        orders = fetch(Orders)
+        j = join(notes, orders, on={"order_id": "id"})
+        ok = require(j, owner_is(user), else_=Forbidden("x"))
+        result = page(ok, limit=20)
+        return result
+    """
+    d = diag(src, "L404", JOINED)
+    assert "owner_is()" in d.message
+    assert errors(src, JOINED) == ["L404"]
+
+
+def test_owner_is_over_one_fetched_table_is_clean() -> None:
+    src = """
+    @endpoint("GET", "/notes/{id}", auth=Customer)
+    def get_note(id: Int(ge=1), user: CurrentUser) -> One | NotFound | Forbidden:
+        notes = fetch(Notes)
+        found = where(notes, col("id") == id)
+        picked = select(found, cols=["id", "author_id", "body"])
+        note = one(picked, else_=NotFound("note"))
+        ok = require(note, owner_is(user), else_=Forbidden("x"))
+        return ok
+    """
+    assert errors(src, JOINED) == []
+
+
 def test_owner_is_is_unknown_in_tabular_programs() -> None:
     src = """
     tags = load("tags.csv", schema=Tag)
@@ -868,3 +929,57 @@ def test_verifier_native_result_is_not_private() -> None:
         return shown
     """
     assert errors(src) == []
+
+
+# ---- the role column is admin-only ----------------------------------------------------------
+
+SELF_GRANT = """
+@endpoint("PATCH", "/users/me", auth={auth})
+def update_user_me(user: CurrentUser, {param}: {typ} = UNSET) -> One:
+    done = update(user, {param}={param})
+    shown = select(done, cols=["id", "email"])
+    return shown
+"""
+ADMIN_FLAG = Profile(schemas={}, api=replace(API, roles_from=AdminFlag("is_superuser", "Customer")))
+
+
+def test_a_customer_cannot_set_the_admin_flag() -> None:
+    src = SELF_GRANT.format(auth="Customer", param="is_superuser", typ="Bool")
+    d = diag(src, "L802", ADMIN_FLAG)
+    assert "is_superuser" in d.message
+    assert errors(src, ADMIN_FLAG) == ["L802"]
+
+
+def test_an_admin_may_set_the_admin_flag() -> None:
+    src = SELF_GRANT.format(auth="Admin", param="is_superuser", typ="Bool")
+    assert errors(src, ADMIN_FLAG) == []
+
+
+def test_a_customer_may_set_other_columns_under_an_admin_flag() -> None:
+    src = SELF_GRANT.format(auth="Customer", param="full_name", typ="Str(max_len=255)")
+    assert errors(src, ADMIN_FLAG) == []
+
+
+def test_a_customer_cannot_set_the_role_column() -> None:
+    users = Schema.from_pairs(
+        [("id", S.UUID), ("email", S.STR), ("role", S.STR)], keys=[("id",)], owner="id"
+    )
+    profile = Profile(
+        schemas={},
+        api=replace(API, tables={**API.tables, "User": users}, roles_from=RoleColumn("role")),
+    )
+    src = SELF_GRANT.format(auth="Customer", param="role", typ="Str(max_len=20)")
+    assert errors(src, profile) == ["L802"]
+
+
+def test_a_signup_may_set_the_admin_flag_to_false() -> None:
+    src = """
+    @endpoint("POST", "/users/signup", auth=Public)
+    def signup(email: Str(max_len=255), flag: Bool) -> One:
+        made = insert(User, email=email, hashed_password="x", is_active=True, is_superuser={v})
+        shown = select(made, cols=["id", "email"])
+        return shown
+    """
+    assert errors(src.replace("{v}", "False"), ADMIN_FLAG) == []
+    assert errors(src.replace("{v}", "True"), ADMIN_FLAG) == ["L802"]
+    assert errors(src.replace("{v}", "flag"), ADMIN_FLAG) == ["L802"]

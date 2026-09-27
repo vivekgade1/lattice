@@ -400,11 +400,11 @@ def _datetime_default(text: str) -> dt.datetime | None:
     """A timezone-aware ISO-8601 date-time literal, converted to UTC, or None."""
     try:
         value = dt.datetime.fromisoformat(text)
-    except ValueError:
+        if value.tzinfo is None:
+            return None
+        return value.astimezone(dt.UTC)
+    except (ValueError, OverflowError):  # out of range in UTC, e.g. year 0 or 10000
         return None
-    if value.tzinfo is None:
-        return None
-    return value.astimezone(dt.UTC)
 
 
 def _default_value(scalar: Scalar | None, node: ast.expr) -> object:

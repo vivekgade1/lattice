@@ -484,6 +484,15 @@ def _internal(detail: str) -> JSONResponse:
     return JSONResponse({"error": "internal", "detail": detail[:500]}, status_code=500)
 
 
+# The 409 body of a write that hits a UNIQUE constraint (or a duplicate key). The detail
+# names no table or column: the database's message is not part of the API.
+UNIQUE_CONFLICT = "a row with the same unique value already exists"
+
+
+def _unique_conflict() -> JSONResponse:
+    return JSONResponse({"error": "conflict", "detail": UNIQUE_CONFLICT}, status_code=409)
+
+
 def _serve(
     plan: EndpointPlan,
     db_path: Path,
@@ -525,6 +534,8 @@ def _serve(
     except LatticeRuntimeError as err:
         return _internal(err.render())
     except Exception as err:  # loud: any unexpected failure is a 500
+        if dialect.is_unique_violation(err):
+            return _unique_conflict()  # rolled back below
         return _internal(f"{type(err).__name__}: {err}")
     finally:
         if conn is not None:

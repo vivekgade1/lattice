@@ -35,6 +35,7 @@ import sys
 import uuid
 from collections.abc import Iterator
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -56,11 +57,12 @@ from bench.template_suite import (
     TEMPLATE_SUITE,
     CaseRecord,
     TemplateCase,
+    datetime_spelling,
     run_template_suite,
 )
 from lattice.api.backend import datetime_text, parse_datetime
 from lattice.api.codegen import compile_source_to_fastapi
-from lattice.api.runtime import build_app
+from lattice.api.runtime import UNIQUE_CONFLICT, build_app
 
 REPO = Path(__file__).resolve().parents[2]
 KIT_PATH = REPO / "bench" / "api_kit" / "platform_kit.py"
@@ -85,6 +87,9 @@ EXTRA_CASES: list[TemplateCase] = [
     _C("inactive_update_me", "PATCH", "/users/me", token=_carol_token, tables=("user",),
        json={"full_name": "Not Allowed"}),
     _C("token_for_unknown_user", "GET", "/users/me", token=_ghost_token, tables=("user",)),
+    _C("inactive_users_list", "GET", "/users/", token=_carol_token, tables=("user",)),
+    _C("inactive_items_list_bad_limit", "GET", "/items/", token=_carol_token,
+       params={"limit": "many"}),
 ]  # fmt: skip
 
 # ---- representation rules ------------------------------------------------------------------
@@ -99,7 +104,9 @@ RULES: dict[str, str] = {
         "on SQLite answers the naive stored value with pydantic's shortest fraction "
         "('2026-02-02T06:00:00') because SQLite keeps no zone (on Postgres it would say "
         "'...:00Z'). The rule maps each template datetime to Lattice's spelling of it as "
-        "UTC."
+        "UTC, and a generated one's placeholder to Lattice's spelling class "
+        "('<datetime:1:T>' -> '<datetime:1:TZ>'); in the database the spellings must "
+        "match."
     ),
     ERROR_ENVELOPE: (
         "Same status and the same detail message; Lattice's declared errors add the error "
@@ -120,6 +127,8 @@ ERROR_CODES = {
     409: "conflict",
 }
 _DATETIME = re.compile(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?")
+_DATETIME_PLACEHOLDER = re.compile(r"<datetime:(\d+):[^>]*>")
+_WIRE_SPELLING = datetime_spelling(datetime_text(datetime(2000, 1, 1)))  # "TZ"
 
 
 def _wire_datetimes(value: Any) -> Any:
@@ -132,6 +141,8 @@ def _wire_datetimes(value: Any) -> Any:
         parsed = parse_datetime(value)
         assert parsed is not None
         return datetime_text(parsed)
+    if isinstance(value, str) and (m := _DATETIME_PLACEHOLDER.fullmatch(value)):
+        return f"<datetime:{m.group(1)}:{_WIRE_SPELLING}>"
     return value
 
 
@@ -222,15 +233,43 @@ DEVIATIONS: dict[str, Deviation] = {
         _UNAUTHORIZED,
     ),
     "users_update_me_email_taken": Deviation(
-        "email-conflict-409",
+        "email-conflict-detail",
         "gap",
-        "The template checks `if user_in.email:` for another user with that email and "
-        "answers 409. Lattice cannot express this check: `email` is an UNSET-able "
-        "partial-update parameter and any expression over it is L404, so the program "
-        "cannot compare it with other rows before the update. The UPDATE then hits the "
-        "UNIQUE index and the request fails with 500 (rolled back, database unchanged).",
-        500,
-        {"error": "internal", "detail": "IntegrityError: UNIQUE constraint failed: user.email"},
+        "Same status (409) and database (unchanged). The template checks `if "
+        "user_in.email:` for another user with that email and answers 409 'User with "
+        "this email already exists'. Lattice cannot express this check: `email` is an "
+        "UNSET-able partial-update parameter and any expression over it is L404, so the "
+        "program cannot compare it with other rows before the update. The UPDATE hits "
+        "the UNIQUE index instead, which Lattice answers with a generic 409 (rolled back) "
+        "whose detail names no table or column -- so not the template's message.",
+        409,
+        {"error": "conflict", "detail": UNIQUE_CONFLICT},
+    ),
+    "inactive_users_list": Deviation(
+        "inactive-before-role",
+        "gap",
+        "An inactive non-superuser lists users: the template's get_current_active_user "
+        "rejects the caller as inactive (400 'Inactive user') before the superuser check. "
+        "Lattice has no auth-level active predicate: `is_active` is checked by a require() "
+        "in the program body, which runs after the automatic auth=Admin role check, so "
+        "the caller gets that check's 403. (An auth-level active predicate is planned "
+        "for sub-project 1b.)",
+        403,
+        {"error": "forbidden"},
+    ),
+    "inactive_items_list_bad_limit": Deviation(
+        "inactive-before-validation",
+        "gap",
+        "An inactive user sends an invalid parameter (limit=many): the template resolves "
+        "the active-user dependency first and answers 400 'Inactive user'. In Lattice "
+        "the active check is a require() in the program body, which runs only after the "
+        "parameters validate, so the caller gets 422. Lattice has no auth-level active "
+        "predicate (planned for sub-project 1b).",
+        422,
+        {
+            "error": "validation",
+            "detail": [{"loc": ["query", "limit"], "msg": "must be an integer"}],
+        },
     ),
     "users_update_me_bad_email": Deviation(
         "email-format",
@@ -253,10 +292,10 @@ DEVIATIONS: dict[str, Deviation] = {
 ALL_CASES = [*TEMPLATE_SUITE, *EXTRA_CASES]
 CASE_NAMES = [c.name for c in ALL_CASES]
 
-# The expected tally over the 53 suite cases and the 7 extra ones (documented in
+# The expected tally over the 53 suite cases and the 9 extra ones (documented in
 # docs/results/2026-09-26-bench-smoke.md): exact matches, matches that need a
 # representation rule, and deviations.
-EXPECTED_TALLY = {"suite": (8, 36, 9), "extra": (0, 6, 1)}
+EXPECTED_TALLY = {"suite": (6, 38, 9), "extra": (0, 6, 3)}
 
 # ---- fixtures -----------------------------------------------------------------------------
 
@@ -341,6 +380,20 @@ def test_the_program_is_accepted_with_only_the_expected_warnings():
     assert codes == ["L823", "L823", "L823", "L833"]
 
 
+@pytest.mark.parametrize("column", ["is_superuser", "is_active"])
+def test_a_customer_cannot_update_their_own_admin_columns(column):
+    from lattice.check import check_source
+
+    src = template_program().replace(
+        "update(user, full_name=full_name, email=email)",
+        f"update(user, full_name=full_name, email=email, {column}=True)",
+    )
+    assert src != template_program()
+    result = check_source(src, template_profile())
+    errors = [d for d in result.diagnostics if d.code == "L802"]
+    assert len(errors) == 1 and column in errors[0].message
+
+
 # ---- Lattice vs template -------------------------------------------------------------------
 
 
@@ -379,6 +432,29 @@ def test_every_deviation_names_a_case():
     assert set(DEVIATIONS) <= set(CASE_NAMES)
     assert len(set(CASE_NAMES)) == len(CASE_NAMES)
     assert all(d.kind in ("policy", "gap") and d.reason for d in DEVIATIONS.values())
+
+
+def test_a_write_in_another_spelling_is_caught(dbs, template_records):
+    """The placeholders keep each generated value's spelling: Lattice storing the new
+    item's created_at as its canonical "...T...Z" in this "YYYY-MM-DD HH:MM:SS" database
+    answers the same status and body but fails on the database effects."""
+    from dataclasses import replace
+
+    from lattice.api.ir import lower_api
+    from lattice.check import check_source
+
+    profile = template_profile()
+    assert profile.api is not None
+    iso = replace(profile, api=replace(profile.api, datetime_storage="iso_z"))
+    result = check_source(template_program(), iso)
+    assert result.program is not None
+    plans = lower_api(result.program)
+    case = next(c for c in TEMPLATE_SUITE if c.name == "item_create")
+    (record,) = run_template_suite(lambda p: build_app(plans, p, natives=NATIVES), dbs[0], [case])
+    template = template_records["item_create"]
+    assert record.status == template.status
+    with pytest.raises(AssertionError, match="database effects differ"):
+        agreement(template, record)
 
 
 # ---- generated FastAPI app vs runtime ------------------------------------------------------

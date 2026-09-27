@@ -95,6 +95,8 @@ USER = Schema.from_pairs(
     keys=[("id",)],
     nullable=["full_name", "created_at"],
     private=["hashed_password"],
+    # the template's non-admin writes (UserUpdateMe) never touch these
+    admin_write=["is_superuser", "is_active"],
 )
 ITEM = Schema.from_pairs(
     [

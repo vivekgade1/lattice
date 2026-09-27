@@ -9,7 +9,8 @@ cannot run with the language's guarantees (spec §3).
   dialect offers a re-read strategy yet). A delete's result is its input rows, which
   were read before the delete, so it needs neither.
 * L873 — a `native.<name>(...)` call needs `native_functions` (natives run inside the
-  query).
+  query); so does every authenticated endpoint under `NativeToken` auth (the caller
+  lookup's query calls the token native).
 
 The backend is `ApiProfile.backend` ("sqlite" when absent); every SQLite capability
 holds, so none of these fire for it. An unknown backend name is left to profile
@@ -22,8 +23,10 @@ import ast
 from collections.abc import Iterator
 
 from lattice.api.backend import Capabilities, dialect_for
+from lattice.catalog import PUBLIC_ROLE
 from lattice.check.astutil import endpoints_of, steps_of
 from lattice.check.context import CheckContext
+from lattice.profile import NativeToken
 
 _WRITES = frozenset({"insert", "update", "delete"})
 _RETURNING_WRITES = frozenset({"insert", "update"})
@@ -45,11 +48,19 @@ def _is_native(node: ast.AST) -> bool:
 
 
 class _Backend:
-    def __init__(self, module: ast.Module, ctx: CheckContext, caps: Capabilities, name: str):
+    def __init__(
+        self,
+        module: ast.Module,
+        ctx: CheckContext,
+        caps: Capabilities,
+        name: str,
+        auth_native: str | None = None,
+    ):
         self.module = module
         self.ctx = ctx
         self.caps = caps
         self.name = name
+        self.auth_native = auth_native  # NativeToken auth's decode native
         self.steps = steps_of(module)
 
     def _walk(self, fn: ast.FunctionDef) -> Iterator[ast.AST]:
@@ -120,6 +131,16 @@ class _Backend:
                     "return rows read before the write, or use a backend with RETURNING",
                 )
         if not self.caps.native_functions:
+            auth = _auth_node(fn)
+            if self.auth_native is not None and auth is not None:
+                self.ctx.error(
+                    "L873",
+                    auth,
+                    f"endpoint '{fn.name}' authenticates with native.{self.auth_native}() "
+                    f"inside the caller lookup's query, but the '{self.name}' backend cannot "
+                    f"call user functions in queries",
+                    "use a backend with native functions",
+                )
             for n in nodes:
                 if _is_native(n):
                     assert isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
@@ -163,6 +184,20 @@ def _total(call: ast.AST) -> bool:
     )
 
 
+def _auth_node(fn: ast.FunctionDef) -> ast.expr | None:
+    """The @endpoint decorator of an endpoint that authenticates its caller (any auth=
+    role but Public), or None."""
+    for deco in fn.decorator_list:
+        if isinstance(deco, ast.Call) and isinstance(deco.func, ast.Name):
+            if deco.func.id != "endpoint":
+                continue
+            auth = next((kw.value for kw in deco.keywords if kw.arg == "auth"), None)
+            if isinstance(auth, ast.Name) and auth.id == PUBLIC_ROLE:
+                return None
+            return deco
+    return None
+
+
 def run(module: ast.Module, ctx: CheckContext) -> None:
     api = ctx.profile.api
     if api is None:
@@ -172,4 +207,6 @@ def run(module: ast.Module, ctx: CheckContext) -> None:
         dialect = dialect_for(name)
     except ValueError:
         return  # profile validation reports an unknown backend
-    _Backend(module, ctx, dialect.capabilities, name).run()
+    auth = getattr(api, "auth", None)
+    auth_native = auth.native if isinstance(auth, NativeToken) else None
+    _Backend(module, ctx, dialect.capabilities, name, auth_native).run()

@@ -316,6 +316,22 @@ REALAPPS_CASES: tuple[HttpCase, ...] = (
     ),
     _rcase("since naive", "GET", "/items/since", "bob", query={"after": "2000-01-01T00:00:00"}),
     _rcase("since bad", "GET", "/items/since", "alice", query={"after": "soon"}, status=422),
+    _rcase(
+        "since too early",
+        "GET",
+        "/items/since",
+        "alice",
+        query={"after": "0001-01-01T00:00:00+01:00"},
+        status=422,
+    ),
+    _rcase(
+        "since too late",
+        "GET",
+        "/items/since",
+        "alice",
+        query={"after": "9999-12-31T23:00:00-05:00"},
+        status=422,
+    ),
     _rcase("to_uuid to_datetime", "GET", "/admin/alice-items", "admin"),
     # Uuid parameters and owner_is() (403) / 404
     _rcase("item own", "GET", f"/items/{_rid(101)}", "alice"),
@@ -410,6 +426,15 @@ REALAPPS_CASES: tuple[HttpCase, ...] = (
         after_sql=_USERS_AFTER,
     ),
     _rcase("update me email null", "PATCH", "/users/me", "bob", json={"email": None}, status=422),
+    _rcase(
+        "update me email taken",
+        "PATCH",
+        "/users/me",
+        "bob",
+        json={"email": "alice@example.com"},
+        status=409,
+        after_sql=_USERS_AFTER,
+    ),
     _rcase(
         "delete own", "DELETE", f"/items/{_rid(104)}", "alice", status=204, after_sql=_ITEMS_AFTER
     ),
@@ -858,6 +883,11 @@ def test_the_realapps_program_passes_its_cases(differential_runs):
     assert bodies["update description null"]["description"] is None
     assert bodies["login"]["access_token"] == realapps.TOKENS["alice"]
     assert bodies["loud"]["loud"] == "ALPHA!"
+    # a UNIQUE violation is a 409 that names no table or column (rolled back)
+    assert bodies["update me email taken"] == {
+        "error": "conflict",
+        "detail": runtime.UNIQUE_CONFLICT,
+    }
 
 
 def test_the_generated_realapps_app_imports_its_natives():

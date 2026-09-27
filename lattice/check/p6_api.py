@@ -46,6 +46,7 @@ from lattice.check.astutil import (
 from lattice.check.context import CheckContext
 from lattice.check.exprs import did_you_mean
 from lattice.check.p4_types import cols_read, is_owner_is
+from lattice.profile import AdminFlag
 from lattice.typesys import Scalar, TableT, generated_key, uuid_key, via_parent_key
 
 _WRITES = ("insert", "update", "delete")
@@ -201,6 +202,7 @@ class _Endpoint:
         self._path()
         self.p.check_subset(self.fn, endpoint=True)
         self._owned_calls()
+        self._owner_is_inputs()
         self._checks_before_owned()
         self._owner_is_checks()
         self._private_reads()
@@ -335,7 +337,24 @@ class _Endpoint:
                 "mine = owned(fetched, by=user)",
             )
 
-    def _over_one_fetch(self, node: ast.expr) -> bool:
+    def _owner_is_inputs(self) -> None:
+        """require(t, owner_is(user)) checks ONE owner column (or owner_via key) in SQL,
+        so -- like owned() -- it must see the rows of one fetched table: a join would
+        let the other table's rows through unchecked."""
+        for call in self._owner_is_requires():
+            if self._type(call) is None:
+                continue  # P4 reported it
+            if self._over_one_fetch(call.args[0], also=frozenset({"one"})):
+                continue
+            self.ctx.error(
+                "L404",
+                call.args[1],
+                "owner_is() must check the rows of one fetched table",
+                "check each table before joining: "
+                "row = one(where(fetch(T), ...)); mine = require(row, owner_is(user), ...)",
+            )
+
+    def _over_one_fetch(self, node: ast.expr, also: frozenset[str] = frozenset()) -> bool:
         seen: set[str] = set()
         while isinstance(node, ast.Name) and node.id not in seen:
             seen.add(node.id)
@@ -343,7 +362,7 @@ class _Endpoint:
             op = _call_name(value) if value is not None else None
             if op == "fetch":
                 return True
-            if op not in _ROW_FILTERS or not isinstance(value, ast.Call) or not value.args:
+            if op not in _ROW_FILTERS | also or not isinstance(value, ast.Call) or not value.args:
                 return False
             node = value.args[0]
         return False
@@ -556,8 +575,17 @@ class _Endpoint:
         schema = self.api.tables.get(table or "")
         if schema is None:
             return
+        admin_write = set(schema.admin_write)
         given = {kw.arg for kw in call.keywords if kw.arg is not None}
-        written = sorted(given & schema.admin_write)
+        if table == self.api.users_table:
+            # the column callers' roles come from (AdminFlag / RoleColumn) is always
+            # admin-only: writing it would let a caller grant themselves Admin. Only a
+            # literal non-admin value (a signup's is_superuser=False) is harmless.
+            role_col = self.api.roles_from.column
+            value = next((kw.value for kw in call.keywords if kw.arg == role_col), None)
+            if value is not None and not self._non_admin_role(value):
+                admin_write.add(role_col)
+        written = sorted(given & admin_write)
         if written:
             self.reported_ownership = True
             cols = ", ".join(written)
@@ -568,6 +596,15 @@ class _Endpoint:
                 f"only auth=Admin endpoints may set {cols}; remove "
                 + ", ".join(f"{c}=" for c in written),
             )
+
+    def _non_admin_role(self, value: ast.expr) -> bool:
+        """A literal that cannot make its row an Admin: False for an AdminFlag column,
+        a role other than the admin role for a RoleColumn."""
+        if not isinstance(value, ast.Constant):
+            return False
+        if isinstance(self.api.roles_from, AdminFlag):
+            return value.value is False
+        return isinstance(value.value, str) and value.value != self.api.admin_role
 
     def _insert_owner(self, call: ast.Call) -> None:
         if not call.args:

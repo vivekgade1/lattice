@@ -3058,9 +3058,9 @@
   "body": {
    "title": "Fresh item",
    "description": "made by bob",
-   "id": "<uuid:1>",
+   "id": "<uuid:1:dashed>",
    "owner_id": "98d1dd4d-4ac3-5c77-80e3-fa14fa3d99e1",
-   "created_at": "<datetime:1>"
+   "created_at": "<datetime:1:T>"
   },
   "db": {
    "item": [
@@ -3207,8 +3207,8 @@
     {
      "title": "Fresh item",
      "description": "made by bob",
-     "id": "<uuid:1>",
-     "created_at": "<datetime:1>",
+     "id": "<uuid:1:hex32>",
+     "created_at": "<datetime:1:space>",
      "owner_id": "98d1dd4d4ac35c7780e3fa14fa3d99e1"
     }
    ]
@@ -3222,9 +3222,9 @@
   "body": {
    "title": "Bare",
    "description": null,
-   "id": "<uuid:1>",
+   "id": "<uuid:1:dashed>",
    "owner_id": "b33cbfa5-3598-5545-b110-d26f8f619d1e",
-   "created_at": "<datetime:1>"
+   "created_at": "<datetime:1:T>"
   },
   "db": {
    "item": [
@@ -3371,8 +3371,8 @@
     {
      "title": "Bare",
      "description": null,
-     "id": "<uuid:1>",
-     "created_at": "<datetime:1>",
+     "id": "<uuid:1:hex32>",
+     "created_at": "<datetime:1:space>",
      "owner_id": "b33cbfa535985545b110d26f8f619d1e"
     }
    ]

@@ -597,6 +597,73 @@ def test_p7_rejects_a_checked_program(registered: None) -> None:
     assert [d.code for d in result.diagnostics if d.code.startswith("L87")] == ["L872"]
 
 
+NATIVE_AUTH = """
+@endpoint("GET", "/items/{id}/plain", auth=Customer)
+def plain(id: Uuid, user: CurrentUser) -> One | NotFound:
+    items = fetch(Item)
+    mine = owned(items, by=user)
+    found = where(mine, col("id") == id)
+    item = one(found, else_=NotFound("item"))
+    return item
+
+
+@endpoint("GET", "/items/public", auth=Public)
+def public() -> Page:
+    items = fetch(Item)
+    shown = select(items, cols=["id"])
+    result = page(shown, limit=10)
+    return result
+"""
+
+
+def test_p7_native_token_auth_needs_native_functions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """NativeToken auth calls the profile's decode native inside the caller lookup's
+    query: every authenticated endpoint needs native_functions (L873); Public ones
+    do not authenticate."""
+    from tests.api import realapps
+
+    caps = dataclasses.replace(SQLITE.capabilities, native_functions=False)
+    no_natives = type("NoNatives", (SqliteDialect,), {"name": "nonat", "capabilities": caps})()
+    monkeypatch.setitem(DIALECTS, "nonat", no_natives)
+    ctx = CheckContext(with_backend(realapps.PROFILE, "nonat"))
+    p7_backend.run(ast.parse(source(NATIVE_AUTH)), ctx)
+    (diag,) = ctx.diagnostics
+    assert diag.code == "L873"
+    deco = '@endpoint("GET", "/items/{id}/plain", auth=Customer)'
+    assert diag.span.line == source(NATIVE_AUTH).splitlines().index(deco) + 1
+    assert "decode_token" in diag.message and "'nonat' backend" in diag.message
+    ctx = CheckContext(with_backend(realapps.PROFILE, "sqlite"))
+    p7_backend.run(ast.parse(source(NATIVE_AUTH)), ctx)
+    assert ctx.diagnostics == []
+
+
+def test_sqlite_detects_unique_violations(tmp_path: Path) -> None:
+    conn = sqlite3.connect(tmp_path / "u.db")
+    conn.execute("CREATE TABLE t (id INTEGER PRIMARY KEY, email TEXT UNIQUE, n INTEGER NOT NULL)")
+    conn.execute("INSERT INTO t VALUES (1, 'a', 0)")
+    errors: list[Exception] = []
+    for sql in (
+        "INSERT INTO t VALUES (2, 'a', 0)",  # UNIQUE column
+        "INSERT INTO t VALUES (1, 'b', 0)",  # primary key
+        "INSERT INTO t VALUES (3, 'c', NULL)",  # NOT NULL: not a uniqueness conflict
+    ):
+        with pytest.raises(sqlite3.IntegrityError) as info:
+            conn.execute(sql)
+        errors.append(info.value)
+    conn.close()
+    assert [SQLITE.is_unique_violation(e) for e in errors] == [True, True, False]
+    assert not SQLITE.is_unique_violation(ValueError("UNIQUE constraint failed: t.email"))
+
+
+@pytest.mark.parametrize(
+    "text", ["0001-01-01T00:00:00+01:00", "9999-12-31T23:00:00-05:00", "2024-13-01T00:00:00"]
+)
+def test_parse_datetime_rejects_out_of_range_instants(text: str) -> None:
+    assert backend.parse_datetime(text) is None
+
+
 def test_p7_skips_tabular_programs_and_unknown_backends() -> None:
     ctx = CheckContext(PROFILE)
     p7_backend.run(ast.parse(source(rt.ADDRESSES)), ctx)

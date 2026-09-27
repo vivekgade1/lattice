@@ -186,6 +186,32 @@ def test_partial_updates_and_writes(records: list[dict]) -> None:
     assert row("item_delete_own") is None
     assert len(by["item_delete_own"]["db"]["item"]) == N_ITEMS - 1
     created = by["item_create"]
-    assert created["body"]["id"] == created["db"]["item"][-1]["id"] == "<uuid:1>"
-    assert created["body"]["created_at"] == created["db"]["item"][-1]["created_at"]
+    # the same generated value (same number), spelled as the API and SQLite spell it
+    assert created["body"]["id"] == "<uuid:1:dashed>"
+    assert created["db"]["item"][-1]["id"] == "<uuid:1:hex32>"
+    assert created["body"]["created_at"] == "<datetime:1:T>"
+    assert created["db"]["item"][-1]["created_at"] == "<datetime:1:space>"
     assert by["login_ok"]["body"] == {"access_token": "<token>", "token_type": "bearer"}
+
+
+def test_placeholders_keep_the_spelling(seed_db: Path) -> None:
+    """A generated value's placeholder keeps its spelling class, so a backend storing a
+    new id or instant in another spelling than the database's own is caught by the
+    table snapshots (a canonical-spelled id written into this hex32 database)."""
+    import uuid
+
+    from bench.template_suite import _Normalizer
+
+    n = _Normalizer(seed_db).fresh()
+    new = uuid.uuid4()
+    assert n.value(new.hex) == "<uuid:1:hex32>"
+    assert n.value(str(new)) == "<uuid:1:dashed>"
+    assert n.value(str(new)) != n.value(new.hex)
+    assert n.value(str(new).upper()) == "<uuid:1:dashed-upper>"
+    assert n.value("2031-05-06 07:08:09.123456") == "<datetime:1:space>"
+    assert n.value("2031-05-06T07:08:09.123456Z") == "<datetime:1:TZ>"
+    assert n.value("2031-05-06T09:08:09.123456+02:00") == "<datetime:1:T+offset>"
+    assert n.value("2031-05-06T07:08:09.123456") == "<datetime:1:T>"
+    # seeded values stay as they are
+    seeded = next(iter(TEMPLATE_ITEMS)).id
+    assert n.value(seeded.hex) == seeded.hex
