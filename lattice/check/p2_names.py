@@ -459,7 +459,7 @@ class _Resolver:
         scopes = [self.globals_, self.consts, self.tables, *self.step_scopes]
         for scope in scopes:
             for b in scope.all_bindings():
-                if b.used:
+                if b.used or b.name in self.ctx.external_uses:
                     continue
                 if b.kind != "ambient":
                     self.ctx.warn(

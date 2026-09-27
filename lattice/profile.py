@@ -49,6 +49,9 @@ class NativeSig:
     nullable: bool = False
     reads_private: bool = False
     effect: bool = False
+    # T2: the profile capability an effect native needs (`@procedure(effects=[...])`
+    # names it); None means the native's own name.
+    capability: str | None = None
 
 
 @dataclass(frozen=True)
@@ -136,6 +139,9 @@ class ApiProfile:
     # Round 2: the default place of null sort keys (NULL_ORDERS) for `sort` without
     # `nulls=` and for `window` order.
     null_order: str = "last"
+    # T2: capabilities `@procedure(effects=[...])` may declare, besides the ones effect
+    # natives name (see `effect_capabilities`).
+    capabilities: frozenset[str] = frozenset()
 
     def __post_init__(self) -> None:
         self._validate_page_shape()
@@ -160,6 +166,14 @@ class ApiProfile:
             raise ValueError(f"ApiProfile.datetime_wire must be one of {DATETIME_WIRES}")
         if self.null_order not in NULL_ORDERS:
             raise ValueError(f"ApiProfile.null_order must be one of {NULL_ORDERS}")
+        if not all(isinstance(c, str) and c.isidentifier() for c in self.capabilities):
+            raise ValueError("ApiProfile.capabilities must be identifiers, e.g. 'mail'")
+
+    def effect_capabilities(self) -> frozenset[str]:
+        """Every capability a procedure may declare: `capabilities` and the capability
+        of each effect native (its `capability`, else its name)."""
+        named = {sig.capability or name for name, sig in self.natives.items() if sig.effect}
+        return frozenset(self.capabilities) | frozenset(named)
 
     @staticmethod
     def default_page_shape() -> Mapping[str, str]:
@@ -203,6 +217,12 @@ class ApiProfile:
                     )
             elif not isinstance(sig.result, Scalar):
                 raise ValueError(f"native {name!r} result must be a Scalar")
+            if sig.capability is not None and not (
+                sig.effect and isinstance(sig.capability, str) and sig.capability.isidentifier()
+            ):
+                raise ValueError(
+                    f"native {name!r}: only an effect native names a capability (an identifier)"
+                )
 
     def _validate_auth(self) -> None:
         users = self.tables.get(self.users_table)

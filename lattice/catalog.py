@@ -333,3 +333,349 @@ API_FN_FUNCS = frozenset(
 API_AGG_FUNCS = frozenset(
     {"sum", "count", "count_distinct", "min", "max", "mean", "at_min", "at_max"}
 )
+
+# ---- T2: @procedure (sub-project 1c, spec §2) ---------------------------------------
+# Ordinary Python in a checked subset, typed by lattice.check.t2. Only API programs
+# have procedures. Everything below is data: the checker interprets the signature
+# strings with the annotation language (lattice.check.t2.types.parse_sig).
+
+PROCEDURE = "procedure"
+RECORD = "record"
+ROW_TYPE = "Row"
+CALLER_TYPE = "Caller"
+# `Row(Schema, private=True)`: the keyword that makes private columns readable
+ROW_PRIVATE = "private"
+# `@procedure(effects=[...])`: the one decorator keyword
+EFFECTS_KW = "effects"
+# Names a program may import from lattice.ops for procedures (API programs). They are
+# ambient in procedure bodies and annotations only, never in T0 code.
+T2_OPS_NAMES = frozenset(
+    {PROCEDURE, RECORD, ROW_TYPE, CALLER_TYPE, "Duration", "Json", "days", "hours", "minutes",
+     "seconds"}
+)
+# The type language: Lattice names, and the Python spellings accepted as aliases.
+T2_TYPE_NAMES = frozenset(
+    {"Int", "Float", "Str", "Bool", "Date", "DateTime", "Duration", "Uuid", "Json", "None"}
+)
+T2_TYPE_ALIASES: Mapping[str, str] = {
+    "int": "Int",
+    "float": "Float",
+    "str": "Str",
+    "bool": "Bool",
+    "date": "Date",
+    "datetime": "DateTime",
+    "timedelta": "Duration",
+}
+# Generic containers of the type language: name -> number of type arguments.
+T2_GENERICS: Mapping[str, int] = {"list": 1, "set": 1, "dict": 2, "tuple": -1}
+# Common misspellings of annotations -> the fix hint.
+T2_TYPE_HINTS: Mapping[str, str] = {
+    "Optional": "write 'T | None'",
+    "Union": "write 'A | B' (only 'T | None' unions are supported)",
+    "List": "write 'list[T]'",
+    "Dict": "write 'dict[K, V]'",
+    "Set": "write 'set[T]'",
+    "Tuple": "write 'tuple[A, B]'",
+    "Any": "name the type; for parsed JSON use Json",
+    "Table": "a procedure takes rows as list[Row[Schema]]",
+}
+# Errors an `except` clause may name: the ones allowlisted functions raise. A bare
+# `except:` / `except Exception` is L149: it would also swallow fuel exhaustion (R620).
+T2_ERRORS: Mapping[str, str] = {
+    "ValueError": "a conversion failed, e.g. int('x') or json.loads('{')",
+    "KeyError": "d[k] for a missing key",
+    "IndexError": "xs[i] out of range, or pop() from an empty list",
+    "ZeroDivisionError": "division or modulo by zero",
+}
+T2_BROAD_ERRORS = frozenset({"Exception", "BaseException"})
+
+
+@dataclass(frozen=True)
+class StdSig:
+    """One overload of an allowlisted function or method.
+
+    Types are strings in the annotation language plus signature-only forms: type
+    variables T, U, W, K, V; `Num` (Int or Float, the result keeps it); `Iterable[T]`
+    (list, set, tuple, dict keys, str, range, views); `Sized`; `Key[T]` (a `lambda`
+    over T returning an orderable value); `Any` (anything JSON-serializable, or
+    printable for str()); `Iter[T]` (a one-shot iterable); `Match`; `Counter[T]`.
+    """
+
+    params: tuple[str, ...]
+    result: str
+    optional: tuple[str, ...] = ()  # optional trailing positionals
+    kwargs: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
+    mutates: bool = False  # a method that changes its receiver (never on a parameter)
+    literal: tuple[int, ...] = ()  # positions that must be string literals (regexes)
+    doc: str = ""
+
+
+def _sig(params: str, result: str, **kw: object) -> StdSig:
+    ps = tuple(p.strip() for p in params.split(";")) if params else ()
+    return StdSig(ps, result, **kw)  # type: ignore[arg-type]
+
+
+_KEY = MappingProxyType({"key": "Key[T]", "reverse": "Bool"})
+_KEY_ONLY = MappingProxyType({"key": "Key[T]"})
+
+# Builtins callable in a procedure (name -> overloads, tried in order).
+T2_BUILTINS: Mapping[str, tuple[StdSig, ...]] = {
+    "len": (_sig("Sized", "Int"),),
+    "abs": (_sig("Num", "Num"),),
+    "round": (_sig("Float", "Int"), _sig("Float; Int", "Float")),
+    "min": (
+        _sig("Iterable[T]", "T", kwargs=_KEY_ONLY),
+        _sig("T; T", "T", optional=("T",), kwargs=_KEY_ONLY),
+    ),
+    "max": (
+        _sig("Iterable[T]", "T", kwargs=_KEY_ONLY),
+        _sig("T; T", "T", optional=("T",), kwargs=_KEY_ONLY),
+    ),
+    "sum": (_sig("Iterable[Num]", "Num", optional=("Num",)),),
+    "sorted": (_sig("Iterable[T]", "list[T]", kwargs=_KEY),),
+    "range": (_sig("Int", "Iter[Int]", optional=("Int", "Int")),),
+    "enumerate": (_sig("Iterable[T]", "Iter[tuple[Int, T]]", optional=("Int",)),),
+    "zip": (
+        _sig("Iterable[T]; Iterable[U]", "Iter[tuple[T, U]]"),
+        _sig("Iterable[T]; Iterable[U]; Iterable[W]", "Iter[tuple[T, U, W]]"),
+    ),
+    "reversed": (_sig("list[T]", "Iter[T]"),),
+    "any": (_sig("Iterable[Bool]", "Bool"),),
+    "all": (_sig("Iterable[Bool]", "Bool"),),
+    "str": (_sig("Any", "Str"),),
+    "int": (_sig("Str", "Int"), _sig("Num", "Int")),
+    "float": (_sig("Str", "Float"), _sig("Num", "Float")),
+    "list": (_sig("", "list[T]"), _sig("Iterable[T]", "list[T]")),
+    "set": (_sig("", "set[T]"), _sig("Iterable[T]", "set[T]")),
+    "dict": (_sig("", "dict[K, V]"), _sig("Iterable[tuple[K, V]]", "dict[K, V]")),
+}
+# Lattice helpers ambient in procedures: Duration constructors.
+T2_HELPERS: Mapping[str, tuple[StdSig, ...]] = {
+    unit: (_sig("Num", "Duration", doc=f"a Duration of n {unit}"),)
+    for unit in ("days", "hours", "minutes", "seconds")
+}
+
+# The standard-library allowlist: module -> name -> overloads (a function) or a type
+# string (a constant). `import m` and `from m import name` both work; nothing else
+# from these modules (or any other module) is importable (L142).
+T2_STDLIB: Mapping[str, Mapping[str, tuple[StdSig, ...] | str]] = {
+    "math": {
+        "floor": (_sig("Num", "Int"),),
+        "ceil": (_sig("Num", "Int"),),
+        "trunc": (_sig("Num", "Int"),),
+        "sqrt": (_sig("Num", "Float"),),
+        "exp": (_sig("Num", "Float"),),
+        "log": (_sig("Num", "Float", optional=("Num",)),),
+        "log10": (_sig("Num", "Float"),),
+        "pow": (_sig("Num; Num", "Float"),),
+        "fabs": (_sig("Num", "Float"),),
+        "isclose": (_sig("Float; Float", "Bool"),),
+        "gcd": (_sig("Int; Int", "Int"),),
+        "pi": "Float",
+        "e": "Float",
+        "inf": "Float",
+    },
+    "datetime": {
+        "timedelta": (
+            _sig(
+                "",
+                "Duration",
+                kwargs=MappingProxyType(
+                    {u: "Num" for u in ("weeks", "days", "hours", "minutes", "seconds")}
+                ),
+            ),
+        ),
+        "date": (_sig("Int; Int; Int", "Date"),),
+    },
+    "re": {
+        "fullmatch": (_sig("Str; Str", "Match | None", literal=(0,)),),
+        "match": (_sig("Str; Str", "Match | None", literal=(0,)),),
+        "search": (_sig("Str; Str", "Match | None", literal=(0,)),),
+        "sub": (_sig("Str; Str; Str", "Str", literal=(0,)),),
+        "findall": (_sig("Str; Str", "list[Str]", literal=(0,)),),
+        "split": (_sig("Str; Str", "list[Str]", literal=(0,)),),
+    },
+    "json": {
+        "dumps": (
+            _sig("Json", "Str", kwargs=MappingProxyType({"sort_keys": "Bool", "indent": "Int"})),
+        ),
+        "loads": (_sig("Str", "Json"),),
+    },
+    "collections": {
+        "Counter": (_sig("", "Counter[T]"), _sig("Iterable[T]", "Counter[T]")),
+        # defaultdict(factory): factory is list, set, int, float or str; the key and
+        # value types come from the annotation (d: dict[K, V] = defaultdict(list))
+        "defaultdict": (_sig("Factory", "dict[K, V]"),),
+    },
+    "string": {
+        "ascii_letters": "Str",
+        "ascii_lowercase": "Str",
+        "ascii_uppercase": "Str",
+        "digits": "Str",
+        "punctuation": "Str",
+    },
+}
+T2_DEFAULTDICT_FACTORIES = frozenset({"list", "set", "int", "float", "str"})
+
+# Methods by receiver kind. Receiver type variables: list/set T; dict K, V; Counter T
+# (keys; values Int).
+T2_METHODS: Mapping[str, Mapping[str, tuple[StdSig, ...]]] = {
+    "Str": {
+        "lower": (_sig("", "Str"),),
+        "upper": (_sig("", "Str"),),
+        "casefold": (_sig("", "Str"),),
+        "title": (_sig("", "Str"),),
+        "capitalize": (_sig("", "Str"),),
+        "strip": (_sig("", "Str", optional=("Str",)),),
+        "lstrip": (_sig("", "Str", optional=("Str",)),),
+        "rstrip": (_sig("", "Str", optional=("Str",)),),
+        "split": (_sig("", "list[Str]", optional=("Str", "Int")),),
+        "rsplit": (_sig("", "list[Str]", optional=("Str", "Int")),),
+        "splitlines": (_sig("", "list[Str]"),),
+        "join": (_sig("Iterable[Str]", "Str"),),
+        "replace": (_sig("Str; Str", "Str", optional=("Int",)),),
+        "startswith": (_sig("Str", "Bool"),),
+        "endswith": (_sig("Str", "Bool"),),
+        "find": (_sig("Str", "Int"),),
+        "rfind": (_sig("Str", "Int"),),
+        "count": (_sig("Str", "Int"),),
+        "partition": (_sig("Str", "tuple[Str, Str, Str]"),),
+        "rpartition": (_sig("Str", "tuple[Str, Str, Str]"),),
+        "zfill": (_sig("Int", "Str"),),
+        "ljust": (_sig("Int", "Str", optional=("Str",)),),
+        "rjust": (_sig("Int", "Str", optional=("Str",)),),
+        "center": (_sig("Int", "Str", optional=("Str",)),),
+        "isdigit": (_sig("", "Bool"),),
+        "isalpha": (_sig("", "Bool"),),
+        "isalnum": (_sig("", "Bool"),),
+        "isspace": (_sig("", "Bool"),),
+        "islower": (_sig("", "Bool"),),
+        "isupper": (_sig("", "Bool"),),
+    },
+    "list": {
+        "append": (_sig("T", "None", mutates=True),),
+        "extend": (_sig("Iterable[T]", "None", mutates=True),),
+        "insert": (_sig("Int; T", "None", mutates=True),),
+        "pop": (_sig("", "T", optional=("Int",), mutates=True),),
+        "remove": (_sig("T", "None", mutates=True),),
+        "clear": (_sig("", "None", mutates=True),),
+        "sort": (_sig("", "None", kwargs=_KEY, mutates=True),),
+        "reverse": (_sig("", "None", mutates=True),),
+        "index": (_sig("T", "Int"),),
+        "count": (_sig("T", "Int"),),
+        "copy": (_sig("", "list[T]"),),
+    },
+    "dict": {
+        "get": (_sig("K", "V | None"), _sig("K; V", "V")),
+        "keys": (_sig("", "Iter[K]"),),
+        "values": (_sig("", "Iter[V]"),),
+        "items": (_sig("", "Iter[tuple[K, V]]"),),
+        "pop": (_sig("K", "V", mutates=True), _sig("K; V", "V", mutates=True)),
+        "setdefault": (_sig("K; V", "V", mutates=True),),
+        "update": (_sig("dict[K, V]", "None", mutates=True),),
+        "clear": (_sig("", "None", mutates=True),),
+        "copy": (_sig("", "dict[K, V]"),),
+    },
+    "set": {
+        "add": (_sig("T", "None", mutates=True),),
+        "discard": (_sig("T", "None", mutates=True),),
+        "remove": (_sig("T", "None", mutates=True),),
+        "clear": (_sig("", "None", mutates=True),),
+        "update": (_sig("Iterable[T]", "None", mutates=True),),
+        "union": (_sig("Iterable[T]", "set[T]"),),
+        "intersection": (_sig("Iterable[T]", "set[T]"),),
+        "difference": (_sig("Iterable[T]", "set[T]"),),
+        "issubset": (_sig("Iterable[T]", "Bool"),),
+        "issuperset": (_sig("Iterable[T]", "Bool"),),
+        "copy": (_sig("", "set[T]"),),
+    },
+    "Counter": {
+        "most_common": (_sig("", "list[tuple[T, Int]]", optional=("Int",)),),
+    },
+    "Date": {
+        "isoformat": (_sig("", "Str"),),
+        "weekday": (_sig("", "Int"),),
+        "isoweekday": (_sig("", "Int"),),
+        "strftime": (_sig("Str", "Str"),),
+    },
+    "DateTime": {
+        "isoformat": (_sig("", "Str"),),
+        "weekday": (_sig("", "Int"),),
+        "strftime": (_sig("Str", "Str"),),
+        "date": (_sig("", "Date"),),
+        "timestamp": (_sig("", "Float"),),
+    },
+    "Duration": {"total_seconds": (_sig("", "Float"),)},
+    "Match": {
+        "group": (_sig("", "Str"), _sig("Int", "Str | None"), _sig("Str", "Str | None")),
+        "start": (_sig("", "Int"),),
+        "end": (_sig("", "Int"),),
+    },
+}
+# Attributes (not methods) by receiver kind.
+T2_ATTRS: Mapping[str, Mapping[str, str]] = {
+    "Date": {"year": "Int", "month": "Int", "day": "Int"},
+    "DateTime": {
+        "year": "Int",
+        "month": "Int",
+        "day": "Int",
+        "hour": "Int",
+        "minute": "Int",
+        "second": "Int",
+        "microsecond": "Int",
+    },
+    "Duration": {"days": "Int", "seconds": "Int"},
+    "Float": {"real": "Float"},
+}
+# The Caller: `id` (the users-table key), `is_admin`, `role` and every public column
+# of the users table.
+T2_CALLER_BUILTIN = MappingProxyType({"is_admin": "Bool", "role": "Str"})
+
+# Rejected calls and attributes (L140 I/O and code execution; L141 reflection).
+T2_IO_CALLS = frozenset(
+    {"open", "print", "input", "eval", "exec", "compile", "__import__", "breakpoint", "exit",
+     "quit", "help"}
+)
+T2_REFLECTION_CALLS = frozenset(
+    {"getattr", "setattr", "hasattr", "delattr", "vars", "globals", "locals", "dir", "type",
+     "isinstance", "issubclass", "id", "super", "object", "memoryview", "classmethod",
+     "staticmethod", "property"}
+)
+
+# ---- diagnostic codes --------------------------------------------------------------
+# T2 subset (L140-L149) and the T2 type checker (L900-L949). L128 (plain class), L130
+# (global/nonlocal), L131 (async) and L803 (private column) are shared with T0.
+T2_CODES: Mapping[str, str] = {
+    "L140": "I/O or code execution (open, print, input, eval, exec, ...) in a procedure",
+    "L141": "reflection (getattr, type, isinstance, dunder attributes, ...) in a procedure",
+    "L142": "import outside the T2 standard-library allowlist (T2_STDLIB)",
+    "L144": "a @record is annotated fields only (no bases, methods or other decorators)",
+    "L145": "mutation of a value passed in (parameters are immutable), or of a record",
+    "L146": "statement not allowed in a procedure (with, raise, assert, del, nested def, ...)",
+    "L147": "expression not allowed in a procedure (lambda outside key=, :=, *x, ...)",
+    "L148": "@procedure shape: decorator, annotated plain parameters, return annotation",
+    "L149": "bare `except:` / `except Exception` (would swallow fuel exhaustion)",
+    "L900": "unknown name",
+    "L901": "assigned value does not match the variable's type",
+    "L902": "invalid type annotation",
+    "L903": "operator or literal applied to incompatible types",
+    "L904": "call arguments do not match the signature",
+    "L905": "unknown attribute, method, field or native",
+    "L906": "a value that may be None is used without a None check",
+    "L907": "not every path returns a value",
+    "L908": "returned value does not match the declared return type",
+    "L909": "condition, iteration or unpacking of an unsupported type",
+    "L910": "local variable may be unbound on some path",
+    "L911": "cannot infer the element type of an empty container",
+    "L912": "value is not callable",
+    "L913": "subscript of an unsupported type or with a wrong index type",
+    "L914": "duplicate or clashing top-level name",
+    "L916": "regular expression must be a valid string literal",
+    "L917": "unpacking arity mismatch",
+    "L918": "except names an error type that is not declared (T2_ERRORS)",
+    "L919": "break/continue outside a loop",
+    "L920": "declared effect is not a capability of the profile",
+    "L921": "effect native called without declaring its effect",
+    "L922": "procedure calls a procedure with effects it does not declare",
+    "L923": "dict key or set element of an unhashable type",
+}

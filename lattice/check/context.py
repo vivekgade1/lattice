@@ -15,6 +15,9 @@ class CheckContext:
     profile: Profile
     diagnostics: list[Diagnostic] = field(default_factory=list)
     types: dict[int, Type] = field(default_factory=dict)  # id(ast node) -> synthesized type
+    # Module names read outside the T0 passes' view (by @procedure bodies): P2 does not
+    # report them as unused.
+    external_uses: set[str] = field(default_factory=set)
 
     def _add(
         self, code: str, sev: Severity, where: ast.AST | Span, message: str, hint: str | None

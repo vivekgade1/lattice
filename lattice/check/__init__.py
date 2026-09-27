@@ -15,10 +15,12 @@ from lattice.check import (
     p5_effects,
     p6_api,
     p7_backend,
+    t2,
 )
 from lattice.check.api_info import EndpointInfo
 from lattice.check.astutil import MAX_DEPTH
 from lattice.check.context import CheckContext
+from lattice.check.t2 import T2Program
 from lattice.diagnostics import Diagnostic, has_errors, sort_key
 from lattice.parse import parse, too_deep
 from lattice.profile import Profile
@@ -34,6 +36,9 @@ class CheckedProgram:
     profile: Profile
     # API profile: endpoint name -> metadata for lowering (empty for other programs)
     endpoints: Mapping[str, EndpointInfo] = field(default_factory=dict)
+    # API profile: the @procedure / @record part (None when the program has none).
+    # `module` then holds only the T0 statements; T2Program.nodes holds the rest.
+    t2: T2Program | None = None
 
 
 @dataclass(frozen=True)
@@ -79,6 +84,13 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
         return CheckResult(None, (too_deep(),))
     ctx = CheckContext(profile, diagnostics=list(parsed.diagnostics))
 
+    # T2: procedures, records (and their imports) are checked by their own checker;
+    # the T0 passes see only the T0 statements.
+    t0_body, t2_stmts = t2.split(module, api=profile.api is not None)
+    t2_program = t2.run(t2_stmts, t0_body, ctx) if t2_stmts else None
+    if t2_stmts:
+        module = ast.Module(body=t0_body, type_ignores=module.type_ignores)
+
     before = ctx.error_count()
     p1_nodes.run(module, ctx)
     if ctx.error_count() > before:
@@ -100,6 +112,6 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
     if has_errors(diags):
         return CheckResult(None, diags)
     program = CheckedProgram(
-        module, parsed.source, dict(ctx.types), dict(steps), profile, endpoints
+        module, parsed.source, dict(ctx.types), dict(steps), profile, endpoints, t2_program
     )
     return CheckResult(program, diags)

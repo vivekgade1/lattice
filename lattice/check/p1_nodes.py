@@ -20,6 +20,7 @@ from lattice.catalog import (
     OP_ALIASES,
     OPS_MODULE,
     SCHEMAS_MODULE,
+    T2_OPS_NAMES,
     USER_PARAM,
 )
 from lattice.check.api_info import (
@@ -202,7 +203,9 @@ def _check_import_from(stmt: ast.ImportFrom, ctx: CheckContext) -> None:
 
 def _check_ops_name(alias: ast.alias, ctx: CheckContext) -> None:
     name = alias.name
-    if name in IMPORTABLE or (ctx.profile.api is not None and name in API_AMBIENT):
+    if name in IMPORTABLE or (
+        ctx.profile.api is not None and (name in API_AMBIENT or name in T2_OPS_NAMES)
+    ):
         return
     if name in OP_ALIASES:
         hint = f"the op is called '{OP_ALIASES[name]}'"
