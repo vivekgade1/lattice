@@ -997,7 +997,10 @@ def test_items_grouped_per_order_stay_per_owner():
         .replace("auth=Customer", "auth=Public")
         .replace("user: CurrentUser", "")
     )
-    assert bench_errors(best_sellers) == []
+    # OrderItems lists only product_id as publicly aggregatable: how often each product
+    # was ordered is public, the quantities are not
+    assert bench_errors(best_sellers) == ["L802"]
+    assert bench_errors(best_sellers.replace('agg.sum(col("qty"))', "agg.count()")) == []
 
 
 def test_items_filtered_by_one_order_stay_per_owner():

@@ -42,7 +42,7 @@ from lattice.check.astutil import (
 )
 from lattice.check.context import CheckContext
 from lattice.check.exprs import did_you_mean
-from lattice.typesys import Scalar, TableT, via_parent_key
+from lattice.typesys import Scalar, TableT, generated_key, via_parent_key
 
 _WRITES = ("insert", "update", "delete")
 _TABLE_ARG_OPS = ("update", "delete")
@@ -454,6 +454,10 @@ class _Endpoint:
         given = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
         if self.admin:
             owner = schema.owner
+            # a table owned through its own generated key (Users) gets a new id from the
+            # database: its owner is the new row itself, nothing to set
+            if owner is not None and owner == generated_key(schema):
+                return
             if owner is not None and owner not in given and "owner" not in given:
                 self.ctx.error(
                     "L404",

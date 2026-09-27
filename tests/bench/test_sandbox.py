@@ -196,3 +196,21 @@ def test_long_stderr_keeps_the_tail_where_the_error_is(tmp_path: Path) -> None:
     assert result.returncode != 0
     assert len(result.stderr) == 4000
     assert "the-real-error" in result.stderr
+
+
+def test_env_extra_is_passed_without_inheriting_the_parent_env(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "super-secret")
+    code = (
+        "import os\n"
+        "print(os.environ.get('EXTRA_VAR'), os.environ.get('ANTHROPIC_API_KEY'), "
+        "os.environ['HOME'] == os.getcwd())\n"
+    )
+    result = run_python_script(code, tmp_path, env_extra={"EXTRA_VAR": "v1"})
+    assert result.stdout.split() == ["v1", "None", "True"]
+
+
+def test_env_extra_cannot_override_the_isolation_variables(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="HOME"):
+        run_python_script("print(1)\n", tmp_path, env_extra={"HOME": "/"})

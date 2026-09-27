@@ -215,9 +215,9 @@ LATTICE_ADVICE: tuple[str, ...] = (
     "`owned(t, by=user)` right after `fetch` and before `where`/`one`/`update`/`delete`/"
     "`return`, so another customer's row answers 404 exactly like a missing one; "
     "`insert` into an owned table passes `owner=user` (never set the owner column "
-    "yourself); an aggregate over many customers' rows is not owned only if it groups by "
-    "ordinary columns (not ids, owner or private columns) and no aggregate reads the "
-    "owner or a private column (e.g. review counts per product).",
+    "yourself); an aggregate over many customers' rows is public only if it groups by, "
+    "filters on and aggregates only the table's columns listed as \"may be aggregated "
+    'publicly" (e.g. review counts per product).',
     "- Bounds: every parameter written by `insert`/`update` needs both bounds: "
     "`Int(ge=, le=)`, `Float(ge=, le=)`, `Str(min_len=, max_len=)` or `OneOf(...)`, "
     "using the limits the task states, so out-of-range input answers 422 and never "
@@ -378,9 +378,8 @@ BASELINE_ADVICE: tuple[str, ...] = (
     "through a parent check the parent's owner (JOIN it); never fetch or change a row "
     "by id alone, and answer 404 when the row is missing or belongs to someone else; an "
     "INSERT sets the owner column to the caller's id; an aggregate over many customers' "
-    "rows is public only if it groups by ordinary columns (not ids, owner or private "
-    "columns) and no aggregate reads the owner or a private column (e.g. review counts "
-    "per product).",
+    "rows is public only if it groups by, filters on and aggregates only the table's "
+    'columns listed as "may be aggregated publicly" (e.g. review counts per product).',
     "- Bounds: every input written to the database needs both bounds: "
     "`Field(ge=, le=)`, `Field(min_length=, max_length=)` or `Literal[...]` in the "
     "body model (`Query(...)`/`Path(...)` for other parameters), using the limits the "

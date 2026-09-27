@@ -24,6 +24,7 @@ both paths share one implementation.
 
 from __future__ import annotations
 
+import contextvars
 import dataclasses
 import importlib
 import inspect
@@ -44,7 +45,7 @@ from bench.sandbox import run_python_script
 DbBuilder = Callable[[Path], None]
 
 _RESULTS_MARK = "__API_RESULTS_"  # + a per-run nonce + "__"
-_NONCE_NAME = "_api_nonce"
+_NONCE_ENV = "LATTICE_API_NONCE"
 _DRIVER_NAME = "_api_driver.py"
 _PRISTINE = "pristine.db"
 _KIT_NAME = "platform_kit.py"
@@ -287,11 +288,10 @@ import traceback
 sys.path.insert(0, os.getcwd())
 sys.dont_write_bytecode = True
 
-# The results marker carries a per-run nonce, read from a file the harness wrote
-# and deleted before any model code runs, so the app cannot print a fake result line.
-with open(__NONCE_FILE__) as _f:
-    MARK = __MARK_PREFIX__ + _f.read().strip() + "__"
-os.remove(__NONCE_FILE__)
+# The results marker carries a per-run nonce, passed in an environment variable that
+# is read and removed before any model code runs (never a file in the app's working
+# directory), so the app cannot print a fake result line.
+MARK = __MARK_PREFIX__ + os.environ.pop(__NONCE_ENV__, "") + "__"
 CASES = json.loads(__CASES__)
 ERROR_LIMIT = __ERROR_LIMIT__
 with open(__PRISTINE__, "rb") as _f:
@@ -448,7 +448,7 @@ def driver_source(task: ApiTask) -> str:
     return (
         _DRIVER_TEMPLATE.replace("__HELPERS__", helpers)
         .replace("__MARK_PREFIX__", repr(_RESULTS_MARK))
-        .replace("__NONCE_FILE__", repr(_NONCE_NAME))
+        .replace("__NONCE_ENV__", repr(_NONCE_ENV))
         .replace("__CASES__", repr(cases))
         .replace("__ERROR_LIMIT__", str(_ERROR_LIMIT))
         .replace("__PRISTINE__", repr(_PRISTINE))
@@ -493,14 +493,13 @@ def run_cases_fastapi(
     pristine.unlink(missing_ok=True)
     db_builder(pristine)
     nonce = secrets.token_hex(16)
-    (workdir / _NONCE_NAME).write_text(nonce)
-
-    try:
-        result = run_python_script(
-            driver_source(task), workdir, timeout_s=timeout_s, script_name=_DRIVER_NAME
-        )
-    finally:
-        (workdir / _NONCE_NAME).unlink(missing_ok=True)
+    result = run_python_script(
+        driver_source(task),
+        workdir,
+        timeout_s=timeout_s,
+        script_name=_DRIVER_NAME,
+        env_extra={_NONCE_ENV: nonce},
+    )
     payload = _parse_driver_output(result.stdout, nonce)
     if payload is None:
         if result.timed_out:
@@ -523,6 +522,14 @@ def run_cases_fastapi(
 # The Lattice runtime's ``on_connect`` hook is module-global state; serialize
 # every in-process run that replaces it.
 _LATTICE_LOCK = threading.Lock()
+
+# The run a thread's work belongs to: set in each run's worker thread and carried by
+# the context into the threads serving its requests. A run's counting hook counts only
+# connections opened under its own token, so a timed-out (abandoned, still running)
+# worker never adds its queries to a later run's counts.
+_RUN_TOKEN: contextvars.ContextVar[object | None] = contextvars.ContextVar(
+    "lattice_api_run", default=None
+)
 
 
 def _render_start_error(exc: BaseException) -> str:
@@ -625,7 +632,9 @@ def run_cases_lattice(
     The cases run in a worker thread with a wall-clock budget of ``timeout_s`` for
     the whole run (like the sandboxed FastAPI driver's): past it the run is a loud
     timeout (not started, ``timed_out``). A hung worker cannot be killed; it is a
-    daemon thread and is abandoned.
+    daemon thread and is abandoned. Every run has its own token (``_RUN_TOKEN``):
+    the counting hook traces only connections opened by that run's worker, so an
+    abandoned worker never adds queries to a later run's counts.
     """
     if serve is None:
         runtime = importlib.import_module("lattice.api.runtime")
@@ -639,15 +648,18 @@ def run_cases_lattice(
     db_builder(pristine)
 
     counter = [0]
+    token = object()  # this run's identity (see _RUN_TOKEN)
+    live = [True]
 
     def trace(sql: str) -> None:
-        if _is_counted_statement(sql):
+        if live[0] and _is_counted_statement(sql):
             counter[0] += 1
 
     done: list[CaseResults] = []
     failed: list[BaseException] = []
 
     def work() -> None:
+        _RUN_TOKEN.set(token)
         try:
             done.append(_lattice_cases(source, workdir, task, profile, serve, counter))
         except BaseException as exc:  # re-raised in the calling thread
@@ -659,7 +671,8 @@ def run_cases_lattice(
         def on_connect(conn: sqlite3.Connection) -> None:
             if previous is not None:
                 previous(conn)
-            conn.set_trace_callback(trace)
+            if _RUN_TOKEN.get() is token:
+                conn.set_trace_callback(trace)
 
         if hooks is not None:
             hooks.on_connect = on_connect
@@ -675,6 +688,7 @@ def run_cases_lattice(
                     timed_out=True,
                 )
         finally:
+            live[0] = False  # an abandoned worker's connections stop counting
             if hooks is not None:
                 hooks.on_connect = previous
     if failed:

@@ -267,16 +267,24 @@ def test_b4_filter_on_a_key_derived_column_narrows():
     assert errors(src) == ["L802"]
 
 
-def test_b4_group_by_status_counting_rows_is_public():
+def test_b4_group_by_public_columns_counting_rows_is_public():
+    # only columns the schema lists as publicly aggregatable (Reviews: product_id,
+    # rating) may be grouped / aggregated over many owners' rows
     src = """
     @endpoint("GET", "/stats", auth=Public)
     def stats() -> Page:
-        orders = fetch(Orders)
-        g = group(orders, by=["status"], n=agg.count(), revenue=agg.sum(col("total")))
+        reviews = fetch(Reviews)
+        g = group(reviews, by=["rating"], n=agg.count(), avg=agg.mean(col("rating")))
         p = page(g, limit=5)
         return p
     """
     assert errors(src) == []
+    # Orders declares no public columns: per-status statistics stay owner-private
+    orders = src.replace("reviews = fetch(Reviews)", "orders = fetch(Orders)").replace(
+        'group(reviews, by=["rating"], n=agg.count(), avg=agg.mean(col("rating")))',
+        'group(orders, by=["status"], n=agg.count(), revenue=agg.sum(col("total")))',
+    )
+    assert errors(orders) == ["L802"]
 
 
 def test_b4_step_computing_owner_values_keeps_them_owned():

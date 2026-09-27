@@ -1253,9 +1253,20 @@ class _Types:
     def _update(self, call: ast.Call, t: TableT, scope: _Scope) -> TableOrUnknown:
         schema = self._write_source(call, t, "update")
         typer = self._typer(t.schema, scope)
+        key_cols = {c for k in schema.keys for c in k} if schema is not None else set()
         for kw in call.keywords:
             assert kw.arg is not None
             if schema is not None and not self._require_columns([kw.arg], schema, kw):
+                continue
+            if kw.arg in key_cols:
+                # a new key would orphan child rows, collide with another row (UNIQUE)
+                # and no longer identify the row the response reads back
+                self.ctx.error(
+                    "L404",
+                    kw,
+                    f"update() sets the key column '{kw.arg}' of {t.source}",
+                    "keys cannot change; insert a new row instead",
+                )
                 continue
             vt = typer.type_of(kw.value)
             want = schema.get(kw.arg) if schema is not None else None
@@ -1289,9 +1300,15 @@ class _Types:
             case "where" | "sort" | "limit":
                 source = t.source
                 if op == "where" and t.owned_from and len(call.args) > 1:
-                    # filtering on anything but a plain stored column (a key, an owner
-                    # column, a value derived from them, ...) may single out one owner
+                    # filtering on anything but a plain (publicly aggregatable) stored
+                    # column -- a key, an owner column, an email, a value derived from
+                    # them, ... -- may single out one owner: a count over the result
+                    # would be an oracle for that owner's data
                     narrowed = narrowed or _reads_other(call.args[1], t.plain)
+                if op == "sort" and t.owned_from:
+                    # ordering by such a column (then limit) singles out rows, too
+                    by = _str_list_of(next((kw.value for kw in kws if kw.arg == "by"), None))
+                    narrowed = narrowed or not set(by) <= t.plain
             case "select":
                 source, paged = t.source, t.paged
             case "derive":
@@ -1387,9 +1404,12 @@ class _Types:
     def _per_owner_groups(self, t: TableT, kws: list[ast.keyword]) -> bool:
         """Whether group(t, by=..., aggs) can still yield rows of a single owner. Its
         rows mix many owners (ownership is dropped) only when `t` derives from an owned
-        table, is neither narrowed nor at most one row, every `by` column is plain (an
-        unmodified stored column that is not a key, owner-identifying or private), and
-        no aggregate reads an owner-identifying or private column."""
+        table, is neither narrowed (no where/join on a column outside the plain ones)
+        nor at most one row, every `by` column is plain and every aggregate reads only
+        plain columns. Plain columns are the unmodified stored columns the schema
+        declares publicly aggregatable (`Schema.public_group`; never a key, owner or
+        private column), so a table without that annotation has no public aggregate
+        but the unfiltered whole-table `group(t, by=[], n=agg.count())`."""
         if not t.owned_from:
             return False
         if t.narrowed or t.at_most_one_row:
@@ -1397,8 +1417,7 @@ class _Types:
         by_node = next((kw.value for kw in kws if kw.arg == "by"), None)
         if not set(_str_list_of(by_node)) <= t.plain:
             return True
-        exposing = t.owner_cols | t.private
-        return any(_reads(kw.value, exposing) for kw in kws if kw.arg != "by")
+        return any(_reads_other(kw.value, t.plain) for kw in kws if kw.arg != "by")
 
 
 def _str_list_of(node: ast.expr | None) -> list[str]:

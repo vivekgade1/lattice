@@ -504,6 +504,68 @@ def test_fastapi_results_marker_cannot_be_spoofed(tmp_path: Path, kit_path: Path
     assert classify(results) == "loud"
 
 
+def test_fastapi_nonce_never_touches_the_workdir(
+    tmp_path: Path, kit_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import bench.api_runner as api_runner
+
+    real = api_runner.run_python_script
+    seen: dict = {}
+
+    def spy(code, workdir, *args, **kwargs):
+        seen["files"] = sorted(p.name for p in Path(workdir).iterdir())
+        seen["env_extra"] = kwargs.get("env_extra")
+        return real(code, workdir, *args, **kwargs)
+
+    monkeypatch.setattr(api_runner, "run_python_script", spy)
+    results = run_cases_fastapi(
+        CORRECT_SCRIPT, tmp_path / "w", TASK, db_builder=build_tiny_db, kit_path=kit_path
+    )
+    assert results.started and classify(results) == "correct"
+    assert not any("nonce" in name for name in seen["files"]), seen["files"]
+    assert seen["env_extra"] and len(seen["env_extra"]) == 1
+
+
+def test_fastapi_script_cannot_read_the_results_nonce(tmp_path: Path, kit_path: Path) -> None:
+    fake = json.dumps(
+        {
+            "started": True,
+            "cases": [
+                {
+                    "name": c.name,
+                    "kind": c.kind,
+                    "family": c.family,
+                    "passed": True,
+                    "status": c.expect_status,
+                    "queries": 1,
+                    "latency_ms": 1.0,
+                    "reason": "",
+                }
+                for c in TASK.cases
+            ],
+        }
+    )
+    script = textwrap.dedent(
+        f"""
+        import os
+        candidates = list(os.environ.values())
+        for name in os.listdir("."):
+            try:
+                candidates.append(open(name).read().strip())
+            except Exception:
+                pass
+        for value in candidates:
+            print("__API_RESULTS_" + value + "__" + {fake!r}, flush=True)
+        os._exit(0)
+        """
+    )
+    results = run_cases_fastapi(
+        script, tmp_path / "w", TASK, db_builder=build_tiny_db, kit_path=kit_path
+    )
+    assert not results.started
+    assert classify(results) == "loud"
+
+
 def test_fastapi_timeout_is_reported(tmp_path: Path, kit_path: Path) -> None:
     script = "import time\ntime.sleep(30)\n"
     results = run_cases_fastapi(
@@ -761,6 +823,77 @@ def test_lattice_hang_is_a_loud_timeout(tmp_path: Path) -> None:
     assert "time limit" in results.start_error
     assert classify(results) == "loud"
     assert runtime.on_connect is not None  # the hook was restored
+
+
+def test_abandoned_lattice_worker_never_pollutes_a_later_runs_query_counts(
+    tmp_path: Path,
+) -> None:
+    import threading
+
+    from starlette.applications import Starlette
+    from starlette.responses import JSONResponse
+    from starlette.routing import Route
+
+    release, polluted = threading.Event(), threading.Event()
+    runtime = types.SimpleNamespace(on_connect=lambda conn: None)
+
+    def serve_source(source: str, profile: object, db_path: Path):
+        def connect() -> sqlite3.Connection:
+            conn = sqlite3.connect(db_path)
+            runtime.on_connect(conn)  # looked up at call time, like the runtime
+            return conn
+
+        if source == "HANG_THEN_QUERY":
+
+            def hang(request):  # outlives its run, then queries during the next one
+                release.wait(10)
+                conn = connect()
+                for _ in range(5):
+                    conn.execute("SELECT 1 FROM orders").fetchall()
+                conn.close()
+                polluted.set()
+                return JSONResponse({})
+
+            return FakeCheck(), Starlette(routes=[Route("/orders", hang, methods=["GET"])])
+
+        def one_query(request):
+            release.set()
+            polluted.wait(10)
+            conn = connect()
+            conn.execute("SELECT id FROM orders").fetchall()
+            conn.close()
+            return JSONResponse({})
+
+        return FakeCheck(), Starlette(routes=[Route("/orders", one_query, methods=["GET"])])
+
+    task = ApiTask(
+        id="t_hang",
+        family="control",
+        spec="",
+        cases=(_case("list", "happy", "GET", "/orders", 200),),
+    )
+    hung = run_cases_lattice(
+        "HANG_THEN_QUERY",
+        tmp_path / "a",
+        task,
+        db_builder=build_tiny_db,
+        profile="PROFILE",
+        serve=serve_source,
+        hooks=runtime,
+        timeout_s=0.3,
+    )
+    assert hung.timed_out
+    later = run_cases_lattice(
+        "GOOD",
+        tmp_path / "b",
+        task,
+        db_builder=build_tiny_db,
+        profile="PROFILE",
+        serve=serve_source,
+        hooks=runtime,
+    )
+    assert polluted.is_set()
+    assert later.started and later.cases[0].queries == 1
 
 
 def test_arm_b_repairs_a_happy_case_500_with_the_runtime_error(tmp_path: Path) -> None:

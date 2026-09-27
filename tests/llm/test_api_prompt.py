@@ -93,7 +93,11 @@ def test_advice_has_equal_substance_in_both_arms() -> None:
     for needle in ("None", "500", "409", "JOIN", "GROUP BY", "LIMIT ? OFFSET ?", "le <= 100"):
         assert needle in baseline, needle
     # owned-through tables and cross-customer aggregates are described in both arms
-    for needle in ("through a parent", "groups by ordinary columns"):
+    for needle in (
+        "through a parent",
+        "groups by, filters on and aggregates only",
+        '"may be aggregated publicly"',
+    ):
         assert needle in lattice and needle in baseline, needle
 
 

@@ -93,6 +93,8 @@ ORDER_ITEMS: Schema = Schema.from_pairs(
     ],
     keys=[("id",)],
     owner_via=("order_id", "Orders"),
+    # how often each product was ordered is public; quantities and prices are not
+    public_group=["product_id"],
 )
 
 REVIEWS: Schema = Schema.from_pairs(
@@ -105,6 +107,8 @@ REVIEWS: Schema = Schema.from_pairs(
     ],
     keys=[("id",)],
     owner="customer_id",
+    # review counts and ratings per product are public statistics
+    public_group=["product_id", "rating"],
 )
 
 ADDRESSES: Schema = Schema.from_pairs(
@@ -603,9 +607,10 @@ def build_db(path: Path, seed: int = 21) -> None:
 
 def schema_description() -> str:
     """Human-readable description of the commerce DB: tables, columns and
-    Lattice types, keys, owner columns, private columns, roles, and the
-    bearer-token auth scheme. Both benchmark arms (Lattice and FastAPI)
-    receive this exact text so they have identical schema information."""
+    Lattice types, keys, owner columns, private columns, admin-only and
+    publicly aggregatable columns, roles, and the bearer-token auth scheme.
+    Both benchmark arms (Lattice and FastAPI) receive this exact text so they have
+    identical schema information."""
     lines: list[str] = []
     lines.append("Commerce database schema (SQLite):")
     lines.append("")
@@ -633,6 +638,9 @@ def schema_description() -> str:
             lines.append(
                 f"    admin-only columns (only Admin endpoints may change them): {admin_cols}"
             )
+        if schema.public_group:
+            public_cols = ", ".join(sorted(schema.public_group))
+            lines.append(f"    columns that may be aggregated publicly: {public_cols}")
     lines.append("")
     lines.append(f"Roles: {', '.join(sorted(ROLES))}. Admin may access every role's endpoints.")
     lines.append(

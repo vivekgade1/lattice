@@ -37,7 +37,7 @@ import os
 import signal
 import subprocess
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -134,9 +134,17 @@ def run_python_script(
     *,
     max_file_bytes: int = DEFAULT_MAX_FILE_BYTES,
     script_name: str = "solution.py",
+    env_extra: Mapping[str, str] | None = None,
 ) -> ScriptResult:
     """Write ``code`` to ``workdir/<script_name>`` (default ``solution.py``) and
-    run it in an isolated subprocess."""
+    run it in an isolated subprocess.
+
+    ``env_extra`` adds variables to the child's (otherwise minimal) environment,
+    e.g. a secret the script reads and removes before running model code; it may not
+    replace ``PATH``, ``HOME`` or ``TMPDIR``."""
+    reserved = sorted(set(env_extra or {}) & {"PATH", "HOME", "TMPDIR"})
+    if reserved:
+        raise ValueError(f"env_extra may not set {', '.join(reserved)}")
     workdir.mkdir(parents=True, exist_ok=True)
     workdir = workdir.resolve()
     script_path = workdir / script_name
@@ -148,6 +156,7 @@ def run_python_script(
         "PATH": os.environ.get("PATH", ""),
         "HOME": str(workdir),
         "TMPDIR": str(tmpdir),
+        **(env_extra or {}),
     }
 
     argv = [sys.executable, "-I", script_name]

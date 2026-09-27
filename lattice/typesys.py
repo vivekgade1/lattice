@@ -52,6 +52,10 @@ class Schema:
     # Columns only an Admin endpoint may write (e.g. a user's role): update()/insert()
     # setting one in any other endpoint is L802.
     admin_write: frozenset[str] = field(default=frozenset(), compare=False)
+    # Columns of an owned table that an aggregate mixing many owners' rows may group by,
+    # filter on and aggregate in a non-Admin endpoint (e.g. review ratings per product).
+    # Every other column keeps such an aggregate owner-private (checker rule L802).
+    public_group: frozenset[str] = field(default=frozenset(), compare=False)
 
     def __post_init__(self) -> None:
         names = [n for n, _ in self.columns]
@@ -76,6 +80,15 @@ class Schema:
         if not self.admin_write <= known:
             extra = sorted(self.admin_write - known)
             raise ValueError(f"admin_write columns {extra} not in schema")
+        if not self.public_group <= known:
+            extra = sorted(self.public_group - known)
+            raise ValueError(f"public_group columns {extra} not in schema")
+        if self.public_group & self.private:
+            both = sorted(self.public_group & self.private)
+            raise ValueError(f"public_group columns {both} are private")
+        if self.public_group & identity_columns(self):
+            ids = sorted(self.public_group & identity_columns(self))
+            raise ValueError(f"public_group columns {ids} identify a row or its owner")
 
     @staticmethod
     def from_pairs(
@@ -87,6 +100,7 @@ class Schema:
         private: Iterable[str] = (),
         owner_via: tuple[str, str] | None = None,
         admin_write: Iterable[str] = (),
+        public_group: Iterable[str] = (),
     ) -> Schema:
         return Schema(
             tuple(pairs),
@@ -96,6 +110,7 @@ class Schema:
             frozenset(private),
             owner_via,
             frozenset(admin_write),
+            frozenset(public_group),
         )
 
     def names(self) -> tuple[str, ...]:
@@ -169,8 +184,14 @@ def identity_columns(schema: Schema) -> frozenset[str]:
 
 
 def plain_columns(schema: Schema) -> frozenset[str]:
-    """Stored columns that neither identify a row/owner nor are private."""
-    return frozenset(schema.names()) - identity_columns(schema) - schema.private
+    """Stored columns that neither identify a row/owner nor are private -- for an owned
+    table (owner column or owner_via) only those it declares publicly aggregatable
+    (`public_group`): an aggregate over many owners' rows may group by, filter on and
+    aggregate only these."""
+    ordinary = frozenset(schema.names()) - identity_columns(schema) - schema.private
+    if schema.owner is not None or schema.owner_via is not None:
+        return ordinary & schema.public_group
+    return ordinary
 
 
 def generated_key(schema: Schema) -> str | None:
