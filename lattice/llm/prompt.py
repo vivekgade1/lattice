@@ -96,21 +96,16 @@ def baseline_task_message(
 # ---------------------------------------------------------------------------
 
 _OP_DESCRIPTIONS: dict[str, str] = {
-    "load": "read a schema-declared input table from a CSV file",
-    "where": "keep only the rows where the Bool predicate is true; null predicates drop the row",
-    "derive": (
-        "add new columns or replace existing ones (same position), each a column "
-        "expression; every expression reads the input table, not columns set earlier "
-        "in the same call"
-    ),
-    "select": "project the table down to exactly the listed columns, in that given order",
-    "rename": "rename one or more existing columns",
-    "group": "group by zero or more columns and compute the given aggregates per group",
-    "join": "combine two tables on shared key columns ('inner' or 'left')",
-    "sort": "sort rows by one or more columns, ascending unless desc=True; "
-    "desc=[True, False] sets one direction per by= column",
-    "limit": "keep only the first n rows",
-    "write": "write the final table to a file (.csv or .parquet); must be the last statement",
+    "load": "read an input CSV",
+    "where": "keep rows where the Bool predicate is true (null drops the row)",
+    "derive": "add or replace columns",
+    "select": "keep exactly the listed columns, in that order",
+    "rename": "rename columns",
+    "group": "one row per `by` group (by=[]: one row overall) with the aggregates",
+    "join": "on shared key columns; how 'inner' or 'left'",
+    "sort": "ascending unless desc=True; desc=[True, False] sets each by= column's direction",
+    "limit": "first n rows",
+    "write": "write the result (.csv or .parquet)",
 }
 
 
@@ -134,9 +129,10 @@ def _render_op_shape(op: str) -> str:
 
 
 def _op_catalog_section() -> str:
-    lines = ["## Op catalog", "", "Every table op below is called exactly this way:", ""]
+    header = "Call each table op exactly this way (positional vs keyword):"
+    lines = ["## Op catalog", "", header, ""]
     for op in OP_SHAPES:
-        lines.append(f"- `{_render_op_shape(op)}` — {_OP_DESCRIPTIONS[op]}")
+        lines.append(f"- `{_render_op_shape(op)}`: {_OP_DESCRIPTIONS[op]}")
     return "\n".join(lines)
 
 
@@ -147,119 +143,104 @@ def _render_fn_sig(name: str) -> str:
     if name == "date_diff":
         params = ["end", "start"]
     args = list(params) + [f"{k}=" for k in sig.kwargs]
-    result = sig.result.value if sig.result is not None else "same scalar type as its first arg"
+    result = sig.result.value if sig.result is not None else "type of x"
     return f"`fn.{name}({', '.join(args)})` -> {result}"
+
+
+# One doc line per group of aggregates; every name in AGG_FUNCS must appear once.
+_AGG_DOCS = (
+    (("sum", "mean", "min", "max"), "take one column expression"),
+    (("count",), "`agg.count()` counts rows, `agg.count(x)` the non-null values of x"),
+    (("count_distinct",), "`agg.count_distinct(x)` its distinct non-null values"),
+    (
+        ("at_min", "at_max"),
+        "`agg.at_min(x, of=o)`/`agg.at_max(x, of=o)` give x where o is smallest/largest "
+        "(ties: earliest row; an earlier sort has no effect)",
+    ),
+)
+
+
+def _aggregate_line() -> str:
+    documented = [n for names, _ in _AGG_DOCS for n in names]
+    if sorted(documented) != sorted(AGG_FUNCS):
+        raise AssertionError(f"_AGG_DOCS out of sync with AGG_FUNCS: {sorted(documented)}")
+    simple = ", ".join(f"`agg.{n}(x)`" for n in _AGG_DOCS[0][0] if n not in ORDER_AGGS)
+    rest = "; ".join(doc for _, doc in _AGG_DOCS[1:])
+    head = "Aggregates `agg.*` (only as `group()` keyword values):"
+    return f"{head} {simple} {_AGG_DOCS[0][1]}; {rest}."
 
 
 def _expression_library_section() -> str:
     lines = [
         "## Expression library",
         "",
-        "Column expressions (`Col[T]`) are built only from the following; nothing",
-        "else is allowed inside them (no method calls, no subscripts, no f-strings):",
+        'Column expressions use only: `col("name")`; `+ - * / %` on numbers; comparisons '
+        "`== != < <= > >=`; `&`, `|`, `~` on Bool (never `and`/`or`/`not`); "
+        "`when(cond, then=a, otherwise=b)`, the only conditional (nest `when` only in "
+        "`otherwise`, never in `then`); `coalesce(a, b)` (first non-null); `is_null(a)`. "
+        "No loops, `if`, lambdas, comprehensions, method calls, subscripts or f-strings "
+        "anywhere.",
         "",
-        '- `col("name")` — reference an existing column by its exact name',
-        "- operators `+ - * / %` on numeric columns; `&`, `|`, `~` on Bool columns "
-        "(never `and`/`or`/`not`); comparisons `== != < <= > >=`",
-        "- `when(cond, then=a, otherwise=b)` — the only conditional; multi-branch "
-        "chains nest only inside `otherwise`, never inside `then`",
-        "- `coalesce(a, b)` — first non-null value",
-        "- `is_null(a)` — true where the value is null",
-        "",
-        "Function library `fn.*` (every function; no aliases are accepted):",
+        "`fn.*` (no aliases):",
         "",
     ]
     for name in FN_SIGS:
-        lines.append(f"- {_render_fn_sig(name)} — {FN_DOCS[name]}")
+        lines.append(f"- {_render_fn_sig(name)}: {FN_DOCS[name]}")
     lines.append("")
-    lines.append(
-        "Aggregate library `agg.*` (only valid as a `group()` keyword value): "
-        + ", ".join(
-            f"`agg.{name}(x, of=o)`" if name in ORDER_AGGS else f"`agg.{name}(...)`"
-            for name in sorted(AGG_FUNCS)
-        )
-        + ". `agg.count()` counts rows, `agg.count(x)` the non-null values of x, "
-        "`agg.count_distinct(x)` its distinct non-null values; "
-        "at_min/at_max give x where o is smallest/largest (ties: earliest row); an "
-        "earlier sort does not change which row is picked; "
-        "every other aggregate takes one column expression."
-    )
+    lines.append(_aggregate_line())
     return "\n".join(lines)
 
 
 _RULES_SECTION = """## Rules
 
-- The first line of the program must be exactly `# lattice: v1`.
+- The first line is exactly `# lattice: v1`; the last is `write(<table>, "out.parquet")`. \
+Write only the output file named in the task.
 - No imports are needed: all ops, `col`, `when`, `coalesce`, `is_null`, `fn`, \
 `agg`, `step`, the type names and the input schema names are always available.
-- Every statement calls exactly one table op or `@step` and assigns its result to \
-a brand-new name. Never reassign or reuse a name, and never use a built-in name \
-(an op, function, type or schema name such as `where` or `Orders`) as a variable, \
-step or parameter name.
-- A statement may also bind a named constant, `name = <expr>`, when the \
-expression uses no columns (literals, operators, `fn.*` on literals, earlier \
-constants, a step's scalar parameters), e.g. `cutoff = fn.to_date("2025-01-01", \
-format="%Y-%m-%d")`. Use it anywhere a value is allowed; an `fn.*` keyword or a \
-step's scalar argument takes a constant only if it is a plain literal (`days = 30`).
-- `derive(t, name=expr)` may overwrite an existing column: it is replaced in place \
-with the expression's value and type. All expressions in one `derive` call read \
-the input table `t`, so a later keyword never sees an earlier keyword's new value; \
-use a second `derive` for that.
-- Never nest calls: a table argument must always be a plain name, never another \
-call. Assign the inner result to its own name first.
-- `where(table, predicate)` takes its predicate positionally; every other \
-non-table argument to every op is passed by keyword (e.g. `load(path, \
-schema=Orders)`, `join(l, r, on=[...], how="left")`, `write(table, path)`).
-- `join(l, r, on=[], how="inner")` (or `"left"`) attaches every column of `r` to \
-every row of `l`; `r` must have at most one row, e.g. a total from \
-`group(t, by=[], ...)`. Share of a total: \
+- Each statement assigns one table op or `@step` call to a new name. Never reassign \
+a name or use a built-in name (op, function, type or schema, e.g. \
+`where`, `Orders`) as a variable, step or parameter.
+- Never nest calls: table arguments are plain names.
+- A statement may also bind a named constant `name = <expr>` using no columns \
+(literals, operators, `fn.*` on literals, earlier constants, a step's scalar \
+parameters), e.g. `cutoff = fn.to_date("2025-01-01", format="%Y-%m-%d")`, usable \
+as any value; as an `fn.*` keyword or step argument only if a plain literal (`days = 30`).
+- `derive(t, name=expr)` may overwrite an existing column in place. All expressions \
+in one `derive` read the input table `t`, not each other's results (chain a second \
+`derive` for that).
+- `join(l, r, on=[], how="inner")` (or `"left"`) attaches `r` to every row of `l`; \
+`r` must have at most one row. Share of a total: \
 `total = group(t, by=[], all_qty=agg.sum(col("qty")))`, \
 `with_total = join(t, total, on=[], how="inner")`, \
 `shares = derive(with_total, share=col("qty") / col("all_qty"))`.
-- A join must not silently repeat rows of its left table: `join(l, r, on=K)` \
-needs `r` to be unique on `K` when inputs declare a "unique key" (a declared key \
-of `r` inside `K`, or `r` built by `group(..., by=K, ...)`). Otherwise reduce `r` \
-to one row per key first, e.g. the current price per product: \
-`current = group(prices, by=["product_id"], price=agg.at_max(col("price"), \
-of=col("valid_from")))`. Pass `fanout="allow"` if repeating rows is really \
-intended, or if `r` is unique by the task's meaning though no key is declared \
-(e.g. filtered to one primary contact per customer).
-- `agg.mean`, `agg.min` and `agg.max` over a value that "may be missing" (a \
-listed column, a right-hand column of a left join, or an `fn.to_int`/`to_float`/\
-`to_date`/`log`/`sqrt` result) must say how to treat missing values: \
+- A join must not silently repeat rows of `l`: `join(l, r, on=K)` needs `r` unique on \
+`K` (a declared "unique key" of `r` inside `K`, or `r` from `group(..., by=K, ...)`). \
+Otherwise reduce `r` to one row per key first, e.g. current price per product: \
+`group(prices, by=["product_id"], price=agg.at_max(col("price"), of=col("valid_from")))`. \
+Pass `fanout="allow"` if repeats are intended or `r` is unique by the task's meaning \
+(e.g. one primary contact per customer).
+- `agg.mean`, `agg.min` and `agg.max` over a value that "may be missing" (a listed \
+column, a left join's right-hand column, or an `fn.to_int`/`to_float`/`to_date`/\
+`log`/`sqrt` result) must say how to treat missing values: \
 `agg.mean(coalesce(col("x"), 0.0))` counts them as 0, `agg.mean(col("x"), \
 nulls="skip")` ignores them. `group` keeps rows with a missing key as their own group.
-- Write only the output file named in the task; any other path is rejected.
-- There are no loops, no `if` statements, no lambdas, no comprehensions, no \
-method calls, and no subscripts anywhere. Use `when(...)` for conditionals and \
-`col("name")` for column access.
-- Use `&`, `|`, `~` for boolean combination — never `and`, `or`, `not`.
-- `when(...)` may only nest inside `otherwise=`, never inside `then=`.
-- `@step` defines a reusable, pure sub-pipeline: every parameter is annotated \
-(`Table[Schema]` or a scalar type name), the return type is `Table[Schema]` or \
-bare `Table`, the body is single-assignment statements ending in exactly one \
-`return <name>`, and it may only read its own parameters and locals (and constants \
-defined above it) — never a module-level table. A step must be defined before it \
-is called and cannot call itself.
-- The program must end by writing its result: `write(<table>, "out.parquet")`.
-"""
+- `@step` defines a pure sub-pipeline: parameters annotated `Table[Schema]` or a \
+scalar type, returns `Table[Schema]` or `Table`, body of single-assignment statements \
+ending in one `return <name>`, reading only its parameters, locals and earlier \
+constants (never a module-level table). Define it before calling it; no recursion."""
 
 # The three worked example problems. Both arms see the SAME three problems
 # (Lattice programs here, pandas scripts in the baseline guide) so neither arm
 # gets extra worked examples. They deliberately differ from every benchmark
 # task (tests/llm/test_prompt_fairness.py enforces this).
 _EXAMPLE_PROBLEMS = (
-    "Example 1 — filter, then derive a column, then project. For refunded "
-    "orders, compute refund_amount = qty * unit_price * (1 - discount), treating "
-    "a missing discount as 0. Return order_id, customer_id, refund_amount.",
-    "Example 2 — group, sort with an explicit tie-break, then limit. Among "
-    "cancelled orders, compute cancelled_qty = sum(qty) per product_id and return "
-    "the 3 products with the largest cancelled_qty (ties: higher product_id "
-    "first). Return product_id, cancelled_qty.",
-    "Example 3 — a reusable function that joins two tables. For orders with a "
-    'given status (here "pending"), inner-join products on product_id and '
-    "compute max_unit_price = max(unit_price) per category. Return category, "
-    "max_unit_price.",
+    "Example 1. For refunded orders, return order_id, customer_id, refund_amount = "
+    "qty * unit_price * (1 - discount), a missing discount counting as 0.",
+    "Example 2. Among cancelled orders, return product_id, cancelled_qty = sum(qty) "
+    "for the 3 products with the largest cancelled_qty (ties: higher product_id first).",
+    "Example 3. As a reusable function: for orders with a given status (here "
+    '"pending"), inner-join products on product_id and return category, '
+    "max_unit_price = max(unit_price) per category.",
 )
 
 _EXAMPLE_1 = """```python
@@ -267,8 +248,7 @@ _EXAMPLE_1 = """```python
 orders = load("orders.csv", schema=Orders)
 refunded = where(orders, col("status") == "refunded")
 priced = derive(
-    refunded,
-    refund_amount=col("qty") * col("unit_price") * (1 - coalesce(col("discount"), 0.0)),
+    refunded, refund_amount=col("qty") * col("unit_price") * (1 - coalesce(col("discount"), 0.0))
 )
 result = select(priced, cols=["order_id", "customer_id", "refund_amount"])
 write(result, "out.parquet")
@@ -286,17 +266,12 @@ write(top3, "out.parquet")
 
 _EXAMPLE_3 = """```python
 # lattice: v1
-
-
 @step
-def max_price_by_category(
-    orders: Table[Orders], products: Table[Products], wanted: Str
-) -> Table:
+def max_price_by_category(orders: Table[Orders], products: Table[Products], wanted: Str) -> Table:
     kept = where(orders, col("status") == wanted)
     joined = join(kept, products, on=["product_id"], how="inner")
     by_category = group(joined, by=["category"], max_unit_price=agg.max(col("unit_price")))
     return by_category
-
 
 orders = load("orders.csv", schema=Orders)
 products = load("products.csv", schema=Products)
@@ -314,16 +289,14 @@ _EXAMPLES_SECTION = f"""## Examples
 
 {_EXAMPLE_2}
 
-{_EXAMPLE_PROBLEMS[2]} In Lattice this is a `@step`:
+{_EXAMPLE_PROBLEMS[2]}
 
-{_EXAMPLE_3}
-"""
+{_EXAMPLE_3}"""
 
 _OUTPUT_FORMAT_SECTION = (
     "## Output format\n\n"
-    "Respond with exactly one ```python code block containing the complete "
-    "program and nothing else. No prose before or after the code, no other "
-    "code blocks."
+    "Respond with exactly one ```python code block holding the complete program; "
+    "no prose, no other code blocks."
 )
 
 
@@ -369,11 +342,9 @@ def lattice_system_prompt(hints: bool = True) -> str:
         # Neutral wording matters: an intro describing a "whitelisted subset" that is
         # "legal" and "rejected before it ever runs" drew cyber-category refusals from
         # claude-opus-5 on 8/40 calls; this wording drew 0/40.
-        "Lattice is a small domain-specific language for tabular data analysis. "
-        "Programs are written in Python syntax, using only the operations and "
-        "expression functions documented below. A validator checks each program's "
-        "structure, names and column types and reports precise diagnostics, so "
-        "follow the conventions exactly.",
+        "Lattice is a small domain-specific language for tabular data analysis, "
+        "written in Python syntax using only the operations and functions documented "
+        "below. A validator checks each program's structure, names and column types.",
         _RULES_SECTION if hints else _without_advice(_RULES_SECTION, _LATTICE_ADVICE_BULLETS),
         _op_catalog_section(),
         _expression_library_section(),
@@ -548,7 +519,7 @@ _PANDAS_EXAMPLES_SECTION = f"""## Examples
 
 {_PANDAS_EXAMPLE_2}
 
-{_EXAMPLE_PROBLEMS[2]} In pandas this is a plain function:
+{_EXAMPLE_PROBLEMS[2]}
 
 {_PANDAS_EXAMPLE_3}
 """

@@ -93,34 +93,33 @@ FN_SIGS: Mapping[str, FnSig] = {
 # One-line semantics for every fn.* (rendered into the model's system prompt).
 FN_DOCS: Mapping[str, str] = {
     "abs": "absolute value",
-    "round": "round to `digits` decimal places",
-    "floor": "largest whole number <= x (as Float)",
-    "ceil": "smallest whole number >= x (as Float)",
-    "log": "natural logarithm; null where x <= 0",
+    "round": "round to `digits` decimals",
+    "floor": "round down",
+    "ceil": "round up",
+    "log": "natural log; null where x <= 0",
     "sqrt": "square root; null where x < 0",
-    "clip": "limit x to the range [lo, hi]",
-    "lower": "lowercase the string",
-    "upper": "uppercase the string",
-    "strip": "remove leading and trailing whitespace",
-    "len": "number of characters in the string",
-    "contains": "true where the string contains `sub` (plain text, not a pattern)",
-    "starts_with": "true where the string starts with `prefix`",
-    "replace": "replace every occurrence of `old` with `new` (plain text)",
+    "clip": "limit to [lo, hi]",
+    "lower": "lowercase",
+    "upper": "uppercase",
+    "strip": "trim leading/trailing whitespace",
+    "len": "character count",
+    "contains": "contains `sub` (plain text)",
+    "starts_with": "starts with `prefix`",
+    "replace": "replace every `old` with `new` (plain text)",
     "concat": "join two strings; null if either is null",
-    "year": "calendar year of a Date",
-    "month": "month number 1-12 of a Date",
-    "day": "day of month 1-31 of a Date",
+    "year": "calendar year",
+    "month": "month 1-12",
+    "day": "day of month 1-31",
     "date_diff": (
-        'fn.date_diff(end, start, unit="days") = end minus start in whole days '
-        '(positive when end is later); "days" is the only unit. E.g. days from '
-        'signup_date to 2025-01-01 is fn.date_diff(fn.to_date("2025-01-01", '
-        'format="%Y-%m-%d"), col("signup_date"), unit="days")'
+        'end minus start in whole days (positive when end is later); unit "days" only; '
+        'e.g. days since signup: fn.date_diff(cutoff, col("signup_date"), '
+        'unit="days")'
     ),
-    "date_add": "the Date shifted by `days` (negative moves earlier)",
-    "to_date": 'parse a string with a strftime `format` such as "%Y-%m-%d"; null if unparsable',
-    "to_int": "convert to Int; null if not convertible",
-    "to_float": "convert to Float; null if not convertible",
-    "to_str": "convert to Str",
+    "date_add": "shift by `days` (negative is earlier)",
+    "to_date": 'parse with a strftime `format` such as "%Y-%m-%d"; null if unparsable',
+    "to_int": "null if not convertible",
+    "to_float": "null if not convertible",
+    "to_str": "as text",
 }
 
 DATE_DIFF_UNITS = frozenset({"days"})
