@@ -9,11 +9,24 @@ from lattice.typesys import Schema
 
 
 @dataclass(frozen=True)
+class ApiProfile:
+    """The API-profile environment: database tables, roles, and the users table."""
+
+    tables: Mapping[str, Schema]  # schema name -> schema (database tables)
+    table_names: Mapping[str, str]  # schema name -> SQL table name
+    roles: frozenset[str]  # e.g. {"Public", "Customer", "Admin"}
+    admin_role: str = "Admin"
+    users_table: str = "Users"  # schema name of the users table (has id, role)
+
+
+@dataclass(frozen=True)
 class Profile:
     schemas: Mapping[str, Schema]
     version: str = "v1"
     # Files a program may write (normalized: no leading "./"); None = unrestricted.
     outputs: frozenset[str] | None = None
+    # Present for API programs (@endpoint); None for tabular pipelines.
+    api: ApiProfile | None = None
 
     @property
     def enforce_keys(self) -> bool:

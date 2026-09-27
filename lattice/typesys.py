@@ -40,6 +40,10 @@ class Schema:
     columns: tuple[tuple[str, Scalar], ...]
     keys: tuple[tuple[str, ...], ...] = field(default=(), compare=False)
     nullable: frozenset[str] = field(default=frozenset(), compare=False)
+    # API profile metadata: the column holding the owning user's id, and columns that
+    # must never leave the server (checker rules L802/L803).
+    owner: str | None = field(default=None, compare=False)
+    private: frozenset[str] = field(default=frozenset(), compare=False)
 
     def __post_init__(self) -> None:
         names = [n for n, _ in self.columns]
@@ -51,6 +55,10 @@ class Schema:
                 raise ValueError(f"schema key {key!r} must name existing columns")
         if not self.nullable <= known:
             raise ValueError(f"nullable columns {sorted(self.nullable - known)} not in schema")
+        if self.owner is not None and self.owner not in known:
+            raise ValueError(f"owner column {self.owner!r} not in schema")
+        if not self.private <= known:
+            raise ValueError(f"private columns {sorted(self.private - known)} not in schema")
 
     @staticmethod
     def from_pairs(
@@ -58,8 +66,16 @@ class Schema:
         *,
         keys: Iterable[Iterable[str]] = (),
         nullable: Iterable[str] = (),
+        owner: str | None = None,
+        private: Iterable[str] = (),
     ) -> Schema:
-        return Schema(tuple(pairs), tuple(tuple(k) for k in keys), frozenset(nullable))
+        return Schema(
+            tuple(pairs),
+            tuple(tuple(k) for k in keys),
+            frozenset(nullable),
+            owner,
+            frozenset(private),
+        )
 
     def names(self) -> tuple[str, ...]:
         return tuple(n for n, _ in self.columns)
