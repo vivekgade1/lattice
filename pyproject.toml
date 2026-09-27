@@ -40,3 +40,6 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.uv]
+default-groups = ["dev", "template"]
