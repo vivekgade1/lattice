@@ -27,6 +27,7 @@ the login route being part of its program.
 
 from __future__ import annotations
 
+import dataclasses
 import importlib
 import sys
 import uuid
@@ -91,6 +92,41 @@ class LiftResult:
 
 
 @dataclass
+class VerifyContext:
+    """Everything verification of one route needs, kept so later rungs (the LLM loop,
+    I5) verify their candidates exactly as the lifters' output was verified.
+    ``suite`` is the lifted routes' suite; :meth:`full_suite` covers every route with a
+    spec (the same seed plan: a route's cases do not depend on the other routes)."""
+
+    root: Path
+    model: RepoModel
+    profile: Profile
+    natives: dict[str, Callable[..., Any]]
+    index: _Index
+    inputs: SuiteInputs
+    token_policies: tuple[Policy, ...]
+    rules: tuple[Rule, ...]
+    app_factory: Callable[[Path], Any]
+    hypothesis_bodies: int = 5
+    suite: GeneratedSuite | None = None
+    _full: GeneratedSuite | None = field(default=None, repr=False)
+
+    def full_suite(self) -> GeneratedSuite | None:
+        if self._full is None and self.inputs.routes:
+            self._full = _suite(list(self.inputs.routes.values()), self.inputs, self.profile,
+                                self.hypothesis_bodies)  # fmt: skip
+        return self._full
+
+    def suite_for(self, key: str) -> GeneratedSuite | None:
+        """A suite holding ``key``'s cases (None: the route has no spec)."""
+        if key not in self.inputs.routes:
+            return None
+        if self.suite is not None and any(c.route == key for c in self.suite.cases):
+            return self.suite
+        return self.full_suite()
+
+
+@dataclass
 class ImportResult:
     model: RepoModel
     profile: ProfileResult
@@ -99,6 +135,7 @@ class ImportResult:
     natives: dict[str, Callable[..., Any]]
     lattice_profile: Profile
     suite: GeneratedSuite | None = None
+    context: VerifyContext | None = None
 
     @property
     def unclear(self) -> list[Unclear]:
@@ -203,36 +240,66 @@ def lift_repo(
 
     lifted_results = [r for r in results if r.lift.ok]
     specs = [inputs.routes[r.key] for r in lifted_results if r.key in inputs.routes]
-    suite = None
-    if specs:
-        suite = generate_suite(
-            specs,
-            inputs.tables,
-            inputs.auth,
-            hypothesis_bodies=hypothesis_bodies,
-            insert_hook=inputs.insert_hook,
-            uuid_storage=api.uuid_storage,
-            datetime_storage=api.datetime_storage,
-        )
+    suite = _suite(specs, inputs, profile, hypothesis_bodies) if specs else None
     rules = tuple(rules) if rules is not None else (ValidationEnvelope(),)
+    ctx = VerifyContext(root, model, profile, natives, index, inputs, tuple(token_policies),
+                        rules, app_factory, hypothesis_bodies, suite)  # fmt: skip
     for r in lifted_results:
-        _verify_route(r, model, profile, natives, inputs, suite, token_policies, rules, app_factory)
+        _verify_route(r, ctx, suite)
 
     programs = _emit(results, profile)
-    return ImportResult(model, generated, results, programs, natives, profile, suite)
+    return ImportResult(model, generated, results, programs, natives, profile, suite, ctx)
+
+
+def _suite(
+    specs: Sequence[Any], inputs: SuiteInputs, profile: Profile, hypothesis_bodies: int
+) -> GeneratedSuite:
+    api = profile.api
+    assert api is not None
+    return generate_suite(
+        specs,
+        inputs.tables,
+        inputs.auth,
+        hypothesis_bodies=hypothesis_bodies,
+        insert_hook=inputs.insert_hook,
+        uuid_storage=api.uuid_storage,
+        datetime_storage=api.datetime_storage,
+    )
+
+
+def verify_candidate(
+    ctx: VerifyContext,
+    base: LiftResult,
+    source: str,
+    *,
+    profile: Profile | None = None,
+    natives: dict[str, Callable[..., Any]] | None = None,
+) -> LiftResult:
+    """Verify ``source`` (one Lattice endpoint, no header) as ``base``'s route, exactly as
+    a lifter's output is verified (checker, the route's cases with its policies, branch
+    coverage). ``profile``/``natives`` override the context's (a carve-out adds natives).
+    Returns a new :class:`LiftResult`: ``lifted-verified`` or ``lifted-unverified`` with
+    the evidence. The policies are those of the lifter fragments that matched the route
+    (and the auth policies), never ones the candidate claims."""
+    policies = tuple(p for f in base.lift.fragments for p in f.policies)
+    lift = dataclasses.replace(base.lift, source=source, policies=policies)
+    r = LiftResult(base.key, base.route, "lifted-unverified", lift)
+    _verify_route(r, ctx, ctx.suite_for(base.key), profile=profile, natives=natives)
+    return r
 
 
 def _verify_route(
     r: LiftResult,
-    model: RepoModel,
-    profile: Profile,
-    natives: dict[str, Callable[..., Any]],
-    inputs: SuiteInputs,
+    ctx: VerifyContext,
     suite: GeneratedSuite | None,
-    token_policies: Sequence[Policy],
-    rules: Sequence[Rule],
-    app_factory: Callable[[Path], Any],
+    *,
+    profile: Profile | None = None,
+    natives: dict[str, Callable[..., Any]] | None = None,
 ) -> None:
+    model, inputs, rules, app_factory = ctx.model, ctx.inputs, ctx.rules, ctx.app_factory
+    profile = profile or ctx.profile
+    natives = natives if natives is not None else ctx.natives
+    token_policies = ctx.token_policies
     assert r.lift.source is not None and profile.api is not None
     plans, errors = check_program(program_source([r.lift.source], r.route.module), profile)
     if plans is None:
@@ -242,6 +309,9 @@ def _verify_route(
         r.reason = f"no request suite: {inputs.skipped.get(r.key, 'unknown route')}"
         return
     cases = [c for c in suite.cases if c.route == r.key]
+    if not cases:
+        r.reason = "no request suite: the suite has no case for the route"
+        return
     policies = [*r.lift.policies, *(token_policies if r.route.auth != "Public" else ())]
     r.deviations = deviations_for(cases, policies, profile.api)
     mint = inputs.auth.mint_token
@@ -299,7 +369,10 @@ __all__ = [
     "ImportResult",
     "LiftResult",
     "LiftStatus",
+    "VerifyContext",
     "check_program",
     "lift_repo",
     "load_profile",
+    "program_source",
+    "verify_candidate",
 ]
