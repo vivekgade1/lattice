@@ -207,7 +207,8 @@ def test_owner_metadata() -> None:
     assert USERS.owner is None
     assert PRODUCTS.owner is None
     assert ORDERS.owner == "customer_id"
-    assert ORDER_ITEMS.owner is None  # reached through its parent order (v1)
+    assert ORDER_ITEMS.owner is None  # owned through its parent order
+    assert ORDER_ITEMS.owner_via == ("order_id", "Orders")
     assert REVIEWS.owner == "customer_id"
     assert ADDRESSES.owner == "customer_id"
 
@@ -279,6 +280,7 @@ def test_schema_description_mentions_every_table_role_and_auth_scheme() -> None:
     assert "Bearer" in text
     assert "401" in text
     assert "403" in text
+    assert "owned through order_id → Orders" in text
 
 
 # ---------------------------------------------------------------------------

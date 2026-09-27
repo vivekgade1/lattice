@@ -605,3 +605,37 @@ def test_require_on_a_view_of_checked_rows(db: Path):
             "status": "paid",
         }
         assert client.get(f"/orders/{dead}/status", headers=auth("alice")).status_code == 409
+
+
+# ---- owned through a parent (OrderItems -> Orders) ------------------------------------
+
+ITEMS = """
+@endpoint("GET", "/items", auth=Customer)
+def my_items(user: CurrentUser, limit: Int(ge=1, le=100) = 100) -> Page:
+    items = fetch(OrderItems)
+    mine = owned(items, by=user)
+    ordered = sort(mine, by=["id"])
+    result = page(ordered, limit=limit)
+    return result
+"""
+
+
+def test_items_owned_through_their_order(db: Path):
+    expected = rows(
+        db,
+        "SELECT i.id FROM order_items i JOIN orders o ON o.id = i.order_id "
+        "WHERE o.customer_id = ? ORDER BY i.id LIMIT 100",
+        USER_IDS["alice"],
+    )
+    assert expected
+    with app_for(ITEMS, db) as client:
+        with counting() as statements:
+            r = client.get("/items", headers=auth("alice"))
+        assert r.status_code == 200
+        assert [i["id"] for i in r.json()["items"]] == [e[0] for e in expected]
+        assert len(data_statements(statements)) == 2  # auth + one SELECT
+        dave = client.get("/items", headers=auth("dave"))
+        assert dave.json()["items"] == []  # dave has no orders
+        admin = client.get("/items", headers=auth("admin"))
+    every = rows(db, "SELECT id FROM order_items ORDER BY id LIMIT 100")
+    assert [i["id"] for i in admin.json()["items"]] == [e[0] for e in every]

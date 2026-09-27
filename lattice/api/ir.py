@@ -41,7 +41,7 @@ from lattice.check.astutil import is_constant_expr, literal_value, steps_of
 from lattice.diagnostics import Span, span_of
 from lattice.profile import ApiProfile
 from lattice.runtime import LatticeInternalError
-from lattice.typesys import Scalar, ScalarParamT, Schema, TableT
+from lattice.typesys import Scalar, ScalarParamT, Schema, TableT, via_parent_key
 
 __all__ = [
     "ApiStep",
@@ -416,10 +416,23 @@ class _Endpoint:
                 order = schema.keys[0] if schema.keys else ()
                 return {"table": self.api.table_names[name.id], "order": order}
             case "owned":
-                owner = self._type(call).owner
-                if owner is None:
+                t = self._type(call)
+                if t.owner is not None:
+                    return {"owner": t.owner}
+                if t.owner_via is None:
                     raise LatticeInternalError("owned() input has no owner column")
-                return {"owner": owner}
+                fk, parent_name = t.owner_via
+                parent = self.api.tables[parent_name]
+                if parent.owner is None or not parent.keys:
+                    raise LatticeInternalError(f"owner_via parent {parent_name} has no owner")
+                return {
+                    "via": (
+                        fk,
+                        self.api.table_names[parent_name],
+                        via_parent_key(parent),
+                        parent.owner,
+                    )
+                }
             case "page":
                 out: dict[str, Any] = {"limit": self._page_value(kws["limit"], subst)}
                 if "offset" in kws:

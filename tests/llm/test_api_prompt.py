@@ -92,6 +92,9 @@ def test_advice_has_equal_substance_in_both_arms() -> None:
         assert needle in baseline, needle
     for needle in ("None", "500", "409", "JOIN", "GROUP BY", "LIMIT ? OFFSET ?", "le <= 100"):
         assert needle in baseline, needle
+    # owned-through tables and cross-customer aggregates are described in both arms
+    for needle in ("through a parent", "grouped without the owner column"):
+        assert needle in lattice and needle in baseline, needle
 
 
 @pytest.mark.parametrize("arm", sorted(PROMPTS))
@@ -125,6 +128,8 @@ def test_lattice_prompt_documents_the_api_surface() -> None:
         assert f"`fn.{fn}(" in prompt, fn
     for agg in API_AGG_FUNCS:
         assert f"`agg.{agg}`" in prompt, agg
+    assert "`agg.at_max(x, of=o)`" in prompt
+    assert "owned through a parent" in prompt and "`zip`" in prompt
     for constraint in ("Int(ge=, le=)", "Str(min_len=, max_len=)", "OneOf(", "Bool", "Date"):
         assert constraint in prompt, constraint
     for rule in ("Never nest calls", "new name", "exactly one `return", "No imports"):

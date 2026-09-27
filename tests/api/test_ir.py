@@ -185,7 +185,8 @@ def test_rows_read_after_a_check_are_bound_not_reread():
             ids = select(order, cols=["id"])
             keyed = rename(ids, id="order_id")
             lines = fetch(OrderItems)
-            joined = join(lines, keyed, on=["order_id"])
+            my_lines = owned(lines, by=user)
+            joined = join(my_lines, keyed, on=["order_id"])
             result = page(joined, limit=100)
             return result
         """
@@ -193,7 +194,10 @@ def test_rows_read_after_a_check_are_bound_not_reread():
     assert kinds(plan) == [("ReadStep", "found"), ("CheckStep", "order"), ("ReadStep", "result")]
     second = plan.steps[2].sql
     assert second.rows == (("__r0", "found", plan.steps[0].schema.names()),)
-    assert '"orders"' not in second.text and '"order_items"' in second.text
+    # the checked order is bound, not re-read; "orders" appears only in the ownership
+    # subquery of the owned-through-Orders items
+    assert second.text.count('"orders"') == 1 and '"order_items"' in second.text
+    assert '"order_id" IN (SELECT "id" FROM "orders"' in second.text
 
 
 def test_require_on_a_write_result_reads_its_flags():

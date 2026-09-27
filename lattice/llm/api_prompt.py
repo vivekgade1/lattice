@@ -115,7 +115,9 @@ _API_OP_DOCS: dict[str, tuple[str, str]] = {
     "fetch": ("fetch(Table)", "all rows of a database table (read lazily, set-based)"),
     "owned": (
         "owned(t, by=user)",
-        "keep the rows whose owner column is the caller's id (Admin callers keep every row)",
+        "keep the rows whose owner column is the caller's id, or, for a table owned "
+        "through a parent (e.g. OrderItems), whose parent row is the caller's (Admin "
+        "callers keep every row)",
     ),
     "one": (
         'one(t, else_=NotFound("thing"))',
@@ -181,7 +183,9 @@ def _lattice_expressions_section() -> str:
         "`coalesce(a, b)`; `is_null(a)`. No loops, `if`, lambdas, comprehensions, method "
         "calls, subscripts or f-strings anywhere.\n\n"
         f"Functions: {fns}.\n\n"
-        f"Aggregates (only as `group()` keyword values): {aggs}; `agg.count()` counts rows."
+        f"Aggregates (only as `group()` keyword values): {aggs}; `agg.count()` counts rows; "
+        "`agg.at_min(x, of=o)` / `agg.at_max(x, of=o)` give `x` on the group's row with the "
+        "smallest / largest `o`."
     )
 
 
@@ -192,7 +196,8 @@ _LATTICE_RULES_SECTION = """## Rules
 `CurrentUser` and the table names (`Users`, `Orders`, ...) are always available.
 - Each statement assigns one operation or `@step` call to a new name. Never reassign a \
 name or use a built-in name (operation, function, type or table, e.g. `where`, \
-`Orders`) as a variable or step name; parameters may be named `limit` or `sort`.
+`Orders`) as a variable or step name. A parameter's name is its query/JSON field name, \
+so parameters may also be named like a Python builtin (`zip`, `id`, `type`) or `limit`/`sort`.
 - Never nest calls: table arguments are plain names (`found = where(...)` then \
 `order = one(found, ...)`, not `one(where(...))`).
 - The body ends with exactly one `return <name>`. Names bound by `one`, `require`, \
@@ -206,10 +211,12 @@ or `rename`).
 
 # Pitfall advice, removable for the no-hints condition (the reference stays).
 LATTICE_ADVICE: tuple[str, ...] = (
-    "- Ownership: for a table with an owner column, call `owned(t, by=user)` right after "
-    "`fetch` and before `where`/`one`/`update`/`delete`/`return`, so another customer's "
-    "row answers 404 exactly like a missing one; `insert` into such a table passes "
-    "`owner=user` (never set the owner column yourself).",
+    "- Ownership: for a table with an owner column or owned through a parent, call "
+    "`owned(t, by=user)` right after `fetch` and before `where`/`one`/`update`/`delete`/"
+    "`return`, so another customer's row answers 404 exactly like a missing one; "
+    "`insert` into an owned table passes `owner=user` (never set the owner column "
+    "yourself); aggregates over many customers' rows (grouped without the owner column) "
+    "are not owned.",
     "- Bounds: every parameter written by `insert`/`update` needs both bounds: "
     "`Int(ge=, le=)`, `Float(ge=, le=)`, `Str(min_len=, max_len=)` or `OneOf(...)`, "
     "using the limits the task states, so out-of-range input answers 422 and never "
@@ -259,14 +266,10 @@ def post_review(
     products = fetch(Products)
     wanted = where(products, col("id") == product_id)
     product = one(wanted, else_=NotFound("product"))
-    orders = fetch(Orders)
-    my_orders = owned(orders, by=user)
-    order_ids = select(my_orders, cols=["id"])
-    my_order_ids = rename(order_ids, id="order_id")
     items = fetch(OrderItems)
-    this_product = where(items, col("product_id") == product_id)
-    bought = join(this_product, my_order_ids, on=["order_id"], how="inner")
-    times_bought = group(bought, by=[], n=agg.count())
+    my_items = owned(items, by=user)
+    this_product = where(my_items, col("product_id") == product_id)
+    times_bought = group(this_product, by=[], n=agg.count())
     ordered = require(times_bought, col("n") > 0, else_=Forbidden("product not ordered"))
     reviews = fetch(Reviews)
     my_reviews = owned(reviews, by=user)
@@ -370,9 +373,11 @@ check passed.
 # Pitfall advice, removable for the no-hints condition (the reference stays).
 BASELINE_ADVICE: tuple[str, ...] = (
     "- Ownership: for a table with an owner column put the check in the SQL WHERE "
-    "clause (`WHERE id = ? AND (customer_id = ? OR ? = 'Admin')`), never fetch or change "
-    "a row by id alone, and answer 404 when the row is missing or belongs to someone "
-    "else; an INSERT sets the owner column to the caller's id.",
+    "clause (`WHERE id = ? AND (customer_id = ? OR ? = 'Admin')`), and for a table owned "
+    "through a parent check the parent's owner (JOIN it); never fetch or change a row "
+    "by id alone, and answer 404 when the row is missing or belongs to someone else; an "
+    "INSERT sets the owner column to the caller's id; aggregates over many customers' "
+    "rows (grouped without the owner column) are not owned.",
     "- Bounds: every input written to the database needs both bounds: "
     "`Field(ge=, le=)`, `Field(min_length=, max_length=)` or `Literal[...]` in the "
     "body model (`Query(...)`/`Path(...)` for other parameters), using the limits the "

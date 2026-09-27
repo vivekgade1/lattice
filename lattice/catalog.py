@@ -202,4 +202,6 @@ API_AMBIENT = (
 API_FN_FUNCS = frozenset(
     {"lower", "upper", "strip", "len", "contains", "starts_with", "year", "month", "day"}
 )
-API_AGG_FUNCS = frozenset({"sum", "count", "count_distinct", "min", "max", "mean"})
+API_AGG_FUNCS = frozenset(
+    {"sum", "count", "count_distinct", "min", "max", "mean", "at_min", "at_max"}
+)

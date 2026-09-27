@@ -44,6 +44,11 @@ class Schema:
     # must never leave the server (checker rules L802/L803).
     owner: str | None = field(default=None, compare=False)
     private: frozenset[str] = field(default=frozenset(), compare=False)
+    # Indirect ownership: (foreign-key column, parent schema name) -- a row belongs to
+    # the owner of the parent row its foreign key references (e.g. an order item
+    # belongs to the owner of its order). The parent must have a direct owner column
+    # and a single-column key (checked by `validate_owner_via`).
+    owner_via: tuple[str, str] | None = field(default=None, compare=False)
 
     def __post_init__(self) -> None:
         names = [n for n, _ in self.columns]
@@ -59,6 +64,12 @@ class Schema:
             raise ValueError(f"owner column {self.owner!r} not in schema")
         if not self.private <= known:
             raise ValueError(f"private columns {sorted(self.private - known)} not in schema")
+        if self.owner_via is not None:
+            fk, _parent = self.owner_via
+            if fk not in known:
+                raise ValueError(f"owner_via column {fk!r} not in schema")
+            if self.owner is not None:
+                raise ValueError("a schema has either an owner column or owner_via, not both")
 
     @staticmethod
     def from_pairs(
@@ -68,6 +79,7 @@ class Schema:
         nullable: Iterable[str] = (),
         owner: str | None = None,
         private: Iterable[str] = (),
+        owner_via: tuple[str, str] | None = None,
     ) -> Schema:
         return Schema(
             tuple(pairs),
@@ -75,6 +87,7 @@ class Schema:
             frozenset(nullable),
             owner,
             frozenset(private),
+            owner_via,
         )
 
     def names(self) -> tuple[str, ...]:
@@ -115,6 +128,27 @@ class Schema:
         return t
 
 
+def validate_owner_via(tables: Mapping[str, Schema]) -> None:
+    """Every `owner_via` names a parent schema in `tables` that has a direct owner
+    column and a single-column key (what the foreign key references)."""
+    for name, schema in tables.items():
+        if schema.owner_via is None:
+            continue
+        fk, parent_name = schema.owner_via
+        parent = tables.get(parent_name)
+        if parent is None:
+            raise ValueError(f"{name}.owner_via names unknown table {parent_name!r}")
+        if parent.owner is None:
+            raise ValueError(f"{name}.owner_via parent {parent_name!r} has no owner column")
+        if not parent.keys or len(parent.keys[0]) != 1:
+            raise ValueError(f"{name}.owner_via parent {parent_name!r} needs a one-column key")
+
+
+def via_parent_key(parent: Schema) -> str:
+    """The column an owner_via foreign key references (the parent's first key)."""
+    return parent.keys[0][0]
+
+
 # ---- checker types (synthesized attributes stored in the checker's side table) ----
 
 
@@ -133,8 +167,18 @@ class TableT:
     # ---- API profile metadata (never set for tabular programs; not part of equality) ----
     # Column holding the owning user's id (from Schema.owner), while it survives.
     owner: str | None = field(default=None, compare=False)
-    # Database tables with an owner column whose rows this table derives from.
+    # Indirect owner (Schema.owner_via): (foreign-key column, parent schema name), while
+    # the foreign-key column survives.
+    owner_via: tuple[str, str] | None = field(default=None, compare=False)
+    # Database tables with an owner column (or owner_via) whose per-owner rows this
+    # table derives from. Cleared by a group(...) whose rows are not per-owner.
     owned_from: frozenset[str] = field(default=frozenset(), compare=False)
+    # Columns whose values identify the owner: the owner / owner_via column and values
+    # computed from them.
+    owner_cols: frozenset[str] = field(default=frozenset(), compare=False)
+    # The rows were narrowed by owner-identifying or key columns (a where/join on
+    # them), so an aggregate over them may describe a single owner.
+    narrowed: bool = field(default=False, compare=False)
     # The rows passed through owned(..., by=user) (or are the caller's own insert).
     owner_checked: bool = field(default=False, compare=False)
     # Columns holding private data (Schema.private, and values computed from them).

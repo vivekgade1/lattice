@@ -445,3 +445,26 @@ def test_every_query_is_one_statement(commerce) -> None:
     finally:
         conn.set_trace_callback(None)
     assert count[0] == 1
+
+
+def test_owned_through_a_parent_is_one_statement(commerce) -> None:
+    _, conn, _, _ = commerce
+    items = Schema.from_pairs([("id", S.INT), ("order_id", S.INT), ("qty", S.INT)])
+    rels = {
+        "i": Rel("i", "fetch", (), {"table": "order_items", "order": ("id",)}, items),
+        "m": Rel("m", "owned", ("i",), {"via": ("order_id", "orders", "id", "customer_id")}, items),
+    }
+    query = compile_select(rels, "m")
+    assert (
+        '(:__is_admin OR "order_id" IN (SELECT "id" FROM "orders" WHERE "customer_id" = '
+        ":__user_id))" in query.text
+    )
+    assert sqlite3.complete_statement(query.text + ";")
+    mine = conn.execute(query.text, bind_values(query, user_id=1)).fetchall()
+    expected = conn.execute(
+        "SELECT i.id, i.order_id, i.qty FROM order_items i JOIN orders o ON o.id = i.order_id "
+        "WHERE o.customer_id = 1 ORDER BY i.id"
+    ).fetchall()
+    assert mine == expected and mine
+    every = conn.execute(query.text, bind_values(query, user_id=1, is_admin=True)).fetchall()
+    assert len(every) == conn.execute("SELECT COUNT(*) FROM order_items").fetchone()[0]

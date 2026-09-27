@@ -147,7 +147,11 @@ class _Resolver:
         """Resolve an endpoint's decorator and annotations, then bind its parameters.
 
         The `auth=` role is not resolved here (P6 reports an unknown role as L801).
-        Parameters may be named like a table op (`limit`, `sort`); `user` is always
+        A parameter's name is its wire name (JSON body / query key), so it may be named
+        like a Python builtin (`zip`, `id`, `type`, `min`, ...) -- Lattice never uses
+        Python builtins -- and like a table op (`limit`, `sort`); every other ambient
+        Lattice name stays L205 (it would hide `col`, `fn`, `agg`, an API op, a type,
+        an error, a role or a table the body or signature needs). `user` is always
         used. A non-Public endpoint without a `user` parameter still binds `user`
         (P6 reports the missing parameter once, as L801)."""
         deco = endpoint_decorator(fn)
@@ -164,7 +168,7 @@ class _Resolver:
             if a.arg in TABLE_OPS and a.arg not in scope.bindings:
                 scope.bindings[a.arg] = Binding(a.arg, "param", a, fn.lineno)
             else:
-                self._bind(scope, a.arg, "param", a, (scope, self.globals_))
+                self._bind(scope, a.arg, "param", a, (scope, self.globals_), wire_name=True)
         user = scope.bindings.get(USER_PARAM)
         if user is not None:
             user.used = True
@@ -226,9 +230,12 @@ class _Resolver:
         kind: Kind,
         node: ast.AST,
         visible: tuple[Scope, ...],
+        *,
+        wire_name: bool = False,
     ) -> None:
+        """Bind `name`; `wire_name` (endpoint parameters) exempts Python builtins."""
         line = getattr(node, "lineno", 1)
-        if name in _BUILTINS:
+        if name in _BUILTINS and not wire_name:
             self.ctx.error(
                 "L205",
                 node,

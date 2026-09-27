@@ -36,7 +36,7 @@ from lattice.check.api_info import (
 from lattice.check.astutil import endpoints_of, is_constant_expr, literal_value, steps_of
 from lattice.check.context import CheckContext
 from lattice.check.exprs import did_you_mean
-from lattice.typesys import Scalar, TableT
+from lattice.typesys import Scalar, TableT, via_parent_key
 
 _WRITES = ("insert", "update", "delete")
 _TABLE_ARG_OPS = ("update", "delete")
@@ -295,6 +295,8 @@ class _Endpoint:
                         self._ownership(call, t, call.args[0].id)
         for call in self._calls("insert"):
             self._insert_owner(call)
+        for call in self._calls("update"):
+            self._update_owner(call)
         self._bounds()
 
     def _insert_owner(self, call: ast.Call) -> None:
@@ -302,9 +304,14 @@ class _Endpoint:
             return
         table = call.args[0].id if isinstance(call.args[0], ast.Name) else None
         schema = self.api.tables.get(table or "")
-        if schema is None or schema.owner is None:
+        if schema is None:
             return
-        given = {kw.arg for kw in call.keywords}
+        given = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
+        if schema.owner_via is not None:
+            self._via_value(call, table or "", schema.owner_via, given.get(schema.owner_via[0]))
+            return
+        if schema.owner is None:
+            return
         if schema.owner in given:
             self.reported_ownership = True
             self.ctx.error(
@@ -321,6 +328,87 @@ class _Endpoint:
                 f"insert into {table} does not record the caller as its owner",
                 f"add owner=user, e.g. insert({table}, owner=user, ...)",
             )
+
+    def _update_owner(self, call: ast.Call) -> None:
+        """update() may not hand rows to another owner: the owner column is never set,
+        and an owner_via foreign key only to a parent row the caller owns."""
+        if self.admin or self.reported_ownership or not call.args:
+            return
+        t = self._type(call.args[0]) if isinstance(call.args[0], ast.Name) else None
+        if t is None and isinstance(call.args[0], ast.Name):
+            t = self._name_type(call.args[0].id)
+        schema = self.api.tables.get(t.source or "") if t is not None else None
+        if schema is None:
+            return
+        given = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
+        if schema.owner is not None and schema.owner in given:
+            self.reported_ownership = True
+            self.ctx.error(
+                "L802",
+                call,
+                f"update() changes the owner column '{schema.owner}' of {t.source}",
+                f"remove {schema.owner}=; rows keep their owner",
+            )
+        elif schema.owner_via is not None and schema.owner_via[0] in given:
+            self._via_value(call, t.source or "", schema.owner_via, given[schema.owner_via[0]])
+
+    def _via_value(
+        self, call: ast.Call, table: str, via: tuple[str, str], value: ast.expr | None
+    ) -> None:
+        """L802 unless the foreign key written into an owned-through table is a
+        parameter that the endpoint matched to a parent row the caller owns:
+        `row = one(where(owned(fetch(Parent)), col(<key>) == param), ...)` spelled in
+        canonical steps."""
+        fk, parent = via
+        if (
+            isinstance(value, ast.Name)
+            and value.id in self.params
+            and self.params[value.id].scalar is not None
+            and self._owns_parent_row(value.id, parent)
+        ):
+            return
+        self.reported_ownership = True
+        schema = self.api.tables.get(parent)
+        key = via_parent_key(schema) if schema is not None else "id"
+        shown = value.id if isinstance(value, ast.Name) else fk
+        self.ctx.error(
+            "L802",
+            call,
+            f"{table}.{fk} must reference a {parent} row the caller owns",
+            f"look it up first: mine = owned(fetch({parent}), by=user); "
+            f'found = where(mine, col("{key}") == {shown}); '
+            f'parent = one(found, else_=NotFound("...")); then {fk}={shown}',
+        )
+
+    def _owns_parent_row(self, param: str, parent: str) -> bool:
+        schema = self.api.tables.get(parent)
+        if schema is None or not schema.keys:
+            return False
+        key = via_parent_key(schema)
+        for value in self.locals.values():
+            if _call_name(value) != "one":
+                continue
+            t = self._type(value)
+            if t is None or t.source != parent or not t.owner_checked:
+                continue
+            if self._pinned(value, key, param):
+                return True
+        return False
+
+    def _pinned(self, node: ast.expr | None, key: str, param: str) -> bool:
+        """Whether the chain of single-input ops ending at `node` includes a where()
+        whose predicate (or one of its `&` conjuncts) is col(key) == param."""
+        seen: set[str] = set()
+        while isinstance(node, ast.Call) and node.args:
+            if _call_name(node) == "where" and len(node.args) > 1:
+                if _pins(node.args[1], key, param):
+                    return True
+            arg = node.args[0]
+            if not isinstance(arg, ast.Name) or arg.id in seen:
+                return False
+            seen.add(arg.id)
+            node = self.locals.get(arg.id)
+        return False
 
     def _bounds(self) -> None:
         """L811: parameters written by insert/update, directly or through local
@@ -527,6 +615,28 @@ class _Endpoint:
                 f'reduce it to one row: one({name}, else_=NotFound("...")), '
                 "or declare -> Page and return page(...)",
             )
+
+
+def _pins(pred: ast.expr, key: str, param: str) -> bool:
+    match pred:
+        case ast.BinOp(left=a, op=ast.BitAnd(), right=b):
+            return _pins(a, key, param) or _pins(b, key, param)
+        case ast.Compare(left=a, ops=[ast.Eq()], comparators=[b]):
+            return (_is_col(a, key) and _is_name(b, param)) or (
+                _is_col(b, key) and _is_name(a, param)
+            )
+    return False
+
+
+def _is_col(node: ast.expr, name: str) -> bool:
+    match node:
+        case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(n))], keywords=[]):
+            return n == name
+    return False
+
+
+def _is_name(node: ast.expr, name: str) -> bool:
+    return isinstance(node, ast.Name) and node.id == name
 
 
 def _bound_hint(spec: ParamSpec) -> str:

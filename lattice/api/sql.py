@@ -284,6 +284,12 @@ class _Builder:
                 return f"SELECT {keep} FROM {ins[0]} WHERE {self.expr(p['predicate'])}"
             case "owned":
                 uid, admin = self.user_ref()
+                if "via" in p:
+                    # owned through a parent: the foreign key names a parent row the
+                    # caller owns (a subquery of the same statement)
+                    fk, parent, key, owner = p["via"]
+                    mine = f"SELECT {q(key)} FROM {q(parent)} WHERE {q(owner)} = {uid}"
+                    return f"SELECT {keep} FROM {ins[0]} WHERE ({admin} OR {q(fk)} IN ({mine}))"
                 return f"SELECT {keep} FROM {ins[0]} WHERE ({admin} OR {q(p['owner'])} = {uid})"
             case "derive":
                 exprs = {name: self.expr(node) for name, node in p["columns"]}

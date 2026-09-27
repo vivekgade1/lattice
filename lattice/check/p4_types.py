@@ -140,6 +140,15 @@ def _guaranteed_present(pred: ast.expr) -> frozenset[str]:
     return frozenset()
 
 
+def _owner_cols(schema: Schema) -> frozenset[str]:
+    """The owner-identifying column of a database table (owner or owner_via's key)."""
+    if schema.owner is not None:
+        return frozenset({schema.owner})
+    if schema.owner_via is not None:
+        return frozenset({schema.owner_via[0]})
+    return frozenset()
+
+
 def _cols(names: tuple[str, ...] | list[str]) -> str:
     return "(" + ", ".join(names) + ")"
 
@@ -1029,12 +1038,15 @@ class _Types:
                 if found is None:
                     return UNKNOWN
                 name, schema = found
+                owned = schema.owner is not None or schema.owner_via is not None
                 return TableT(
                     schema,
                     keys=schema.keys,
                     nullable=schema.nullable,
                     owner=schema.owner,
-                    owned_from=frozenset({name}) if schema.owner is not None else frozenset(),
+                    owner_via=schema.owner_via,
+                    owned_from=frozenset({name}) if owned else frozenset(),
+                    owner_cols=_owner_cols(schema),
                     private=schema.private,
                     source=name,
                 )
@@ -1103,8 +1115,8 @@ class _Types:
             if not self._silenced(by):
                 self.ctx.error("L404", by, "owned() filters by the caller", "write by=user")
             return UNKNOWN
-        if t.owner is None:
-            owned = sorted(n for n, s in self.schemas.items() if s.owner is not None)
+        if t.owner is None and t.owner_via is None:
+            owned = sorted(n for n, s in self.schemas.items() if s.owner is not None or s.owner_via)
             self.ctx.error(
                 "L404",
                 call,
@@ -1134,6 +1146,14 @@ class _Types:
             if kw.arg == "owner":
                 if not (isinstance(kw.value, ast.Name) and kw.value.id == USER_PARAM):
                     self.ctx.error("L404", kw.value, "insert() owner= must be user", "owner=user")
+                elif schema.owner_via is not None:
+                    fk, parent = schema.owner_via
+                    self.ctx.error(
+                        "L404",
+                        kw,
+                        f"'{name}' is owned through {fk} -> {parent}, not by an owner column",
+                        f"remove owner=user; set {fk}= to the id of a {parent} row the caller owns",
+                    )
                 elif schema.owner is None:
                     self.ctx.error(
                         "L404",
@@ -1154,6 +1174,8 @@ class _Types:
             keys=schema.keys,
             nullable=schema.nullable,
             owner=schema.owner,
+            owner_via=schema.owner_via,
+            owner_cols=_owner_cols(schema),
             owner_checked=True,  # the caller's own new row (P6 enforces owner=user)
             private=schema.private,
             source=name,
@@ -1206,12 +1228,20 @@ class _Types:
         unchecked = frozenset().union(*(i.unchecked_owned for i in inputs))
         private = frozenset().union(*(i.private for i in inputs)) & names
         owner = next((i.owner for i in inputs if i.owner is not None and i.owner in names), None)
+        via = next(
+            (i.owner_via for i in inputs if i.owner_via is not None and i.owner_via[0] in names),
+            None,
+        )
+        owner_cols = frozenset().union(*(i.owner_cols for i in inputs))
+        narrowed = any(i.narrowed for i in inputs)
         source: str | None = None
         paged = False
         kws = [kw for kw in call.keywords if kw.arg is not None]
         match op:
             case "where" | "sort" | "limit":
                 source = t.source
+                if op == "where" and t.owned_from and len(call.args) > 1:
+                    narrowed = narrowed or _reads(call.args[1], owner_cols | self._key_cols(t))
             case "select":
                 source, paged = t.source, t.paged
             case "derive":
@@ -1219,17 +1249,36 @@ class _Types:
                 private = (t.private - overwritten) | {
                     kw.arg for kw in kws if kw.arg and _reads(kw.value, t.private)
                 }
+                owner_cols = (t.owner_cols - overwritten) | {
+                    kw.arg for kw in kws if kw.arg and _reads(kw.value, t.owner_cols)
+                }
                 owner = t.owner if t.owner not in overwritten else None
+                via = t.owner_via if via is not None and via[0] not in overwritten else None
                 source, paged = t.source, t.paged
             case "rename":
                 mapping = {kw.arg: _str_constant(kw.value) or kw.arg for kw in kws if kw.arg}
                 private = frozenset(mapping.get(c, c) for c in t.private)
+                owner_cols = frozenset(mapping.get(c, c) for c in t.owner_cols)
                 owner = mapping.get(t.owner, t.owner) if t.owner is not None else None
+                if t.owner_via is not None:
+                    via = (mapping.get(t.owner_via[0], t.owner_via[0]), t.owner_via[1])
                 paged = t.paged
             case "group":
                 private = (t.private & names) | {
                     kw.arg for kw in kws if kw.arg != "by" and _reads(kw.value, t.private)
                 }
+                if not self._per_owner_groups(t, kws):
+                    # every group mixes the rows of many owners: not owner-private rows
+                    owned_from = unchecked = frozenset()
+                    owner, via, owner_cols, narrowed = None, None, frozenset(), False
+                else:
+                    owner_cols = (t.owner_cols & names) | {
+                        kw.arg for kw in kws if kw.arg != "by" and _reads(kw.value, t.owner_cols)
+                    }
+            case "join":
+                on = _str_list_of(next((kw.value for kw in kws if kw.arg == "on"), None))
+                if owned_from and set(on) & owner_cols:
+                    narrowed = True
             case "step":
                 # a step cannot read the database, so with one-row inputs every op in
                 # it (joins included) yields at most one row
@@ -1240,12 +1289,67 @@ class _Types:
         return replace(
             out,
             owner=owner,
+            owner_via=via,
             owned_from=owned_from,
             owner_checked=bool(owned_from) and not unchecked,
+            owner_cols=owner_cols & names,
+            narrowed=narrowed and bool(owned_from),
             private=private & names,
             source=source,
             paged=paged,
         )
+
+    def _key_cols(self, t: TableT) -> frozenset[str]:
+        """Columns of the known keys of `t` and of the owned tables it derives from."""
+        keys = [*t.keys]
+        for name in t.owned_from:
+            schema = self.schemas.get(name)
+            if schema is not None:
+                keys.extend(schema.keys)
+        return frozenset(c for k in keys for c in k)
+
+    def _per_owner_groups(self, t: TableT, kws: list[ast.keyword]) -> bool:
+        """Whether group(t, by=..., aggs) can still yield rows of a single owner: `t`
+        derives from an owned table and is narrowed by owner/key columns or has at
+        most one row, `by` holds an owner-identifying column or a whole key (one row
+        per group), or an aggregate picks a value (min/max/at_min/at_max) of an
+        owner-identifying or private column."""
+        if not t.owned_from:
+            return False
+        if t.narrowed or t.at_most_one_row:
+            return True
+        by_node = next((kw.value for kw in kws if kw.arg == "by"), None)
+        by = set(_str_list_of(by_node))
+        if by & t.owner_cols:
+            return True
+        keys = [*t.keys]
+        for name in t.owned_from:
+            schema = self.schemas.get(name)
+            if schema is not None:
+                keys.extend(k for k in schema.keys if set(k) <= set(t.schema.names()))
+        if any(k and set(k) <= by for k in keys):
+            return True
+        exposing = t.owner_cols | t.private
+        for kw in kws:
+            if kw.arg == "by":
+                continue
+            match kw.value:
+                case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"), attr=func)) if (
+                    func in _PICKING_AGGS and _reads(kw.value, exposing)
+                ):
+                    return True
+        return False
+
+
+# Aggregates whose result is one row's value (so they can expose that row's owner).
+_PICKING_AGGS = frozenset({"min", "max", "at_min", "at_max"})
+
+
+def _str_list_of(node: ast.expr | None) -> list[str]:
+    """The string constants of a list/tuple literal (empty for anything else)."""
+    if isinstance(node, ast.List | ast.Tuple):
+        return [v for v in map(_str_constant, node.elts) if v is not None]
+    return []
 
 
 def _reads(node: ast.expr, columns: frozenset[str]) -> bool:

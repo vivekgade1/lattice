@@ -19,7 +19,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from lattice.profile import ApiProfile, Profile
-from lattice.typesys import Scalar, Schema
+from lattice.typesys import Scalar, Schema, validate_owner_via
 
 S = Scalar
 
@@ -79,8 +79,7 @@ ORDERS: Schema = Schema.from_pairs(
     owner="customer_id",
 )
 
-# v1: owned tables are those with a direct owner column; order_items rows are
-# reached through their parent order (no direct owner column here).
+# No direct owner column: an item belongs to the owner of its order (owner_via).
 ORDER_ITEMS: Schema = Schema.from_pairs(
     [
         ("id", S.INT),
@@ -90,6 +89,7 @@ ORDER_ITEMS: Schema = Schema.from_pairs(
         ("unit_price", S.FLOAT),
     ],
     keys=[("id",)],
+    owner_via=("order_id", "Orders"),
 )
 
 REVIEWS: Schema = Schema.from_pairs(
@@ -131,6 +131,7 @@ ROLES: frozenset[str] = frozenset({"Public", "Customer", "Admin"})
 
 
 def api_profile() -> Profile:
+    validate_owner_via({name: schema for name, _, schema in _TABLES})
     return Profile(
         schemas={},
         api=ApiProfile(
@@ -613,6 +614,12 @@ def schema_description() -> str:
             lines.append(f"    key: {key_cols}")
         if schema.owner:
             lines.append(f"    owner column: {schema.owner} (rows are owned by this user id)")
+        if schema.owner_via:
+            fk, parent = schema.owner_via
+            lines.append(
+                f"    owned through {fk} → {parent} (a row belongs to the owner of its "
+                f"{parent} row)"
+            )
         if schema.private:
             private_cols = ", ".join(sorted(schema.private))
             lines.append(f"    private columns (never returned to clients): {private_cols}")

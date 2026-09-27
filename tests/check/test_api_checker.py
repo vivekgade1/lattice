@@ -763,3 +763,359 @@ def test_l811_float_still_needs_both_bounds():
         return done
     """
     assert errors(src) == ["L811"]
+
+
+# ---- language findings: wire-named params, public aggregates, owned-through, at_min/max ----
+
+
+def bench_errors(src: str) -> list[str]:
+    from bench.api_datasets import api_profile
+
+    result = check_source("# lattice: v1\n" + dedent(src).lstrip("\n"), api_profile())
+    return [d.code for d in result.diagnostics if d.severity is Severity.ERROR]
+
+
+def bench_diag(src: str, code: str):
+    from bench.api_datasets import api_profile
+
+    result = check_source("# lattice: v1\n" + dedent(src).lstrip("\n"), api_profile())
+    found = [d for d in result.diagnostics if d.code == code]
+    assert found, result.diagnostics
+    return found[0]
+
+
+ZIP_UPDATE = """
+@endpoint("PUT", "/addresses/{address_id}", auth=Customer)
+def replace_address(
+    address_id: Int(ge=1), city: Str(min_len=1, max_len=60), zip: Str(min_len=5, max_len=5),
+    user: CurrentUser,
+) -> One | NotFound:
+    addresses = fetch(Addresses)
+    mine = owned(addresses, by=user)
+    found = where(mine, col("id") == address_id)
+    address = one(found, else_=NotFound("address"))
+    done = update(address, city=city, zip=zip)
+    shown = select(done, cols=["id", "city", "zip"])
+    return shown
+"""
+
+
+def test_params_may_be_named_like_python_builtins():
+    # a parameter's name is its wire name (JSON body / query key)
+    assert bench_errors(ZIP_UPDATE) == []
+
+
+@pytest.mark.parametrize("name", ["zip", "id", "type", "format", "min", "max", "sum", "input"])
+def test_every_builtin_named_param_is_allowed(name):
+    src = f"""
+    @endpoint("GET", "/products/search", auth=Public)
+    def search({name}: Str(max_len=20) = "x") -> Page:
+        products = fetch(Products)
+        hit = where(products, col("name") == {name})
+        result = page(hit, limit=20)
+        return result
+    """
+    assert errors(src) == []
+
+
+def test_builtin_names_still_rejected_for_locals_and_step_params():
+    body_local = ZIP_UPDATE.replace(
+        "shown = select(done,", 'id = select(done, cols=["id"])\n    shown = select(done,'
+    )
+    assert "L205" in bench_errors(body_local)
+    step = """
+    @step
+    def f(t: Table[Products], max: Int) -> Table:
+        r = where(t, col("stock") < max)
+        return r
+    """
+    assert "L205" in errors(step)
+
+
+@pytest.mark.parametrize(
+    "name", ["col", "fn", "agg", "when", "fetch", "owned", "one", "page", "Orders", "NotFound"]
+)
+def test_params_shadowing_lattice_names_still_rejected(name):
+    src = f"""
+    @endpoint("GET", "/products/search", auth=Public)
+    def search({name}: Str(max_len=20) = "x") -> Page:
+        products = fetch(Products)
+        result = page(products, limit=20)
+        return result
+    """
+    d = diag(src, "L205")
+    assert "Lattice name" in d.message
+
+
+REVIEW_STATS = """
+@endpoint("GET", "/products/ratings", auth=Public)
+def product_ratings(limit: Int(ge=1, le=100) = 20, offset: Int(ge=0) = 0) -> Page:
+    products = fetch(Products)
+    reviews = fetch(Reviews)
+    per_product = group(
+        reviews, by=["product_id"], review_count=agg.count(), avg_rating=agg.mean(col("rating"))
+    )
+    keyed = rename(per_product, product_id="id")
+    joined = join(products, keyed, on=["id"], how="left")
+    shown = select(joined, cols=["id", "name", "review_count", "avg_rating"])
+    ordered = sort(shown, by=["id"])
+    result = page(ordered, limit=limit, offset=offset)
+    return result
+"""
+
+
+def test_public_aggregate_over_owned_table_is_ok():
+    assert bench_errors(REVIEW_STATS) == []
+    distinct = REVIEW_STATS.replace(
+        "agg.count(),", 'agg.count(), reviewers=agg.count_distinct(col("customer_id")),'
+    )
+    assert bench_errors(distinct) == []
+
+
+def stats(by: str, pre: str, src: str) -> str:
+    """A Public endpoint: fetch Reviews, one statement `pre` defining `src`, then return
+    group(<src>, by=<by>, n=agg.count())."""
+    return f"""
+    @endpoint("GET", "/stats", auth=Public)
+    def stats() -> Page:
+        reviews = fetch(Reviews)
+        {pre}
+        per = group({src}, by={by}, n=agg.count())
+        result = page(per, limit=20)
+        return result
+    """
+
+
+def test_stats_helper_is_clean_when_grouped_across_owners():
+    src = stats('["product_id"]', pre='kept = where(reviews, col("rating") >= 1)', src="kept")
+    assert bench_errors(src) == []
+
+
+def test_group_by_owner_is_still_per_owner():
+    pre = 'kept = where(reviews, col("rating") >= 1)'
+    assert bench_errors(stats('["product_id", "customer_id"]', pre=pre, src="kept")) == ["L802"]
+    assert bench_errors(stats('["customer_id"]', pre=pre, src="kept")) == ["L802"]
+
+
+@pytest.mark.parametrize(
+    "agg_expr",
+    [
+        'agg.min(col("customer_id"))',
+        'agg.max(col("customer_id"))',
+        'agg.at_max(col("customer_id"), of=col("rating"))',
+        'agg.at_min(col("rating"), of=col("customer_id"))',
+    ],
+)
+def test_aggregate_exposing_owner_values_is_per_owner(agg_expr):
+    src = REVIEW_STATS.replace("agg.count(),", f"agg.count(), who={agg_expr},")
+    assert bench_errors(src) == ["L802"]
+
+
+def test_owner_copy_and_owner_filter_keep_rows_per_owner():
+    copied = stats(
+        '["product_id", "who"]',
+        pre='tagged = derive(reviews, who=col("customer_id") + 0)',
+        src="tagged",
+    )
+    assert bench_errors(copied) == ["L802"]
+    renamed = stats('["who"]', pre='tagged = rename(reviews, customer_id="who")', src="tagged")
+    assert bench_errors(renamed) == ["L802"]
+    filtered = stats(
+        '["product_id"]', pre='tagged = where(reviews, col("customer_id") == 3)', src="tagged"
+    )
+    assert bench_errors(filtered) == ["L802"]
+    one_review = stats(
+        '["product_id"]', pre='tagged = where(reviews, col("id") == 3)', src="tagged"
+    )
+    assert bench_errors(one_review) == ["L802"]
+
+
+def test_group_by_the_owned_tables_key_is_per_row():
+    pre = 'kept = where(reviews, col("rating") >= 1)'
+    assert bench_errors(stats('["product_id", "id"]', pre=pre, src="kept")) == ["L802"]
+
+
+ITEMS = """
+@endpoint("GET", "/orders/{order_id}/items", auth=Customer)
+def order_items(order_id: Int(ge=1), user: CurrentUser) -> Page:
+    items = fetch(OrderItems)
+    mine = owned(items, by=user)
+    of_order = where(mine, col("order_id") == order_id)
+    result = page(of_order, limit=50)
+    return result
+"""
+
+
+def test_items_read_through_owned_is_ok():
+    assert bench_errors(ITEMS) == []
+
+
+def test_items_read_without_owned_is_l802():
+    src = ITEMS.replace("mine = owned(items, by=user)\n    ", "").replace(
+        "where(mine,", "where(items,"
+    )
+    d = bench_diag(src, "L802")
+    assert "OrderItems" in d.message
+    assert d.hint == "filter with owned(items, by=user) before returning or writing"
+    assert bench_errors(src) == ["L802"]
+    assert bench_errors(src.replace("auth=Customer", "auth=Admin")) == []
+
+
+def test_items_update_and_delete_need_owned():
+    src = """
+    @endpoint("DELETE", "/items/{item_id}", auth=Customer)
+    def remove(item_id: Int(ge=1), user: CurrentUser) -> NoContent | NotFound:
+        items = fetch(OrderItems)
+        found = where(items, col("id") == item_id)
+        item = one(found, else_=NotFound("item"))
+        gone = delete(item)
+        return gone
+    """
+    assert bench_errors(src) == ["L802"]
+    fixed = src.replace(
+        "found = where(items,", "mine = owned(items, by=user)\n        found = where(mine,"
+    )
+    assert bench_errors(fixed) == []
+
+
+def test_items_grouped_per_order_stay_per_owner():
+    src = """
+    @endpoint("GET", "/order_units", auth=Customer)
+    def units(user: CurrentUser) -> Page:
+        items = fetch(OrderItems)
+        per_order = group(items, by=["order_id"], units=agg.sum(col("qty")))
+        result = page(per_order, limit=20)
+        return result
+    """
+    assert bench_errors(src) == ["L802"]
+    best_sellers = (
+        src.replace('by=["order_id"]', 'by=["product_id"]')
+        .replace("auth=Customer", "auth=Public")
+        .replace("user: CurrentUser", "")
+    )
+    assert bench_errors(best_sellers) == []
+
+
+def test_items_filtered_by_one_order_stay_per_owner():
+    src = """
+    @endpoint("GET", "/orders/{order_id}/units", auth=Customer)
+    def units(order_id: Int(ge=1), user: CurrentUser) -> One:
+        items = fetch(OrderItems)
+        of_order = where(items, col("order_id") == order_id)
+        summed = group(of_order, by=[], units=agg.sum(col("qty")))
+        return summed
+    """
+    assert bench_errors(src) == ["L802"]
+
+
+ADD_ITEM = """
+@endpoint("POST", "/orders/{order_id}/items", auth=Customer)
+def add_item(
+    order_id: Int(ge=1), product_id: Int(ge=1), qty: Int(ge=1, le=100), user: CurrentUser
+) -> Created | NotFound:
+    orders = fetch(Orders)
+    mine = owned(orders, by=user)
+    found = where(mine, col("id") == order_id)
+    order = one(found, else_=NotFound("order"))
+    row = insert(OrderItems, order_id=order_id, product_id=product_id, qty=qty, unit_price=1.0)
+    return row
+"""
+
+
+def test_insert_into_items_of_an_owned_order_is_ok():
+    assert bench_errors(ADD_ITEM) == []
+
+
+def test_insert_into_items_without_owning_the_order_is_l802():
+    unchecked = ADD_ITEM.replace("mine = owned(orders, by=user)\n    ", "").replace(
+        "where(mine,", "where(orders,"
+    )
+    d = bench_diag(unchecked, "L802")
+    assert "OrderItems" in d.message and "order_id" in d.message
+    assert bench_errors(unchecked) == ["L802"]
+    no_lookup = """
+    @endpoint("POST", "/orders/{order_id}/items", auth=Customer)
+    def add_item(order_id: Int(ge=1), qty: Int(ge=1, le=100), user: CurrentUser) -> Created:
+        row = insert(OrderItems, order_id=order_id, product_id=1, qty=qty, unit_price=1.0)
+        return row
+    """
+    assert bench_errors(no_lookup) == ["L802"]
+    other_param = ADD_ITEM.replace('col("id") == order_id', 'col("id") == product_id')
+    assert bench_errors(other_param) == ["L802"]
+    assert bench_errors(no_lookup.replace("auth=Customer", "auth=Admin")) == []
+
+
+def test_insert_into_items_takes_no_owner():
+    src = ADD_ITEM.replace("insert(OrderItems,", "insert(OrderItems, owner=user,")
+    assert bench_errors(src) == ["L404"]
+
+
+def test_update_cannot_move_rows_to_another_owner():
+    src = """
+    @endpoint("PATCH", "/orders/{order_id}", auth=Customer)
+    def move(order_id: Int(ge=1), to: Int(ge=1), user: CurrentUser) -> One | NotFound:
+        orders = fetch(Orders)
+        mine = owned(orders, by=user)
+        found = where(mine, col("id") == order_id)
+        order = one(found, else_=NotFound("order"))
+        done = update(order, customer_id=to)
+        return done
+    """
+    assert bench_errors(src) == ["L802"]
+    assert bench_errors(src.replace("auth=Customer", "auth=Admin")) == []
+
+
+def test_at_min_and_at_max_are_available_in_endpoints():
+    src = """
+    @endpoint("GET", "/categories/cheapest", auth=Public)
+    def cheapest() -> Page:
+        products = fetch(Products)
+        per = group(
+            products, by=["category"], cheapest=agg.at_min(col("name"), of=col("price")),
+            priciest=agg.at_max(col("name"), of=col("price")),
+        )
+        result = page(per, limit=20)
+        return result
+    """
+    assert bench_errors(src) == []
+
+
+def test_owner_via_is_validated():
+    with pytest.raises(ValueError, match="owner_via"):
+        Schema.from_pairs([("id", S.INT)], owner_via=("order_id", "Orders"))
+    with pytest.raises(ValueError, match="owner"):
+        Schema.from_pairs(
+            [("id", S.INT), ("a", S.INT), ("b", S.INT)], owner="a", owner_via=("b", "Orders")
+        )
+    from lattice.typesys import validate_owner_via
+
+    items = Schema.from_pairs([("id", S.INT), ("order_id", S.INT)], owner_via=("order_id", "X"))
+    with pytest.raises(ValueError, match="X"):
+        validate_owner_via({"Items": items, "Orders": ORDERS})
+    good = Schema.from_pairs([("id", S.INT), ("order_id", S.INT)], owner_via=("order_id", "Orders"))
+    validate_owner_via({"Items": good, "Orders": ORDERS})
+    with pytest.raises(ValueError, match="owner"):
+        validate_owner_via({"Items": good, "Orders": PRODUCTS})
+
+
+def test_update_of_an_items_order_must_reference_an_owned_order():
+    src = """
+    @endpoint("PATCH", "/items/{item_id}", auth=Customer)
+    def move_item(
+        item_id: Int(ge=1), order_id: Int(ge=1), user: CurrentUser
+    ) -> One | NotFound:
+        items = fetch(OrderItems)
+        mine = owned(items, by=user)
+        found = where(mine, col("id") == item_id)
+        item = one(found, else_=NotFound("item"))
+        moved = update(item, order_id=order_id)
+        return moved
+    """
+    assert bench_errors(src) == ["L802"]
+    checked = src.replace(
+        "moved = update(",
+        "orders = fetch(Orders)\n        my_orders = owned(orders, by=user)\n"
+        '        target = where(my_orders, col("id") == order_id)\n'
+        '        order = one(target, else_=NotFound("order"))\n        moved = update(',
+    )
+    assert bench_errors(checked) == []

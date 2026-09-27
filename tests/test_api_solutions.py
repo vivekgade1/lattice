@@ -7,10 +7,9 @@
 - ``lattice.py`` checks with zero errors under ``api_profile()`` and, once the Lattice
   runtime (``lattice.api.runtime``) exists, passes every case too.
 
-Known language gaps (``LATTICE_GAPS``): for these tasks no Lattice program can satisfy
-the (fair) spec; ``lattice.py`` is the closest program that checks, its runtime test is a
-strict xfail, and ``test_known_language_gaps_still_present`` fails once the gap is closed
-(then write the real solution and drop the entry).
+Formerly known language gaps are closed (language spec §5.11 item 20); the regression
+tests at the end prove that the programs they needed now check, and that the soundness
+rules that replaced them still reject the unsafe variants.
 
 The FastAPI runs are done once per session, concurrently, and cached.
 """
@@ -36,37 +35,6 @@ KIT_PATH = Path(__file__).resolve().parents[1] / "bench" / "api_kit" / "platform
 TASKS = {t.id: t for t in API_TASKS}
 ALL_IDS = [t.id for t in API_TASKS]
 TRAP_IDS = [t.id for t in API_TASKS if t.family in TRAP_FAMILIES]
-
-# task id -> (why no Lattice program can meet the spec, rule code the natural program hits)
-LATTICE_GAPS: Mapping[str, tuple[str, str]] = {
-    "o07": (
-        "the JSON body field `zip` must be an endpoint parameter named zip, "
-        "which is rejected as shadowing a Python builtin",
-        "L205",
-    ),
-    "v02": (
-        "the JSON body field `zip` must be an endpoint parameter named zip, "
-        "which is rejected as shadowing a Python builtin",
-        "L205",
-    ),
-    "f05": (
-        "a Public endpoint cannot return anything derived from Reviews (an owned table), "
-        "not even per-product aggregates",
-        "L802",
-    ),
-}
-
-
-def _natural_program(task_id: str) -> str:
-    """The program the spec actually calls for, which the checker rejects."""
-    source = (SOLUTIONS / task_id / "lattice.py").read_text()
-    if task_id in ("o07", "v02"):
-        return source.replace("zip_code", "zip")
-    if task_id == "f05":
-        return source.replace("auth=Admin", "auth=Public").replace(
-            "    user: CurrentUser, limit", "    limit"
-        )
-    raise KeyError(task_id)
 
 
 @pytest.fixture(scope="session")
@@ -151,12 +119,42 @@ def test_lattice_solution_checks_clean(task_id: str):
     assert result.ok
 
 
-@pytest.mark.parametrize("task_id", sorted(LATTICE_GAPS))
-def test_known_language_gaps_still_present(task_id: str):
-    reason, code = LATTICE_GAPS[task_id]
-    result = check_source(_natural_program(task_id), api_profile())
-    codes = [d.code for d in result.diagnostics if d.severity is Severity.ERROR]
-    assert code in codes, f"gap closed? ({reason}); now: {codes}"
+def _errors(source: str) -> list[str]:
+    result = check_source(source, api_profile())
+    return [d.code for d in result.diagnostics if d.severity is Severity.ERROR]
+
+
+def _solution(task_id: str) -> str:
+    return (SOLUTIONS / task_id / "lattice.py").read_text()
+
+
+@pytest.mark.parametrize("task_id", ["o07", "v02"])
+def test_gap_closed_zip_parameter(task_id: str):
+    source = _solution(task_id)
+    assert "zip: Str(" in source  # the body field's wire name, as the spec requires
+    assert _errors(source) == []
+
+
+def test_gap_closed_public_review_aggregates():
+    source = _solution("f05")
+    assert "auth=Public" in source and "fetch(Reviews)" in source
+    assert _errors(source) == []
+    # an aggregate that picks a customer's id keeps the rows per-owner, even once dropped
+    exposing = source.replace(
+        "review_count=agg.count(),", 'review_count=agg.count(), who=agg.max(col("customer_id")),'
+    )
+    assert _errors(exposing) == ["L802"]
+
+
+@pytest.mark.parametrize("task_id", ["f01", "f07", "o05", "o08"])
+def test_gap_closed_items_need_owned(task_id: str):
+    source = _solution(task_id)
+    assert "owned(items, by=user)" in source
+    assert _errors(source) == []
+    unchecked = source.replace("my_items = owned(items, by=user)\n    ", "").replace(
+        "(my_items,", "(items,"
+    )
+    assert _errors(unchecked) == ["L802"]
 
 
 def _lattice_runtime():
@@ -170,18 +168,7 @@ def _lattice_runtime():
     return runtime if hasattr(runtime, "serve_source") else None
 
 
-def _lattice_params() -> list:
-    params = []
-    for task_id in ALL_IDS:
-        marks = []
-        if task_id in LATTICE_GAPS:
-            reason = "language gap: " + LATTICE_GAPS[task_id][0]
-            marks.append(pytest.mark.xfail(reason=reason, strict=True))
-        params.append(pytest.param(task_id, marks=marks, id=task_id))
-    return params
-
-
-@pytest.mark.parametrize("task_id", _lattice_params())
+@pytest.mark.parametrize("task_id", ALL_IDS)
 def test_lattice_solution_passes_every_case(task_id: str, pristine_db: Path, tmp_path: Path):
     if _lattice_runtime() is None:
         pytest.skip("lattice.api.runtime (serve_source) is not built yet")
