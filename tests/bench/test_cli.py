@@ -313,3 +313,26 @@ def test_rerun_into_same_out_dir_starts_a_fresh_outcomes_file(tmp_path: Path) ->
     main(argv)
 
     assert len(read_outcomes(out_dir / "outcomes.jsonl")) == 1
+
+
+def test_no_hints_flag_reaches_both_arms(tmp_path, monkeypatch) -> None:
+    import bench.runners as runners
+    from lattice.llm.prompt import baseline_system_prompt, lattice_system_prompt
+
+    seen: list[str] = []
+
+    class Spy:
+        def __init__(self, texts):
+            self.texts = list(texts)
+
+        def generate(self, system, messages):
+            seen.append(system)
+            raise RuntimeError("stop after capturing the system prompt")
+
+    monkeypatch.setattr("bench.cli._offline_generator", lambda d, arm, tid: Spy([]))
+    (tmp_path / "script").mkdir()
+    assert main(["run", "--arms", "A,B", "--tasks", "s01", "--offline", str(tmp_path / "script"),
+                 "--out", str(tmp_path / "out"), "--no-hints"]) == 0
+    assert baseline_system_prompt(hints=False) in seen
+    assert lattice_system_prompt(hints=False) in seen
+    del runners

@@ -21,7 +21,7 @@ from lattice.check import check_source
 from lattice.diagnostics import Diagnostic, Severity, Span, render_for_llm, sort_key
 from lattice.llm.client import Generation, GenerationRefused, Generator, extract_code
 from lattice.llm.prompt import (
-    BASELINE_SYSTEM,
+    baseline_system_prompt,
     baseline_task_message,
     lattice_system_prompt,
     lattice_task_message,
@@ -273,8 +273,9 @@ class _Ledger:
         """Outcome for a refusal: earlier rounds' accounting plus the refused call."""
         t = self.totals()
         return dataclasses.replace(
-            self.outcome(correct=False, check_passed=check_passed, failure="refused",
-                         detail=str(exc)),
+            self.outcome(
+                correct=False, check_passed=check_passed, failure="refused", detail=str(exc)
+            ),
             rounds=len(self.generations) + 1,
             output_tokens=t.output_tokens + exc.usage.output_tokens,
             input_tokens=t.input_tokens + exc.usage.total_input_tokens,
@@ -296,12 +297,20 @@ def _score(
     try:
         actual = pl.read_parquet(workdir / "out.parquet")
     except Exception as exc:
-        return ledger.outcome(correct=False, check_passed=check_passed, failure="no_output",
-                              detail=f"could not read out.parquet: {exc}")
+        return ledger.outcome(
+            correct=False,
+            check_passed=check_passed,
+            failure="no_output",
+            detail=f"could not read out.parquet: {exc}",
+        )
     expected = task.reference(fixtures_frames)
     ok, reason = frames_match(actual, expected, ordered=task.ordered)
-    return ledger.outcome(correct=ok, check_passed=check_passed,
-                          failure=None if ok else "wrong_result", detail="" if ok else reason)
+    return ledger.outcome(
+        correct=ok,
+        check_passed=check_passed,
+        failure=None if ok else "wrong_result",
+        detail="" if ok else reason,
+    )
 
 
 _SCHEMA_CODE_PREFIX = "L4"
@@ -359,6 +368,7 @@ def _run_lattice(
     *,
     arm: Literal["B", "C"],
     max_repairs: int,
+    hints: bool = True,
 ) -> TaskOutcome:
     """Generate, check, run and score a Lattice program; arm B repairs.
 
@@ -374,7 +384,7 @@ def _run_lattice(
 
     registry, profile = _registry(task)
     allowed = _allowed_files(task, registry)
-    system = lattice_system_prompt()
+    system = lattice_system_prompt(hints=hints)
     messages: list[dict[str, str]] = [
         {"role": "user", "content": _lattice_message(task, profile, fixtures_frames)}
     ]
@@ -459,6 +469,7 @@ def _run_pandas(
     *,
     arm: Literal["A", "P"],
     max_repairs: int,
+    hints: bool = True,
 ) -> TaskOutcome:
     """Arms A (``max_repairs=0``) and P: generate a pandas script, sandbox it, score it.
 
@@ -481,7 +492,7 @@ def _run_pandas(
 
     for attempt in range(max_repairs + 1):
         try:
-            generation = generator.generate(BASELINE_SYSTEM, messages)
+            generation = generator.generate(baseline_system_prompt(hints=hints), messages)
         except GenerationRefused as exc:
             return ledger.refused(exc, check_passed=None)
         ledger.generations.append(generation)
@@ -508,8 +519,7 @@ def _run_pandas(
                 return _score(ledger, workdir, fixtures_frames, check_passed=None)
 
         if attempt == max_repairs:
-            return ledger.outcome(correct=False, check_passed=None, failure=failure,
-                                  detail=detail)
+            return ledger.outcome(correct=False, check_passed=None, failure=failure, detail=detail)
         messages.append({"role": "assistant", "content": generation.text})
         messages.append({"role": "user", "content": _repair_message(failure, stderr)})
 
@@ -521,9 +531,13 @@ def _run_baseline(
     generator: Generator,
     workdir: Path,
     fixtures_frames: Mapping[str, pl.DataFrame],
+    *,
+    hints: bool = True,
 ) -> TaskOutcome:
     """Arm A: one pandas script, sandboxed and scored."""
-    return _run_pandas(task, generator, workdir, fixtures_frames, arm="A", max_repairs=0)
+    return _run_pandas(
+        task, generator, workdir, fixtures_frames, arm="A", max_repairs=0, hints=hints
+    )
 
 
 def _run_baseline_repair(
@@ -533,10 +547,11 @@ def _run_baseline_repair(
     fixtures_frames: Mapping[str, pl.DataFrame],
     *,
     max_repairs: int = 2,
+    hints: bool = True,
 ) -> TaskOutcome:
     """Arm P: pandas + repair (see ``_run_pandas``)."""
     return _run_pandas(
-        task, generator, workdir, fixtures_frames, arm="P", max_repairs=max_repairs
+        task, generator, workdir, fixtures_frames, arm="P", max_repairs=max_repairs, hints=hints
     )
 
 

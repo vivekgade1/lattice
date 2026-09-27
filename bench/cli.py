@@ -59,18 +59,19 @@ def _build_parser() -> argparse.ArgumentParser:
 
     run_parser = subparsers.add_parser("run", help="run the benchmark and write a report")
     run_parser.add_argument("--arms", default="A", help="comma-separated arms, e.g. A,P,B,C")
-    run_parser.add_argument(
-        "--suite", default="seed", choices=("seed", "deep", "all", "bench2")
-    )
-    run_parser.add_argument(
-        "--tasks", default=None, help="comma-separated task ids to restrict to"
-    )
+    run_parser.add_argument("--suite", default="seed", choices=("seed", "deep", "all", "bench2"))
+    run_parser.add_argument("--tasks", default=None, help="comma-separated task ids to restrict to")
     run_parser.add_argument("--model", default="claude-opus-5")
     run_parser.add_argument(
         "--out", default=None, help="output directory (default results/<UTC timestamp>)"
     )
     run_parser.add_argument("--offline", default=None, help="directory of scripted responses")
     run_parser.add_argument("--max-repairs", type=int, default=2)
+    run_parser.add_argument(
+        "--no-hints",
+        action="store_true",
+        help="drop pitfall advice from both arms' system prompts (language reference stays)",
+    )
     run_parser.add_argument(
         "--workers", type=int, default=1, help="tasks to run concurrently (default 1)"
     )
@@ -88,6 +89,7 @@ def _run_one(
     offline_dir: Path | None,
     model: str,
     max_repairs: int,
+    hints: bool = True,
 ) -> TaskOutcome:
     workdir = prepare_workdir(task, work_root / arm, fixtures_dir)
 
@@ -97,10 +99,10 @@ def _run_one(
         generator = ClaudeGenerator(model=model)
 
     if arm == "A":
-        return run_baseline(task, generator, workdir, fixtures_frames)
+        return run_baseline(task, generator, workdir, fixtures_frames, hints=hints)
     if arm == "P":
         return run_baseline_repair(
-            task, generator, workdir, fixtures_frames, max_repairs=max_repairs
+            task, generator, workdir, fixtures_frames, max_repairs=max_repairs, hints=hints
         )
     if arm in ("B", "C"):
         return run_lattice(
@@ -110,6 +112,7 @@ def _run_one(
             fixtures_frames,
             arm=arm,
             max_repairs=max_repairs if arm == "B" else 0,
+            hints=hints,
         )
     raise ValueError(f"unknown arm: {arm!r}")
 
@@ -166,6 +169,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 offline_dir=offline_dir,
                 model=args.model,
                 max_repairs=args.max_repairs,
+                hints=not args.no_hints,
             )
         except BaseException as exc:
             if not isinstance(exc, Exception) and not is_panic(exc):

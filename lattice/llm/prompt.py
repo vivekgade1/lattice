@@ -325,7 +325,38 @@ _OUTPUT_FORMAT_SECTION = (
 )
 
 
-def lattice_system_prompt() -> str:
+# Pitfall advice, removable for the no-hints condition (language reference stays).
+_LATTICE_ADVICE_BULLETS = (
+    "- A join must not silently repeat rows",
+    "- `agg.mean`, `agg.min` and `agg.max` over a value",
+)
+_PANDAS_ADVICE_BULLETS = (
+    "- A merge must not silently repeat left rows",
+    "- `mean`, `min` and `max` skip missing values silently",
+    "- Columns typed `Str` must be read as text",
+)
+_PANDAS_ADVICE_FRAGMENTS = (
+    " (e.g. `fillna(0.0)` only when told to treat missing as 0)",
+    " `groupby` drops rows whose key is null unless you pass `dropna=False`; keep or "
+    "drop null keys exactly as the task says.",
+)
+
+
+def _without_advice(section: str, bullets: tuple[str, ...], fragments=()) -> str:
+    """Drop whole advice bullets (one line each) and advice sentences inside bullets."""
+    for prefix in bullets:
+        if not any(line.startswith(prefix) for line in section.splitlines()):
+            raise AssertionError(f"advice bullet not found: {prefix!r}")
+    kept = [ln for ln in section.splitlines() if not ln.startswith(bullets)]
+    text = "\n".join(kept) + ("\n" if section.endswith("\n") else "")
+    for fragment in fragments:
+        if fragment not in text:
+            raise AssertionError(f"advice fragment not found: {fragment!r}")
+        text = text.replace(fragment, "")
+    return text
+
+
+def lattice_system_prompt(hints: bool = True) -> str:
     """The Lattice arm's system prompt: rules, op catalog, expression library,
 
     three worked examples, and the output contract. Deterministic (no
@@ -341,7 +372,7 @@ def lattice_system_prompt() -> str:
         "expression functions documented below. A validator checks each program's "
         "structure, names and column types and reports precise diagnostics, so "
         "follow the conventions exactly.",
-        _RULES_SECTION,
+        _RULES_SECTION if hints else _without_advice(_RULES_SECTION, _LATTICE_ADVICE_BULLETS),
         _op_catalog_section(),
         _expression_library_section(),
         _EXAMPLES_SECTION,
@@ -521,21 +552,34 @@ _PANDAS_EXAMPLES_SECTION = f"""## Examples
 {_PANDAS_EXAMPLE_3}
 """
 
-BASELINE_SYSTEM = (
-    "\n\n".join(
-        [
-            "You are an expert data engineer. Write one Python 3 script using "
-            "pandas that reads the listed CSV files from the current directory, "
-            "computes exactly what is requested, and writes the final result to "
-            "out.parquet with exactly the requested columns, using index=False. "
-            "Your script is run once, unattended, in a fresh directory that "
-            "contains only the input files; its out.parquet is then compared "
-            "with the correct answer, so follow the task and the rules below "
-            "precisely.",
-            _PANDAS_RULES_SECTION,
-            _PANDAS_EXAMPLES_SECTION,
-            _OUTPUT_FORMAT_SECTION.replace("program", "script"),
-        ]
+
+def baseline_system_prompt(hints: bool = True) -> str:
+    """Arm A/P system prompt; hints=False drops the pitfall advice (no-hints condition)."""
+    rules = (
+        _PANDAS_RULES_SECTION
+        if hints
+        else _without_advice(
+            _PANDAS_RULES_SECTION, _PANDAS_ADVICE_BULLETS, _PANDAS_ADVICE_FRAGMENTS
+        )
     )
-    + "\n"
-)
+    return (
+        "\n\n".join(
+            [
+                "You are an expert data engineer. Write one Python 3 script using "
+                "pandas that reads the listed CSV files from the current directory, "
+                "computes exactly what is requested, and writes the final result to "
+                "out.parquet with exactly the requested columns, using index=False. "
+                "Your script is run once, unattended, in a fresh directory that "
+                "contains only the input files; its out.parquet is then compared "
+                "with the correct answer, so follow the task and the rules below "
+                "precisely.",
+                rules,
+                _PANDAS_EXAMPLES_SECTION,
+                _OUTPUT_FORMAT_SECTION.replace("program", "script"),
+            ]
+        )
+        + "\n"
+    )
+
+
+BASELINE_SYSTEM = baseline_system_prompt()
