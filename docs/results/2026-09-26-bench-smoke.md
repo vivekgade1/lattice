@@ -521,3 +521,16 @@ The P arm's silent failures are:
 **Cost.** L costs 1.7–5× more per correct result. The L system prompt is 15k characters, against 1k for P, and L needs more repair rounds.
 
 **Verdict.** The gap-closing round moved Sonnet on Lattice to parity on the tuned tickets and near parity on the held-out ones. The core claim, fewer silent bugs through Lattice, is **not yet supported**: L's silent failures moved to new places, namely semantic defaults, ownership intent and caller references.
+
+## Importer on held-out repos — first contact (no LLM, 2026-09-27)
+
+`python -m lattice.importer . --package bench.import_repos.<repo>.app --app-factory bench.import_repos.<repo>:make_app --no-llm` at commit 679a577. It was run before any importer work had looked at these repos.
+
+| repo | result |
+|---|---|
+| TaskFlow | **crash** in `adapt.table_spec`: `User.created_at: column type NaiveDatetime` is unsupported |
+| JustNotes | **crash** in `adapt.auth_spec`: "no users table" (its users table isn't recognised) |
+
+**Verdict:** the importer's extraction and adaptation are shaped around the template, and they fail hard instead of degrading. The rule is that an unsupported piece should become "unclear" or an island, never a crash.
+
+The next step generalises them: it degrades gracefully, supports common types (naive datetimes, integer keys), and detects the users table from the auth dependency. From then on, these two repos are **no longer held out for the importer** (they remain held out for the language and for tickets t19–t24). Later importer claims need a third, untouched repo.
