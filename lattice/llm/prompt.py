@@ -13,29 +13,52 @@ from typing import TYPE_CHECKING
 from lattice.catalog import AGG_FUNCS, FN_DOCS, FN_SIGS, OP_SHAPES
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from bench.datasets import Dataset
     from bench.tasks import Task
     from lattice.profile import Profile
 
-def dataset_description(name: str) -> str:
-    """Render one input dataset as ``"<file>.csv — columns: c1 (T1), c2 (T2), ..."``."""
-    from bench.datasets import DATASETS
 
-    dataset = DATASETS[name]
-    columns = ", ".join(
-        f"{col_name} ({scalar.value})" for col_name, scalar in dataset.schema.columns
-    )
-    return f"{dataset.filename} — columns: {columns}"
+def _registry(registry: str) -> Mapping[str, Dataset]:
+    """The benchmark's dataset registry by name (imported lazily: ``lattice`` must
+    not import ``bench`` at module import time)."""
+    if registry == "bench":
+        from bench.datasets import DATASETS
+
+        return DATASETS
+    if registry == "bench2":
+        from bench.bench2_datasets import DATASETS2
+
+        return DATASETS2
+    raise ValueError(f"unknown dataset registry: {registry!r}")
+
+
+def dataset_description(name: str, registry: str = "bench") -> str:
+    """Render one input dataset as ``"<file>.csv — columns: c1 (T1), c2 (T2), ..."``,
+    followed by ``; unique key: (a, b)`` and ``; may be missing: x, y`` when its schema
+    declares keys or nullable columns."""
+    dataset = _registry(registry)[name]
+    schema = dataset.schema
+    columns = ", ".join(f"{col_name} ({scalar.value})" for col_name, scalar in schema.columns)
+    text = f"{dataset.filename} — columns: {columns}"
+    if schema.keys:
+        text += "; unique key: " + ", ".join(f"({', '.join(k)})" for k in schema.keys)
+    if schema.nullable:
+        text += "; may be missing: " + ", ".join(
+            n for n in schema.names() if n in schema.nullable
+        )
+    return text
 
 
 _INPUTS_HEADER = "Input files (in the current directory):"
 _OUTPUT_LINE = "Write the final result to out.parquet"
 
 
-def _pandas_read_call(name: str) -> str:
-    from bench.datasets import DATASETS
+def _pandas_read_call(name: str, registry: str = "bench") -> str:
     from lattice.typesys import Scalar
 
-    dataset = DATASETS[name]
+    dataset = _registry(registry)[name]
     dates = [col for col, scalar in dataset.schema.columns if scalar is Scalar.DATE]
     if dates:
         return f'pd.read_csv("{dataset.filename}", parse_dates={dates!r})'.replace("'", '"')
@@ -50,10 +73,10 @@ def baseline_task_message(task: Task) -> str:
     """
     lines = [task.prompt, "", _INPUTS_HEADER]
     for name in task.inputs:
-        lines.append(f"- {dataset_description(name)}")
-        lines.append(f"  read with: {_pandas_read_call(name)}")
+        lines.append(f"- {dataset_description(name, task.datasets)}")
+        lines.append(f"  read with: {_pandas_read_call(name, task.datasets)}")
     lines.append("")
-    lines.append(f"{_OUTPUT_LINE} with index=False.")
+    lines.append(f"{_OUTPUT_LINE} with index=False. Write no other file.")
     return "\n".join(lines)
 
 
@@ -175,6 +198,18 @@ every row of `l`; `r` must have at most one row, e.g. a total from \
 `total = group(t, by=[], all_qty=agg.sum(col("qty")))`, \
 `with_total = join(t, total, on=[], how="inner")`, \
 `shares = derive(with_total, share=col("qty") / col("all_qty"))`.
+- A join must not silently repeat rows of its left table: `join(l, r, on=K)` \
+needs `r` to be unique on `K` when inputs declare a "unique key" (a declared key \
+of `r` inside `K`, or `r` built by `group(..., by=K, ...)`). Otherwise reduce `r` \
+to one row per key first, e.g. `latest = group(prices, by=["product_id"], \
+price=agg.max(col("price")))`, or pass `fanout="allow"` if repeating rows is \
+really intended.
+- `agg.mean`, `agg.min` and `agg.max` over a value that "may be missing" (a \
+listed column, a right-hand column of a left join, or an `fn.to_int`/`to_float`/\
+`to_date`/`log`/`sqrt` result) must say how to treat missing values: \
+`agg.mean(coalesce(col("x"), 0.0))` counts them as 0, `agg.mean(col("x"), \
+nulls="skip")` ignores them. `group` keeps rows with a missing key as their own group.
+- Write only the output file named in the task; any other path is rejected.
 - There are no loops, no `if` statements, no lambdas, no comprehensions, no \
 method calls, and no subscripts anywhere. Use `when(...)` for conditionals and \
 `col("name")` for column access.
@@ -304,19 +339,22 @@ def lattice_task_message(task: Task, profile: Profile) -> str:
     :func:`baseline_task_message`; the only difference is the per-file
     language-specific loading hint (the ``load(...)`` call and schema name).
     """
-    from bench.datasets import DATASETS
-
+    datasets = _registry(task.datasets)
     lines = [task.prompt, "", _INPUTS_HEADER]
     for name in task.inputs:
-        dataset = DATASETS[name]
+        dataset = datasets[name]
         if dataset.schema_name not in profile.schemas:
             raise KeyError(f"schema {dataset.schema_name!r} missing from profile")
-        lines.append(f"- {dataset_description(name)}")
+        lines.append(f"- {dataset_description(name, task.datasets)}")
         lines.append(
             f'  load with: load("{dataset.filename}", schema={dataset.schema_name})'
         )
     lines.append("")
-    lines.append(f'{_OUTPUT_LINE} with write(<table>, "out.parquet").')
+    allowed = sorted(profile.outputs) if profile.outputs else ["out.parquet"]
+    target = "out.parquet" if "out.parquet" in allowed else allowed[0]
+    lines.append(f'{_OUTPUT_LINE} with write(<table>, "{target}"). Write no other file.')
+    if profile.outputs is not None:
+        lines.append(f"This task may only write: {', '.join(allowed)}.")
     return "\n".join(lines)
 
 
@@ -352,6 +390,18 @@ the task says.
 - Join with `left.merge(right, on=[...], how="inner")` or `how="left"`. For \
 "rows with no match" use `~left["key"].isin(right["key"])` (or a left merge \
 followed by an `isna()` test on a right-hand column).
+- A merge must not silently repeat left rows: pass \
+`validate="many_to_one"` to `merge` (or first reduce the right side to one row \
+per key, e.g. `drop_duplicates`/`groupby` on the key) when the right table has \
+several rows per key; a column listed as "unique key" is safe to merge on.
+- `mean`, `min` and `max` skip missing values silently: when the task says a \
+missing value counts as 0, `fillna(0.0)` before aggregating (a "may be missing" \
+column, or right-hand columns after a left merge). `groupby(..., dropna=False)` \
+keeps rows with a missing key as their own group when the task keeps them.
+- Code-like columns typed `Str` (zip codes, account ids, e.g. "02134") must stay \
+strings: `pd.read_csv(..., dtype={"zip": str})` keeps leading zeros.
+- Write only `out.parquet`: no other files, no network access, no shell or \
+subprocess calls, no `os`/`shutil` file operations.
 - Whole-table aggregates (no grouping) produce a single-row result: build it \
 explicitly, e.g. `pd.DataFrame({"total": [df["x"].sum()], "n": [len(df)]})`.
 - Share of a total: compute the whole-table total as a scalar first, e.g. \

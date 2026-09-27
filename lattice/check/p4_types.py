@@ -16,7 +16,9 @@ checking the op's expressions, so one mistake yields one diagnostic.
 from __future__ import annotations
 
 import ast
-from dataclasses import dataclass, field
+import copy
+import json
+from dataclasses import dataclass, field, replace
 
 from lattice.catalog import EXPR_FUNCS, NAMESPACES, OP_SHAPES, TABLE_OPS, TYPE_NAMES
 from lattice.check.astutil import (
@@ -30,9 +32,17 @@ from lattice.check.astutil import (
     steps_of,
 )
 from lattice.check.context import CheckContext
-from lattice.check.exprs import ExprTyper, constant_scalar, did_you_mean, reported_name_spans
+from lattice.check.exprs import (
+    NULLS_AGGS,
+    ExprTyper,
+    constant_scalar,
+    did_you_mean,
+    reported_name_spans,
+)
+from lattice.check.nullability import expr_nullable
 from lattice.diagnostics import span_of
 from lattice.typesys import (
+    NUMERIC,
     SCALAR_NAMES,
     UNKNOWN,
     ColT,
@@ -58,15 +68,58 @@ class _Scope:
     consts: dict[str, LiteralValue | None] = field(default_factory=dict)  # constant -> literal
     # constant -> (depth, node count) of its value with every constant substituted
     shapes: dict[str, tuple[int, int]] = field(default_factory=dict)
+    # constant -> whether its value can be missing (e.g. fn.to_int("x"))
+    nullconsts: dict[str, bool] = field(default_factory=dict)
 
     def for_step(self) -> _Scope:
         """A step body's scope: the module constants defined so far, no tables."""
-        return _Scope({}, dict(self.scalars), dict(self.consts), dict(self.shapes))
+        return _Scope(
+            {}, dict(self.scalars), dict(self.consts), dict(self.shapes), dict(self.nullconsts)
+        )
 
     def bound(self, name: str) -> bool:
         return name in self.env or name in self.consts
 
 JOIN_HOWS = ("inner", "left")
+FANOUT_VALUES = ("allow",)
+
+
+class _DoubleQuoted(ast.NodeTransformer):
+    def visit_Constant(self, node: ast.Constant) -> ast.expr:
+        if isinstance(node.value, str):
+            return ast.Name(json.dumps(node.value))
+        return node
+
+
+def _render(node: ast.expr) -> str:
+    """Source-like text of an expression, with strings double-quoted as in the prompt."""
+    return ast.unparse(_DoubleQuoted().visit(copy.deepcopy(node)))
+
+
+def _col_name(node: ast.expr) -> str | None:
+    match node:
+        case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
+            return name
+    return None
+
+
+def _guaranteed_present(pred: ast.expr) -> frozenset[str]:
+    """Columns non-null on every row where `pred` is true: from each `&` conjunct that
+    is `~is_null(col(x))` or a comparison with `col(x)` as an operand (a comparison
+    with a missing value is null, and where() drops null rows)."""
+    match pred:
+        case ast.BinOp(left=a, op=ast.BitAnd(), right=b):
+            return _guaranteed_present(a) | _guaranteed_present(b)
+        case ast.UnaryOp(op=ast.Invert(), operand=ast.Call(func=ast.Name(id="is_null"), args=[a])):
+            name = _col_name(a)
+            return frozenset({name}) if name is not None else frozenset()
+        case ast.Compare(left=a, comparators=rest):
+            return frozenset(n for n in map(_col_name, [a, *rest]) if n is not None)
+    return frozenset()
+
+
+def _cols(names: tuple[str, ...] | list[str]) -> str:
+    return "(" + ", ".join(names) + ")"
 
 
 @dataclass(frozen=True)
@@ -162,6 +215,7 @@ class _Types:
             case LitT(scalar=s) if shape is not None:
                 scope.scalars[name] = s
                 scope.shapes[name] = shape
+                scope.nullconsts[name] = expr_nullable(value, frozenset(), scope.nullconsts)
                 lit = literal_value(value)
                 if lit is None and isinstance(value, ast.Name):
                     lit = scope.consts.get(value.id)  # `b = a` with a bound to a literal
@@ -354,7 +408,8 @@ class _Types:
         available = ", ".join(sorted(self.schemas)) or "none"
         match schema_node:
             case ast.Name(id=name) if name in self.schemas:
-                return TableT(self.schemas[name])
+                schema = self.schemas[name]
+                return TableT(schema, keys=schema.keys, nullable=schema.nullable)
             case ast.Name() if self._silenced(schema_node):
                 return UNKNOWN
             case ast.Name(id=name):
@@ -396,13 +451,17 @@ class _Types:
                     f"where() predicate must be Bool, got {s.value}",
                     'compare it, e.g. col("x") > 0',
                 )
-        return t  # the predicate never changes the schema
+        # the predicate never changes the schema; rows where it is null are dropped,
+        # so a column it guarantees present is no longer nullable
+        present = _guaranteed_present(pred) & t.nullable
+        return replace(t, nullable=t.nullable - present) if present else t
 
     def _derive(self, call: ast.Call, t: TableT, scope: _Scope) -> TableOrUnknown:
         # Every expression reads the INPUT table: a later keyword does not see an earlier
         # keyword's new value. An existing name is replaced in place (with the new type).
         typer = self._typer(t.schema, scope)
         cols: list[tuple[str, Scalar]] = []
+        nullable = set(t.nullable)
         unknown = False
         for kw in call.keywords:
             assert kw.arg is not None  # P1 rejects **kwargs
@@ -411,14 +470,30 @@ class _Types:
                 unknown = True
             else:
                 cols.append((kw.arg, vt.scalar))
-        return UNKNOWN if unknown else TableT(t.schema.with_columns(cols), t.at_most_one_row)
+                if expr_nullable(kw.value, t.nullable, scope.nullconsts):
+                    nullable.add(kw.arg)
+                else:
+                    nullable.discard(kw.arg)
+        if unknown:
+            return UNKNOWN
+        overwritten = {n for n, _ in cols if n in t.schema}
+        keys = tuple(k for k in t.keys if not overwritten.intersection(k))
+        return TableT(
+            t.schema.with_columns(cols), t.at_most_one_row, keys, frozenset(nullable)
+        )
 
     def _select(self, t: TableT, cols_node: ast.expr) -> TableOrUnknown:
         names = self._str_list(cols_node, "cols")
         if names is None or not self._require_columns(names, t.schema, cols_node):
             return UNKNOWN
         self._no_dups(names, cols_node)
-        return TableT(t.schema.project(dict.fromkeys(names)), t.at_most_one_row)
+        kept = set(names)
+        return TableT(
+            t.schema.project(dict.fromkeys(names)),
+            t.at_most_one_row,
+            tuple(k for k in t.keys if kept.issuperset(k)),
+            t.nullable & kept,
+        )
 
     def _rename(self, call: ast.Call, t: TableT) -> TableOrUnknown:
         mapping: dict[str, str] = {}
@@ -450,7 +525,14 @@ class _Types:
                     "choose a new name or rename first",
                 )
             taken.add(new)
-        return TableT(t.schema.renamed(mapping), t.at_most_one_row) if ok else UNKNOWN
+        if not ok:
+            return UNKNOWN
+        return TableT(
+            t.schema.renamed(mapping),
+            t.at_most_one_row,
+            tuple(tuple(mapping.get(c, c) for c in k) for k in t.keys),
+            frozenset(mapping.get(c, c) for c in t.nullable),
+        )
 
     def _group(
         self, call: ast.Call, t: TableT, by_node: ast.expr, scope: _Scope
@@ -460,10 +542,13 @@ class _Types:
         ok = ok and self._no_dups(by or [], by_node)
         typer = self._typer(t.schema, scope)
         aggs: list[tuple[str, Scalar]] = []
+        null_aggs: set[str] = set()
         for kw in call.keywords:
             if kw.arg == "by" or kw.arg is None:
                 continue
             at = typer.type_agg(kw.value)
+            if at is not None and self._agg_nullable(kw.value, t, scope):
+                null_aggs.add(kw.arg)
             if by is not None and kw.arg in by:
                 ok = False
                 self.ctx.error(
@@ -478,8 +563,49 @@ class _Types:
                 aggs.append((kw.arg, at))
         if not ok or by is None:
             return UNKNOWN
-        # by=[] yields exactly one row (a whole-table aggregate)
-        return TableT(t.schema.project(by).extend(aggs), at_most_one_row=not by)
+        # by=[] yields exactly one row (a whole-table aggregate); the group keys are
+        # unique in the result (the empty key for by=[])
+        return TableT(
+            t.schema.project(by).extend(aggs),
+            at_most_one_row=not by,
+            keys=(tuple(by),),
+            nullable=(t.nullable & set(by)) | null_aggs,
+        )
+
+    def _agg_nullable(self, node: ast.expr, t: TableT, scope: _Scope) -> bool:
+        """Whether a (well-typed) aggregate's result can be missing; reports L421 when
+        mean/min/max reads a nullable expression without a null policy."""
+        assert isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+        fn = node.func.attr
+        if fn not in NULLS_AGGS:
+            return False  # sum/count are never missing
+        arg = node.args[0]
+        if (
+            not node.keywords
+            and self.ctx.profile.enforce_nullable
+            and expr_nullable(arg, t.nullable, scope.nullconsts)
+        ):
+            text = _render(arg)
+            match arg:
+                case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(c))]):
+                    what = c
+                case _:
+                    what = text
+            at = self.ctx.types.get(id(arg))
+            numeric = isinstance(at, ColT | LitT) and at.scalar in NUMERIC
+            fill = (
+                f"coalesce({text}, 0.0)) to count missing as 0"
+                if numeric
+                else f"coalesce({text}, <value>)) to use a value for missing ones"
+            )
+            self.ctx.error(
+                "L421",
+                node,
+                f"aggregating '{what}' which can be missing: say how to treat missing values",
+                f"use agg.{fn}({fill}, or agg.{fn}({text}, "
+                'nulls="skip") to ignore missing values',
+            )
+        return True  # an all-missing group (or empty input) gives a missing result
 
     def _join(
         self, call: ast.Call, left: TableT, right: TableT, kws: dict[str, ast.expr]
@@ -487,6 +613,16 @@ class _Types:
         how = kws.get("how")
         if how is not None and _str_constant(how) not in JOIN_HOWS:
             self.ctx.error("L404", how, 'join how= must be "inner" or "left"', 'e.g. how="left"')
+        fanout = kws.get("fanout")
+        fanout_ok = fanout is None or _str_constant(fanout) in FANOUT_VALUES
+        if not fanout_ok:
+            assert fanout is not None
+            self.ctx.error(
+                "L404",
+                fanout,
+                'join fanout= must be "allow"',
+                'pass fanout="allow" only if repeating left rows is intended',
+            )
         on_node = kws["on"]
         on = self._str_list(on_node, "on")
         if on is None:
@@ -521,7 +657,29 @@ class _Types:
                 f"{what} in both tables; rename one side first",
                 f'e.g. rename(table, {clashes[0]}="{clashes[0]}_2")',
             )
-        return TableT(left.schema.extend(extra)) if ok else UNKNOWN
+        if not ok:
+            return UNKNOWN
+        unique = any(set(k) <= set(on) for k in right.keys)
+        if not unique and fanout is None and self.ctx.profile.enforce_keys:
+            r_name = call.args[1].id if isinstance(call.args[1], ast.Name) else "right"
+            known = ", ".join(_cols(k) for k in right.keys) or "none"
+            self.ctx.error(
+                "L420",
+                call,
+                f"join can repeat rows of the left table: '{r_name}' is not unique on "
+                f"{_cols(on)}; known keys of it: {known}",
+                f"reduce it to one row per {_cols(on)} first, e.g. group({r_name}, by=[...], "
+                '...), or pass fanout="allow" if repeating rows is intended',
+            )
+            return UNKNOWN
+        extra_names = {n for n, _ in extra}
+        how_s = _str_constant(how) if how is not None else "inner"
+        right_null = extra_names if how_s == "left" else right.nullable & extra_names
+        return TableT(
+            left.schema.extend(extra),
+            keys=left.keys if unique else (),
+            nullable=left.nullable | right_null,
+        )
 
     def _cross_join(
         self, call: ast.Call, left: TableT, right: TableT, on_node: ast.expr
@@ -548,7 +706,15 @@ class _Types:
                 f'e.g. rename(table, {clashes[0]}="{clashes[0]}_2")',
             )
             return UNKNOWN
-        return TableT(left.schema.extend(right.schema.columns), left.at_most_one_row)
+        how = next((kw.value for kw in call.keywords if kw.arg == "how"), None)
+        left_join = _str_constant(how) == "left" if how is not None else False
+        right_null = frozenset(right.schema.names()) if left_join else right.nullable
+        return TableT(
+            left.schema.extend(right.schema.columns),
+            left.at_most_one_row,
+            left.keys,
+            left.nullable | right_null,
+        )
 
     def _sort(self, t: TableT, kws: dict[str, ast.expr]) -> TableOrUnknown:
         by = self._str_list(kws["by"], "by")
@@ -566,7 +732,7 @@ class _Types:
         if not (isinstance(value, int) and not isinstance(value, bool) and value > 0):
             self.ctx.error("L417", n, "limit n= must be a positive integer literal", "e.g. n=10")
         if value == 1 and not isinstance(value, bool):
-            return TableT(t.schema, at_most_one_row=True)
+            return replace(t, at_most_one_row=True)
         return t
 
     def _write(self, call: ast.Call) -> None:
@@ -584,6 +750,7 @@ class _Types:
             # parameter wins inside the body
             scope.consts.pop(a.arg, None)
             scope.shapes.pop(a.arg, None)
+            scope.nullconsts.pop(a.arg, None)
             ann = a.annotation
             if isinstance(ann, ast.Name) and ann.id in SCALAR_NAMES:
                 scope.scalars[a.arg] = SCALAR_NAMES[ann.id]
@@ -591,6 +758,10 @@ class _Types:
                 continue
             scope.scalars.pop(a.arg, None)
             pt = self._table_annotation(ann, a)
+            if isinstance(pt, TableT):
+                # the body is checked once for every caller: no argument's keys are
+                # assumed (L420 needs a key the body establishes itself)
+                pt = TableT(pt.schema, nullable=pt.schema.nullable)
             scope.env[a.arg] = pt
             params.append((a.arg, pt))
         result: TableOrUnknown = UNKNOWN
@@ -655,8 +826,9 @@ class _Types:
                 "fix the body or change the return annotation (bare Table infers it)",
             )
             return declared  # callers see the declared schema: no cascade past the step
-        one_row = isinstance(inferred, TableT) and inferred.at_most_one_row
-        return TableT(declared.schema, one_row)
+        if isinstance(inferred, TableT):
+            return replace(inferred, schema=declared.schema)
+        return TableT(declared.schema)
 
     def _call_step(self, call: ast.Call, name: str, scope: _Scope) -> TableOrUnknown:
         sig = self.sigs.get(name)

@@ -27,7 +27,7 @@ OP_SHAPES: Mapping[str, OpShape] = {
     "select": OpShape(("table",), 1, frozenset({"cols"})),
     "rename": OpShape(("table",), 1, var_kw=True),
     "group": OpShape(("table",), 1, frozenset({"by"}), var_kw=True),
-    "join": OpShape(("left", "right"), 2, frozenset({"on"}), frozenset({"how"})),
+    "join": OpShape(("left", "right"), 2, frozenset({"on"}), frozenset({"how", "fanout"})),
     "sort": OpShape(("table",), 1, frozenset({"by"}), frozenset({"desc"})),
     "limit": OpShape(("table",), 1, frozenset({"n"})),
     "write": OpShape(("table", "path"), 1),

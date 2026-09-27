@@ -10,6 +10,7 @@ from pathlib import Path
 import polars as pl
 
 from lattice.check import CheckResult, check_source
+from lattice.check.p5_effects import normalize_output
 from lattice.diagnostics import Span
 from lattice.ir import Node, Plan, lower
 from lattice.profile import Profile
@@ -143,18 +144,24 @@ def _run_op(
 
 
 def execute(
-    plan: Plan, io_root: Path, *, max_rows: int = 5_000_000, time_limit_s: float = 60.0
+    plan: Plan,
+    io_root: Path,
+    *,
+    outputs: frozenset[str] | None = None,
+    max_rows: int = 5_000_000,
+    time_limit_s: float = 60.0,
 ) -> RunResult:
     """Run the plan. Limits: an op whose output exceeds `max_rows` raises R201 (a join is
     estimated from per-key counts and refused *before* it runs); the time limit is
-    checked between ops (R202), so one long-running op is not interrupted."""
+    checked between ops (R202), so one long-running op is not interrupted. With
+    `outputs`, a write to any other file is refused (R104) before anything is written."""
     root = io_root.resolve()
     last_use: dict[str, int] = {}
     for i, node in enumerate(plan.nodes):
         for inp in node.inputs:
             last_use[inp] = i
     frames: dict[str, pl.DataFrame] = {}
-    outputs: dict[str, pl.DataFrame] = {}
+    written: dict[str, pl.DataFrame] = {}
     warnings: list[RuntimeIssue] = []
     start = time.perf_counter()
     for i, node in enumerate(plan.nodes):
@@ -169,9 +176,15 @@ def execute(
         if node.op == "write":
             if len(inputs) != 1:
                 raise LatticeInternalError("write takes exactly one table")
-            path = _resolve(root, node.params["path"], node.span)
-            ops.write(inputs[0], path, node.params["path"], node.span)
-            outputs[node.params["path"]] = inputs[0]
+            shown = node.params["path"]
+            if outputs is not None and normalize_output(shown) not in outputs:
+                allowed = ", ".join(sorted(outputs)) or "nothing"
+                raise LatticeRuntimeError(
+                    "R104", node.span, f"write to '{shown}' refused: may only write {allowed}"
+                )
+            path = _resolve(root, shown, node.span)
+            ops.write(inputs[0], path, shown, node.span)
+            written[shown] = inputs[0]
         else:
             df, guards = _run_op(node, inputs, root, max_rows)
             _assert_schema(node, df)
@@ -186,7 +199,7 @@ def execute(
         for inp in set(node.inputs):
             if last_use.get(inp) == i:
                 frames.pop(inp, None)
-    return RunResult(outputs, tuple(warnings))
+    return RunResult(written, tuple(warnings))
 
 
 def run_source(
@@ -197,4 +210,4 @@ def run_source(
     result = check_source(source, profile)
     if result.program is None:
         return result, None
-    return result, execute(lower(result.program), io_root)
+    return result, execute(lower(result.program), io_root, outputs=profile.outputs)

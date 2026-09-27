@@ -27,6 +27,10 @@ from lattice.typesys import NUMERIC, ORDERED, UNKNOWN, ColT, LitT, Scalar, Schem
 
 ExprT = ColT | LitT | UnknownT
 
+# aggregates that take a null policy (nulls="skip"), and the accepted policies
+NULLS_AGGS = frozenset({"mean", "min", "max"})
+NULL_POLICIES = frozenset({"skip"})
+
 # Use-site name errors reported by P2; a Name at such a span is typed UNKNOWN silently.
 NAME_ERROR_CODES = frozenset({"L202", "L203", "L603", "L604"})
 
@@ -536,6 +540,13 @@ class ExprTyper:
 
     # ---- aggregates ---------------------------------------------------------
 
+    @staticmethod
+    def _agg_keywords(node: ast.Call, attr: str) -> bool:
+        """Only mean/min/max take a keyword: at most one `nulls=`."""
+        if not node.keywords:
+            return True
+        return attr in NULLS_AGGS and [kw.arg for kw in node.keywords] == ["nulls"]
+
     def _agg(self, node: ast.expr) -> Scalar | None:
         match node:
             case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"), attr=attr)):
@@ -567,9 +578,18 @@ class ExprTyper:
                 return None
             counted = self.type_of(node.args[0])  # any scalar type
             return None if isinstance(counted, UnknownT) else Scalar.INT
-        if len(node.args) != 1 or node.keywords:
+        if len(node.args) != 1 or not self._agg_keywords(node, attr):
             self.ctx.error("L404", node, f"agg.{attr} takes exactly one column expression", None)
             return None
+        for kw in node.keywords:
+            if not (isinstance(kw.value, ast.Constant) and kw.value.value in NULL_POLICIES):
+                self.ctx.error(
+                    "L404",
+                    kw.value,
+                    f'agg.{attr} nulls= must be "skip"',
+                    f'write agg.{attr}(<expr>, nulls="skip") to ignore missing values',
+                )
+                return None
         t = self.type_of(node.args[0])
         if isinstance(t, UnknownT):
             return None

@@ -190,7 +190,10 @@ class _Lowerer:
                 params = {"by": _strs(kws["by"]), "aggs": self._aggs(call, subst)}
             case "join":
                 how = _str(kws["how"]) if "how" in kws else "inner"
+                # fanout="allow" only silences the static L420 check; unused at runtime
                 params = {"on": _strs(kws["on"]), "how": how}
+                if "fanout" in kws:
+                    params["fanout"] = _str(kws["fanout"])
             case "sort":
                 desc = kws.get("desc")
                 match desc:

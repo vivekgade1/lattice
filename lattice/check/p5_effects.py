@@ -21,6 +21,12 @@ def _io_name(node: ast.AST) -> str | None:
     return None
 
 
+def normalize_output(path: str) -> str:
+    """The name a write() path is compared against the profile's outputs by: a
+    leading "./" is dropped; otherwise exact and case-sensitive."""
+    return path[2:] if path.startswith("./") else path
+
+
 def _is_relative(path: str) -> bool:
     if not path or "\\" in path or path.startswith(("/", "~")) or _DRIVE.match(path):
         return False
@@ -111,6 +117,17 @@ class _Effects:
                 arg,
                 f"{op}() path must be a file name ending with {' or '.join(allowed)}",
                 f'e.g. "{"orders.csv" if op == "load" else "out.parquet"}"',
+            )
+            return
+        outputs = self.ctx.profile.outputs
+        if op == "write" and outputs is not None and normalize_output(path) not in outputs:
+            allowed_out = ", ".join(sorted(outputs)) or "nothing"
+            example = min(outputs) if outputs else "out.parquet"
+            self.ctx.error(
+                "L506",
+                arg,
+                f"this task may only write: {allowed_out}",
+                f'write the result to exactly that file, e.g. write(result, "{example}")',
             )
 
 

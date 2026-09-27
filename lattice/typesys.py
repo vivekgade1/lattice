@@ -31,18 +31,37 @@ def unify(a: Scalar, b: Scalar) -> Scalar | None:
 
 @dataclass(frozen=True)
 class Schema:
-    """Ordered mapping of column name -> scalar type."""
+    """Ordered mapping of column name -> scalar type.
+
+    `keys` (declared unique keys: each a tuple of columns identifying a row) and
+    `nullable` (columns that may be missing) are dataset metadata used by the
+    checker's L420/L421 rules; they never take part in schema equality."""
 
     columns: tuple[tuple[str, Scalar], ...]
+    keys: tuple[tuple[str, ...], ...] = field(default=(), compare=False)
+    nullable: frozenset[str] = field(default=frozenset(), compare=False)
 
     def __post_init__(self) -> None:
         names = [n for n, _ in self.columns]
         if len(names) != len(set(names)):
             raise ValueError(f"duplicate column names in schema: {names}")
+        known = set(names)
+        for key in self.keys:
+            if not key or not set(key) <= known:
+                raise ValueError(f"schema key {key!r} must name existing columns")
+        if not self.nullable <= known:
+            raise ValueError(f"nullable columns {sorted(self.nullable - known)} not in schema")
 
     @staticmethod
-    def from_pairs(pairs: Iterable[tuple[str, Scalar]]) -> Schema:
-        return Schema(tuple(pairs))
+    def from_pairs(
+        pairs: Iterable[tuple[str, Scalar]],
+        *,
+        keys: Iterable[Iterable[str]] = (),
+        nullable: Iterable[str] = (),
+    ) -> Schema:
+        return Schema(
+            tuple(pairs), tuple(tuple(k) for k in keys), frozenset(nullable)
+        )
 
     def names(self) -> tuple[str, ...]:
         return tuple(n for n, _ in self.columns)
@@ -91,6 +110,12 @@ class TableT:
     # Statically known to have at most one row (group(by=[]), limit(n=1), and row-wise
     # ops of such a table). Not part of equality: tables match by schema only.
     at_most_one_row: bool = field(default=False, compare=False)
+    # Statically known unique keys (each a tuple of columns identifying a row), used by
+    # the join fan-out check (L420). Not part of equality.
+    keys: tuple[tuple[str, ...], ...] = field(default=(), compare=False)
+    # Columns that may hold missing values, used by the aggregate null policy (L421).
+    # Not part of equality.
+    nullable: frozenset[str] = field(default=frozenset(), compare=False)
 
 
 @dataclass(frozen=True)
