@@ -214,3 +214,26 @@ The gate checks: multi-step accuracy B − A ≥ +15 points; single-step no regr
 - Arm A output with string-typed dates where a Date is expected now scores as a mismatch (arm A is told to use `parse_dates`).
 - Sandbox (macOS `sandbox-exec`) blocks network and writes outside the workdir but allows reads; on Linux run the harness in a container with `--network=none`.
 - System prompt (~1.8k tokens) is below Opus's minimum cacheable prefix, so prompt caching likely won't engage.
+
+## API profile — first live run (40 tasks × 4 arms, 2026-09-27)
+
+A = FastAPI one-shot, P = FastAPI + repair, B = Lattice + repair, C = Lattice first-shot. Traps: 32 tasks (ownership, validation, errors, efficiency); 8 control. "silent" = wrong non-5xx answer.
+
+| Model / condition | A correct | P correct | B correct | C correct | silent (any arm, 32 traps) | eff. queries/request (P vs B) | cost per correct task B vs P |
+|---|---|---|---|---|---|---|---|
+| haiku-4-5, no hints | 40 | 40 | 38 | 28 | **0** | 1.65 vs 1.65 | 1.33× |
+| haiku-4-5, hints | 39 | 39 | 38 | 25 | **0** | 1.65 vs 1.65 | 1.27× |
+| sonnet-5, no hints | 40 | 40 | 40 | 36 | **0** | 1.65 vs 1.65 | **0.84×** |
+| sonnet-5, hints | 40 | 40 | 40 | 37 | **0** | 1.65 vs 1.65 | **0.83×** |
+| opus-5, no hints | 40 | 39 | 33* | —* | **0** | 1.65 vs 1.65 | **0.69×** |
+| opus-5, hints | 40 | 40 | 40 | 19* | **0** | 1.65 vs 1.65 | **0.69×** |
+
+\* Opus runs were cut short by an exhausted API credit balance (C: 40 and 21 tasks, B: 7 tasks not run; recorded as harness errors). One `cyber` refusal on a FastAPI (P) call.
+
+Findings:
+- **No silent API failures in any arm, on any model.** When the spec states the rule ("another customer's order behaves exactly like a missing one (404)", bounds, error statuses, "at most 3 queries"), all three models implement it correctly in plain FastAPI — ownership filters, pydantic bounds, 404 mapping, JOINs instead of per-row queries and LIMITs. The trap families as written don't bite, so Lattice's guarantees are not exercised by this suite.
+- **Efficiency parity:** 1.65 queries per request for both on the efficiency family — models already avoid N+1 when told.
+- **Cost:** on Sonnet and Opus Lattice + repair is **cheaper per correct task** (0.83× and 0.69×) — shorter programs and fewer output tokens than FastAPI; on Haiku it costs more (1.3×) and loses 2 tasks.
+- **First-shot Lattice (C)** fails loudly more often (Haiku 28/40) — the checker catches the errors and repair (B) fixes almost all of them.
+
+Implication: with explicit specs, models already write secure, efficient CRUD. Lattice's structural value would show when requirements are implicit (org-wide policies not restated in every ticket) — the next experiment.
