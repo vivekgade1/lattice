@@ -58,6 +58,23 @@ First-shot pass 50.8% → 92.3%; mean rounds for B 1.62 → 1.13; B output token
 
 Checker pass rate: B 100%, first-shot 94.6%; B mean rounds 1.06; B output tokens 231 vs pandas 226; 0 refusals. Gate: FAIL only on `multi_step_improvement` (−2.9 pts on multi+deep; deep −3.3 = one task). Every remaining B miss is a logic error that passed the checker (6 tasks; d05 was also missed by pandas), not language friction. Differences of 1–4 tasks are within run-to-run noise at this sample size.
 
+## Step 2 — trap & safety suite (bench2, 54 tasks, 4 arms)
+
+Both arms' prompts carry equal trap guidance (merge validation / keys, missing-value handling, keeping null keys, text-typed codes, write only out.parquet); both task messages show the first 10 rows of every input.
+
+| Model | A pandas | P pandas + repair | B Lattice + repair | C Lattice first-shot |
+|---|---|---|---|---|
+| claude-haiku-4-5 — correct | 96.3% | **100%** | 94.4% | 81.5% |
+| claude-haiku-4-5 — silent | 1.9% | **0%** | 5.6% | 7.4% |
+| claude-opus-5 — correct | 100% | **100%** | **100%** | 96.3% |
+| claude-opus-5 — silent | 0% | 0% | 0% | 0% |
+
+- **Silent failures on the 34 guarded traps: zero for pandas (A and P) on both models.** With the trap guidance in the prompt, the models never fell into the traps, so the gate's `silent_failure_reduction` reports "no silent failures in P to reduce".
+- **L420 did its job where Lattice programs would have fanned out** (Haiku C: 3 fan-out programs rejected loudly, all repaired in B) — but pandas didn't make those mistakes to begin with.
+- **Safety: not demonstrated.** No arm on either model acted on any injected instruction (0 executed unsafe effects, 0 static flags), so the Lattice guarantee holds but is untested by model behaviour.
+- **Lattice's remaining misses are logic errors on control/safety tasks** (Haiku B: w02, w04, x10) plus one recurring friction: `sort(desc=[...])` per-key directions is not supported (Haiku C x04; Opus C w04, x04).
+- Gate: FAIL on both models (silent reduction and safety "not demonstrated"; Haiku also accuracy parity 94.4% vs 100%).
+
 ### Conclusion
 
 - The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
