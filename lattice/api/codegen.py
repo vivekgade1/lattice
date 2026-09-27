@@ -100,7 +100,7 @@ from lattice.api.outbox import (
 )
 from lattice.api.runtime import auth_sql
 from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, sent_bind
-from lattice.catalog import USER_PARAM
+from lattice.catalog import EMAIL_MAX_LEN, USER_PARAM
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, UNSET, ParamSpec
 from lattice.profile import NativeSig, Profile
@@ -592,6 +592,8 @@ _FLOAT = re.compile(r"[+-]?(?:[0-9]+\\.?[0-9]*|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?", 
 # SQLite INTEGER is a signed 64-bit value: an int outside it cannot be bound.
 INT_MIN = -(2**63)
 INT_MAX = 2**63 - 1
+# RFC 5321's cap on an Email value, whatever its max_len (lattice.catalog.EMAIL_MAX_LEN).
+EMAIL_MAX_LEN = 254
 _TRUE = frozenset({"true", "1", "yes", "on"})
 _FALSE = frozenset({"false", "0", "no", "off"})
 _TYPE_NAMES = {
@@ -692,6 +694,8 @@ def _constrain(spec: Param, value: object) -> None:
             raise ValueError(f"must have at least {spec.min_len} characters")
         if spec.max_len is not None and len(value) > spec.max_len:
             raise ValueError(f"must have at most {spec.max_len} characters")
+        if spec.email and len(value) > EMAIL_MAX_LEN:
+            raise ValueError(f"must have at most {EMAIL_MAX_LEN} characters")
         if spec.pattern is not None and not re.fullmatch(spec.pattern, value):
             if spec.email:
                 raise ValueError("must be an email address")
@@ -1077,6 +1081,8 @@ def _module_names(src: str) -> frozenset[str]:
 
 
 # generated module-level names must not shadow the prelude's (or a builtin)
+if f"\nEMAIL_MAX_LEN = {EMAIL_MAX_LEN}\n" not in _PRELUDE:  # the kit's copy of the cap
+    raise LatticeInternalError("the generated kit's EMAIL_MAX_LEN is out of date")
 _RESERVED = _module_names(_PRELUDE)
 
 
@@ -1249,8 +1255,11 @@ def _auth_sql(plan: EndpointPlan) -> str:
 
 
 class _EndpointGen:
-    def __init__(self, plan: EndpointPlan, names: _Names, lines: Sequence[str] | None) -> None:
+    def __init__(
+        self, plan: EndpointPlan, names: _Names, lines: Sequence[str] | None, owner: str = "app"
+    ) -> None:
         self.plan = plan
+        self.owner = owner  # the object the route is registered on: app or router
         self.names = names
         self.lines = lines
         self.base = _ident(plan.name).upper()
@@ -1493,7 +1502,8 @@ class _EndpointGen:
             *self.body,
             "",
             "",
-            f"@app.{_METHODS[plan.method]}({_py_str(plan.path)}, name={_py_str(plan.name)})",
+            f"@{self.owner}.{_METHODS[plan.method]}"
+            f"({_py_str(plan.path)}, name={_py_str(plan.name)})",
             f"async def {route_name}(request: Request) -> Response:",
             f"    return await dispatch(request, {ep_name}, {steps_name})",
         ]
@@ -1590,16 +1600,37 @@ def _set_constant(prelude: str, name: str, value: str) -> str:
     return new
 
 
+_TARGETS = ("app", "router")
+_STANDALONE = "A standalone FastAPI app over the benchmark's platform_kit (app, get_db)"
+# The prelude's app-level handlers: a router target leaves error pages to the host app.
+_APP_HANDLERS = "\n\n@app.exception_handler(404)\n"
+
+
 def generate_fastapi(
-    plans: Sequence[EndpointPlan], source: str | None = None, natives_module: str = "natives"
+    plans: Sequence[EndpointPlan],
+    source: str | None = None,
+    natives_module: str = "natives",
+    *,
+    target: str = "app",
+    kit_module: str = "platform_kit",
 ) -> str:
     """The source of a standalone FastAPI `app.py` serving `plans` exactly as the
     Phase A runtime does. With the Lattice `source`, each check and write is annotated
     with the source line it was lowered from. When the plans call natives, the app
     imports them by name from the module `natives_module` (placed next to the app) and
-    registers them on every connection."""
-    if not natives_module.replace(".", "_").isidentifier():
-        raise LatticeInternalError(f"natives_module {natives_module!r} is not a module name")
+    registers them on every connection.
+
+    `target="router"` (the thin emitter, `lattice.emit.thin`) emits the same module
+    with the routes on a module-level `router = APIRouter()` instead of the kit's `app`,
+    without the app-level 404/405 handlers, and with `get_db` imported from
+    `kit_module` (a module name, or a relative one such as ".kit" inside a package).
+    The request pipeline, and so the observable behaviour of every route, is identical.
+    """
+    if target not in _TARGETS:
+        raise LatticeInternalError(f"target {target!r} is not one of {_TARGETS}")
+    for label, module in (("natives_module", natives_module), ("kit_module", kit_module)):
+        if not module.replace(".", "_").isidentifier():
+            raise LatticeInternalError(f"{label} {module!r} is not a module name")
     for plan in plans:
         if plan.method not in _METHODS:
             raise LatticeInternalError(f"unsupported method {plan.method!r}")
@@ -1614,9 +1645,20 @@ def generate_fastapi(
     ordered = sorted(plans, key=_specificity)
     routes = [f"#   line {p.span.line:>4}: {p.method:<6} {p.path} -> {p.name}" for p in ordered]
     header = _HEADER + "# Routes in registration order (Lattice source line of each endpoint):\n"
+    if target == "router":
+        router_doc = f"A FastAPI APIRouter (router; get_db from {kit_module})"
+        header = header.replace(_STANDALONE, router_doc, 1)
     imports, register = _natives_section(ordered, natives_module, names)
     kit = "from platform_kit import app, get_db\n"
-    prelude = _PRELUDE.replace(kit, kit + imports, 1)
+    if target == "router":
+        names.used.add("router")
+        head, _handlers = _PRELUDE.split(_APP_HANDLERS, 1)
+        prelude = head.replace(
+            kit, f"from fastapi import APIRouter\n\nfrom {kit_module} import get_db\n" + imports, 1
+        )
+        prelude += "\n\n\nrouter = APIRouter()\n"
+    else:
+        prelude = _PRELUDE.replace(kit, kit + imports, 1)
     for name, value in (
         ("OUTBOX_DDL", CREATE_SQL),
         ("OUTBOX_COLUMNS", COLUMNS_SQL),
@@ -1643,15 +1685,24 @@ def generate_fastapi(
     parts = [header + "\n".join(routes) + "\n\n" + prelude.rstrip("\n")]
     if register:
         parts.append(register)
-    parts += [_EndpointGen(plan, names, lines).render() for plan in ordered]
+    owner = "router" if target == "router" else "app"
+    parts += [_EndpointGen(plan, names, lines, owner).render() for plan in ordered]
     return "\n\n\n".join(parts) + "\n"
 
 
 def compile_source_to_fastapi(
-    source: str, profile: Profile, natives_module: str = "natives"
+    source: str,
+    profile: Profile,
+    natives_module: str = "natives",
+    *,
+    target: str = "app",
+    kit_module: str = "platform_kit",
 ) -> tuple[CheckResult, str | None]:
     """Check -> lower -> generate. (check result, None) when the program is rejected."""
     result = check_source(source, profile)
     if result.program is None:
         return result, None
-    return result, generate_fastapi(lower_api(result.program), source, natives_module)
+    code = generate_fastapi(
+        lower_api(result.program), source, natives_module, target=target, kit_module=kit_module
+    )
+    return result, code

@@ -230,14 +230,10 @@ def deviations_for(cases: list[Case]) -> dict[str, Deviation]:
 
 # Mismatches the generated suite found that are *not* policy: open findings against the
 # template proof, asserted exactly so that fixing one (or finding another) fails the test.
-FINDINGS: dict[str, str] = {
-    "update_user_me.boundary.email.max": (
-        "Lattice's Email accepts (and writes) a 255-character address; the template's "
-        "EmailStr (email-validator) refuses any address longer than 254 characters (RFC "
-        "5321) with 422, whatever the declared max_length=255. A gap in the Lattice Email "
-        "type (no 254-character limit), not a policy."
-    ),
-}
+FINDINGS: dict[str, str] = {}
+# Closed: "update_user_me.boundary.email.max" -- Lattice's Email accepted a 255-character
+# address that pydantic's EmailStr refuses (RFC 5321: 254 at most). Email now caps every
+# address at 254 characters (lattice.catalog.EMAIL_MAX_LEN), so both answer 422.
 
 
 @pytest.fixture(scope="module")
@@ -308,7 +304,7 @@ def test_every_case_is_equal_a_named_deviation_or_a_recorded_finding(result):
 
 
 def test_the_tally(result, suite):
-    assert result.tally() == (91, 17, 29, 1)
+    assert result.tally() == (91, 18, 29, 0)
     kinds = Counter(o.deviation for o in result.outcomes.values() if o.kind == "deviation")
     assert kinds == {
         "invalid-token-401": 8,
@@ -320,11 +316,15 @@ def test_the_tally(result, suite):
     assert all(d.kind == "policy" for d in deviations_for(suite.cases).values())
 
 
-def test_the_finding_is_what_it_says(result):
+def test_the_closed_email_finding_is_equal_under_the_validation_rule(result):
     name = "update_user_me.boundary.email.max"
     original, lattice = result.original[name], result.lattice[name]
     assert original.status == 422 and "too long" in original.body["detail"][0]["msg"]
-    assert lattice.status == 200 and len(lattice.body["email"]) == 255
+    assert lattice.status == 422
+    assert lattice.body == {
+        "detail": [{"loc": ["body", "email"], "msg": "must have at most 254 characters"}]
+    }
+    assert result.outcomes[name].kind == "equal_under_rule"
 
 
 def test_every_raise_site_of_the_template_routes_is_hit(result):

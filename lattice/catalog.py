@@ -261,6 +261,9 @@ EMAIL_PATTERN = (
     r"[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
     r"@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}"
 )
+# RFC 5321: an address is at most 254 characters (pydantic's EmailStr refuses longer
+# ones), whatever `Email(max_len=)` allows; both limits apply.
+EMAIL_MAX_LEN = 254
 # `Uuid` and `DateTime` are scalar types only API programs have (tabular data has none).
 API_TYPE_NAMES = frozenset({"OneOf", CURRENT_USER, "Uuid", "DateTime", EMAIL_TYPE})
 # `UNSET`: an endpoint parameter default meaning "not sent" (partial updates).

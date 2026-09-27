@@ -548,6 +548,16 @@ PARTB_CASES: tuple[HttpCase, ...] = (
         after_sql=_USERS_AFTER,
     ),
     _pbcase(
+        "email too long",
+        "PATCH",
+        "/users/me",
+        "bob",
+        # 255 characters, a valid address: over RFC 5321's 254 (Email refuses it)
+        json={"email": "b" * 64 + "@" + ".".join(["d" * 63, "d" * 63, "d" * 50]) + ".example.com"},
+        status=422,
+        after_sql=_USERS_AFTER,
+    ),
+    _pbcase(
         "signup bad email",
         "POST",
         "/users/signup",

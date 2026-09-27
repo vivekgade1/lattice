@@ -75,7 +75,7 @@ from lattice.api.ir import (
     lower_api,
 )
 from lattice.api.sql import bind_values, compile_lookup, decode
-from lattice.catalog import PUBLIC_ROLE, USER_PARAM
+from lattice.catalog import EMAIL_MAX_LEN, PUBLIC_ROLE, USER_PARAM
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, ParamSpec, pattern_problem
 from lattice.profile import Profile
@@ -261,6 +261,8 @@ def _constrain(spec: ParamSpec, value: object) -> None:
             raise ValueError(f"must have at least {spec.min_len} characters")
         if spec.max_len is not None and len(value) > spec.max_len:
             raise ValueError(f"must have at most {spec.max_len} characters")
+        if spec.email and len(value) > EMAIL_MAX_LEN:
+            raise ValueError(f"must have at most {EMAIL_MAX_LEN} characters")
         if (mismatch := pattern_problem(spec, value)) is not None:
             raise ValueError(mismatch)
 

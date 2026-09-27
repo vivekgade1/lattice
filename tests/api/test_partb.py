@@ -539,6 +539,36 @@ def test_email_accepts(client, email):
     assert (r.status_code, r.json()["email"]) == (200, email)
 
 
+def _email_of_len(n: int) -> str:
+    from lattice.importer.suite import _email_of_len as make
+
+    email = make(n)
+    assert len(email) == n
+    return email
+
+
+def test_an_email_longer_than_254_characters_is_422(client, db: Path):
+    """RFC 5321 caps an address at 254 characters (pydantic's EmailStr answers 422), so
+    Email refuses a longer one even under a larger max_len (here 255)."""
+    before = _users(db)
+    r = client.patch("/users/me", json={"email": _email_of_len(255)}, headers=_h("bob"))
+    assert r.status_code == 422
+    assert r.json() == {
+        "detail": [{"loc": ["body", "email"], "msg": "must have at most 254 characters"}]
+    }
+    assert _users(db) == before
+    ok = client.patch("/users/me", json={"email": _email_of_len(254)}, headers=_h("bob"))
+    assert (ok.status_code, len(ok.json()["email"])) == (200, 254)
+
+
+def test_a_smaller_email_max_len_still_applies(client):
+    r = client.post(
+        "/users/signup", json={"email": _email_of_len(256), "password": "longpassword"}
+    )
+    assert r.status_code == 422
+    assert r.json()["detail"][0]["msg"] == "must have at most 255 characters"
+
+
 def test_a_pattern_mismatch_is_422(client):
     r = client.post("/items/", json={"title": "lower case"}, headers=_h("alice"))
     assert r.status_code == 422
