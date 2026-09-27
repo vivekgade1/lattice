@@ -6,22 +6,14 @@ def read_items(
     user: CurrentUser,
     skip: Int(ge=0) = 0,
     limit: Int(ge=0, le=100) = 100,
-    since: DateTime = "0001-01-01T00:00:00Z",
+    since: DateTime | None = None,
     sort: OneOf("newest", "oldest") = "newest",
 ) -> Page:
-    no_since = fn.to_datetime("0001-01-01 00:00", format="%Y-%m-%d %H:%M")
     items = fetch(Item)
     mine = owned(items, by=user)
-    recent = where(mine, (col("created_at") >= since) | (since == no_since))
-    keyed = derive(
-        recent,
-        undated_first=when((sort == "oldest") & ~is_null(col("created_at")), then=1, otherwise=0),
-        oldest_key=when(sort == "oldest", then=col("created_at"), otherwise=no_since),
-        newest_key=when(sort == "newest", then=col("created_at"), otherwise=no_since),
-    )
-    ordered = sort(keyed, by=["undated_first", "oldest_key", "newest_key"], desc=[False, False, True])
-    shown = select(ordered, cols=["title", "description", "id", "owner_id", "created_at"])
-    result = page(shown, limit=limit, offset=skip, total=True)
+    recent = where(mine, is_null(since) | (col("created_at") >= since))
+    ordered = sort(recent, by=["created_at"], desc=[sort == "newest"], nulls="smallest")
+    result = page(ordered, limit=limit, offset=skip, total=True)
     return result
 
 

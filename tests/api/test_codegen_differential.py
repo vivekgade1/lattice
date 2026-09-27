@@ -51,7 +51,7 @@ from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import effects, loops, partb, realapps
+from tests.api import effects, gaps, loops, partb, realapps
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -711,6 +711,98 @@ EFFECTS_CASES: tuple[HttpCase, ...] = (
 )
 
 
+# ---- the gap-features program (edit-slice gaps: contains ignore_case, sent(), DateTime
+# arithmetic, `| None` parameters, null writes, sort direction from a parameter) ---------
+
+_G = gaps
+_GITEMS = "SELECT id, title, description, created_at, deleted_at FROM item ORDER BY rowid"
+
+
+def _gcase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _G.TOKENS[who], **kw)
+
+
+GAPS_CASES: tuple[HttpCase, ...] = (
+    _gcase("list", "GET", "/items/", "alice"),
+    _gcase("search upper", "GET", "/items/", "alice", query={"q": "GROC"}),
+    _gcase("search a", "GET", "/items/", "alice", query={"q": "a", "limit": 1, "skip": 1}),
+    _gcase("search empty", "GET", "/items/", "alice", query={"q": ""}),
+    _gcase("search unicode", "GET", "/items/", "alice", query={"q": "ÄLPHA"}),
+    _gcase("search admin", "GET", "/items/", "admin", query={"q": "e"}),
+    _gcase("since", "GET", "/items/", "bob", query={"since": "2000-01-04T12:00:00+02:00"}),
+    _gcase("since naive", "GET", "/items/", "alice", query={"since": "2000-01-05T10:00:00"}),
+    _gcase("since bad", "GET", "/items/", "alice", query={"since": "yesterday"}, status=422),
+    _gcase("oldest", "GET", "/items/", "bob", query={"sort": "oldest"}),
+    _gcase("oldest admin", "GET", "/items/", "admin", query={"sort": "oldest", "limit": 3}),
+    _gcase("newest admin", "GET", "/items/", "admin", query={"sort": "newest", "skip": 2}),
+    _gcase("sort bad", "GET", "/items/", "bob", query={"sort": "random"}, status=422),
+    _gcase("ordered", "GET", "/items/ordered", "admin"),
+    _gcase("ordered desc", "GET", "/items/ordered", "admin", query={"newest_first": "true"}),
+    _gcase("ordered last", "GET", "/items/ordered-last", "admin", query={"newest_first": "1"}),
+    _gcase("ordered last asc", "GET", "/items/ordered-last", "bob"),
+    _gcase(
+        "title locked",
+        "PUT",
+        f"/items/{_G.uid(101)}",
+        "alice",
+        json={"title": "Renamed"},
+        status=403,
+        after_sql=_GITEMS,
+    ),
+    _gcase(
+        "description only",
+        "PUT",
+        f"/items/{_G.uid(101)}",
+        "alice",
+        json={"description": "fine"},
+        after_sql=_GITEMS,
+    ),
+    _gcase("title admin", "PUT", f"/items/{_G.uid(101)}", "admin", json={"title": "Fixed"}),
+    _gcase("title undated", "PUT", f"/items/{_G.UNDATED}", "bob", json={"title": "Dated"}),
+    _gcase("title fresh", "PUT", f"/items/{_G.FUTURE}", "carol", json={"title": "Soon"}),
+    _gcase(
+        "title other", "PUT", f"/items/{_G.FUTURE}", "alice", json={"title": "x"}, status=403
+    ),
+    _gcase(
+        "title deleted", "PUT", f"/items/{_G.DELETED}", "alice", json={"title": "x"}, status=404
+    ),
+    _gcase(
+        "create null description",
+        "POST",
+        "/items/",
+        "alice",
+        json={"title": "New"},
+        status=201,
+        after_sql=_GITEMS,
+    ),
+    _gcase(
+        "soft delete",
+        "DELETE",
+        f"/items/{_G.uid(101)}",
+        "alice",
+        status=204,
+        after_sql=_GITEMS,
+    ),
+    _gcase(
+        "restore",
+        "POST",
+        f"/items/{_G.DELETED}/restore",
+        "admin",
+        after_sql=_GITEMS,
+    ),
+    _gcase(
+        "restore live", "POST", f"/items/{_G.uid(101)}/restore", "admin", status=400
+    ),
+    _gcase("restore customer", "POST", f"/items/{_G.DELETED}/restore", "alice", status=403),
+    _gcase("times", "GET", f"/items/{_G.uid(101)}/times", "alice"),
+    _gcase(
+        "times start", "GET", f"/items/{_G.uid(102)}/times", "alice",
+        query={"start": "2000-01-03T12:00:01+01:00"},
+    ),  # fmt: skip
+    _gcase("times undated", "GET", f"/items/{_G.UNDATED}/times", "bob"),
+)
+
+
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
     _R.PROGRAM,
@@ -730,9 +822,13 @@ PROGRAMS["effects"] = (
         "effects", "control", "for_each and the outbox", EFFECTS_CASES + _probes(EFFECTS_CASES)
     ),
 )
+PROGRAMS["gaps"] = (
+    gaps.PROGRAM,
+    ApiTask("gaps", "control", "edit-slice gap features", GAPS_CASES + _probes(GAPS_CASES)),
+)
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
-EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb", "loops", "effects"]
+EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb", "loops", "effects", "gaps"]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -752,6 +848,7 @@ SETUPS = {
     "partb": Setup(_PB.PROFILE, _PB.build_db, _PB.NATIVES, _PB.NATIVES_FILE),
     "loops": Setup(loops.PROFILE, loops.build_db),
     "effects": Setup(effects.PROFILE, effects.build_db, effects.NATIVES, effects.NATIVES_FILE),
+    "gaps": Setup(gaps.PROFILE, gaps.build_db, gaps.NATIVES, gaps.NATIVES_FILE),
 }
 
 
@@ -1123,6 +1220,30 @@ def test_the_realapps_program_passes_its_cases(differential_runs):
         "error": "conflict",
         "detail": runtime.UNIQUE_CONFLICT,
     }
+
+
+def test_the_gaps_program_passes_its_cases(differential_runs):
+    """Every gap-features case gets its expected status on both backends, and the
+    bodies show each feature (equal on both, by the differential above)."""
+    rt_results, rt_captured, gen_results, _ = differential_runs["gaps"]
+    want = {c.name: c.expect_status for c in GAPS_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want
+    bodies = {c["name"]: c["body"] for c in rt_captured}
+
+    def titles(name: str) -> list[str]:
+        return [r["title"] for r in bodies[name]["data"]]
+
+    assert titles("search upper") == ["weekly GROCERIES"]
+    assert titles("search unicode") == []  # 'ä' is not 'a'
+    assert titles("since") == ["Gamma"]
+    assert titles("oldest") == ["Epsilon", "Gamma"]  # nulls="smallest"
+    assert bodies["title locked"]["detail"] == gaps.LOCKED
+    assert bodies["title fresh"]["title"] == "Soon"
+    assert bodies["create null description"]["description"] is None
+    assert bodies["restore"]["title"] == "Delta"
+    assert bodies["times"]["hours"] == 106
 
 
 def test_the_generated_realapps_app_imports_its_natives():

@@ -208,6 +208,16 @@ def _two(args: Args) -> tuple[pl.Expr, pl.Expr]:
     return args[0], args[1]
 
 
+def _contains(a: Args, k: Kw) -> pl.Expr:
+    """fn.contains(x, sub=, ignore_case=): a plain-text match; ignoring case, both sides
+    are lowercased (Unicode lowercase: Rust's to_lowercase for x, Python's str.lower for
+    the literal needle -- the same mapping, as the SQL side's lattice_lower)."""
+    sub = str(k["sub"])
+    if k.get("ignore_case") is True:
+        return _one(a).str.to_lowercase().str.contains(sub.lower(), literal=True)
+    return _one(a).str.contains(sub, literal=True)
+
+
 def _log(c: _Compiler, a: Args, k: Kw) -> pl.Expr:
     x = _one(a)
     return c.guarded("R302", x > 0, x.cast(F64).log())
@@ -274,7 +284,7 @@ _FN: Mapping[str, _Builder] = {
     "upper": lambda c, a, k: _one(a).str.to_uppercase(),
     "strip": lambda c, a, k: _one(a).str.strip_chars(),
     "len": lambda c, a, k: _one(a).str.len_chars().cast(pl.Int64),
-    "contains": lambda c, a, k: _one(a).str.contains(str(k["sub"]), literal=True),
+    "contains": lambda c, a, k: _contains(a, k),
     "starts_with": lambda c, a, k: _one(a).str.starts_with(str(k["prefix"])),
     "replace": lambda c, a, k: _one(a).str.replace_all(str(k["old"]), str(k["new"]), literal=True),
     "concat": lambda c, a, k: pl.concat_str(list(_two(a))),

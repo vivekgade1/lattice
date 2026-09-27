@@ -162,10 +162,25 @@ def _cross_join(left: pl.DataFrame, right: pl.DataFrame, how: str) -> pl.DataFra
     return left.join(right, how="cross", maintain_order="left_right")
 
 
-def sort(df: pl.DataFrame, by: Sequence[str], desc: bool | Sequence[bool]) -> pl.DataFrame:
-    """desc is one direction for every column, or one per `by` column."""
-    descending = desc if isinstance(desc, bool) else list(desc)
-    return df.sort(list(by), descending=descending, nulls_last=True, maintain_order=True)
+def sort(
+    df: pl.DataFrame, by: Sequence[str], desc: bool | Sequence[bool], nulls: str = "last"
+) -> pl.DataFrame:
+    """desc is one direction for every column, or one per `by` column. `nulls` places
+    null keys: "last" / "first" in either direction, "smallest" first when ascending
+    and last when descending."""
+    descending = [desc] * len(by) if isinstance(desc, bool) else list(desc)
+    match nulls:
+        case "last":
+            nulls_last = [True] * len(by)
+        case "first":
+            nulls_last = [False] * len(by)
+        case "smallest":
+            nulls_last = list(descending)
+        case _:
+            raise LatticeInternalError(f"unknown sort nulls= {nulls!r}")
+    if not by:
+        return df
+    return df.sort(list(by), descending=descending, nulls_last=nulls_last, maintain_order=True)
 
 
 def limit(df: pl.DataFrame, n: int) -> pl.DataFrame:

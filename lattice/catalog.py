@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from types import MappingProxyType
 
 from lattice.typesys import NUMERIC, Scalar
 
@@ -31,7 +32,7 @@ OP_SHAPES: Mapping[str, OpShape] = {
     "rename": OpShape(("table",), 1, var_kw=True),
     "group": OpShape(("table",), 1, frozenset({"by"}), var_kw=True),
     "join": OpShape(("left", "right"), 2, frozenset({"on"}), frozenset({"how", "fanout"})),
-    "sort": OpShape(("table",), 1, frozenset({"by"}), frozenset({"desc"})),
+    "sort": OpShape(("table",), 1, frozenset({"by"}), frozenset({"desc", "nulls"})),
     "limit": OpShape(("table",), 1, frozenset({"n"})),
     # window(t, by=[...], order=[...], desc=[...], name=win.<f>(...), ...)
     "window": OpShape(("table",), 1, optional_kw=WINDOW_KW, var_kw=True),
@@ -89,6 +90,10 @@ WIN_TIE_SAFE = frozenset({"rank", "dense_rank"})
 TRAVERSE_DEPTH = "depth"
 TRAVERSE_DIRECTIONS = ("down", "up")
 TRAVERSE_MAX_DEPTH = 1000
+# sort(t, by=[...], nulls=...): where null keys go. "last" (the default) and "first"
+# hold in either direction; "smallest" orders nulls as the smallest value: first when
+# ascending, last when descending (SQL's usual order).
+SORT_NULLS = ("last", "first", "smallest")
 
 
 @dataclass(frozen=True)
@@ -96,6 +101,8 @@ class FnSig:
     params: tuple[frozenset[Scalar], ...]  # allowed scalar types per positional argument
     kwargs: Mapping[str, Scalar]  # required keyword args; values must be literals
     result: Scalar | None  # None = same type as the first argument
+    # optional keyword args (same value rules as kwargs)
+    optional: Mapping[str, Scalar] = field(default_factory=lambda: MappingProxyType({}))
 
 
 N, S_, D = NUMERIC, frozenset({Scalar.STR}), frozenset({Scalar.DATE})
@@ -115,7 +122,7 @@ FN_SIGS: Mapping[str, FnSig] = {
     "upper": FnSig((S_,), {}, Scalar.STR),
     "strip": FnSig((S_,), {}, Scalar.STR),
     "len": FnSig((S_,), {}, Scalar.INT),
-    "contains": FnSig((S_,), {"sub": Scalar.STR}, Scalar.BOOL),
+    "contains": FnSig((S_,), {"sub": Scalar.STR}, Scalar.BOOL, {"ignore_case": Scalar.BOOL}),
     "starts_with": FnSig((S_,), {"prefix": Scalar.STR}, Scalar.BOOL),
     "replace": FnSig((S_,), {"old": Scalar.STR, "new": Scalar.STR}, Scalar.STR),
     "concat": FnSig((S_, S_), {}, Scalar.STR),
@@ -133,10 +140,19 @@ FN_SIGS: Mapping[str, FnSig] = {
     "now": FnSig((), {}, Scalar.DATETIME),
     "date": FnSig((DT,), {}, Scalar.DATE),
     "to_datetime": FnSig((S_,), {"format": Scalar.STR}, Scalar.DATETIME),
+    "datetime_add": FnSig(
+        (DT,),
+        {},
+        Scalar.DATETIME,
+        {"days": Scalar.INT, "hours": Scalar.INT, "minutes": Scalar.INT, "seconds": Scalar.INT},
+    ),
+    "datetime_diff": FnSig((DT, DT), {"unit": Scalar.STR}, Scalar.INT),
 }
 # fn.* that exist only in API programs (Profile.api set): tabular programs have no
 # Uuid/DateTime values, so there they are unknown (L106) and not in the prompt.
-API_ONLY_FNS = frozenset({"to_uuid", "now", "date", "to_datetime"})
+API_ONLY_FNS = frozenset(
+    {"to_uuid", "now", "date", "to_datetime", "datetime_add", "datetime_diff"}
+)
 # One-line semantics for every fn.* (rendered into the model's system prompt).
 FN_DOCS: Mapping[str, str] = {
     "abs": "absolute value",
@@ -150,7 +166,7 @@ FN_DOCS: Mapping[str, str] = {
     "upper": "uppercase",
     "strip": "trim leading/trailing whitespace",
     "len": "character count",
-    "contains": "contains `sub` (plain text)",
+    "contains": "contains `sub` (plain text); `ignore_case=True` compares both lowercased",
     "starts_with": "starts with `prefix`",
     "replace": "replace every `old` with `new` (plain text)",
     "concat": "join two strings; null if either is null",
@@ -174,9 +190,19 @@ FN_DOCS: Mapping[str, str] = {
         'parse with a strftime `format` such as "%Y-%m-%d %H:%M" (UTC unless the format '
         "has an offset); null if unparsable"
     ),
+    "datetime_add": (
+        "shift by `days`/`hours`/`minutes`/`seconds` (at least one; negative is earlier); "
+        "null out of range"
+    ),
+    "datetime_diff": (
+        'end minus start in whole `unit`s ("days", "hours", "minutes" or "seconds"), '
+        "truncated toward zero"
+    ),
 }
 
 DATE_DIFF_UNITS = frozenset({"days"})
+DATETIME_DIFF_UNITS = ("days", "hours", "minutes", "seconds")
+DATETIME_ADD_UNITS = ("days", "hours", "minutes", "seconds")
 ROUND_DIGITS_MAX = 2**32 - 1  # fn.round digits= range (polars takes a u32)
 DATE_ADD_DAYS_MAX = 36_500_000  # |fn.date_add days=| (~100k years; keeps dates representable)
 
@@ -270,6 +296,8 @@ API_TYPE_NAMES = frozenset({"OneOf", CURRENT_USER, "Uuid", "DateTime", EMAIL_TYP
 UNSET_NAME = "UNSET"
 # `owner_is(user)`: the whole condition of require(t, owner_is(user), else_=Forbidden(..)).
 OWNER_IS = "owner_is"
+# `sent(p)`: whether the request included the optional (`= UNSET`) parameter p (a Bool).
+SENT = "sent"
 # `native.<name>(...)`: a typed native function declared by ApiProfile.natives.
 NATIVE_NS = "native"
 API_AMBIENT = (
@@ -277,7 +305,7 @@ API_AMBIENT = (
     | frozenset(API_ERRORS)
     | frozenset(API_SUCCESS_KINDS)
     | API_TYPE_NAMES
-    | {"endpoint", UNSET_NAME, OWNER_IS, NATIVE_NS}
+    | {"endpoint", UNSET_NAME, OWNER_IS, NATIVE_NS, SENT}
 )
 # The expression subset the API profile compiles to SQL (anything else is L841).
 API_FN_FUNCS = frozenset(

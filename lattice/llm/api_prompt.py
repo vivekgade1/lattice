@@ -233,6 +233,37 @@ column answers that 409.
 - A top-level list of column names, e.g. `{API_LIST_EXAMPLE[0]}`, can be reused as \
 `{API_LIST_EXAMPLE[1]}`."""
 
+# Optional values, text search, time and ordering (the edit-slice gap features): one
+# short bullet per feature, each with an inline example; the baseline guide carries the
+# same information in SQL/FastAPI terms (_BASELINE_OPTIONAL_SECTION).
+API_OPTIONAL_EXAMPLES = (
+    'where(mine, is_null(since) | (col("created_at") >= since))',
+    'require(t, ~sent(title) | (col("created_at") >= fn.datetime_add(fn.now(), hours=-24)), '
+    'else_=Forbidden("too late"))',
+    'fn.contains(col("title"), sub=q, ignore_case=True)',
+    'fn.datetime_diff(fn.now(), col("created_at"), unit="hours")',
+    "update(t, deleted_at=None)",
+    'sort(t, by=["created_at"], desc=[order == "newest"], nulls="smallest")',
+)
+
+_LATTICE_OPTIONAL_SECTION = f"""## Optional values, search, time and ordering
+
+- `p: T | None = None` (e.g. `since: DateTime | None = None`): a parameter that is None \
+when not sent; test it with `is_null(p)`, e.g. `{API_OPTIONAL_EXAMPLES[0]}`. None means \
+"not given"; `= UNSET` means "leave the column unchanged" (update values only).
+- `sent(p)`: a Bool, true when the request included the `= UNSET` parameter `p` (even \
+as null); usable in any condition, e.g. `{API_OPTIONAL_EXAMPLES[1]}`.
+- `{API_OPTIONAL_EXAMPLES[2]}`: a case-insensitive substring match (both sides \
+lowercased, Unicode); `sub=""` matches every string.
+- DateTime arithmetic: `fn.datetime_add(x, days=, hours=, minutes=, seconds=)` (at least \
+one; negative is earlier) and `fn.datetime_diff(end, start, unit=)` (whole "days", \
+"hours", "minutes" or "seconds", truncated toward zero), e.g. \
+`{API_OPTIONAL_EXAMPLES[3]}`; `fn.now()` is one instant per request.
+- `{API_OPTIONAL_EXAMPLES[4]}` (or `insert(T, c=None)`) writes null into a nullable column.
+- `sort` directions may be Bool expressions of parameters, and `nulls=` places nulls: \
+"last" (default), "first", or "smallest" (first ascending, last descending), e.g. \
+`{API_OPTIONAL_EXAMPLES[5]}`."""
+
 _LATTICE_RULES_SECTION = """## Rules
 
 - No imports are needed: all operations, `col`, `when`, `coalesce`, `is_null`, `fn`, \
@@ -348,6 +379,7 @@ def api_lattice_system_prompt(hints: bool = True) -> str:
         _lattice_ops_section(),
         _lattice_expressions_section(),
         _LATTICE_LOOPS_SECTION,
+        _LATTICE_OPTIONAL_SECTION,
         _LATTICE_RULES_SECTION,
     ]
     if hints:
@@ -442,6 +474,26 @@ email pattern such as `r"[^@\\s]+@[^@\\s]+\\.[A-Za-z]{2,}"`; a bad value answers
 JSON error body.
 - A module-level list of column names, e.g. `PUBLIC = ["id", "email", "name"]`, can be \
 reused in every `SELECT` (`", ".join(PUBLIC)`)."""
+
+# The same information as _LATTICE_OPTIONAL_SECTION, for SQL and FastAPI.
+_BASELINE_OPTIONAL_SECTION = """## Optional values, search, time and ordering
+
+- An optional parameter that is None when not sent: `since: datetime | None = None`; \
+filter with `WHERE (:since IS NULL OR created_at >= :since)`. None means "not given"; \
+a partial update keeps every column whose field was not sent \
+(`payload.model_dump(exclude_unset=True)`).
+- Whether a body field was sent (even as null): `"title" in payload.model_fields_set`; \
+usable in any check, e.g. reject a late title change with 403.
+- Case-insensitive substring: `instr(py_lower(title), py_lower(:q)) > 0` after \
+`db.create_function("py_lower", 1, lambda s: s if s is None else s.lower())` (SQLite's \
+`lower()` folds ASCII only); an empty `q` matches every string.
+- Time: `datetime.now(timezone.utc)` once per request; `now - timedelta(hours=24)`; \
+whole units truncated toward zero: `int((end - start) / timedelta(hours=1))`; compare \
+with stored values in UTC and their stored text format.
+- `UPDATE items SET deleted_at = NULL WHERE id = ?` clears a nullable column.
+- A sort direction from a parameter: pick `"DESC"` or `"ASC"` in code from a fixed \
+choice (never paste input into SQL); SQLite puts NULLs first ascending and last \
+descending; `ORDER BY x IS NULL, x` puts them last."""
 
 # Pitfall advice, removable for the no-hints condition (the reference stays).
 BASELINE_ADVICE: tuple[str, ...] = (
@@ -576,6 +628,7 @@ def api_baseline_system_prompt(hints: bool = True) -> str:
         _BASELINE_KIT_SECTION,
         _BASELINE_CONVENTIONS_SECTION,
         _BASELINE_LOOPS_SECTION,
+        _BASELINE_OPTIONAL_SECTION,
     ]
     if hints:
         sections.append(_advice_section(BASELINE_ADVICE))

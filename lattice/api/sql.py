@@ -409,10 +409,10 @@ class _Builder:
             case "sort":
                 by: tuple[str, ...] = tuple(p["by"])
                 desc = p["desc"]
-                flags = [desc] * len(by) if isinstance(desc, bool) else list(desc)
+                flags = list(desc) if isinstance(desc, tuple | list) else [desc] * len(by)
+                nulls = p.get("nulls", "last")
                 keys = ", ".join(
-                    f"({q(c)} IS NULL), {q(c)}{' DESC' if d else ''}"
-                    for c, d in zip(by, flags, strict=True)
+                    self._sort_key(q(c), d, nulls) for c, d in zip(by, flags, strict=True)
                 )
                 listed = ", ".join(q(c) for c in cols)
                 rownum = self.d.row_number(f"{keys}, {ORD}")
@@ -429,6 +429,29 @@ class _Builder:
                 return f"SELECT {keep} FROM {ins[0]} ORDER BY {ORD} LIMIT {limit} OFFSET {offset}"
             case _:
                 raise LatticeInternalError(f"no SQL for op '{rel.op}'")
+
+    def _sort_key(self, c: str, desc: bool | ast.expr, nulls: str) -> str:
+        """The ORDER BY keys of one sort column: a null flag, then the value. A
+        direction computed per request (`desc` an expression) orders by two keys, one
+        for each direction, of which only the chosen one is not null (a null direction
+        is ascending)."""
+        if isinstance(desc, bool):
+            first = nulls == "first" or (nulls == "smallest" and not desc)
+            flag = f"({c} IS NOT NULL)" if first else f"({c} IS NULL)"
+            return f"{flag}, {c}{' DESC' if desc else ''}"
+        d = self.expr(desc)
+        match nulls:
+            case "last":
+                flag = f"({c} IS NULL)"
+            case "first":
+                flag = f"({c} IS NOT NULL)"
+            case "smallest":
+                flag = f"(CASE WHEN {d} THEN ({c} IS NULL) ELSE ({c} IS NOT NULL) END)"
+            case _:
+                raise LatticeInternalError(f"unknown sort nulls= {nulls!r}")
+        return (
+            f"{flag}, (CASE WHEN {d} THEN {c} END) DESC, (CASE WHEN {d} THEN NULL ELSE {c} END)"
+        )
 
     def _join(self, rel: Rel, left: str, right: str) -> str:
         q = self.q
@@ -624,8 +647,12 @@ class _Builder:
         match node:
             case ast.Constant(value=v) if isinstance(v, bool | int | float | str):
                 return self.lit(v)
+            case ast.Constant(value=None):  # update(t, c=None) / insert(T, c=None)
+                return "NULL"
             case ParamRef(name=name):
                 return self.param(name)
+            case ast.Call(func=ast.Name(id="sent"), args=[ParamRef(name=name)]):
+                return self.sent_ref(name)
             case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
                 return self.q(name)
             case ast.Call(func=ast.Name(id="when"), args=[cond], keywords=kws):
@@ -681,11 +708,21 @@ class _Builder:
     def _fn(self, name: str, node: ast.Call) -> str:
         if name == "now" and not node.args and not node.keywords:
             return self.now_ref()
-        if len(node.args) != 1:
-            raise LatticeInternalError(f"fn.{name} takes one argument")
+        if len(node.args) != (2 if name == "datetime_diff" else 1):
+            raise LatticeInternalError(f"fn.{name} has the wrong number of arguments")
         x = self.expr(node.args[0])
-        # keyword arguments compile after the argument (bind numbering), each once
-        kw = {str(k.arg): self.expr(k.value) for k in node.keywords}
+        keywords = list(node.keywords)
+        if name == "contains":  # ignore_case= is a literal: it picks the function
+            flag = next((k for k in keywords if k.arg == "ignore_case"), None)
+            if flag is not None:
+                keywords.remove(flag)
+                if literal_value(flag.value) is True:
+                    name = "icontains"
+        # keyword arguments compile after the argument (bind numbering), each once;
+        # datetime_diff's second argument (the start) is passed as "start"
+        kw = {str(k.arg): self.expr(k.value) for k in keywords}
+        if name == "datetime_diff":
+            kw["start"] = self.expr(node.args[1])
         out = self.d.function(name, x, kw)
         if out is None:
             raise LatticeInternalError(f"fn.{name} has no SQL translation")

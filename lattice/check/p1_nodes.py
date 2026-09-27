@@ -473,10 +473,10 @@ def _check_endpoint_signature(fn: ast.FunctionDef, ctx: CheckContext) -> None:
                 f"parameter '{USER_PARAM}' is reserved for the caller",
                 f"write {USER_PARAM}: {CURRENT_USER}, or rename this parameter",
             )
-        if i >= first_default:
-            problem = default_problem(a.arg, pt, args.defaults[i - first_default])
-            if problem is not None:
-                ctx.error("L601", args.defaults[i - first_default], problem[0], problem[1])
+        default = args.defaults[i - first_default] if i >= first_default else None
+        problem = default_problem(a.arg, pt, default)
+        if problem is not None:
+            ctx.error("L601", default if default is not None else a, problem[0], problem[1])
     ret = parse_returns(fn.returns)
     if not isinstance(ret[1], tuple):
         ctx.error("L601", fn.returns if fn.returns is not None else fn, ret[0], ret[1])

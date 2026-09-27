@@ -23,6 +23,7 @@ from lattice.catalog import (
     FOR_EACH_MAX_ROWS,
     PAGE_LIMIT_MAX,
     PUBLIC_ROLE,
+    SENT,
     TABLE_OPS,
     UNIQUE_OR,
     UNSET_NAME,
@@ -105,6 +106,7 @@ class _Api:
 
     def run(self) -> dict[str, EndpointInfo]:
         self._unset_placement()
+        self._sent_in_steps()
         infos: dict[str, EndpointInfo] = {}
         routes: set[tuple[str, str]] = set()
         for fn in endpoints_of(self.module):
@@ -141,6 +143,20 @@ class _Api:
                     "declare an optional parameter, e.g. title: Str(max_len=100) = UNSET, "
                     "and pass it to update(t, title=title)",
                 )
+
+    def _sent_in_steps(self) -> None:
+        """L404: sent(p) tests an endpoint's own optional parameter, so it appears only
+        in an endpoint body."""
+        for step in self.steps.values():
+            for node in ast.walk(step):
+                if _call_name(node) == SENT:
+                    self.ctx.error(
+                        "L404",
+                        node,
+                        "sent() is only allowed in an endpoint body",
+                        "test the endpoint's optional parameter there, e.g. "
+                        "require(t, ~sent(title) | ..., else_=Forbidden(...))",
+                    )
 
     def check_subset(self, fn: ast.FunctionDef, *, endpoint: bool) -> None:
         """L841: table ops and expressions outside what the API profile compiles to
@@ -371,6 +387,13 @@ class _Endpoint:
                     f"path parameter '{n}' is always sent; it cannot default to UNSET",
                     "remove '= UNSET'",
                 )
+            elif spec.nullable:
+                self.ctx.error(
+                    "L404",
+                    self._arg(n),
+                    f"path parameter '{n}' is always sent; it cannot be None",
+                    "remove '| None = None'",
+                )
 
     # ---- owned() placement (L404), checks before owned() (L802) ------------------------
 
@@ -467,15 +490,50 @@ class _Endpoint:
 
     # ---- UNSET: optional parameters ---------------------------------------------------
 
+    def _sent_calls(self) -> set[int]:
+        """L404: sent(p) names an optional (`= UNSET`) parameter of this endpoint.
+        Returns the ids of the argument names of the valid calls."""
+        ok: set[int] = set()
+        for node in ast.walk(self.fn):
+            if _call_name(node) != SENT:
+                continue
+            assert isinstance(node, ast.Call)
+            arg = node.args[0] if len(node.args) == 1 and not node.keywords else None
+            if not isinstance(arg, ast.Name):
+                continue  # P4 reported it
+            spec = self.params.get(arg.id)
+            if spec is not None and spec.optional:
+                ok.add(id(arg))
+                continue
+            if spec is not None and spec.nullable:
+                hint = (
+                    f"'{arg.id}' is None when not given: test it with is_null({arg.id})"
+                )
+            elif spec is not None and spec.scalar is not None:
+                hint = (
+                    f"'{arg.id}' is required, so it is always sent; declare it "
+                    f"{arg.id}: ... = UNSET to make it optional"
+                )
+            else:
+                hint = "name a parameter declared with the default UNSET"
+            self.ctx.error(
+                "L404",
+                node,
+                f"sent({arg.id}) is only for an optional parameter (default UNSET)",
+                hint,
+            )
+        return ok
+
     def _optional_params(self) -> None:
         """L404: an optional parameter (default UNSET) is used only directly as an
-        update() value, or an insert() value of a nullable column: anywhere else (inside
-        an expression, a filter, a page bound, a step argument, ...) it has no value
-        when it is not sent."""
+        update() value, or an insert() value of a nullable column, or as the argument
+        of sent(): anywhere else (inside an expression, a filter, a page bound, a step
+        argument, ...) it has no value when it is not sent."""
+        sent_args = self._sent_calls()
         optional = {n for n, spec in self.params.items() if spec.optional}
         if not optional:
             return
-        allowed: set[int] = set()
+        allowed: set[int] = set(sent_args)
         reported: set[str] = set()
         for call in self._calls("update"):
             for kw in call.keywords:
@@ -511,7 +569,7 @@ class _Endpoint:
                     "L404",
                     node,
                     f"'{node.id}' is optional (default UNSET): use it only directly as an "
-                    "update() value, e.g. update(t, col=" + node.id + ")",
+                    "update() value, e.g. update(t, col=" + node.id + f"), or test sent({node.id})",
                     f"to compute with it or filter by it, make '{node.id}' required or give "
                     "it a default value",
                 )

@@ -18,12 +18,15 @@ from lattice.catalog import (
     API_ONLY_FNS,
     DATE_ADD_DAYS_MAX,
     DATE_DIFF_UNITS,
+    DATETIME_ADD_UNITS,
+    DATETIME_DIFF_UNITS,
     FN_ALIASES,
     FN_SIGS,
     NATIVE_NS,
     ORDER_AGGS,
     OWNER_IS,
     ROUND_DIGITS_MAX,
+    SENT,
     UNSET_NAME,
     WIN_CUMULATIVE,
     WIN_FUNCS,
@@ -263,6 +266,8 @@ class ExprTyper:
                 return self._coalesce(node)
             case "is_null":
                 return self._is_null(node)
+            case _ if name == SENT and self.api:
+                return self._sent(node)
             case _ if span_of(node.func) in self.reported:
                 return UNKNOWN
             case _ if name == OWNER_IS and self.api:
@@ -367,6 +372,23 @@ class ExprTyper:
             return UNKNOWN
         return _wrap(Scalar.BOOL, known)
 
+    def _sent(self, node: ast.Call) -> ExprT:
+        """sent(p): whether the request included the optional parameter p -- a Bool
+        that is the same on every row (P6 checks that p is an `= UNSET` parameter)."""
+        match node:
+            case ast.Call(args=[ast.Name(id=name) as arg], keywords=[]) if name in self.scalars:
+                self.ctx.set_type(arg, LitT(self.scalars[name]))
+                return LitT(Scalar.BOOL)
+            case ast.Call(args=[ast.Name()], keywords=[]):
+                return UNKNOWN  # not a parameter in scope: P6 reports it (L404)
+            case _:
+                return self._err(
+                    "L404",
+                    node,
+                    "sent() takes one parameter name",
+                    "e.g. sent(title) for a parameter title: Str(max_len=100) = UNSET",
+                )
+
     def _fn(self, node: ast.Call, name: str) -> ExprT:
         sig = FN_SIGS.get(name)
         if name in API_ONLY_FNS and not self.api:
@@ -397,7 +419,7 @@ class ExprTyper:
                     f"fn.{name} expects {_scalars(allowed)} for argument {i}, got {t.scalar.value}",
                     "convert with fn.to_int/fn.to_float/fn.to_str or fn.to_date",
                 )
-        ok = self._fn_keywords(node, name, sig.kwargs) and ok
+        ok = self._fn_keywords(node, name, sig.kwargs, sig.optional) and ok
         known = _known(args)
         if known is None or not ok:
             return UNKNOWN
@@ -456,10 +478,26 @@ class ExprTyper:
             return UNKNOWN
         return _wrap(sig.result, known)
 
-    def _fn_keywords(self, node: ast.Call, name: str, expected: Mapping[str, Scalar]) -> bool:
+    def _fn_keywords(
+        self,
+        node: ast.Call,
+        name: str,
+        required: Mapping[str, Scalar],
+        optional: Mapping[str, Scalar] | None = None,
+    ) -> bool:
         given = {kw.arg: kw for kw in node.keywords if kw.arg is not None}
+        expected = {**required, **(optional or {})}
         ok = True
-        for missing in sorted(set(expected) - set(given)):
+        if name == "datetime_add" and not given:
+            ok = False
+            units = ", ".join(f"{u}=" for u in DATETIME_ADD_UNITS)
+            self.ctx.error(
+                "L404",
+                node,
+                f"fn.datetime_add needs at least one of {units}",
+                "e.g. fn.datetime_add(fn.now(), hours=-24)",
+            )
+        for missing in sorted(set(required) - set(given)):
             ok = False
             self.ctx.error(
                 "L404",
@@ -528,6 +566,20 @@ class ExprTyper:
             )
             return False
         lit = self.literal_of(value)
+        if fn_name == "contains" and arg == "ignore_case" and not isinstance(lit, bool):
+            self.ctx.error(
+                "L404",
+                value,
+                "fn.contains ignore_case= must be True or False (a literal)",
+                "e.g. ignore_case=True",
+            )
+            return False
+        if fn_name == "datetime_diff" and arg == "unit" and lit not in DATETIME_DIFF_UNITS:
+            units = ", ".join(f'"{u}"' for u in DATETIME_DIFF_UNITS)
+            self.ctx.error(
+                "L404", value, "unsupported datetime_diff unit", f"use unit= one of {units}"
+            )
+            return False
         if fn_name == "date_diff" and arg == "unit":
             if lit not in DATE_DIFF_UNITS:
                 units = ", ".join(f'"{u}"' for u in sorted(DATE_DIFF_UNITS))

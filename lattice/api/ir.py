@@ -274,14 +274,6 @@ def _join_keys(node: ast.expr) -> dict[str, tuple[str, ...]]:
     return out
 
 
-def _bool(node: ast.expr) -> bool:
-    match node:
-        case ast.Constant(value=bool(v)):
-            return v
-        case _:
-            raise LatticeInternalError("sort desc= is not a bool literal")
-
-
 def _int(node: ast.expr) -> int:
     v = literal_value(node)
     if isinstance(v, int) and not isinstance(v, bool):
@@ -649,16 +641,26 @@ class _Endpoint:
                 how = _str(kws["how"]) if "how" in kws else "inner"
                 return {**_join_keys(kws["on"]), "how": how}
             case "sort":
+                # a direction is a bool, or a Bool expression over parameters and
+                # literals (the request's direction, computed in SQL)
+                def direction(node: ast.expr) -> bool | ast.expr:
+                    value = self._expr(node, subst)
+                    lit = literal_value(value)
+                    return lit if isinstance(lit, bool) else value
+
                 desc = kws.get("desc")
-                flag: bool | tuple[bool, ...]
+                flag: bool | ast.expr | tuple[bool | ast.expr, ...]
                 match desc:
                     case None:
                         flag = False
                     case ast.List(elts=elts) | ast.Tuple(elts=elts):
-                        flag = tuple(_bool(e) for e in elts)
+                        flag = tuple(direction(e) for e in elts)
                     case _:
-                        flag = _bool(desc)
-                return {"by": _strs(kws["by"]), "desc": flag}
+                        flag = direction(desc)
+                out = {"by": _strs(kws["by"]), "desc": flag}
+                if "nulls" in kws:  # absent: "last"
+                    out["nulls"] = _str(kws["nulls"])
+                return out
             case "limit":
                 return {"n": _int(self._expr(kws["n"], subst))}
             case "window":

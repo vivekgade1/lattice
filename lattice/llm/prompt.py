@@ -143,9 +143,9 @@ def _render_fn_sig(name: str) -> str:
     sig = FN_SIGS[name]
     n_params = len(sig.params)
     params = ["x"] if n_params == 1 else [f"x{i + 1}" for i in range(n_params)]
-    if name == "date_diff":
+    if name in ("date_diff", "datetime_diff"):
         params = ["end", "start"]
-    args = list(params) + [f"{k}=" for k in sig.kwargs]
+    args = list(params) + [f"{k}=" for k in sig.kwargs] + [f"{k}=" for k in sig.optional]
     result = sig.result.value if sig.result is not None else "type of x"
     return f"`fn.{name}({', '.join(args)})` -> {result}"
 

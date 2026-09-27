@@ -36,6 +36,7 @@ from lattice.catalog import (
     ORDER_AGGS,
     OWNER_IS,
     PUBLIC_ROLE,
+    SORT_NULLS,
     TABLE_OPS,
     TRAVERSE_DEPTH,
     TRAVERSE_DIRECTIONS,
@@ -534,7 +535,7 @@ class _Types:
             case "join":
                 return self._join(call, tables[0], tables[1], kws)
             case "sort":
-                return self._sort(tables[0], kws)
+                return self._sort(tables[0], kws, scope)
             case "limit":
                 return self._limit(tables[0], kws["n"])
             case "window":
@@ -978,12 +979,12 @@ class _Types:
             left.nullable | right_null,
         )
 
-    def _sort(self, t: TableT, kws: dict[str, ast.expr]) -> TableOrUnknown:
+    def _sort(self, t: TableT, kws: dict[str, ast.expr], scope: _Scope) -> TableOrUnknown:
         by = self._str_list(kws["by"], "by")
         if by is not None:
             self._require_columns(by, t.schema, kws["by"])
         desc = kws.get("desc")
-        if desc is not None and not _valid_sort_desc(desc, by):
+        if desc is not None and not _valid_sort_desc(desc, by, literal_only=self.api is None):
             self.ctx.error(
                 "L404",
                 desc,
@@ -991,7 +992,44 @@ class _Types:
                 'e.g. desc=True, or by=["revenue", "id"], desc=[True, False] for revenue '
                 "descending with ties by id ascending",
             )
+        elif desc is not None and self.api is not None:
+            entries = desc.elts if isinstance(desc, ast.List | ast.Tuple) else [desc]
+            for entry in entries:
+                self._sort_direction(entry, t, scope)
+        nulls = kws.get("nulls")
+        if nulls is not None and literal_value(nulls) not in SORT_NULLS:
+            listed = ", ".join(f'"{n}"' for n in SORT_NULLS)
+            self.ctx.error(
+                "L404",
+                nulls,
+                f"sort nulls= must be one of {listed} (a literal)",
+                'e.g. nulls="smallest": nulls first ascending, last descending',
+            )
         return t
+
+    def _sort_direction(self, entry: ast.expr, t: TableT, scope: _Scope) -> None:
+        """One desc= entry of an API sort: a Bool literal, or a Bool computed from
+        parameters and literals only (one direction for the whole request)."""
+        if isinstance(entry, ast.Constant) and isinstance(entry.value, bool):
+            return
+        match self._typer(t.schema, scope).type_of(entry):
+            case LitT(scalar=Scalar.BOOL) | UnknownT():
+                pass
+            case ColT():
+                self.ctx.error(
+                    "L404",
+                    entry,
+                    "a sort direction applies to the whole request: compute it from "
+                    "parameters and literals, with no columns",
+                    'e.g. desc=[order == "newest"] with order: OneOf("newest", "oldest")',
+                )
+            case LitT(scalar=s):
+                self.ctx.error(
+                    "L404",
+                    entry,
+                    f"a sort direction must be Bool, got {s.value}",
+                    'compare it, e.g. desc=[order == "desc"]',
+                )
 
     def _limit(self, t: TableT, n: ast.expr) -> TableOrUnknown:
         value = n.value if isinstance(n, ast.Constant) else None
@@ -1602,7 +1640,9 @@ class _Types:
                 scope.env[spec.name] = caller if caller is not None else UNKNOWN
             else:
                 scope.scalars[spec.name] = spec.scalar
-        public = isinstance(decl.auth, ast.Name) and decl.auth.id == PUBLIC_ROLE
+                if spec.nullable:  # `p: T | None = None` is None when not given
+                    scope.nullconsts[spec.name] = True
+        public =isinstance(decl.auth, ast.Name) and decl.auth.id == PUBLIC_ROLE
         if not public and all(p.name != USER_PARAM for p in params):
             # a missing `user` parameter is P6's L801; type its uses anyway
             scope.env[USER_PARAM] = caller if caller is not None else UNKNOWN
@@ -1868,6 +1908,8 @@ class _Types:
                 continue
             if not self._require_columns([kw.arg], schema, kw):
                 continue
+            if self._null_write(kw, schema, name):
+                continue
             vt = typer.type_of(kw.value)
             want = schema.get(kw.arg)
             if not isinstance(vt, UnknownT) and want is not None:
@@ -1973,11 +2015,47 @@ class _Types:
                     "keys cannot change; insert a new row instead",
                 )
                 continue
+            if schema is not None and self._null_write(kw, schema, t.source or ""):
+                continue
             vt = typer.type_of(kw.value)
             want = schema.get(kw.arg) if schema is not None else None
             if not isinstance(vt, UnknownT) and want is not None:
                 self._compatible(kw.value, vt.scalar, want, kw.arg)
         return t
+
+    def _null_write(self, kw: ast.keyword, schema: Schema, table: str) -> bool:
+        """None as an insert()/update() value: a null for a nullable column, L410 for a
+        required one (True: the value was None and is handled). Also L410: a `| None`
+        parameter written directly to a required column."""
+        column, value = kw.arg or "", kw.value
+        if isinstance(value, ast.Constant) and value.value is None:
+            want = schema.get(column)
+            if column not in schema.nullable:
+                self.ctx.error(
+                    "L410",
+                    kw,
+                    f"column '{column}' of {table} is not nullable; it cannot be set to None",
+                    "write a value (only nullable columns take None)",
+                )
+            elif want is not None:
+                self.ctx.set_type(value, LitT(want))
+            return True
+        spec = self.param_specs.get(value.id) if isinstance(value, ast.Name) else None
+        if (
+            self.in_endpoint
+            and spec is not None
+            and spec.nullable
+            and column not in schema.nullable
+        ):
+            self.ctx.error(
+                "L410",
+                kw,
+                f"column '{column}' of {table} is not nullable, but parameter "
+                f"'{spec.name}' may be None (declared `| None`)",
+                f"make '{spec.name}' required or give it a default value, or write "
+                f"coalesce({spec.name}, <value>)",
+            )
+        return False
 
     def _api_meta(self, call: ast.Call, op: str, inputs: list[TableT], out: TableT) -> TableT:
         """Carry the API metadata (owner, ownership, private columns, source, page)
@@ -2219,11 +2297,15 @@ def run(module: ast.Module, ctx: CheckContext) -> dict[str, StepT]:
     return _Types(module, ctx).run()
 
 
-def _valid_sort_desc(desc: ast.expr, by: list[str] | None) -> bool:
-    """desc= is a bool literal, or a list/tuple of bool literals, one per by= column."""
+def _valid_sort_desc(desc: ast.expr, by: list[str] | None, *, literal_only: bool = True) -> bool:
+    """desc= is a bool literal, or a list/tuple of bool literals, one per by= column.
+    Without `literal_only` (API programs) an entry may also be an expression: a
+    direction computed per request, typed by `_sort_direction`."""
 
     def is_bool(n: ast.expr) -> bool:
-        return isinstance(n, ast.Constant) and isinstance(n.value, bool)
+        if isinstance(n, ast.Constant) and isinstance(n.value, bool):
+            return True
+        return not literal_only and not isinstance(n, ast.Constant | ast.List | ast.Tuple)
 
     if is_bool(desc):
         return True
