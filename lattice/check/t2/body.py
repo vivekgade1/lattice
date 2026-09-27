@@ -41,6 +41,7 @@ from lattice.catalog import (
 )
 from lattice.check.astutil import literal_value
 from lattice.check.context import CheckContext
+from lattice.check.loop_hints import t1_shape_warning
 from lattice.check.t2 import types as T
 from lattice.check.t2.model import ProcSig, RecordDef
 from lattice.check.t2.types import UNK, T2Type
@@ -257,6 +258,9 @@ class BodyChecker:
     def err(self, code: str, node: ast.AST, message: str, hint: str | None = None) -> T2Type:
         self.ctx.error(code, node, message, hint)
         return UNK
+
+    def warn(self, code: str, node: ast.AST, message: str, hint: str | None = None) -> None:
+        self.ctx.warn(code, node, message, hint)
 
     def _once(self, key: str, code: str) -> bool:
         if (key, code) in self.reported:
@@ -593,7 +597,16 @@ class BodyChecker:
         elif ct is not UNK and not isinstance(ct, T.ListT):
             self.err("L913", tgt, f"items of a {ct} cannot be assigned")
 
+    def _t1_shape_warn(self, s: ast.For | ast.While) -> None:
+        """spec 2026-09-27 lattice-t2-design §5: a loop shaped like window/traverse/
+        for_each gets a warning naming the T1 construct (L924) -- not an error, since
+        T2 permits the loop."""
+        hint = t1_shape_warning(s)
+        if hint is not None:
+            self.warn("L924", s, "this loop matches a T1 construct", hint)
+
     def _for(self, s: ast.For, env: Env) -> Env | None:
+        self._t1_shape_warn(s)
         it = self.expr(s.iter, env)
         el = self._elem(it, s.iter)
         assigned = assigned_names([*s.body, s.target])
@@ -621,6 +634,7 @@ class BodyChecker:
         return el
 
     def _while(self, s: ast.While, env: Env) -> Env | None:
+        self._t1_shape_warn(s)
         start = self.widen(env, assigned_names(s.body))
         self.expr(s.test, start)
         then_env, else_env = self.narrow(s.test, start)

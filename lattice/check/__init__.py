@@ -21,6 +21,8 @@ from lattice.check.api_info import EndpointInfo
 from lattice.check.astutil import MAX_DEPTH
 from lattice.check.context import CheckContext
 from lattice.check.t2 import T2Program
+from lattice.check.tiers import compute_tiers
+from lattice.check.tiers import tier_summary as _tier_summary
 from lattice.diagnostics import Diagnostic, has_errors, sort_key
 from lattice.parse import parse, too_deep
 from lattice.profile import Profile
@@ -39,6 +41,13 @@ class CheckedProgram:
     # API profile: the @procedure / @record part (None when the program has none).
     # `module` then holds only the T0 statements; T2Program.nodes holds the rest.
     t2: T2Program | None = None
+    # Every endpoint's and procedure's tier (spec 2026-09-27 lattice-t2-design §5):
+    # name -> "T0" | "T1" | "T2" | "T3" (lattice.check.tiers).
+    tiers: Mapping[str, str] = field(default_factory=dict)
+
+    def tier_summary(self) -> str:
+        """A one-line tier mix for reports, e.g. `"T0: 3, T1: 1, T2: 1"`."""
+        return _tier_summary(self.tiers)
 
 
 @dataclass(frozen=True)
@@ -113,6 +122,13 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
     if has_errors(diags):
         return CheckResult(None, diags)
     program = CheckedProgram(
-        module, parsed.source, dict(ctx.types), dict(steps), profile, endpoints, t2_program
+        module,
+        parsed.source,
+        dict(ctx.types),
+        dict(steps),
+        profile,
+        endpoints,
+        t2_program,
+        compute_tiers(endpoints, t2_program),
     )
     return CheckResult(program, diags)

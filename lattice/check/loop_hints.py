@@ -1,4 +1,5 @@
-"""Rejection hints for loops (spec 2026-09-27 lattice-loops §5).
+"""Rejection hints for loops (spec 2026-09-27 lattice-loops §5; T2 fallback and
+T2-body warnings: spec 2026-09-27 lattice-t2-design §5).
 
 A `for`/`while` statement stays L127 and a comprehension L121; only the hint changes:
 it names the Lattice construct for the loop's shape, read off the loop's identifiers
@@ -7,10 +8,18 @@ and statements (a heuristic -- the code, not the hint, is the contract):
 * repeat until nothing changes (changed/stable/tolerance, or a pass whose
   result is compared with the previous one)                                -> iterate
 * a parent/child walk (`node = node.parent`, parent/children/visited, ...) -> traverse
-* a state machine (branches on carried state updating 3+ pieces of it)     -> a native
+* a state machine (branches on carried state updating 3+ pieces of it)     -> a @procedure
+  (T2) in an API program, a native function in a tabular one
 * an action per row (a call statement, no assignment)                      -> for_each
 * a value carried across rows (running/prev/rank/balance, `+=`, ...)       -> window
-* anything else                                                            -> a native
+* anything else                                                            -> a @procedure
+  (T2) in an API program, a native function in a tabular one
+
+`t1_shape_warning` is the reverse direction: inside a checked `@procedure` body (T2
+permits the loop), a shape that matches `window`/`traverse`/`for_each` gets a warning
+naming the stronger-guaranteed T1 construct, not a rejection. A state machine or
+anything else has no T0/T1 equivalent (that is why it stays a procedure), so it is
+never flagged.
 """
 
 from __future__ import annotations
@@ -72,7 +81,7 @@ _ITERATE = (
 )
 _ITERATE_API = (
     "a repeat-until-stable loop: iterate(...) exists only in tabular programs; in an API "
-    "program use traverse(...) for a tree walk, otherwise a native function"
+    "program use traverse(...) for a tree walk, otherwise write a @procedure (T2)"
 )
 _FOR_EACH = (
     'an action per row: call an effect native with for_each(t, native.<name>, col("x"), '
@@ -86,6 +95,18 @@ _NATIVE = (
     "other loop state (several accumulators, a state machine, early exit): keep that "
     "logic in a native function; per-row conditions are where/derive/when"
 )
+_PROCEDURE = (
+    "other loop state (several accumulators, a state machine, early exit): write it as "
+    "a @procedure (T2) -- ordinary Python in a checked, fuel-bounded subset -- and call "
+    "it from derive/where (scalar) or call(proc, rows=t, ...) (whole-value); per-row "
+    "conditions are where/derive/when"
+)
+
+
+def _general_fallback(api: bool) -> str:
+    """The hint for a loop shape no T1 construct fits: a @procedure (T2) in an API
+    program (T2 exists only there), otherwise a native function."""
+    return _PROCEDURE if api else _NATIVE
 
 
 def _words(node: ast.AST) -> set[str]:
@@ -227,13 +248,52 @@ def loop_hint(loop: ast.For | ast.AsyncFor | ast.While, api: bool) -> str:
     if words & _TREE_WORDS or (is_while and _walks_links(loop)):
         return _TRAVERSE
     if _state_machine(loop):
-        return _NATIVE
+        return _general_fallback(api)
     if _pure_action_loop(loop.body):
         return _FOR_EACH if api else _FOR_EACH_TABULAR
     has_aug = any(isinstance(sub, ast.AugAssign) for sub in ast.walk(loop))
     if words & _WINDOW_WORDS or has_aug:
         return _WINDOW
-    return _NATIVE
+    return _general_fallback(api)
+
+
+# ---- T2 body warnings (spec 2026-09-27 lattice-t2-design §5) -----------------------------
+
+_WINDOW_T1 = (
+    "this loop's shape matches window (T1): a value carried across rows (running "
+    "total, previous row, rank) -- window(t, by=[...], order=[...], "
+    'name=win.cum_sum(col("x"))), or win.lag/win.rank/win.mean, gives the same result '
+    "with T1's guarantees"
+)
+_TRAVERSE_T1 = (
+    "this loop's shape matches traverse (T1): a parent/child walk -- "
+    'traverse(edges, start, parent="parent_id", child="id", max_depth=N) -- is '
+    "cycle-safe and gives the same result with T1's guarantees"
+)
+_FOR_EACH_T1 = (
+    "this loop's shape matches for_each (T1): an action per row -- "
+    "for_each(t, native.<name>, ...) on a bounded table -- runs it after commit with "
+    "T1's guarantees, without a @procedure"
+)
+
+
+def t1_shape_warning(loop: ast.For | ast.While) -> str | None:
+    """Inside a checked `@procedure` body, the T1 hint for a loop shaped like
+    `window`/`traverse`/`for_each`, or None when no T1 construct fits (a state
+    machine or anything else -- the reason the loop is a procedure at all, per
+    l12_login_state_machine). A warning, never an error: T2 does not reject the loop."""
+    words = _words(loop)
+    is_while = isinstance(loop, ast.While)
+    if words & _TREE_WORDS or (is_while and _walks_links(loop)):
+        return _TRAVERSE_T1
+    if _state_machine(loop):
+        return None
+    if _pure_action_loop(loop.body):
+        return _FOR_EACH_T1
+    has_aug = any(isinstance(sub, ast.AugAssign) for sub in ast.walk(loop))
+    if words & _WINDOW_WORDS or has_aug:
+        return _WINDOW_T1
+    return None
 
 
 def comprehension_hint(

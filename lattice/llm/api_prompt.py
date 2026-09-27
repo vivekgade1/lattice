@@ -242,6 +242,42 @@ column answers that 409.
 - A top-level list of column names, e.g. `{API_LIST_EXAMPLE[0]}`, can be reused as \
 `{API_LIST_EXAMPLE[1]}`."""
 
+# @procedure (T2, spec 2026-09-27 lattice-t2-design §2, §5, §7.7): one concise section --
+# when to use it, the subset, types, fuel, scalar vs whole-value calls, effects via
+# for_each, "prefer T0/T1". The baseline guide carries the same information for ordinary
+# Python (_BASELINE_T2_SECTION).
+API_PROCEDURE_SCALAR_EXAMPLE = "derive(mine, stale=is_stale(row(), user, fn.now()))"
+API_PROCEDURE_WHOLE_EXAMPLE = "lines = call(digest, rows=bounded)"
+
+_LATTICE_T2_SECTION = f"""## Procedures (`@procedure`, T2)
+
+Prefer plain ops (T0) or `window`/`traverse`/`iterate`/`for_each` (T1) whenever the \
+shape fits one of them. When it does not -- the logic is naturally step-by-step, with \
+several branches carrying state together, such as a small state machine -- write a \
+`@procedure`: ordinary Python in a checked, fuel-bounded subset, not a table op. A \
+procedure's types, effects and parameter immutability are checked; its termination is \
+not (fuel is).
+
+- Allowed: assignment, augmented assignment, `if`/`elif`/`else`, `for` over a finite \
+value (a list, dict, row set or `range`), `while`, `break`/`continue`/`return`, \
+comprehensions, f-strings, `try`/`except` of declared errors, `@record` value types, \
+recursion, and a small stdlib allowlist (`math`, `datetime`, `re`, `itertools`, ...). \
+Not allowed: unrestricted I/O, `eval`/`exec`, reflection, global state, `async`, or \
+mutating a value passed in (inputs are immutable; return a new value).
+- `@procedure` (pure) or `@procedure(effects=["mail"])` (a profile capability); \
+parameters and the return are annotated: `Int Float Str Bool Date DateTime Duration \
+Uuid`, `T | None`, `list[T]`, `dict[K, V]`, `Row[Table]` (no private columns unless \
+the endpoint is Admin), `Caller` (`caller.id`, `caller.is_admin`, `caller.role`), or a \
+`@record` type.
+- Fuel: every loop iteration, call and comprehension element costs one unit of the \
+request's fuel budget; running out answers 500, never a partial result.
+- Called scalar, row by row, as the whole value of a `derive`/`where`/`require` \
+expression: `{API_PROCEDURE_SCALAR_EXAMPLE}`.
+- Called whole-value, over a bounded table (`one`/`insert`/`update`, or `page`/`limit` \
+<= 100): `{API_PROCEDURE_WHOLE_EXAMPLE}`.
+- An effectful procedure runs only from `for_each(t, proc, ...)`, once per row after \
+commit, exactly like an effect native."""
+
 # Optional values, text search, time and ordering (the edit-slice gap features): one
 # short bullet per feature, each with an inline example; the baseline guide carries the
 # same information in SQL/FastAPI terms (_BASELINE_OPTIONAL_SECTION).
@@ -395,6 +431,7 @@ def api_lattice_system_prompt(hints: bool = True) -> str:
         _lattice_ops_section(),
         _lattice_expressions_section(),
         _LATTICE_LOOPS_SECTION,
+        _LATTICE_T2_SECTION,
         _LATTICE_OPTIONAL_SECTION,
         _LATTICE_RULES_SECTION,
     ]
@@ -500,6 +537,34 @@ email pattern such as `r"[^@\\s]+@[^@\\s]+\\.[A-Za-z]{2,}"`; a bad value answers
 JSON error body.
 - A module-level list of column names, e.g. `PUBLIC = ["id", "email", "name"]`, can be \
 reused in every `SELECT` (`", ".join(PUBLIC)`)."""
+
+# The same information as _LATTICE_T2_SECTION, for ordinary Python: no separate
+# construct exists (the script is already unrestricted Python), so the equal-information
+# note is what to prefer instead, and how to keep step-by-step logic bounded.
+_BASELINE_T2_SECTION = """## Step-by-step logic
+
+Prefer a single SQL statement (a JOIN/GROUP BY, or a window function -- see \
+"Row-by-row work" above) whenever the shape fits one. When it does not -- the logic \
+is naturally step-by-step, with several branches carrying state together, such as a \
+small state machine that reads its own previous state at every step -- write it as a \
+plain Python function and call it from the route; there is no separate construct for \
+it, and beyond ordinary type hints and your own tests, nothing checks it.
+
+- A helper function used from more than one route is defined once in the script, \
+with its own type hints for every parameter and its return, and takes plain values or \
+`dict(row)` rows, never a live `sqlite3.Connection` (read the rows it needs with one \
+query first, then pass them in).
+- Nothing bounds a loop automatically, and a request that runs too long is killed \
+outright with no response at all: read at most a fixed number of rows (e.g. `LIMIT \
+100`, exactly as for a per-row side effect) before working row by row, and give any \
+`while` loop a simple, obviously terminating exit condition, checked at the top of \
+each pass.
+- A helper never mutates the dict (or row) a caller passed it in place; build and \
+return a new dict (or a small dataclass) with the changed fields instead, so every \
+caller can still rely on its own copy afterward.
+- An effectful helper (e.g. send an email) still runs only after `db.commit()`, once \
+per row, in order, exactly as described in "Row-by-row work" above -- never inside \
+the step-by-step function itself, before the transaction is known to have succeeded."""
 
 # The same information as _LATTICE_OPTIONAL_SECTION, for SQL and FastAPI.
 _BASELINE_OPTIONAL_SECTION = """## Optional values, search, time and ordering
@@ -654,6 +719,7 @@ def api_baseline_system_prompt(hints: bool = True) -> str:
         _BASELINE_KIT_SECTION,
         _BASELINE_CONVENTIONS_SECTION,
         _BASELINE_LOOPS_SECTION,
+        _BASELINE_T2_SECTION,
         _BASELINE_OPTIONAL_SECTION,
     ]
     if hints:

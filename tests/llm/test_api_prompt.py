@@ -642,6 +642,103 @@ def signup(
     assert result.ok and not result.diagnostics, [d.render() for d in result.diagnostics]
 
 
+# --------------------------------------------- procedures (@procedure, T2) --
+
+
+def test_both_arms_document_procedures_and_step_by_step_logic() -> None:
+    """T2 (spec 2026-09-27 lattice-t2-design §2, §5, §7.7): both arms get one concise
+    section on step-by-step logic, of equal substance."""
+    from lattice.llm.api_prompt import _BASELINE_T2_SECTION, _LATTICE_T2_SECTION
+
+    for hints in (True, False):  # reference, not removable advice
+        assert _LATTICE_T2_SECTION in api_lattice_system_prompt(hints=hints)
+        assert _BASELINE_T2_SECTION in api_baseline_system_prompt(hints=hints)
+    assert 0.7 <= len(_BASELINE_T2_SECTION) / len(_LATTICE_T2_SECTION) <= 1.3
+    lattice, baseline = _LATTICE_T2_SECTION, _BASELINE_T2_SECTION
+    for construct in ("`@procedure`", "fuel", "`Caller`", "`@record`", "prefer plain ops"):
+        assert construct.lower() in lattice.lower(), construct
+    for needle in ("plain Python function", "state machine", "type hints"):
+        assert needle in baseline, needle
+    # the same facts in both arms
+    for needle in ("state machine", "once per row", "100"):
+        assert needle in lattice and needle in baseline, needle
+    # "prefer T0/T1" (spec §5) and its baseline counterpart
+    assert "Prefer plain ops (T0)" in lattice and "window" in lattice
+    assert "Prefer a single SQL statement" in baseline
+
+
+def test_api_procedure_examples_check_clean() -> None:
+    from lattice.llm.api_prompt import (
+        _LATTICE_T2_SECTION,
+        API_PROCEDURE_SCALAR_EXAMPLE,
+        API_PROCEDURE_WHOLE_EXAMPLE,
+    )
+    from lattice.profile import ApiProfile, Profile
+    from lattice.typesys import Scalar, Schema
+
+    for example in (API_PROCEDURE_SCALAR_EXAMPLE, API_PROCEDURE_WHOLE_EXAMPLE):
+        assert f"`{example}`" in _LATTICE_T2_SECTION, example
+    users = Schema.from_pairs(
+        [("id", Scalar.INT), ("email", Scalar.STR), ("name", Scalar.STR),
+         ("role", Scalar.STR), ("token", Scalar.STR)],
+        keys=[("id",)],
+        private=["token"],
+    )  # fmt: skip
+    items = Schema.from_pairs(
+        [("id", Scalar.INT), ("owner_id", Scalar.INT), ("title", Scalar.STR),
+         ("created_at", Scalar.DATETIME)],
+        keys=[("id",)],
+        owner="owner_id",
+    )  # fmt: skip
+    profile = Profile(
+        schemas={},
+        api=ApiProfile(
+            tables={"Users": users, "Items": items},
+            table_names={"Users": "users", "Items": "items"},
+            roles=frozenset({"Public", "Customer", "Admin"}),
+        ),
+    )
+    source = f"""# lattice: v1
+@record
+class Line:
+    id: Int
+    text: Str
+
+
+@procedure
+def is_stale(item: Row[Items], caller: Caller, now: DateTime) -> Bool:
+    if caller.is_admin:
+        return False
+    return now - item.created_at > hours(24)
+
+
+@procedure
+def digest(rows: list[Row[Items]]) -> list[Line]:
+    return [Line(id=r.id, text=r.title) for r in rows]
+
+
+@endpoint("GET", "/items", auth=Customer)
+def list_items(user: CurrentUser) -> Page:
+    items = fetch(Items)
+    mine = accessible(items, by=user)
+    flagged = {API_PROCEDURE_SCALAR_EXAMPLE}
+    shown = select(flagged, cols=["id", "title", "stale"])
+    result = page(shown, limit=20)
+    return result
+
+
+@endpoint("GET", "/items/digest", auth=Customer)
+def get_digest(user: CurrentUser) -> List:
+    items = fetch(Items)
+    mine = accessible(items, by=user)
+    bounded = limit(mine, n=100)
+    {API_PROCEDURE_WHOLE_EXAMPLE}
+    return lines
+"""
+    result = check_source(source, profile)
+    assert result.ok and not result.diagnostics, [d.render() for d in result.diagnostics]
+
+
 # ---------------------------------- optional values, search, time, ordering --
 
 

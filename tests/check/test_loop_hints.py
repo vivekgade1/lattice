@@ -4,9 +4,10 @@ construct matching the loop's shape:
 
 * running / previous / rank -> `window`
 * tree / parent walk        -> `traverse`
-* repeat until stable       -> `iterate` (tabular; API programs: a native)
+* repeat until stable       -> `iterate` (tabular; API programs: a @procedure (T2))
 * do something per row      -> `for_each` (API; tabular programs: `write` only)
-* anything else             -> a native function
+* anything else             -> a native function (tabular) or a @procedure (T2, API)
+  (spec 2026-09-27 lattice-t2-design §5: T2c)
 """
 
 from __future__ import annotations
@@ -109,12 +110,24 @@ def test_api_profile_hints_follow_the_profile() -> None:
     api = effects.PROFILE
     # for_each is the API construct for a per-row action
     assert "for_each(" in (loop_diag(PER_ROW, api).hint or "")
-    # iterate is tabular only: an API program keeps such a loop in a native
+    # iterate is tabular only: an API program's non-tree fallback is a @procedure (T2)
     hint = loop_diag(UNTIL_STABLE, api).hint or ""
-    assert "iterate" in hint and "native function" in hint
+    assert "iterate" in hint and "@procedure" in hint and "native function" not in hint
     # window and traverse exist in both profiles
     assert "window(" in (loop_diag(RUNNING, api).hint or "")
     assert "traverse(" in (loop_diag(PARENT_WALK, api).hint or "")
+
+
+def test_api_profile_general_fallback_names_a_procedure() -> None:
+    """T2c (spec 2026-09-27 lattice-t2-design §5): the general fallback -- a state
+    machine or anything else no T1 construct fits -- names @procedure (T2) in an API
+    program, since T2 exists only there; a tabular program keeps "a native function"."""
+    api = effects.PROFILE
+    for body in (STATE_MACHINE, "for x in xs:\n    y = f(x)\n    z = g(y)\n"):
+        hint = loop_diag(body, api).hint or ""
+        assert "@procedure" in hint and "T2" in hint and "native function" not in hint
+        tabular_hint = loop_diag(body).hint or ""
+        assert "native function" in tabular_hint and "@procedure" not in tabular_hint
 
 
 def test_tabular_per_row_action_points_at_the_api_construct() -> None:
