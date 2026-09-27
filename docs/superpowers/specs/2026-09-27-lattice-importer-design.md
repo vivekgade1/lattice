@@ -1,6 +1,6 @@
 # Lattice sub-project 2 — Importer: FastAPI + SQLModel → Lattice (design, for review)
 
-> Status: DRAFT for review · 2026-09-27. Roadmap: `docs/lattice-vision.md` §4 and §6. Builds on sub-projects 1 and 1b. Their evidence (template proof 49/53, with the rest policy deviations; loop corpus 11/11 plus 1 island) is in `docs/results/2026-09-26-bench-smoke.md`.
+> Status: APPROVED 2026-09-27 (with the close-the-gap loop, §3.4) · 2026-09-27. Roadmap: `docs/lattice-vision.md` §4 and §6. Builds on sub-projects 1 and 1b. Their evidence (template proof 49/53, with the rest policy deviations; loop corpus 11/11 plus 1 island) is in `docs/results/2026-09-26-bench-smoke.md`.
 
 ## 1. Goal
 
@@ -32,7 +32,7 @@ repo ──► 1 Extract (deterministic AST analysis)
            2b LLM lift (checker + repair loop) for routes no lifter matches
      ──► 3 Verify per route
            generated request suite vs original app, on identical seeded DBs
-           mismatch → LLM repair with the diff (≤ 2 rounds) → still failing → native island
+           mismatch → close-the-gap loop (§3.4): repair → re-lift → carve-out native → island (last resort)
      ──► 4 Report + write lattice_import/
 ```
 
@@ -77,7 +77,23 @@ repo ──► 1 Extract (deterministic AST analysis)
 - **Comparison:** the same machinery as `bench/template_suite.py` and `tests/template/test_template_differential.py`, generalised into `lattice/importer/verify.py`. It compares status + JSON (placeholders keep the storage spelling) and DB effects. The representation rules are the profile's error body, datetime wire and validation envelope, each asserted as needed.
 - **Outcome per route:** equal, equal except for declared policy deviations, or not equal after repair, which makes the route an island.
 
-### 3.4 Output — `lattice_import/`
+### 3.4 Close-the-gap loop (target: 100%)
+
+After the first pass, every route that isn't verified goes into an LLM-driven loop. The loop is repeated over the failing routes until every route is verified or the budget runs out. Each rung of the escalation ladder gets the previous rung's evidence: the checker diagnostics, the request/response diff, and the DB-effect diff.
+
+| Rung | What the LLM does | Result if verified |
+|---|---|---|
+| R1 Repair | fixes the lifted Lattice using the verification diff (up to 3 rounds) | Lattice route |
+| R2 Re-lift | writes the route again from scratch, given the original, the diff history and the full language guide, on a stronger model or higher effort (up to 2 attempts) | Lattice route |
+| R3 Carve-out | splits the route. The expressible part becomes Lattice; only the inexpressible piece (a state machine, arbitrary library call, etc.) becomes a **small typed native** extracted from the original code, called from Lattice (pure native or `for_each` effect) | Lattice route + narrow native |
+| R4 Island | whole-route native island: last resort, allowed only with a recorded reason | island (counted as *not* reaching 100%) |
+
+- **Verification gates every rung.** The soundness gate (§4.4) is unchanged: nothing is emitted as Lattice without passing the differential. A carve-out native is verified as part of its route.
+- **Budget:** per-route and per-repo caps on rounds and cost (CLI `--max-rounds`, `--max-cost-usd`). Every rung is logged to `corpus/imports.jsonl`.
+- **Language gaps:** when R3 or R4 is needed, the report classifies the gap (missing construct, missing type, unsupported framework feature). That record is the input for adding constructs (vision §5). Re-running the importer after the language gains the construct lifts the route fully.
+- **Coverage metric:** % of routes verified as Lattice (R0–R2), % with a carve-out (R3), % islands (R4). "100%" means every route verified at R0–R3.
+
+### 3.5 Output — `lattice_import/`
 
 ```
 lattice_import/
@@ -106,7 +122,7 @@ The report contains:
    - deviation count;
    - LLM cost per route.
    
-   **Target:** ≥ 70% of CRUD routes lifted and verified, with no unverified route ever emitted as Lattice.
+   **Target:** 100% of routes verified at R0–R3 (§3.4). Each shortfall is reported as a classified language gap, and the report shows what each rung contributed. No unverified route is ever emitted as Lattice.
 4. **Soundness gate:** a route is never in the output as Lattice unless its verification passed. This has its own test, which uses an injected lifter bug and asserts that the route becomes an island.
 
 ## 5. Self-learning hook (vision §5)
@@ -145,7 +161,7 @@ This is the raw material for later learning work: mining new lifters and cluster
 1. Extract + profile generation (template).
 2. Lifters (template idioms) + verify, generalised from the template differential.
 3. Report + CLI; template end-to-end with `--no-llm`.
-4. LLM lift + repair.
+4. LLM lift + close-the-gap loop (R1–R4) with budgets.
 5. Loop-corpus lifting.
 6. Held-out repos: select, vendor, run, report.
 7. Review.
