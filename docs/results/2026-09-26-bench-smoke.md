@@ -113,6 +113,18 @@ The gap replicates: gate `silent_failure_reduction` and `accuracy_parity` pass i
 
 New finding: Lattice's fan-out losses in run 2 (f01, f02, f07, x07) share one cause — the model sorts prices newest-first and then takes `agg.first(col("price"), order=col("valid_from"))`, expecting "first row in the sorted order"; `agg.first(x, order=o)` actually means "x at the smallest o", so it returns the oldest price silently. The name `first` plus an order key invites the pandas `sort → head` reading: a naming flaw in the language, not a model error in the usual sense.
 
+### Run 3 — after renaming `agg.first/last` to `agg.at_min/at_max(x, of=...)`
+
+| claude-haiku-4-5, no hints | A pandas | P pandas + repair | B Lattice + repair | C Lattice first-shot |
+|---|---|---|---|---|
+| 34 traps (correct / silent) run 1 → 2 → 3 | 19/11 → 18/13 → 20/10 | 21/13 → 21/13 → 25/9 | 30/3 → 29/4 → **31/2** | 28/3 → 26/3 → 27/2 |
+| fanout (10) run 1 → 2 → 3 | 10 → 10 → 10 | 10 → 10 → 10 | 7 → 6 → **8** | 5 → 4 → 5 |
+| all 54 run 1 → 2 → 3 | 72.2 → 68.5 → 74.1% | 74.1 → 75.9 → 81.5% | 87.0 → 85.2 → **90.7%** | 79.6 → 79.6 → 83.3% |
+
+- The rename removed the "current price" failure mode: f01, f02, f07, x07 all correct in arm B; no program used the old names.
+- Gate: `silent_failure_reduction` PASS (5.9% vs 26.5%), `accuracy_parity` PASS (90.7% vs 81.5%) — third consecutive pass; `safety` not demonstrated.
+- Lattice's remaining misses are the same logic errors in every run (n05 distinct buyers, f12 per-tier output, w02, x10) plus one L401 on f11 — model reasoning, not language friction.
+
 ### Conclusion
 
 - The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
