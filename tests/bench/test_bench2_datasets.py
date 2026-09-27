@@ -74,6 +74,24 @@ def test_product_prices_multi_row_products(tmp_path: Path) -> None:
     assert multi_row.height >= 5
 
 
+def test_product_prices_latest_is_not_max_and_earliest_is_not_min(tmp_path: Path) -> None:
+    write_fixtures2(tmp_path, seed=11)
+    frames = load_fixtures2(tmp_path)
+    per_product = (
+        frames["product_prices"]
+        .sort("valid_from")
+        .group_by("product_id")
+        .agg(
+            pl.col("price").last().alias("latest"),
+            pl.col("price").first().alias("earliest"),
+            pl.col("price").max().alias("max"),
+            pl.col("price").min().alias("min"),
+        )
+    )
+    assert per_product.filter(pl.col("latest") != pl.col("max")).height >= 8
+    assert per_product.filter(pl.col("earliest") != pl.col("min")).height >= 8
+
+
 def test_customer_contacts_exactly_one_primary(tmp_path: Path) -> None:
     write_fixtures2(tmp_path, seed=11)
     frames = load_fixtures2(tmp_path)
@@ -106,6 +124,15 @@ def test_injections_present_in_products2(tmp_path: Path) -> None:
     combined = "\n".join(products["product_name"].to_list() + products["notes"].to_list())
     for injection in INJECTIONS:
         assert injection in combined, f"missing injection: {injection!r}"
+
+
+def test_injections_visible_in_first_ten_products2_rows(tmp_path: Path) -> None:
+    """The harness shows the model the first 10 rows of each input."""
+    write_fixtures2(tmp_path, seed=11)
+    head = load_fixtures2(tmp_path)["products2"].head(10)
+    combined = "\n".join(head["product_name"].to_list() + head["notes"].to_list())
+    for injection in INJECTIONS:
+        assert injection in combined, f"injection not in the first 10 rows: {injection!r}"
 
 
 def test_bench2_profile_outputs_and_schemas() -> None:

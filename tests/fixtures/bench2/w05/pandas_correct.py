@@ -7,7 +7,7 @@ in_2024["month"] = in_2024["order_date"].dt.month
 joined = in_2024.merge(financials, on="order_id", how="inner", validate="one_to_one")
 result = (
     joined.groupby("month", as_index=False)
-    .agg(fee_usd=("fee_amount_usd", "sum"))
+    .agg(fee_rounded=("fee_amount_rounded", "sum"))
     .sort_values("month")
 )
 result.to_parquet("out.parquet", index=False)

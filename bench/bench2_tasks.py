@@ -1,12 +1,15 @@
-"""The bench2 suite: 52 trap, control and safety tasks with polars reference solutions.
+"""The bench2 suite: 54 trap, control and safety tasks with polars reference solutions.
 
 Families (docs/superpowers/specs/2026-09-26-lattice-step2-design.md §4):
 
 - ``n01``–``n08`` null_keys: grouping on a key with missing values, where the prompt
   requires the missing-key rows to form their own group (pandas ``groupby`` drops them).
-- ``f01``–``f10`` fanout: joining a table with several rows per key (price history,
-  customer contacts, orders per customer) where the question needs one row per key
-  (a plain ``merge`` repeats left rows and inflates sums/counts).
+- ``f01``–``f07``, ``f10``–``f12`` fanout: joining a table with several rows per key
+  (price history, customer contacts) where the question needs one row per key (a plain
+  ``merge`` repeats left rows and inflates sums/counts).
+- ``f08``, ``f09`` distinct (control): counting/summing distinct entities after joining
+  to orders. L420 does not guard this (a natural Lattice program joining in the "safe"
+  direction is silently wrong too), so the family is a control, not a trap.
 - ``v01``–``v08`` aggregates: mean/min/max where a missing value counts as 0
   (pandas skips missing values silently).
 - ``t01``–``t08`` types: zip codes are text with leading zeros (``read_csv`` infers
@@ -269,6 +272,33 @@ def _f10(frames: Frames) -> pl.DataFrame:
     )
 
 
+def _f11(frames: Frames) -> pl.DataFrame:
+    return (
+        _price_on_order_date(frames)
+        .join(frames["products2"], on="product_id")
+        .group_by("category")
+        .agg((pl.col("qty") * pl.col("price")).sum().alias("list_value"))
+    )
+
+
+def _f12(frames: Frames) -> pl.DataFrame:
+    revenue = (
+        _paid(frames).group_by("customer_id").agg(_revenue().sum().alias("paid_revenue"))
+    )
+    n_contacts = (
+        frames["customer_contacts"].group_by("customer_id").agg(_i64(pl.len()).alias("n"))
+    )
+    return (
+        revenue.join(n_contacts, on="customer_id")
+        .join(frames["customers2"], on="customer_id")
+        .group_by("tier")
+        .agg(
+            pl.col("paid_revenue").sum().alias("paid_revenue"),
+            _i64(pl.col("n").sum()).alias("n_contacts"),
+        )
+    )
+
+
 # ---------------------------------------------------------------------------
 # aggregates (missing values count as 0)
 # ---------------------------------------------------------------------------
@@ -456,7 +486,7 @@ def _w05(frames: Frames) -> pl.DataFrame:
         _with_fin(frames, orders)
         .with_columns(_i64(pl.col("order_date").dt.month()).alias("month"))
         .group_by("month")
-        .agg(pl.col("fee_amount_usd").sum().alias("fee_usd"))
+        .agg(pl.col("fee_amount_rounded").sum().alias("fee_rounded"))
         .sort("month")
     )
 
@@ -475,8 +505,8 @@ def _w07(frames: Frames) -> pl.DataFrame:
         _with_fin(frames, frames["orders2"])
         .group_by("product_id")
         .agg(
-            pl.col("shipping_amount").sum().alias("total_shipping"),
-            pl.col("tax_amount_usd").sum().alias("total_tax"),
+            pl.col("amount_shipping").sum().alias("total_unit_shipping"),
+            pl.col("tax_amount_rounded").sum().alias("total_tax_rounded"),
         )
     )
 
@@ -590,6 +620,7 @@ _TIERS: Mapping[str, Tier] = {
     "aggregates": "trap",
     "types": "trap",
     "wide": "control",
+    "distinct": "control",
     "safety": "safety",
 }
 
@@ -768,7 +799,7 @@ _FANOUT: tuple[Task, ...] = (
     ),
     _t(
         "f08",
-        "fanout",
+        "distinct",
         f"Definitions: {_PAID}. For each customer tier, the number of distinct customers "
         "in that tier who placed at least one paid order (a customer with several paid "
         "orders counts once). Return exactly two columns: tier, n_buyers. "
@@ -778,7 +809,7 @@ _FANOUT: tuple[Task, ...] = (
     ),
     _t(
         "f09",
-        "fanout",
+        "distinct",
         "For each product category, the total cost (sum of the products' cost, each "
         "product counted once) of the products that were ordered at least once in 2024 "
         "(any status; order_date in 2024). Return exactly two columns: category, "
@@ -796,6 +827,29 @@ _FANOUT: tuple[Task, ...] = (
         f"columns: order_id, primary_email, current_price. {_UNORDERED}",
         ("orders2", "customer_contacts", "product_prices"),
         _f10,
+    ),
+    _t(
+        "f11",
+        "fanout",
+        f"Definitions: {_PAID}. A product's price history has one row per price change; "
+        "the list price in effect for an order is the price on the product's row with "
+        "the latest valid_from on or before the order_date. Value every paid order at "
+        "qty * the list price in effect for it (each order counted once) and report, for "
+        "each product category, the total of that value over its paid orders. Return "
+        f"exactly two columns: category, list_value. {_UNORDERED}",
+        ("orders2", "products2", "product_prices"),
+        _f11,
+    ),
+    _t(
+        "f12",
+        "fanout",
+        f"Definitions: {_PAID}; {_REVENUE}. For each customer tier, over the customers in "
+        "that tier who placed at least one paid order: their total paid revenue, and the "
+        "total number of contacts on file for them (a customer can have several "
+        "contacts; each paid order counts once in paid_revenue). Return exactly three "
+        f"columns: tier, paid_revenue, n_contacts. {_UNORDERED}",
+        ("orders2", "customers2", "customer_contacts"),
+        _f12,
     ),
 )
 
@@ -1001,9 +1055,9 @@ _WIDE: tuple[Task, ...] = (
         "w05",
         "wide",
         "For each month of 2024 (by order_date, month as a number 1-12, any status), the "
-        "total processing fee in USD over that month's orders (the fee_amount_usd column "
-        "of the order financials, not the per-unit amount_fee). Return exactly two "
-        "columns: month, fee_usd. Sort rows by month ascending.",
+        "sum over that month's orders of the processing fee rounded to whole dollars (the "
+        "fee_amount_rounded column of the order financials, not the unrounded fee_amount). "
+        "Return exactly two columns: month, fee_rounded. Sort rows by month ascending.",
         ("orders2", "order_financials"),
         _w05,
         ordered=True,
@@ -1021,10 +1075,11 @@ _WIDE: tuple[Task, ...] = (
     _t(
         "w07",
         "wide",
-        "For each product, over all its orders (any status): the total shipping amount "
-        "(sum of the shipping_amount column of the order financials) and the total tax "
-        "in USD (sum of the tax_amount_usd column). Return exactly three columns: "
-        f"product_id, total_shipping, total_tax. {_UNORDERED}",
+        "For each product, over all its orders (any status): the sum of the per-unit "
+        "shipping amount (the amount_shipping column of the order financials, not the "
+        "order's total shipping_amount) and the sum of the tax rounded to whole dollars "
+        "(the tax_amount_rounded column, not the unrounded tax_amount). Return exactly "
+        f"three columns: product_id, total_unit_shipping, total_tax_rounded. {_UNORDERED}",
         ("orders2", "order_financials"),
         _w07,
     ),

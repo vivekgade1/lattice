@@ -2,8 +2,9 @@
 
 - ``lattice.py`` checks clean under ``bench2_profile()`` and its output matches the reference;
 - ``pandas_correct.py`` runs in the sandbox (fixture CSVs in its workdir) and matches;
-- ``pandas_naive.py`` (trap tasks only) is the natural-but-wrong script: it runs cleanly,
-  writes out.parquet, and does NOT match — proving the trap is real.
+- ``pandas_naive.py`` (trap tasks and the "distinct" control family) is the
+  natural-but-wrong script: it runs cleanly, writes out.parquet, and does NOT match —
+  proving the trap is real.
 
 The sandbox runs are done once per session, concurrently, and cached.
 """
@@ -29,7 +30,9 @@ from lattice.runtime.exec import run_source
 SOLUTIONS = Path(__file__).parent / "fixtures" / "bench2"
 TASKS = {t.id: t for t in BENCH2_TASKS}
 ALL_IDS = [t.id for t in BENCH2_TASKS]
-TRAP_IDS = [t.id for t in BENCH2_TASKS if t.tier == "trap"]
+# Trap tasks, plus the "distinct" control family (f08, f09): its naive pandas script is
+# still wrong, but Lattice does not guard it, so it is scored as a control.
+NAIVE_IDS = [t.id for t in BENCH2_TASKS if t.tier == "trap" or t.family == "distinct"]
 
 
 @dataclass(frozen=True)
@@ -89,7 +92,7 @@ def test_every_task_has_exactly_its_solution_files() -> None:
     for task in BENCH2_TASKS:
         files = {p.name for p in (SOLUTIONS / task.id).iterdir() if p.suffix == ".py"}
         expected = {"lattice.py", "pandas_correct.py"}
-        if task.tier == "trap":
+        if task.id in NAIVE_IDS:
             expected.add("pandas_naive.py")
         assert files == expected, task.id
 
@@ -127,7 +130,7 @@ def test_pandas_correct_matches(
     assert ok, why
 
 
-@pytest.mark.parametrize("task_id", TRAP_IDS)
+@pytest.mark.parametrize("task_id", NAIVE_IDS)
 def test_pandas_naive_runs_but_is_wrong(
     task_id: str,
     frames: Mapping[str, pl.DataFrame],

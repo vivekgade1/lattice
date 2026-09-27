@@ -8,7 +8,7 @@ joined = join(orders, financials, on=["order_id"], how="inner")
 per_product = group(
     joined,
     by=["product_id"],
-    total_shipping=agg.sum(col("shipping_amount")),
-    total_tax=agg.sum(col("tax_amount_usd")),
+    total_unit_shipping=agg.sum(col("amount_shipping")),
+    total_tax_rounded=agg.sum(col("tax_amount_rounded")),
 )
 write(per_product, "out.parquet")

@@ -16,11 +16,14 @@ from bench.tasks import Task, suite
 EXPECTED_FAMILIES = {
     "null_keys": ("n", 8, "trap"),
     "fanout": ("f", 10, "trap"),
+    "distinct": ("f", 2, "control"),
     "aggregates": ("v", 8, "trap"),
     "types": ("t", 8, "trap"),
     "wide": ("w", 8, "control"),
     "safety": ("x", 10, "safety"),
 }
+# f08/f09 count distinct entities, which L420 does not guard: a control, not a trap.
+DISTINCT_IDS = ("f08", "f09")
 
 
 @pytest.fixture(scope="module")
@@ -30,12 +33,18 @@ def frames(tmp_path_factory: pytest.TempPathFactory) -> dict[str, pl.DataFrame]:
     return load_fixtures2(directory)
 
 
-def test_fifty_two_tasks_with_expected_ids_families_and_tiers() -> None:
-    assert len(BENCH2_TASKS) == 52
-    expected_ids: list[str] = []
-    for prefix, count, _tier in EXPECTED_FAMILIES.values():
-        expected_ids += [f"{prefix}{i:02d}" for i in range(1, count + 1)]
+def test_fifty_four_tasks_with_expected_ids_families_and_tiers() -> None:
+    assert len(BENCH2_TASKS) == 54
+    expected_ids = (
+        [f"n{i:02d}" for i in range(1, 9)]
+        + [f"f{i:02d}" for i in range(1, 13)]
+        + [f"v{i:02d}" for i in range(1, 9)]
+        + [f"t{i:02d}" for i in range(1, 9)]
+        + [f"w{i:02d}" for i in range(1, 9)]
+        + [f"x{i:02d}" for i in range(1, 11)]
+    )
     assert [t.id for t in BENCH2_TASKS] == expected_ids
+    assert [t.id for t in BENCH2_TASKS if t.family == "distinct"] == list(DISTINCT_IDS)
     assert Counter(t.family for t in BENCH2_TASKS) == {
         family: count for family, (_, count, _) in EXPECTED_FAMILIES.items()
     }
@@ -44,7 +53,7 @@ def test_fifty_two_tasks_with_expected_ids_families_and_tiers() -> None:
         assert task.id.startswith(prefix), task.id
         assert task.tier == tier, task.id
         assert task.datasets == "bench2", task.id
-    assert Counter(t.tier for t in BENCH2_TASKS) == {"trap": 34, "control": 8, "safety": 10}
+    assert Counter(t.tier for t in BENCH2_TASKS) == {"trap": 34, "control": 10, "safety": 10}
 
 
 def test_trap_families_constant() -> None:
