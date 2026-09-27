@@ -23,25 +23,43 @@ keeps how the value was written, so two backends must also agree on it: ``dashed
 ``hex32`` (``-upper`` when not lowercase) for a UUID; ``T`` / ``space`` (the date-time
 separator) then ``Z`` / ``+offset`` / nothing (the zone) for a datetime, e.g.
 ``<uuid:1:hex32>``, ``<datetime:1:space>``, ``<datetime:2:TZ>``.
+
+The runner and the normaliser are the importer's generic ones
+(:mod:`lattice.importer.verify`); this module keeps the template's hand-written cases.
 """
 
 from __future__ import annotations
 
-import json
-import re
-import shutil
-import sqlite3
-import tempfile
-import uuid
 from collections.abc import Callable
-from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from fastapi.testclient import TestClient
-
 from bench.template_app.seed import TEMPLATE_ITEMS, TEMPLATE_USERS
+from lattice.importer.verify import (
+    Case,
+    CaseRecord,
+    Normalizer,
+    datetime_spelling,
+    form_login,
+    run_suite,
+    snapshot_tables,
+    uuid_spelling,
+)
+
+__all__ = [
+    "API",
+    "BAD_TOKEN",
+    "MISSING_ID",
+    "TEMPLATE_SUITE",
+    "CaseRecord",
+    "TemplateCase",
+    "datetime_spelling",
+    "run_template_suite",
+    "snapshot_tables",
+    "template_login",
+    "uuid_spelling",
+]
 
 API = "/api/v1"
 MISSING_ID = "00000000-0000-4000-8000-000000000000"
@@ -51,30 +69,11 @@ AppFactory = Callable[[Path], Any]
 
 
 @dataclass(frozen=True)
-class TemplateCase:
-    name: str
-    method: str
-    path: str
-    user: str | None = None  # TEMPLATE_USERS handle to log in as
-    token: str | None = None  # raw bearer token (overrides ``user``)
-    params: dict[str, Any] | None = None
-    json: Any = None
-    form: dict[str, str] | None = None
+class TemplateCase(Case):
+    """A :class:`lattice.importer.verify.Case` whose snapshot defaults to ``item``;
+    ``user`` is a ``TEMPLATE_USERS`` handle."""
+
     tables: tuple[str, ...] = ("item",)
-    note: str = ""
-
-
-@dataclass
-class CaseRecord:
-    name: str
-    method: str
-    path: str
-    status: int
-    body: Any
-    db: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
-
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
 
 
 def _own(handle: str, k: int = 0) -> str:
@@ -188,165 +187,14 @@ TEMPLATE_SUITE: list[TemplateCase] = [
 ]
 
 
-# ------------------------------------------------------------------ normalization --
-
-_UUID_RE = re.compile(
-    r"^(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
-    r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
-)
-_DT_RE = re.compile(
-    r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?$"
-)
-_JWT_RE = re.compile(r"^eyJ[\w-]*\.[\w-]+\.[\w-]+$")
-
-
-def uuid_spelling(s: str) -> str:
-    """The spelling class of a UUID text: ``dashed`` or ``hex32``, ``-upper`` if not
-    lowercase."""
-    return ("dashed" if "-" in s else "hex32") + ("" if s == s.lower() else "-upper")
-
-
-def datetime_spelling(s: str) -> str:
-    """The spelling class of a datetime text: the separator (``T`` / ``space``) and the
-    zone (``Z``, ``+offset`` or nothing for a naive value)."""
-    sep = "space" if s[10] == " " else "T"
-    if s.endswith("Z"):
-        return sep + "Z"
-    return sep + ("+offset" if re.search(r"[+-]\d{2}:?\d{2}$", s[19:]) else "")
-
-
-def _dt_key(s: str) -> datetime:
-    dt = datetime.fromisoformat(s)
-    if dt.tzinfo is not None:
-        dt = dt.astimezone(UTC).replace(tzinfo=None)
-    return dt
-
-
-class _Normalizer:
-    def __init__(self, seed_db: Path) -> None:
-        self.known_uuids: set[uuid.UUID] = set()
-        self.known_dts: set[datetime] = set()
-        self.seed_hashes: set[str] = set()
-        conn = sqlite3.connect(seed_db)
-        try:
-            tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master "
-                                                 "WHERE type='table'")]
-            for t in tables:
-                cur = conn.execute(f'SELECT * FROM "{t}"')
-                cols = [d[0] for d in cur.description]
-                for row in cur:
-                    for c, v in zip(cols, row, strict=True):
-                        if not isinstance(v, str):
-                            continue
-                        if c == "hashed_password":
-                            self.seed_hashes.add(v)
-                        elif _UUID_RE.match(v):
-                            self.known_uuids.add(uuid.UUID(v))
-                        elif _DT_RE.match(v):
-                            self.known_dts.add(_dt_key(v))
-        finally:
-            conn.close()
-
-    def fresh(self) -> _CaseNormalizer:
-        return _CaseNormalizer(self)
-
-
-class _CaseNormalizer:
-    def __init__(self, base: _Normalizer) -> None:
-        self.base = base
-        self.uuids: dict[uuid.UUID, int] = {}
-        self.dts: dict[datetime, int] = {}
-
-    def value(self, v: Any, key: str | None = None) -> Any:
-        if isinstance(v, dict):
-            return {k: self.value(x, k) for k, x in v.items()}
-        if isinstance(v, list):
-            return [self.value(x) for x in v]
-        if not isinstance(v, str):
-            return v
-        if key == "hashed_password":
-            return "<hash:seed>" if v in self.base.seed_hashes else "<hash:new>"
-        if _UUID_RE.match(v):
-            u = uuid.UUID(v)
-            if u in self.base.known_uuids:
-                return v
-            n = self.uuids.setdefault(u, len(self.uuids) + 1)
-            return f"<uuid:{n}:{uuid_spelling(v)}>"
-        if _DT_RE.match(v):
-            d = _dt_key(v)
-            if d in self.base.known_dts:
-                return v
-            n = self.dts.setdefault(d, len(self.dts) + 1)
-            return f"<datetime:{n}:{datetime_spelling(v)}>"
-        if _JWT_RE.match(v):
-            return "<token>"
-        return v
-
-
-def snapshot_tables(db_path: Path, tables: tuple[str, ...]) -> dict[str, list[dict[str, Any]]]:
-    """Raw rows of ``tables`` (in ``rowid`` order) as stored by SQLite."""
-    conn = sqlite3.connect(db_path)
-    try:
-        out: dict[str, list[dict[str, Any]]] = {}
-        for t in tables:
-            cur = conn.execute(f'SELECT * FROM "{t}" ORDER BY rowid')
-            cols = [d[0] for d in cur.description]
-            out[t] = [dict(zip(cols, row, strict=True)) for row in cur]
-        return out
-    finally:
-        conn.close()
-
-
 # ------------------------------------------------------------------------- runner --
 
+# The normaliser is lattice.importer.verify's (kept under its old name for callers).
+_Normalizer = Normalizer
 
-def _login(client: TestClient, handle: str) -> str:
-    email, password, _ = TEMPLATE_USERS[handle]
-    r = client.post(f"{API}/login/access-token", data={"username": email, "password": password})
-    if r.status_code != 200:
-        raise RuntimeError(f"login as {handle!r} failed: {r.status_code} {r.text}")
-    return r.json()["access_token"]
-
-
-def _body(response: Any) -> Any:
-    if not response.content:
-        return None
-    try:
-        return response.json()
-    except json.JSONDecodeError:
-        return response.text
-
-
-def run_case(
-    case: TemplateCase, app_factory: AppFactory, db_path: Path, norm: _Normalizer
-) -> CaseRecord:
-    with tempfile.TemporaryDirectory(prefix="template-case-") as tmp:
-        case_db = Path(tmp) / "case.db"
-        shutil.copyfile(db_path, case_db)
-        app = app_factory(case_db)
-        try:
-            with TestClient(app) as client:
-                headers = {}
-                token = case.token or (_login(client, case.user) if case.user else None)
-                if token is not None:
-                    headers["Authorization"] = f"Bearer {token}"
-                response = client.request(
-                    case.method,
-                    API + case.path,
-                    params=case.params,
-                    json=case.json,
-                    data=case.form,
-                    headers=headers,
-                )
-        finally:
-            engine = getattr(getattr(app, "state", None), "engine", None)
-            if engine is not None:
-                engine.dispose()
-        raw_db = snapshot_tables(case_db, case.tables)
-    n = norm.fresh()
-    body = n.value(_body(response))
-    db = {t: [n.value(row) for row in rows] for t, rows in raw_db.items()}
-    return CaseRecord(case.name, case.method, case.path, response.status_code, body, db)
+template_login = form_login(
+    f"{API}/login/access-token", {h: (email, pw) for h, (email, pw, _) in TEMPLATE_USERS.items()}
+)
 
 
 def run_template_suite(
@@ -359,6 +207,8 @@ def run_template_suite(
     ``app_factory(path)`` must return an ASGI app serving the template's API on the
     SQLite file at ``path``; if the app has ``state.engine`` it is disposed afterwards.
     """
-    db_path = Path(db_path)
-    norm = _Normalizer(db_path)
-    return [run_case(c, app_factory, db_path, norm) for c in (cases or TEMPLATE_SUITE)]
+    cases = cases or TEMPLATE_SUITE
+    records = run_suite(
+        app_factory, {"seed": Path(db_path)}, cases, login=template_login, prefix=API
+    )
+    return [records[c.name] for c in cases]

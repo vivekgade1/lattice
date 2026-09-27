@@ -14,7 +14,9 @@ and spellings: the profile stores Uuids as 32 hex digits and DateTimes as naive-
 ``"YYYY-MM-DD HH:MM:SS.ffffff"``). Every record is status + JSON body + the affected
 tables after the request, with generated UUIDs, timestamps and tokens as placeholders.
 
-Comparison, per case:
+Both comparisons run through the importer's differential, ``lattice.importer.verify``
+(``verify(...)`` classifies each case as equal / equal under a rule / a declared
+deviation / a mismatch). Per case:
 
 * **Generated app vs runtime:** identical records, every case.
 * **Lattice vs template:** identical status and DB effects, and an identical body up to
@@ -38,9 +40,8 @@ import importlib
 import shutil
 import sqlite3
 import sys
+import tempfile
 import uuid
-from collections.abc import Iterator
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -57,15 +58,23 @@ from bench.template_profile import (
     template_program,
 )
 from bench.template_suite import (
+    API,
     CAROL_ITEM,
     MISSING_ID,
     TEMPLATE_SUITE,
-    CaseRecord,
     TemplateCase,
     run_template_suite,
+    template_login,
 )
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.api.runtime import build_app
+from lattice.importer.verify import (
+    Deviation,
+    ValidationEnvelope,
+    VerifyResult,
+    agreement,
+    verify,
+)
 
 REPO = Path(__file__).resolve().parents[2]
 KIT_PATH = REPO / "bench" / "api_kit" / "platform_kit.py"
@@ -77,7 +86,12 @@ GENERATED = "generated_template_app"
 # template's own create_access_token (carol cannot log in).
 
 INACTIVE = "carol"
-_C = TemplateCase
+
+
+def _C(*args: Any, **kwargs: Any) -> TemplateCase:
+    return TemplateCase(*args, db="inactive", **kwargs)
+
+
 _carol_token = create_access_token(TEMPLATE_USERS[INACTIVE][2])
 _ghost_token = create_access_token(uuid.UUID(MISSING_ID))
 EXTRA_CASES: list[TemplateCase] = [
@@ -97,44 +111,14 @@ EXTRA_CASES: list[TemplateCase] = [
 
 # ---- representation rules ------------------------------------------------------------------
 
-VALIDATION_ENVELOPE = "VALIDATION_ENVELOPE"
-RULES: dict[str, str] = {
-    VALIDATION_ENVELOPE: (
-        "Both answer 422 flagging the same fields (the same loc lists, in order) in a "
-        '{"detail": [...]} body; each entry\'s wording differs: Lattice {"loc", "msg"}, '
-        'pydantic {"type", "loc", "msg", "input", "ctx"}.'
-    ),
-}
-
-
-def agreement(template: CaseRecord, lattice: CaseRecord) -> tuple[str, ...]:
-    """The representation rules under which `lattice` reproduces `template` (empty: an
-    exact match). AssertionError when it does not reproduce it."""
-    assert lattice.status == template.status, (template.status, lattice.status)
-    assert lattice.db == template.db, "database effects differ"
-    t, b = template.body, lattice.body
-    if template.status == 422:
-        assert isinstance(b, dict) and set(b) == {"detail"}
-        assert [d["loc"] for d in b["detail"]] == [d["loc"] for d in t["detail"]]
-        assert all(set(d) == {"loc", "msg"} for d in b["detail"])
-        return (VALIDATION_ENVELOPE,)
-    assert b == t, (t, b)
-    return ()
+# One named rule (lattice.importer.verify.ValidationEnvelope): both answer 422 flagging the
+# same fields (the same loc lists, in order) in a {"detail": [...]} body; each entry's
+# wording differs: Lattice {"loc", "msg"}, pydantic {"type", "loc", "msg", "input", "ctx"}.
+VALIDATION_ENVELOPE = ValidationEnvelope()
+RULES = (VALIDATION_ENVELOPE,)
 
 
 # ---- deviations ---------------------------------------------------------------------------
-
-
-@dataclass(frozen=True)
-class Deviation:
-    """An intentional difference or a known language gap: what Lattice answers instead."""
-
-    id: str
-    kind: str  # "policy" (Lattice's contract differs on purpose) | "gap" (not expressible)
-    reason: str
-    status: int  # Lattice's status
-    body: Any  # Lattice's (normalized) body
-    db_same: bool = True  # Lattice's database effects equal the template's
 
 
 _UNAUTHORIZED = {"detail": "Not authenticated"}
@@ -184,46 +168,49 @@ EXPECTED_TALLY = {"suite": (40, 9, 4), "extra": (8, 0, 1)}
 # ---- fixtures -----------------------------------------------------------------------------
 
 
-def _inactive_variant(seed: Path, path: Path) -> Path:
-    shutil.copyfile(seed, path)
-    conn = sqlite3.connect(path)
-    try:
-        conn.execute(
-            'UPDATE "user" SET is_active = 0 WHERE email = ?', (TEMPLATE_USERS[INACTIVE][0],)
-        )
-        conn.commit()
-    finally:
-        conn.close()
-    return path
+def template_dbs(variant: str, path: Path) -> Path:
+    """The seed database, or its variant where carol is inactive."""
+    seed = build_template_db(path)
+    if variant == "inactive":
+        conn = sqlite3.connect(seed)
+        try:
+            conn.execute(
+                'UPDATE "user" SET is_active = 0 WHERE email = ?', (TEMPLATE_USERS[INACTIVE][0],)
+            )
+            conn.commit()
+        finally:
+            conn.close()
+    return seed
 
 
-def _run(factory: Any, seed: Path, inactive: Path) -> dict[str, CaseRecord]:
-    records = run_template_suite(factory, seed, TEMPLATE_SUITE)
-    records += run_template_suite(factory, inactive, EXTRA_CASES)
-    return {r.name: r for r in records}
+def runtime_factory(path: Path) -> Any:
+    return build_app(template_plans(), path, natives=NATIVES)
+
+
+def _verify(original: Any, lattice: Any, rules=RULES, deviations=None) -> VerifyResult:
+    return verify(
+        original,
+        lattice,
+        template_dbs,
+        ALL_CASES,
+        rules,
+        DEVIATIONS if deviations is None else deviations,
+        login=template_login,
+        prefix=API,
+    )
 
 
 @pytest.fixture(scope="module")
-def dbs(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
-    root = tmp_path_factory.mktemp("template-diff")
-    seed = build_template_db(root / "seed.db")
-    return seed, _inactive_variant(seed, root / "inactive.db")
-
-
-@pytest.fixture(scope="module")
-def template_records(dbs) -> dict[str, CaseRecord]:
+def result() -> VerifyResult:
+    """The template (live) against the Lattice runtime."""
     template_utils.OUTBOX.clear()
-    return _run(make_app, *dbs)
+    return _verify(make_app, runtime_factory)
 
 
 @pytest.fixture(scope="module")
-def runtime_records(dbs) -> dict[str, CaseRecord]:
-    plans = template_plans()
-    return _run(lambda path: build_app(plans, path, natives=NATIVES), *dbs)
-
-
-@pytest.fixture(scope="module")
-def generated_records(dbs, tmp_path_factory: pytest.TempPathFactory) -> Iterator[dict]:
+def generated_vs_runtime(tmp_path_factory: pytest.TempPathFactory):
+    """The runtime against the FastAPI app generated from the same program: no rules and
+    no deviations, so every case must be identical."""
     result, code = compile_source_to_fastapi(
         template_program(), template_profile(), natives_module="bench.template_profile"
     )
@@ -242,7 +229,7 @@ def generated_records(dbs, tmp_path_factory: pytest.TempPathFactory) -> Iterator
             kit.DB_FILENAME = str(path)  # the kit's get_db opens this file per request
             return module.app
 
-        yield _run(factory, *dbs)
+        yield _verify(runtime_factory, factory, rules=(), deviations={})
     finally:
         sys.path.remove(str(gen_dir))
         for name in ("platform_kit", GENERATED):
@@ -281,45 +268,42 @@ def test_a_customer_cannot_update_their_own_admin_columns(column):
 
 
 @pytest.mark.parametrize("name", CASE_NAMES)
-def test_lattice_reproduces_the_template(name, template_records, runtime_records):
-    t, lat = template_records[name], runtime_records[name]
+def test_lattice_reproduces_the_template(name, result):
+    outcome = result.outcomes[name]
     dev = DEVIATIONS.get(name)
     if dev is None:
-        agreement(t, lat)
+        assert outcome.kind in ("equal", "equal_under_rule"), result.render()
         return
+    # the Lattice answer is asserted exactly, and the deviation is real
+    assert (outcome.kind, outcome.deviation) == ("deviation", dev.id), outcome.reason
+    lat = result.lattice[name]
     assert (lat.status, lat.body) == (dev.status, dev.body)
-    assert (lat.db == t.db) is dev.db_same
-    with pytest.raises(AssertionError):  # the deviation is real
-        agreement(t, lat)
+    with pytest.raises(AssertionError):
+        agreement(result.original[name], lat, RULES)
 
 
-def test_the_tally(template_records, runtime_records):
-    used: set[str] = set()
-    tally = {}
-    for group, cases in (("suite", TEMPLATE_SUITE), ("extra", EXTRA_CASES)):
-        exact = under_rules = deviations = 0
-        for case in cases:
-            if case.name in DEVIATIONS:
-                deviations += 1
-                continue
-            rules = agreement(template_records[case.name], runtime_records[case.name])
-            used.update(rules)
-            exact += not rules
-            under_rules += bool(rules)
-        tally[group] = (exact, under_rules, deviations)
+def test_the_tally(result):
+    tally = {
+        "suite": result.tally([c.name for c in TEMPLATE_SUITE])[:3],
+        "extra": result.tally([c.name for c in EXTRA_CASES])[:3],
+    }
     assert tally == EXPECTED_TALLY
-    assert used == set(RULES)  # every rule is needed by some case
+    assert result.mismatches == {}
+    assert result.unneeded_rules == ()  # every rule is needed by some case
+    assert result.rules_used == {VALIDATION_ENVELOPE.name}
+    assert result.ok, result.render()
 
 
-def test_every_deviation_names_a_case():
+def test_every_deviation_names_a_case(result):
     assert set(DEVIATIONS) <= set(CASE_NAMES)
+    assert result.unknown_deviations == ()
     assert len(set(CASE_NAMES)) == len(CASE_NAMES)
     assert all(d.kind in ("policy", "gap") and d.reason for d in DEVIATIONS.values())
     # sub-project 1b Part B closed every language gap: only policy deviations remain
     assert {d.kind for d in DEVIATIONS.values()} == {"policy"}
 
 
-def test_a_write_in_another_spelling_is_caught(dbs, template_records):
+def test_a_write_in_another_spelling_is_caught(result):
     """The placeholders keep each generated value's spelling: Lattice storing the new
     item's created_at as its canonical "...T...Z" in this "YYYY-MM-DD HH:MM:SS" database
     answers the same status and body but fails on the database effects."""
@@ -331,20 +315,26 @@ def test_a_write_in_another_spelling_is_caught(dbs, template_records):
     profile = template_profile()
     assert profile.api is not None
     iso = replace(profile, api=replace(profile.api, datetime_storage="iso_z"))
-    result = check_source(template_program(), iso)
-    assert result.program is not None
-    plans = lower_api(result.program)
+    checked = check_source(template_program(), iso)
+    assert checked.program is not None
+    plans = lower_api(checked.program)
     case = next(c for c in TEMPLATE_SUITE if c.name == "item_create")
-    (record,) = run_template_suite(lambda p: build_app(plans, p, natives=NATIVES), dbs[0], [case])
-    template = template_records["item_create"]
+    with tempfile.TemporaryDirectory() as tmp:
+        db = build_template_db(Path(tmp) / "seed.db")
+        (record,) = run_template_suite(lambda p: build_app(plans, p, natives=NATIVES), db, [case])
+    template = result.original["item_create"]
     assert record.status == template.status
     with pytest.raises(AssertionError, match="database effects differ"):
-        agreement(template, record)
+        agreement(template, record, RULES)
 
 
 # ---- generated FastAPI app vs runtime ------------------------------------------------------
 
 
 @pytest.mark.parametrize("name", CASE_NAMES)
-def test_the_generated_app_answers_like_the_runtime(name, runtime_records, generated_records):
-    assert generated_records[name].to_dict() == runtime_records[name].to_dict()
+def test_the_generated_app_answers_like_the_runtime(name, generated_vs_runtime):
+    assert generated_vs_runtime.outcomes[name].kind == "equal", generated_vs_runtime.render()
+    assert (
+        generated_vs_runtime.lattice[name].to_dict()
+        == generated_vs_runtime.original[name].to_dict()
+    )
