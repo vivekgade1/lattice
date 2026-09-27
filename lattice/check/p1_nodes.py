@@ -41,6 +41,7 @@ from lattice.check.astutil import (
     literal_value,
 )
 from lattice.check.context import CheckContext
+from lattice.check.loop_hints import comprehension_hint, loop_hint
 
 _BIN_OPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Mod, ast.BitAnd, ast.BitOr)
 _CMP_OPS = (ast.Eq, ast.NotEq, ast.Lt, ast.LtE, ast.Gt, ast.GtE)
@@ -74,7 +75,10 @@ _BANNED_EXPRS: dict[type[ast.AST], tuple[str, str, str | None]] = {
     ast.YieldFrom: ("L131", "yield is not allowed", None),
 }
 
-# Banned statements: (code, message, hint)
+_COMPREHENSIONS = (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)
+
+# Banned statements: (code, message, hint); a loop's hint names the matching construct
+# (lattice.check.loop_hints), an if-statement's stays this one
 _LOOP = ("L127", "loops and if-statements are not allowed", "use where/derive/when instead")
 _BANNED_STMTS: dict[type[ast.AST], tuple[str, str, str | None]] = {
     ast.AugAssign: ("L126", "augmented assignment is not allowed", "bind a new name with ="),
@@ -161,6 +165,8 @@ def _check_other_stmt(stmt: ast.stmt, ctx: CheckContext) -> None:
     banned = _BANNED_STMTS.get(type(stmt))
     if banned is not None:
         code, msg, hint = banned
+        if isinstance(stmt, ast.For | ast.AsyncFor | ast.While):
+            hint = loop_hint(stmt, api=ctx.profile.api is not None)
         ctx.error(code, stmt, msg, hint)
         return
     ctx.error("L101", stmt, f"'{type(stmt).__name__}' is not allowed in a Lattice program")
@@ -539,6 +545,8 @@ def _check_expr(node: ast.expr, ctx: CheckContext) -> None:
             banned = _BANNED_EXPRS.get(type(node))
             if banned is not None:
                 code, msg, hint = banned
+                if isinstance(node, _COMPREHENSIONS) and hint is not None:
+                    hint = comprehension_hint(node, ctx.profile.api is not None, hint)
                 ctx.error(code, node, msg, hint)
             else:
                 ctx.error(

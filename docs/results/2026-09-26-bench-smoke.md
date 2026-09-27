@@ -336,3 +336,118 @@ Not covered by any case, and noted for completeness:
 | FastAPI app generated from the Lattice program | 1427 | 8154 |
 
 For these nine routes, Lattice is about 47% fewer lines (17% fewer AST nodes) than the route functions alone, and about 59% fewer lines (37% fewer AST nodes) once the auth and crud code the routes depend on is counted, since Lattice gets that from the language and profile. The inactive-user check is now in the profile, once, as the template has it once in `get_current_active_user`.
+
+## Loop constructs (1b)
+
+The loop corpus in `tests/fixtures/loops/` holds 12 real-style Python loops. Each one is
+paired with its Lattice program, and the corpus is the importer's first test set. The
+equivalence test is `tests/loops/test_loop_corpus.py`:
+
+- **Tabular items (9):** 25 seeded random inputs each. The original runs on Python rows
+  or a pandas DataFrame, and the Lattice program runs through the polars executor. The
+  7 programs without `iterate` also run as one compiled SQL statement in SQLite, and
+  both results must match the original.
+- **API items (2):** 8 generated databases each, with 6-7 requests per database. The
+  original FastAPI + SQLModel app and the Lattice runtime each serve their own copy.
+  The test compares status codes, bodies (except 422 validation details), the table
+  afterwards, and the side effects in order.
+
+**Result:** 11/11 expressible items are equivalent on every generated input. Item 12 is
+a native island by design.
+
+Sizes are `bench.metrics.program_metrics` (non-blank, non-comment lines / AST nodes):
+
+- *original:* the function with its loop, including its signature and docstring;
+- *Lattice:* the whole program, including `load`/`write` and the endpoint signature;
+- for the API items, the SQLModel classes and dependencies on one side, and the
+  profile on the other, are not counted.
+
+| # | Item | Loop shape | Construct | Original | Lattice | Equivalent |
+|---|---|---|---|---|---|---|
+| 01 | running balance per account | running value per key | `window` + `win.cum_sum` | 8 / 108 | 5 / 45 | yes (polars, SQL) |
+| 02 | previous-value delta (pandas) | previous row of the same key | `window` + `win.lag` | 17 / 132 | 4 / 63 | yes (polars, SQL) |
+| 03 | salary rank within department | rank within group, ties share | `window` + `win.rank` | 14 / 156 | 5 / 44 | yes (polars, SQL) |
+| 04 | 3-row moving average (pandas + deque) | moving frame of N rows | `window` + `win.mean(rows=3)` | 12 / 130 | 3 / 46 | yes (polars, SQL) |
+| 05 | category descendants with depth | tree walk down (BFS, seen-set) | `traverse` | 24 / 246 | 4 / 49 | yes (polars, SQL) |
+| 06 | breadcrumb (ancestors path) | parent walk up | `traverse(direction="up")` | 13 / 146 | 6 / 51 | yes (polars, SQL) |
+| 07 | org chart reports, cycles in data | one query per level, seen-set | `traverse` (API, 1 statement) | 26 / 223 | 10 / 127 | yes (API) |
+| 08 | prune orphaned replies | repeat until stable | `iterate(until="fixpoint")` | 10 / 93 | 11 / 137 | yes (polars) |
+| 09 | converge forecasts | converge until a predicate holds | `iterate(until=<Bool>)` | 8 / 96 | 9 / 91 | yes (polars) |
+| 10 | notify watchers after insert | side effect per row | `for_each` + outbox (API) | 22 / 173 | 14 / 155 | yes (API) |
+| 11 | order sequence number, same-day ties | per-key counter, ties | `window` + `win.row_number`, key in `order` | 9 / 115 | 6 / 57 | yes (polars, SQL) |
+| 12 | login lockout replay | multi-accumulator state machine | native island | 28 / 259 | — | n/a (native) |
+| | **total, items 01-11** | | | **163 / 1618** | **77 / 865** | **11/11** |
+
+**Size.** Summed over the 11 expressible items, Lattice uses 53% fewer lines and 47%
+fewer AST nodes.
+
+- `window` and `traverse` items shrink the most, to 4-6 lines against 8-24, because the
+  loop's bookkeeping (dicts of accumulators, seen-sets, frontiers, sorting) disappears.
+- The two `iterate` items are about as long as the original (11 vs 10 lines, 9 vs 8).
+  A round of the loop becomes a `@step`, and item 08 needs a `group` + `rename` + left
+  `join` to express "parent still exists".
+- What `iterate` adds is the bound: at most N rounds, and R610 instead of a silent
+  partial answer.
+
+**Bounds made explicit.**
+
+- Items 05-07 take a stated `max_depth`, and items 08-09 a stated `max`.
+- Item 10 notifies at most 100 watchers (L439), where the original notifies all of them.
+- These are listed per item in `tests/fixtures/loops/README.md`.
+
+**Native island (12).** Replaying login events carries four interacting accumulators
+(failures, lock deadline, sessions, status), and branches on the current state. That is
+a non-associative fold: no combination of `win.*` scans rebuilds it. `iterate` could
+only emulate it one event per round, at O(n²). It stays a native function. The checker
+rejects the loop with L127, and the hint says to keep it in a native function (asserted
+by the test).
+
+**Rejection hints.** A `for`/`while` statement keeps L127, and a comprehension keeps
+L121. The hint now names the construct for the loop's shape:
+
+- running / previous / rank → `window`;
+- tree / parent walk → `traverse`;
+- repeat until stable → `iterate` (in API programs: a native function);
+- an action per row → `for_each` (in tabular programs: a note that effects are API-only);
+- a state machine or anything else → a native function.
+
+The classifier is `lattice/check/loop_hints.py`, tested in
+`tests/check/test_loop_hints.py`. On every corpus item, the original loop's hint names
+that item's construct (`test_the_original_loop_gets_a_hint_naming_the_construct`).
+
+**Prompt size.** Each construct has one short section with one inline example, and the
+three fenced examples are unchanged.
+
+- The tabular guide gets `window`, `traverse` and `iterate`.
+- The API guide gets `window`, `traverse`, `for_each`, `Email`/`pattern`, `unique_or`
+  and list constants.
+- Each baseline guide gets a section with the same information: pandas groupby
+  `cumsum`/`shift`/`rank`/`rolling`, BFS with a visited dict, and bounded retry for the
+  tabular arm; SQL window functions, `WITH RECURSIVE`, effects after `db.commit()`,
+  `Field(pattern=)`, `IntegrityError` → 409 and column-list constants for the API arm.
+- The sections are reference material, not advice, so both hint conditions carry them.
+  The tests assert equal substance (±30% per section) and that every inline Lattice
+  example checks clean.
+
+Token counts are estimates at about 3.5 characters per token: no tokenizer or API key
+was available offline.
+
+| Prompt | Before (chars) | After (chars) | Δ chars | Δ tokens (est.) | Baseline / Lattice ratio |
+|---|---|---|---|---|---|
+| tabular Lattice (hints / no hints) | 7,911 / 7,061 | 9,579 / 8,729 | +1,668 (+21% / +24%) | ≈ +480 | — |
+| tabular pandas (hints / no hints) | 7,224 / 6,170 | 8,837 / 7,783 | +1,613 (+22% / +26%) | ≈ +460 | 0.91 → 0.92 |
+| API Lattice (hints / no hints) | 10,802 / 9,489 | 12,798 / 11,485 | +1,996 (+18% / +21%) | ≈ +570 | — |
+| API FastAPI (hints / no hints) | 10,258 / 8,884 | 11,989 / 10,615 | +1,731 (+17% / +19%) | ≈ +490 | 0.95 → 0.94 |
+
+**Language gaps found while writing the corpus.**
+
+1. **`@step` parameters lose declared keys.** Inside a step, `Table[Comments]` does not
+   carry the key `(id,)`. So a `select` → `rename` → `join` that checks clean at the top
+   level is L420 inside the step. Item 08 re-proves uniqueness with
+   `group(t, by=["id"], n=agg.count())`.
+2. **L439 does not see through joins.** `for_each` over `join(limit(...), one_row,
+   on=[])` is rejected as unbounded, although the input is bounded. Effect arguments
+   therefore come from the bounded table and the endpoint parameters only (item 10
+   cannot pass the new comment's id).
+3. **Fan-out needs an explicit cap.** "Notify every watcher" becomes "the first 100"
+   (L439). The cap is by design, but the importer must report it as a behaviour change.

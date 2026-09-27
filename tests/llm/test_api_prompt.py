@@ -532,3 +532,111 @@ def test_implicit_view_gives_both_arms_the_same_implicit_message() -> None:
         assert lattice.startswith(task.implicit_spec) and baseline.startswith(task.implicit_spec)
         assert task.spec not in lattice and task.spec not in baseline
         assert lattice.splitlines()[:-1] == baseline.splitlines()[:-1]
+
+
+# ------------------------------------------------ loop constructs and Part B --
+
+
+def test_both_arms_document_row_by_row_work_formats_and_uniqueness() -> None:
+    from lattice.catalog import WIN_FUNCS
+    from lattice.llm.api_prompt import _BASELINE_LOOPS_SECTION, _LATTICE_LOOPS_SECTION
+
+    for hints in (True, False):  # reference, not removable advice
+        assert _LATTICE_LOOPS_SECTION in api_lattice_system_prompt(hints=hints)
+        assert _BASELINE_LOOPS_SECTION in api_baseline_system_prompt(hints=hints)
+    assert 0.7 <= len(_BASELINE_LOOPS_SECTION) / len(_LATTICE_LOOPS_SECTION) <= 1.3
+    lattice, baseline = _LATTICE_LOOPS_SECTION, _BASELINE_LOOPS_SECTION
+    for construct in ("`window(", "`traverse(", "`for_each(", "`Email(max_len=)`"):
+        assert construct in lattice, construct
+    for name in WIN_FUNCS:
+        assert f"`win.{name}(" in lattice, name
+    for needle in ('pattern=r"', "unique_or=", "PUBLIC = ", "cols=PUBLIC"):
+        assert needle in lattice, needle
+    for needle in ("ROW_NUMBER()", "LAG(", "ROWS BETWEEN", "WITH RECURSIVE", "MIN(depth)"):
+        assert needle in baseline, needle
+    for needle in ("db.commit()", "IntegrityError", 'Field(pattern=r"', "PUBLIC = "):
+        assert needle in baseline, needle
+    # the same facts in both arms
+    for needle in ("at-least-once", "at most 100", "409", "422", "smallest", "key"):
+        assert needle.replace("at most 100", "100") in lattice and needle in baseline, needle
+
+
+def test_api_loop_examples_check_clean() -> None:
+    from lattice.llm.api_prompt import (
+        _LATTICE_LOOPS_SECTION,
+        API_FOR_EACH_EXAMPLE,
+        API_LIST_EXAMPLE,
+        API_TRAVERSE_EXAMPLE,
+        API_UNIQUE_EXAMPLE,
+        API_WINDOW_EXAMPLE,
+    )
+    from lattice.profile import ApiProfile, NativeSig, Profile
+    from lattice.typesys import Scalar, Schema
+
+    for example in (
+        API_WINDOW_EXAMPLE,
+        *API_TRAVERSE_EXAMPLE,
+        API_FOR_EACH_EXAMPLE,
+        API_UNIQUE_EXAMPLE,
+        *API_LIST_EXAMPLE,
+    ):
+        assert f"`{example}`" in _LATTICE_LOOPS_SECTION, example
+    bench_api = api_profile().api
+    assert bench_api is not None
+    users = Schema.from_pairs(
+        [("id", Scalar.INT), ("email", Scalar.STR), ("name", Scalar.STR),
+         ("role", Scalar.STR), ("token", Scalar.STR)],
+        keys=[("id",)],
+        private=["token"],
+    )  # fmt: skip
+    categories = Schema.from_pairs(
+        [("id", Scalar.INT), ("parent_id", Scalar.INT), ("name", Scalar.STR)],
+        keys=[("id",)],
+        nullable=["parent_id"],
+    )
+    profile = Profile(
+        schemas={},
+        api=ApiProfile(
+            tables={"Users": users, "Orders": bench_api.tables["Orders"], "Categories": categories},
+            table_names={"Users": "users", "Orders": "orders", "Categories": "categories"},
+            roles=bench_api.roles,
+            natives={"send_welcome": NativeSig((Scalar.STR,), effect=True)},
+        ),
+    )
+    source = f"""# lattice: v1
+{API_LIST_EXAMPLE[0]}
+
+
+@endpoint("GET", "/orders/numbered", auth=Customer)
+def numbered_orders(user: CurrentUser) -> Page:
+    orders = fetch(Orders)
+    mine = owned(orders, by=user)
+    {API_WINDOW_EXAMPLE}
+    result = page(numbered, limit=100)
+    return result
+
+
+@endpoint("GET", "/categories/{{category_id}}/tree", auth=Public)
+def category_tree(category_id: Int(ge=1)) -> Page:
+    categories = fetch(Categories)
+    {API_TRAVERSE_EXAMPLE[0]}
+    {API_TRAVERSE_EXAMPLE[1]}
+    result = page(tree, limit=100)
+    return result
+
+
+@endpoint("POST", "/signup", auth=Public)
+def signup(
+    email: Email(max_len=255),
+    name: Str(min_len=1, max_len=50),
+    token: Str(max_len=64, pattern=r"[A-Za-z0-9]{{16,64}}"),
+) -> Created | Conflict:
+    created = insert(
+        Users, email=email, name=name, role="Customer", token=token, {API_UNIQUE_EXAMPLE}
+    )
+    {API_FOR_EACH_EXAMPLE}
+    shown = {API_LIST_EXAMPLE[1]}
+    return shown
+"""
+    result = check_source(source, profile)
+    assert result.ok and not result.diagnostics, [d.render() for d in result.diagnostics]

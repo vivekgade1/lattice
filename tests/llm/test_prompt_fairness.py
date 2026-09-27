@@ -150,3 +150,24 @@ def test_both_task_messages_list_the_same_file_schema_and_output_info() -> None:
         assert message.startswith(task.prompt)
         assert "Input files (in the current directory):" in message
         assert "Write the final result to out.parquet" in message
+
+
+def test_both_arms_get_the_loop_guidance_with_equal_substance() -> None:
+    """Sub-project 1b: the Lattice guide's loop constructs have a pandas counterpart of
+    comparable length covering the same three shapes, in both hint conditions."""
+    from lattice.llm.prompt import _LOOPS_SECTION, _PANDAS_LOOPS_SECTION, baseline_system_prompt
+
+    for hints in (True, False):
+        assert _LOOPS_SECTION in lattice_system_prompt(hints=hints)
+        assert _PANDAS_LOOPS_SECTION in baseline_system_prompt(hints=hints)
+    assert 0.7 <= len(_PANDAS_LOOPS_SECTION) / len(_LOOPS_SECTION) <= 1.3
+    # running / previous / rank / moving frame; tree walk; repeat until stable
+    for needle in ("cumsum()", "shift(1)", 'rank(method="min")', "rolling(N", "unique key"):
+        assert needle in _PANDAS_LOOPS_SECTION, needle
+    for needle in ("visited", "smallest depth", "maximum depth"):
+        assert needle in _PANDAS_LOOPS_SECTION, needle
+    for needle in ("at most N rounds", "raise", "same rows"):
+        assert needle in _PANDAS_LOOPS_SECTION, needle
+    # the same worked computation in both arms
+    for needle in ('"customer_id"', '"order_date", "order_id"', '"est"', '"target"', "0.5"):
+        assert needle in _LOOPS_SECTION and needle in _PANDAS_LOOPS_SECTION, needle

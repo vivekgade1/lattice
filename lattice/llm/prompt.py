@@ -133,7 +133,7 @@ def _render_op_shape(op: str) -> str:
 def _op_catalog_section() -> str:
     header = "Call each table op exactly this way (positional vs keyword):"
     lines = ["## Op catalog", "", header, ""]
-    # the ops this guide documents (window/traverse get their sections in N4)
+    # window/traverse are documented in the loop constructs section
     for op in (o for o in OP_SHAPES if o in _OP_DESCRIPTIONS):
         lines.append(f"- `{_render_op_shape(op)}`: {_OP_DESCRIPTIONS[op]}")
     return "\n".join(lines)
@@ -195,6 +195,41 @@ def _expression_library_section() -> str:
     lines.append(_aggregate_line())
     return "\n".join(lines)
 
+
+# Loop-shaped work (spec 2026-09-27 lattice-loops §5): one short section per construct,
+# one inline example each (the three fenced examples stay the only code blocks). The
+# pandas guide carries the same information (_PANDAS_LOOPS_SECTION).
+WINDOW_EXAMPLE = (
+    'running = window(orders, by=["customer_id"], order=["order_date", "order_id"], '
+    'spent=win.cum_sum(col("qty") * col("unit_price")), prev_qty=win.lag(col("qty")))'
+)
+TRAVERSE_EXAMPLE = (
+    'top = where(categories, col("id") == 1)',
+    'tree = traverse(categories, top, parent="parent_id", child="id", max_depth=10)',
+)
+ITERATE_EXAMPLE = (
+    'done = iterate(halve, plans, until=fn.abs(col("est") - col("target")) <= 0.5, max=64)'
+)
+_LOOPS_SECTION = f"""## Loop constructs
+
+Instead of loops over rows:
+
+- `window(t, by=[...], order=[...], desc=[...], name=win.<f>(...), ...)` keeps every \
+row and adds values over its `by` group (`by=[]`: all rows) in `order` (nulls last): \
+`win.row_number()`, `win.rank()`, `win.dense_rank()`; `win.lag(x, offset=1)` / \
+`win.lead(x, offset=1)` (previous / next row, null past the edge); `win.cum_sum(x)`, \
+`win.cum_count()`, `win.cum_min(x)`, `win.cum_max(x)` (running, nulls skipped); \
+`win.mean(x, rows=N)` / `win.sum(x, rows=N)` (the row and the N-1 before it). End \
+`order` with a unique key so ties cannot change the result. E.g. `{WINDOW_EXAMPLE}`.
+- `traverse(edges, start, parent="parent_id", child="id", max_depth=N)` gives the rows \
+of `edges` reachable from the rows of `start` (a name) through `parent` -> `child` links \
+(`direction="up"`: towards the ancestors), each once at its smallest `depth` (a new Int \
+column, 0 = start); cycle-safe; `max_depth` an Int literal 1-1000, `child` a unique key. \
+E.g. `{TRAVERSE_EXAMPLE[0]}` then `{TRAVERSE_EXAMPLE[1]}`.
+- `iterate(step, t, until="fixpoint", max=N)` applies a `@step` `Table[S] -> Table[S]` \
+until a round returns the same rows (`until=<Bool expr>`: until every row satisfies it); \
+needing more than `max` rounds (a literal <= 10000) is a run error. E.g. with a step \
+`halve` deriving `est=(col("est") + col("target")) / 2`: `{ITERATE_EXAMPLE}`."""
 
 _RULES_SECTION = """## Rules
 
@@ -353,6 +388,7 @@ def lattice_system_prompt(hints: bool = True) -> str:
         _RULES_SECTION if hints else _without_advice(_RULES_SECTION, _LATTICE_ADVICE_BULLETS),
         _op_catalog_section(),
         _expression_library_section(),
+        _LOOPS_SECTION,
         _EXAMPLES_SECTION,
         _OUTPUT_FORMAT_SECTION,
     ]
@@ -470,6 +506,33 @@ when the task asks for a sorted or top-n result.
 `result.to_parquet("out.parquet", index=False)`.
 """
 
+# The same information as _LOOPS_SECTION, for pandas.
+_PANDAS_LOOPS_SECTION = """## Row-by-row computations
+
+Instead of Python loops over rows:
+
+- Values over the ordered rows of a group, keeping every row: sort, then with \
+`g = df.groupby(keys)`: `g.cumcount() + 1` (row number), `g[c].rank(method="min")` / \
+`method="dense"` (ties share a rank); `g[c].shift(1)` / `g[c].shift(-1)` (previous / \
+next row, NaN past the edge); `g[c].cumsum()`, `g[c].cummin()`, `g[c].cummax()` \
+(running); `g[c].transform(lambda s: s.rolling(N, min_periods=1).mean())` (the row and \
+the N-1 before it). End the sort with a unique key so ties cannot change the result. \
+E.g. `orders = orders.sort_values(["customer_id", "order_date", "order_id"])`, \
+`orders["spent"] = (orders["qty"] * orders["unit_price"]).groupby(orders["customer_id"])\
+.cumsum()`, `orders["prev_qty"] = orders.groupby("customer_id")["qty"].shift(1)`.
+- Tree or graph walks (parent/child columns): breadth-first from the start rows, level \
+by level, with a dict of visited ids so cycles stop and each row appears once at its \
+smallest depth (0 = start), up to a maximum depth. E.g. \
+`kids = df.groupby("parent_id")["id"].apply(list).to_dict()`, `seen, level = {1: 0}, [1]`, \
+then for `depth in range(1, 11)`: `level = [k for p in level for k in kids.get(p, []) \
+if k not in seen]`, `seen.update((k, depth) for k in level)`.
+- Repeat until stable: at most N rounds; stop when a round returns the same rows or \
+every row meets the stop condition, and raise when N rounds were not enough (never \
+return a half-finished answer). E.g. `for _ in range(64):` stop if \
+`((p["est"] - p["target"]).abs() <= 0.5).all()`, else \
+`p["est"] = (p["est"] + p["target"]) / 2`.
+"""
+
 _PANDAS_EXAMPLE_1 = """```python
 import pandas as pd
 
@@ -552,6 +615,7 @@ def baseline_system_prompt(hints: bool = True) -> str:
                 "with the correct answer, so follow the task and the rules below "
                 "precisely.",
                 rules,
+                _PANDAS_LOOPS_SECTION,
                 _PANDAS_EXAMPLES_SECTION,
                 _OUTPUT_FORMAT_SECTION.replace("program", "script"),
             ]

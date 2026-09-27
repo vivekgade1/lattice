@@ -7,6 +7,7 @@ from bench.tasks import Task
 from lattice.catalog import API_ONLY_FNS, FN_SIGS, OP_SHAPES
 from lattice.check import check_source
 from lattice.llm.prompt import lattice_system_prompt, lattice_task_message
+from lattice.profile import Profile
 
 _FENCE_RE = re.compile(r"```python\n(.*?)```", re.DOTALL)
 
@@ -21,8 +22,7 @@ def test_system_prompt_is_deterministic() -> None:
 
 def test_system_prompt_mentions_every_op() -> None:
     prompt = lattice_system_prompt()
-    # window/traverse (sub-project 1b) get their prompt sections in node N4
-    for op in (o for o in OP_SHAPES if o not in ("window", "traverse")):
+    for op in OP_SHAPES:
         assert op in prompt, f"missing op {op!r}"
 
 
@@ -165,3 +165,60 @@ def test_prompts_document_joins_on_differently_named_keys() -> None:
         assert 'on={"id": "order_id"}' in lattice_system_prompt(hints=hints)
         assert 'on={"id": "order_id"}' in api_lattice_system_prompt(hints=hints)
         assert "left_on=[...], right_on=[...]" in baseline_system_prompt(hints=hints)
+
+
+def test_system_prompt_documents_every_loop_construct_and_win_function() -> None:
+    from lattice.catalog import WIN_FUNCS
+
+    for hints in (True, False):  # a language reference, not removable advice
+        prompt = lattice_system_prompt(hints=hints)
+        assert "## Loop constructs" in prompt
+        for construct in ("`window(", "`traverse(", "`iterate("):
+            assert construct in prompt, construct
+        for name in WIN_FUNCS:
+            assert f"`win.{name}(" in prompt, name
+        assert 'direction="up"' in prompt and "unique key" in prompt
+
+
+def test_loop_construct_examples_check_clean() -> None:
+    """The inline window / traverse / iterate examples are valid Lattice (checked
+    against the bench schemas with a declared order key, plus a category tree and a
+    plans table)."""
+    import dataclasses
+
+    from bench.datasets import ORDERS
+    from lattice.llm.prompt import ITERATE_EXAMPLE, TRAVERSE_EXAMPLE, WINDOW_EXAMPLE
+    from lattice.typesys import Scalar, Schema
+
+    prompt = lattice_system_prompt()
+    for example in (WINDOW_EXAMPLE, *TRAVERSE_EXAMPLE, ITERATE_EXAMPLE):
+        assert f"`{example}`" in prompt
+    categories = Schema.from_pairs(
+        [("id", Scalar.INT), ("parent_id", Scalar.INT), ("name", Scalar.STR)],
+        keys=[("id",)],
+        nullable=["parent_id"],
+    )
+    plans = Schema.from_pairs(
+        [("id", Scalar.INT), ("est", Scalar.FLOAT), ("target", Scalar.FLOAT)], keys=[("id",)]
+    )
+    profile = Profile(
+        schemas={
+            "Orders": dataclasses.replace(ORDERS, keys=(("order_id",),)),
+            "Categories": categories,
+            "Plans": plans,
+        }
+    )
+    source = (
+        "# lattice: v1\n"
+        "@step\n"
+        "def halve(t: Table[Plans]) -> Table[Plans]:\n"
+        '    out = derive(t, est=(col("est") + col("target")) / 2)\n'
+        "    return out\n\n"
+        'orders = load("orders.csv", schema=Orders)\n'
+        'categories = load("categories.csv", schema=Categories)\n'
+        'plans = load("plans.csv", schema=Plans)\n'
+        + "\n".join((WINDOW_EXAMPLE, *TRAVERSE_EXAMPLE, ITERATE_EXAMPLE))
+        + '\nwrite(running, "a.csv")\nwrite(tree, "b.csv")\nwrite(done, "c.csv")\n'
+    )
+    result = check_source(source, profile)
+    assert result.ok and not result.diagnostics, [d.render() for d in result.diagnostics]

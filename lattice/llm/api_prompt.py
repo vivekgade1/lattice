@@ -191,6 +191,48 @@ def _lattice_expressions_section() -> str:
     )
 
 
+# Loop-shaped work and the Part B additions (spec 2026-09-27 lattice-loops §4, §5): one
+# short bullet per construct, one inline example each (the three fenced examples stay
+# the only Examples). The baseline guide carries the same information in SQL/FastAPI
+# terms (_BASELINE_LOOPS_SECTION).
+API_WINDOW_EXAMPLE = (
+    'numbered = window(mine, by=["status"], order=["created_at", "id"], '
+    'n=win.row_number(), running=win.cum_sum(col("total")))'
+)
+API_TRAVERSE_EXAMPLE = (
+    'start = where(categories, col("id") == category_id)',
+    'tree = traverse(categories, start, parent="parent_id", child="id", max_depth=10)',
+)
+API_FOR_EACH_EXAMPLE = 'for_each(created, native.send_welcome, col("email"))'
+API_UNIQUE_EXAMPLE = 'unique_or=Conflict("email taken")'
+API_LIST_EXAMPLE = ('PUBLIC = ["id", "email", "name"]', "select(created, cols=PUBLIC)")
+
+_LATTICE_LOOPS_SECTION = f"""## Row-by-row work, formats and uniqueness
+
+- `window(t, by=[...], order=[...], desc=[...], name=win.<f>(...), ...)` keeps every \
+row and adds values over its `by` group in `order` (nulls last): `win.row_number()`, \
+`win.rank()`, `win.dense_rank()`; `win.lag(x, offset=1)` / `win.lead(x, offset=1)` \
+(null past the edge); `win.cum_sum(x)`, `win.cum_count()`, `win.cum_min(x)`, \
+`win.cum_max(x)` (running); `win.mean(x, rows=N)` / `win.sum(x, rows=N)` (the row and \
+the N-1 before it). `by` + `order` must be unique: end `order` with a key. E.g. \
+`{API_WINDOW_EXAMPLE}`.
+- `traverse(edges, start, parent="parent_id", child="id", max_depth=N)`: the rows of \
+`edges` reachable from the rows of `start` (a name) through `parent` -> `child` links \
+(`direction="up"`: the ancestors), each once at its smallest `depth` (a new Int column, \
+0 = start), in one query; cycle-safe; `max_depth` a literal 1-1000 or a bounded Int \
+parameter; call `owned` first on an owned table. E.g. `{API_TRAVERSE_EXAMPLE[0]}` then \
+`{API_TRAVERSE_EXAMPLE[1]}`.
+- `for_each(t, native.<name>, <expr>, ...)`, a statement, calls an effect native the task \
+declares (e.g. send an email) once per row of `t` after the endpoint commits, in order; \
+`t` comes from `one`, `insert`, `update` or `page`/`limit` with n <= 100; a failure never \
+changes the response (delivery is at-least-once). E.g. `{API_FOR_EACH_EXAMPLE}`.
+- Parameter formats: `Email(max_len=)` (an email address) and `Str(pattern=r"...")` \
+(the whole value matches the regular expression); a bad value answers 422.
+- `insert(...)` / `update(...)` take `{API_UNIQUE_EXAMPLE}`: a write that hits a unique \
+column answers that 409.
+- A top-level list of column names, e.g. `{API_LIST_EXAMPLE[0]}`, can be reused as \
+`{API_LIST_EXAMPLE[1]}`."""
+
 _LATTICE_RULES_SECTION = """## Rules
 
 - No imports are needed: all operations, `col`, `when`, `coalesce`, `is_null`, `fn`, \
@@ -305,6 +347,7 @@ def api_lattice_system_prompt(hints: bool = True) -> str:
         _LATTICE_PROGRAM_SECTION,
         _lattice_ops_section(),
         _lattice_expressions_section(),
+        _LATTICE_LOOPS_SECTION,
         _LATTICE_RULES_SECTION,
     ]
     if hints:
@@ -373,6 +416,32 @@ and change every row. Columns listed as private never appear in a response.
 check passed.
 - Dates are ISO `YYYY-MM-DD` strings. Import only the standard library, `fastapi`, \
 `pydantic` and `platform_kit`; no network, no files other than through `get_db`."""
+
+# The same information as _LATTICE_LOOPS_SECTION, for SQL and FastAPI.
+_BASELINE_LOOPS_SECTION = """## Row-by-row work, formats and uniqueness
+
+- Per-row values over ordered rows: SQL window functions \
+`... OVER (PARTITION BY ... ORDER BY ...)`: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`; \
+`LAG(x, 1)` / `LEAD(x, 1)` (NULL past the edge); `SUM(x)`, `COUNT(*)`, `MIN(x)`, `MAX(x)` \
+(running); `AVG(x)` / `SUM(x)` with `ROWS BETWEEN N-1 PRECEDING AND CURRENT ROW`. End \
+`ORDER BY` with a key so ties cannot change the result; nulls last: `ORDER BY x IS NULL, \
+x`. E.g. `ROW_NUMBER() OVER (PARTITION BY status ORDER BY created_at, id) AS n`.
+- Tree walks (parent/child columns): one `WITH RECURSIVE` query from the start rows with \
+a depth counter and `WHERE w.depth < N`, then `MIN(depth)` per id (cycle-safe; each row \
+once at its smallest depth, 0 = start); apply the ownership filter inside. E.g. \
+`WITH RECURSIVE w(id, depth) AS (SELECT id, 0 FROM categories WHERE id = ? UNION \
+SELECT c.id, w.depth + 1 FROM categories c JOIN w ON c.parent_id = w.id WHERE w.depth \
+< 10) SELECT id, MIN(depth) AS depth FROM w GROUP BY id`.
+- Side effects the task provides (e.g. send an email): call it once per row only after \
+`db.commit()`, in order, for at most 100 rows, catching its errors so the response never \
+depends on it (it may be retried: at-least-once). E.g. `for r in rows:` \
+`try: send_welcome(r["email"])` `except Exception: pass`.
+- Formats: `Field(pattern=r"...")` (the whole value must match); for an email use an \
+email pattern such as `r"[^@\\s]+@[^@\\s]+\\.[A-Za-z]{2,}"`; a bad value answers 422.
+- A write that hits a unique column raises `sqlite3.IntegrityError`: answer 409 with the \
+JSON error body.
+- A module-level list of column names, e.g. `PUBLIC = ["id", "email", "name"]`, can be \
+reused in every `SELECT` (`", ".join(PUBLIC)`)."""
 
 # Pitfall advice, removable for the no-hints condition (the reference stays).
 BASELINE_ADVICE: tuple[str, ...] = (
@@ -502,7 +571,12 @@ def post_review(
 
 def api_baseline_system_prompt(hints: bool = True) -> str:
     """Arms A/P system prompt; ``hints=False`` drops the Advice section."""
-    sections = [_BASELINE_INTRO, _BASELINE_KIT_SECTION, _BASELINE_CONVENTIONS_SECTION]
+    sections = [
+        _BASELINE_INTRO,
+        _BASELINE_KIT_SECTION,
+        _BASELINE_CONVENTIONS_SECTION,
+        _BASELINE_LOOPS_SECTION,
+    ]
     if hints:
         sections.append(_advice_section(BASELINE_ADVICE))
     sections += [
