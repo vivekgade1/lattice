@@ -23,6 +23,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from lattice.api.backend import dialect_for
 from lattice.api.sql import (
     ParamRef,
     Rel,
@@ -142,6 +143,7 @@ class EndpointPlan:
     user_key: str = "id"
     # the caller's row as the auth lookup reads it: the result of step "user"
     user_columns: tuple[str, ...] = ("id", "role")
+    backend: str = "sqlite"  # the dialect the SQL was compiled for (ApiProfile.backend)
 
 
 # ---- helpers ---------------------------------------------------------------------------
@@ -264,6 +266,7 @@ class _Endpoint:
     ) -> None:
         self.program = program
         self.api = api
+        self.dialect = dialect_for(getattr(api, "backend", "sqlite"))
         self.info = info
         self.step_defs = steps_of(program.module)
         self.step_consts = step_consts
@@ -611,7 +614,9 @@ class _Endpoint:
             if view is not None:
                 materialized[rid] = (view, rel.schema.names())
                 return view
-            sql = compile_select(self.rels, rid, materialized=materialized, extra=extra)
+            sql = compile_select(
+                self.rels, rid, materialized=materialized, extra=extra, dialect=self.dialect
+            )
             steps.append(ReadStep(rid, sql, span, rel.schema, tuple(n for n, _ in extra)))
             step_flags[rid] = {n for n, _ in extra}
             materialized[rid] = (rid, rel.schema.names())
@@ -636,7 +641,11 @@ class _Endpoint:
                             rid = self._rel_of(ev.input)
                             flag_step = f"{ev.id}#cond"
                             sql = compile_select(
-                                self.rels, rid, materialized=materialized, extra=[(flag, ev.cond)]
+                                self.rels,
+                                rid,
+                                materialized=materialized,
+                                extra=[(flag, ev.cond)],
+                                dialect=self.dialect,
                             )
                             schema = self._schema_of(ev.input)
                             steps.append(ReadStep(flag_step, sql, ev.span, schema, (flag,)))
@@ -670,6 +679,7 @@ class _Endpoint:
             self.api.table_names.get(self.api.users_table, "users"),
             users.keys[0][0] if users is not None and users.keys else "id",
             users.names() if users is not None else ("id", "role"),
+            self.dialect.name,
         )
 
     def _write(
@@ -682,7 +692,9 @@ class _Endpoint:
         values = tuple((c, _sql_text(e)) for c, e in ev.values)
         if ev.kind == "insert":
             owner = ev.schema.owner if ev.owner else None
-            sql = compile_insert(table, ev.values, ev.schema.names(), owner=owner)
+            sql = compile_insert(
+                table, ev.values, ev.schema.names(), owner=owner, dialect=self.dialect
+            )
             schema = self.step_schemas[ev.id]
             return WriteStep(ev.id, "insert", table, None, values, ev.span, sql, schema)
         assert ev.input is not None
@@ -694,9 +706,9 @@ class _Endpoint:
             raise LatticeInternalError(f"{ev.kind}() rows lack the key of {ev.table}")
         src = (source, schema.names())
         if ev.kind == "update":
-            sql = compile_update(table, key, src, ev.values)
+            sql = compile_update(table, key, src, ev.values, dialect=self.dialect)
         else:
-            sql = compile_delete(table, key, src)
+            sql = compile_delete(table, key, src, dialect=self.dialect)
         return WriteStep(ev.id, ev.kind, table, source, values, ev.span, sql, schema, key)
 
 

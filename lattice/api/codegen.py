@@ -47,8 +47,9 @@ import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from lattice.api.backend import SQLITE
 from lattice.api.ir import CheckStep, EndpointPlan, ReadStep, WriteStep, lower_api
-from lattice.api.sql import IS_ADMIN, USER_ID, SqlQuery, q
+from lattice.api.sql import IS_ADMIN, USER_ID, SqlQuery, compile_lookup
 from lattice.catalog import USER_PARAM
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, ParamSpec
@@ -702,9 +703,8 @@ def _param(spec: ParamSpec) -> _Call:
 
 
 def _auth_sql(plan: EndpointPlan) -> str:
-    """The runtime's authentication statement (identifiers quoted as sql.q does)."""
-    cols = ", ".join(q(c) for c in plan.user_columns)
-    return f"SELECT {cols} FROM {q(plan.users_table)} WHERE {q('token')} = ?"
+    """The runtime's authentication statement (the same compile_lookup)."""
+    return compile_lookup(plan.users_table, plan.user_columns, "token", dialect=SQLITE)
 
 
 class _EndpointGen:
@@ -928,6 +928,12 @@ def generate_fastapi(plans: Sequence[EndpointPlan], source: str | None = None) -
     for plan in plans:
         if plan.method not in _METHODS:
             raise LatticeInternalError(f"unsupported method {plan.method!r}")
+        # the generated app runs over the platform kit's SQLite connection and
+        # registers the SQLite dialect's functions itself
+        if plan.backend != SQLITE.name:
+            raise LatticeInternalError(
+                f"FastAPI generation supports the sqlite backend only, not {plan.backend!r}"
+            )
     lines = source.splitlines() if source is not None else None
     names = _Names()
     ordered = sorted(plans, key=_specificity)

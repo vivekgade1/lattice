@@ -27,11 +27,14 @@ from lattice.catalog import (
     EXPR_FUNCS,
     IO_OPS,
     NAMESPACES,
+    NATIVE_NS,
     OP_SHAPES,
     ORDER_AGGS,
+    OWNER_IS,
     PUBLIC_ROLE,
     TABLE_OPS,
     TYPE_NAMES,
+    UNSET_NAME,
     USER_PARAM,
 )
 from lattice.check.api_info import (
@@ -79,6 +82,7 @@ from lattice.typesys import (
     generated_key,
     identity_columns,
     plain_columns,
+    uuid_key,
 )
 
 TableOrUnknown = TableT | UnknownT
@@ -250,6 +254,11 @@ class _Types:
         self.reported = reported_name_spans(ctx)
         self.sigs: dict[str, _Sig] = {}
         self.in_endpoint = False  # typing an @endpoint body (API profile)
+        self.natives = self.api.natives if self.api is not None else {}
+        # natives whose result may be missing (L421 nullability)
+        self.null_natives = frozenset(n for n, sig in self.natives.items() if sig.nullable)
+        # natives that may read private columns without revealing them (verifiers)
+        self._verifiers = frozenset(n for n, sig in self.natives.items() if sig.reads_private)
 
     def run(self) -> dict[str, StepT]:
         scope = _Scope()
@@ -285,6 +294,7 @@ class _Types:
             self.reported,
             consts=scope.consts,
             tables=scope.env,
+            natives=self.natives,
         )
 
     def _assign(self, name: str, value: ast.expr, scope: _Scope) -> None:
@@ -311,7 +321,9 @@ class _Types:
             case LitT(scalar=s) if shape is not None:
                 scope.scalars[name] = s
                 scope.shapes[name] = shape
-                scope.nullconsts[name] = expr_nullable(value, frozenset(), scope.nullconsts)
+                scope.nullconsts[name] = expr_nullable(
+                    value, frozenset(), scope.nullconsts, self.null_natives
+                )
                 lit = literal_value(value)
                 if lit is None and isinstance(value, ast.Name):
                     lit = scope.consts.get(value.id)  # `b = a` with a bound to a literal
@@ -378,10 +390,12 @@ class _Types:
             return "type", "pass a table name here"
         if name in TABLE_OPS:
             return "op", f"call it first: t = {name}(...), then pass t"
-        if name in NAMESPACES:
+        if name in NAMESPACES or (self.api is not None and name == NATIVE_NS):
             return "namespace", "pass a table name here"
-        if name in EXPR_FUNCS or name == "step":
+        if name in EXPR_FUNCS or name == "step" or (self.api is not None and name == OWNER_IS):
             return "function", "pass a table name here"
+        if self.api is not None and name == UNSET_NAME:
+            return None  # P6 reports UNSET outside a parameter default (L404)
         return None  # otherwise unresolved: P2 reported it (L202/L203/L603/L604)
 
     def _table_arg(self, arg: ast.expr, scope: _Scope) -> TableOrUnknown:
@@ -578,7 +592,7 @@ class _Types:
                 unknown = True
             else:
                 cols.append((kw.arg, vt.scalar))
-                if expr_nullable(kw.value, t.nullable, scope.nullconsts):
+                if expr_nullable(kw.value, t.nullable, scope.nullconsts, self.null_natives):
                     nullable.add(kw.arg)
                 else:
                     nullable.discard(kw.arg)
@@ -685,7 +699,7 @@ class _Types:
             # the picked row's value may be missing; every order value may be missing;
             # a whole-table aggregate over an empty input has no row to pick
             return whole_table or any(
-                expr_nullable(e, t.nullable, scope.nullconsts)
+                expr_nullable(e, t.nullable, scope.nullconsts, self.null_natives)
                 for e in [node.args[0], node.keywords[0].value]
             )
         if fn not in NULLS_AGGS:
@@ -694,7 +708,7 @@ class _Types:
         if (
             not node.keywords
             and self.ctx.profile.enforce_nullable
-            and expr_nullable(arg, t.nullable, scope.nullconsts)
+            and expr_nullable(arg, t.nullable, scope.nullconsts, self.null_natives)
         ):
             text = _render(arg)
             match arg:
@@ -1224,13 +1238,15 @@ class _Types:
                 return self._owned(call, tables[0], kws["by"])
             case "one":
                 self._else(kws["else_"])
-                return replace(tables[0], at_most_one_row=True, paged=False)
+                return replace(tables[0], at_most_one_row=True, paged=False, page_total=False)
             case "require":
-                self._condition(call.args[1], tables[0], scope, "require()")
                 self._else(kws["else_"])
+                if is_owner_is(call.args[1]):
+                    return self._owner_is(call.args[1], tables[0])
+                self._condition(call.args[1], tables[0], scope, "require()")
                 return tables[0]
             case "page":
-                return replace(tables[0], paged=True)
+                return replace(tables[0], paged=True, page_total=self._page_total(kws))
             case "insert":
                 return self._insert(call, scope)
             case "update":
@@ -1240,6 +1256,56 @@ class _Types:
                 return tables[0]
             case _:
                 raise TypeError(f"no transfer function for API op '{op}'")
+
+    def _page_total(self, kws: dict[str, ast.expr]) -> bool:
+        """page(..., total=True|False): a bool literal; True needs the profile's page
+        shape to carry a "total" field."""
+        assert self.api is not None
+        node = kws.get("total")
+        if node is None:
+            return False
+        v = node.value if isinstance(node, ast.Constant) else None
+        if not isinstance(v, bool):
+            self.ctx.error("L404", node, "page total= must be True or False", "e.g. total=True")
+            return False
+        if v and not self.api.page_shape.get("total"):
+            fields = ", ".join(k for k, f in self.api.page_shape.items() if f) or "none"
+            self.ctx.error(
+                "L404",
+                node,
+                "page(total=True) needs the profile's page shape to include a 'total' field",
+                f"this profile's pages carry: {fields}; remove total=True",
+            )
+            return False
+        return v
+
+    def _owner_is(self, cond: ast.Call, t: TableT) -> TableOrUnknown:
+        """require(t, owner_is(user), else_=...): every row is the caller's (Admin
+        callers pass), so the result is owner-checked like owned(t, by=user)."""
+        match cond:
+            case ast.Call(args=[ast.Name(id=name) as arg], keywords=[]) if name == USER_PARAM:
+                pass
+            case ast.Call(args=[ast.Name() as arg], keywords=[]) if self._silenced(arg):
+                return UNKNOWN
+            case _:
+                self.ctx.error(
+                    "L404",
+                    cond,
+                    "owner_is() takes the caller: owner_is(user)",
+                    'e.g. require(row, owner_is(user), else_=Forbidden("not yours"))',
+                )
+                return UNKNOWN
+        if t.owner is None and t.owner_via is None:
+            owned = sorted(n for n, s in self.schemas.items() if s.owner is not None or s.owner_via)
+            self.ctx.error(
+                "L404",
+                cond,
+                "owner_is() needs rows of a table with an owner column; this table has none",
+                "remove the check: only " + (", ".join(owned) or "no tables") + " are per-user",
+            )
+            return UNKNOWN
+        self.ctx.set_type(cond, ColT(Scalar.BOOL))
+        return replace(t, owner_checked=True)
 
     def _condition(self, pred: ast.expr, t: TableT, scope: _Scope, what: str) -> None:
         pt = self._typer(t.schema, scope).type_of(pred)
@@ -1374,11 +1440,14 @@ class _Types:
                 "insert() cannot create one for the caller",
                 "remove owner=user",
             )
-        # the owner column is P6's (L802 without owner=user; L404 for Admin)
+        # the owner column is P6's (L802 without owner=user; L404 for Admin); a Uuid
+        # key is filled with a new uuid4 when not given
         missing = [
             c
             for c in schema.names()
-            if c not in (key, schema.owner) and c not in schema.nullable and c not in given
+            if c not in (key, schema.owner, uuid_key(schema))
+            and c not in schema.nullable
+            and c not in given
         ]
         if missing:
             listed = ", ".join(f"'{c}'" for c in missing)
@@ -1464,7 +1533,7 @@ class _Types:
         plain = frozenset().union(*(i.plain for i in inputs))
         narrowed = any(i.narrowed for i in inputs)
         source: str | None = None
-        paged = False
+        paged = page_total = False
         # an identity column (key / owner / owner_via) was given new values: the rows
         # no longer identify database rows, nor are they known to be the caller's
         rebound = False
@@ -1483,11 +1552,11 @@ class _Types:
                     by = _str_list_of(next((kw.value for kw in kws if kw.arg == "by"), None))
                     narrowed = narrowed or not set(by) <= t.plain
             case "select":
-                source, paged = t.source, t.paged
+                source, paged, page_total = t.source, t.paged, t.page_total
             case "derive":
                 overwritten = {kw.arg for kw in kws}
                 private = (t.private - overwritten) | {
-                    kw.arg for kw in kws if kw.arg and _reads(kw.value, t.private)
+                    kw.arg for kw in kws if kw.arg and _reads(kw.value, t.private, self._verifiers)
                 }
                 owner_cols = (t.owner_cols - overwritten) | {
                     kw.arg for kw in kws if kw.arg and _reads(kw.value, t.owner_cols)
@@ -1495,7 +1564,7 @@ class _Types:
                 plain = t.plain - overwritten
                 owner = t.owner if t.owner not in overwritten else None
                 via = t.owner_via if via is not None and via[0] not in overwritten else None
-                paged = t.paged
+                paged, page_total = t.paged, t.page_total
                 if overwritten & self._identity(t):
                     rebound = True
                 else:
@@ -1508,11 +1577,13 @@ class _Types:
                 owner = mapping.get(t.owner, t.owner) if t.owner is not None else None
                 if t.owner_via is not None:
                     via = (mapping.get(t.owner_via[0], t.owner_via[0]), t.owner_via[1])
-                paged = t.paged
+                paged, page_total = t.paged, t.page_total
             case "group":
                 by = set(_str_list_of(next((kw.value for kw in kws if kw.arg == "by"), None)))
                 private = (t.private & names) | {
-                    kw.arg for kw in kws if kw.arg != "by" and _reads(kw.value, t.private)
+                    kw.arg
+                    for kw in kws
+                    if kw.arg != "by" and _reads(kw.value, t.private, self._verifiers)
                 }
                 plain = t.plain & by
                 if not self._per_owner_groups(t, kws):
@@ -1559,6 +1630,7 @@ class _Types:
             private=private & names,
             source=source,
             paged=paged,
+            page_total=page_total,
             plain=plain & names,
         )
 
@@ -1594,6 +1666,13 @@ class _Types:
         return any(_reads_other(kw.value, t.plain) for kw in kws if kw.arg != "by")
 
 
+def is_owner_is(node: ast.expr) -> bool:
+    """A call `owner_is(...)` (the whole condition of a require())."""
+    return (
+        isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == OWNER_IS
+    )
+
+
 def _rename_meta(t: TableT, mapping: dict[str, str]) -> TableT:
     """`t` with the column names in its API metadata renamed by `mapping`."""
 
@@ -1617,9 +1696,31 @@ def _str_list_of(node: ast.expr | None) -> list[str]:
     return []
 
 
-def _reads(node: ast.expr, columns: frozenset[str]) -> bool:
-    """Whether an expression reads any of `columns` via col("...")."""
-    return any(_col_name(n) in columns for n in ast.walk(node) if isinstance(n, ast.Call))
+def _reads(
+    node: ast.expr, columns: frozenset[str], verifiers: frozenset[str] = frozenset()
+) -> bool:
+    """Whether an expression reads any of `columns` via col("..."), not counting the
+    arguments of verifier natives (`native.<v>(...)` with NativeSig.reads_private)."""
+    return bool(cols_read(node, verifiers) & columns)
+
+
+def cols_read(node: ast.expr, verifiers: frozenset[str] = frozenset()) -> frozenset[str]:
+    """The columns an expression reads via col("..."), except inside the arguments of
+    verifier natives (their result reveals nothing about the columns they read)."""
+    found: set[str] = set()
+    todo: list[ast.AST] = [node]
+    while todo:
+        n = todo.pop()
+        match n:
+            case ast.Call(func=ast.Attribute(value=ast.Name(id=ns), attr=attr)) if (
+                ns == NATIVE_NS and attr in verifiers
+            ):
+                continue
+            case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
+                found.add(name)
+            case _:
+                todo.extend(ast.iter_child_nodes(n))
+    return frozenset(found)
 
 
 def _reads_other(node: ast.expr, columns: frozenset[str]) -> bool:

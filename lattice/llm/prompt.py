@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from lattice.catalog import AGG_FUNCS, FN_DOCS, FN_SIGS, OP_SHAPES, ORDER_AGGS
+from lattice.catalog import AGG_FUNCS, API_ONLY_FNS, FN_DOCS, FN_SIGS, OP_SHAPES, ORDER_AGGS
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -187,6 +187,8 @@ def _expression_library_section() -> str:
         "",
     ]
     for name in FN_SIGS:
+        if name in API_ONLY_FNS:
+            continue  # Uuid/DateTime functions exist only in API programs
         lines.append(f"- {_render_fn_sig(name)}: {FN_DOCS[name]}")
     lines.append("")
     lines.append(_aggregate_line())

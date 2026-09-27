@@ -11,6 +11,7 @@ from __future__ import annotations
 import ast
 import datetime as dt
 import re
+import uuid
 from dataclasses import dataclass
 from typing import Literal
 
@@ -21,6 +22,7 @@ from lattice.catalog import (
     CURRENT_USER,
     PARAM_CONSTRAINTS,
     QUERY_METHODS,
+    UNSET_NAME,
 )
 from lattice.check.astutil import literal_value
 from lattice.diagnostics import Span, span_of
@@ -47,6 +49,27 @@ class _Missing:
 
 MISSING = _Missing()
 
+
+class _Unset:
+    """Sentinel: the default of an optional parameter (`name: Type = UNSET`). A request
+    that does not send the parameter leaves the column it updates unchanged."""
+
+    _instance: _Unset | None = None
+
+    def __new__(cls) -> _Unset:
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __repr__(self) -> str:
+        return "UNSET"
+
+    def __bool__(self) -> bool:
+        return False
+
+
+UNSET = _Unset()
+
 ParamSource = Literal["path", "query", "body", "user"]
 SuccessKind = Literal["One", "Page", "Created", "NoContent"]
 
@@ -55,7 +78,11 @@ SuccessKind = Literal["One", "Page", "Created", "NoContent"]
 class ParamSpec:
     """One endpoint parameter. `scalar` is None only for `user: CurrentUser`
     (source "user"). Bounds are the literal constraints of the annotation; `one_of`
-    is set for `OneOf(...)` (scalar Str). `default` is MISSING when there is none."""
+    is set for `OneOf(...)` (scalar Str). `default` is MISSING when there is none, and
+    UNSET (with `optional=True`) for `name: Type = UNSET`: the parameter may be left
+    out of the request, and is then "not sent" (update() keeps the column). Date
+    defaults are `datetime.date`, DateTime defaults timezone-aware `datetime.datetime`
+    (UTC), Uuid defaults canonical lowercase strings."""
 
     name: str
     source: ParamSource
@@ -66,12 +93,14 @@ class ParamSpec:
     max_len: int | None = None
     one_of: tuple[str, ...] | None = None
     default: object = MISSING
+    optional: bool = False  # default is UNSET
 
     @property
     def bounded(self) -> bool:
         """Safe to write to the database (L811): Int needs ge= (ids and counts rarely
         have a natural upper bound; requiring one forced arbitrary values), Float needs
-        ge= and le=, Str a max_len= (or a OneOf set); Bool and Date are always bounded."""
+        ge= and le=, Str a max_len= (or a OneOf set); Bool, Date, DateTime and Uuid are
+        always bounded."""
         if self.scalar is Scalar.INT:
             return self.ge is not None
         if self.scalar is Scalar.FLOAT:
@@ -94,6 +123,14 @@ class EndpointInfo:
     errors: tuple[str, ...]  # declared errors, in annotation order
     node: ast.FunctionDef
     span: Span
+    # @endpoint(..., response="Name"): the ApiProfile.responses model the response
+    # objects are serialized with (exactly its fields, in its order); None = every
+    # returned column. For Page it describes each item.
+    response: str | None = None
+    # Page endpoints: the returned page was built with page(..., total=True), so the
+    # envelope carries ApiProfile.page_shape["total"] (set by P6 from the returned
+    # table's TableT.page_total).
+    page_total: bool = False
 
 
 Problem = tuple[str, str | None]  # (message, hint)
@@ -123,16 +160,29 @@ class Decl:
     method: str
     path: str
     auth: ast.expr | None  # the auth= value, if given
+    response: str | None = None  # the response= model name, if given
 
 
 def parse_decl(deco: ast.Call) -> Decl | Problem:
     usage = '@endpoint("GET", "/orders/{order_id}", auth=Customer)'
+    names = [kw.arg for kw in deco.keywords]
     if (
         len(deco.args) != 2
         or any(isinstance(a, ast.Starred) for a in deco.args)
-        or any(kw.arg != "auth" for kw in deco.keywords)
+        or any(n not in ("auth", "response") for n in names)
+        or len(names) != len(set(names))
     ):
-        return ("an endpoint is declared as @endpoint(METHOD, PATH, auth=Role)", f"e.g. {usage}")
+        return (
+            'an endpoint is declared as @endpoint(METHOD, PATH, auth=Role[, response="Model"])',
+            f"e.g. {usage}",
+        )
+    response_node = next((kw.value for kw in deco.keywords if kw.arg == "response"), None)
+    response = literal_value(response_node) if response_node is not None else None
+    if response_node is not None and not isinstance(response, str):
+        return (
+            "response= must name a response model as a string",
+            'e.g. response="ItemPublic"',
+        )
     method, path = (literal_value(a) for a in deco.args)
     if not isinstance(method, str) or not isinstance(path, str):
         return ("endpoint METHOD and PATH must be string literals", f"e.g. {usage}")
@@ -141,8 +191,8 @@ def parse_decl(deco: ast.Call) -> Decl | Problem:
             f"unknown HTTP method {method!r}",
             "use one of " + ", ".join(f'"{m}"' for m in API_METHODS),
         )
-    auth = next((kw.value for kw in deco.keywords), None)
-    return Decl(method, path, auth)
+    auth = next((kw.value for kw in deco.keywords if kw.arg == "auth"), None)
+    return Decl(method, path, auth, response if isinstance(response, str) else None)
 
 
 _SEGMENT = re.compile(r"[A-Za-z0-9_.~-]+")
@@ -186,7 +236,7 @@ class ParamType:
 
 _TYPE_HINT = (
     'use Int(ge=, le=), Float(ge=, le=), Str(min_len=, max_len=), OneOf("a", "b"), Bool, '
-    "Date (or a bare Int/Float/Str), or user: CurrentUser"
+    "Date, DateTime, Uuid (or a bare Int/Float/Str), or user: CurrentUser"
 )
 
 
@@ -257,7 +307,11 @@ def _constrained(name: str, type_name: str, kws: list[ast.keyword]) -> ParamType
 
 def default_problem(name: str, pt: ParamType, node: ast.expr) -> Problem | None:
     """Whether a parameter default is a literal of the parameter's type within its
-    constraints."""
+    constraints, or UNSET (an optional parameter of any scalar type)."""
+    if is_unset(node):
+        if pt.scalar is None:
+            return (f"'{name}: CurrentUser' cannot have a default", "remove the default")
+        return None
     v = literal_value(node)
     bad = (f"default of '{name}' must be a literal of its type", None)
     match pt.scalar:
@@ -281,12 +335,70 @@ def default_problem(name: str, pt: ParamType, node: ast.expr) -> Problem | None:
                 dt.date.fromisoformat(v)
             except ValueError:
                 return (f"default of '{name}' must be an ISO date string", 'e.g. "2024-01-01"')
+        case Scalar.DATETIME if isinstance(v, str):
+            if _datetime_default(v) is None:
+                return (
+                    f"default of '{name}' must be an ISO date-time string with a timezone",
+                    'e.g. "2024-01-01T00:00:00Z"',
+                )
+        case Scalar.UUID if isinstance(v, str):
+            if _uuid_default(v) is None:
+                return (
+                    f"default of '{name}' must be a UUID string",
+                    'e.g. "5b3e9c1c-0000-4000-8000-000000000000"',
+                )
         case _:
             return bad
     if isinstance(v, int | float) and not isinstance(v, bool):
         if (pt.ge is not None and v < pt.ge) or (pt.le is not None and v > pt.le):
             return (f"default of '{name}' is outside its bounds", None)
     return None
+
+
+def is_unset(node: ast.AST | None) -> bool:
+    """The `UNSET` marker (only valid as an endpoint parameter default)."""
+    return isinstance(node, ast.Name) and node.id == UNSET_NAME
+
+
+_UUID_TEXT = re.compile(
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+)
+
+
+def _uuid_default(text: str) -> str | None:
+    """The canonical (lowercase, hyphenated) form of a UUID literal, or None."""
+    if not _UUID_TEXT.fullmatch(text):
+        return None
+    return str(uuid.UUID(text))
+
+
+def _datetime_default(text: str) -> dt.datetime | None:
+    """A timezone-aware ISO-8601 date-time literal, converted to UTC, or None."""
+    try:
+        value = dt.datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if value.tzinfo is None:
+        return None
+    return value.astimezone(dt.UTC)
+
+
+def _default_value(scalar: Scalar | None, node: ast.expr) -> object:
+    """The Python value of a default P1 accepted."""
+    if is_unset(node):
+        return UNSET
+    v = literal_value(node)
+    if isinstance(v, str):
+        match scalar:
+            case Scalar.DATE:
+                return dt.date.fromisoformat(v)
+            case Scalar.DATETIME:
+                return _datetime_default(v)
+            case Scalar.UUID:
+                return _uuid_default(v)
+            case _:
+                pass
+    return v
 
 
 def _defaults(fn: ast.FunctionDef) -> dict[str, ast.expr]:
@@ -315,13 +427,19 @@ def endpoint_params(fn: ast.FunctionDef, method: str, path: str) -> tuple[ParamS
             source = "query" if method in QUERY_METHODS else "body"
         default: object = MISSING
         if a.arg in defaults:
-            v = literal_value(defaults[a.arg])
-            default = (
-                dt.date.fromisoformat(v) if pt.scalar is Scalar.DATE and isinstance(v, str) else v
-            )
+            default = _default_value(pt.scalar, defaults[a.arg])
         specs.append(
             ParamSpec(
-                a.arg, source, pt.scalar, pt.ge, pt.le, pt.min_len, pt.max_len, pt.one_of, default
+                a.arg,
+                source,
+                pt.scalar,
+                pt.ge,
+                pt.le,
+                pt.min_len,
+                pt.max_len,
+                pt.one_of,
+                default,
+                optional=default is UNSET,
             )
         )
     return tuple(specs)
@@ -414,4 +532,5 @@ def endpoint_info(fn: ast.FunctionDef) -> EndpointInfo | None:
         errors,
         fn,
         span_of(fn),
+        response=decl.response,
     )

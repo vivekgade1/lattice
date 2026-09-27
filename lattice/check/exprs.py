@@ -15,16 +15,21 @@ from collections.abc import Collection, Mapping
 from lattice.catalog import (
     AGG_ALIASES,
     AGG_FUNCS,
+    API_ONLY_FNS,
     DATE_ADD_DAYS_MAX,
     DATE_DIFF_UNITS,
     FN_ALIASES,
     FN_SIGS,
+    NATIVE_NS,
     ORDER_AGGS,
+    OWNER_IS,
     ROUND_DIGITS_MAX,
+    UNSET_NAME,
 )
 from lattice.check.astutil import LiteralValue, literal_value
 from lattice.check.context import CheckContext
 from lattice.diagnostics import Severity, Span, span_of
+from lattice.profile import NativeSig
 from lattice.typesys import NUMERIC, ORDERED, UNKNOWN, ColT, LitT, Scalar, Schema, UnknownT, unify
 
 ExprT = ColT | LitT | UnknownT
@@ -42,6 +47,8 @@ _EXAMPLE_LITERAL = {
     Scalar.STR: '"text"',
     Scalar.BOOL: "True",
     Scalar.DATE: '"2024-01-01"',
+    Scalar.DATETIME: 'fn.to_datetime("2024-01-01 00:00", format="%Y-%m-%d %H:%M")',
+    Scalar.UUID: 'fn.to_uuid("5b3e9c1c-0000-4000-8000-000000000000")',
 }
 _ARITH = {ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Mod: "%"}
 _CMP_EQ = {ast.Eq: "==", ast.NotEq: "!="}
@@ -95,6 +102,16 @@ def _known(ts: list[ExprT]) -> list[ColT | LitT] | None:
     return out
 
 
+def _convert_hint(a: Scalar, b: Scalar) -> str | None:
+    """How to compare a Uuid/DateTime with a string literal: convert the string."""
+    if Scalar.STR in (a, b):
+        if Scalar.UUID in (a, b):
+            return 'convert the text: fn.to_uuid("5b3e9c1c-0000-4000-8000-000000000000")'
+        if Scalar.DATETIME in (a, b):
+            return 'convert the text: fn.to_datetime("2024-01-01 00:00", format="%Y-%m-%d %H:%M")'
+    return None
+
+
 class ExprTyper:
     def __init__(
         self,
@@ -105,12 +122,14 @@ class ExprTyper:
         reported: frozenset[Span] | None = None,
         consts: Mapping[str, LiteralValue | None] | None = None,
         tables: Collection[str] = (),
+        natives: Mapping[str, NativeSig] | None = None,
     ) -> None:
         """`scalars`: scalar step parameters and well-typed named constants in scope.
         `consts`: every named constant in scope -> its plain literal value (None when
         computed, e.g. `b = a * 2`); a constant absent from `scalars` already
         produced a diagnostic, so its uses are typed UNKNOWN silently.
-        `tables`: table names in scope (for a precise message when one is misused)."""
+        `tables`: table names in scope (for a precise message when one is misused).
+        `natives`: the API profile's native functions (native.<name>(...))."""
         self.ctx = ctx
         self.schema = schema
         self.scalars = scalars
@@ -118,6 +137,8 @@ class ExprTyper:
         self.reported = reported_name_spans(ctx) if reported is None else reported
         self.consts = consts or {}
         self.tables = tables
+        self.natives = natives or {}
+        self.api = ctx.profile.api is not None
 
     # ---- public -------------------------------------------------------------
 
@@ -143,6 +164,10 @@ class ExprTyper:
                 return self._named_call(node, name)
             case ast.Call(func=ast.Attribute(value=ast.Name(id="fn"), attr=attr)):
                 return self._fn(node, attr)
+            case ast.Call(func=ast.Attribute(value=ast.Name(id=ns), attr=attr)) if (
+                ns == NATIVE_NS and self.api
+            ):
+                return self._native(node, attr)
             case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"))):
                 return self._err(
                     "L413",
@@ -200,6 +225,8 @@ class ExprTyper:
         s = self.scalars.get(name)
         if s is not None:
             return LitT(s)
+        if name == UNSET_NAME and self.api:
+            return UNKNOWN  # outside a parameter default: P6 reports it (L404)
         if name in self.consts or span_of(node) in self.reported:
             return UNKNOWN  # an ill-typed constant or an unresolved name: already reported
         if name in self.tables:
@@ -223,6 +250,18 @@ class ExprTyper:
                 return self._coalesce(node)
             case "is_null":
                 return self._is_null(node)
+            case _ if span_of(node.func) in self.reported:
+                return UNKNOWN
+            case _ if name == OWNER_IS and self.api:
+                return self._err(
+                    "L404",
+                    node,
+                    "owner_is(user) is only allowed as the whole condition of require()",
+                    'write mine = require(row, owner_is(user), else_=Forbidden("...")), '
+                    "or filter with owned(t, by=user)",
+                )
+            case _ if name in (NATIVE_NS, UNSET_NAME) and self.api:
+                return self._err("L411", node, f"'{name}(...)' is not a column expression", None)
             case _ if name in self.silent_calls or span_of(node.func) in self.reported:
                 return UNKNOWN
             case _:
@@ -317,15 +356,16 @@ class ExprTyper:
 
     def _fn(self, node: ast.Call, name: str) -> ExprT:
         sig = FN_SIGS.get(name)
+        if name in API_ONLY_FNS and not self.api:
+            sig = None  # Uuid/DateTime functions exist only in API programs
         if sig is None:
             canonical = FN_ALIASES.get(name)
             if canonical is not None:
                 return self._err(
                     "L702", node, f"fn.{name} is not in the library", f"use fn.{canonical}"
                 )
-            return self._err(
-                "L106", node, f"unknown function fn.{name}", did_you_mean(name, list(FN_SIGS))
-            )
+            known = [n for n in FN_SIGS if self.api or n not in API_ONLY_FNS]
+            return self._err("L106", node, f"unknown function fn.{name}", did_you_mean(name, known))
         if len(node.args) != len(sig.params):
             return self._err(
                 "L404",
@@ -354,6 +394,46 @@ class ExprTyper:
         ):
             result = Scalar.FLOAT  # a Float bound makes the result Float (runtime casts)
         return _wrap(result, known)
+
+    def _native(self, node: ast.Call, name: str) -> ExprT:
+        """native.<name>(args...): typed by ApiProfile.natives; arguments are scalar
+        expressions (columns, parameters, constants), never tables or keywords."""
+        sig = self.natives.get(name)
+        if sig is None:
+            known = sorted(self.natives)
+            return self._err(
+                "L106",
+                node,
+                f"unknown native function native.{name}",
+                did_you_mean(name, known)
+                or ("available: " + ", ".join(known) if known else "the profile declares none"),
+            )
+        usage = f"native.{name}({', '.join(p.value for p in sig.params)})"
+        if len(node.args) != len(sig.params) or node.keywords:
+            return self._err(
+                "L404",
+                node,
+                f"native.{name} takes {len(sig.params)} positional argument(s), "
+                f"got {len(node.args)}" + (" and keywords" if node.keywords else ""),
+                f"write {usage}",
+            )
+        args = [self.type_of(a) for a in node.args]
+        ok = True
+        for i, (t, want) in enumerate(zip(args, sig.params, strict=True), start=1):
+            if isinstance(t, UnknownT):
+                continue
+            if not (t.scalar is want or (want is Scalar.FLOAT and t.scalar is Scalar.INT)):
+                ok = False
+                self.ctx.error(
+                    "L402",
+                    node.args[i - 1],
+                    f"native.{name} expects {want.value} for argument {i}, got {t.scalar.value}",
+                    f"write {usage}",
+                )
+        known = _known(args)
+        if known is None or not ok:
+            return UNKNOWN
+        return _wrap(sig.result, known)
 
     def _fn_keywords(self, node: ast.Call, name: str, expected: Mapping[str, Scalar]) -> bool:
         given = {kw.arg: kw for kw in node.keywords if kw.arg is not None}
@@ -509,7 +589,7 @@ class ExprTyper:
         a, b = known[0].scalar, known[1].scalar
         if type(op) in _CMP_EQ:
             if unify(a, b) is None:
-                return self._mismatch(node, _CMP_EQ[type(op)], a, b, None)
+                return self._mismatch(node, _CMP_EQ[type(op)], a, b, _convert_hint(a, b))
             if Scalar.FLOAT in (a, b):
                 self.ctx.warn(
                     "L406",
@@ -521,7 +601,10 @@ class ExprTyper:
         if type(op) in _CMP_ORD:
             if (a in NUMERIC and b in NUMERIC) or (a == b and a in ORDERED):
                 return _wrap(Scalar.BOOL, known)
-            return self._mismatch(node, _CMP_ORD[type(op)], a, b, None)
+            hint = _convert_hint(a, b)
+            if a == b == Scalar.UUID:
+                hint = "Uuid values are compared only with == and !="
+            return self._mismatch(node, _CMP_ORD[type(op)], a, b, hint)
         raise TypeError(f"P1 should have rejected comparison {type(op).__name__}")
 
     def _unary(self, node: ast.UnaryOp) -> ExprT:

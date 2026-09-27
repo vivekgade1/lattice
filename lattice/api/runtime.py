@@ -1,4 +1,4 @@
-"""The Lattice API runtime (Phase A): serve lowered endpoint plans over SQLite.
+"""The Lattice API runtime (Phase A): serve lowered endpoint plans over a SQL backend.
 
 Per request: authenticate (`Authorization: Bearer <token>`, one statement), check the
 role, parse and validate the parameters, then run the plan's steps in order inside
@@ -9,6 +9,10 @@ A new connection is opened per request and closed after it (no connection is hel
 between requests). Every new connection is passed to the module attribute
 `on_connect` (a no-op by default) — the benchmark harness replaces it to count
 statements.
+
+Everything backend-specific (opening a connection, registering the functions the SQL
+calls, starting/ending transactions, value decoding) is delegated to the plan's
+`lattice.api.backend.Dialect` (`EndpointPlan.backend`; SQLite by default).
 """
 
 from __future__ import annotations
@@ -17,7 +21,6 @@ import datetime as dt
 import json
 import math
 import re
-import sqlite3
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -29,6 +32,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
+from lattice.api.backend import Dialect, dialect_for
 from lattice.api.ir import (
     CheckStep,
     EndpointPlan,
@@ -37,7 +41,7 @@ from lattice.api.ir import (
     WriteStep,
     lower_api,
 )
-from lattice.api.sql import bind_values, decode, q, register_functions
+from lattice.api.sql import bind_values, compile_lookup, decode
 from lattice.catalog import PUBLIC_ROLE, USER_PARAM
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, ParamSpec
@@ -48,8 +52,8 @@ from lattice.typesys import Scalar
 __all__ = ["ApiRuntimeError", "build_app", "on_connect", "serve_source"]
 
 
-def on_connect(conn: sqlite3.Connection) -> None:
-    """Called with every new SQLite connection (replaceable module attribute)."""
+def on_connect(conn: Any) -> None:
+    """Called with every new database connection (replaceable module attribute)."""
 
 
 class ApiRuntimeError(LatticeRuntimeError):
@@ -64,11 +68,9 @@ class _ErrorResponse(Exception):
         self.body = body
 
 
-def _connect(db_path: Path) -> sqlite3.Connection:
-    conn = sqlite3.connect(str(db_path), isolation_level=None, check_same_thread=False)
-    register_functions(conn)
-    on_connect(conn)  # looked up at call time: the harness may replace it
-    return conn
+def _connect(dialect: Dialect, db_path: Path) -> Any:
+    # on_connect is looked up at call time: the harness may replace it
+    return dialect.connect(db_path, lambda conn: on_connect(conn))
 
 
 # ---- parameters ------------------------------------------------------------------------
@@ -238,13 +240,11 @@ def _token(header: str | None) -> str | None:
 
 
 def _authenticate(
-    plan: EndpointPlan, conn: sqlite3.Connection, token: str
+    plan: EndpointPlan, dialect: Dialect, conn: Any, token: str
 ) -> tuple[object, str, tuple[Any, ...]]:
     """(caller id, role, the caller's row as `plan.user_columns`): one statement."""
-    cols = ", ".join(q(c) for c in plan.user_columns)
-    row = conn.execute(
-        f"SELECT {cols} FROM {q(plan.users_table)} WHERE {q('token')} = ?", (token,)
-    ).fetchone()
+    sql = compile_lookup(plan.users_table, plan.user_columns, "token", dialect=dialect)
+    row = conn.execute(sql, (token,)).fetchone()
     if row is None:
         raise _ErrorResponse(401, {"error": "unauthorized"})
     user_id = row[plan.user_columns.index(plan.user_key)]
@@ -271,7 +271,8 @@ def _error(err: ErrorSpec) -> _ErrorResponse:
 
 def _run_steps(
     plan: EndpointPlan,
-    conn: sqlite3.Connection,
+    dialect: Dialect,
+    conn: Any,
     values: Mapping[str, object],
     user_id: object,
     is_admin: bool,
@@ -282,7 +283,14 @@ def _run_steps(
         results[USER_PARAM] = (plan.user_columns, [caller])
 
     def run(sql: Any) -> list[tuple[Any, ...]]:
-        binds = bind_values(sql, params=values, results=results, user_id=user_id, is_admin=is_admin)
+        binds = bind_values(
+            sql,
+            params=values,
+            results=results,
+            user_id=user_id,
+            is_admin=is_admin,
+            dialect=dialect,
+        )
         return conn.execute(sql.text, binds).fetchall()
 
     for step in plan.steps:
@@ -335,13 +343,18 @@ def _run_steps(
     return results
 
 
-def _respond(plan: EndpointPlan, results: Mapping[str, Result], values: Mapping[str, object]):
+def _respond(
+    plan: EndpointPlan,
+    dialect: Dialect,
+    results: Mapping[str, Result],
+    values: Mapping[str, object],
+):
     if plan.success == "NoContent":
         return Response(status_code=204)
     names = plan.schema.names()
     types = dict(plan.schema.columns)
     items = [
-        {c: _finite(decode(v, types[c])) for c, v in zip(names, row, strict=True)}
+        {c: _finite(decode(v, types[c], dialect)) for c, v in zip(names, row, strict=True)}
         for row in _project(results[plan.returns], names)
     ]
     if plan.success == "Page":
@@ -379,7 +392,8 @@ def _serve(
     body: bytes,
     authorization: str | None,
 ) -> Response:
-    conn: sqlite3.Connection | None = None
+    dialect = dialect_for(plan.backend)
+    conn: Any = None
     in_txn = False
     try:
         user_id: object = None
@@ -389,18 +403,17 @@ def _serve(
             token = _token(authorization)
             if token is None:
                 raise _ErrorResponse(401, {"error": "unauthorized"})
-            conn = _connect(db_path)
-            user_id, role, caller = _authenticate(plan, conn, token)
+            conn = _connect(dialect, db_path)
+            user_id, role, caller = _authenticate(plan, dialect, conn, token)
             is_admin = role == plan.admin_role
         values = _parse_params(plan, path, query, body)
         if conn is None:
-            conn = _connect(db_path)
-        writes = any(isinstance(s, WriteStep) for s in plan.steps)
-        conn.execute("BEGIN IMMEDIATE" if writes else "BEGIN")
+            conn = _connect(dialect, db_path)
+        dialect.begin(conn, writes=any(isinstance(s, WriteStep) for s in plan.steps))
         in_txn = True
-        results = _run_steps(plan, conn, values, user_id, is_admin, caller)
-        response = _respond(plan, results, values)
-        conn.execute("COMMIT")
+        results = _run_steps(plan, dialect, conn, values, user_id, is_admin, caller)
+        response = _respond(plan, dialect, results, values)
+        dialect.commit(conn)
         in_txn = False
         return response
     except _ErrorResponse as err:
@@ -412,10 +425,7 @@ def _serve(
     finally:
         if conn is not None:
             if in_txn:
-                try:
-                    conn.execute("ROLLBACK")
-                except sqlite3.Error:
-                    pass
+                dialect.rollback(conn)
             conn.close()
 
 
@@ -448,7 +458,8 @@ async def _http_error(request: Request, exc: Exception) -> Response:
 
 
 def build_app(plans: Sequence[EndpointPlan], db_path: Path) -> Starlette:
-    """A Starlette app serving `plans` against the SQLite database at `db_path`."""
+    """A Starlette app serving `plans` against the database at `db_path` (each plan's
+    backend dialect opens it)."""
     db = Path(db_path)
     routes = [
         Route(plan.path, _handler(plan, db), methods=[plan.method], name=plan.name)

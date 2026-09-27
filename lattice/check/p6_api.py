@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import ast
 from collections.abc import Iterator
+from dataclasses import replace
 
 from lattice.catalog import (
     AGG_FUNCS,
@@ -21,6 +22,7 @@ from lattice.catalog import (
     PAGE_LIMIT_MAX,
     PUBLIC_ROLE,
     TABLE_OPS,
+    UNSET_NAME,
     USER_PARAM,
 )
 from lattice.check.api_info import (
@@ -43,7 +45,8 @@ from lattice.check.astutil import (
 )
 from lattice.check.context import CheckContext
 from lattice.check.exprs import did_you_mean
-from lattice.typesys import Scalar, TableT, generated_key, via_parent_key
+from lattice.check.p4_types import cols_read, is_owner_is
+from lattice.typesys import Scalar, TableT, generated_key, uuid_key, via_parent_key
 
 _WRITES = ("insert", "update", "delete")
 _TABLE_ARG_OPS = ("update", "delete")
@@ -83,6 +86,7 @@ class _Api:
         self.api = ctx.profile.api
         self.steps = steps_of(module)
         self.subset_checked: set[int] = set()
+        self.verifiers = frozenset(n for n, sig in self.api.natives.items() if sig.reads_private)
         self.module_consts: dict[str, object] = {}
         for stmt in module.body:
             if (
@@ -94,6 +98,7 @@ class _Api:
                 self.module_consts.setdefault(stmt.targets[0].id, literal_value(stmt.value))
 
     def run(self) -> dict[str, EndpointInfo]:
+        self._unset_placement()
         infos: dict[str, EndpointInfo] = {}
         routes: set[tuple[str, str]] = set()
         for fn in endpoints_of(self.module):
@@ -111,9 +116,25 @@ class _Api:
                     "give each endpoint its own method and path",
                 )
             routes.add(shape)
-            _Endpoint(self, fn, deco, info).check()
-            infos.setdefault(fn.name, info)
+            checked = _Endpoint(self, fn, deco, info)
+            checked.check()
+            infos.setdefault(fn.name, replace(info, page_total=checked.page_total()))
         return infos
+
+    def _unset_placement(self) -> None:
+        """L404: `UNSET` is only an endpoint parameter's default (`p: Str = UNSET`)."""
+        allowed: set[int] = set()
+        for fn in endpoints_of(self.module):
+            allowed.update(id(d) for d in fn.args.defaults)
+        for node in ast.walk(self.module):
+            if isinstance(node, ast.Name) and node.id == UNSET_NAME and id(node) not in allowed:
+                self.ctx.error(
+                    "L404",
+                    node,
+                    "UNSET is only allowed as the default of an endpoint parameter",
+                    "declare an optional parameter, e.g. title: Str(max_len=100) = UNSET, "
+                    "and pass it to update(t, title=title)",
+                )
 
     def check_subset(self, fn: ast.FunctionDef, *, endpoint: bool) -> None:
         """L841: table ops and expressions outside what the API profile compiles to
@@ -181,11 +202,22 @@ class _Endpoint:
         self.p.check_subset(self.fn, endpoint=True)
         self._owned_calls()
         self._checks_before_owned()
+        self._owner_is_checks()
         self._private_reads()
+        self._optional_params()
         self._writes()
         self._errors()
         self._pages()
         self._response()
+        self._response_model()
+
+    def page_total(self) -> bool:
+        """Whether the returned table is a page(..., total=True) (for lowering)."""
+        ret = self.fn.body[-1] if self.fn.body else None
+        if self.info.success != "Page" or not isinstance(ret, ast.Return):
+            return False
+        t = self._type(ret.value) if ret.value is not None else None
+        return t is not None and t.paged and t.page_total
 
     # ---- helpers ------------------------------------------------------------------
 
@@ -277,6 +309,13 @@ class _Endpoint:
                     f"path segment {{{n}}} has no parameter named '{n}'",
                     f"add a parameter {n}: Int(ge=1)",
                 )
+            elif spec.optional:
+                self.ctx.error(
+                    "L404",
+                    self._arg(n),
+                    f"path parameter '{n}' is always sent; it cannot default to UNSET",
+                    "remove '= UNSET'",
+                )
 
     # ---- owned() placement (L404), checks before owned() (L802) ------------------------
 
@@ -309,12 +348,26 @@ class _Endpoint:
             node = value.args[0]
         return False
 
+    def _owner_is_requires(self) -> Iterator[ast.Call]:
+        for call in self._calls("require"):
+            if len(call.args) > 1 and is_owner_is(call.args[1]):
+                yield call
+
     def _checks_before_owned(self) -> None:
         """one()/require() over rows of an owned table not yet passed through owned()
         answer differently for another customer's row than for a missing one (a
-        status-code oracle): L802, like returning those rows."""
+        status-code oracle): L802, like returning those rows. Exempt: the ownership
+        check require(t, owner_is(user), ...) itself, and a one() whose result it
+        checks directly (the faithful 404-then-403 lookup, warned as L823)."""
+        exempt: set[int] = set()
+        for call in self._owner_is_requires():
+            exempt.add(id(call))
+            arg = call.args[0]
+            value = self.locals.get(arg.id) if isinstance(arg, ast.Name) else None
+            if _call_name(value) == "one":
+                exempt.add(id(value))
         for _, value in _assigns(self.fn):
-            if _call_name(value) not in ("one", "require"):
+            if _call_name(value) not in ("one", "require") or id(value) in exempt:
                 continue
             assert isinstance(value, ast.Call)
             arg = value.args[0] if value.args else None
@@ -322,6 +375,74 @@ class _Endpoint:
                 t = self._name_type(arg.id)
                 if t is not None:
                     self._ownership(value, t, arg.id)
+
+    def _owner_is_checks(self) -> None:
+        """L823 (warning): require(t, owner_is(user), else_=Forbidden(...)) tells a
+        caller that another user's row exists (403), where owned() answers 404."""
+        if self.admin:
+            return
+        for call in self._owner_is_requires():
+            if self._type(call) is None:
+                continue  # P4 reported the check
+            self.ctx.warn(
+                "L823",
+                call,
+                "require(..., owner_is(user)) reveals that other users' rows exist (403); "
+                "owned() answers 404",
+                "keep it only when the 403 is the intended contract; otherwise filter with "
+                "owned(t, by=user) before one()",
+            )
+
+    # ---- UNSET: optional parameters ---------------------------------------------------
+
+    def _optional_params(self) -> None:
+        """L404: an optional parameter (default UNSET) is used only directly as an
+        update() value, or an insert() value of a nullable column: anywhere else (inside
+        an expression, a filter, a page bound, a step argument, ...) it has no value
+        when it is not sent."""
+        optional = {n for n, spec in self.params.items() if spec.optional}
+        if not optional:
+            return
+        allowed: set[int] = set()
+        reported: set[str] = set()
+        for call in self._calls("update"):
+            for kw in call.keywords:
+                if isinstance(kw.value, ast.Name) and kw.value.id in optional:
+                    allowed.add(id(kw.value))
+        for call in self._calls("insert"):
+            table = call.args[0].id if call.args and isinstance(call.args[0], ast.Name) else ""
+            schema = self.api.tables.get(table)
+            for kw in call.keywords:
+                if not (isinstance(kw.value, ast.Name) and kw.value.id in optional):
+                    continue
+                allowed.add(id(kw.value))
+                if kw.arg == "owner" or schema is None or kw.arg not in schema:
+                    continue  # P4 reported it
+                if kw.arg not in schema.nullable and kw.value.id not in reported:
+                    reported.add(kw.value.id)
+                    self.ctx.error(
+                        "L404",
+                        kw,
+                        f"insert() sets the required column '{kw.arg}' of {table} from "
+                        f"'{kw.value.id}', which is optional (default UNSET)",
+                        f"make '{kw.value.id}' required (remove '= UNSET') or give it a "
+                        "default value",
+                    )
+        for stmt in self.fn.body:
+            for node in ast.walk(stmt):
+                if not (isinstance(node, ast.Name) and node.id in optional):
+                    continue
+                if id(node) in allowed or node.id in reported:
+                    continue
+                reported.add(node.id)
+                self.ctx.error(
+                    "L404",
+                    node,
+                    f"'{node.id}' is optional (default UNSET): use it only directly as an "
+                    "update() value, e.g. update(t, col=" + node.id + ")",
+                    f"to compute with it or filter by it, make '{node.id}' required or give "
+                    "it a default value",
+                )
 
     # ---- L803: private values as an oracle ---------------------------------------------
 
@@ -354,9 +475,10 @@ class _Endpoint:
         if not private and op not in self.p.steps:
             return frozenset()
         kws = {kw.arg: kw.value for kw in call.keywords if kw.arg is not None}
+        verifiers = self.p.verifiers
         match op:
             case "where" | "require" if len(call.args) > 1:
-                return _cols_read(call.args[1]) & private
+                return cols_read(call.args[1], verifiers) & private
             case "sort":
                 return frozenset(_strs(kws.get("by"))) & private
             case "join":
@@ -366,13 +488,13 @@ class _Endpoint:
                 read = frozenset(_strs(kws.get("by")))
                 for name, v in kws.items():
                     if name != "by" and v is not None:
-                        read |= _cols_read(v)
+                        read |= cols_read(v, verifiers)
                 return read & private
             case "update":
                 read = frozenset()
                 for v in kws.values():
                     if v is not None:
-                        read |= _cols_read(v)
+                        read |= cols_read(v, verifiers)
                 return read & private
             case _ if op in self.p.steps:
                 args = [t for t in tables if t is not None]
@@ -458,8 +580,8 @@ class _Endpoint:
         if self.admin:
             owner = schema.owner
             # a table owned through its own generated key (Users) gets a new id from the
-            # database: its owner is the new row itself, nothing to set
-            if owner is not None and owner == generated_key(schema):
+            # database (or a new uuid4): its owner is the new row itself, nothing to set
+            if owner is not None and owner in (generated_key(schema), uuid_key(schema)):
                 return
             if owner is not None and owner not in given and "owner" not in given:
                 self.ctx.error(
@@ -893,6 +1015,59 @@ class _Endpoint:
                 f'reduce it to one row: one({name}, else_=NotFound("...")), '
                 "or declare -> Page and return page(...)",
             )
+
+    # ---- L834: declared response models ------------------------------------------------
+
+    def _response_model(self) -> None:
+        """@endpoint(..., response="Model"): the returned columns are exactly the
+        model's fields (any order); for a Page, the columns of each item."""
+        name = self.info.response
+        if name is None:
+            return
+        where = next(kw.value for kw in self.deco.keywords if kw.arg == "response")
+        fields = self.api.responses.get(name)
+        if fields is None:
+            known = sorted(self.api.responses)
+            self.ctx.error(
+                "L834",
+                where,
+                f"unknown response model '{name}'",
+                did_you_mean(name, known)
+                or ("models: " + ", ".join(known) if known else "the profile declares none"),
+            )
+            return
+        if self.info.success == "NoContent":
+            self.ctx.error(
+                "L834",
+                where,
+                "a NoContent endpoint has no response body to shape",
+                f'remove response="{name}"',
+            )
+            return
+        ret = self.fn.body[-1] if self.fn.body else None
+        if not (isinstance(ret, ast.Return) and isinstance(ret.value, ast.Name)):
+            return
+        t = self._type(ret.value)
+        if t is None:
+            return
+        returned = t.schema.names()
+        missing = [f for f in fields if f not in returned]
+        extra = [c for c in returned if c not in fields]
+        if not missing and not extra:
+            return
+        parts = []
+        if missing:
+            parts.append("missing " + ", ".join(f"'{f}'" for f in missing))
+        if extra:
+            parts.append("extra " + ", ".join(f"'{c}'" for c in extra))
+        listed = ", ".join(f'"{f}"' for f in fields)
+        self.ctx.error(
+            "L834",
+            ret,
+            f"the returned columns do not match response model '{name}': " + "; ".join(parts),
+            f"return exactly its fields, e.g. select(..., cols=[{listed}]) "
+            "(derive or rename the missing ones first)",
+        )
 
 
 def _is_table_param(a: ast.arg) -> bool:

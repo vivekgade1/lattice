@@ -1,0 +1,1355 @@
+{
+ "api/c02/my_addresses/result": {
+  "binds": [],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", \"id\" AS __ord FROM \"addresses\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"line1\", \"city\", \"zip\", __ord FROM t1),\nt3 AS (SELECT \"id\", \"line1\", \"city\", \"zip\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t2),\nt4 AS (SELECT \"id\", \"line1\", \"city\", \"zip\", __ord FROM t3 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"line1\", \"city\", \"zip\" FROM t4 ORDER BY __ord",
+  "user": true
+ },
+ "api/c03/my_stats/filled": {
+  "binds": [
+   [
+    "__l0",
+    "paid"
+   ],
+   [
+    "__l1",
+    "shipped"
+   ],
+   [
+    "__l2",
+    0.0
+   ],
+   [
+    "__l3",
+    0.0
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", (CASE WHEN ((\"status\" = :__l0) OR (\"status\" = :__l1)) THEN \"total\" ELSE :__l2 END) AS \"spent\", __ord FROM t1),\nt3 AS (SELECT COUNT(*) AS \"order_count\", COALESCE(SUM(\"spent\"), 0) AS \"total_spent\", 0 AS __ord FROM t2),\nt4 AS (SELECT \"order_count\", COALESCE(\"total_spent\", :__l3) AS \"total_spent\", __ord FROM t3)\nSELECT \"order_count\", \"total_spent\" FROM t4 ORDER BY __ord",
+  "user": true
+ },
+ "api/c04/category_products/result": {
+  "binds": [],
+  "params": [
+   "category",
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"category\" = :p_category)),\nt2 AS (SELECT \"id\", \"name\", \"price\", __ord FROM t1),\nt3 AS (SELECT \"id\", \"name\", \"price\", ROW_NUMBER() OVER (ORDER BY (\"price\" IS NULL), \"price\", (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t2),\nt4 AS (SELECT \"id\", \"name\", \"price\", __ord FROM t3 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"name\", \"price\" FROM t4 ORDER BY __ord",
+  "user": false
+ },
+ "api/c05/delete_review/found": {
+  "binds": [],
+  "params": [
+   "review_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", \"id\" AS __ord FROM \"reviews\"),\nt1 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t1 WHERE (\"id\" = :p_review_id))\nSELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/c05/delete_review/gone": {
+  "binds": [],
+  "params": [],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "product_id",
+     "customer_id",
+     "rating",
+     "body"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"product_id\", json_extract(j.value, '$[2]') AS \"customer_id\", json_extract(j.value, '$[3]') AS \"rating\", json_extract(j.value, '$[4]') AS \"body\", j.key AS __ord FROM json_each(:__r0) AS j)\nDELETE FROM \"reviews\" WHERE \"id\" IN (SELECT \"id\" FROM t0)",
+  "user": false
+ },
+ "api/c06/get_user/found": {
+  "binds": [],
+  "params": [
+   "user_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", \"id\" AS __ord FROM \"users\"),\nt1 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", __ord FROM t0 WHERE (\"id\" = :p_user_id))\nSELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/c07/categories/result": {
+  "binds": [],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"category\", COUNT(*) AS \"product_count\", MIN(__ord) AS __ord FROM t0 GROUP BY \"category\"),\nt2 AS (SELECT \"category\", \"product_count\", ROW_NUMBER() OVER (ORDER BY (\"category\" IS NULL), \"category\", __ord) AS __ord FROM t1),\nt3 AS (SELECT \"category\", \"product_count\", __ord FROM t2 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"category\", \"product_count\" FROM t3 ORDER BY __ord",
+  "user": false
+ },
+ "api/c08/my_reviews/result": {
+  "binds": [],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", \"id\" AS __ord FROM \"reviews\"),\nt1 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"product_id\", \"rating\", \"body\", __ord FROM t1),\nt3 AS (SELECT \"id\", \"product_id\", \"rating\", \"body\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t2),\nt4 AS (SELECT \"id\", \"product_id\", \"rating\", \"body\", __ord FROM t3 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"product_id\", \"rating\", \"body\" FROM t4 ORDER BY __ord",
+  "user": true
+ },
+ "api/e01/get_product/found": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/e02/pay_order/done": {
+  "binds": [
+   [
+    "__l0",
+    "paid"
+   ]
+  ],
+  "params": [],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "customer_id",
+     "status",
+     "created_at",
+     "total"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"customer_id\", json_extract(j.value, '$[2]') AS \"status\", json_extract(j.value, '$[3]') AS \"created_at\", json_extract(j.value, '$[4]') AS \"total\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"orders\" SET \"status\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", :__l0 AS \"__v0\" FROM t0) AS s WHERE \"orders\".\"id\" = s.\"__k0\" RETURNING \"id\", \"status\"",
+  "user": false
+ },
+ "api/e02/pay_order/found": {
+  "binds": [
+   [
+    "__l0",
+    "pending"
+   ]
+  ],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t1 WHERE (\"id\" = :p_order_id))\nSELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", (\"status\" = :__l0) AS \"__ok_pending\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/e03/delete_product/found": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/e03/delete_product/gone": {
+  "binds": [],
+  "params": [],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "name",
+     "category",
+     "price",
+     "stock",
+     "active"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"name\", json_extract(j.value, '$[2]') AS \"category\", json_extract(j.value, '$[3]') AS \"price\", json_extract(j.value, '$[4]') AS \"stock\", json_extract(j.value, '$[5]') AS \"active\", j.key AS __ord FROM json_each(:__r0) AS j)\nDELETE FROM \"products\" WHERE \"id\" IN (SELECT \"id\" FROM t0)",
+  "user": false
+ },
+ "api/e04/product_stock/found": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/e05/ship_order/done": {
+  "binds": [
+   [
+    "__l0",
+    "shipped"
+   ]
+  ],
+  "params": [],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "customer_id",
+     "status",
+     "created_at",
+     "total"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"customer_id\", json_extract(j.value, '$[2]') AS \"status\", json_extract(j.value, '$[3]') AS \"created_at\", json_extract(j.value, '$[4]') AS \"total\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"orders\" SET \"status\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", :__l0 AS \"__v0\" FROM t0) AS s WHERE \"orders\".\"id\" = s.\"__k0\" RETURNING \"id\", \"status\"",
+  "user": false
+ },
+ "api/e05/ship_order/found": {
+  "binds": [
+   [
+    "__l0",
+    "paid"
+   ]
+  ],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (\"id\" = :p_order_id))\nSELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", (\"status\" = :__l0) AS \"__ok_paid\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/e06/review_product/counted": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [
+   "product_id"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "user",
+    [
+     "id",
+     "email",
+     "name",
+     "role",
+     "token",
+     "password_hash"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", \"id\" AS __ord FROM \"reviews\"),\nt1 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t1 WHERE (\"product_id\" = :p_product_id)),\nt3 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"email\", json_extract(j.value, '$[2]') AS \"name\", json_extract(j.value, '$[3]') AS \"role\", json_extract(j.value, '$[4]') AS \"token\", json_extract(j.value, '$[5]') AS \"password_hash\", j.key AS __ord FROM json_each(:__r0) AS j),\nt4 AS (SELECT \"id\", __ord FROM t3),\nt5 AS (SELECT \"id\" AS \"customer_id\", __ord FROM t4),\nt6 AS (SELECT l.\"id\", l.\"product_id\", l.\"customer_id\", l.\"rating\", l.\"body\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t2 AS l JOIN t5 AS r ON l.\"customer_id\" = r.\"customer_id\"),\nt7 AS (SELECT COUNT(*) AS \"n\", 0 AS __ord FROM t6)\nSELECT \"n\", (\"n\" = :__l0) AS \"__ok_first\" FROM t7 ORDER BY __ord",
+  "user": true
+ },
+ "api/e06/review_product/found": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/e06/review_product/row": {
+  "binds": [],
+  "params": [
+   "product_id",
+   "rating",
+   "body"
+  ],
+  "rows": [],
+  "text": "INSERT INTO \"reviews\" (\"product_id\", \"rating\", \"body\", \"customer_id\") VALUES (:p_product_id, :p_rating, :p_body, :__user_id) RETURNING \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\"",
+  "user": true
+ },
+ "api/e07/reserve/done": {
+  "binds": [],
+  "params": [
+   "qty"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "name",
+     "category",
+     "price",
+     "stock",
+     "active"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"name\", json_extract(j.value, '$[2]') AS \"category\", json_extract(j.value, '$[3]') AS \"price\", json_extract(j.value, '$[4]') AS \"stock\", json_extract(j.value, '$[5]') AS \"active\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"products\" SET \"stock\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", (\"stock\" - :p_qty) AS \"__v0\" FROM t0) AS s WHERE \"products\".\"id\" = s.\"__k0\" RETURNING \"id\", \"stock\"",
+  "user": false
+ },
+ "api/e07/reserve/found": {
+  "binds": [],
+  "params": [
+   "product_id",
+   "qty"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", (\"stock\" >= :p_qty) AS \"__ok_enough\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/e08/customer_orders/result": {
+  "binds": [],
+  "params": [
+   "user_id",
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (\"customer_id\" = :p_user_id)),\nt2 AS (SELECT \"id\", \"status\", \"created_at\", \"total\", __ord FROM t1),\nt3 AS (SELECT \"id\", \"status\", \"created_at\", \"total\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t2),\nt4 AS (SELECT \"id\", \"status\", \"created_at\", \"total\", __ord FROM t3 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"status\", \"created_at\", \"total\" FROM t4 ORDER BY __ord",
+  "user": false
+ },
+ "api/example1/list_addresses/result": {
+  "binds": [],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", \"id\" AS __ord FROM \"addresses\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t1),\nt3 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t2 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\" FROM t3 ORDER BY __ord",
+  "user": true
+ },
+ "api/example2/set_stock/slim": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id)),\nt2 AS (SELECT \"id\", \"name\", \"stock\", __ord FROM t1)\nSELECT \"id\", \"name\", \"stock\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "api/example2/set_stock/updated": {
+  "binds": [],
+  "params": [
+   "stock"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "slim",
+    [
+     "id",
+     "name",
+     "stock"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"name\", json_extract(j.value, '$[2]') AS \"stock\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"products\" SET \"stock\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", :p_stock AS \"__v0\" FROM t0) AS s WHERE \"products\".\"id\" = s.\"__k0\" RETURNING \"id\", \"stock\"",
+  "user": false
+ },
+ "api/example3/post_review/existing": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", \"id\" AS __ord FROM \"reviews\"),\nt1 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t1 WHERE (\"product_id\" = :p_product_id)),\nt3 AS (SELECT COUNT(*) AS \"n\", 0 AS __ord FROM t2)\nSELECT \"n\", (\"n\" = :__l0) AS \"__ok_fresh\" FROM t3 ORDER BY __ord",
+  "user": true
+ },
+ "api/example3/post_review/review": {
+  "binds": [],
+  "params": [
+   "product_id",
+   "rating",
+   "body"
+  ],
+  "rows": [],
+  "text": "INSERT INTO \"reviews\" (\"product_id\", \"rating\", \"body\", \"customer_id\") VALUES (:p_product_id, :p_rating, :p_body, :__user_id) RETURNING \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\"",
+  "user": true
+ },
+ "api/example3/post_review/times_bought": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", \"id\" AS __ord FROM \"order_items\"),\nt1 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t0 WHERE (:__is_admin OR \"order_id\" IN (SELECT \"id\" FROM \"orders\" WHERE \"customer_id\" = :__user_id))),\nt2 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t1 WHERE (\"product_id\" = :p_product_id)),\nt3 AS (SELECT COUNT(*) AS \"n\", 0 AS __ord FROM t2)\nSELECT \"n\", (\"n\" > :__l0) AS \"__ok_ordered\" FROM t3 ORDER BY __ord",
+  "user": true
+ },
+ "api/example3/post_review/wanted": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/f01/list_orders/result": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", \"id\" AS __ord FROM \"order_items\"),\nt3 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t2 WHERE (:__is_admin OR \"order_id\" IN (SELECT \"id\" FROM \"orders\" WHERE \"customer_id\" = :__user_id))),\nt4 AS (SELECT \"order_id\", COALESCE(SUM(\"qty\"), 0) AS \"units\", MIN(__ord) AS __ord FROM t3 GROUP BY \"order_id\"),\nt5 AS (SELECT \"order_id\" AS \"id\", \"units\", __ord FROM t4),\nt6 AS (SELECT l.\"id\", l.\"customer_id\", l.\"status\", l.\"created_at\", l.\"total\", r.\"units\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t1 AS l LEFT JOIN t5 AS r ON l.\"id\" = r.\"id\"),\nt7 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", COALESCE(\"units\", :__l0) AS \"units\", __ord FROM t6),\nt8 AS (SELECT \"id\", \"status\", \"created_at\", \"total\", \"units\", __ord FROM t7),\nt9 AS (SELECT \"id\", \"status\", \"created_at\", \"total\", \"units\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t8),\nt10 AS (SELECT \"id\", \"status\", \"created_at\", \"total\", \"units\", __ord FROM t9 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"status\", \"created_at\", \"total\", \"units\" FROM t10 ORDER BY __ord",
+  "user": true
+ },
+ "api/f02/all_orders/result": {
+  "binds": [],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", \"id\" AS __ord FROM \"users\"),\nt2 AS (SELECT \"id\", \"name\", __ord FROM t1),\nt3 AS (SELECT \"id\" AS \"customer_id\", \"name\" AS \"customer_name\", __ord FROM t2),\nt4 AS (SELECT l.\"id\", l.\"customer_id\", l.\"status\", l.\"created_at\", l.\"total\", r.\"customer_name\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l LEFT JOIN t3 AS r ON l.\"customer_id\" = r.\"customer_id\"),\nt5 AS (SELECT \"id\", \"customer_id\", \"customer_name\", \"status\", \"total\", __ord FROM t4),\nt6 AS (SELECT \"id\", \"customer_id\", \"customer_name\", \"status\", \"total\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t5),\nt7 AS (SELECT \"id\", \"customer_id\", \"customer_name\", \"status\", \"total\", __ord FROM t6 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"customer_id\", \"customer_name\", \"status\", \"total\" FROM t7 ORDER BY __ord",
+  "user": false
+ },
+ "api/f03/catalog/result": {
+  "binds": [],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", __ord FROM t0),\nt2 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t1),\nt3 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", __ord FROM t2 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\" FROM t3 ORDER BY __ord",
+  "user": false
+ },
+ "api/f04/moderation_queue/result": {
+  "binds": [],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", \"id\" AS __ord FROM \"reviews\"),\nt1 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", \"id\" AS __ord FROM \"users\"),\nt2 AS (SELECT \"id\", \"name\", __ord FROM t1),\nt3 AS (SELECT \"id\" AS \"customer_id\", \"name\" AS \"reviewer_name\", __ord FROM t2),\nt4 AS (SELECT l.\"id\", l.\"product_id\", l.\"customer_id\", l.\"rating\", l.\"body\", r.\"reviewer_name\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l LEFT JOIN t3 AS r ON l.\"customer_id\" = r.\"customer_id\"),\nt5 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt6 AS (SELECT \"id\", \"name\", __ord FROM t5),\nt7 AS (SELECT \"id\" AS \"product_id\", \"name\" AS \"product_name\", __ord FROM t6),\nt8 AS (SELECT l.\"id\", l.\"product_id\", l.\"customer_id\", l.\"rating\", l.\"body\", l.\"reviewer_name\", r.\"product_name\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t4 AS l LEFT JOIN t7 AS r ON l.\"product_id\" = r.\"product_id\"),\nt9 AS (SELECT \"id\", \"rating\", \"body\", \"reviewer_name\", \"product_name\", __ord FROM t8),\nt10 AS (SELECT \"id\", \"rating\", \"body\", \"reviewer_name\", \"product_name\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t9),\nt11 AS (SELECT \"id\", \"rating\", \"body\", \"reviewer_name\", \"product_name\", __ord FROM t10 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"rating\", \"body\", \"reviewer_name\", \"product_name\" FROM t11 ORDER BY __ord",
+  "user": false
+ },
+ "api/f05/product_ratings/result": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", \"id\" AS __ord FROM \"reviews\"),\nt2 AS (SELECT \"product_id\", COUNT(*) AS \"review_count\", AVG(\"rating\") AS \"avg_rating\", MIN(__ord) AS __ord FROM t1 GROUP BY \"product_id\"),\nt3 AS (SELECT \"product_id\" AS \"id\", \"review_count\", \"avg_rating\", __ord FROM t2),\nt4 AS (SELECT l.\"id\", l.\"name\", l.\"category\", l.\"price\", l.\"stock\", l.\"active\", r.\"review_count\", r.\"avg_rating\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l LEFT JOIN t3 AS r ON l.\"id\" = r.\"id\"),\nt5 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", COALESCE(\"review_count\", :__l0) AS \"review_count\", \"avg_rating\", __ord FROM t4),\nt6 AS (SELECT \"id\", \"name\", \"review_count\", \"avg_rating\", __ord FROM t5),\nt7 AS (SELECT \"id\", \"name\", \"review_count\", \"avg_rating\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t6),\nt8 AS (SELECT \"id\", \"name\", \"review_count\", \"avg_rating\", __ord FROM t7 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"name\", \"review_count\", \"avg_rating\" FROM t8 ORDER BY __ord",
+  "user": false
+ },
+ "api/f06/customer_stats/result": {
+  "binds": [
+   [
+    "__l0",
+    "Customer"
+   ],
+   [
+    "__l1",
+    "cancelled"
+   ],
+   [
+    "__l2",
+    0
+   ],
+   [
+    "__l3",
+    0.0
+   ]
+  ],
+  "params": [
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", \"id\" AS __ord FROM \"users\"),\nt1 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", __ord FROM t0 WHERE (\"role\" = :__l0)),\nt2 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt3 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t2 WHERE (\"status\" <> :__l1)),\nt4 AS (SELECT \"customer_id\", COUNT(*) AS \"order_count\", COALESCE(SUM(\"total\"), 0) AS \"total_spent\", MIN(__ord) AS __ord FROM t3 GROUP BY \"customer_id\"),\nt5 AS (SELECT \"customer_id\" AS \"id\", \"order_count\", \"total_spent\", __ord FROM t4),\nt6 AS (SELECT l.\"id\", l.\"email\", l.\"name\", l.\"role\", l.\"token\", l.\"password_hash\", r.\"order_count\", r.\"total_spent\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t1 AS l LEFT JOIN t5 AS r ON l.\"id\" = r.\"id\"),\nt7 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", COALESCE(\"order_count\", :__l2) AS \"order_count\", COALESCE(\"total_spent\", :__l3) AS \"total_spent\", __ord FROM t6),\nt8 AS (SELECT \"id\", \"name\", \"email\", \"order_count\", \"total_spent\", __ord FROM t7),\nt9 AS (SELECT \"id\", \"name\", \"email\", \"order_count\", \"total_spent\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t8),\nt10 AS (SELECT \"id\", \"name\", \"email\", \"order_count\", \"total_spent\", __ord FROM t9 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"name\", \"email\", \"order_count\", \"total_spent\" FROM t10 ORDER BY __ord",
+  "user": false
+ },
+ "api/f07/order_lines/found": {
+  "binds": [],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t1 WHERE (\"id\" = :p_order_id))\nSELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/f07/order_lines/result": {
+  "binds": [],
+  "params": [
+   "order_id",
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", \"id\" AS __ord FROM \"order_items\"),\nt1 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t0 WHERE (:__is_admin OR \"order_id\" IN (SELECT \"id\" FROM \"orders\" WHERE \"customer_id\" = :__user_id))),\nt2 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t1 WHERE (\"order_id\" = :p_order_id)),\nt3 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt4 AS (SELECT \"id\", \"name\", __ord FROM t3),\nt5 AS (SELECT \"id\" AS \"product_id\", \"name\" AS \"product_name\", __ord FROM t4),\nt6 AS (SELECT l.\"id\", l.\"order_id\", l.\"product_id\", l.\"qty\", l.\"unit_price\", r.\"product_name\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t2 AS l LEFT JOIN t5 AS r ON l.\"product_id\" = r.\"product_id\"),\nt7 AS (SELECT \"id\", \"product_id\", \"product_name\", \"qty\", \"unit_price\", __ord FROM t6),\nt8 AS (SELECT \"id\", \"product_id\", \"product_name\", \"qty\", \"unit_price\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t7),\nt9 AS (SELECT \"id\", \"product_id\", \"product_name\", \"qty\", \"unit_price\", __ord FROM t8 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"product_id\", \"product_name\", \"qty\", \"unit_price\" FROM t9 ORDER BY __ord",
+  "user": true
+ },
+ "api/f08/list_users/result": {
+  "binds": [],
+  "params": [
+   "role",
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", \"id\" AS __ord FROM \"users\"),\nt1 AS (SELECT \"id\", \"email\", \"name\", \"role\", \"token\", \"password_hash\", __ord FROM t0 WHERE (\"role\" = :p_role)),\nt2 AS (SELECT \"id\", \"email\", \"name\", \"role\", __ord FROM t1),\nt3 AS (SELECT \"id\", \"email\", \"name\", \"role\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t2),\nt4 AS (SELECT \"id\", \"email\", \"name\", \"role\", __ord FROM t3 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"email\", \"name\", \"role\" FROM t4 ORDER BY __ord",
+  "user": false
+ },
+ "api/o01/get_order/found": {
+  "binds": [],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t1 WHERE (\"id\" = :p_order_id))\nSELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/o02/get_address/found": {
+  "binds": [],
+  "params": [
+   "address_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", \"id\" AS __ord FROM \"addresses\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t1 WHERE (\"id\" = :p_address_id))\nSELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/o03/delete_address/found": {
+  "binds": [],
+  "params": [
+   "address_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", \"id\" AS __ord FROM \"addresses\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t1 WHERE (\"id\" = :p_address_id))\nSELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/o03/delete_address/gone": {
+  "binds": [],
+  "params": [],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "customer_id",
+     "line1",
+     "city",
+     "zip"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"customer_id\", json_extract(j.value, '$[2]') AS \"line1\", json_extract(j.value, '$[3]') AS \"city\", json_extract(j.value, '$[4]') AS \"zip\", j.key AS __ord FROM json_each(:__r0) AS j)\nDELETE FROM \"addresses\" WHERE \"id\" IN (SELECT \"id\" FROM t0)",
+  "user": false
+ },
+ "api/o04/update_review/done": {
+  "binds": [],
+  "params": [
+   "rating",
+   "body"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "product_id",
+     "customer_id",
+     "rating",
+     "body"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"product_id\", json_extract(j.value, '$[2]') AS \"customer_id\", json_extract(j.value, '$[3]') AS \"rating\", json_extract(j.value, '$[4]') AS \"body\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"reviews\" SET \"rating\" = s.\"__v0\", \"body\" = s.\"__v1\" FROM (SELECT \"id\" AS \"__k0\", :p_rating AS \"__v0\", :p_body AS \"__v1\" FROM t0) AS s WHERE \"reviews\".\"id\" = s.\"__k0\" RETURNING \"id\", \"rating\", \"body\"",
+  "user": false
+ },
+ "api/o04/update_review/found": {
+  "binds": [],
+  "params": [
+   "review_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", \"id\" AS __ord FROM \"reviews\"),\nt1 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\", __ord FROM t1 WHERE (\"id\" = :p_review_id))\nSELECT \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/o05/order_items/found": {
+  "binds": [],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t1 WHERE (\"id\" = :p_order_id))\nSELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/o05/order_items/result": {
+  "binds": [],
+  "params": [
+   "order_id",
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", \"id\" AS __ord FROM \"order_items\"),\nt1 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t0 WHERE (:__is_admin OR \"order_id\" IN (SELECT \"id\" FROM \"orders\" WHERE \"customer_id\" = :__user_id))),\nt2 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t1 WHERE (\"order_id\" = :p_order_id)),\nt3 AS (SELECT \"id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t2),\nt4 AS (SELECT \"id\", \"product_id\", \"qty\", \"unit_price\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t3),\nt5 AS (SELECT \"id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t4 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"product_id\", \"qty\", \"unit_price\" FROM t5 ORDER BY __ord",
+  "user": true
+ },
+ "api/o06/cancel_order/done": {
+  "binds": [
+   [
+    "__l0",
+    "cancelled"
+   ]
+  ],
+  "params": [],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "customer_id",
+     "status",
+     "created_at",
+     "total"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"customer_id\", json_extract(j.value, '$[2]') AS \"status\", json_extract(j.value, '$[3]') AS \"created_at\", json_extract(j.value, '$[4]') AS \"total\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"orders\" SET \"status\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", :__l0 AS \"__v0\" FROM t0) AS s WHERE \"orders\".\"id\" = s.\"__k0\" RETURNING \"id\", \"status\"",
+  "user": false
+ },
+ "api/o06/cancel_order/found": {
+  "binds": [
+   [
+    "__l0",
+    "pending"
+   ]
+  ],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t1 WHERE (\"id\" = :p_order_id))\nSELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", (\"status\" = :__l0) AS \"__ok_pending\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/o07/replace_address/done": {
+  "binds": [],
+  "params": [
+   "line1",
+   "city",
+   "zip"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "customer_id",
+     "line1",
+     "city",
+     "zip"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"customer_id\", json_extract(j.value, '$[2]') AS \"line1\", json_extract(j.value, '$[3]') AS \"city\", json_extract(j.value, '$[4]') AS \"zip\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"addresses\" SET \"line1\" = s.\"__v0\", \"city\" = s.\"__v1\", \"zip\" = s.\"__v2\" FROM (SELECT \"id\" AS \"__k0\", :p_line1 AS \"__v0\", :p_city AS \"__v1\", :p_zip AS \"__v2\" FROM t0) AS s WHERE \"addresses\".\"id\" = s.\"__k0\" RETURNING \"id\", \"line1\", \"city\", \"zip\"",
+  "user": false
+ },
+ "api/o07/replace_address/found": {
+  "binds": [],
+  "params": [
+   "address_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", \"id\" AS __ord FROM \"addresses\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\", __ord FROM t1 WHERE (\"id\" = :p_address_id))\nSELECT \"id\", \"customer_id\", \"line1\", \"city\", \"zip\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/o08/order_units/found": {
+  "binds": [],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (:__is_admin OR \"customer_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t1 WHERE (\"id\" = :p_order_id))\nSELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\" FROM t2 ORDER BY __ord",
+  "user": true
+ },
+ "api/o08/order_units/shown": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", \"id\" AS __ord FROM \"order_items\"),\nt1 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t0 WHERE (:__is_admin OR \"order_id\" IN (SELECT \"id\" FROM \"orders\" WHERE \"customer_id\" = :__user_id))),\nt2 AS (SELECT \"id\", \"order_id\", \"product_id\", \"qty\", \"unit_price\", __ord FROM t1 WHERE (\"order_id\" = :p_order_id)),\nt3 AS (SELECT COALESCE(SUM(\"qty\"), 0) AS \"units\", 0 AS __ord FROM t2),\nt4 AS (SELECT COALESCE(\"units\", :__l0) AS \"units\", :p_order_id AS \"order_id\", __ord FROM t3),\nt5 AS (SELECT \"order_id\", \"units\", __ord FROM t4)\nSELECT \"order_id\", \"units\" FROM t5 ORDER BY __ord",
+  "user": true
+ },
+ "api/v01/create_review/found": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/v01/create_review/row": {
+  "binds": [],
+  "params": [
+   "product_id",
+   "rating",
+   "body"
+  ],
+  "rows": [],
+  "text": "INSERT INTO \"reviews\" (\"product_id\", \"rating\", \"body\", \"customer_id\") VALUES (:p_product_id, :p_rating, :p_body, :__user_id) RETURNING \"id\", \"product_id\", \"customer_id\", \"rating\", \"body\"",
+  "user": true
+ },
+ "api/v02/create_address/row": {
+  "binds": [],
+  "params": [
+   "line1",
+   "city",
+   "zip"
+  ],
+  "rows": [],
+  "text": "INSERT INTO \"addresses\" (\"line1\", \"city\", \"zip\", \"customer_id\") VALUES (:p_line1, :p_city, :p_zip, :__user_id) RETURNING \"id\", \"customer_id\", \"line1\", \"city\", \"zip\"",
+  "user": true
+ },
+ "api/v03/create_product/row": {
+  "binds": [
+   [
+    "__l0",
+    1
+   ]
+  ],
+  "params": [
+   "name",
+   "category",
+   "price",
+   "stock"
+  ],
+  "rows": [],
+  "text": "INSERT INTO \"products\" (\"name\", \"category\", \"price\", \"stock\", \"active\") VALUES (:p_name, :p_category, :p_price, :p_stock, :__l0) RETURNING \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\"",
+  "user": false
+ },
+ "api/v04/set_price/done": {
+  "binds": [],
+  "params": [
+   "price"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "name",
+     "category",
+     "price",
+     "stock",
+     "active"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"name\", json_extract(j.value, '$[2]') AS \"category\", json_extract(j.value, '$[3]') AS \"price\", json_extract(j.value, '$[4]') AS \"stock\", json_extract(j.value, '$[5]') AS \"active\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"products\" SET \"price\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", :p_price AS \"__v0\" FROM t0) AS s WHERE \"products\".\"id\" = s.\"__k0\" RETURNING \"id\", \"price\"",
+  "user": false
+ },
+ "api/v04/set_price/found": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/v05/set_status/done": {
+  "binds": [],
+  "params": [
+   "status"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "customer_id",
+     "status",
+     "created_at",
+     "total"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"customer_id\", json_extract(j.value, '$[2]') AS \"status\", json_extract(j.value, '$[3]') AS \"created_at\", json_extract(j.value, '$[4]') AS \"total\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"orders\" SET \"status\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", :p_status AS \"__v0\" FROM t0) AS s WHERE \"orders\".\"id\" = s.\"__k0\" RETURNING \"id\", \"status\"",
+  "user": false
+ },
+ "api/v05/set_status/found": {
+  "binds": [],
+  "params": [
+   "order_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", \"id\" AS __ord FROM \"orders\"),\nt1 AS (SELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\", __ord FROM t0 WHERE (\"id\" = :p_order_id))\nSELECT \"id\", \"customer_id\", \"status\", \"created_at\", \"total\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "api/v06/browse/result": {
+  "binds": [],
+  "params": [
+   "category",
+   "limit",
+   "offset"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"active\" AND (\"category\" = :p_category))),\nt2 AS (SELECT \"id\", \"name\", \"price\", __ord FROM t1),\nt3 AS (SELECT \"id\", \"name\", \"price\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t2),\nt4 AS (SELECT \"id\", \"name\", \"price\", __ord FROM t3 ORDER BY __ord LIMIT :p_limit OFFSET :p_offset)\nSELECT \"id\", \"name\", \"price\" FROM t4 ORDER BY __ord",
+  "user": false
+ },
+ "api/v07/rename_me/done": {
+  "binds": [],
+  "params": [
+   "name"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "user",
+    [
+     "id",
+     "email",
+     "name",
+     "role",
+     "token",
+     "password_hash"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"email\", json_extract(j.value, '$[2]') AS \"name\", json_extract(j.value, '$[3]') AS \"role\", json_extract(j.value, '$[4]') AS \"token\", json_extract(j.value, '$[5]') AS \"password_hash\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"users\" SET \"name\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", :p_name AS \"__v0\" FROM t0) AS s WHERE \"users\".\"id\" = s.\"__k0\" RETURNING \"id\", \"name\"",
+  "user": false
+ },
+ "api/v08/restock/done": {
+  "binds": [],
+  "params": [
+   "qty"
+  ],
+  "rows": [
+   [
+    "__r0",
+    "found",
+    [
+     "id",
+     "name",
+     "category",
+     "price",
+     "stock",
+     "active"
+    ]
+   ]
+  ],
+  "text": "WITH t0 AS (SELECT json_extract(j.value, '$[0]') AS \"id\", json_extract(j.value, '$[1]') AS \"name\", json_extract(j.value, '$[2]') AS \"category\", json_extract(j.value, '$[3]') AS \"price\", json_extract(j.value, '$[4]') AS \"stock\", json_extract(j.value, '$[5]') AS \"active\", j.key AS __ord FROM json_each(:__r0) AS j)\nUPDATE \"products\" SET \"stock\" = s.\"__v0\" FROM (SELECT \"id\" AS \"__k0\", (\"stock\" + :p_qty) AS \"__v0\" FROM t0) AS s WHERE \"products\".\"id\" = s.\"__k0\" RETURNING \"id\", \"stock\"",
+  "user": false
+ },
+ "api/v08/restock/found": {
+  "binds": [],
+  "params": [
+   "product_id"
+  ],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", \"id\" AS __ord FROM \"products\"),\nt1 AS (SELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\", __ord FROM t0 WHERE (\"id\" = :p_product_id))\nSELECT \"id\", \"name\", \"category\", \"price\", \"stock\", \"active\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/chain": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ],
+   [
+    "__l1",
+    3
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", (\"qty\" * \"price\") AS \"value\", __ord FROM t0),\nt2 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"value\", __ord FROM t1 WHERE (\"value\" > :__l0)),\nt3 AS (SELECT \"name\", COALESCE(SUM(\"value\"), 0) AS \"total\", COUNT(*) AS \"n\", MIN(__ord) AS __ord FROM t2 GROUP BY \"name\"),\nt4 AS (SELECT \"name\", \"total\", \"n\", ROW_NUMBER() OVER (ORDER BY (\"total\" IS NULL), \"total\" DESC, (\"name\" IS NULL), \"name\", __ord) AS __ord FROM t3),\nt5 AS (SELECT \"name\", \"total\", \"n\", __ord FROM t4 ORDER BY __ord LIMIT :__l1)\nSELECT \"name\", \"total\", \"n\" FROM t5 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/derive_arith": {
+  "binds": [
+   [
+    "__l0",
+    2
+   ],
+   [
+    "__l1",
+    1
+   ],
+   [
+    "__l2",
+    3
+   ],
+   [
+    "__l3",
+    -4
+   ],
+   [
+    "__l4",
+    2
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", ((\"qty\" * :__l0) + :__l1) AS \"a\", (CAST(\"price\" AS REAL) / \"qty\") AS \"b\", lattice_mod(\"qty\", :__l2) AS \"c\", (-\"price\") AS \"d\", (\"qty\" - \"id\") AS \"e\", lattice_mod(\"qty\", :__l3) AS \"f\", lattice_mod(\"price\", :__l4) AS \"h\", __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"a\", \"b\", \"c\", \"d\", \"e\", \"f\", \"h\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/derive_bool": {
+  "binds": [
+   [
+    "__l0",
+    1
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", ((\"qty\" > :__l0) AND \"flag\") AS \"b\", (NOT \"flag\") AS \"nb\", __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"b\", \"nb\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/derive_div_int": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", (CAST(\"qty\" AS REAL) / \"id\") AS \"r\", (CAST(\"id\" AS REAL) / :__l0) AS \"z\", __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"r\", \"z\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/derive_empty_affixes": {
+  "binds": [
+   [
+    "__l0",
+    ""
+   ],
+   [
+    "__l1",
+    ""
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", (instr(\"name\", :__l0) > 0) AS \"a\", (substr(\"name\", 1, length(:__l1)) = :__l1) AS \"b\", __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"a\", \"b\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/derive_fns": {
+  "binds": [
+   [
+    "__l0",
+    "pp"
+   ],
+   [
+    "__l1",
+    "ap"
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", lattice_lower(\"name\") AS \"lo\", lattice_upper(\"name\") AS \"up\", lattice_strip(\"name\") AS \"st\", length(\"name\") AS \"n\", (instr(\"name\", :__l0) > 0) AS \"has\", (substr(\"name\", 1, length(:__l1)) = :__l1) AS \"pre\", CAST(strftime('%Y', \"day\") AS INTEGER) AS \"y\", CAST(strftime('%m', \"day\") AS INTEGER) AS \"m\", CAST(strftime('%d', \"day\") AS INTEGER) AS \"d\", __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"lo\", \"up\", \"st\", \"n\", \"has\", \"pre\", \"y\", \"m\", \"d\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/derive_replace": {
+  "binds": [
+   [
+    "__l0",
+    1
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", lattice_upper(\"name\") AS \"name\", \"grp\", (\"qty\" + :__l0) AS \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/derive_when_coalesce": {
+  "binds": [
+   [
+    "__l0",
+    2
+   ],
+   [
+    "__l1",
+    0.5
+   ],
+   [
+    "__l2",
+    -1.0
+   ],
+   [
+    "__l3",
+    "yes"
+   ],
+   [
+    "__l4",
+    "no"
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", (CASE WHEN (\"qty\" > :__l0) THEN \"price\" ELSE :__l1 END) AS \"w\", COALESCE(\"price\", :__l2) AS \"c\", (\"name\" IS NULL) AS \"n\", (CASE WHEN \"flag\" THEN :__l3 ELSE :__l4 END) AS \"k\", __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"w\", \"c\", \"n\", \"k\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/fetch_order": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"day\", \"flag\", __ord FROM t0)\nSELECT \"id\", \"name\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_all_aggs": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"grp\", COALESCE(SUM(\"qty\"), 0) AS \"total\", COUNT(*) AS \"n\", COUNT(\"qty\") AS \"nq\", COUNT(DISTINCT \"name\") AS \"nd\", MIN(\"price\") AS \"lo\", MAX(\"name\") AS \"hi\", AVG(\"price\") AS \"avg\", COALESCE(SUM(\"price\"), 0) AS \"fs\", MIN(__ord) AS __ord FROM t0 GROUP BY \"grp\")\nSELECT \"grp\", \"total\", \"n\", \"nq\", \"nd\", \"lo\", \"hi\", \"avg\", \"fs\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_all_null_sum": {
+  "binds": [
+   [
+    "__l0",
+    4
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE (\"id\" = :__l0)),\nt2 AS (SELECT \"grp\", COALESCE(SUM(\"qty\"), 0) AS \"s\", MIN(__ord) AS __ord FROM t1 GROUP BY \"grp\")\nSELECT \"grp\", \"s\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_at": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT *, FIRST_VALUE(CASE WHEN \"price\" IS NOT NULL THEN \"name\" END) OVER (PARTITION BY \"grp\" ORDER BY (\"price\" IS NULL), \"price\", __ord ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS __w0, FIRST_VALUE(CASE WHEN \"day\" IS NOT NULL THEN \"id\" END) OVER (PARTITION BY \"grp\" ORDER BY (\"day\" IS NULL), \"day\" DESC, __ord ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS __w1, FIRST_VALUE(CASE WHEN \"qty\" IS NOT NULL THEN \"id\" END) OVER (PARTITION BY \"grp\" ORDER BY (\"qty\" IS NULL), \"qty\" DESC, __ord ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS __w2 FROM t0),\nt2 AS (SELECT \"grp\", MIN(__w0) AS \"cheapest\", MIN(__w1) AS \"latest\", MIN(__w2) AS \"tie\", MIN(__ord) AS __ord FROM t1 GROUP BY \"grp\")\nSELECT \"grp\", \"cheapest\", \"latest\", \"tie\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_at_whole": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT *, FIRST_VALUE(CASE WHEN \"day\" IS NOT NULL THEN \"id\" END) OVER (ORDER BY (\"day\" IS NULL), \"day\", __ord ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS __w0, FIRST_VALUE(CASE WHEN \"qty\" IS NOT NULL THEN \"name\" END) OVER (ORDER BY (\"qty\" IS NULL), \"qty\" DESC, __ord ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS __w1 FROM t0),\nt2 AS (SELECT MIN(__w0) AS \"first\", MIN(__w1) AS \"last\", 0 AS __ord FROM t1)\nSELECT \"first\", \"last\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_empty": {
+  "binds": [
+   [
+    "__l0",
+    100
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE (\"id\" > :__l0)),\nt2 AS (SELECT COALESCE(SUM(\"qty\"), 0) AS \"total\", COUNT(*) AS \"n\", COALESCE(SUM(\"price\"), 0) AS \"fs\", AVG(\"qty\") AS \"avg\", MIN(\"qty\") AS \"lo\", 0 AS __ord FROM t1)\nSELECT \"total\", \"n\", \"fs\", \"avg\", \"lo\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_expr_arg": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"grp\", COALESCE(SUM((\"qty\" * \"price\")), 0) AS \"v\", MAX((CASE WHEN \"flag\" THEN \"qty\" ELSE :__l0 END)) AS \"m\", MIN(__ord) AS __ord FROM t0 GROUP BY \"grp\")\nSELECT \"grp\", \"v\", \"m\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_literal": {
+  "binds": [
+   [
+    "__l0",
+    1
+   ],
+   [
+    "__l1",
+    1
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"grp\", COALESCE(SUM(:__l0), 0) AS \"ones\", COUNT(:__l1) AS \"c1\", MIN(__ord) AS __ord FROM t0 GROUP BY \"grp\")\nSELECT \"grp\", \"ones\", \"c1\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_two_keys": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"grp\", \"flag\", COUNT(*) AS \"n\", COALESCE(SUM(\"qty\"), 0) AS \"s\", MIN(__ord) AS __ord FROM t0 GROUP BY \"grp\", \"flag\")\nSELECT \"grp\", \"flag\", \"n\", \"s\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/group_whole": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT COALESCE(SUM(\"qty\"), 0) AS \"total\", COUNT(*) AS \"n\", AVG(\"qty\") AS \"avg\", 0 AS __ord FROM t0)\nSELECT \"total\", \"n\", \"avg\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_cross_empty_left": {
+  "binds": [
+   [
+    "__l0",
+    100
+   ],
+   [
+    "__l1",
+    1
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE (\"id\" > :__l0)),\nt2 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"qty\" AS \"z\", __ord FROM t1),\nt3 AS (SELECT \"z\", __ord FROM t2),\nt4 AS (SELECT \"z\", __ord FROM t3 ORDER BY __ord LIMIT :__l1),\nt5 AS (SELECT l.\"id\", l.\"name\", l.\"grp\", l.\"qty\", l.\"price\", l.\"day\", l.\"flag\", r.\"z\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l LEFT JOIN t4 AS r ON 1)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"z\" FROM t5 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_cross_one_row": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT COALESCE(SUM(\"qty\"), 0) AS \"all_qty\", 0 AS __ord FROM t0),\nt2 AS (SELECT l.\"id\", l.\"name\", l.\"grp\", l.\"qty\", l.\"price\", l.\"day\", l.\"flag\", r.\"all_qty\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l JOIN t1 AS r ON 1),\nt3 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"all_qty\", (CAST(\"qty\" AS REAL) / \"all_qty\") AS \"share\", __ord FROM t2)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"all_qty\", \"share\" FROM t3 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_inner_fanout": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"tag\", \"weight\", rowid AS __ord FROM \"tags\"),\nt2 AS (SELECT l.\"id\", l.\"name\", l.\"grp\", l.\"qty\", l.\"price\", l.\"day\", l.\"flag\", r.\"tag\", r.\"weight\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l JOIN t1 AS r ON l.\"id\" = r.\"id\")\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"tag\", \"weight\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_left_fanout": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"tag\", \"weight\", rowid AS __ord FROM \"tags\"),\nt2 AS (SELECT l.\"id\", l.\"name\", l.\"grp\", l.\"qty\", l.\"price\", l.\"day\", l.\"flag\", r.\"tag\", r.\"weight\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l LEFT JOIN t1 AS r ON l.\"id\" = r.\"id\")\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"tag\", \"weight\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_mapped_inner_fanout": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"tag\", \"weight\", rowid AS __ord FROM \"tags\"),\nt2 AS (SELECT \"id\" AS \"item_id\", \"tag\", \"weight\", __ord FROM t1),\nt3 AS (SELECT l.\"id\", l.\"name\", l.\"grp\", l.\"qty\", l.\"price\", l.\"day\", l.\"flag\", r.\"tag\", r.\"weight\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l JOIN t2 AS r ON l.\"id\" = r.\"item_id\")\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"tag\", \"weight\" FROM t3 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_mapped_left": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"tag\", \"weight\", rowid AS __ord FROM \"tags\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt2 AS (SELECT \"id\" AS \"item_id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t1),\nt3 AS (SELECT l.\"id\", l.\"tag\", l.\"weight\", r.\"name\", r.\"grp\", r.\"qty\", r.\"price\", r.\"day\", r.\"flag\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l LEFT JOIN t2 AS r ON l.\"id\" = r.\"item_id\")\nSELECT \"id\", \"tag\", \"weight\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t3 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_mapped_per_parent_totals": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"tag\", \"weight\", rowid AS __ord FROM \"tags\"),\nt2 AS (SELECT \"id\" AS \"item_id\", \"tag\", \"weight\", __ord FROM t1),\nt3 AS (SELECT \"item_id\", COALESCE(SUM(\"weight\"), 0) AS \"weight\", COUNT(*) AS \"n\", MIN(__ord) AS __ord FROM t2 GROUP BY \"item_id\"),\nt4 AS (SELECT l.\"id\", l.\"name\", l.\"grp\", l.\"qty\", l.\"price\", l.\"day\", l.\"flag\", r.\"weight\", r.\"n\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l LEFT JOIN t3 AS r ON l.\"id\" = r.\"item_id\")\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"weight\", \"n\" FROM t4 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_mapped_two_keys_null": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"grp\", \"name\", __ord FROM t0),\nt2 AS (SELECT \"grp\", \"id\", COUNT(*) AS \"n\", MIN(__ord) AS __ord FROM t0 GROUP BY \"grp\", \"id\"),\nt3 AS (SELECT \"grp\" AS \"g2\", \"id\" AS \"i2\", \"n\", __ord FROM t2),\nt4 AS (SELECT l.\"id\", l.\"grp\", l.\"name\", r.\"n\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t1 AS l LEFT JOIN t3 AS r ON l.\"grp\" = r.\"g2\" AND l.\"id\" = r.\"i2\")\nSELECT \"id\", \"grp\", \"name\", \"n\" FROM t4 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_null_keys": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"grp\", \"id\", __ord FROM t0),\nt2 AS (SELECT \"grp\", COUNT(*) AS \"n\", MIN(__ord) AS __ord FROM t0 GROUP BY \"grp\"),\nt3 AS (SELECT l.\"grp\", l.\"id\", r.\"n\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t1 AS l LEFT JOIN t2 AS r ON l.\"grp\" = r.\"grp\")\nSELECT \"grp\", \"id\", \"n\" FROM t3 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/join_right_first": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"tag\", \"weight\", rowid AS __ord FROM \"tags\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt2 AS (SELECT l.\"id\", l.\"tag\", l.\"weight\", r.\"name\", r.\"grp\", r.\"qty\", r.\"price\", r.\"day\", r.\"flag\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l LEFT JOIN t1 AS r ON l.\"id\" = r.\"id\")\nSELECT \"id\", \"tag\", \"weight\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/limit_no_sort": {
+  "binds": [
+   [
+    "__l0",
+    2
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 ORDER BY __ord LIMIT :__l0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/rename_swap": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\" AS \"grp\", \"grp\" AS \"name\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0)\nSELECT \"id\", \"grp\", \"name\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/select_rename": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"name\", \"id\", __ord FROM t0),\nt2 AS (SELECT \"name\" AS \"label\", \"id\" AS \"key\", __ord FROM t1)\nSELECT \"label\", \"key\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/sort_after_join_then_group": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"tag\", \"weight\", rowid AS __ord FROM \"tags\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt2 AS (SELECT l.\"id\", l.\"tag\", l.\"weight\", r.\"name\", r.\"grp\", r.\"qty\", r.\"price\", r.\"day\", r.\"flag\", ROW_NUMBER() OVER (ORDER BY l.__ord, r.__ord) AS __ord FROM t0 AS l JOIN t1 AS r ON l.\"id\" = r.\"id\"),\nt3 AS (SELECT \"tag\", COALESCE(SUM(\"weight\"), 0) AS \"w\", MAX(\"qty\") AS \"q\", MIN(__ord) AS __ord FROM t2 GROUP BY \"tag\"),\nt4 AS (SELECT \"tag\", \"w\", \"q\", ROW_NUMBER() OVER (ORDER BY (\"w\" IS NULL), \"w\" DESC, __ord) AS __ord FROM t3)\nSELECT \"tag\", \"w\", \"q\" FROM t4 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/sort_asc_nulls_last": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", ROW_NUMBER() OVER (ORDER BY (\"qty\" IS NULL), \"qty\", __ord) AS __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/sort_bool": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", ROW_NUMBER() OVER (ORDER BY (\"flag\" IS NULL), \"flag\" DESC, __ord) AS __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/sort_desc_nulls_last": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", ROW_NUMBER() OVER (ORDER BY (\"price\" IS NULL), \"price\" DESC, __ord) AS __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/sort_mixed_stable": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", ROW_NUMBER() OVER (ORDER BY (\"grp\" IS NULL), \"grp\" DESC, (\"name\" IS NULL), \"name\", __ord) AS __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/sort_str_unicode": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", ROW_NUMBER() OVER (ORDER BY (\"name\" IS NULL), \"name\", __ord) AS __ord FROM t0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/sort_then_limit": {
+  "binds": [
+   [
+    "__l0",
+    3
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", ROW_NUMBER() OVER (ORDER BY (\"price\" IS NULL), \"price\" DESC, __ord) AS __ord FROM t0),\nt2 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t1 ORDER BY __ord LIMIT :__l0)\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t2 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/step_inlined": {
+  "binds": [
+   [
+    "__l0",
+    3
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE (\"qty\" >= :__l0))\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/where_and": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ],
+   [
+    "__l1",
+    2.0
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE ((\"qty\" >= :__l0) AND (\"price\" < :__l1)))\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/where_bool_col": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE \"flag\")\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/where_cmp": {
+  "binds": [
+   [
+    "__l0",
+    2
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE (\"qty\" > :__l0))\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/where_date": {
+  "binds": [],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE (\"day\" > \"day\"))\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/where_ne_str": {
+  "binds": [
+   [
+    "__l0",
+    "apple"
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE (\"name\" <> :__l0))\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ },
+ "tabular/where_null_logic": {
+  "binds": [
+   [
+    "__l0",
+    0
+   ]
+  ],
+  "params": [],
+  "rows": [],
+  "text": "WITH t0 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\", __ord FROM t0 WHERE ((\"qty\" > :__l0) OR (NOT \"flag\")))\nSELECT \"id\", \"name\", \"grp\", \"qty\", \"price\", \"day\", \"flag\" FROM t1 ORDER BY __ord",
+  "user": false
+ }
+}

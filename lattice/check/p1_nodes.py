@@ -15,6 +15,7 @@ from lattice.catalog import (
     FN_ALIASES,
     IMPORTABLE,
     NAMESPACES,
+    NATIVE_NS,
     OP_ALIASES,
     OPS_MODULE,
     SCHEMAS_MODULE,
@@ -460,7 +461,7 @@ def _check_expr(node: ast.expr, ctx: CheckContext) -> None:
         case ast.Call():
             _check_call(node, ctx)
         case ast.Attribute():
-            if not (isinstance(node.value, ast.Name) and node.value.id in NAMESPACES):
+            if not (isinstance(node.value, ast.Name) and node.value.id in _namespaces(ctx)):
                 ctx.error(
                     "L106",
                     node,
@@ -513,6 +514,11 @@ def _check_expr(node: ast.expr, ctx: CheckContext) -> None:
                 )
 
 
+def _namespaces(ctx: CheckContext) -> frozenset[str]:
+    """`agg.*` and `fn.*`; API programs also call `native.*` (ApiProfile.natives)."""
+    return NAMESPACES | {NATIVE_NS} if ctx.profile.api is not None else NAMESPACES
+
+
 def _check_int_range(node: ast.expr, ctx: CheckContext) -> None:
     v = literal_value(node)
     if isinstance(v, int) and not INT64_MIN <= v <= INT64_MAX:
@@ -527,7 +533,7 @@ def _check_int_range(node: ast.expr, ctx: CheckContext) -> None:
 def _check_call(node: ast.Call, ctx: CheckContext) -> None:
     func = node.func
     if isinstance(func, ast.Attribute):
-        if not (isinstance(func.value, ast.Name) and func.value.id in NAMESPACES):
+        if not (isinstance(func.value, ast.Name) and func.value.id in _namespaces(ctx)):
             ctx.error(
                 "L105",
                 node,

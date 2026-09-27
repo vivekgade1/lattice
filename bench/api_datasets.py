@@ -36,6 +36,8 @@ SQL_TYPES: Mapping[Scalar, str] = {
     S.STR: "TEXT",
     S.BOOL: "INTEGER",  # 0/1
     S.DATE: "TEXT",  # ISO-8601 date string
+    S.UUID: "TEXT",  # canonical lowercase UUID string
+    S.DATETIME: "TEXT",  # ISO-8601 timestamp, UTC ("Z")
 }
 
 # ---------------------------------------------------------------------------

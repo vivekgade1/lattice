@@ -4,7 +4,7 @@ import re
 
 from bench.datasets import bench_profile
 from bench.tasks import Task
-from lattice.catalog import FN_SIGS, OP_SHAPES
+from lattice.catalog import API_ONLY_FNS, FN_SIGS, OP_SHAPES
 from lattice.check import check_source
 from lattice.llm.prompt import lattice_system_prompt, lattice_task_message
 
@@ -28,6 +28,8 @@ def test_system_prompt_mentions_every_op() -> None:
 def test_system_prompt_mentions_every_fn() -> None:
     prompt = lattice_system_prompt()
     for name in FN_SIGS:
+        if name in API_ONLY_FNS:
+            continue  # API programs only (tests/check/test_realapps_checker.py)
         assert f"fn.{name}(" in prompt, f"missing fn.{name}"
 
 
@@ -111,6 +113,8 @@ def test_every_fn_has_a_semantic_description_in_the_prompt() -> None:
     assert set(FN_DOCS) == set(FN_SIGS)
     text = lattice_system_prompt()
     for name, doc in FN_DOCS.items():
+        if name in API_ONLY_FNS:
+            continue  # API programs only
         assert doc in text, name
 
 

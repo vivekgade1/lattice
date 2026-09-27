@@ -61,6 +61,7 @@ class FnSig:
 
 
 N, S_, D = NUMERIC, frozenset({Scalar.STR}), frozenset({Scalar.DATE})
+DT = frozenset({Scalar.DATETIME})
 ANY = frozenset(Scalar)
 _F = frozenset({Scalar.FLOAT})
 
@@ -89,7 +90,15 @@ FN_SIGS: Mapping[str, FnSig] = {
     "to_int": FnSig((ANY,), {}, Scalar.INT),
     "to_float": FnSig((ANY,), {}, Scalar.FLOAT),
     "to_str": FnSig((ANY,), {}, Scalar.STR),
+    # API profile only (API_ONLY_FNS)
+    "to_uuid": FnSig((S_,), {}, Scalar.UUID),
+    "now": FnSig((), {}, Scalar.DATETIME),
+    "date": FnSig((DT,), {}, Scalar.DATE),
+    "to_datetime": FnSig((S_,), {"format": Scalar.STR}, Scalar.DATETIME),
 }
+# fn.* that exist only in API programs (Profile.api set): tabular programs have no
+# Uuid/DateTime values, so there they are unknown (L106) and not in the prompt.
+API_ONLY_FNS = frozenset({"to_uuid", "now", "date", "to_datetime"})
 # One-line semantics for every fn.* (rendered into the model's system prompt).
 FN_DOCS: Mapping[str, str] = {
     "abs": "absolute value",
@@ -120,6 +129,13 @@ FN_DOCS: Mapping[str, str] = {
     "to_int": "null if not convertible",
     "to_float": "null if not convertible",
     "to_str": "as text",
+    "to_uuid": 'parse a UUID such as "5b3e9c1c-0000-4000-8000-000000000000"; null if invalid',
+    "now": "the current instant (UTC), the same value everywhere in one request",
+    "date": "the calendar date (UTC) of a DateTime",
+    "to_datetime": (
+        'parse with a strftime `format` such as "%Y-%m-%d %H:%M" (UTC unless the format '
+        "has an offset); null if unparsable"
+    ),
 }
 
 DATE_DIFF_UNITS = frozenset({"days"})
@@ -163,7 +179,7 @@ API_OP_SHAPES: Mapping[str, OpShape] = {
     "owned": OpShape(("table",), 1, frozenset({"by"})),
     "one": OpShape(("table",), 1, frozenset({"else_"})),
     "require": OpShape(("table", "condition"), 1, frozenset({"else_"})),
-    "page": OpShape(("table",), 1, frozenset({"limit"}), frozenset({"offset"})),
+    "page": OpShape(("table",), 1, frozenset({"limit"}), frozenset({"offset", "total"})),
     "insert": OpShape(("table_name",), 0, var_kw=True),
     "update": OpShape(("table",), 1, var_kw=True),
     "delete": OpShape(("table",), 1),
@@ -194,13 +210,25 @@ PARAM_CONSTRAINTS: Mapping[str, frozenset[str]] = {
     "Float": frozenset({"ge", "le"}),
     "Str": frozenset({"min_len", "max_len"}),
 }
-API_TYPE_NAMES = frozenset({"OneOf", CURRENT_USER})
+# `Uuid` and `DateTime` are scalar types only API programs have (tabular data has none).
+API_TYPE_NAMES = frozenset({"OneOf", CURRENT_USER, "Uuid", "DateTime"})
+# `UNSET`: an endpoint parameter default meaning "not sent" (partial updates).
+UNSET_NAME = "UNSET"
+# `owner_is(user)`: the whole condition of require(t, owner_is(user), else_=Forbidden(..)).
+OWNER_IS = "owner_is"
+# `native.<name>(...)`: a typed native function declared by ApiProfile.natives.
+NATIVE_NS = "native"
 API_AMBIENT = (
-    API_OPS | frozenset(API_ERRORS) | frozenset(API_SUCCESS_KINDS) | API_TYPE_NAMES | {"endpoint"}
+    API_OPS
+    | frozenset(API_ERRORS)
+    | frozenset(API_SUCCESS_KINDS)
+    | API_TYPE_NAMES
+    | {"endpoint", UNSET_NAME, OWNER_IS, NATIVE_NS}
 )
 # The expression subset the API profile compiles to SQL (anything else is L841).
 API_FN_FUNCS = frozenset(
     {"lower", "upper", "strip", "len", "contains", "starts_with", "year", "month", "day"}
+    | API_ONLY_FNS
 )
 API_AGG_FUNCS = frozenset(
     {"sum", "count", "count_distinct", "min", "max", "mean", "at_min", "at_max"}

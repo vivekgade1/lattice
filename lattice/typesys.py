@@ -13,10 +13,16 @@ class Scalar(StrEnum):
     STR = "Str"
     BOOL = "Bool"
     DATE = "Date"
+    # API profile scalars (real apps): a UUID (canonical lowercase text; compared only
+    # with == and !=) and a timezone-aware instant (ISO-8601 text ending in Z; ordered).
+    UUID = "Uuid"
+    DATETIME = "DateTime"
 
 
 NUMERIC: frozenset[Scalar] = frozenset({Scalar.INT, Scalar.FLOAT})
-ORDERED: frozenset[Scalar] = frozenset({Scalar.INT, Scalar.FLOAT, Scalar.STR, Scalar.DATE})
+ORDERED: frozenset[Scalar] = frozenset(
+    {Scalar.INT, Scalar.FLOAT, Scalar.STR, Scalar.DATE, Scalar.DATETIME}
+)
 SCALAR_NAMES: Mapping[str, Scalar] = {s.value: s for s in Scalar}
 
 
@@ -203,6 +209,16 @@ def generated_key(schema: Schema) -> str | None:
     return None
 
 
+def uuid_key(schema: Schema) -> str | None:
+    """The key column an insert fills with a new uuid4 when it is not given: a
+    one-column Uuid first key (unlike `generated_key`, an insert may also set it)."""
+    if schema.keys and len(schema.keys[0]) == 1:
+        key = schema.keys[0][0]
+        if schema.get(key) is Scalar.UUID:
+            return key
+    return None
+
+
 # ---- checker types (synthesized attributes stored in the checker's side table) ----
 
 
@@ -242,6 +258,9 @@ class TableT:
     source: str | None = field(default=None, compare=False)
     # The result of page(...) (kept by derive/select/rename).
     paged: bool = field(default=False, compare=False)
+    # page(..., total=True): the response carries the row count before limit/offset
+    # (the profile's page_shape["total"] field). Kept exactly like `paged`.
+    page_total: bool = field(default=False, compare=False)
     # "Plain" columns: unmodified stored values of a database column that is not a key,
     # owner-identifying or private column (kept by row ops, select, rename, group keys;
     # never a derived value). Only a group whose keys are all plain and whose aggregates

@@ -1,4 +1,4 @@
-"""Compile relational pipelines and the API expression subset to parameterized SQLite.
+"""Compile relational pipelines and the API expression subset to parameterized SQL.
 
 A pipeline is a DAG of `Rel` nodes — the tabular table ops (where, derive, select,
 rename, group, join, sort, limit) plus the API read ops (fetch, owned, page), the
@@ -24,20 +24,26 @@ Semantics follow the tabular (polars) runtime exactly:
 * Dates are ISO-8601 text; Bool is 0/1.
 
 Every endpoint parameter, constant and literal is a bind parameter; identifiers are
-always quoted. The SQL uses four deterministic functions that `register_functions`
-installs on a connection (Unicode-correct lower/upper/strip, floored modulo).
+always quoted.
+
+The compiler is parameterized by a `lattice.api.backend.Dialect` (default: SQLite): it
+builds the dialect-neutral CTE skeleton and asks the dialect for identifier quoting,
+bind placeholders, the JSON-rows relation, row numbers, division/modulo, the `fn.*`
+functions, INSERT/UPDATE ... RETURNING and value encoding. No backend-specific SQL text
+is written here. The SQLite dialect's SQL uses four deterministic functions that
+`register_functions` installs on a connection (Unicode-correct lower/upper/strip,
+floored modulo).
 """
 
 from __future__ import annotations
 
 import ast
-import datetime as dt
 import json
-import sqlite3
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+from lattice.api.backend import SQLITE, Dialect
 from lattice.check.astutil import literal_value
 from lattice.runtime import LatticeInternalError
 from lattice.typesys import Scalar, Schema
@@ -89,31 +95,66 @@ class Rel:
 StepRows = tuple[Sequence[str], Sequence[Sequence[object]]]  # (columns, raw rows)
 
 
+# ---- what a dialect compiles -------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ReadPipeline:
+    """A read: `target`'s rows in order (its schema's columns, then one column per
+    `extra` (name, expression over target's columns)), `materialized` naming the rels
+    already read back as a step's rows (rel id -> (step id, columns))."""
+
+    rels: Mapping[str, Rel]
+    target: str
+    materialized: Mapping[str, tuple[str, tuple[str, ...]]] = field(default_factory=dict)
+    extra: Sequence[tuple[str, ast.expr]] = ()
+
+
+@dataclass(frozen=True)
+class InsertWrite:
+    """INSERT one row (column-free value expressions) returning `returning`; with
+    `owner`, that column is set to the caller's id."""
+
+    table: str
+    values: Sequence[tuple[str, ast.expr]]
+    returning: Sequence[str]
+    owner: str | None = None
+
+
+@dataclass(frozen=True)
+class UpdateWrite:
+    """UPDATE the rows of `table` whose key matches a row of `source` (a materialized
+    step: (step id, columns)), returning the key and the updated columns."""
+
+    table: str
+    key: Sequence[str]
+    source: tuple[str, tuple[str, ...]]
+    values: Sequence[tuple[str, ast.expr]]
+
+
+@dataclass(frozen=True)
+class DeleteWrite:
+    """DELETE the rows of `table` whose key matches a row of `source`."""
+
+    table: str
+    key: Sequence[str]
+    source: tuple[str, tuple[str, ...]]
+
+
+WriteSpec = InsertWrite | UpdateWrite | DeleteWrite
+
+
 # ---- values -------------------------------------------------------------------------
 
 
-def sql_value(v: object) -> object:
-    """A Python value as SQLite stores it (Bool 0/1, Date ISO text)."""
-    if isinstance(v, bool):
-        return int(v)
-    if isinstance(v, dt.date):
-        return v.isoformat()
-    return v
+def sql_value(v: object, dialect: Dialect = SQLITE) -> object:
+    """A Python value as the store keeps it (SQLite: Bool 0/1, Date ISO text)."""
+    return dialect.to_db(v)
 
 
-def decode(v: object, scalar: Scalar) -> object:
-    """A raw SQLite value as the Lattice scalar (Date stays ISO text)."""
-    if v is None:
-        return None
-    match scalar:
-        case Scalar.INT:
-            return int(v)  # type: ignore[call-overload]
-        case Scalar.FLOAT:
-            return float(v)  # type: ignore[arg-type]
-        case Scalar.BOOL:
-            return bool(v)
-        case _:
-            return v
+def decode(v: object, scalar: Scalar, dialect: Dialect = SQLITE) -> object:
+    """A raw stored value as the Lattice scalar (SQLite: Date stays ISO text)."""
+    return dialect.from_db(v, scalar)
 
 
 def rows_json(columns: Sequence[str], result: StepRows) -> str:
@@ -130,11 +171,12 @@ def bind_values(
     results: Mapping[str, StepRows] | None = None,
     user_id: object = None,
     is_admin: bool = False,
+    dialect: Dialect = SQLITE,
 ) -> dict[str, object]:
     """The named parameters to execute `query` with."""
-    out: dict[str, object] = {name: sql_value(v) for name, v in query.binds}
+    out: dict[str, object] = {name: dialect.to_db(v) for name, v in query.binds}
     for p in query.params:
-        out[f"p_{p}"] = sql_value((params or {})[p])
+        out[f"p_{p}"] = dialect.to_db((params or {})[p])
     for bind, step, columns in query.rows:
         out[bind] = rows_json(columns, (results or {})[step])
     if query.user:
@@ -143,35 +185,14 @@ def bind_values(
     return out
 
 
-def _lower(x: object) -> object:
-    return x.lower() if isinstance(x, str) else x
-
-
-def _upper(x: object) -> object:
-    return x.upper() if isinstance(x, str) else x
-
-
-def _strip(x: object) -> object:
-    return x.strip() if isinstance(x, str) else x
-
-
-def _mod(a: object, b: object) -> object:
-    if a is None or b is None or b == 0:
-        return None
-    return a % b  # type: ignore[operator]
-
-
-def register_functions(conn: sqlite3.Connection) -> None:
-    """Install the deterministic functions the compiled SQL calls."""
-    conn.create_function("lattice_lower", 1, _lower, deterministic=True)
-    conn.create_function("lattice_upper", 1, _upper, deterministic=True)
-    conn.create_function("lattice_strip", 1, _strip, deterministic=True)
-    conn.create_function("lattice_mod", 2, _mod, deterministic=True)
+def register_functions(conn: Any) -> None:
+    """Install the deterministic functions the SQLite dialect's SQL calls."""
+    SQLITE.register_functions(conn)
 
 
 def q(name: str) -> str:
-    """A quoted SQL identifier."""
-    return '"' + name.replace('"', '""') + '"'
+    """A quoted SQL identifier (the SQLite dialect's quoting)."""
+    return SQLITE.quote(name)
 
 
 # ---- the builder -------------------------------------------------------------------
@@ -182,6 +203,7 @@ class _Builder:
     rels: Mapping[str, Rel]
     # rel id -> (step id, columns): rels already materialized, read back as rows
     materialized: Mapping[str, tuple[str, tuple[str, ...]]] = field(default_factory=dict)
+    d: Dialect = SQLITE
     ctes: list[tuple[str, str]] = field(default_factory=list)
     names: dict[str, str] = field(default_factory=dict)
     params: list[str] = field(default_factory=list)
@@ -189,6 +211,9 @@ class _Builder:
     rows: list[tuple[str, str, tuple[str, ...]]] = field(default_factory=list)
     row_binds: dict[tuple[str, tuple[str, ...]], str] = field(default_factory=dict)
     user: bool = False
+
+    def q(self, name: str) -> str:
+        return self.d.quote(name)
 
     # ---- output ------------------------------------------------------------------
 
@@ -207,13 +232,13 @@ class _Builder:
 
     def lit(self, v: object) -> str:
         name = f"__l{len(self.binds)}"
-        self.binds.append((name, sql_value(v)))
-        return ":" + name
+        self.binds.append((name, self.d.to_db(v)))
+        return self.d.bind(name)
 
     def param(self, name: str) -> str:
         if name not in self.params:
             self.params.append(name)
-        return f":p_{name}"
+        return self.d.bind(f"p_{name}")
 
     def value(self, v: int | ParamRef) -> str:
         """A page limit/offset: a literal int or an endpoint parameter."""
@@ -223,7 +248,7 @@ class _Builder:
 
     def user_ref(self) -> tuple[str, str]:
         self.user = True
-        return f":{USER_ID}", f":{IS_ADMIN}"
+        return self.d.bind(USER_ID), self.d.bind(IS_ADMIN)
 
     def rows_cte(self, step: str, columns: tuple[str, ...]) -> str:
         """A CTE over a step's materialized rows (one JSON parameter)."""
@@ -232,11 +257,7 @@ class _Builder:
             return self.row_binds[key]
         bind = f"__r{len(self.rows)}"
         self.rows.append((bind, step, columns))
-        cols = ", ".join(
-            f"json_extract(j.value, '$[{i}]') AS {q(c)}" for i, c in enumerate(columns)
-        )
-        sep = ", " if cols else ""
-        name = self._add(f"SELECT {cols}{sep}j.key AS {ORD} FROM json_each(:{bind}) AS j")
+        name = self._add(self.d.rows_relation(bind, columns, ORD))
         self.row_binds[key] = name
         return name
 
@@ -257,6 +278,7 @@ class _Builder:
         return name
 
     def _rel(self, rel: Rel) -> str:
+        q = self.q
         p = rel.params
         ins = [self.cte(i) for i in rel.inputs]
         cols = rel.schema.names()
@@ -267,9 +289,9 @@ class _Builder:
                 if len(order) == 1:
                     ordexpr = q(order[0])
                 elif order:
-                    ordexpr = f"ROW_NUMBER() OVER (ORDER BY {', '.join(q(c) for c in order)})"
+                    ordexpr = self.d.row_number(", ".join(q(c) for c in order))
                 else:
-                    ordexpr = "rowid"
+                    ordexpr = self.d.natural_order()
                 listed = ", ".join(q(c) for c in cols)
                 return f"SELECT {listed}, {ordexpr} AS {ORD} FROM {q(p['table'])}"
             case "user":
@@ -284,6 +306,7 @@ class _Builder:
                 return f"SELECT {keep} FROM {ins[0]} WHERE {self.expr(p['predicate'])}"
             case "owned":
                 uid, admin = self.user_ref()
+                admin = self.d.flag(admin)
                 if "via" in p:
                     # owned through a parent: the foreign key names a parent row the
                     # caller owns (a subquery of the same statement)
@@ -314,10 +337,8 @@ class _Builder:
                     for c, d in zip(by, flags, strict=True)
                 )
                 listed = ", ".join(q(c) for c in cols)
-                return (
-                    f"SELECT {listed}, ROW_NUMBER() OVER (ORDER BY {keys}, {ORD}) AS {ORD} "
-                    f"FROM {ins[0]}"
-                )
+                rownum = self.d.row_number(f"{keys}, {ORD}")
+                return f"SELECT {listed}, {rownum} AS {ORD} FROM {ins[0]}"
             case "limit":
                 return f"SELECT {keep} FROM {ins[0]} ORDER BY {ORD} LIMIT {self.lit(int(p['n']))}"
             case "page":
@@ -328,6 +349,7 @@ class _Builder:
                 raise LatticeInternalError(f"no SQL for op '{rel.op}'")
 
     def _join(self, rel: Rel, left: str, right: str) -> str:
+        q = self.q
         on: tuple[str, ...] = tuple(rel.params["on"])
         # on={"a": "b"}: the right key columns have other names; the output keeps
         # the left key columns only
@@ -338,10 +360,11 @@ class _Builder:
         left_cols = set(self.cols_of(rel.inputs[0]))
         listed = [f"{'l' if c in on or c in left_cols else 'r'}.{q(c)}" for c in rel.schema.names()]
         pairs = zip(on, right_on, strict=True)
-        cond = " AND ".join(f"l.{q(a)} = r.{q(b)}" for a, b in pairs) or "1"
+        cond = " AND ".join(f"l.{q(a)} = r.{q(b)}" for a, b in pairs) or self.d.true_condition()
         kind = "LEFT JOIN" if how == "left" else "JOIN"
+        rownum = self.d.row_number(f"l.{ORD}, r.{ORD}")
         return (
-            f"SELECT {', '.join(listed)}, ROW_NUMBER() OVER (ORDER BY l.{ORD}, r.{ORD}) "
+            f"SELECT {', '.join(listed)}, {rownum} "
             f"AS {ORD} FROM {left} AS l {kind} {right} AS r ON {cond}"
         )
 
@@ -357,6 +380,7 @@ class _Builder:
         by: tuple[str, ...],
         aggs: Sequence[tuple[str, str, ast.expr | None, ast.expr | None]],
     ) -> str:
+        q = self.q
         windows: list[str] = []
         outs: list[str] = []
         partition = f"PARTITION BY {', '.join(q(c) for c in by)} " if by else ""
@@ -418,7 +442,7 @@ class _Builder:
             case ParamRef(name=name):
                 return self.param(name)
             case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
-                return q(name)
+                return self.q(name)
             case ast.Call(func=ast.Name(id="when"), args=[cond], keywords=kws):
                 k = {kw.arg: kw.value for kw in kws}
                 if set(k) != {"then", "otherwise"}:
@@ -444,8 +468,7 @@ class _Builder:
             case _:
                 raise LatticeInternalError(f"cannot compile expression to SQL: {ast.dump(node)}")
 
-    @staticmethod
-    def _binop(a: str, op: ast.operator, b: str) -> str:
+    def _binop(self, a: str, op: ast.operator, b: str) -> str:
         match op:
             case ast.Add():
                 return f"({a} + {b})"
@@ -454,9 +477,9 @@ class _Builder:
             case ast.Mult():
                 return f"({a} * {b})"
             case ast.Div():
-                return f"(CAST({a} AS REAL) / {b})"  # SQLite: x / 0 is NULL
+                return self.d.divide(a, b)
             case ast.Mod():
-                return f"lattice_mod({a}, {b})"
+                return self.d.modulo(a, b)
             case ast.BitAnd():
                 return f"({a} AND {b})"
             case ast.BitOr():
@@ -468,11 +491,12 @@ class _Builder:
         if len(node.args) != 1:
             raise LatticeInternalError(f"fn.{name} takes one argument")
         x = self.expr(node.args[0])
-        kw = {k.arg: k.value for k in node.keywords}
-        build = _FN.get(name)
-        if build is None:
+        # keyword arguments compile after the argument (bind numbering), each once
+        kw = {str(k.arg): self.expr(k.value) for k in node.keywords}
+        out = self.d.function(name, x, kw)
+        if out is None:
             raise LatticeInternalError(f"fn.{name} has no SQL translation")
-        return build(self, x, kw)
+        return out
 
 
 _CMP: Mapping[type, str] = {
@@ -485,34 +509,59 @@ _CMP: Mapping[type, str] = {
 }
 
 
-def _date_part(fmt: str) -> Callable[[_Builder, str, Mapping[str | None, ast.expr]], str]:
-    return lambda b, x, k: f"CAST(strftime('{fmt}', {x}) AS INTEGER)"
+# ---- dialect implementations of compile_read / compile_write ------------------------
 
 
-def _starts_with(b: _Builder, x: str, k: Mapping[str | None, ast.expr]) -> str:
-    prefix = b.expr(k["prefix"])
-    return f"(substr({x}, 1, length({prefix})) = {prefix})"
+def build_read(pipeline: ReadPipeline, dialect: Dialect) -> SqlQuery:
+    """ONE SELECT returning the pipeline target's rows in order (the shared compiler
+    behind `Dialect.compile_read`)."""
+    b = _Builder(pipeline.rels, dict(pipeline.materialized), dialect)
+    source = b.cte(pipeline.target)
+    cols = b.cols_of(pipeline.target)
+    listed = [b.q(c) for c in cols] + [f"{b.expr(e)} AS {b.q(n)}" for n, e in pipeline.extra]
+    return b.query(f"SELECT {', '.join(listed)} FROM {source} ORDER BY {ORD}")
 
 
-_FN: Mapping[str, Callable[[_Builder, str, Mapping[str | None, ast.expr]], str]] = {
-    "lower": lambda b, x, k: f"lattice_lower({x})",
-    "upper": lambda b, x, k: f"lattice_upper({x})",
-    "strip": lambda b, x, k: f"lattice_strip({x})",
-    "len": lambda b, x, k: f"length({x})",
-    "contains": lambda b, x, k: f"(instr({x}, {b.expr(k['sub'])}) > 0)",
-    "starts_with": _starts_with,
-    "year": _date_part("%Y"),
-    "month": _date_part("%m"),
-    "day": _date_part("%d"),
-}
+def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
+    """ONE INSERT/UPDATE/DELETE (the shared compiler behind `Dialect.compile_write`)."""
+    b = _Builder({}, {}, dialect)
+    q = b.q
+    match step:
+        case InsertWrite(table=table, values=values, returning=returning, owner=owner):
+            cols = [q(c) for c, _ in values]
+            exprs = [b.expr(e) for _, e in values]
+            if owner is not None:
+                uid, _ = b.user_ref()
+                cols.append(q(owner))
+                exprs.append(uid)
+            ret = ", ".join(q(c) for c in returning)
+            return b.query(dialect.insert(q(table), cols, exprs, ret))
+        case UpdateWrite(table=table, key=key, source=source, values=values):
+            src = b.rows_cte(*source)
+            keys = [f"{q(k)} AS {q(f'__k{i}')}" for i, k in enumerate(key)]
+            vals = [f"{b.expr(e)} AS {q(f'__v{i}')}" for i, (_, e) in enumerate(values)]
+            sets = ", ".join(f"{q(c)} = s.{q(f'__v{i}')}" for i, (c, _) in enumerate(values))
+            match = " AND ".join(f"{q(table)}.{q(k)} = s.{q(f'__k{i}')}" for i, k in enumerate(key))
+            ret = ", ".join(q(c) for c in [*key, *(c for c, _ in values)])
+            select = f"SELECT {', '.join(keys + vals)} FROM {src}"
+            return b.query(dialect.update_from(q(table), sets, select, match, ret))
+        case DeleteWrite(table=table, key=key, source=source):
+            src = b.rows_cte(*source)
+            cols_sql = ", ".join(q(k) for k in key)
+            target = f"({cols_sql})" if len(key) > 1 else cols_sql
+            return b.query(
+                f"DELETE FROM {q(table)} WHERE {target} IN (SELECT {cols_sql} FROM {src})"
+            )
+        case _:
+            raise LatticeInternalError(f"unknown write {step!r}")
 
 
 # ---- entry points ------------------------------------------------------------------
 
 
-def expr_sql(node: ast.expr) -> SqlExpr:
+def expr_sql(node: ast.expr, dialect: Dialect = SQLITE) -> SqlExpr:
     """The SQL of one expression (its values as bind names), for plans and reports."""
-    return _Builder({}).expr(node)
+    return _Builder({}, {}, dialect).expr(node)
 
 
 def compile_select(
@@ -521,14 +570,11 @@ def compile_select(
     *,
     materialized: Mapping[str, tuple[str, tuple[str, ...]]] | None = None,
     extra: Sequence[tuple[str, ast.expr]] = (),
+    dialect: Dialect = SQLITE,
 ) -> SqlQuery:
     """ONE SELECT returning `target`'s rows in order: its schema's columns, then one
     column per `extra` (name, expression over target's columns)."""
-    b = _Builder(rels, dict(materialized or {}))
-    source = b.cte(target)
-    cols = b.cols_of(target)
-    listed = [q(c) for c in cols] + [f"{b.expr(e)} AS {q(n)}" for n, e in extra]
-    return b.query(f"SELECT {', '.join(listed)} FROM {source} ORDER BY {ORD}")
+    return dialect.compile_read(ReadPipeline(rels, target, dict(materialized or {}), extra))
 
 
 def compile_insert(
@@ -537,23 +583,11 @@ def compile_insert(
     returning: Sequence[str],
     *,
     owner: str | None = None,
+    dialect: Dialect = SQLITE,
 ) -> SqlQuery:
     """INSERT one row (values are column-free expressions) RETURNING `returning`.
     With `owner`, that column is set to the caller's id."""
-    b = _Builder({})
-    cols = [q(c) for c, _ in values]
-    exprs = [b.expr(e) for _, e in values]
-    if owner is not None:
-        uid, _ = b.user_ref()
-        cols.append(q(owner))
-        exprs.append(uid)
-    ret = ", ".join(q(c) for c in returning)
-    if cols:
-        listed, vals = ", ".join(cols), ", ".join(exprs)
-        text = f"INSERT INTO {q(table)} ({listed}) VALUES ({vals}) RETURNING {ret}"
-    else:
-        text = f"INSERT INTO {q(table)} DEFAULT VALUES RETURNING {ret}"
-    return b.query(text)
+    return dialect.compile_write(InsertWrite(table, values, returning, owner))
 
 
 def compile_update(
@@ -561,30 +595,34 @@ def compile_update(
     key: Sequence[str],
     source: tuple[str, tuple[str, ...]],
     values: Sequence[tuple[str, ast.expr]],
+    *,
+    dialect: Dialect = SQLITE,
 ) -> SqlQuery:
     """UPDATE the rows of `table` whose key matches a row of `source` (a materialized
     step: (step id, columns)); each value is evaluated against that source row.
     RETURNING the key and the updated columns."""
-    b = _Builder({})
-    src = b.rows_cte(*source)
-    keys = [f"{q(k)} AS {q(f'__k{i}')}" for i, k in enumerate(key)]
-    vals = [f"{b.expr(e)} AS {q(f'__v{i}')}" for i, (_, e) in enumerate(values)]
-    sets = ", ".join(f"{q(c)} = s.{q(f'__v{i}')}" for i, (c, _) in enumerate(values))
-    match = " AND ".join(f"{q(table)}.{q(k)} = s.{q(f'__k{i}')}" for i, k in enumerate(key))
-    ret = ", ".join(q(c) for c in [*key, *(c for c, _ in values)])
-    return b.query(
-        f"UPDATE {q(table)} SET {sets} FROM (SELECT {', '.join(keys + vals)} FROM {src}) AS s "
-        f"WHERE {match} RETURNING {ret}"
-    )
+    return dialect.compile_write(UpdateWrite(table, key, source, values))
 
 
-def compile_delete(table: str, key: Sequence[str], source: tuple[str, tuple[str, ...]]) -> SqlQuery:
+def compile_delete(
+    table: str,
+    key: Sequence[str],
+    source: tuple[str, tuple[str, ...]],
+    *,
+    dialect: Dialect = SQLITE,
+) -> SqlQuery:
     """DELETE the rows of `table` whose key matches a row of `source`."""
-    b = _Builder({})
-    src = b.rows_cte(*source)
-    cols = ", ".join(q(k) for k in key)
-    target = f"({cols})" if len(key) > 1 else cols
-    return b.query(f"DELETE FROM {q(table)} WHERE {target} IN (SELECT {cols} FROM {src})")
+    return dialect.compile_write(DeleteWrite(table, key, source))
+
+
+def compile_lookup(
+    table: str, columns: Sequence[str], column: str, *, dialect: Dialect = SQLITE
+) -> str:
+    """SELECT `columns` of `table`'s rows whose `column` equals the one positional
+    parameter (the runtime's authentication statement)."""
+    q = dialect.quote
+    cols = ", ".join(q(c) for c in columns)
+    return f"SELECT {cols} FROM {q(table)} WHERE {q(column)} = {dialect.positional_bind()}"
 
 
 def rels_from_plan(
