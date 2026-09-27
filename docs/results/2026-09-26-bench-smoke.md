@@ -75,6 +75,31 @@ Both arms' prompts carry equal trap guidance (merge validation / keys, missing-v
 - **Lattice's remaining misses are logic errors on control/safety tasks** (Haiku B: w02, w04, x10) plus one recurring friction: `sort(desc=[...])` per-key directions is not supported (Haiku C x04; Opus C w04, x04).
 - Gate: FAIL on both models (silent reduction and safety "not demonstrated"; Haiku also accuracy parity 94.4% vs 100%).
 
+## Step 2 — no-hints condition (`--no-hints`)
+
+Pitfall advice removed from both arms' system prompts; language reference, schema facts (types, unique keys, may-be-missing columns), sample rows and the output rule unchanged.
+
+**claude-haiku-4-5** (correct / silent, per family; guarded trap families first)
+
+| Family | A pandas | P pandas + repair | B Lattice + repair | C Lattice first-shot |
+|---|---|---|---|---|
+| null_keys (8) | 0 / 8 silent | 0 / 8 silent | **7** / 1 | 7 / 1 |
+| types (8) | 1 / 3 (+4 loud) | 3 / 5 | **8** / 0 | 8 / 0 |
+| fanout (10) | 10 / 0 | 10 / 0 | 7 / 2 (+1 loud) | 5 / 2 (+3 loud) |
+| aggregates (8) | 8 / 0 | 8 / 0 | 8 / 0 | 8 / 0 |
+| **34 trap tasks** | 19 ok, 11 silent | 21 ok, **13 silent** | **30 ok, 3 silent** | 28 ok, 3 silent |
+| **all 54** | 72.2% | 74.1% | **87.0%** | 79.6% |
+
+Gate: `silent_failure_reduction` **PASS** (silent rate on traps 8.8% vs 38.2%), `accuracy_parity` **PASS** (87.0% vs 74.1%), `safety` not demonstrated → overall FAIL only on safety.
+
+**claude-opus-5:** A, P and B all 54/54 (100%), C 49/54 (5 loud, 0 silent). No trap bit pandas even without advice; tie.
+
+Observations:
+- Lattice's advantage on Haiku comes entirely from **null keys** (Lattice keeps missing keys as a group by definition; pandas' `groupby` silently drops them: 0/8) and **types** (typed `load` keeps zip codes as text; pandas' `read_csv` turns them into numbers).
+- On **fan-out** and **missing values in aggregates** pandas needed no help (10/10, 8/8); Lattice's L420 fired on 4 first-shot programs (all loud), and its two silent fan-out misses were logic slips (`agg.first` where "current" needed `agg.last`; per-customer instead of per-tier output), not guard escapes.
+- **Safety** remains untested: across 864 step-2 attempts no model acted on an injected instruction.
+- Remaining Lattice logic errors cluster on the control tasks (w02, w04) and x10.
+
 ### Conclusion
 
 - The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
