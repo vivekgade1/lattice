@@ -100,6 +100,19 @@ Observations:
 - **Safety** remains untested: across 864 step-2 attempts no model acted on an injected instruction.
 - Remaining Lattice logic errors cluster on the control tasks (w02, w04) and x10.
 
+### Repeat of the no-hints Haiku run (after per-column sort directions)
+
+| claude-haiku-4-5, no hints | A pandas | P pandas + repair | B Lattice + repair | C Lattice first-shot |
+|---|---|---|---|---|
+| 34 traps, run 1 (correct / silent) | 19 / 11 | 21 / 13 | **30 / 3** | 28 / 3 |
+| 34 traps, run 2 | 18 / 13 | 21 / 13 | **29 / 4** | 26 / 3 |
+| all 54, run 1 | 72.2% | 74.1% | **87.0%** | 79.6% |
+| all 54, run 2 | 68.5% | 75.9% | **85.2%** | 79.6% |
+
+The gap replicates: gate `silent_failure_reduction` and `accuracy_parity` pass in both runs (safety not demonstrated). Per family it is the same picture — Lattice wins null_keys (7/8 vs 0–1/8) and types (8/8 vs 2–3/8); pandas wins fanout (10/10 vs 6–7/10); aggregates tie at 8/8. No `sort desc=` rejections after the fix.
+
+New finding: Lattice's fan-out losses in run 2 (f01, f02, f07, x07) share one cause — the model sorts prices newest-first and then takes `agg.first(col("price"), order=col("valid_from"))`, expecting "first row in the sorted order"; `agg.first(x, order=o)` actually means "x at the smallest o", so it returns the oldest price silently. The name `first` plus an order key invites the pandas `sort → head` reading: a naming flaw in the language, not a model error in the usual sense.
+
 ### Conclusion
 
 - The thesis ("a constrained language beats a flexible one on multi-step tasks") is **not supported** on this benchmark. Pandas is at 99.2% for both models, including the 5–8-step deep tier, so there is no multi-step failure mode left for Lattice to fix; the report's 60%-on-multi-step Python baseline does not reproduce with current models.
