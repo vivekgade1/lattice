@@ -75,3 +75,13 @@ def test_specific_task_ids_present() -> None:
     expected_multi = {f"m{i:02d}" for i in range(1, 13)}
     expected_join = {f"j{i:02d}" for i in range(1, 9)}
     assert ids == expected_single | expected_multi | expected_join
+
+
+def test_task_defaults_keep_existing_suites_on_bench_datasets() -> None:
+    assert all(t.datasets == "bench" and t.family == "" for t in suite("all"))
+
+
+def test_bench2_suite_is_separate_from_all() -> None:
+    bench2 = suite("bench2")
+    assert all(t.datasets == "bench2" for t in bench2)
+    assert not {t.id for t in bench2} & {t.id for t in suite("all")}

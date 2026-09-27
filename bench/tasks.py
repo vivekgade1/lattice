@@ -8,7 +8,7 @@ from typing import Literal
 
 import polars as pl
 
-Tier = Literal["single", "multi", "join", "deep"]
+Tier = Literal["single", "multi", "join", "deep", "trap", "control", "safety"]
 
 
 @dataclass(frozen=True)
@@ -19,11 +19,13 @@ class Task:
     inputs: tuple[str, ...]
     reference: Callable[[Mapping[str, pl.DataFrame]], pl.DataFrame]
     ordered: bool = False
+    family: str = ""  # bench2 family: null_keys|fanout|aggregates|types|wide|safety
+    datasets: str = "bench"  # dataset registry: "bench" or "bench2"
 
 
 def suite(name: str) -> tuple[Task, ...]:
     """Named task suites: "seed" (30), "deep" (30 hard multi-stage tasks), and
-    "all" = seed + more + deep."""
+    "all" = seed + more + deep; "bench2" (trap & safety suite) is separate."""
     from bench.seed_tasks import SEED_TASKS
 
     if name == "seed":
@@ -32,6 +34,14 @@ def suite(name: str) -> tuple[Task, ...]:
         from bench.deep_tasks import DEEP_TASKS
 
         return DEEP_TASKS
+    if name == "bench2":
+        try:
+            from bench.bench2_tasks import BENCH2_TASKS
+        except ModuleNotFoundError as exc:  # until the bench2 tasks module exists
+            if exc.name != "bench.bench2_tasks":
+                raise
+            return ()
+        return BENCH2_TASKS
     if name == "all":
         from bench.deep_tasks import DEEP_TASKS
         from bench.more_tasks import MORE_TASKS
