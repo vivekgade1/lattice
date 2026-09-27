@@ -26,6 +26,8 @@ from lattice.typesys import Scalar, ScalarParamT, Schema, TableT
 
 ScalarValue = bool | int | float | str
 Subst = Mapping[str, ast.expr]  # name -> replacement expression (fully substituted)
+# one group() aggregate: (output name, agg function, argument, order= expression)
+AggSpec = tuple[str, str, ast.expr | None, ast.expr | None]
 
 
 @dataclass(frozen=True)
@@ -230,16 +232,30 @@ class _Lowerer:
         self.nodes.append(Node(node_id, op, tuple(inputs), params, schema, span_of(call)))
         return None if op == "write" else node_id
 
-    def _aggs(self, call: ast.Call, subst: Subst) -> tuple[tuple[str, str, ast.expr | None], ...]:
-        out: list[tuple[str, str, ast.expr | None]] = []
+    def _aggs(self, call: ast.Call, subst: Subst) -> tuple[AggSpec, ...]:
+        """(name, func, argument, order) per aggregate; `order` is agg.first/last's
+        order= expression, else None."""
+        out: list[AggSpec] = []
         for kw in call.keywords:
             if kw.arg is None or kw.arg == "by":
                 continue
             match kw.value:
                 case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"), attr=func), args=[]):
-                    out.append((kw.arg, func, None))
-                case ast.Call(func=ast.Attribute(value=ast.Name(id="agg"), attr=func), args=[a]):
-                    out.append((kw.arg, func, self._expr(a, subst)))
+                    out.append((kw.arg, func, None, None))
+                case ast.Call(
+                    func=ast.Attribute(value=ast.Name(id="agg"), attr=func),
+                    args=[a],
+                    keywords=kws,
+                ):
+                    order = next((k.value for k in kws if k.arg == "order"), None)
+                    out.append(
+                        (
+                            kw.arg,
+                            func,
+                            self._expr(a, subst),
+                            None if order is None else self._expr(order, subst),
+                        )
+                    )
                 case _:
                     raise LatticeInternalError(f"not an aggregate: {ast.dump(kw.value)}")
         return tuple(out)

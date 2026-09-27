@@ -10,10 +10,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from lattice.catalog import AGG_FUNCS, FN_DOCS, FN_SIGS, OP_SHAPES
+from lattice.catalog import AGG_FUNCS, FN_DOCS, FN_SIGS, OP_SHAPES, ORDER_AGGS
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+    import polars as pl
 
     from bench.datasets import Dataset
     from bench.tasks import Task
@@ -45,9 +47,7 @@ def dataset_description(name: str, registry: str = "bench") -> str:
     if schema.keys:
         text += "; unique key: " + ", ".join(f"({', '.join(k)})" for k in schema.keys)
     if schema.nullable:
-        text += "; may be missing: " + ", ".join(
-            n for n in schema.names() if n in schema.nullable
-        )
+        text += "; may be missing: " + ", ".join(n for n in schema.names() if n in schema.nullable)
     return text
 
 
@@ -55,26 +55,37 @@ _INPUTS_HEADER = "Input files (in the current directory):"
 _OUTPUT_LINE = "Write the final result to out.parquet"
 
 
-def _pandas_read_call(name: str, registry: str = "bench") -> str:
-    from lattice.typesys import Scalar
+def _samples_section(task: Task, samples: Mapping[str, tuple[pl.DataFrame, int]]) -> list[str]:
+    """Message lines showing sample rows of every input, identical in both arms.
 
-    dataset = _registry(registry)[name]
-    dates = [col for col, scalar in dataset.schema.columns if scalar is Scalar.DATE]
-    if dates:
-        return f'pd.read_csv("{dataset.filename}", parse_dates={dates!r})'.replace("'", '"')
-    return f'pd.read_csv("{dataset.filename}")'
+    ``samples`` maps each input dataset name to ``(head, total_rows)``: the first K
+    rows as loaded and the input's full row count. Each input renders as
+    ``Sample rows of <file> (first K of N):`` followed by compact CSV (a header and
+    K rows, missing values empty), with a blank line before each section."""
+    datasets = _registry(task.datasets)
+    lines: list[str] = []
+    for name in task.inputs:
+        head, total = samples[name]  # KeyError: every input needs samples
+        lines.append("")
+        lines.append(f"Sample rows of {datasets[name].filename} (first {head.height} of {total}):")
+        lines.extend(head.write_csv().splitlines())
+    return lines
 
 
-def baseline_task_message(task: Task) -> str:
+def baseline_task_message(
+    task: Task, samples: Mapping[str, tuple[pl.DataFrame, int]] | None = None
+) -> str:
     """The user-turn message for the pandas baseline arm.
 
-    Mirrors :func:`lattice_task_message`: same files, columns/types and output
-    target, plus a per-file language-specific loading hint.
+    Mirrors :func:`lattice_task_message`: same files, columns/types, sample rows
+    (when given) and output target; it has no per-file loading hint because
+    reading the CSVs is part of the pandas task.
     """
     lines = [task.prompt, "", _INPUTS_HEADER]
     for name in task.inputs:
         lines.append(f"- {dataset_description(name, task.datasets)}")
-        lines.append(f"  read with: {_pandas_read_call(name, task.datasets)}")
+    if samples is not None:
+        lines.extend(_samples_section(task, samples))
     lines.append("")
     lines.append(f"{_OUTPUT_LINE} with index=False. Write no other file.")
     return "\n".join(lines)
@@ -162,8 +173,13 @@ def _expression_library_section() -> str:
     lines.append("")
     lines.append(
         "Aggregate library `agg.*` (only valid as a `group()` keyword value): "
-        + ", ".join(f"`agg.{name}(...)`" for name in sorted(AGG_FUNCS))
+        + ", ".join(
+            f"`agg.{name}(x, order=o)`" if name in ORDER_AGGS else f"`agg.{name}(...)`"
+            for name in sorted(AGG_FUNCS)
+        )
         + ". `agg.count()` counts rows and `agg.count(x)` counts the non-null values of x; "
+        "first/last give x on the row with the smallest/largest non-null o "
+        "(ties: the earliest row); "
         "every other aggregate takes one column expression."
     )
     return "\n".join(lines)
@@ -201,9 +217,11 @@ every row of `l`; `r` must have at most one row, e.g. a total from \
 - A join must not silently repeat rows of its left table: `join(l, r, on=K)` \
 needs `r` to be unique on `K` when inputs declare a "unique key" (a declared key \
 of `r` inside `K`, or `r` built by `group(..., by=K, ...)`). Otherwise reduce `r` \
-to one row per key first, e.g. `latest = group(prices, by=["product_id"], \
-price=agg.max(col("price")))`, or pass `fanout="allow"` if repeating rows is \
-really intended.
+to one row per key first, e.g. the current price per product: \
+`current = group(prices, by=["product_id"], price=agg.last(col("price"), \
+order=col("valid_from")))`. Pass `fanout="allow"` if repeating rows is really \
+intended, or if `r` is unique by the task's meaning though no key is declared \
+(e.g. filtered to one primary contact per customer).
 - `agg.mean`, `agg.min` and `agg.max` over a value that "may be missing" (a \
 listed column, a right-hand column of a left join, or an `fn.to_int`/`to_float`/\
 `to_date`/`log`/`sqrt` result) must say how to treat missing values: \
@@ -237,12 +255,12 @@ _EXAMPLE_PROBLEMS = (
     "the 3 products with the largest cancelled_qty (ties: higher product_id "
     "first). Return product_id, cancelled_qty.",
     "Example 3 — a reusable function that joins two tables. For orders with a "
-    "given status (here \"pending\"), inner-join products on product_id and "
+    'given status (here "pending"), inner-join products on product_id and '
     "compute max_unit_price = max(unit_price) per category. Return category, "
     "max_unit_price.",
 )
 
-_EXAMPLE_1 = '''```python
+_EXAMPLE_1 = """```python
 # lattice: v1
 orders = load("orders.csv", schema=Orders)
 refunded = where(orders, col("status") == "refunded")
@@ -252,9 +270,9 @@ priced = derive(
 )
 result = select(priced, cols=["order_id", "customer_id", "refund_amount"])
 write(result, "out.parquet")
-```'''
+```"""
 
-_EXAMPLE_2 = '''```python
+_EXAMPLE_2 = """```python
 # lattice: v1
 orders = load("orders.csv", schema=Orders)
 cancelled = where(orders, col("status") == "cancelled")
@@ -262,9 +280,9 @@ by_product = group(cancelled, by=["product_id"], cancelled_qty=agg.sum(col("qty"
 ranked = sort(by_product, by=["cancelled_qty", "product_id"], desc=True)
 top3 = limit(ranked, n=3)
 write(top3, "out.parquet")
-```'''
+```"""
 
-_EXAMPLE_3 = '''```python
+_EXAMPLE_3 = """```python
 # lattice: v1
 
 
@@ -282,7 +300,7 @@ orders = load("orders.csv", schema=Orders)
 products = load("products.csv", schema=Products)
 prices = max_price_by_category(orders, products, wanted="pending")
 write(prices, "out.parquet")
-```'''
+```"""
 
 _EXAMPLES_SECTION = f"""## Examples
 
@@ -332,12 +350,17 @@ def lattice_system_prompt() -> str:
     return "\n\n".join(sections) + "\n"
 
 
-def lattice_task_message(task: Task, profile: Profile) -> str:
+def lattice_task_message(
+    task: Task,
+    profile: Profile,
+    samples: Mapping[str, tuple[pl.DataFrame, int]] | None = None,
+) -> str:
     """The user-turn message for the Lattice arm.
 
-    Lists exactly the same files, columns/types and output target as
-    :func:`baseline_task_message`; the only difference is the per-file
-    language-specific loading hint (the ``load(...)`` call and schema name).
+    Lists exactly the same files, columns/types, sample rows (when given) and
+    output target as :func:`baseline_task_message`; the only differences are the
+    per-file ``load(...)`` call (the language's API for reading an input) and the
+    ``write(...)`` output contract.
     """
     datasets = _registry(task.datasets)
     lines = [task.prompt, "", _INPUTS_HEADER]
@@ -346,9 +369,9 @@ def lattice_task_message(task: Task, profile: Profile) -> str:
         if dataset.schema_name not in profile.schemas:
             raise KeyError(f"schema {dataset.schema_name!r} missing from profile")
         lines.append(f"- {dataset_description(name, task.datasets)}")
-        lines.append(
-            f'  load with: load("{dataset.filename}", schema={dataset.schema_name})'
-        )
+        lines.append(f'  load with: load("{dataset.filename}", schema={dataset.schema_name})')
+    if samples is not None:
+        lines.extend(_samples_section(task, samples))
     lines.append("")
     allowed = sorted(profile.outputs) if profile.outputs else ["out.parquet"]
     target = "out.parquet" if "out.parquet" in allowed else allowed[0]
@@ -371,9 +394,8 @@ _PANDAS_RULES_SECTION = """## Rules
 - Write one complete Python 3 script. Import only `pandas as pd` and, if you \
 need it, `numpy as np`. Do not use the network, do not read or write any file \
 other than the listed inputs and `out.parquet`, and do not print large output.
-- Read each input with `pd.read_csv("<file>.csv")` from the current directory. \
-Pass `parse_dates=[...]` listing every column whose type is `Date`, so date \
-columns are real datetimes rather than strings.
+- Columns typed `Date` must be parsed as dates (e.g. `parse_dates=[...]`), so \
+they are real datetimes rather than strings.
 - Column types in the task description map to pandas as follows: `Int` -> \
 int64 (a column containing nulls may load as float64), `Float` -> float64, \
 `Str` -> object/str, `Date` -> datetime64 (via `parse_dates`), `Bool` -> bool.
@@ -392,14 +414,16 @@ the task says.
 followed by an `isna()` test on a right-hand column).
 - A merge must not silently repeat left rows: pass \
 `validate="many_to_one"` to `merge` (or first reduce the right side to one row \
-per key, e.g. `drop_duplicates`/`groupby` on the key) when the right table has \
-several rows per key; a column listed as "unique key" is safe to merge on.
+per key, e.g. the latest row per key: `sort_values(date_col)` then \
+`drop_duplicates(keys, keep="last")`) when the right table has several rows \
+per key; a column listed as "unique key" is safe to merge on, and so is a right \
+side unique by the task's meaning (e.g. one primary contact per customer).
 - `mean`, `min` and `max` skip missing values silently: when the task says a \
 missing value counts as 0, `fillna(0.0)` before aggregating (a "may be missing" \
 column, or right-hand columns after a left merge). `groupby(..., dropna=False)` \
 keeps rows with a missing key as their own group when the task keeps them.
-- Code-like columns typed `Str` (zip codes, account ids, e.g. "02134") must stay \
-strings: `pd.read_csv(..., dtype={"zip": str})` keeps leading zeros.
+- Columns typed `Str` must be read as text (e.g. `dtype=str` for those \
+columns): code-like values such as zip codes keep leading zeros.
 - Write only `out.parquet`: no other files, no network access, no shell or \
 subprocess calls, no `os`/`shutil` file operations.
 - Whole-table aggregates (no grouping) produce a single-row result: build it \
@@ -437,7 +461,7 @@ when the task asks for a sorted or top-n result.
 `result.to_parquet("out.parquet", index=False)`.
 """
 
-_PANDAS_EXAMPLE_1 = '''```python
+_PANDAS_EXAMPLE_1 = """```python
 import pandas as pd
 
 orders = pd.read_csv("orders.csv", parse_dates=["order_date"])
@@ -447,9 +471,9 @@ refunded["refund_amount"] = (
 )
 result = refunded[["order_id", "customer_id", "refund_amount"]]
 result.to_parquet("out.parquet", index=False)
-```'''
+```"""
 
-_PANDAS_EXAMPLE_2 = '''```python
+_PANDAS_EXAMPLE_2 = """```python
 import pandas as pd
 
 orders = pd.read_csv("orders.csv", parse_dates=["order_date"])
@@ -460,9 +484,9 @@ by_product = cancelled.groupby("product_id", as_index=False).agg(
 ranked = by_product.sort_values(["cancelled_qty", "product_id"], ascending=False)
 top3 = ranked.head(3)
 top3.to_parquet("out.parquet", index=False)
-```'''
+```"""
 
-_PANDAS_EXAMPLE_3 = '''```python
+_PANDAS_EXAMPLE_3 = """```python
 import pandas as pd
 
 
@@ -480,7 +504,7 @@ orders = pd.read_csv("orders.csv", parse_dates=["order_date"])
 products = pd.read_csv("products.csv")
 prices = max_price_by_category(orders, products, wanted="pending")
 prices.to_parquet("out.parquet", index=False)
-```'''
+```"""
 
 _PANDAS_EXAMPLES_SECTION = f"""## Examples
 

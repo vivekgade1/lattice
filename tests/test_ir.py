@@ -60,8 +60,9 @@ def test_linear_pipeline_nodes_in_order():
     group = by_id["by_status"]
     assert group.params["by"] == ("customer_id",)
     aggs = group.params["aggs"]
-    assert [(n, f) for n, f, _ in aggs] == [("revenue", "sum"), ("n", "count")]
+    assert [(n, f) for n, f, _, _ in aggs] == [("revenue", "sum"), ("n", "count")]
     assert aggs[1][2] is None
+    assert all(order is None for *_, order in aggs)
     assert group.schema == Schema.from_pairs(
         [("customer_id", Scalar.INT), ("revenue", Scalar.FLOAT), ("n", Scalar.INT)]
     )
@@ -191,6 +192,24 @@ write(q, "q.parquet")
     assert isinstance(lit, ast.Constant) and lit.value == 2.0 and isinstance(lit.value, float)
     (_, _), (_, lit_q) = by_id["q/s"].params["columns"]
     assert isinstance(lit_q, ast.Constant) and lit_q.value == -1.5
+
+
+def test_first_last_lower_order_with_step_params_substituted():
+    src = """# lattice: v1
+@step
+def pick(orders: Table[Orders], k: Int) -> Table:
+    g = group(orders, by=["customer_id"], v=agg.last(col("qty") + k, order=col("qty") * k))
+    return g
+raw = load("orders.csv", schema=Orders)
+r = pick(raw, k=3)
+write(r, "out.parquet")
+"""
+    plan = lower(_checked(src))
+    by_id = {n.id: n for n in plan.nodes}
+    ((name, func, arg, order),) = by_id["r/g"].params["aggs"]
+    assert (name, func) == ("v", "last")
+    assert ast.unparse(arg) == "col('qty') + 3"
+    assert order is not None and ast.unparse(order) == "col('qty') * 3"
 
 
 def test_lowering_does_not_mutate_module():

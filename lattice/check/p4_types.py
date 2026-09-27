@@ -20,7 +20,7 @@ import copy
 import json
 from dataclasses import dataclass, field, replace
 
-from lattice.catalog import EXPR_FUNCS, NAMESPACES, OP_SHAPES, TABLE_OPS, TYPE_NAMES
+from lattice.catalog import EXPR_FUNCS, NAMESPACES, OP_SHAPES, ORDER_AGGS, TABLE_OPS, TYPE_NAMES
 from lattice.check.astutil import (
     MAX_DEPTH,
     MAX_EXPANDED_NODES,
@@ -79,6 +79,7 @@ class _Scope:
 
     def bound(self, name: str) -> bool:
         return name in self.env or name in self.consts
+
 
 JOIN_HOWS = ("inner", "left")
 FANOUT_VALUES = ("allow",)
@@ -478,9 +479,7 @@ class _Types:
             return UNKNOWN
         overwritten = {n for n, _ in cols if n in t.schema}
         keys = tuple(k for k in t.keys if not overwritten.intersection(k))
-        return TableT(
-            t.schema.with_columns(cols), t.at_most_one_row, keys, frozenset(nullable)
-        )
+        return TableT(t.schema.with_columns(cols), t.at_most_one_row, keys, frozenset(nullable))
 
     def _select(self, t: TableT, cols_node: ast.expr) -> TableOrUnknown:
         names = self._str_list(cols_node, "cols")
@@ -534,9 +533,7 @@ class _Types:
             frozenset(mapping.get(c, c) for c in t.nullable),
         )
 
-    def _group(
-        self, call: ast.Call, t: TableT, by_node: ast.expr, scope: _Scope
-    ) -> TableOrUnknown:
+    def _group(self, call: ast.Call, t: TableT, by_node: ast.expr, scope: _Scope) -> TableOrUnknown:
         by = self._str_list(by_node, "by")
         ok = by is not None and self._require_columns(by, t.schema, by_node)
         ok = ok and self._no_dups(by or [], by_node)
@@ -547,7 +544,7 @@ class _Types:
             if kw.arg == "by" or kw.arg is None:
                 continue
             at = typer.type_agg(kw.value)
-            if at is not None and self._agg_nullable(kw.value, t, scope):
+            if at is not None and self._agg_nullable(kw.value, t, scope, whole_table=not by):
                 null_aggs.add(kw.arg)
             if by is not None and kw.arg in by:
                 ok = False
@@ -572,11 +569,18 @@ class _Types:
             nullable=(t.nullable & set(by)) | null_aggs,
         )
 
-    def _agg_nullable(self, node: ast.expr, t: TableT, scope: _Scope) -> bool:
+    def _agg_nullable(self, node: ast.expr, t: TableT, scope: _Scope, *, whole_table: bool) -> bool:
         """Whether a (well-typed) aggregate's result can be missing; reports L421 when
         mean/min/max reads a nullable expression without a null policy."""
         assert isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
         fn = node.func.attr
+        if fn in ORDER_AGGS:
+            # the picked row's value may be missing; every order value may be missing;
+            # a whole-table aggregate over an empty input has no row to pick
+            return whole_table or any(
+                expr_nullable(e, t.nullable, scope.nullconsts)
+                for e in [node.args[0], node.keywords[0].value]
+            )
         if fn not in NULLS_AGGS:
             return False  # sum/count are never missing
         arg = node.args[0]
@@ -602,8 +606,7 @@ class _Types:
                 "L421",
                 node,
                 f"aggregating '{what}' which can be missing: say how to treat missing values",
-                f"use agg.{fn}({fill}, or agg.{fn}({text}, "
-                'nulls="skip") to ignore missing values',
+                f'use agg.{fn}({fill}, or agg.{fn}({text}, nulls="skip") to ignore missing values',
             )
         return True  # an all-missing group (or empty input) gives a missing result
 

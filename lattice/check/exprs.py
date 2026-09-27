@@ -18,6 +18,7 @@ from lattice.catalog import (
     DATE_DIFF_UNITS,
     FN_ALIASES,
     FN_SIGS,
+    ORDER_AGGS,
     ROUND_DIGITS_MAX,
 )
 from lattice.check.astutil import LiteralValue, literal_value
@@ -578,6 +579,8 @@ class ExprTyper:
                 return None
             counted = self.type_of(node.args[0])  # any scalar type
             return None if isinstance(counted, UnknownT) else Scalar.INT
+        if attr in ORDER_AGGS:
+            return self._order_agg(node, attr)
         if len(node.args) != 1 or not self._agg_keywords(node, attr):
             self.ctx.error("L404", node, f"agg.{attr} takes exactly one column expression", None)
             return None
@@ -603,3 +606,28 @@ class ExprTyper:
             )
             return None
         return Scalar.FLOAT if attr == "mean" else t.scalar
+
+    def _order_agg(self, node: ast.Call, attr: str) -> Scalar | None:
+        """agg.first/agg.last(x, order=o): x's value on the row with the smallest /
+        largest o. x may be any scalar type; o must be ordered."""
+        if len(node.args) != 1 or [kw.arg for kw in node.keywords] != ["order"]:
+            self.ctx.error(
+                "L404",
+                node,
+                f"agg.{attr} takes one column expression and an order= column expression",
+                f'write agg.{attr}(col("x"), order=col("date"))',
+            )
+            return None
+        value = self.type_of(node.args[0])
+        order = self.type_of(node.keywords[0].value)
+        if isinstance(value, UnknownT) or isinstance(order, UnknownT):
+            return None
+        if order.scalar not in ORDERED:
+            self.ctx.error(
+                "L402",
+                node.keywords[0].value,
+                f"agg.{attr} order= expects {_scalars(ORDERED)}, got {order.scalar.value}",
+                None,
+            )
+            return None
+        return value.scalar

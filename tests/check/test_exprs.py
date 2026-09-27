@@ -299,6 +299,11 @@ def test_subexpressions_recorded(profile):
         ("agg.count()", INT),
         ('agg.count(col("qty"))', INT),
         ('agg.count(col("region"))', INT),
+        ('agg.first(col("region"), order=col("order_date"))', S),
+        ('agg.last(col("qty"), order=col("order_date"))', INT),
+        ('agg.last(col("price"), order=col("region"))', F),
+        ('agg.first(col("qty") > 1, order=col("qty"))', B),
+        ('agg.last(col("order_date"), order=col("price") * 2)', D),
     ],
 )
 def test_agg_ok(profile, src, expected):
@@ -317,6 +322,14 @@ def test_agg_ok(profile, src, expected):
         ('agg.mean(col("status"))', "L402"),
         ('agg.max(col("qty") > 1)', "L402"),
         ('agg.sum(col("zz"))', "L401"),
+        ('agg.last(col("qty"))', "L404"),
+        ('agg.first(col("qty"), col("price"))', "L404"),
+        ('agg.first(col("qty"), nulls="skip")', "L404"),
+        ('agg.last(col("qty"), order=col("price"), nulls="skip")', "L404"),
+        ('agg.last(order=col("price"))', "L404"),
+        ('agg.last(col("qty"), order=col("qty") > 1)', "L402"),
+        ('agg.last(col("zz"), order=col("qty"))', "L401"),
+        ('agg.last(col("qty"), order=col("zz"))', "L401"),
     ],
 )
 def test_agg_errors(profile, src, code):

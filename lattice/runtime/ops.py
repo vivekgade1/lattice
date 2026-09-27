@@ -76,12 +76,12 @@ def rename(df: pl.DataFrame, mapping: Sequence[tuple[str, str]]) -> pl.DataFrame
 def group(
     df: pl.DataFrame,
     by: Sequence[str],
-    aggs: Sequence[tuple[str, str, ast.expr | None]],
+    aggs: Sequence[tuple[str, str, ast.expr | None, ast.expr | None]],
 ) -> Result:
     guards: list[Guard] = []
     exprs: list[pl.Expr] = []
-    for name, func, arg in aggs:
-        c = compile_agg(func, arg)
+    for name, func, arg, order in aggs:
+        c = compile_agg(func, arg, order)
         guards += c.guards
         exprs.append(c.expr.alias(name))
     if not by:

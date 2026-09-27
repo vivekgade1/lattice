@@ -31,11 +31,20 @@ def expr_nullable(
             return expr_nullable(a, nullable_cols, consts) and expr_nullable(
                 b, nullable_cols, consts
             )
-        case ast.Call(func=ast.Name(id="when"), keywords=kws):
+        case ast.Call(func=ast.Name(id="when"), args=[cond], keywords=kws):
+            branches = {kw.arg: kw.value for kw in kws}
+            # when(is_null(E), then=a, otherwise=b): b only runs where E is present
+            # (and symmetrically then= under ~is_null(E))
+            present = {
+                "otherwise": _is_null_arg(cond),
+                "then": _is_null_arg(cond.operand)
+                if isinstance(cond, ast.UnaryOp) and isinstance(cond.op, ast.Invert)
+                else None,
+            }
             return any(
-                expr_nullable(kw.value, nullable_cols, consts)
-                for kw in kws
-                if kw.arg in ("then", "otherwise")
+                _nullable_where_present(branches[b], present[b], nullable_cols, consts)
+                for b in ("then", "otherwise")
+                if b in branches
             )
         case ast.Call(func=ast.Name(id="is_null")):
             return False
@@ -53,3 +62,32 @@ def expr_nullable(
             return expr_nullable(a, nullable_cols, consts)
         case _:
             return False
+
+
+def _is_null_arg(node: ast.expr) -> ast.expr | None:
+    """E for an `is_null(E)` call, else None."""
+    match node:
+        case ast.Call(func=ast.Name(id="is_null"), args=[e], keywords=[]):
+            return e
+        case _:
+            return None
+
+
+def _nullable_where_present(
+    node: ast.expr,
+    present: ast.expr | None,
+    nullable_cols: frozenset[str],
+    consts: Mapping[str, bool],
+) -> bool:
+    """Nullability of `node` on rows where the expression `present` is known non-null:
+    `node` is non-null if it is `present` itself; if `present` is a column, that
+    column counts as non-null inside `node`."""
+    if present is None:
+        return expr_nullable(node, nullable_cols, consts)
+    if ast.dump(node) == ast.dump(present):
+        return False
+    match present:
+        case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
+            return expr_nullable(node, nullable_cols - {name}, consts)
+        case _:
+            return expr_nullable(node, nullable_cols, consts)

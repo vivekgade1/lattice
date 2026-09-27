@@ -66,6 +66,11 @@ def test_lattice_prompt_has_new_rules() -> None:
     prompt = lattice_system_prompt()
     assert 'fanout="allow"' in prompt
     assert 'group(prices, by=["product_id"]' in prompt
+    assert 'agg.last(col("price"), order=col("valid_from"))' in prompt
+    assert "latest = group(" not in prompt  # max price is not the latest price
+    assert 'price=agg.max(col("price"))' not in prompt
+    assert "unique by the task's meaning" in prompt
+    assert "`agg.first(x, order=o)`" in prompt and "`agg.last(x, order=o)`" in prompt
     assert 'nulls="skip"' in prompt
     assert 'agg.mean(coalesce(col("x"), 0.0))' in prompt
     assert "Write only the output file named in the task" in prompt
@@ -77,7 +82,12 @@ def test_baseline_prompt_has_equivalent_rules() -> None:
     assert 'validate="many_to_one"' in BASELINE_SYSTEM
     assert "dropna=False" in BASELINE_SYSTEM
     assert "fillna(0.0)` before aggregating" in BASELINE_SYSTEM
-    assert 'dtype={"zip": str}' in BASELINE_SYSTEM
+    assert 'dtype={"zip": str}' not in BASELINE_SYSTEM  # no literal answer for a trap
+    assert 'pd.read_csv("<file>.csv")' not in BASELINE_SYSTEM
+    assert "must be read as text" in BASELINE_SYSTEM
+    assert "dtype=str" in BASELINE_SYSTEM and "leading zeros" in BASELINE_SYSTEM
+    assert "parse_dates" in BASELINE_SYSTEM
+    assert 'keep="last"' in BASELINE_SYSTEM  # the pandas analogue of agg.last
     assert "Write only `out.parquet`: no other files, no network access, no shell" in (
         BASELINE_SYSTEM
     )
@@ -94,9 +104,10 @@ def test_lattice_rule_examples_check_clean() -> None:
     src = (
         "# lattice: v1\n"
         'prices = load("product_prices.csv", schema=ProductPrices)\n'
-        'latest = group(prices, by=["product_id"], price=agg.max(col("price"), nulls="skip"), '
-        'm=agg.mean(coalesce(col("price"), 0.0)))\n'
-        'write(latest, "out.parquet")\n'
+        'current = group(prices, by=["product_id"], '
+        'price=agg.last(col("price"), order=col("valid_from")), '
+        'hi=agg.max(col("price"), nulls="skip"), m=agg.mean(coalesce(col("price"), 0.0)))\n'
+        'write(current, "out.parquet")\n'
     )
     result = check_source(src, PROFILE2)
     assert result.ok and not result.diagnostics, [d.render() for d in result.diagnostics]
@@ -107,8 +118,7 @@ def test_lattice_rule_examples_check_clean() -> None:
 
 def test_bench_descriptions_unchanged() -> None:
     assert dataset_description("products") == (
-        "products.csv — columns: product_id (Int), product_name (Str), category (Str), "
-        "cost (Float)"
+        "products.csv — columns: product_id (Int), product_name (Str), category (Str), cost (Float)"
     )
     assert dataset_description("orders", "bench") == dataset_description("orders")
     assert "unique key" not in dataset_description("orders")
@@ -146,7 +156,8 @@ def test_lattice_task_message_bench2(fake_bench2: None) -> None:
 def test_baseline_task_message_bench2(fake_bench2: None) -> None:
     message = baseline_task_message(_task(("product_prices",)))
     assert "unique key: (product_id, valid_from)" in message
-    assert 'pd.read_csv("product_prices.csv", parse_dates=["valid_from"])' in message
+    assert "read with" not in message and "read_csv" not in message
+    assert "product_prices.csv — columns: product_id (Int), valid_from (Date)" in message
     assert "out.parquet with index=False. Write no other file." in message
 
 
@@ -179,3 +190,77 @@ def test_real_bench2_registry_if_available() -> None:
             assert "; unique key: " in desc
         if ds.schema.nullable:
             assert "; may be missing: " in desc
+
+
+# ---- sample rows -----------------------------------------------------------------------
+
+
+def _samples() -> dict[str, tuple[pl.DataFrame, int]]:
+    import datetime
+
+    prices = pl.DataFrame(
+        {
+            "product_id": [1, 1],
+            "valid_from": [datetime.date(2024, 1, 1), datetime.date(2024, 3, 1)],
+            "price": [9.5, None],
+        }
+    )
+    customers = pl.DataFrame({"customer_id": [7], "zip": ["02134"], "region": [None]})
+    return {"product_prices": (prices, 40), "customers": (customers, 3)}
+
+
+def test_sample_rows_rendered_identically_in_both_arms(fake_bench2: None) -> None:
+    task = _task(("product_prices", "customers"))
+    lat = lattice_task_message(task, PROFILE2, samples=_samples())
+    base = baseline_task_message(task, samples=_samples())
+    section = (
+        "Sample rows of product_prices.csv (first 2 of 40):\n"
+        "product_id,valid_from,price\n"
+        "1,2024-01-01,9.5\n"
+        "1,2024-03-01,\n"
+        "\n"
+        "Sample rows of customers.csv (first 1 of 3):\n"
+        "customer_id,zip,region\n"
+        "7,02134,\n"
+    )
+    assert section in lat and section in base
+    # the samples come after the input list and before the output contract
+    for message in (lat, base):
+        assert message.index("Input files") < message.index("Sample rows of")
+        assert message.index("Sample rows of") < message.index("Write the final result")
+
+
+def test_no_samples_by_default(fake_bench2: None) -> None:
+    task = _task(("product_prices",))
+    assert "Sample rows" not in lattice_task_message(task, PROFILE2)
+    assert "Sample rows" not in baseline_task_message(task)
+    assert lattice_task_message(task, PROFILE2, samples=None) == lattice_task_message(
+        task, PROFILE2
+    )
+
+
+def test_samples_must_cover_every_input(fake_bench2: None) -> None:
+    task = _task(("product_prices", "customers"))
+    only_prices = {"product_prices": _samples()["product_prices"]}
+    with pytest.raises(KeyError):
+        baseline_task_message(task, samples=only_prices)
+    with pytest.raises(KeyError):
+        lattice_task_message(task, PROFILE2, samples=only_prices)
+
+
+def test_both_messages_differ_only_in_loading_and_output_contract(fake_bench2: None) -> None:
+    task = _task(("product_prices", "customers"))
+    lat = lattice_task_message(task, PROFILE2, samples=_samples()).splitlines()
+    base = baseline_task_message(task, samples=_samples()).splitlines()
+    lat_only = [line for line in lat if line not in base]
+    base_only = [line for line in base if line not in lat]
+    assert lat_only == [
+        '  load with: load("product_prices.csv", schema=ProductPrices)',
+        '  load with: load("customers.csv", schema=Customers2)',
+        'Write the final result to out.parquet with write(<table>, "out.parquet"). '
+        "Write no other file.",
+        "This task may only write: out.parquet.",
+    ]
+    assert base_only == [
+        "Write the final result to out.parquet with index=False. Write no other file."
+    ]

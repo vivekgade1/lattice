@@ -60,6 +60,16 @@ def grouped(agg: str, table: str = "orders", by: str = '"customer_id"') -> str:
         ('when(col("a") > 1, then=col("d"), otherwise=0.0)', True),
         ('when(col("d") > 1, then=col("a"), otherwise=0.0)', False),
         ('is_null(col("d"))', False),
+        ('when(is_null(col("d")), then=0.0, otherwise=col("d"))', False),
+        ('when(~is_null(col("d")), then=col("d"), otherwise=0.0)', False),
+        ('when(is_null(col("d")), then=0.0, otherwise=col("d") * 2)', False),
+        ('when(is_null(col("d")), then=col("d"), otherwise=0.0)', True),
+        ('when(~is_null(col("d")), then=0.0, otherwise=col("d"))', True),
+        ('when(is_null(col("d")), then=col("d2"), otherwise=col("d"))', True),
+        ('when(is_null(col("a")), then=0.0, otherwise=col("d"))', True),
+        ("when(is_null(k), then=0.0, otherwise=k)", False),
+        ('when(is_null(col("d") * 2), then=0.0, otherwise=col("d") * 2)', False),
+        ('when(is_null(col("d") * 2), then=0.0, otherwise=col("d"))', True),
         ('fn.to_int(col("s"))', True),
         ('fn.abs(col("a"))', False),
         ('fn.abs(col("d"))', True),
@@ -73,7 +83,7 @@ def grouped(agg: str, table: str = "orders", by: str = '"customer_id"') -> str:
 )
 def test_expr_nullable(src: str, expected: bool) -> None:
     node = ast.parse(src, mode="eval").body
-    assert expr_nullable(node, frozenset({"d"}), {"k": True, "j": False}) is expected
+    assert expr_nullable(node, frozenset({"d", "d2"}), {"k": True, "j": False}) is expected
 
 
 # ---- L421 ------------------------------------------------------------------------
@@ -296,3 +306,85 @@ def test_where_not_guaranteeing_presence_keeps_nullability(pred: str) -> None:
         'write(g, "out.parquet")\n'
     )
     assert codes(body) == ["L421"]
+
+
+# ---- when(is_null(E), ...) narrows E --------------------------------------------------
+
+
+def test_when_is_null_fill_in_aggregate_is_ok() -> None:
+    fill = 'when(is_null(col("discount")), then=0.0, otherwise=col("discount"))'
+    assert codes(grouped(f"agg.mean({fill})")) == []
+
+
+def test_when_is_null_fill_in_derive_clears_nullability() -> None:
+    body = (
+        'd = derive(orders, disc=when(~is_null(col("discount")), then=col("discount"), '
+        "otherwise=0.0))\n"
+        'g = group(d, by=["customer_id"], v=agg.mean(col("disc")))\n'
+        'write(g, "out.parquet")\n'
+    )
+    assert codes(body) == []
+
+
+def test_when_is_null_on_other_branch_keeps_nullability() -> None:
+    fill = 'when(is_null(col("discount")), then=col("discount"), otherwise=0.0)'
+    assert codes(grouped(f"agg.mean({fill})")) == ["L421"]
+
+
+# ---- agg.first / agg.last ---------------------------------------------------------------
+
+
+def _then_mean(agg: str, by: str = '"customer_id"') -> str:
+    return (
+        f"g = group(orders, by=[{by}], v={agg})\n"
+        'h = group(g, by=[], m=agg.mean(col("v")))\n'
+        'write(h, "out.parquet")\n'
+    )
+
+
+@pytest.mark.parametrize("fn", ["first", "last"])
+def test_first_last_over_nullable_value_needs_no_policy(fn: str) -> None:
+    assert codes(grouped(f'agg.{fn}(col("discount"), order=col("amount"))')) == []
+
+
+@pytest.mark.parametrize(
+    ("agg", "nullable"),
+    [
+        ('agg.last(col("amount"), order=col("order_id"))', False),
+        ('agg.last(col("discount"), order=col("order_id"))', True),
+        ('agg.first(col("amount"), order=col("discount"))', True),
+    ],
+)
+def test_first_last_result_nullability(agg: str, nullable: bool) -> None:
+    assert codes(_then_mean(agg)) == (["L421"] if nullable else [])
+
+
+def test_first_last_whole_table_is_nullable() -> None:
+    # by=[] over an empty input yields one row with a missing value
+    assert codes(_then_mean('agg.first(col("amount"), order=col("order_id"))', by="")) == ["L421"]
+
+
+def test_first_last_runtime(tmp_path: Path) -> None:
+    (tmp_path / "orders.csv").write_text(
+        "order_id,customer_id,amount,discount,code\n"
+        "5,1,10.0,0.5,a\n1,1,20.0,,b\n5,1,30.0,,c\n1,1,40.0,,d\n"
+        "7,2,1.0,,e\n3,2,,,f\n"
+    )
+    (tmp_path / "ratings.csv").write_text("customer_id,rating,region\n1,4.0,x\n")
+    body = (
+        'g = group(orders, by=["customer_id"], '
+        'f=agg.first(col("code"), order=col("order_id")), '
+        'l=agg.last(col("code"), order=col("order_id")), '
+        'fd=agg.first(col("code"), order=col("discount")), '
+        'la=agg.last(col("amount"), order=col("order_id") * -1))\n'
+        'write(g, "out.parquet")\n'
+    )
+    result, run = run_source(H + LOADS + body, NULLABLE, tmp_path)
+    assert result.ok, result.diagnostics
+    assert run is not None
+    got = run.outputs["out.parquet"].sort("customer_id")
+    assert got["f"].to_list() == ["b", "f"]  # tie on 1: earliest row wins
+    assert got["l"].to_list() == ["a", "e"]  # tie on 5: earliest row wins
+    assert got["fd"].to_list() == ["a", None]  # null orders ignored; all-null -> null
+    assert got["la"].to_list() == [20.0, None]  # value at the extreme row may be null
+    assert got.schema["la"] == pl.Float64

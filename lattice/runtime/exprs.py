@@ -296,16 +296,36 @@ def compile_expr(node: ast.expr) -> Compiled:
     return Compiled(expr, c.guards)
 
 
-def compile_agg(func: str, arg: ast.expr | None) -> Compiled:
+def _per_row(node: ast.expr) -> Compiled:
+    """Compile an aggregate's operand; a literal-only one is broadcast to every row."""
+    c = compile_expr(node)
+    return Compiled(pl.repeat(c.expr, pl.len()), c.guards) if literal_only(node) else c
+
+
+def compile_agg(func: str, arg: ast.expr | None, order: ast.expr | None = None) -> Compiled:
     """An aggregate over a group (or the whole frame). Literal-only arguments are
     broadcast to one value per row first, so agg.sum(1) counts rows like SQL.
-    agg.count() counts rows; agg.count(x) counts the non-null values of x."""
+    agg.count() counts rows; agg.count(x) counts the non-null values of x.
+    agg.first/agg.last(x, order=o) take x on the row with the smallest/largest
+    non-null o (ties: the earliest row); null if every o is null."""
     if func == "count" and arg is None:
         return Compiled(pl.len().cast(pl.Int64))
     if arg is None:
         raise LatticeInternalError(f"agg.{func} needs an argument")
-    inner = compile_expr(arg)
-    x = pl.repeat(inner.expr, pl.len()) if literal_only(arg) else inner.expr
+    inner = _per_row(arg)
+    x = inner.expr
+    if func in ("first", "last"):
+        if order is None:
+            raise LatticeInternalError(f"agg.{func} needs order=")
+        o = _per_row(order)
+        present = o.expr.is_not_null()
+        # a stable sort keeps tied rows in input order, so .first() is the earliest
+        picked = (
+            x.filter(present)
+            .sort_by(o.expr.filter(present), descending=func == "last", maintain_order=True)
+            .first()
+        )
+        return Compiled(picked, inner.guards + o.guards)
     match func:
         case "sum":
             out = x.sum()

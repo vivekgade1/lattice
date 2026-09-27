@@ -235,6 +235,32 @@ def test_aggregates():
     assert [code for code, _ in guarded.guards] == ["R301"]
 
 
+def test_first_last_aggregates():
+    def run(func: str, df: pl.DataFrame, x: str = 'col("x")') -> list[object]:
+        c = compile_agg(
+            func, ast.parse(x, mode="eval").body, ast.parse('col("o")', mode="eval").body
+        )
+        if "k" in df.columns:
+            return df.group_by("k", maintain_order=True).agg(c.expr.alias("v"))["v"].to_list()
+        return df.select(c.expr.alias("v"))["v"].to_list()
+
+    df = pl.DataFrame(
+        {
+            "k": [1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4],
+            "x": ["a", "b", "c", "d", "e", "f", "g", None, "h", "i", "j"],
+            "o": [5, 1, 5, 1, None, None, None, 3, 2, None, 7],
+        }
+    )
+    # ties -> earliest row; null order ignored; all-null order -> null; x may be null
+    assert run("first", df) == ["b", None, "h", "j"]
+    assert run("last", df) == ["a", None, None, "j"]
+    empty = df.drop("k").head(0)
+    assert run("first", empty) == [None] and run("last", empty) == [None]
+    assert run("last", df.drop("k"), x="7") == [7]  # a literal is broadcast per row
+    with pytest.raises(LatticeInternalError):
+        compile_agg("last", ast.parse('col("x")', mode="eval").body)
+
+
 def test_unknown_node_is_internal_error():
     with pytest.raises(LatticeInternalError):
         compile_expr(ast.parse("x", mode="eval").body)

@@ -39,7 +39,9 @@ EXPR_FUNCS = frozenset({"col", "when", "coalesce", "is_null"})
 NAMESPACES = frozenset({"agg", "fn"})
 TYPE_NAMES = frozenset({"Table", "Int", "Float", "Str", "Bool", "Date"})
 IMPORTABLE = TABLE_OPS | EXPR_FUNCS | NAMESPACES | TYPE_NAMES | {"step"}
-AGG_FUNCS = frozenset({"sum", "mean", "min", "max", "count"})
+AGG_FUNCS = frozenset({"sum", "mean", "min", "max", "count", "first", "last"})
+# aggregates that pick one row's value by an ordering expression: agg.first(x, order=o)
+ORDER_AGGS = frozenset({"first", "last"})
 
 
 @dataclass(frozen=True)
