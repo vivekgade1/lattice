@@ -17,6 +17,15 @@ auth, validation and routing paths are compared too.
 Full bodies are captured by test-local wrappers only (bench/ semantics are unchanged):
 the sandbox driver `run_cases_fastapi` runs is extended with a capture line, and the
 runtime app is wrapped in an ASGI shim that records the response.
+
+The "realapps" program (tests/api/realapps.py) runs on its own profile and database
+and covers the sub-project 1 features: Uuid keys (generated on insert), DateTime and
+fn.now(), page totals in a custom page shape, response models, UNSET partial updates
+(incl. explicit null), owner_is() 403s, natives in reads and requires, NativeToken
+auth with an Admin flag column, and trailing-slash routes. Its natives module is copied
+next to the generated app as `natives.py`. Values generated per request (a new uuid4,
+the request's instant) differ between the two runs by nature, so bodies, after_sql rows
+and the DB digest compare them through placeholders (`normalize`).
 """
 
 from __future__ import annotations
@@ -42,6 +51,7 @@ from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
+from tests.api import realapps
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -273,19 +283,266 @@ NUMERIC_CASES = (
     _case("pricey big offset", "GET", "/products/pricey", None, query={"offset": 2**63 - 1}),
 )
 
+# ---- the real-apps program (sub-project 1 features) -------------------------------------
+
+_R = realapps
+_RT = _R.TOKENS
+_ITEMS_AFTER = "SELECT id, title, description, owner_id, created_at FROM item ORDER BY rowid"
+_USERS_AFTER = 'SELECT id, email, full_name, created_at FROM "user" ORDER BY rowid'
+
+
+def _rcase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _RT[who], **kw)
+
+
+def _rid(n: int) -> str:
+    return _R.uid(n)
+
+
+REALAPPS_CASES: tuple[HttpCase, ...] = (
+    # page totals, the page shape, response models, trailing slashes
+    _rcase("items alice", "GET", "/items/", "alice"),
+    _rcase("items page 2", "GET", "/items/", "alice", query={"limit": 2, "skip": 2}),
+    _rcase("items past the end", "GET", "/items/", "alice", query={"skip": 50}),
+    _rcase("items admin", "GET", "/items/", "admin", query={"limit": 2, "skip": 1}),
+    _rcase("items bob", "GET", "/items/", "bob"),
+    _rcase("items redirect", "GET", "/items", "alice", query={"limit": 1}),
+    _rcase("items bad limit", "GET", "/items/", "alice", query={"limit": 0}, status=422),
+    _rcase("users admin", "GET", "/users/", "admin", query={"limit": 3}),
+    _rcase("users customer", "GET", "/users/", "alice", status=403),
+    _rcase("since default", "GET", "/items/since", "alice"),
+    _rcase(
+        "since offset", "GET", "/items/since", "alice", query={"after": "2000-01-03T11:00+02:00"}
+    ),
+    _rcase("since naive", "GET", "/items/since", "bob", query={"after": "2000-01-01T00:00:00"}),
+    _rcase("since bad", "GET", "/items/since", "alice", query={"after": "soon"}, status=422),
+    _rcase("to_uuid to_datetime", "GET", "/admin/alice-items", "admin"),
+    # Uuid parameters and owner_is() (403) / 404
+    _rcase("item own", "GET", f"/items/{_rid(101)}", "alice"),
+    _rcase("item 32 hex", "GET", "/items/" + _rid(102).replace("-", "").upper(), "alice"),
+    _rcase("item other 403", "GET", f"/items/{_rid(103)}", "alice", status=403),
+    _rcase("item admin", "GET", f"/items/{_rid(103)}", "admin"),
+    _rcase("item missing", "GET", f"/items/{_rid(999)}", "alice", status=404),
+    _rcase("item bad uuid", "GET", "/items/not-a-uuid", "alice", status=422),
+    _rcase("note own", "GET", f"/notes/{_rid(201)}", "alice"),
+    _rcase("note other 403", "GET", f"/notes/{_rid(202)}", "alice", status=403),
+    # inserts: a generated uuid4 key, fn.now(), optional values
+    _rcase("create", "POST", "/items/", "alice", json={"title": "Made"}, status=201),
+    _rcase(
+        "create described",
+        "POST",
+        "/items/",
+        "bob",
+        json={"title": "Made", "description": "d"},
+        status=201,
+        after_sql=_ITEMS_AFTER,
+    ),
+    _rcase(
+        "create null description",
+        "POST",
+        "/items/",
+        "alice",
+        json={"title": "M", "description": None},
+        status=201,
+    ),
+    _rcase("create null title", "POST", "/items/", "alice", json={"title": None}, status=422),
+    _rcase(
+        "copy with given id",
+        "POST",
+        f"/items/{_rid(101)}/copy",
+        "alice",
+        json={"new_id": "AAAAAAAA-0000-4000-8000-000000000999"},
+        status=201,
+        after_sql=_ITEMS_AFTER,
+    ),
+    _rcase(
+        "copy bad id",
+        "POST",
+        f"/items/{_rid(101)}/copy",
+        "alice",
+        json={"new_id": "nope"},
+        status=422,
+    ),
+    # UNSET partial updates
+    _rcase(
+        "update title",
+        "PUT",
+        f"/items/{_rid(101)}",
+        "alice",
+        json={"title": "New"},
+        after_sql=_ITEMS_AFTER,
+    ),
+    _rcase(
+        "update description null",
+        "PUT",
+        f"/items/{_rid(101)}",
+        "alice",
+        json={"description": None},
+        after_sql=_ITEMS_AFTER,
+    ),
+    _rcase("update nothing", "PUT", f"/items/{_rid(104)}", "alice", json={}),
+    _rcase(
+        "update title null",
+        "PUT",
+        f"/items/{_rid(101)}",
+        "alice",
+        json={"title": None},
+        status=422,
+    ),
+    _rcase(
+        "update other 403",
+        "PUT",
+        f"/items/{_rid(103)}",
+        "alice",
+        json={"title": "x"},
+        status=403,
+        after_sql=_ITEMS_AFTER,
+    ),
+    _rcase(
+        "update missing", "PUT", f"/items/{_rid(998)}", "alice", json={"title": "x"}, status=404
+    ),
+    _rcase(
+        "update me",
+        "PATCH",
+        "/users/me",
+        "bob",
+        json={"full_name": "Bobby"},
+        after_sql=_USERS_AFTER,
+    ),
+    _rcase("update me email null", "PATCH", "/users/me", "bob", json={"email": None}, status=422),
+    _rcase(
+        "delete own", "DELETE", f"/items/{_rid(104)}", "alice", status=204, after_sql=_ITEMS_AFTER
+    ),
+    _rcase("delete other", "DELETE", f"/items/{_rid(104)}", "bob", status=403),
+    # natives and NativeToken auth
+    _rcase("me", "GET", "/users/me", "alice"),
+    _rcase("me trailing slash", "GET", "/users/me/", "carol"),
+    _case("me unknown user", "GET", "/users/me", f"tok-{_rid(777)}", status=401),
+    _case("me bad token", "GET", "/users/me", "garbage", status=401),
+    _rcase(
+        "signup",
+        "POST",
+        "/users/signup",
+        None,
+        json={"email": "new@example.com", "password": "longpassword"},
+        status=201,
+        after_sql=_USERS_AFTER,
+    ),
+    _rcase(
+        "signup short",
+        "POST",
+        "/users/signup",
+        None,
+        json={"email": "x@example.com", "password": "short"},
+        status=422,
+    ),
+    _rcase(
+        "login",
+        "POST",
+        "/login/access-token",
+        None,
+        json={"username": "alice@example.com", "password": "alice-pass"},
+    ),
+    _rcase(
+        "login wrong",
+        "POST",
+        "/login/access-token",
+        None,
+        json={"username": "alice@example.com", "password": "nope"},
+        status=400,
+    ),
+    _rcase(
+        "login inactive",
+        "POST",
+        "/login/access-token",
+        None,
+        json={"username": "carol@example.com", "password": "carol-pw"},
+        status=400,
+    ),
+    _rcase("loud", "GET", f"/items/{_rid(101)}/loud", "alice"),
+    _rcase("loud empty", "GET", f"/items/{_rid(105)}/loud", "bob"),
+    _rcase("loud require", "GET", f"/items/{_rid(102)}/loud", "alice", status=400),
+    # fn.now() once per request, fn.date
+    _rcase("clock", "GET", f"/clock/{_rid(101)}", "alice"),
+    _rcase("clock not mine", "GET", f"/clock/{_rid(103)}", "alice", status=404),
+)
+
+
 PROGRAMS = _programs()
+PROGRAMS["realapps"] = (
+    _R.PROGRAM,
+    ApiTask("realapps", "control", "real-app features", REALAPPS_CASES + _probes(REALAPPS_CASES)),
+)
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
-EXTRA_IDS = ["numeric", "mapped_join"]
+EXTRA_IDS = ["numeric", "mapped_join", "realapps"]
+
+
+@dataclasses.dataclass(frozen=True)
+class Setup:
+    """How a program runs: its profile, database, natives (and the natives module
+    copied next to the generated app)."""
+
+    profile: Any
+    build: Any
+    natives: Mapping[str, Any] | None = None
+    natives_file: Path | None = None
+
+
+DEFAULT_SETUP = Setup(api_profile(), build_db)
+SETUPS = {
+    "realapps": Setup(_R.PROFILE, _R.build_db, _R.NATIVES, _R.NATIVES_FILE),
+}
+
+
+def setup_of(pid: str) -> Setup:
+    return SETUPS.get(pid, DEFAULT_SETUP)
+
+
+def normalize(value: object) -> object:
+    """`value` (JSON or rows) with values generated per request replaced by
+    placeholders: a UUID not seeded (tests/api/realapps.py seeds only ids with the
+    prefix 00000000-0000-4000-8000-) is "<uuid>", a stored DateTime not in the seeded
+    year 2000 is "<now>"."""
+    if isinstance(value, dict):
+        return {k: normalize(v) for k, v in value.items()}
+    if isinstance(value, list | tuple):
+        return [normalize(v) for v in value]
+    if isinstance(value, str):
+        value = re.sub(
+            r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+            lambda m: m.group(0) if m.group(0).startswith("00000000-0000-4000-8000-") else "<uuid>",
+            value,
+        )
+        value = re.sub(
+            r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z",
+            lambda m: m.group(0) if m.group(0).startswith("2000-") else "<now>",
+            value,
+        )
+    return value
 
 
 # ---- capture ---------------------------------------------------------------------------------
 
 
 def db_digest(path: str) -> str:
-    """A digest of every table's rows (stdlib only: also copied into the sandbox driver)."""
+    """A digest of every table's rows (stdlib only: also copied into the sandbox driver).
+    Values generated per request (a UUID that was not seeded, a stored DateTime outside
+    the seeded year 2000) enter it as placeholders (see `normalize`)."""
     import hashlib as _hashlib
+    import re as _re
     import sqlite3 as _sqlite3
+
+    uuids = _re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+    instants = _re.compile(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z")
+
+    def cell(v: object) -> object:
+        if not isinstance(v, str):
+            return v
+        v = uuids.sub(
+            lambda m: m.group(0) if m.group(0).startswith("00000000-0000-4000-8000-") else "<u>", v
+        )
+        return instants.sub(lambda m: m.group(0) if m.group(0).startswith("2000-") else "<t>", v)
 
     conn = _sqlite3.connect(path)
     try:
@@ -296,7 +553,7 @@ def db_digest(path: str) -> str:
         for (table,) in tables:
             quoted = '"' + table.replace('"', '""') + '"'
             rows = conn.execute(f"SELECT * FROM {quoted} ORDER BY rowid").fetchall()
-            h.update(repr((table, rows)).encode())
+            h.update(repr((table, [tuple(cell(v) for v in r) for r in rows])).encode())
         return h.hexdigest()
     finally:
         conn.close()
@@ -334,10 +591,13 @@ def _copier(pristine: Path):
 
 
 def _run_generated(
-    app_source: str, workdir: Path, task: ApiTask, pristine: Path
+    app_source: str, workdir: Path, task: ApiTask, pristine: Path, setup: Setup = DEFAULT_SETUP
 ) -> tuple[CaseResults, list[dict]]:
     capture = workdir / CAPTURE_FILE
     capture.unlink(missing_ok=True)
+    if setup.natives_file is not None:  # imported by the generated app as `natives`
+        workdir.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(setup.natives_file, workdir / "natives.py")
     results = run_cases_fastapi(
         app_source, workdir, task, db_builder=_copier(pristine), kit_path=KIT_PATH, timeout_s=300
     )
@@ -352,6 +612,7 @@ class _Shim:
 
     def __init__(self, app: Any, db_path: Path, case: HttpCase, sink: list[dict]) -> None:
         self.app, self.db_path, self.case, self.sink = app, db_path, case, sink
+        self.recorded: int | None = None
 
     async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
         if scope["type"] != "http":
@@ -380,24 +641,30 @@ class _Shim:
                 after = [list(r) for r in conn.execute(self.case.after_sql).fetchall()]
             finally:
                 conn.close()
-        self.sink.append(
-            {
-                "name": self.case.name,
-                "status": status,
-                "body": body,
-                "crash": "",
-                "after": after,
-                "digest": db_digest(str(self.db_path)),
-            }
-        )
+        record = {
+            "name": self.case.name,
+            "status": status,
+            "body": body,
+            "crash": "",
+            "after": after,
+            "digest": db_digest(str(self.db_path)),
+        }
+        # a followed redirect is two requests: keep the final response's record
+        if self.recorded is None:
+            self.recorded = len(self.sink)
+            self.sink.append(record)
+        else:
+            self.sink[self.recorded] = record
 
 
-def _run_runtime(source: str, workdir: Path, task: ApiTask, pristine: Path):
+def _run_runtime(
+    source: str, workdir: Path, task: ApiTask, pristine: Path, setup: Setup = DEFAULT_SETUP
+):
     captured: list[dict] = []
     calls = [0]
 
     def serve(src: str, profile: Any, db_path: Path):
-        check, app = runtime.serve_source(src, profile, db_path)
+        check, app = runtime.serve_source(src, profile, db_path, natives=setup.natives)
         case = task.cases[calls[0]]
         calls[0] += 1
         return check, (None if app is None else _Shim(app, db_path, case, captured))
@@ -407,7 +674,7 @@ def _run_runtime(source: str, workdir: Path, task: ApiTask, pristine: Path):
         workdir,
         task,
         db_builder=_copier(pristine),
-        profile=api_profile(),
+        profile=setup.profile,
         serve=serve,
         hooks=runtime,
     )
@@ -418,24 +685,39 @@ def _run_runtime(source: str, workdir: Path, task: ApiTask, pristine: Path):
 def differential_runs(tmp_path_factory: pytest.TempPathFactory) -> Mapping[str, tuple]:
     """program id -> (runtime results, runtime captures, generated results, captures)."""
     root = tmp_path_factory.mktemp("codegen_diff")
-    pristine = root / "pristine.db"
-    build_db(pristine)
+    pristines: dict[int, Path] = {}
+
+    def pristine(pid: str) -> Path:
+        setup = setup_of(pid)
+        key = id(setup)
+        if key not in pristines:
+            pristines[key] = root / f"pristine_{len(pristines)}.db"
+            setup.build(pristines[key])
+        return pristines[key]
+
     apps: dict[str, str] = {}
     for pid, (source, _task) in PROGRAMS.items():
-        check, app_source = compile_source_to_fastapi(source, api_profile())
+        check, app_source = compile_source_to_fastapi(source, setup_of(pid).profile)
         assert app_source is not None, [d.render() for d in check.diagnostics]
         apps[pid] = app_source
         (root / f"{pid}_app.py").write_text(app_source)
+        pristine(pid)
 
     runtime_runs = {
-        pid: _run_runtime(source, root / f"{pid}_runtime", task, pristine)
+        pid: _run_runtime(source, root / f"{pid}_runtime", task, pristine(pid), setup_of(pid))
         for pid, (source, task) in PROGRAMS.items()
     }
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr(api_runner, "driver_source", _capturing_driver_source)
 
         def gen(pid: str):
-            return _run_generated(apps[pid], root / f"{pid}_generated", PROGRAMS[pid][1], pristine)
+            return _run_generated(
+                apps[pid],
+                root / f"{pid}_generated",
+                PROGRAMS[pid][1],
+                pristine(pid),
+                setup_of(pid),
+            )
 
         with ThreadPoolExecutor(max_workers=8) as pool:
             generated = dict(zip(PROGRAMS, pool.map(gen, PROGRAMS), strict=True))
@@ -478,13 +760,13 @@ def _mismatches(pid: str, runs: tuple) -> list[str]:
             "queries": (rt.queries, gen.queries),
             "passed": (rt.passed, gen.passed),
             "reason": (rt.reason, gen.reason),
-            "after_sql rows": (rc["after"], gc["after"]),
+            "after_sql rows": (normalize(rc["after"]), normalize(gc["after"])),
             "db digest": (rc["digest"], gc["digest"]),
         }
         for what, (x, y) in pairs.items():
             if x != y:
                 problems.append(f"{where}: {what} differs: runtime {x!r} vs generated {y!r}")
-        if not strict_equal(rc["body"], gc["body"]):
+        if not strict_equal(normalize(rc["body"]), normalize(gc["body"])):
             problems.append(
                 f"{where}: body differs: runtime {rc['body']!r} vs generated {gc['body']!r}"
             )
@@ -557,3 +839,30 @@ def test_the_probes_reach_the_new_input_rules_and_non_finite_results(differentia
         first = captured[0]["body"]
         assert first["huge"] is None and isinstance(first["tiny"], float)
         assert all(item["huge"] is None for item in captured[2]["body"]["items"])
+
+
+def test_the_realapps_program_passes_its_cases(differential_runs):
+    """Every real-apps case gets its expected status on both backends, and the cases
+    reach each new feature (equally on both, by the differential above)."""
+    rt_results, rt_captured, gen_results, _ = differential_runs["realapps"]
+    want = {c.name: c.expect_status for c in REALAPPS_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want  # (after_sql rows are compared between the backends above)
+    bodies = {c["name"]: c["body"] for c in rt_captured}
+    assert bodies["items past the end"] == {"data": [], "count": 3}
+    assert bodies["item other 403"]["error"] == "forbidden"
+    assert normalize(bodies["create"])["id"] == "<uuid>"
+    clock = normalize(bodies["clock"])
+    assert clock["a"] == clock["b"] == "<now>"
+    assert bodies["update description null"]["description"] is None
+    assert bodies["login"]["access_token"] == realapps.TOKENS["alice"]
+    assert bodies["loud"]["loud"] == "ALPHA!"
+
+
+def test_the_generated_realapps_app_imports_its_natives():
+    check, code = compile_source_to_fastapi(realapps.PROGRAM, realapps.PROFILE)
+    assert code is not None, [d.render() for d in check.diagnostics]
+    assert "from natives import " in code and "native_decode_token" in code
+    check, code = compile_source_to_fastapi(realapps.PROGRAM, realapps.PROFILE, "my.natives")
+    assert code is not None and "from my.natives import " in code

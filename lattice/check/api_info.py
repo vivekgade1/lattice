@@ -200,13 +200,16 @@ _PARAM_SEGMENT = re.compile(r"\{([A-Za-z_][A-Za-z0-9_]*)\}")
 
 
 def path_params(path: str) -> list[str] | None:
-    """Names of the `{name}` segments of a path, or None if the path is malformed."""
+    """Names of the `{name}` segments of a path, or None if the path is malformed. One
+    trailing "/" is allowed (e.g. "/items/"): the route matches exactly as declared,
+    and the runtime redirects the slash-less request to it as FastAPI does."""
     if path == "/":
         return []
     if not path.startswith("/"):
         return None
+    body = path[1:-1] if path.endswith("/") else path[1:]
     names: list[str] = []
-    for seg in path[1:].split("/"):
+    for seg in body.split("/"):
         m = _PARAM_SEGMENT.fullmatch(seg)
         if m is not None:
             names.append(m.group(1))

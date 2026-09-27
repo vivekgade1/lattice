@@ -1,9 +1,17 @@
 """The Lattice API runtime (Phase A): serve lowered endpoint plans over a SQL backend.
 
-Per request: authenticate (`Authorization: Bearer <token>`, one statement), check the
-role, parse and validate the parameters, then run the plan's steps in order inside
-one transaction — each read pipeline is one SELECT, each write one statement, checks
-cost nothing — and serialize the returned rows. Any error response rolls back.
+Per request: authenticate (`Authorization: Bearer <token>`, one statement: the token
+is looked up in the users table's token column, or decoded to the caller's key by a
+native -- `ApiProfile.auth`), check the role, parse and validate the parameters, then
+run the plan's steps in order inside one transaction — each read pipeline is one
+SELECT, each write one statement, checks cost nothing — and serialize the returned
+rows (a response model's fields in its order; a Page in the profile's page shape, with
+the total when the page has one). Any error response rolls back. `fn.now()` is the
+request's one instant, taken when the request starts.
+
+Natives (`native.<name>(...)`) are pure Python functions registered as SQL functions
+on every connection: `build_app`/`serve_source` take their implementations as
+`natives={name: callable}`.
 
 A new connection is opened per request and closed after it (no connection is held
 between requests). Every new connection is passed to the module attribute
@@ -21,7 +29,7 @@ import datetime as dt
 import json
 import math
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -32,7 +40,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
-from lattice.api.backend import Dialect, dialect_for
+from lattice.api.backend import Dialect, NativeImpl, dialect_for, parse_datetime, uuid_text
 from lattice.api.ir import (
     CheckStep,
     EndpointPlan,
@@ -68,9 +76,9 @@ class _ErrorResponse(Exception):
         self.body = body
 
 
-def _connect(dialect: Dialect, db_path: Path) -> Any:
+def _connect(dialect: Dialect, db_path: Path, natives: Mapping[str, NativeImpl]) -> Any:
     # on_connect is looked up at call time: the harness may replace it
-    return dialect.connect(db_path, lambda conn: on_connect(conn))
+    return dialect.connect(db_path, lambda conn: on_connect(conn), natives)
 
 
 # ---- parameters ------------------------------------------------------------------------
@@ -91,6 +99,8 @@ _TYPE_NAMES = {
     Scalar.STR: "a string",
     Scalar.BOOL: "a boolean",
     Scalar.DATE: "an ISO date (YYYY-MM-DD)",
+    Scalar.DATETIME: "an ISO date-time",
+    Scalar.UUID: "a UUID",
 }
 
 
@@ -156,6 +166,16 @@ def _convert(spec: ParamSpec, raw: object, *, text: bool) -> object:
                 except ValueError:
                     raise bad from None
             raise bad
+        case Scalar.DATETIME:  # a naive date-time is UTC
+            value_dt = parse_datetime(raw) if isinstance(raw, str) else None
+            if value_dt is None:
+                raise bad
+            return value_dt
+        case Scalar.UUID:  # hyphenated or 32 hex digits, any case
+            text_uuid = uuid_text(raw) if isinstance(raw, str) else None
+            if text_uuid is None:
+                raise bad
+            return text_uuid
         case _:
             raise LatticeInternalError(f"parameter '{spec.name}' has no scalar type")
 
@@ -208,6 +228,13 @@ def _parse_params(
             continue
         source: Mapping[str, object] = {"path": path, "query": query, "body": data}[spec.source]
         loc = [spec.source, spec.name]
+        if spec.optional and spec.name in source and source[spec.name] is None:
+            # an explicit null: sets NULL, where every column it is written to allows it
+            if spec.name in plan.null_ok:
+                values[spec.name] = None
+            else:
+                detail.append({"loc": loc, "msg": "must not be null"})
+            continue
         if spec.name not in source or source[spec.name] is None:
             if spec.default is not MISSING:
                 values[spec.name] = spec.default
@@ -239,16 +266,37 @@ def _token(header: str | None) -> str | None:
     return token
 
 
+def auth_sql(plan: EndpointPlan, dialect: Dialect) -> str:
+    """The authentication statement: the caller's row by token column, or by key =
+    the auth native applied to the token."""
+    if plan.auth_native is not None:
+        return compile_lookup(
+            plan.users_table,
+            plan.user_columns,
+            plan.user_key,
+            native=plan.auth_native,
+            dialect=dialect,
+        )
+    return compile_lookup(plan.users_table, plan.user_columns, plan.token_column, dialect=dialect)
+
+
+def caller_role(plan: EndpointPlan, row: Sequence[Any]) -> str:
+    """The caller's role, from the role column or the admin flag column."""
+    if plan.admin_flag is not None:
+        flagged = row[plan.user_columns.index(plan.admin_flag)]
+        return plan.admin_role if flagged else plan.flag_role
+    return str(row[plan.user_columns.index(plan.role_column)])
+
+
 def _authenticate(
     plan: EndpointPlan, dialect: Dialect, conn: Any, token: str
 ) -> tuple[object, str, tuple[Any, ...]]:
     """(caller id, role, the caller's row as `plan.user_columns`): one statement."""
-    sql = compile_lookup(plan.users_table, plan.user_columns, "token", dialect=dialect)
-    row = conn.execute(sql, (token,)).fetchone()
+    row = conn.execute(auth_sql(plan, dialect), (token,)).fetchone()
     if row is None:
         raise _ErrorResponse(401, {"error": "unauthorized"})
     user_id = row[plan.user_columns.index(plan.user_key)]
-    role = str(row[plan.user_columns.index("role")])
+    role = caller_role(plan, row)
     if not (plan.auth == PUBLIC_ROLE or role == plan.auth or role == plan.admin_role):
         raise _ErrorResponse(403, {"error": "forbidden"})
     return user_id, role, tuple(row)
@@ -277,8 +325,11 @@ def _run_steps(
     user_id: object,
     is_admin: bool,
     caller: tuple[Any, ...] | None = None,
-) -> dict[str, Result]:
+    now: dt.datetime | None = None,
+) -> tuple[dict[str, Result], dict[str, int]]:
+    """Every step's rows, and the total of each page(total=True) read (by step id)."""
     results: dict[str, Result] = {}
+    totals: dict[str, int] = {}
     if caller is not None:
         results[USER_PARAM] = (plan.user_columns, [caller])
 
@@ -289,6 +340,7 @@ def _run_steps(
             results=results,
             user_id=user_id,
             is_admin=is_admin,
+            now=now,
             dialect=dialect,
         )
         return conn.execute(sql.text, binds).fetchall()
@@ -296,7 +348,11 @@ def _run_steps(
     for step in plan.steps:
         match step:
             case ReadStep():
-                results[step.id] = (step.schema.names() + step.flags, run(step.sql))
+                rows = run(step.sql)
+                if step.sql.total:  # trailing (__in_page, __total); an empty page is 1 row
+                    totals[step.id] = int(rows[0][-1]) if rows else 0
+                    rows = [r[:-2] for r in rows if r[-2]]
+                results[step.id] = (step.schema.names() + step.flags, rows)
             case CheckStep(kind="one"):
                 n = len(results[step.input][1])
                 if n == 0:
@@ -340,7 +396,7 @@ def _run_steps(
                 results[step.id] = (names, _project(results[step.input], names))
             case _:
                 raise LatticeInternalError(f"unknown step {step!r}")
-    return results
+    return results, totals
 
 
 def _respond(
@@ -348,6 +404,7 @@ def _respond(
     dialect: Dialect,
     results: Mapping[str, Result],
     values: Mapping[str, object],
+    totals: Mapping[str, int] | None = None,
 ):
     if plan.success == "NoContent":
         return Response(status_code=204)
@@ -362,7 +419,11 @@ def _respond(
             raise LatticeInternalError(f"Page endpoint '{plan.name}' returns no page()")
         limit = values[plan.page.limit] if isinstance(plan.page.limit, str) else plan.page.limit
         offset = values[plan.page.offset] if isinstance(plan.page.offset, str) else plan.page.offset
-        return JSONResponse({"items": items, "limit": limit, "offset": offset})
+        parts: dict[str, object] = {"items": items, "limit": limit, "offset": offset}
+        if plan.page.total_step is not None:
+            parts["total"] = (totals or {})[plan.page.total_step]
+        envelope = {name: parts[key] for key, name in plan.page_shape if name and key in parts}
+        return JSONResponse(envelope)
     if not items:
         raise _ErrorResponse(404, {"error": "not_found", "detail": "no such row"})
     if len(items) > 1:
@@ -391,8 +452,11 @@ def _serve(
     query: Mapping[str, str],
     body: bytes,
     authorization: str | None,
+    natives: Mapping[str, NativeImpl] | None = None,
 ) -> Response:
     dialect = dialect_for(plan.backend)
+    impls = natives or {}
+    now = dt.datetime.now(dt.UTC)  # fn.now(): one instant per request
     conn: Any = None
     in_txn = False
     try:
@@ -403,16 +467,16 @@ def _serve(
             token = _token(authorization)
             if token is None:
                 raise _ErrorResponse(401, {"error": "unauthorized"})
-            conn = _connect(dialect, db_path)
+            conn = _connect(dialect, db_path, impls)
             user_id, role, caller = _authenticate(plan, dialect, conn, token)
             is_admin = role == plan.admin_role
         values = _parse_params(plan, path, query, body)
         if conn is None:
-            conn = _connect(dialect, db_path)
+            conn = _connect(dialect, db_path, impls)
         dialect.begin(conn, writes=any(isinstance(s, WriteStep) for s in plan.steps))
         in_txn = True
-        results = _run_steps(plan, dialect, conn, values, user_id, is_admin, caller)
-        response = _respond(plan, dialect, results, values)
+        results, totals = _run_steps(plan, dialect, conn, values, user_id, is_admin, caller, now)
+        response = _respond(plan, dialect, results, values, totals)
         dialect.commit(conn)
         in_txn = False
         return response
@@ -429,7 +493,7 @@ def _serve(
             conn.close()
 
 
-def _handler(plan: EndpointPlan, db_path: Path):
+def _handler(plan: EndpointPlan, db_path: Path, natives: Mapping[str, NativeImpl]):
     async def endpoint(request: Request) -> Response:
         body = await request.body()
         return await run_in_threadpool(
@@ -440,6 +504,7 @@ def _handler(plan: EndpointPlan, db_path: Path):
             dict(request.query_params),
             body,
             request.headers.get("authorization"),
+            natives,
         )
 
     endpoint.__name__ = plan.name
@@ -457,22 +522,51 @@ async def _http_error(request: Request, exc: Exception) -> Response:
     return JSONResponse({"error": code}, status_code=status)
 
 
-def build_app(plans: Sequence[EndpointPlan], db_path: Path) -> Starlette:
+def native_impls(
+    plans: Sequence[EndpointPlan], natives: Mapping[str, Callable[..., object]] | None
+) -> dict[str, NativeImpl]:
+    """The natives the plans call, each with its signature and implementation; a
+    native without an implementation is a ValueError (before serving anything)."""
+    impls: dict[str, NativeImpl] = {}
+    for plan in plans:
+        for name, sig in plan.natives:
+            fn = (natives or {}).get(name)
+            if fn is None:
+                raise ValueError(
+                    f"native {name!r} has no implementation: pass natives={{{name!r}: ...}}"
+                )
+            impls[name] = (sig, fn)
+    return impls
+
+
+def build_app(
+    plans: Sequence[EndpointPlan],
+    db_path: Path,
+    natives: Mapping[str, Callable[..., object]] | None = None,
+) -> Starlette:
     """A Starlette app serving `plans` against the database at `db_path` (each plan's
-    backend dialect opens it)."""
+    backend dialect opens it). `natives` maps each native the plans call to its
+    Python implementation (registered as a SQL function on every connection).
+
+    Routing is Starlette's (FastAPI's): a path is matched exactly as declared, and a
+    request that differs only by a trailing slash is redirected (307) to it."""
     db = Path(db_path)
+    impls = native_impls(plans, natives)
     routes = [
-        Route(plan.path, _handler(plan, db), methods=[plan.method], name=plan.name)
+        Route(plan.path, _handler(plan, db, impls), methods=[plan.method], name=plan.name)
         for plan in sorted(plans, key=_specificity)
     ]
     return Starlette(routes=routes, exception_handlers={HTTPException: _http_error})
 
 
 def serve_source(
-    source: str, profile: Profile, db_path: Path
+    source: str,
+    profile: Profile,
+    db_path: Path,
+    natives: Mapping[str, Callable[..., object]] | None = None,
 ) -> tuple[CheckResult, Starlette | None]:
     """Check -> lower -> build. (check result, None) when the program is rejected."""
     result = check_source(source, profile)
     if result.program is None:
         return result, None
-    return result, build_app(lower_api(result.program), db_path)
+    return result, build_app(lower_api(result.program), db_path, natives)

@@ -30,6 +30,15 @@ Authentication is generated inline rather than through the kit's `current_user` 
    the request's single connection, and a missing/malformed header is rejected with 401
    before any connection is opened.
 
+Real-app features are generated the runtime's way: Uuid/DateTime parameters, fn.now()
+(one instant per request, bound as `:__now`), UNSET parameters (a "sent" flag bound per
+optional parameter), page totals (`split_total`) in the profile's page shape, response
+models (the plan's schema is the model's fields in order), the role from a role column
+or an Admin flag column, and natives: `generate_fastapi(..., natives_module="natives")`
+imports the natives the plans call from that module (which must sit next to the app)
+and registers them, like the runtime's functions, on every connection (NativeToken auth
+decodes the bearer token with one of them).
+
 The 401/403 bodies (`{"error": "unauthorized"}` / `{"error": "forbidden"}`), the
 precedence (401, then 403, then 422 validation) and the Admin rule are the runtime's.
 Every connection still comes from the kit's `get_db`, so the harness's statement
@@ -49,11 +58,12 @@ from dataclasses import dataclass
 
 from lattice.api.backend import SQLITE
 from lattice.api.ir import CheckStep, EndpointPlan, ReadStep, WriteStep, lower_api
-from lattice.api.sql import IS_ADMIN, USER_ID, SqlQuery, compile_lookup
+from lattice.api.runtime import auth_sql
+from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, sent_bind
 from lattice.catalog import USER_PARAM
 from lattice.check import CheckResult, check_source
-from lattice.check.api_info import MISSING, ParamSpec
-from lattice.profile import Profile
+from lattice.check.api_info import MISSING, UNSET, ParamSpec
+from lattice.profile import NativeSig, Profile
 from lattice.runtime import LatticeInternalError
 
 __all__ = ["compile_source_to_fastapi", "generate_fastapi"]
@@ -68,6 +78,7 @@ import json
 import math
 import re
 import sqlite3
+import uuid
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, NamedTuple
@@ -91,9 +102,19 @@ class _Missing:
 MISSING: Any = _Missing()  # a parameter without a default value
 
 
+class _Unset:
+    def __repr__(self) -> str:
+        return "UNSET"
+
+
+UNSET: Any = _Unset()  # an optional parameter that was not sent
+
+
 @dataclass(frozen=True)
 class Param:
-    """One endpoint parameter; `scalar` is Int | Float | Str | Bool | Date."""
+    """One endpoint parameter; `scalar` is Int | Float | Str | Bool | Date | DateTime |
+    Uuid. `optional`: its default is UNSET (not sent: the column it updates is kept);
+    `nullable`: an explicit JSON null for it is accepted (sets NULL)."""
 
     name: str
     source: str  # "path" | "query" | "body"
@@ -104,6 +125,8 @@ class Param:
     max_len: int | None = None
     one_of: tuple[str, ...] | None = None
     default: object = MISSING
+    optional: bool = False
+    nullable: bool = False
 
 
 @dataclass(frozen=True)
@@ -116,6 +139,9 @@ class Endpoint:
     user_columns: tuple[str, ...]
     user_key: str
     admin_role: str
+    role_column: str = "role"  # the caller's role column, unless admin_flag is set
+    admin_flag: str | None = None  # a Bool column: true -> admin_role, else flag_role
+    flag_role: str = ""
 
 
 class Caller(NamedTuple):
@@ -163,6 +189,136 @@ def _mod(a: object, b: object) -> object:
     return a % b  # type: ignore[operator]
 
 
+# Uuid values are stored as canonical lowercase hyphenated text; DateTime values as
+# fixed-width ISO-8601 UTC text with microseconds and a "Z" (text order is time order).
+_UUID_TEXT = re.compile(
+    r"[0-9a-fA-F]{8}(-?)[0-9a-fA-F]{4}\\1[0-9a-fA-F]{4}\\1[0-9a-fA-F]{4}\\1[0-9a-fA-F]{12}"
+)
+
+
+def uuid_text(text: object) -> str | None:
+    """The canonical text of a UUID written hyphenated or as 32 hex digits, or None."""
+    if isinstance(text, uuid.UUID):
+        return str(text)
+    if not isinstance(text, str) or not _UUID_TEXT.fullmatch(text):
+        return None
+    return str(uuid.UUID(text))
+
+
+def parse_datetime(text: object) -> dt.datetime | None:
+    """An ISO-8601 date-time (a naive one is UTC) as an aware UTC datetime, or None."""
+    if isinstance(text, dt.datetime):
+        value = text
+    elif isinstance(text, str):
+        try:
+            value = dt.datetime.fromisoformat(text)
+        except ValueError:
+            return None
+    else:
+        return None
+    if value.tzinfo is None:
+        return value.replace(tzinfo=dt.UTC)
+    return value.astimezone(dt.UTC)
+
+
+def datetime_text(value: dt.datetime) -> str:
+    if value.tzinfo is not None:
+        value = value.astimezone(dt.UTC)
+    return value.replace(tzinfo=None).isoformat(timespec="microseconds") + "Z"
+
+
+def _to_uuid(x: object) -> object:
+    return uuid_text(x)
+
+
+def _to_datetime(x: object, fmt: object) -> object:
+    if not isinstance(x, str) or not isinstance(fmt, str):
+        return None
+    try:
+        value = dt.datetime.strptime(x, fmt)
+    except ValueError:
+        return None
+    return datetime_text(value)
+
+
+def _uuid4() -> str:
+    return str(uuid.uuid4())
+
+
+# ---- natives: pure Python functions callable from the SQL ---------------------------------
+
+
+@dataclass(frozen=True)
+class Native:
+    params: tuple[str, ...]  # scalar names
+    result: str
+    nullable: bool  # the result may be null
+    fn: Callable[..., object]
+
+
+NATIVES: dict[str, Native] = {}  # filled below when the program calls natives
+
+
+def _native_arg(v: object, scalar: str) -> object:
+    """A stored value as the native receives it (Date/DateTime/Uuid as Python objects)."""
+    if scalar == "Bool":
+        return bool(v)
+    if scalar == "Int":
+        return int(v)  # type: ignore[call-overload]
+    if scalar == "Float":
+        return float(v)  # type: ignore[arg-type]
+    if scalar == "Date":
+        return dt.date.fromisoformat(str(v))
+    if scalar == "DateTime":
+        return parse_datetime(v)
+    if scalar == "Uuid":
+        return uuid.UUID(str(v))
+    return v
+
+
+def _native_result(name: str, v: object, scalar: str) -> object:
+    """A native's result as stored (a wrong type is an error)."""
+    bad = TypeError(f"native {name} returned {type(v).__name__}, not {scalar}")
+    if scalar == "Bool" and isinstance(v, bool):
+        return int(v)
+    if scalar == "Int" and isinstance(v, int) and not isinstance(v, bool):
+        return v
+    if scalar == "Float" and isinstance(v, int | float) and not isinstance(v, bool):
+        return float(v)
+    if scalar == "Str" and isinstance(v, str):
+        return v
+    if scalar == "Date" and isinstance(v, dt.date) and not isinstance(v, dt.datetime):
+        return v.isoformat()
+    if scalar == "DateTime" and isinstance(v, dt.datetime | str):
+        parsed = parse_datetime(v)
+        if parsed is None:
+            raise bad
+        return datetime_text(parsed)
+    if scalar == "Uuid" and isinstance(v, uuid.UUID | str):
+        text = uuid_text(v)
+        if text is None:
+            raise bad
+        return text
+    raise bad
+
+
+def _native_function(name: str, native: Native) -> Callable[..., object]:
+    """A null argument gives null; a null result only for a nullable native."""
+
+    def call(*args: object) -> object:
+        if any(a is None for a in args):
+            return None
+        converted = (_native_arg(a, s) for a, s in zip(args, native.params, strict=True))
+        out = native.fn(*converted)
+        if out is None:
+            if native.nullable:
+                return None
+            raise ValueError(f"native {name} returned null")
+        return _native_result(name, out, native.result)
+
+    return call
+
+
 def connect() -> sqlite3.Connection:
     """The kit's connection, in autocommit mode (transactions are explicit)."""
     conn = get_db()
@@ -172,6 +328,16 @@ def connect() -> sqlite3.Connection:
     conn.create_function("lattice_upper", 1, _upper, deterministic=True)
     conn.create_function("lattice_strip", 1, _strip, deterministic=True)
     conn.create_function("lattice_mod", 2, _mod, deterministic=True)
+    conn.create_function("lattice_to_uuid", 1, _to_uuid, deterministic=True)
+    conn.create_function("lattice_to_datetime", 2, _to_datetime, deterministic=True)
+    conn.create_function("lattice_uuid4", 0, _uuid4)  # not deterministic
+    for name, native in NATIVES.items():
+        conn.create_function(
+            f"native_{name}",
+            len(native.params),
+            _native_function(name, native),
+            deterministic=True,
+        )
     return conn
 
 
@@ -191,6 +357,8 @@ _TYPE_NAMES = {
     "Str": "a string",
     "Bool": "a boolean",
     "Date": "an ISO date (YYYY-MM-DD)",
+    "DateTime": "an ISO date-time",
+    "Uuid": "a UUID",
 }
 
 
@@ -242,6 +410,16 @@ def _convert(spec: Param, raw: object, *, text: bool) -> object:
         if not text and isinstance(raw, bool):
             return raw
         raise bad
+    if spec.scalar == "DateTime":  # a naive date-time is UTC
+        value_dt = parse_datetime(raw) if isinstance(raw, str) else None
+        if value_dt is None:
+            raise bad
+        return value_dt
+    if spec.scalar == "Uuid":  # hyphenated or 32 hex digits, any case
+        text_uuid = uuid_text(raw) if isinstance(raw, str) else None
+        if text_uuid is None:
+            raise bad
+        return text_uuid
     if isinstance(raw, str):  # Date
         try:
             return dt.date.fromisoformat(raw)
@@ -294,6 +472,13 @@ def parse_params(
     for spec in params:
         source: Mapping[str, object] = {"path": path, "query": query, "body": data}[spec.source]
         loc = [spec.source, spec.name]
+        if spec.optional and spec.name in source and source[spec.name] is None:
+            # an explicit null: sets NULL, where every column it is written to allows it
+            if spec.nullable:
+                values[spec.name] = None
+            else:
+                detail.append({"loc": loc, "msg": "must not be null"})
+            continue
         if spec.name not in source or source[spec.name] is None:
             if spec.default is not MISSING:
                 values[spec.name] = spec.default
@@ -332,7 +517,10 @@ def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
     if row is None:
         raise ErrorResponse(401, {"error": "unauthorized"})
     user_id = row[ep.user_columns.index(ep.user_key)]
-    role = str(row[ep.user_columns.index("role")])
+    if ep.admin_flag is not None:
+        role = ep.admin_role if row[ep.user_columns.index(ep.admin_flag)] else ep.flag_role
+    else:
+        role = str(row[ep.user_columns.index(ep.role_column)])
     if not (ep.auth == "Public" or role == ep.auth or role == ep.admin_role):
         raise ErrorResponse(403, {"error": "forbidden"})
     return Caller(user_id, int(role == ep.admin_role), tuple(row))
@@ -342,12 +530,24 @@ def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
 
 
 def sql_value(v: object) -> object:
-    """A parameter value as SQLite stores it (Bool 0/1, Date ISO text)."""
+    """A parameter value as SQLite stores it (Bool 0/1, Date ISO text, DateTime UTC text
+    with "Z", Uuid canonical text; an optional parameter that was not sent is null)."""
+    if v is UNSET:
+        return None
     if isinstance(v, bool):
         return int(v)
+    if isinstance(v, dt.datetime):
+        return datetime_text(v)
     if isinstance(v, dt.date):
         return v.isoformat()
+    if isinstance(v, uuid.UUID):
+        return str(v)
     return v
+
+
+def sent(values: Mapping[str, object], name: str) -> int:
+    """1 when the optional parameter `name` was sent (its update() value applies)."""
+    return int(values[name] is not UNSET)
 
 
 def rows_json(result: Result, columns: Sequence[str]) -> str:
@@ -359,6 +559,13 @@ def rows_json(result: Result, columns: Sequence[str]) -> str:
 
 def run(conn: sqlite3.Connection, sql: str, binds: Mapping[str, object]) -> list[tuple[Any, ...]]:
     return conn.execute(sql, binds).fetchall()
+
+
+def split_total(rows: list[tuple[Any, ...]]) -> tuple[list[tuple[Any, ...]], int]:
+    """A page(total=True) read: (the page's rows, the total). Each row ends with
+    (__in_page, __total); an empty page is one placeholder row with __in_page 0."""
+    total = int(rows[0][-1]) if rows else 0
+    return [r[:-2] for r in rows if r[-2]], total
 
 
 def project(result: Result, columns: Sequence[str]) -> list[tuple[Any, ...]]:
@@ -419,6 +626,11 @@ def _decode(v: object, scalar: str) -> object:
         return float(v)  # type: ignore[arg-type]
     if scalar == "Bool":
         return bool(v)
+    if scalar == "Uuid":  # canonical text
+        return uuid_text(v) or v
+    if scalar == "DateTime":  # canonical text
+        parsed = parse_datetime(v)
+        return v if parsed is None else datetime_text(parsed)
     return v  # Str; Date stays ISO text
 
 
@@ -452,16 +664,25 @@ def respond_one(
 
 
 def respond_page(
-    result: Result, columns: Sequence[tuple[str, str]], limit: object, offset: object
+    result: Result,
+    columns: Sequence[tuple[str, str]],
+    shape: Sequence[tuple[str, str]],
+    limit: object,
+    offset: object,
+    total: int | None = None,
 ) -> Response:
-    return JSONResponse({"items": _items(result, columns), "limit": limit, "offset": offset})
+    """The Page envelope in the profile's shape ((key, JSON field); "" = omitted)."""
+    parts: dict[str, object] = {"items": _items(result, columns), "limit": limit, "offset": offset}
+    if total is not None:
+        parts["total"] = total
+    return JSONResponse({name: parts[key] for key, name in shape if name and key in parts})
 
 
 def _internal(detail: str) -> JSONResponse:
     return JSONResponse({"error": "internal", "detail": detail[:500]}, status_code=500)
 
 
-Steps = Callable[[sqlite3.Connection, dict[str, object], Caller | None], Response]
+Steps = Callable[[sqlite3.Connection, dict[str, object], Caller | None, dt.datetime], Response]
 
 
 def serve(
@@ -473,7 +694,8 @@ def serve(
     authorization: str | None,
 ) -> Response:
     """Authenticate, validate, then run the steps in one transaction; any error
-    response rolls back."""
+    response rolls back. fn.now() is one instant per request, taken first."""
+    now = dt.datetime.now(dt.UTC)
     conn: sqlite3.Connection | None = None
     in_txn = False
     try:
@@ -489,7 +711,7 @@ def serve(
             conn = connect()
         conn.execute("BEGIN IMMEDIATE" if ep.writes else "BEGIN")
         in_txn = True
-        response = steps(conn, values, caller)
+        response = steps(conn, values, caller, now)
         conn.execute("COMMIT")
         in_txn = False
         return response
@@ -648,6 +870,10 @@ def _literal(v: object) -> str:
         return repr(v)
     if isinstance(v, float):
         return repr(v) if math.isfinite(v) else f'float("{v}")'
+    if isinstance(v, dt.datetime):
+        v = v.astimezone(dt.UTC)
+        parts = [v.year, v.month, v.day, v.hour, v.minute, v.second, v.microsecond]
+        return f"dt.datetime({', '.join(map(str, parts))}, tzinfo=dt.UTC)"
     if isinstance(v, dt.date):
         return f"dt.date({v.year}, {v.month}, {v.day})"
     if isinstance(v, tuple):
@@ -689,7 +915,7 @@ class _Names:
 # ---- per-endpoint generation ---------------------------------------------------------------
 
 
-def _param(spec: ParamSpec) -> _Call:
+def _param(spec: ParamSpec, null_ok: Sequence[str] = ()) -> _Call:
     if spec.scalar is None:
         raise LatticeInternalError(f"parameter '{spec.name}' has no scalar type")
     args: list[_Node] = [_py_str(spec.name), _py_str(spec.source), _py_str(spec.scalar.value)]
@@ -697,14 +923,20 @@ def _param(spec: ParamSpec) -> _Call:
         value = getattr(spec, name)
         if value is not None:
             args.append(_Kw(name, _literal(value)))
-    if spec.default is not MISSING:
+    if spec.default is UNSET:
+        args.append(_Kw("default", "UNSET"))
+    elif spec.default is not MISSING:
         args.append(_Kw("default", _literal(spec.default)))
+    if spec.optional:
+        args.append(_Kw("optional", "True"))
+        if spec.name in null_ok:
+            args.append(_Kw("nullable", "True"))
     return _Call("Param", tuple(args))
 
 
 def _auth_sql(plan: EndpointPlan) -> str:
     """The runtime's authentication statement (the same compile_lookup)."""
-    return compile_lookup(plan.users_table, plan.user_columns, "token", dialect=SQLITE)
+    return auth_sql(plan, SQLITE)
 
 
 class _EndpointGen:
@@ -743,12 +975,15 @@ class _EndpointGen:
         items += [
             (_py_str(f"p_{p}"), _Call("sql_value", (f"values[{_py_str(p)}]",))) for p in sql.params
         ]
+        items += [(_py_str(sent_bind(p)), _Call("sent", ("values", _py_str(p)))) for p in sql.sent]
         items += [
             (_py_str(bind), _Call("rows_json", (f"results[{_py_str(step)}]", _strs(cols))))
             for bind, step, cols in sql.rows
         ]
         if sql.user:
             items += [(_py_str(USER_ID), "user_id"), (_py_str(IS_ADMIN), "is_admin")]
+        if sql.now:
+            items += [(_py_str(NOW), _Call("sql_value", ("now",)))]
         return _Dict(tuple(items))
 
     def run(self, step_id: str, sql: SqlQuery) -> _Call:
@@ -766,6 +1001,17 @@ class _EndpointGen:
 
     def step(self, step: ReadStep | CheckStep | WriteStep) -> None:
         match step:
+            case ReadStep() if step.sql.total:
+                self.body.append(f"    # SELECT the rows of {step.id!r} and the page total (one")
+                self.body.append("    # statement)")
+                cols = self.constant(
+                    f"{_ident(step.id).upper()}_COLUMNS", _strs(step.schema.names() + step.flags)
+                )
+                self.emit(
+                    _Call("split_total", (self.run(step.id, step.sql),)),
+                    f"rows, totals[{_py_str(step.id)}] = ",
+                )
+                self.emit(_Tuple((cols, "rows")), f"{self.result(step.id)} = ")
             case ReadStep():
                 self.body.append(f"    # SELECT the rows of {step.id!r} (one statement)")
                 cols = self.constant(
@@ -825,7 +1071,19 @@ class _EndpointGen:
             def arg(v: int | str) -> str:
                 return f"values[{_py_str(v)}]" if isinstance(v, str) else repr(v)
 
-            args: tuple[_Node, ...] = (result, columns, arg(plan.page.limit), arg(plan.page.offset))
+            shape = self.constant(
+                "PAGE_SHAPE",
+                _Tuple(tuple(_Tuple((_py_str(k), _py_str(v))) for k, v in plan.page_shape)),
+            )
+            args: tuple[_Node, ...] = (
+                result,
+                columns,
+                shape,
+                arg(plan.page.limit),
+                arg(plan.page.offset),
+            )
+            if plan.page.total_step is not None:
+                args += (f"totals[{_py_str(plan.page.total_step)}]",)
             self.emit(_Call("respond_page", args), "return ")
             return
         status = "201" if plan.success == "Created" else "200"
@@ -835,12 +1093,25 @@ class _EndpointGen:
 
     # ---- the whole endpoint ---------------------------------------------------------------
 
+    def role_source(self) -> list[_Node]:
+        """Endpoint(...) keywords for a role source other than the "role" column."""
+        plan = self.plan
+        out: list[_Node] = []
+        if plan.role_column != "role":
+            out.append(_Kw("role_column", _py_str(plan.role_column)))
+        if plan.admin_flag is not None:
+            out.append(_Kw("admin_flag", _py_str(plan.admin_flag)))
+            out.append(_Kw("flag_role", _py_str(plan.flag_role)))
+        return out
+
     def render(self) -> str:
         plan = self.plan
         ep_name = self.names.take(f"{self.base}_ENDPOINT")
         steps_name = self.names.take(f"_{_ident(plan.name)}_steps")
         route_name = self.names.take(_ident(plan.name))
         self.body.append("    results: dict[str, Result] = {}")
+        if any(isinstance(s, ReadStep) and s.sql.total for s in plan.steps):
+            self.body.append("    totals: dict[str, int] = {}")
         if any(isinstance(s, ReadStep | WriteStep) and s.sql.user for s in plan.steps):
             self.body += [
                 "    user_id, is_admin = (None, 0) if caller is None else (caller.id, "
@@ -861,12 +1132,18 @@ class _EndpointGen:
             (
                 _Kw("name", _py_str(plan.name)),
                 _Kw("auth", _py_str(plan.auth)),
-                _Kw("params", _Tuple(tuple(_param(p) for p in plan.params if p.source != "user"))),
+                _Kw(
+                    "params",
+                    _Tuple(
+                        tuple(_param(p, plan.null_ok) for p in plan.params if p.source != "user")
+                    ),
+                ),
                 _Kw("writes", repr(any(isinstance(s, WriteStep) for s in plan.steps))),
                 _Kw("auth_sql", _py_str(_auth_sql(plan))),
                 _Kw("user_columns", _strs(plan.user_columns)),
                 _Kw("user_key", _py_str(plan.user_key)),
                 _Kw("admin_role", _py_str(plan.admin_role)),
+                *self.role_source(),
             ),
         )
         rule = "# " + "-" * 86
@@ -885,7 +1162,10 @@ class _EndpointGen:
             "",
             "",
             f"def {steps_name}(",
-            "    conn: sqlite3.Connection, values: dict[str, object], caller: Caller | None",
+            "    conn: sqlite3.Connection,",
+            "    values: dict[str, object],",
+            "    caller: Caller | None,",
+            "    now: dt.datetime,",
             ") -> Response:",
             f'    """{doc}"""',
             *self.body,
@@ -921,10 +1201,49 @@ connection and accepts only "Bearer ".
 '''
 
 
-def generate_fastapi(plans: Sequence[EndpointPlan], source: str | None = None) -> str:
+def _natives_section(plans: Sequence[EndpointPlan], module: str, names: _Names) -> tuple[str, str]:
+    """(the import of the natives the plans call from `module`, their registration)."""
+    natives: dict[str, NativeSig] = {}
+    for plan in plans:
+        natives.update(plan.natives)
+    if not natives:
+        return "", ""
+    aliases = {name: names.take(f"native_{name}") for name in sorted(natives)}
+    imported = [f"{name} as {alias}" for name, alias in aliases.items()]
+    line = f"from {module} import {', '.join(imported)}"
+    if len(line) > _WIDTH:
+        line = "\n".join([f"from {module} import (", *(f"    {i}," for i in imported), ")"])
+    entries = tuple(
+        (
+            _py_str(name),
+            _Call(
+                "Native",
+                (
+                    _strs([s.value for s in sig.params]),
+                    _py_str(sig.result.value),
+                    repr(sig.nullable),
+                    aliases[name],
+                ),
+            ),
+        )
+        for name, sig in sorted(natives.items())
+    )
+    register = "\n".join(_render(_Call("NATIVES.update", (_Dict(entries),)), ""))
+    rule = "# " + "-" * 86
+    header = f"{rule}\n# Natives (pure Python functions registered on every connection)\n{rule}"
+    return line + "\n", header + "\n\n" + register
+
+
+def generate_fastapi(
+    plans: Sequence[EndpointPlan], source: str | None = None, natives_module: str = "natives"
+) -> str:
     """The source of a standalone FastAPI `app.py` serving `plans` exactly as the
     Phase A runtime does. With the Lattice `source`, each check and write is annotated
-    with the source line it was lowered from."""
+    with the source line it was lowered from. When the plans call natives, the app
+    imports them by name from the module `natives_module` (placed next to the app) and
+    registers them on every connection."""
+    if not natives_module.replace(".", "_").isidentifier():
+        raise LatticeInternalError(f"natives_module {natives_module!r} is not a module name")
     for plan in plans:
         if plan.method not in _METHODS:
             raise LatticeInternalError(f"unsupported method {plan.method!r}")
@@ -939,14 +1258,21 @@ def generate_fastapi(plans: Sequence[EndpointPlan], source: str | None = None) -
     ordered = sorted(plans, key=_specificity)
     routes = [f"#   line {p.span.line:>4}: {p.method:<6} {p.path} -> {p.name}" for p in ordered]
     header = _HEADER + "# Routes in registration order (Lattice source line of each endpoint):\n"
-    parts = [header + "\n".join(routes) + "\n\n" + _PRELUDE.rstrip("\n")]
+    imports, register = _natives_section(ordered, natives_module, names)
+    kit = "from platform_kit import app, get_db\n"
+    prelude = _PRELUDE.replace(kit, kit + imports, 1)
+    parts = [header + "\n".join(routes) + "\n\n" + prelude.rstrip("\n")]
+    if register:
+        parts.append(register)
     parts += [_EndpointGen(plan, names, lines).render() for plan in ordered]
     return "\n\n\n".join(parts) + "\n"
 
 
-def compile_source_to_fastapi(source: str, profile: Profile) -> tuple[CheckResult, str | None]:
+def compile_source_to_fastapi(
+    source: str, profile: Profile, natives_module: str = "natives"
+) -> tuple[CheckResult, str | None]:
     """Check -> lower -> generate. (check result, None) when the program is rejected."""
     result = check_source(source, profile)
     if result.program is None:
         return result, None
-    return result, generate_fastapi(lower_api(result.program), source)
+    return result, generate_fastapi(lower_api(result.program), source, natives_module)

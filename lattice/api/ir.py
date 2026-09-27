@@ -20,11 +20,12 @@ from __future__ import annotations
 import ast
 import copy
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 from lattice.api.backend import dialect_for
 from lattice.api.sql import (
+    OwnerIs,
     ParamRef,
     Rel,
     SqlExpr,
@@ -35,14 +36,15 @@ from lattice.api.sql import (
     compile_update,
     expr_sql,
 )
-from lattice.catalog import API_ERRORS, OP_SHAPES, USER_PARAM
+from lattice.catalog import API_ERRORS, NATIVE_NS, OP_SHAPES, PUBLIC_ROLE, USER_PARAM
 from lattice.check import CheckedProgram
-from lattice.check.api_info import EndpointInfo, ParamSpec
+from lattice.check.api_info import EndpointInfo, ParamSpec, user_table
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
+from lattice.check.p4_types import is_owner_is
 from lattice.diagnostics import Span, span_of
-from lattice.profile import ApiProfile
+from lattice.profile import AdminFlag, ApiProfile, NativeSig, NativeToken, RoleColumn, TokenColumn
 from lattice.runtime import LatticeInternalError
-from lattice.typesys import Scalar, ScalarParamT, Schema, TableT, via_parent_key
+from lattice.typesys import Scalar, ScalarParamT, Schema, TableT, uuid_key, via_parent_key
 
 __all__ = [
     "ApiStep",
@@ -118,10 +120,14 @@ ApiStep = ReadStep | CheckStep | WriteStep
 
 @dataclass(frozen=True)
 class PageArgs:
-    """page(limit=, offset=): each an int literal or an endpoint parameter name."""
+    """page(limit=, offset=): each an int literal or an endpoint parameter name.
+    `total`: page(..., total=True); the row count is computed by step `total_step`'s
+    statement (`SqlQuery.total`)."""
 
     limit: int | str
     offset: int | str = 0
+    total: bool = False
+    total_step: str | None = None
 
 
 @dataclass(frozen=True)
@@ -144,6 +150,30 @@ class EndpointPlan:
     # the caller's row as the auth lookup reads it: the result of step "user"
     user_columns: tuple[str, ...] = ("id", "role")
     backend: str = "sqlite"  # the dialect the SQL was compiled for (ApiProfile.backend)
+    # The Page envelope: (page_shape key, JSON field) in the profile's order; a key
+    # mapped to "" is omitted.
+    page_shape: tuple[tuple[str, str], ...] = (
+        ("items", "items"),
+        ("limit", "limit"),
+        ("offset", "offset"),
+    )
+    # @endpoint(..., response="M"): the model's name (plan.schema is then exactly its
+    # fields, in its order).
+    response: str | None = None
+    # Authentication: the users-table column the bearer token is looked up in, or the
+    # native decoding the token to the users-table key (ApiProfile.auth).
+    token_column: str = "token"
+    auth_native: str | None = None
+    # The caller's role: the Str column `role_column`, or -- with `admin_flag` (a Bool
+    # column) -- admin_role when it is true, else `flag_role` (ApiProfile.roles_from).
+    role_column: str = "role"
+    admin_flag: str | None = None
+    flag_role: str = ""
+    # The natives the plan's SQL (and its auth statement) calls, with their signatures.
+    natives: tuple[tuple[str, NativeSig], ...] = ()
+    # Optional (UNSET) parameters an explicit JSON null may set (every column they are
+    # written to is nullable); a null for any other optional parameter is a 422.
+    null_ok: tuple[str, ...] = ()
 
 
 # ---- helpers ---------------------------------------------------------------------------
@@ -276,10 +306,14 @@ class _Endpoint:
         self.subst: dict[str, ast.expr] = dict(consts)
         self.env: dict[str, _Val] = {}
         self.page_of: dict[str, PageArgs] = {}  # rel id -> the page() it is (a view of)
+        self.page_rel: dict[str, str] = {}  # rel id -> the page() rel it is (a view of)
+        self.val_types: dict[_Val, TableT] = {}  # the checker's type of each bound value
+        # optional parameter -> whether every column it is written to is nullable
+        self.null_uses: dict[str, bool] = {p.name: True for p in info.params if p.optional}
         for spec in info.params:
             self.subst.pop(spec.name, None)
             if spec.scalar is not None:
-                self.subst[spec.name] = ParamRef(spec.name)
+                self.subst[spec.name] = ParamRef(spec.name, spec.optional)
         users = api.tables.get(api.users_table)
         if users is not None and any(p.source == "user" for p in info.params):
             key = users.keys[0][0] if users.keys else "id"
@@ -291,6 +325,9 @@ class _Endpoint:
                 users,
             )
             self.env[USER_PARAM] = _RelVal(USER_PARAM)
+            caller = user_table(api)
+            if caller is not None:
+                self.val_types[_RelVal(USER_PARAM)] = caller
 
     # ---- phase 1 ---------------------------------------------------------------------
 
@@ -338,12 +375,53 @@ class _Endpoint:
                 case ast.Assign(targets=[ast.Name(id=name)], value=ast.Call() as call):
                     self.subst.pop(name, None)
                     self.env[name] = self._unit(call, name, self.env, self.subst, "")
+                    self._note_type(self.env[name], call)
                 case ast.Return(value=ast.Name(id=name)) if name in self.env:
                     self.events.append(_Return(self.env[name], span_of(stmt)))
                 case _:
                     raise LatticeInternalError(
                         f"unexpected statement in endpoint '{fn.name}' at {span_of(stmt)}"
                     )
+
+    def _note_type(self, val: _Val, node: ast.expr) -> None:
+        t = self.program.types.get(id(node))
+        if isinstance(t, TableT):
+            self.val_types.setdefault(val, t)
+
+    def _owner_is(self, val: _Val, node: ast.expr) -> OwnerIs:
+        """owner_is(user) over the rows `val` (whose type has the owner metadata)."""
+        t = self.val_types.get(val)
+        if t is None:
+            t = self.program.types.get(id(node))  # type: ignore[assignment]
+        if not isinstance(t, TableT):
+            raise LatticeInternalError(f"no table type for owner_is() at {span_of(node)}")
+        owner, via = self._owner(t)
+        return OwnerIs(owner, via)
+
+    def _owner(self, t: TableT) -> tuple[str | None, tuple[str, str, str, str] | None]:
+        """(owner column, None) or (None, (fk, parent table, parent key, parent owner))."""
+        if t.owner is not None:
+            return t.owner, None
+        if t.owner_via is None:
+            raise LatticeInternalError("an ownership check over rows without an owner column")
+        fk, parent_name = t.owner_via
+        parent = self.api.tables[parent_name]
+        if parent.owner is None or not parent.keys:
+            raise LatticeInternalError(f"owner_via parent {parent_name} has no owner")
+        return None, (
+            fk,
+            self.api.table_names[parent_name],
+            via_parent_key(parent),
+            parent.owner,
+        )
+
+    def _note_nulls(self, schema: Schema, values: tuple[tuple[str, ast.expr], ...]) -> None:
+        """Record, per optional parameter, whether the columns it is written to accept
+        null (an explicit JSON null for it)."""
+        for column, value in values:
+            if isinstance(value, ParamRef) and value.optional:
+                ok = column in schema.nullable
+                self.null_uses[value.name] = self.null_uses.get(value.name, True) and ok
 
     def _unit(
         self,
@@ -368,6 +446,8 @@ class _Endpoint:
             case "one" | "require":
                 val = table_arg(call.args[0])
                 cond = self._expr(call.args[1], subst) if op == "require" else None
+                if op == "require" and is_owner_is(call.args[1]):
+                    cond = self._owner_is(val, call.args[0])
                 self.events.append(
                     _Check(rid, op, val, _error(kws["else_"]), cond, span_of(call))  # type: ignore[arg-type]
                 )
@@ -378,6 +458,7 @@ class _Endpoint:
                     raise LatticeInternalError("insert() table is not a name")
                 schema = self.api.tables[table.id]
                 values = tuple((k, self._expr(v, subst)) for k, v in kws.items() if k != "owner")
+                self._note_nulls(schema, values)
                 self.step_schemas[rid] = self._schema(call)
                 self.events.append(
                     _Write(
@@ -391,6 +472,7 @@ class _Endpoint:
                 if t.source is None:
                     raise LatticeInternalError(f"{op}() rows have no source table")
                 values = tuple((k, self._expr(v, subst)) for k, v in kws.items())
+                self._note_nulls(self.api.tables[t.source], values)
                 self.step_schemas[rid] = self._schema_of(val)
                 self.events.append(
                     _Write(
@@ -413,11 +495,17 @@ class _Endpoint:
                 self.rels[rid] = Rel(rid, op, inputs, params, self._schema(call))
                 if op == "page":
                     self.page_of[rid] = PageArgs(
-                        _page_arg(params["limit"]), _page_arg(params.get("offset", 0))
+                        _page_arg(params["limit"]),
+                        _page_arg(params.get("offset", 0)),
+                        bool(params.get("total", False)),
                     )
+                    self.page_rel[rid] = rid
                 elif op in ("derive", "select", "rename") and inputs[0] in self.page_of:
                     self.page_of[rid] = self.page_of[inputs[0]]
-                return _RelVal(rid)
+                    self.page_rel[rid] = self.page_rel[inputs[0]]
+                val = _RelVal(rid)
+                self._note_type(val, call)
+                return val
 
     def _params(
         self, op: str, call: ast.Call, kws: Mapping[str, ast.expr], subst: Mapping[str, ast.expr]
@@ -431,27 +519,14 @@ class _Endpoint:
                 order = schema.keys[0] if schema.keys else ()
                 return {"table": self.api.table_names[name.id], "order": order}
             case "owned":
-                t = self._type(call)
-                if t.owner is not None:
-                    return {"owner": t.owner}
-                if t.owner_via is None:
-                    raise LatticeInternalError("owned() input has no owner column")
-                fk, parent_name = t.owner_via
-                parent = self.api.tables[parent_name]
-                if parent.owner is None or not parent.keys:
-                    raise LatticeInternalError(f"owner_via parent {parent_name} has no owner")
-                return {
-                    "via": (
-                        fk,
-                        self.api.table_names[parent_name],
-                        via_parent_key(parent),
-                        parent.owner,
-                    )
-                }
+                owner, via = self._owner(self._type(call))
+                return {"owner": owner} if via is None else {"via": via}
             case "page":
                 out: dict[str, Any] = {"limit": self._page_value(kws["limit"], subst)}
                 if "offset" in kws:
                     out["offset"] = self._page_value(kws["offset"], subst)
+                if "total" in kws and literal_value(kws["total"]) is True:
+                    out["total"] = True
                 return out
             case "where":
                 return {"predicate": self._expr(call.args[1], subst)}
@@ -567,12 +642,14 @@ class _Endpoint:
                 case ast.Assign(targets=[ast.Name(id=local)], value=ast.Call() as body_call):
                     inner_subst.pop(local, None)
                     inner_env[local] = self._unit(body_call, local, inner_env, inner_subst, prefix)
+                    self._note_type(inner_env[local], body_call)
                 case ast.Return(value=ast.Name(id=local)) if local in inner_env:
                     result = inner_env[local]
                 case _:
                     raise LatticeInternalError(f"unexpected statement in step '{name}'")
         if result is None:
             raise LatticeInternalError(f"step '{name}' has no return")
+        self._note_type(result, call)
         return result
 
     # ---- phase 2 ---------------------------------------------------------------------
@@ -585,6 +662,7 @@ class _Endpoint:
         steps: list[ApiStep] = []
         materialized: dict[str, tuple[str, tuple[str, ...]]] = {}
         step_flags: dict[str, set[str]] = {}  # ReadStep id -> require flags it computes
+        total_step: dict[str, str] = {}  # page(total=True) rel id -> the step counting it
         if USER_PARAM in self.rels:  # the auth lookup reads the caller's whole row
             materialized[USER_PARAM] = (USER_PARAM, self.rels[USER_PARAM].schema.names())
 
@@ -614,8 +692,20 @@ class _Endpoint:
             if view is not None:
                 materialized[rid] = (view, rel.schema.names())
                 return view
+            # a page(total=True) (or a view of one) counts its input in the same
+            # statement, the first time it is read
+            page = self.page_rel.get(rid)
+            total_of: str | None = None
+            if page is not None and self.page_of[page].total and page not in total_step:
+                total_of = self.rels[page].inputs[0]
+                total_step[page] = rid
             sql = compile_select(
-                self.rels, rid, materialized=materialized, extra=extra, dialect=self.dialect
+                self.rels,
+                rid,
+                materialized=materialized,
+                extra=extra,
+                total_of=total_of,
+                dialect=self.dialect,
             )
             steps.append(ReadStep(rid, sql, span, rel.schema, tuple(n for n, _ in extra)))
             step_flags[rid] = {n for n, _ in extra}
@@ -659,9 +749,28 @@ class _Endpoint:
                     response = self._schema_of(ev.value)
                     if isinstance(ev.value, _RelVal):
                         page = self.page_of.get(ev.value.rel)
+                        if page is not None and page.total:
+                            counted = total_step.get(self.page_rel[ev.value.rel])
+                            if counted is None:
+                                raise LatticeInternalError("page(total=True) was never read")
+                            page = replace(page, total_step=counted)
         if returns is None:
             raise LatticeInternalError(f"endpoint '{self.info.name}' has no return")
+        if self.info.response is not None:
+            response = _reorder(response, self.api.responses[self.info.response])
         users = self.api.tables.get(self.api.users_table)
+        token_column, auth_native = "token", None
+        match self.api.auth:
+            case TokenColumn(column=column):
+                token_column = column
+            case NativeToken(native=native):
+                auth_native = native
+        role_column, admin_flag, flag_role = "role", None, ""
+        match self.api.roles_from:
+            case RoleColumn(column=column):
+                role_column = column
+            case AdminFlag(column=column, role=role):
+                admin_flag, flag_role = column, role
         return EndpointPlan(
             self.info.name,
             self.info.method,
@@ -680,7 +789,34 @@ class _Endpoint:
             users.keys[0][0] if users is not None and users.keys else "id",
             users.names() if users is not None else ("id", "role"),
             self.dialect.name,
+            tuple(self.api.page_shape.items()),
+            self.info.response,
+            token_column,
+            auth_native,
+            role_column,
+            admin_flag,
+            flag_role,
+            self._natives(auth_native),
+            tuple(name for name, ok in self.null_uses.items() if ok),
         )
+
+    def _natives(self, auth_native: str | None) -> tuple[tuple[str, NativeSig], ...]:
+        """The natives this endpoint calls (its body, the steps it may inline, and the
+        authentication statement), in name order."""
+        names: set[str] = set()
+        roots: list[ast.AST] = [self.info.node, *self.step_defs.values()]
+        for root in roots:
+            for n in ast.walk(root):
+                match n:
+                    case ast.Call(func=ast.Attribute(value=ast.Name(id=ns), attr=name)) if (
+                        ns == NATIVE_NS and name in self.api.natives
+                    ):
+                        names.add(name)
+                    case _:
+                        pass
+        if auth_native is not None and self.info.auth != PUBLIC_ROLE:
+            names.add(auth_native)
+        return tuple((n, self.api.natives[n]) for n in sorted(names))
 
     def _write(
         self,
@@ -692,8 +828,15 @@ class _Endpoint:
         values = tuple((c, _sql_text(e)) for c, e in ev.values)
         if ev.kind == "insert":
             owner = ev.schema.owner if ev.owner else None
+            key = uuid_key(ev.schema)
+            given = {c for c, _ in ev.values} | ({owner} if owner is not None else set())
             sql = compile_insert(
-                table, ev.values, ev.schema.names(), owner=owner, dialect=self.dialect
+                table,
+                ev.values,
+                ev.schema.names(),
+                owner=owner,
+                generate=key if key is not None and key not in given else None,
+                dialect=self.dialect,
             )
             schema = self.step_schemas[ev.id]
             return WriteStep(ev.id, "insert", table, None, values, ev.span, sql, schema)
@@ -710,6 +853,16 @@ class _Endpoint:
         else:
             sql = compile_delete(table, key, src, dialect=self.dialect)
         return WriteStep(ev.id, ev.kind, table, source, values, ev.span, sql, schema, key)
+
+
+def _reorder(schema: Schema, fields: tuple[str, ...]) -> Schema:
+    """The response columns as a response model's fields, in the model's order (the
+    checker's L834 guarantees they are the same set)."""
+    types = dict(schema.columns)
+    missing = [f for f in fields if f not in types]
+    if missing or len(fields) != len(types):
+        raise LatticeInternalError(f"response columns {sorted(types)} are not {list(fields)}")
+    return Schema(tuple((f, types[f]) for f in fields))
 
 
 def _flag(check_id: str) -> str:

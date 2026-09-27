@@ -119,6 +119,12 @@ class MarkerDialect(SqliteDialect):
     def update_from(self, table: str, sets: str, source: str, match: str, ret: str) -> str:
         return f"UPD {table} SET {sets} USING ({source}) s ON {match} RET {ret}"
 
+    def new_uuid(self) -> str:
+        return "NEW_UUID()"
+
+    def native(self, name: str, args: Sequence[str]) -> str:
+        return f"NATIVE_{name}({', '.join(args)})"
+
 
 _NONE = Capabilities(
     transactions=False,
@@ -605,3 +611,50 @@ def test_backend_module_exports() -> None:
 def test_param_refs_bind_through_the_dialect() -> None:
     text = expr_sql(ast.Compare(ParamRef("x"), [ast.Eq()], [_e('col("id")')]), BRACKET)
     assert text == "(@p_x = [id])"
+
+
+def test_real_app_features_compile_through_the_dialect(registered: None) -> None:
+    """Uuid key generation, fn.now()/to_uuid/date/to_datetime, natives, page totals,
+    UNSET updates, owner_is() and NativeToken auth leave no SQLite text either."""
+    from lattice.api.runtime import auth_sql
+    from tests.api import realapps
+
+    profile = with_backend(realapps.PROFILE, "marker")
+    check = check_source(realapps.PROGRAM, profile)
+    assert check.program is not None, [d.render() for d in check.diagnostics]
+    seen: set[str] = set()
+    for plan in lower_api(check.program):
+        if plan.auth != "Public":
+            text = auth_sql(plan, MARKER)
+            _assert_no_sqlite_text(text, f"{plan.name}/auth")
+            assert "NATIVE_decode_token(%s)" in text
+        for step in plan.steps:
+            sql = getattr(step, "sql", None)
+            if sql is not None and sql.text:
+                _assert_no_sqlite_text(sql.text, f"{plan.name}/{step.id}")
+                seen |= {
+                    k
+                    for k in (
+                        "NEW_UUID()",
+                        "NATIVE_",
+                        "FN_to_uuid",
+                        "FN_date(",
+                        "FN_to_datetime",
+                        "%(__now)s",
+                        "CASE WHEN FLAG(",
+                        "LEFT JOIN",
+                        "ON TRUE",
+                    )
+                    if k in sql.text
+                }
+    assert seen == {
+        "NEW_UUID()",
+        "NATIVE_",
+        "FN_to_uuid",
+        "FN_date(",
+        "FN_to_datetime",
+        "%(__now)s",
+        "CASE WHEN FLAG(",
+        "LEFT JOIN",
+        "ON TRUE",
+    }

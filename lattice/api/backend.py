@@ -20,12 +20,15 @@ names to dialects and `dialect_for(name)` resolves one.
 from __future__ import annotations
 
 import datetime as dt
+import re
 import sqlite3
+import uuid
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
+from lattice.profile import NativeSig
 from lattice.typesys import Scalar
 
 if TYPE_CHECKING:
@@ -37,12 +40,59 @@ __all__ = [
     "Capabilities",
     "Connection",
     "Dialect",
+    "NativeImpl",
     "SqliteDialect",
+    "datetime_text",
     "dialect_for",
+    "parse_datetime",
+    "uuid_text",
 ]
 
 Connection = Any  # a DB-API 2.0 connection
 ConnectHook = Callable[[Any], None]
+# A native function's signature and its Python implementation (see `ApiProfile.natives`).
+NativeImpl = tuple[NativeSig, Callable[..., object]]
+
+
+# ---- Uuid and DateTime values ----------------------------------------------------------
+
+_UUID_TEXT = re.compile(
+    r"[0-9a-fA-F]{8}(-?)[0-9a-fA-F]{4}\1[0-9a-fA-F]{4}\1[0-9a-fA-F]{4}\1[0-9a-fA-F]{12}"
+)
+
+
+def uuid_text(text: object) -> str | None:
+    """The canonical (lowercase, hyphenated) text of a UUID written hyphenated or as 32
+    hex digits, or None."""
+    if isinstance(text, uuid.UUID):
+        return str(text)
+    if not isinstance(text, str) or not _UUID_TEXT.fullmatch(text):
+        return None
+    return str(uuid.UUID(text))
+
+
+def parse_datetime(text: object) -> dt.datetime | None:
+    """An ISO-8601 date-time (a naive one is UTC) as an aware UTC datetime, or None."""
+    if isinstance(text, dt.datetime):
+        value = text
+    elif isinstance(text, str):
+        try:
+            value = dt.datetime.fromisoformat(text)
+        except ValueError:
+            return None
+    else:
+        return None
+    if value.tzinfo is None:
+        return value.replace(tzinfo=dt.UTC)
+    return value.astimezone(dt.UTC)
+
+
+def datetime_text(value: dt.datetime) -> str:
+    """The stored text of a DateTime: fixed-width ISO-8601 in UTC with microseconds and
+    a `Z` suffix, so text order is time order (a naive value is UTC)."""
+    if value.tzinfo is not None:
+        value = value.astimezone(dt.UTC)
+    return value.replace(tzinfo=None).isoformat(timespec="microseconds") + "Z"
 
 
 @dataclass(frozen=True)
@@ -68,7 +118,12 @@ class Dialect(Protocol):
     def bind(self, name: str) -> str: ...  # placeholder text for a named bind
     def compile_read(self, pipeline: ReadPipeline) -> SqlQuery: ...
     def compile_write(self, step: WriteSpec) -> SqlQuery: ...
-    def connect(self, target: Any, hook: ConnectHook | None = None) -> Connection: ...
+    def connect(
+        self,
+        target: Any,
+        hook: ConnectHook | None = None,
+        natives: Mapping[str, NativeImpl] | None = None,
+    ) -> Connection: ...
 
     # ---- SQL pieces the compiler asks for --------------------------------------------
     def positional_bind(self) -> str: ...  # placeholder for a single positional parameter
@@ -82,6 +137,8 @@ class Dialect(Protocol):
     def function(self, name: str, x: str, kw: Mapping[str, str]) -> str | None: ...
     def insert(self, table: str, cols: Sequence[str], vals: Sequence[str], ret: str) -> str: ...
     def update_from(self, table: str, sets: str, source: str, match: str, ret: str) -> str: ...
+    def new_uuid(self) -> str: ...  # a fresh uuid4 (an omitted Uuid key on insert)
+    def native(self, name: str, args: Sequence[str]) -> str: ...  # native.<name>(args...)
 
     # ---- values ----------------------------------------------------------------------
     def to_db(self, v: object) -> object: ...  # a Python value as the store keeps it
@@ -128,7 +185,28 @@ _SQLITE_FN: Mapping[str, Callable[[str, Mapping[str, str]], str]] = {
     "year": _date_part("%Y"),
     "month": _date_part("%m"),
     "day": _date_part("%d"),
+    "to_uuid": lambda x, k: f"lattice_to_uuid({x})",
+    "date": lambda x, k: f"substr({x}, 1, 10)",  # stored DateTime text starts YYYY-MM-DD
+    "to_datetime": lambda x, k: f"lattice_to_datetime({x}, {k['format']})",
 }
+
+
+def _to_uuid(x: object) -> object:
+    return uuid_text(x)
+
+
+def _to_datetime(x: object, fmt: object) -> object:
+    if not isinstance(x, str) or not isinstance(fmt, str):
+        return None
+    try:
+        value = dt.datetime.strptime(x, fmt)
+    except ValueError:
+        return None
+    return datetime_text(value)
+
+
+def _uuid4() -> str:
+    return str(uuid.uuid4())
 
 
 class SqliteDialect:
@@ -211,13 +289,25 @@ class SqliteDialect:
     def update_from(self, table: str, sets: str, source: str, match: str, ret: str) -> str:
         return f"UPDATE {table} SET {sets} FROM ({source}) AS s WHERE {match} RETURNING {ret}"
 
+    def new_uuid(self) -> str:
+        return "lattice_uuid4()"
+
+    def native(self, name: str, args: Sequence[str]) -> str:
+        return f"native_{name}({', '.join(args)})"
+
     # ---- values ------------------------------------------------------------------------
 
     def to_db(self, v: object) -> object:
+        """Bool is 0/1; Date ISO text; DateTime fixed-width UTC text with `Z`; Uuid its
+        canonical lowercase hyphenated text."""
         if isinstance(v, bool):
             return int(v)
+        if isinstance(v, dt.datetime):
+            return datetime_text(v)
         if isinstance(v, dt.date):
             return v.isoformat()
+        if isinstance(v, uuid.UUID):
+            return str(v)
         return v
 
     def from_db(self, v: object, scalar: Scalar) -> object:
@@ -230,8 +320,78 @@ class SqliteDialect:
                 return float(v)  # type: ignore[arg-type]
             case Scalar.BOOL:
                 return bool(v)
+            case Scalar.UUID:  # canonical text (a 32-hex spelling is normalized)
+                return uuid_text(v) or v
+            case Scalar.DATETIME:  # canonical text (another ISO spelling is normalized)
+                parsed = parse_datetime(v)
+                return v if parsed is None else datetime_text(parsed)
             case _:
                 return v
+
+    # ---- natives -----------------------------------------------------------------------
+
+    def native_arg(self, v: object, scalar: Scalar) -> object:
+        """A stored value as the Python value a native receives: Bool bool, Date
+        `datetime.date`, DateTime an aware UTC `datetime.datetime`, Uuid `uuid.UUID`."""
+        match scalar:
+            case Scalar.BOOL:
+                return bool(v)
+            case Scalar.INT:
+                return int(v)  # type: ignore[call-overload]
+            case Scalar.FLOAT:
+                return float(v)  # type: ignore[arg-type]
+            case Scalar.DATE:
+                return dt.date.fromisoformat(str(v))
+            case Scalar.DATETIME:
+                return parse_datetime(v)
+            case Scalar.UUID:
+                return uuid.UUID(str(v))
+            case _:
+                return v
+
+    def native_result(self, name: str, v: object, scalar: Scalar) -> object:
+        """A native's Python result as stored (a wrong type is an error)."""
+        bad = TypeError(f"native {name} returned {type(v).__name__}, not {scalar.value}")
+        match scalar:
+            case Scalar.BOOL if isinstance(v, bool):
+                return int(v)
+            case Scalar.INT if isinstance(v, int) and not isinstance(v, bool):
+                return v
+            case Scalar.FLOAT if isinstance(v, int | float) and not isinstance(v, bool):
+                return float(v)
+            case Scalar.STR if isinstance(v, str):
+                return v
+            case Scalar.DATE if isinstance(v, dt.date) and not isinstance(v, dt.datetime):
+                return v.isoformat()
+            case Scalar.DATETIME if isinstance(v, dt.datetime | str):
+                parsed = parse_datetime(v)
+                if parsed is None:
+                    raise bad
+                return datetime_text(parsed)
+            case Scalar.UUID if isinstance(v, uuid.UUID | str):
+                text = uuid_text(v)
+                if text is None:
+                    raise bad
+                return text
+            case _:
+                raise bad
+
+    def native_function(self, name: str, impl: NativeImpl) -> Callable[..., object]:
+        """The SQL function for one native: a null argument gives null (without calling
+        it); a null result is allowed only for a `nullable` native."""
+        sig, fn = impl
+
+        def call(*args: object) -> object:
+            if any(a is None for a in args):
+                return None
+            out = fn(*(self.native_arg(a, s) for a, s in zip(args, sig.params, strict=True)))
+            if out is None:
+                if sig.nullable:
+                    return None
+                raise ValueError(f"native {name} returned null")
+            return self.native_result(name, out, sig.result)
+
+        return call
 
     # ---- connections and transactions --------------------------------------------------
 
@@ -241,13 +401,33 @@ class SqliteDialect:
         conn.create_function("lattice_upper", 1, _upper, deterministic=True)
         conn.create_function("lattice_strip", 1, _strip, deterministic=True)
         conn.create_function("lattice_mod", 2, _mod, deterministic=True)
+        conn.create_function("lattice_to_uuid", 1, _to_uuid, deterministic=True)
+        conn.create_function("lattice_to_datetime", 2, _to_datetime, deterministic=True)
+        conn.create_function("lattice_uuid4", 0, _uuid4)  # not deterministic
 
-    def connect(self, target: Any, hook: ConnectHook | None = None) -> sqlite3.Connection:
+    def register_natives(self, conn: sqlite3.Connection, natives: Mapping[str, NativeImpl]) -> None:
+        """Install each native as the SQL function `native.<name>` compiles to."""
+        for name, impl in natives.items():
+            conn.create_function(
+                f"native_{name}",
+                len(impl[0].params),
+                self.native_function(name, impl),
+                deterministic=True,
+            )
+
+    def connect(
+        self,
+        target: Any,
+        hook: ConnectHook | None = None,
+        natives: Mapping[str, NativeImpl] | None = None,
+    ) -> sqlite3.Connection:
         """A connection to the database file `target` in autocommit mode (transactions
-        are explicit), usable from any thread, with the functions registered; `hook`
-        (if given) sees it last."""
+        are explicit), usable from any thread, with the functions (and `natives`)
+        registered; `hook` (if given) sees it last."""
         conn = sqlite3.connect(str(Path(target)), isolation_level=None, check_same_thread=False)
         self.register_functions(conn)
+        if natives:
+            self.register_natives(conn, natives)
         if hook is not None:
             hook(conn)
         return conn

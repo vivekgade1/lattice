@@ -1127,3 +1127,14 @@ def test_update_of_an_items_order_must_reference_an_owned_order():
         '        order = one(target, else_=NotFound("order"))\n        moved = update(',
     )
     assert bench_errors(checked) == []
+
+
+def test_l804_accepts_one_trailing_slash():
+    src = CANCEL.replace('"/orders/{order_id}/cancel"', '"/orders/{order_id}/cancel/"')
+    assert errors(src) == []
+
+
+@pytest.mark.parametrize("path", ["/orders/{order_id}/cancel//", "//", "/orders//{order_id}"])
+def test_l804_rejects_more_than_one_trailing_or_empty_segment(path: str):
+    src = CANCEL.replace('"/orders/{order_id}/cancel"', f'"{path}"')
+    assert "L804" in errors(src)

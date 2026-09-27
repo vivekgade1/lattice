@@ -44,6 +44,8 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from lattice.api.backend import SQLITE, Dialect
+from lattice.catalog import NATIVE_NS
+from lattice.check.api_info import UNSET
 from lattice.check.astutil import literal_value
 from lattice.runtime import LatticeInternalError
 from lattice.typesys import Scalar, Schema
@@ -53,16 +55,39 @@ SqlExpr = str  # a SQL expression fragment
 ORD = "__ord"  # hidden row-order column carried by every CTE
 USER_ID = "__user_id"  # bind name: the caller's id
 IS_ADMIN = "__is_admin"  # bind name: 1 when the caller has the admin role
+NOW = "__now"  # bind name: fn.now(), the request's one current instant
+TOTAL = "__total"  # page(total=True): the row count before limit/offset
+IN_PAGE = "__in_page"  # page(total=True): 0 on the placeholder row of an empty page
+
+
+def sent_bind(name: str) -> str:
+    """Bind name of the 0/1 flag "optional parameter `name` was sent"."""
+    return f"__sent_{name}"
 
 
 class ParamRef(ast.expr):
-    """An endpoint parameter inside a lowered expression (bound as `:p_<name>`)."""
+    """An endpoint parameter inside a lowered expression (bound as `:p_<name>`).
+    `optional`: its default is UNSET (an update() value that may be "not sent")."""
 
     _fields = ("name",)
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, optional: bool = False) -> None:
         super().__init__()
         self.name = name
+        self.optional = optional
+
+
+class OwnerIs(ast.expr):
+    """`owner_is(user)` lowered: the row's owner (column `owner`, or through
+    `via` = (foreign key, parent table, parent key, parent owner)) is the caller, or the
+    caller is an Admin -- `owned()`'s predicate as a condition."""
+
+    _fields = ()
+
+    def __init__(self, owner: str | None, via: tuple[str, str, str, str] | None = None) -> None:
+        super().__init__()
+        self.owner = owner
+        self.via = via
 
 
 @dataclass(frozen=True)
@@ -72,13 +97,20 @@ class SqlQuery:
     `params`: endpoint parameters referenced (bound as `:p_<name>`); `binds`: literal
     and constant values (bind name -> value); `rows`: materialized step results
     referenced (bind name, step id, columns), each bound as a JSON array of rows;
-    `user`: whether `:__user_id` / `:__is_admin` are referenced."""
+    `user`: whether `:__user_id` / `:__is_admin` are referenced; `now`: whether
+    `:__now` (fn.now()) is; `sent`: optional parameters whose "was sent" flag
+    (`sent_bind(name)`, 0/1) is referenced; `total`: the statement is a page read with
+    its total (two trailing columns `__in_page`, `__total`; an empty page is one
+    placeholder row with `__in_page` 0)."""
 
     text: str
     params: tuple[str, ...] = ()
     binds: tuple[tuple[str, object], ...] = ()
     rows: tuple[tuple[str, str, tuple[str, ...]], ...] = ()
     user: bool = False
+    now: bool = False
+    sent: tuple[str, ...] = ()
+    total: bool = False
 
 
 @dataclass(frozen=True)
@@ -102,23 +134,28 @@ StepRows = tuple[Sequence[str], Sequence[Sequence[object]]]  # (columns, raw row
 class ReadPipeline:
     """A read: `target`'s rows in order (its schema's columns, then one column per
     `extra` (name, expression over target's columns)), `materialized` naming the rels
-    already read back as a step's rows (rel id -> (step id, columns))."""
+    already read back as a step's rows (rel id -> (step id, columns)). With
+    `total_of` (the input of a page(total=True)), the statement also counts that
+    relation's rows (see `SqlQuery.total`)."""
 
     rels: Mapping[str, Rel]
     target: str
     materialized: Mapping[str, tuple[str, tuple[str, ...]]] = field(default_factory=dict)
     extra: Sequence[tuple[str, ast.expr]] = ()
+    total_of: str | None = None
 
 
 @dataclass(frozen=True)
 class InsertWrite:
     """INSERT one row (column-free value expressions) returning `returning`; with
-    `owner`, that column is set to the caller's id."""
+    `owner`, that column is set to the caller's id; with `generate` (an omitted Uuid
+    key), that column is set to a fresh uuid4."""
 
     table: str
     values: Sequence[tuple[str, ast.expr]]
     returning: Sequence[str]
     owner: str | None = None
+    generate: str | None = None
 
 
 @dataclass(frozen=True)
@@ -171,17 +208,25 @@ def bind_values(
     results: Mapping[str, StepRows] | None = None,
     user_id: object = None,
     is_admin: bool = False,
+    now: object = None,
     dialect: Dialect = SQLITE,
 ) -> dict[str, object]:
-    """The named parameters to execute `query` with."""
+    """The named parameters to execute `query` with. An optional parameter that was not
+    sent (UNSET) binds null, and its "sent" flag 0; `now` is the request's instant."""
+    values = params or {}
     out: dict[str, object] = {name: dialect.to_db(v) for name, v in query.binds}
     for p in query.params:
-        out[f"p_{p}"] = dialect.to_db((params or {})[p])
+        v = values[p]
+        out[f"p_{p}"] = None if v is UNSET else dialect.to_db(v)
+    for p in query.sent:
+        out[sent_bind(p)] = int(values[p] is not UNSET)
     for bind, step, columns in query.rows:
         out[bind] = rows_json(columns, (results or {})[step])
     if query.user:
         out[USER_ID] = user_id
         out[IS_ADMIN] = int(is_admin)
+    if query.now:
+        out[NOW] = dialect.to_db(now)
     return out
 
 
@@ -211,17 +256,28 @@ class _Builder:
     rows: list[tuple[str, str, tuple[str, ...]]] = field(default_factory=list)
     row_binds: dict[tuple[str, tuple[str, ...]], str] = field(default_factory=dict)
     user: bool = False
+    now: bool = False
+    sent: list[str] = field(default_factory=list)
 
     def q(self, name: str) -> str:
         return self.d.quote(name)
 
     # ---- output ------------------------------------------------------------------
 
-    def query(self, final: str) -> SqlQuery:
+    def query(self, final: str, *, total: bool = False) -> SqlQuery:
         text = final
         if self.ctes:
             text = "WITH " + ",\n".join(f"{n} AS ({s})" for n, s in self.ctes) + "\n" + final
-        return SqlQuery(text, tuple(self.params), tuple(self.binds), tuple(self.rows), self.user)
+        return SqlQuery(
+            text,
+            tuple(self.params),
+            tuple(self.binds),
+            tuple(self.rows),
+            self.user,
+            self.now,
+            tuple(self.sent),
+            total,
+        )
 
     def _add(self, sql: str) -> str:
         name = f"t{len(self.ctes)}"
@@ -249,6 +305,33 @@ class _Builder:
     def user_ref(self) -> tuple[str, str]:
         self.user = True
         return self.d.bind(USER_ID), self.d.bind(IS_ADMIN)
+
+    def now_ref(self) -> str:
+        """fn.now(): one bind for the whole request (every use is the same instant)."""
+        self.now = True
+        return self.d.bind(NOW)
+
+    def sent_ref(self, name: str) -> str:
+        """The 0/1 "optional parameter `name` was sent" flag, as a condition."""
+        if name not in self.sent:
+            self.sent.append(name)
+        return self.d.flag(self.d.bind(sent_bind(name)))
+
+    def owner_cond(self, owner: str | None, via: tuple[str, str, str, str] | None) -> str:
+        """The caller owns the row (directly, or through its parent row), or is an
+        Admin: owned()'s filter and owner_is()'s condition."""
+        q = self.q
+        uid, admin = self.user_ref()
+        admin = self.d.flag(admin)
+        if via is not None:
+            # owned through a parent: the foreign key names a parent row the caller
+            # owns (a subquery of the same statement)
+            fk, parent, key, parent_owner = via
+            mine = f"SELECT {q(key)} FROM {q(parent)} WHERE {q(parent_owner)} = {uid}"
+            return f"({admin} OR {q(fk)} IN ({mine}))"
+        if owner is None:
+            raise LatticeInternalError("an ownership condition without an owner column")
+        return f"({admin} OR {q(owner)} = {uid})"
 
     def rows_cte(self, step: str, columns: tuple[str, ...]) -> str:
         """A CTE over a step's materialized rows (one JSON parameter)."""
@@ -305,15 +388,8 @@ class _Builder:
             case "where":
                 return f"SELECT {keep} FROM {ins[0]} WHERE {self.expr(p['predicate'])}"
             case "owned":
-                uid, admin = self.user_ref()
-                admin = self.d.flag(admin)
-                if "via" in p:
-                    # owned through a parent: the foreign key names a parent row the
-                    # caller owns (a subquery of the same statement)
-                    fk, parent, key, owner = p["via"]
-                    mine = f"SELECT {q(key)} FROM {q(parent)} WHERE {q(owner)} = {uid}"
-                    return f"SELECT {keep} FROM {ins[0]} WHERE ({admin} OR {q(fk)} IN ({mine}))"
-                return f"SELECT {keep} FROM {ins[0]} WHERE ({admin} OR {q(p['owner'])} = {uid})"
+                cond = self.owner_cond(p.get("owner"), p.get("via"))
+                return f"SELECT {keep} FROM {ins[0]} WHERE {cond}"
             case "derive":
                 exprs = {name: self.expr(node) for name, node in p["columns"]}
                 listed = ", ".join(f"{exprs[c]} AS {q(c)}" if c in exprs else q(c) for c in cols)
@@ -457,6 +533,12 @@ class _Builder:
                 return f"({self.expr(a)} IS NULL)"
             case ast.Call(func=ast.Attribute(value=ast.Name(id="fn"), attr=name)):
                 return self._fn(name, node)
+            case ast.Call(func=ast.Attribute(value=ast.Name(id=ns), attr=name), args=args) if (
+                ns == NATIVE_NS
+            ):
+                return self.d.native(name, [self.expr(a) for a in args])
+            case OwnerIs(owner=owner, via=via):
+                return self.owner_cond(owner, via)
             case ast.BinOp(left=left, op=op, right=right):
                 return self._binop(self.expr(left), op, self.expr(right))
             case ast.Compare(left=left, ops=[op], comparators=[right]):
@@ -488,6 +570,8 @@ class _Builder:
                 raise LatticeInternalError(f"unsupported operator {type(op).__name__}")
 
     def _fn(self, name: str, node: ast.Call) -> str:
+        if name == "now" and not node.args and not node.keywords:
+            return self.now_ref()
         if len(node.args) != 1:
             raise LatticeInternalError(f"fn.{name} takes one argument")
         x = self.expr(node.args[0])
@@ -518,8 +602,22 @@ def build_read(pipeline: ReadPipeline, dialect: Dialect) -> SqlQuery:
     b = _Builder(pipeline.rels, dict(pipeline.materialized), dialect)
     source = b.cte(pipeline.target)
     cols = b.cols_of(pipeline.target)
-    listed = [b.q(c) for c in cols] + [f"{b.expr(e)} AS {b.q(n)}" for n, e in pipeline.extra]
-    return b.query(f"SELECT {', '.join(listed)} FROM {source} ORDER BY {ORD}")
+    if pipeline.total_of is None:
+        listed = [b.q(c) for c in cols] + [f"{b.expr(e)} AS {b.q(n)}" for n, e in pipeline.extra]
+        return b.query(f"SELECT {', '.join(listed)} FROM {source} ORDER BY {ORD}")
+    # page(total=True): the page's rows next to the row count of the page's input, in
+    # the same statement. The count is a one-row relation LEFT JOINed to the page, so
+    # an empty page (an offset past the end) still yields the total, on one
+    # placeholder row whose __in_page is 0.
+    counted = b.cte(pipeline.total_of)
+    listed = [f"f.{b.q(c)}" for c in cols] + [f"{b.expr(e)} AS {b.q(n)}" for n, e in pipeline.extra]
+    listed += [f"(f.{ORD} IS NOT NULL) AS {IN_PAGE}", f"n.{TOTAL}"]
+    count = f"(SELECT COUNT(*) AS {TOTAL} FROM {counted}) AS n"
+    return b.query(
+        f"SELECT {', '.join(listed)} FROM {count} LEFT JOIN {source} AS f "
+        f"ON {dialect.true_condition()} ORDER BY f.{ORD}",
+        total=True,
+    )
 
 
 def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
@@ -527,20 +625,25 @@ def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
     b = _Builder({}, {}, dialect)
     q = b.q
     match step:
-        case InsertWrite(table=table, values=values, returning=returning, owner=owner):
+        case InsertWrite(
+            table=table, values=values, returning=returning, owner=owner, generate=generate
+        ):
             cols = [q(c) for c, _ in values]
             exprs = [b.expr(e) for _, e in values]
             if owner is not None:
                 uid, _ = b.user_ref()
                 cols.append(q(owner))
                 exprs.append(uid)
+            if generate is not None:
+                cols.append(q(generate))
+                exprs.append(dialect.new_uuid())
             ret = ", ".join(q(c) for c in returning)
             return b.query(dialect.insert(q(table), cols, exprs, ret))
         case UpdateWrite(table=table, key=key, source=source, values=values):
             src = b.rows_cte(*source)
             keys = [f"{q(k)} AS {q(f'__k{i}')}" for i, k in enumerate(key)]
             vals = [f"{b.expr(e)} AS {q(f'__v{i}')}" for i, (_, e) in enumerate(values)]
-            sets = ", ".join(f"{q(c)} = s.{q(f'__v{i}')}" for i, (c, _) in enumerate(values))
+            sets = ", ".join(_set(b, table, c, e, i) for i, (c, e) in enumerate(values))
             match = " AND ".join(f"{q(table)}.{q(k)} = s.{q(f'__k{i}')}" for i, k in enumerate(key))
             ret = ", ".join(q(c) for c in [*key, *(c for c, _ in values)])
             select = f"SELECT {', '.join(keys + vals)} FROM {src}"
@@ -554,6 +657,17 @@ def build_write(step: WriteSpec, dialect: Dialect) -> SqlQuery:
             )
         case _:
             raise LatticeInternalError(f"unknown write {step!r}")
+
+
+def _set(b: _Builder, table: str, column: str, value: ast.expr, i: int) -> str:
+    """One SET item of an update. An optional (UNSET-able) parameter's column keeps
+    its value unless the request sent the parameter (a bound "sent" flag), so one
+    precompiled statement serves every combination of sent fields."""
+    q = b.q
+    new = f"s.{q(f'__v{i}')}"
+    if isinstance(value, ParamRef) and value.optional:
+        new = f"CASE WHEN {b.sent_ref(value.name)} THEN {new} ELSE {q(table)}.{q(column)} END"
+    return f"{q(column)} = {new}"
 
 
 # ---- entry points ------------------------------------------------------------------
@@ -570,11 +684,15 @@ def compile_select(
     *,
     materialized: Mapping[str, tuple[str, tuple[str, ...]]] | None = None,
     extra: Sequence[tuple[str, ast.expr]] = (),
+    total_of: str | None = None,
     dialect: Dialect = SQLITE,
 ) -> SqlQuery:
     """ONE SELECT returning `target`'s rows in order: its schema's columns, then one
-    column per `extra` (name, expression over target's columns)."""
-    return dialect.compile_read(ReadPipeline(rels, target, dict(materialized or {}), extra))
+    column per `extra` (name, expression over target's columns). With `total_of`, also
+    the row count of that relation (see `SqlQuery.total`)."""
+    return dialect.compile_read(
+        ReadPipeline(rels, target, dict(materialized or {}), extra, total_of)
+    )
 
 
 def compile_insert(
@@ -583,11 +701,13 @@ def compile_insert(
     returning: Sequence[str],
     *,
     owner: str | None = None,
+    generate: str | None = None,
     dialect: Dialect = SQLITE,
 ) -> SqlQuery:
     """INSERT one row (values are column-free expressions) RETURNING `returning`.
-    With `owner`, that column is set to the caller's id."""
-    return dialect.compile_write(InsertWrite(table, values, returning, owner))
+    With `owner`, that column is set to the caller's id; with `generate`, that (Uuid
+    key) column to a fresh uuid4."""
+    return dialect.compile_write(InsertWrite(table, values, returning, owner, generate))
 
 
 def compile_update(
@@ -616,13 +736,22 @@ def compile_delete(
 
 
 def compile_lookup(
-    table: str, columns: Sequence[str], column: str, *, dialect: Dialect = SQLITE
+    table: str,
+    columns: Sequence[str],
+    column: str,
+    *,
+    native: str | None = None,
+    dialect: Dialect = SQLITE,
 ) -> str:
     """SELECT `columns` of `table`'s rows whose `column` equals the one positional
-    parameter (the runtime's authentication statement)."""
+    parameter (the runtime's authentication statement) -- or, with `native`, equals
+    that native applied to the parameter (a bearer token decoded to a key)."""
     q = dialect.quote
     cols = ", ".join(q(c) for c in columns)
-    return f"SELECT {cols} FROM {q(table)} WHERE {q(column)} = {dialect.positional_bind()}"
+    value = dialect.positional_bind()
+    if native is not None:
+        value = dialect.native(native, [value])
+    return f"SELECT {cols} FROM {q(table)} WHERE {q(column)} = {value}"
 
 
 def rels_from_plan(

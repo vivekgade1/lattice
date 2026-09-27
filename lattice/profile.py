@@ -51,6 +51,26 @@ AuthScheme = TokenColumn | NativeToken
 
 
 @dataclass(frozen=True)
+class RoleColumn:
+    """The caller's role is the value of this (Str) column of the users table (today's
+    behaviour)."""
+
+    column: str = "role"
+
+
+@dataclass(frozen=True)
+class AdminFlag:
+    """The caller's role comes from a Bool column of the users table (e.g. the FastAPI
+    template's `is_superuser`): true -> the profile's admin role, false -> `role`."""
+
+    column: str
+    role: str
+
+
+RoleSource = RoleColumn | AdminFlag
+
+
+@dataclass(frozen=True)
 class ApiProfile:
     """The API-profile environment: database tables, roles, and the users table."""
 
@@ -67,12 +87,15 @@ class ApiProfile:
     natives: Mapping[str, NativeSig] = field(default_factory=dict)
     auth: AuthScheme = field(default_factory=TokenColumn)
     backend: str = "sqlite"  # lattice.api.backend dialect name
+    # Where an authenticated caller's role comes from.
+    roles_from: RoleSource = field(default_factory=RoleColumn)
 
     def __post_init__(self) -> None:
         self._validate_page_shape()
         self._validate_responses()
         self._validate_natives()
         self._validate_auth()
+        self._validate_roles_from()
         if not isinstance(self.backend, str) or not self.backend:
             raise ValueError("ApiProfile.backend must name a backend, e.g. 'sqlite'")
 
@@ -140,6 +163,23 @@ class ApiProfile:
                     )
             case _:
                 raise ValueError("ApiProfile.auth must be TokenColumn(...) or NativeToken(...)")
+
+    def _validate_roles_from(self) -> None:
+        users = self.tables.get(self.users_table)
+        match self.roles_from:
+            case RoleColumn():
+                pass  # today's behaviour: not validated (the column is read at runtime)
+            case AdminFlag(column=column, role=role):
+                if users is not None and users.get(column) is not Scalar.BOOL:
+                    raise ValueError(
+                        f"AdminFlag column {column!r} must be a Bool column of {self.users_table}"
+                    )
+                if role not in self.roles or role == self.admin_role:
+                    raise ValueError(
+                        f"AdminFlag role {role!r} must be a non-admin role of the profile"
+                    )
+            case _:
+                raise ValueError("ApiProfile.roles_from must be RoleColumn(...) or AdminFlag(...)")
 
 
 @dataclass(frozen=True)
