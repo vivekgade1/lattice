@@ -724,10 +724,14 @@ class _Types:
         if by is not None:
             self._require_columns(by, t.schema, kws["by"])
         desc = kws.get("desc")
-        if desc is not None and not (
-            isinstance(desc, ast.Constant) and isinstance(desc.value, bool)
-        ):
-            self.ctx.error("L404", desc, "sort desc= must be True or False", None)
+        if desc is not None and not _valid_sort_desc(desc, by):
+            self.ctx.error(
+                "L404",
+                desc,
+                "sort desc= must be True, False, or a list with one True/False per by= column",
+                'e.g. desc=True, or by=["revenue", "id"], desc=[True, False] for revenue '
+                "descending with ties by id ascending",
+            )
         return t
 
     def _limit(self, t: TableT, n: ast.expr) -> TableOrUnknown:
@@ -899,3 +903,16 @@ class _Types:
 
 def run(module: ast.Module, ctx: CheckContext) -> dict[str, StepT]:
     return _Types(module, ctx).run()
+
+
+def _valid_sort_desc(desc: ast.expr, by: list[str] | None) -> bool:
+    """desc= is a bool literal, or a list/tuple of bool literals, one per by= column."""
+
+    def is_bool(n: ast.expr) -> bool:
+        return isinstance(n, ast.Constant) and isinstance(n.value, bool)
+
+    if is_bool(desc):
+        return True
+    if isinstance(desc, (ast.List, ast.Tuple)) and all(is_bool(e) for e in desc.elts):
+        return by is None or len(desc.elts) == len(by)
+    return False

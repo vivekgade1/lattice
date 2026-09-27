@@ -203,8 +203,10 @@ class _Lowerer:
                         flag = False
                     case ast.Constant(value=bool(v)):
                         flag = v
+                    case ast.List(elts=elts) | ast.Tuple(elts=elts):
+                        flag = tuple(_bool_literal(e) for e in elts)
                     case _:
-                        raise LatticeInternalError("sort desc= is not a bool literal")
+                        raise LatticeInternalError("sort desc= is not a bool literal or list")
                 params = {"by": _strs(kws["by"]), "desc": flag}
             case "limit":
                 match kws["n"]:
@@ -322,3 +324,11 @@ class _Lowerer:
 
 def lower(program: CheckedProgram) -> Plan:
     return _Lowerer(program).run()
+
+
+def _bool_literal(node: ast.expr) -> bool:
+    match node:
+        case ast.Constant(value=bool(v)):
+            return v
+        case _:
+            raise LatticeInternalError("sort desc= list element is not a bool literal")

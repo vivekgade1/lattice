@@ -429,3 +429,5 @@ Guarantee boundary (documented to users): Tier 1 code is fully checked; Tier 2 o
 ## Next step
 
 The writing-plans skill produces the Phase 0–3 implementation plan from this spec. Open questions in §14 default to the recommendations (Python, tabular data pipelines, Claude API only, +15-point bar) unless changed before planning.
+
+16. **Per-column sort directions (added after step 2):** `sort(t, by=[...], desc=...)` accepts a single bool (applies to every column) or a list of bools, one per `by` column, e.g. `desc=[True, False]` for "revenue descending, ties by id ascending". The single-flag design treated per-column directions as a redundant alternative; they are not — mixed-direction tie-breaks are common analyst phrasing, cannot be expressed for text/date columns any other way, and caused 3 first-shot rejections (L404) across claude-haiku-4-5 and claude-opus-5 in the bench2 runs.

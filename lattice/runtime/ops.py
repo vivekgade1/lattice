@@ -137,8 +137,10 @@ def _cross_join(left: pl.DataFrame, right: pl.DataFrame, how: str) -> pl.DataFra
     return left.join(right, how="cross", maintain_order="left_right")
 
 
-def sort(df: pl.DataFrame, by: Sequence[str], desc: bool) -> pl.DataFrame:
-    return df.sort(list(by), descending=desc, nulls_last=True, maintain_order=True)
+def sort(df: pl.DataFrame, by: Sequence[str], desc: bool | Sequence[bool]) -> pl.DataFrame:
+    """desc is one direction for every column, or one per `by` column."""
+    descending = desc if isinstance(desc, bool) else list(desc)
+    return df.sort(list(by), descending=descending, nulls_last=True, maintain_order=True)
 
 
 def limit(df: pl.DataFrame, n: int) -> pl.DataFrame:

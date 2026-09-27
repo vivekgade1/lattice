@@ -107,7 +107,9 @@ _OP_DESCRIPTIONS: dict[str, str] = {
     "rename": "rename one or more existing columns",
     "group": "group by zero or more columns and compute the given aggregates per group",
     "join": "combine two tables on shared key columns ('inner' or 'left')",
-    "sort": "sort rows by one or more columns, ascending unless desc=True",
+    "sort": "sort rows by one or more columns, ascending unless desc=True; "
+    "desc=[True, False] gives one direction per by= column (e.g. revenue descending, "
+    "ties by id ascending)",
     "limit": "keep only the first n rows",
     "write": "write the final table to a file (.csv or .parquet); must be the last statement",
 }
