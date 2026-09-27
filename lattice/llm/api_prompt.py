@@ -119,6 +119,10 @@ _API_OP_DOCS: dict[str, tuple[str, str]] = {
         "through a parent (e.g. OrderItems), whose parent row is the caller's (Admin "
         "callers keep every row)",
     ),
+    "mine": (
+        "mine(t, by=user)",
+        "keep only the caller's own rows, like `owned` but for Admin callers too",
+    ),
     "one": (
         'one(t, else_=NotFound("thing"))',
         "exactly one row; zero rows respond with that error",
@@ -196,7 +200,7 @@ def _lattice_expressions_section() -> str:
 # the only Examples). The baseline guide carries the same information in SQL/FastAPI
 # terms (_BASELINE_LOOPS_SECTION).
 API_WINDOW_EXAMPLE = (
-    'numbered = window(mine, by=["status"], order=["created_at", "id"], '
+    'numbered = window(visible, by=["status"], order=["created_at", "id"], '
     'n=win.row_number(), running=win.cum_sum(col("total")))'
 )
 API_TRAVERSE_EXAMPLE = (
@@ -237,7 +241,7 @@ column answers that 409.
 # short bullet per feature, each with an inline example; the baseline guide carries the
 # same information in SQL/FastAPI terms (_BASELINE_OPTIONAL_SECTION).
 API_OPTIONAL_EXAMPLES = (
-    'where(mine, is_null(since) | (col("created_at") >= since))',
+    'where(visible, is_null(since) | (col("created_at") >= since))',
     'require(t, ~sent(title) | (col("created_at") >= fn.datetime_add(fn.now(), hours=-24)), '
     'else_=Forbidden("too late"))',
     'fn.contains(col("title"), sub=q, ignore_case=True)',
@@ -264,8 +268,15 @@ one; negative is earlier) and `fn.datetime_diff(end, start, unit=)` (whole "days
 "last" (default), "first", or "smallest" (first ascending, last descending), e.g. \
 `{API_OPTIONAL_EXAMPLES[5]}`."""
 
-_LATTICE_RULES_SECTION = """## Rules
+# owned() vs mine() (the thin slice's "my items" trap); the baseline guide carries the
+# same information in SQL terms (BASELINE_OWN_ROWS).
+LATTICE_OWN_ROWS = (
+    "- `owned(t, by=user)` = rows the caller may access (admins: all rows). "
+    "`mine(t, by=user)` = the caller's own rows only (admins too) — use it for "
+    "'my …' features."
+)
 
+_LATTICE_RULES_SECTION = f"## Rules\n\n{LATTICE_OWN_ROWS}\n" + """\
 - No imports are needed: all operations, `col`, `when`, `coalesce`, `is_null`, `fn`, \
 `agg`, `endpoint`, `step`, the parameter types, success kinds, errors, roles, \
 `CurrentUser` and the table names (`Users`, `Orders`, ...) are always available.
@@ -315,8 +326,8 @@ def list_addresses(
     user: CurrentUser, limit: Int(ge=1, le=50) = 20, offset: Int(ge=0) = 0
 ) -> Page:
     addresses = fetch(Addresses)
-    mine = owned(addresses, by=user)
-    ordered = sort(mine, by=["id"])
+    visible = owned(addresses, by=user)
+    ordered = sort(visible, by=["id"])
     result = page(ordered, limit=limit, offset=offset)
     return result
 """,
@@ -344,13 +355,13 @@ def post_review(
     wanted = where(products, col("id") == product_id)
     product = one(wanted, else_=NotFound("product"))
     items = fetch(OrderItems)
-    my_items = owned(items, by=user)
-    this_product = where(my_items, col("product_id") == product_id)
+    visible_items = owned(items, by=user)
+    this_product = where(visible_items, col("product_id") == product_id)
     times_bought = group(this_product, by=[], n=agg.count())
     ordered = require(times_bought, col("n") > 0, else_=Forbidden("product not ordered"))
     reviews = fetch(Reviews)
-    my_reviews = owned(reviews, by=user)
-    same = where(my_reviews, col("product_id") == product_id)
+    visible_reviews = owned(reviews, by=user)
+    same = where(visible_reviews, col("product_id") == product_id)
     existing = group(same, by=[], n=agg.count())
     fresh = require(existing, col("n") == 0, else_=Conflict("already reviewed"))
     review = insert(Reviews, owner=user, product_id=product_id, rating=rating, body=body)
@@ -422,6 +433,13 @@ answers 403 `{"error": "forbidden"}` unless the caller has one of the given role
 The kit only authenticates: ownership checks, input validation, error responses and \
 pagination are the script's job."""
 
+# The same information as LATTICE_OWN_ROWS, in SQL terms.
+BASELINE_OWN_ROWS = (
+    "- For the caller's own rows only ('my …' features), filter by "
+    "`owner_id == current_user.id` (admins too); the access filter "
+    "`(owner_id = ? OR ? = 'Admin')` lets superusers see all rows."
+)
+
 _BASELINE_CONVENTIONS_SECTION = f"""## Conventions
 
 - Parameters: path segments come from the path; the others come from the query \
@@ -444,6 +462,7 @@ async def invalid_input(request: Request, exc: RequestValidationError) -> JSONRe
 
 - Rows of a table with an owner column belong to that user; Admin callers may see \
 and change every row. Columns listed as private never appear in a response.
+{BASELINE_OWN_ROWS}
 - Everything a request writes succeeds or fails together: commit only after every \
 check passed.
 - Dates are ISO `YYYY-MM-DD` strings. Import only the standard library, `fastapi`, \

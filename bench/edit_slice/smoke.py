@@ -54,6 +54,9 @@ class SmokeRequest:
 
 _ITEMS = f"{API}/items/"
 _ITEM = f"{API}/items/{CREATED}"
+_USERS = f"{API}/users/"
+_ALICE = TEMPLATE_USERS["alice"][2]
+_BOB_EMAIL = TEMPLATE_USERS["bob"][0]
 
 # The happy paths each ticket's text describes (the requests a developer would try).
 SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
@@ -77,6 +80,25 @@ SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
         SmokeRequest("alice", "PUT", _ITEM, json={"title": "Smoke test, renamed"}),
     ),
     "t6_stats": (SmokeRequest("alice", "GET", f"{API}/items/stats"),),
+    # the held-out tickets
+    "t7_deactivate": (
+        SmokeRequest("admin", "POST", f"{_USERS}{_ALICE}/deactivate"),
+        SmokeRequest("admin", "POST", f"{_USERS}{_ALICE}/activate"),
+    ),
+    "t8_user_filter": (
+        SmokeRequest("admin", "GET", _USERS, params={"is_active": "false"}),
+        SmokeRequest("admin", "GET", _USERS, params={"q": "ALICE"}),
+    ),
+    "t9_item_quota": (SmokeRequest("alice", "POST", _ITEMS, json={"title": "Smoke test"}),),
+    "t10_owner_counts": (SmokeRequest("admin", "GET", f"{_USERS}item-counts"),),
+    "t11_title_trim": (
+        SmokeRequest("alice", "POST", _ITEMS, json={"title": " Groceries "}, save=True),
+        SmokeRequest("alice", "PUT", _ITEM, json={"title": " Groceries "}),
+    ),
+    "t12_transfer": (
+        SmokeRequest("alice", "POST", _ITEMS, json={"title": "Smoke test"}, save=True),
+        SmokeRequest("alice", "POST", f"{_ITEM}/transfer", json={"new_owner_email": _BOB_EMAIL}),
+    ),
 }
 
 

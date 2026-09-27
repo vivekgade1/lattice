@@ -607,7 +607,7 @@ class _Endpoint:
                 schema = self.api.tables[name.id]
                 order = schema.keys[0] if schema.keys else ()
                 return {"table": self.api.table_names[name.id], "order": order}
-            case "owned":
+            case "owned" | "mine":
                 owner, via = self._owner(self._type(call))
                 return {"owner": owner} if via is None else {"via": via}
             case "page":
@@ -1045,7 +1045,7 @@ def _arg_columns(ev: _ForEach) -> list[tuple[str, ast.expr]]:
 def _tables(op: str) -> int:
     if op in OP_SHAPES:
         return OP_SHAPES[op].tables
-    return {"fetch": 0, "owned": 1, "page": 1}[op]
+    return {"fetch": 0, "owned": 1, "mine": 1, "page": 1}[op]
 
 
 def _page_arg(v: int | ParamRef) -> int | str:

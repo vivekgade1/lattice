@@ -1720,8 +1720,8 @@ class _Types:
                     source=name,
                     plain=plain_columns(schema),
                 )
-            case "owned":
-                return self._owned(call, tables[0], kws["by"])
+            case "owned" | "mine":
+                return self._owned(call, op, tables[0], kws["by"])
             case "one":
                 self._else(kws["else_"])
                 return replace(tables[0], at_most_one_row=True, paged=False, page_total=False)
@@ -1851,18 +1851,20 @@ class _Types:
             'e.g. else_=NotFound("order")',
         )
 
-    def _owned(self, call: ast.Call, t: TableT, by: ast.expr) -> TableOrUnknown:
+    def _owned(self, call: ast.Call, op: str, t: TableT, by: ast.expr) -> TableOrUnknown:
+        """owned(t, by=user) / mine(t, by=user): the rows the caller may access / the
+        caller's own rows. Either one is an ownership filter (mine() is the stricter)."""
         if not (isinstance(by, ast.Name) and by.id == USER_PARAM):
             if not self._silenced(by):
-                self.ctx.error("L404", by, "owned() filters by the caller", "write by=user")
+                self.ctx.error("L404", by, f"{op}() filters by the caller", "write by=user")
             return UNKNOWN
         if t.owner is None and t.owner_via is None:
             owned = sorted(n for n, s in self.schemas.items() if s.owner is not None or s.owner_via)
             self.ctx.error(
                 "L404",
                 call,
-                "owned() needs rows of a table with an owner column; this table has none",
-                "remove owned(): only " + (", ".join(owned) or "no tables") + " are per-user",
+                f"{op}() needs rows of a table with an owner column; this table has none",
+                f"remove {op}(): only " + (", ".join(owned) or "no tables") + " are per-user",
             )
             return UNKNOWN
         return replace(t, owner_checked=True)

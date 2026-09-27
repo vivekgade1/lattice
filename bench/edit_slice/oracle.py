@@ -57,6 +57,7 @@ from bench.template_app.app.core.config import settings
 from lattice.importer.suite import (
     ACTOR,
     ADMIN,
+    INACTIVE,
     MISSING_ID,
     OTHER,
     AuthSpec,
@@ -164,6 +165,31 @@ RESTORE_ITEM = RouteSpec("restore_item", "POST", f"{API}/items/{{id}}/restore", 
                          auth="admin", params=(ID,), errors=(NOT_FOUND, NOT_ADMIN))  # fmt: skip
 ITEM_STATS = RouteSpec("read_item_stats", "GET", f"{API}/items/stats", "other", "item")
 
+# ---- the held-out tickets' routes
+USER_ID = P("user_id", "uuid", "path")
+USER_NOT_FOUND = ErrorSpec(404, "User not found", "not_found")
+TRANSFER_ITEM = RouteSpec("transfer_item", "POST", f"{API}/items/{{id}}/transfer", "other", "item",
+                          params=(ID, P("new_owner_email", "email", "body")),
+                          errors=(NOT_FOUND, NOT_OWNER))  # fmt: skip
+
+
+def _user_switch(name: str, action: str) -> RouteSpec:
+    return RouteSpec(name, "POST", f"{API}/users/{{user_id}}/{action}", "other", "user",
+                     auth="admin", params=(USER_ID,),
+                     errors=(USER_NOT_FOUND, NOT_ADMIN))  # fmt: skip
+
+
+def _read_users(*extra: ParamSpec) -> RouteSpec:
+    return RouteSpec("read_users", "GET", f"{API}/users/", "list", "user", auth="admin",
+                     params=(*PAGE, *extra), pagination=("skip", "limit"),
+                     errors=(NOT_ADMIN,))  # fmt: skip
+
+
+USER_ITEM_COUNTS = RouteSpec("read_user_item_counts", "GET", f"{API}/users/item-counts",
+                             "list", "user", auth="admin", params=PAGE,
+                             pagination=("skip", "limit"), errors=(NOT_ADMIN,),
+                             tables=("user", "item"))  # fmt: skip
+
 ROUTES: dict[str, tuple[RouteSpec, ...]] = {
     "t1_search": (_read_items(P("q", "str", "query", required=False)),),
     "t2_since": (
@@ -176,6 +202,20 @@ ROUTES: dict[str, tuple[RouteSpec, ...]] = {
     "t4_restore": (RESTORE_ITEM,),
     "t5_title_window": (UPDATE_ITEM,),
     "t6_stats": (ITEM_STATS,),
+    "t7_deactivate": (
+        _user_switch("deactivate_user", "deactivate"),
+        _user_switch("activate_user", "activate"),
+    ),
+    "t8_user_filter": (
+        _read_users(
+            P("is_active", "bool", "query", required=False),
+            P("q", "str", "query", required=False),
+        ),
+    ),
+    "t9_item_quota": (CREATE_ITEM,),
+    "t10_owner_counts": (USER_ITEM_COUNTS,),
+    "t11_title_trim": (CREATE_ITEM, UPDATE_ITEM),
+    "t12_transfer": (TRANSFER_ITEM,),
 }
 
 # ---- database variants --------------------------------------------------------------------
@@ -207,12 +247,44 @@ FRESH_ROWS = (  # hours before the database is built
 )
 
 
+# the held-out tickets' extra users: name -> (email, active, admin, days after EXTRA_EPOCH)
+EXTRA_USERS = {
+    "dave": ("dave@example.com", True, True, 0),  # a second admin
+    "erin": ("Erin.Stone@example.com", True, False, 1),
+    "frank": ("frank@alice-corp.com", False, False, 2),
+    "gina": ("gina@example.com", True, False, 3),  # owns nothing
+}
+QUOTA = 50  # t9_item_quota's limit
+
+
 def _add_items(engine: Engine, ticket_id: str, rows: Sequence[dict[str, Any]]) -> None:
     item_model = reference_variant(ticket_id).module("models").Item
     with Session(engine) as session:
         for row in rows:
             session.add(item_model(**row))
         session.commit()
+
+
+def _add_users(engine: Engine, ticket_id: str, names: Sequence[str]) -> None:
+    user_model = reference_variant(ticket_id).module("models").User
+    with Session(engine) as session:
+        for name in names:
+            email, active, admin, days = EXTRA_USERS[name]
+            session.add(user_model(
+                id=extra_id(f"user/{name}"), email=email, is_active=active,
+                is_superuser=admin, full_name=name.title(), hashed_password="!unusable",
+                created_at=EXTRA_EPOCH + timedelta(days=days),
+            ))  # fmt: skip
+        session.commit()
+
+
+def _fill(engine: Engine, ticket_id: str, owner: uuid.UUID, tag: str, n: int) -> None:
+    """Give ``owner`` ``n`` more items."""
+    _add_items(engine, ticket_id, [
+        {"id": extra_id(f"{tag}/{k}"), "title": f"Bulk item {k + 1}", "owner_id": owner,
+         "created_at": EXTRA_EPOCH + timedelta(hours=k)}
+        for k in range(n)
+    ])  # fmt: skip
 
 
 def _variant_writer(ticket_id: str, plan: SeedPlan) -> dict[str, Callable[[Engine], None]]:
@@ -245,6 +317,10 @@ def _variant_writer(ticket_id: str, plan: SeedPlan) -> dict[str, Callable[[Engin
         with engine.begin() as conn:
             conn.execute(text("DELETE FROM item WHERE owner_id = :o"), {"o": uid[OTHER].hex})
 
+    def no_items(engine: Engine) -> None:
+        with engine.begin() as conn:
+            conn.execute(text("DELETE FROM item"))
+
     def undated(engine: Engine) -> None:
         with engine.begin() as conn:
             conn.execute(
@@ -252,8 +328,33 @@ def _variant_writer(ticket_id: str, plan: SeedPlan) -> dict[str, Callable[[Engin
                 {"o": uid[ACTOR].hex},
             )
 
+    def with_users(*names: str) -> Callable[[Engine], None]:
+        return lambda engine: _add_users(engine, ticket_id, names)
+
+    def owning(**extra: int) -> Callable[[Engine], None]:
+        """Each seed user ``handle`` owns ``extra[handle]`` more items."""
+
+        def write(engine: Engine) -> None:
+            for handle, n in extra.items():
+                _fill(engine, ticket_id, uid[handle], f"bulk/{handle}", n)
+
+        return write
+
+    def counts(engine: Engine) -> None:
+        _add_users(engine, ticket_id, ["erin", "frank", "gina"])
+        owning(alice=3, bob=1)(engine)
+        _fill(engine, ticket_id, extra_id("user/frank"), "bulk/frank", 1)
+
+    own = {h: len(plan.owned("item", h)) for h in uid}
     return {"search": search, "soft": soft, "fresh": fresh, "no_bob_items": no_bob_items,
-            "undated": undated}  # fmt: skip
+            "undated": undated, "no_items": no_items,
+            "second_admin": with_users("dave"),
+            "more_users": with_users("dave", "erin", "frank", "gina"),
+            "counts": counts,
+            "alice_at_limit": owning(alice=QUOTA - own[ACTOR]),
+            "alice_below_limit": owning(alice=QUOTA - 1 - own[ACTOR]),
+            "admin_at_limit": owning(admin=QUOTA - own[ADMIN]),
+            }  # fmt: skip
 
 
 # ---- ticket-specific cases ----------------------------------------------------------------
@@ -413,6 +514,154 @@ def _t6_cases(plan: SeedPlan) -> list[Case]:
     ]
 
 
+def _t7_cases(plan: SeedPlan) -> list[Case]:
+    users = f"{API}/users"
+    uid = {h: plan.user(h).id for h in (ACTOR, OTHER, ADMIN, INACTIVE)}
+    dave = extra_id("user/dave")
+
+    def c(what: str, action: str, target: uuid.UUID | str, user: str,
+          db: str = "seed") -> Case:  # fmt: skip
+        return Case(f"t7.{what}", "POST", f"{users}/{target}/{action}", user=user, db=db,
+                    tables=("user",), route=f"{action}_user")  # fmt: skip
+
+    return [
+        c("admin_deactivates_alice", "deactivate", uid[ACTOR], ADMIN),
+        c("admin_activates_carol", "activate", uid[INACTIVE], ADMIN),
+        c("deactivate_already_inactive", "deactivate", uid[INACTIVE], ADMIN),
+        c("activate_already_active", "activate", uid[OTHER], ADMIN),
+        c("admin_deactivates_self", "deactivate", uid[ADMIN], ADMIN),
+        c("admin_activates_self", "activate", uid[ADMIN], ADMIN),
+        c("admin_deactivates_other_admin", "deactivate", dave, ADMIN, "second_admin"),
+        c("alice_deactivates_self", "deactivate", uid[ACTOR], ACTOR),
+        c("alice_deactivates_bob", "deactivate", uid[OTHER], ACTOR),
+        c("alice_activates_carol", "activate", uid[INACTIVE], ACTOR),
+        c("activate_unknown", "activate", MISSING_ID, ADMIN),
+    ]
+
+
+def _t8_cases(plan: SeedPlan) -> list[Case]:
+    users = f"{API}/users/"
+
+    def c(what: str, user: str = ADMIN, db: str = "more_users", **params: Any) -> Case:
+        return Case(f"t8.{what}", "GET", users, user=user, params=params, db=db,
+                    route="read_users")  # fmt: skip
+
+    return [
+        c("inactive_only", is_active="false"),
+        c("active_only", is_active="true"),
+        c("inactive_only_seed", db="seed", is_active="false"),
+        c("q_ignores_case", q="ALICE"),
+        c("q_mixed_case_email", q="erin.stone"),
+        c("q_domain_count", q="example.com"),
+        c("q_and_inactive", q="alice", is_active="false"),
+        c("q_and_active", q="alice", is_active="true"),
+        c("active_paged", is_active="true", skip=1, limit=2),
+        c("q_paged", q="example", skip=2, limit=2),
+        c("no_match", q="zzz"),
+        c("empty_q", q=""),
+        c("is_active_malformed", is_active="maybe"),
+        c("alice_cannot_filter", user=ACTOR, is_active="false"),
+    ]
+
+
+def _t9_cases(plan: SeedPlan) -> list[Case]:
+    items = f"{API}/items/"
+
+    def c(what: str, user: str, db: str, body: Any = None) -> Case:
+        return Case(f"t9.{what}", "POST", items, user=user, db=db,
+                    json=body if body is not None else {"title": "One more"},
+                    tables=("item",), route="create_item")  # fmt: skip
+
+    return [
+        c("alice_at_limit", ACTOR, "alice_at_limit"),
+        c("alice_at_limit_with_description", ACTOR, "alice_at_limit",
+          {"title": "One more", "description": "please"}),
+        c("alice_reaches_limit", ACTOR, "alice_below_limit"),
+        c("bob_while_alice_is_full", OTHER, "alice_at_limit"),
+        c("admin_counts_own_items_only", ADMIN, "alice_at_limit"),
+        c("admin_at_limit", ADMIN, "admin_at_limit"),
+        c("alice_while_admin_is_full", ACTOR, "admin_at_limit"),
+    ]  # fmt: skip
+
+
+def _t10_cases(plan: SeedPlan) -> list[Case]:
+    path = f"{API}/users/item-counts"
+
+    def c(what: str, user: str = ADMIN, db: str = "counts", **params: Any) -> Case:
+        return Case(f"t10.{what}", "GET", path, user=user, params=params or None, db=db,
+                    route="read_user_item_counts")  # fmt: skip
+
+    return [
+        c("admin_counts"),
+        c("admin_ties_by_email", db="seed"),
+        c("admin_window", skip=2, limit=3),
+        c("admin_tail", skip=5),
+        c("admin_no_items_anywhere", db="no_items"),
+        c("alice_not_admin", user=ACTOR),
+        # no "GET /users/{user_id} still works" case (t6 has one for /items/{id}): that
+        # route is not lifted, so arm L's emitted app never has it; the shadowing trap
+        # is caught by the cases above (a shadowed route answers 422)
+    ]
+
+
+def _t11_cases(plan: SeedPlan) -> list[Case]:
+    items = f"{API}/items/"
+    own, bobs = _row(plan, ACTOR)["id"], _row(plan, OTHER)["id"]
+    tables = ("item",)
+
+    def create(what: str, title: str) -> Case:
+        return Case(f"t11.{what}", "POST", items, user=ACTOR, json={"title": title},
+                    tables=tables, route="create_item")  # fmt: skip
+
+    def put(what: str, item: uuid.UUID, body: dict[str, Any], user: str = ACTOR) -> Case:
+        return Case(f"t11.{what}", "PUT", f"{items}{item}", user=user, json=body,
+                    tables=tables, route="update_item")  # fmt: skip
+
+    return [
+        create("create_padded", "  Groceries  "),
+        create("create_tabs_and_newlines", "\tWeekly report\n"),
+        create("create_inner_spaces", "Tax   return 2025"),
+        create("create_blank", "   "),
+        create("create_blank_mixed", " \t\n "),
+        create("create_empty", ""),
+        put("update_padded", own, {"title": " Renamed "}),
+        put("update_blank", own, {"title": "    ", "description": "changed"}),
+        put("update_description_only", own, {"description": "  keep my spaces  "}),
+        put("update_title_and_description", own, {"title": "\tBoth ", "description": " d "}),
+        put("admin_update_blank_other", bobs, {"title": " "}, user=ADMIN),
+        put("admin_update_padded_other", bobs, {"title": " Fixed "}, user=ADMIN),
+        put("blank_title_other_users_item", bobs, {"title": " "}),
+    ]
+
+
+def _t12_cases(plan: SeedPlan) -> list[Case]:
+    items = f"{API}/items"
+    own, bobs = _row(plan, ACTOR)["id"], _row(plan, OTHER)["id"]
+    email = {h: plan.user(h).email for h in (ACTOR, OTHER, ADMIN, INACTIVE)}
+
+    def c(what: str, item: uuid.UUID | str, user: str, to: Any) -> Case:
+        body = {"new_owner_email": to} if isinstance(to, str) else to
+        return Case(f"t12.{what}", "POST", f"{items}/{item}/transfer", user=user, json=body,
+                    tables=("item",), route="transfer_item")  # fmt: skip
+
+    return [
+        c("alice_to_bob", own, ACTOR, email[OTHER]),
+        c("alice_to_admin", own, ACTOR, email[ADMIN]),
+        c("admin_moves_bobs_item", bobs, ADMIN, email[ACTOR]),
+        c("admin_to_self", bobs, ADMIN, email[ADMIN]),
+        c("bob_takes_alices_item", own, OTHER, email[OTHER]),
+        c("bob_gives_alices_item_away", own, OTHER, email[ADMIN]),
+        c("bob_probes_unknown_email", own, OTHER, "nobody@example.com"),
+        c("bob_probes_inactive", own, OTHER, email[INACTIVE]),
+        c("alice_to_unknown", own, ACTOR, "nobody@example.com"),
+        c("alice_to_inactive", own, ACTOR, email[INACTIVE]),
+        c("alice_to_self", own, ACTOR, email[ACTOR]),
+        c("missing_item", MISSING_ID, ACTOR, email[OTHER]),
+        c("invalid_email", own, ACTOR, "not-an-email"),
+        c("no_body_field", own, ACTOR, {}),
+    ]
+
+
 SPECIFIC: dict[str, Callable[[SeedPlan], list[Case]]] = {
     "t1_search": _t1_cases,
     "t2_since": _t2_cases,
@@ -420,6 +669,12 @@ SPECIFIC: dict[str, Callable[[SeedPlan], list[Case]]] = {
     "t4_restore": _t4_cases,
     "t5_title_window": _t5_cases,
     "t6_stats": _t6_cases,
+    "t7_deactivate": _t7_cases,
+    "t8_user_filter": _t8_cases,
+    "t9_item_quota": _t9_cases,
+    "t10_owner_counts": _t10_cases,
+    "t11_title_trim": _t11_cases,
+    "t12_transfer": _t12_cases,
 }
 
 # ---- declared deviations ------------------------------------------------------------------
@@ -475,6 +730,30 @@ TITLE_LOCKED = Deviation(
 
 NOT_NULL = {("update_item", "title")}
 
+BLANK_TITLE = Deviation(
+    "blank-title-400", "ambiguity",
+    "An empty title: the reference keeps the template's validation (min_length=1, a 422 "
+    "before the handler runs); answering the ticket's 400 'Title must not be blank' is an "
+    "equally valid reading of 'a title that is empty after stripping'.",
+    400, {"detail": "Title must not be blank"}, accept_original=True,
+)  # fmt: skip
+BLANK_BEFORE_OWNER = Deviation(
+    "blank-title-before-ownership", "ambiguity",
+    "A blank title for another user's item: the reference checks ownership first (403), "
+    "as the template orders its checks; validating the title first (400) is an equally "
+    "valid reading and reveals nothing about the item.",
+    400, {"detail": "Title must not be blank"}, accept_original=True,
+)  # fmt: skip
+# ticket ambiguities: ticket -> case name -> accepted alternatives
+AMBIGUITIES: dict[str, dict[str, tuple[Deviation, ...]]] = {
+    "t11_title_trim": {
+        "create_item.boundary.title.below_min": (BLANK_TITLE,),
+        "update_item.boundary.title.below_min": (BLANK_TITLE,),
+        "t11.create_empty": (BLANK_TITLE,),
+        "t11.blank_title_other_users_item": (BLANK_BEFORE_OWNER,),
+    },
+}
+
 
 def accepted_for(ticket_id: str, cases: Sequence[Case]) -> dict[str, tuple[Deviation, ...]]:
     """The alternative answers accepted per case (besides the reference's own): the
@@ -501,6 +780,7 @@ def accepted_for(ticket_id: str, cases: Sequence[Case]) -> dict[str, tuple[Devia
             alts.append(_null_deviation(nulls[0]))
             if ticket_id == "t5_title_window" and c.user == ACTOR:
                 alts.append(TITLE_LOCKED)
+        alts += AMBIGUITIES.get(ticket_id, {}).get(c.name, ())
         if alts:
             out[c.name] = tuple(alts)
     return out
@@ -559,11 +839,11 @@ def ticket_oracle(ticket_id: str) -> TicketOracle:
 
     specific = SPECIFIC[ticket_id](suite.plan)
     cases = (*suite.cases, *specific)
-    items = ref.module("api.routes.items")
     deps = ref.module("api.deps")
     branches: dict[str, list[Callable[..., Any]]] = {}
     for r in routes:
-        fs = [getattr(items, r.name), deps.get_current_user]
+        router = "users" if r.path.startswith(f"{API}/users") else "items"
+        fs = [getattr(ref.module(f"api.routes.{router}"), r.name), deps.get_current_user]
         if r.auth == "admin":
             fs.append(deps.get_current_active_superuser)
         branches[r.name] = fs

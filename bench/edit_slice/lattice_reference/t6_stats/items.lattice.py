@@ -4,21 +4,18 @@
 @endpoint("GET", "/api/v1/items/", auth=Customer, response="ItemPublic")
 def read_items(user: CurrentUser, skip: Int(ge=0) = 0, limit: Int(ge=0, le=100) = 100) -> Page:
     items = fetch(Item)
-    mine = owned(items, by=user)
-    ordered = sort(mine, by=["created_at"], desc=True)
+    visible = owned(items, by=user)
+    ordered = sort(visible, by=["created_at"], desc=True)
     result = page(ordered, limit=limit, offset=skip, total=True)
     return result
 
 
 @endpoint("GET", "/api/v1/items/stats", auth=Customer, response="ItemStats")
 def read_item_stats(user: CurrentUser) -> One:
-    me = select(user, cols=["id"])
-    caller = rename(me, id="owner_id")
     items = fetch(Item)
-    visible = owned(items, by=user)
-    mine = join(visible, caller, on=["owner_id"])
+    own = mine(items, by=user)
     stats = group(
-        mine, by=[], count=agg.count(), latest_created_at=agg.max(col("created_at"), nulls="skip")
+        own, by=[], count=agg.count(), latest_created_at=agg.max(col("created_at"), nulls="skip")
     )
     return stats
 

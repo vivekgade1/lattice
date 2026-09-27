@@ -170,13 +170,9 @@ def test_arm_l_keeps_earlier_files_across_rounds():
 
 
 def test_a_silent_answer_passes_the_smoke_run_and_is_scored_silent():
-    """Admins get everyone's stats: the visible smoke run (as a normal user) passes, so
-    there is no repair; the hidden oracle finds it."""
-    leaky = _l_answer(
-        "t6_stats",
-        '    mine = join(visible, caller, on=["owner_id"])\n    stats = group(\n        mine,',
-        "    stats = group(\n        visible,",
-    )
+    """owned() for "my items": admins get everyone's stats. The visible smoke run (as a
+    normal user) passes, so there is no repair; the hidden oracle finds it."""
+    leaky = _l_answer("t6_stats", "own = mine(items, by=user)", "own = owned(items, by=user)")
     gen = ScriptedGenerator([leaky])
     r = run.run_arm("L", "t6_stats", gen)
     assert (r.outcome, r.rounds) == ("silent", 1)
@@ -240,9 +236,13 @@ def test_the_dry_run_scores_every_reference_correct(arm, ticket_id):
     assert r.model == "reference" and r.dry_run and r.cost_usd == 0
 
 
-def test_every_ticket_is_expressible_in_lattice():
-    assert GAPS == {}
-    assert all(has_lattice_reference(t) for t in TICKET_IDS)
+def test_every_ticket_is_expressible_in_lattice_but_the_recorded_gaps():
+    """The baseline six are all expressible; a held-out ticket current Lattice cannot
+    express is a recorded gap (with the missing feature), not a written solution."""
+    assert set(GAPS) <= set(tickets.HELD_OUT)
+    assert set(GAPS) == {"t12_transfer"}
+    assert all(has_lattice_reference(t) for t in tickets.BASELINE)
+    assert all(has_lattice_reference(t) != (t in GAPS) for t in TICKET_IDS)
 
 
 # ---- nothing hidden reaches a prompt --------------------------------------------------------
@@ -328,3 +328,107 @@ def test_the_estimate_counts_characters_without_a_key(monkeypatch):
     assert rows["L"]["prompt_tokens"] == round((len(system) + len(user)) / run.CHARS_PER_TOKEN)
     assert est["runs"] == 6 and est["total_usd"] > 0 and not est["counted"]
     assert "6 runs, expected total $" in run.render_estimate(est)
+
+
+# ---- artefacts and truncation ---------------------------------------------------------------
+
+
+class _Stops:
+    """A generator whose answers carry a stop reason (``max_tokens``: cut off)."""
+
+    def __init__(self, answers: Sequence[tuple[str, str]]) -> None:
+        self.answers = list(answers)
+        self.calls: list[tuple[str, list[Mapping[str, str]]]] = []
+
+    def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
+        self.calls.append((system, list(messages)))
+        text, stop = self.answers.pop(0)
+        return Generation(text, Usage(10, 20), 0.1, stop, model="m")
+
+
+def test_every_round_records_its_stop_reason():
+    gen = _Stops([("no code", "end_turn"), (_l_answer("t6_stats"), "end_turn")])
+    r = run.run_arm("L", "t6_stats", gen, max_tokens=1234)
+    assert (r.outcome, r.stop_reasons, r.max_tokens) == ("correct", ["end_turn", "end_turn"], 1234)
+
+
+def test_a_truncated_answer_is_not_a_format_error():
+    cut = _l_answer("t6_stats")[:400]  # cut off mid-block: no complete file
+    gen = _Stops([(cut, "max_tokens"), (_l_answer("t6_stats"), "end_turn")])
+    r = run.run_arm("L", "t6_stats", gen)
+    assert (r.outcome, r.round_problems) == ("correct", ["truncated", None])
+    assert r.stop_reasons == ["max_tokens", "end_turn"]
+    feedback = gen.calls[1][1][-1]["content"]
+    assert "cut off" in feedback and run.NO_FILES not in feedback
+    # complete file blocks before the cut are not trusted either
+    whole = _p_answer("t1_search") + "\n\nAnd one more thing"
+    gen = _Stops([(whole, "max_tokens")] * 3)
+    r = run.run_arm("P", "t1_search", gen)
+    assert (r.outcome, r.failure, r.round_problems) == ("loud", "truncated", ["truncated"] * 3)
+
+
+def test_a_refused_round_records_its_stop_reason():
+    r = run.run_arm("L", "t1_search", _Priced([], refuse=True), model="claude-haiku-4-5")
+    assert r.stop_reasons == ["refusal"]
+
+
+def test_artefacts_hold_every_rounds_output_and_candidate_files(tmp_path):
+    root = tmp_path / "results.jsonl.artefacts"
+    broken = _l_answer(
+        "t6_stats", 'agg.max(col("created_at"), nulls="skip")', 'agg.max(col("created_at"))'
+    )
+    gen = ScriptedGenerator(["no code at all", broken, _l_answer("t6_stats")])
+    r = run.run_arm("L", "t6_stats", gen, model="claude-x", rep=2, artefact_root=root)
+    rep = root / "claude-x" / "L" / "t6_stats" / "rep2"
+    assert r.artefacts == str(rep) and r.round_problems == ["no_code", "static", None]
+    assert sorted(p.name for p in rep.iterdir()) == ["round1", "round2", "round3"]
+    assert (rep / "round1" / "response.md").read_text() == "no code at all"
+    assert not (rep / "round1" / "files").exists()  # nothing parsed
+    meta = json.loads((rep / "round2" / "round.json").read_text())
+    assert (meta["problem"], meta["stop_reason"]) == ("static", "end_turn")
+    assert "L421" in meta["feedback"]
+    final = rep / "round3" / "files"
+    assert (final / "items.lattice.py").read_text() == lattice_reference_files("t6_stats")[
+        "items.lattice.py"
+    ]
+    assert (final / "profile.py").exists()
+
+
+def test_arm_p_artefacts_are_the_candidate_python_files(tmp_path):
+    gen = ScriptedGenerator([_p_answer("t4_restore")])
+    r = run.run_arm("P", "t4_restore", gen, model="m", artefact_root=tmp_path)
+    files = tmp_path / "m" / "P" / "t4_restore" / "rep0" / "round1" / "files"
+    # the start overlay (the t3 reference) plus the answer's files, relative to the app
+    assert r.outcome == "correct" and r.artefacts is not None
+    for rel, src in reference_files("t4_restore").items():
+        assert (files / rel).read_text() == src
+    assert (files / "api" / "routes" / "items.py").exists()
+
+
+def test_no_artefacts_without_a_root():
+    r = run.run_arm("L", "t6_stats", ScriptedGenerator([_l_answer("t6_stats")]))
+    assert r.artefacts is None
+
+
+def test_the_cli_writes_artefacts_next_to_the_jsonl(tmp_path, monkeypatch):
+    import lattice.llm.client as client
+
+    seen: dict[str, object] = {}
+
+    class _Fake:
+        def __init__(self, model: str, max_tokens: int, effort: str) -> None:
+            seen["max_tokens"] = max_tokens
+            self.inner = ScriptedGenerator([_l_answer("t6_stats")])
+
+        def generate(self, system, messages):
+            return self.inner.generate(system, messages)
+
+    monkeypatch.setattr(client, "ClaudeGenerator", _Fake)
+    out = tmp_path / "res.jsonl"
+    args = ["--model", "fake", "--arm", "L", "--tickets", "t6_stats", "--out", str(out)]
+    assert run.main([*args, "--max-tokens", "777"]) == 0
+    record = json.loads(out.read_text().splitlines()[0])
+    assert seen["max_tokens"] == 777 and record["max_tokens"] == 777
+    rep = tmp_path / "res.jsonl.artefacts" / "fake" / "L" / "t6_stats" / "rep0"
+    assert record["artefacts"] == str(rep) and (rep / "round1" / "response.md").exists()
+    assert run._parser().parse_args([]).max_tokens == run.MAX_TOKENS == 16000

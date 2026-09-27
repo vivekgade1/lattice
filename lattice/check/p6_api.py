@@ -59,7 +59,7 @@ _TABLE_ARG_OPS = ("update", "delete")
 _ROW_FILTERS = frozenset({"where", "sort", "select", "limit"})
 # ops a parent-row lookup for an owned-through write may pass through (_pinned)
 _PIN_CHAIN = frozenset(
-    {"fetch", "owned", "where", "sort", "select", "limit", "one", "require", "derive"}
+    {"fetch", "owned", "mine", "where", "sort", "select", "limit", "one", "require", "derive"}
 )
 # ops whose result has exactly as many rows as their (first) input
 _ROW_WISE = frozenset(
@@ -398,20 +398,21 @@ class _Endpoint:
     # ---- owned() placement (L404), checks before owned() (L802) ------------------------
 
     def _owned_calls(self) -> None:
-        """owned() filters by ONE owner column, so it must see the rows of one fetched
+        """owned() / mine() filter by ONE owner column, so it must see the rows of one fetched
         table: fetch(T), possibly narrowed by where/sort/select/limit."""
-        for call in self._calls("owned"):
-            if self._type(call) is None or not call.args:
-                continue  # P4 reported it
-            if self._over_one_fetch(call.args[0]):
-                continue
-            self.ctx.error(
-                "L404",
-                call,
-                "owned() must filter the rows of one fetched table",
-                "apply owned() to each table right after fetch, before joining: "
-                "mine = owned(fetched, by=user)",
-            )
+        for op in ("owned", "mine"):
+            for call in self._calls(op):
+                if self._type(call) is None or not call.args:
+                    continue  # P4 reported it
+                if self._over_one_fetch(call.args[0]):
+                    continue
+                self.ctx.error(
+                    "L404",
+                    call,
+                    f"{op}() must filter the rows of one fetched table",
+                    f"apply {op}() to each table right after fetch, before joining: "
+                    f"{'visible' if op == 'owned' else 'own'} = {op}(fetched, by=user)",
+                )
 
     def _owner_is_inputs(self) -> None:
         """require(t, owner_is(user)) checks ONE owner column (or owner_via key) in SQL,
@@ -427,7 +428,7 @@ class _Endpoint:
                 call.args[1],
                 "owner_is() must check the rows of one fetched table",
                 "check each table before joining: "
-                "row = one(where(fetch(T), ...)); mine = require(row, owner_is(user), ...)",
+                "row = one(where(fetch(T), ...)); checked = require(row, owner_is(user), ...)",
             )
 
     def _over_one_fetch(self, node: ast.expr, also: frozenset[str] = frozenset()) -> bool:
@@ -834,8 +835,8 @@ class _Endpoint:
             "L802",
             call,
             f"{table}.{fk} must reference a {parent} row the caller owns",
-            f"look it up first: mine = owned(fetch({parent}), by=user); "
-            f'found = where(mine, col("{key}") == {shown}); '
+            f"look it up first: visible = owned(fetch({parent}), by=user); "
+            f'found = where(visible, col("{key}") == {shown}); '
             f'parent = one(found, else_=NotFound("...")); then {fk}={shown}',
         )
 

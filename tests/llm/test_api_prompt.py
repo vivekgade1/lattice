@@ -610,7 +610,7 @@ def test_api_loop_examples_check_clean() -> None:
 @endpoint("GET", "/orders/numbered", auth=Customer)
 def numbered_orders(user: CurrentUser) -> Page:
     orders = fetch(Orders)
-    mine = owned(orders, by=user)
+    visible = owned(orders, by=user)
     {API_WINDOW_EXAMPLE}
     result = page(numbered, limit=100)
     return result
@@ -709,12 +709,12 @@ def example(
     order: OneOf("newest", "oldest") = "newest",
 ) -> One | NotFound | Forbidden:
     items = fetch(Item)
-    mine = owned(items, by=user)
-    found = where(mine, col("id") == id)
+    visible = owned(items, by=user)
+    found = where(visible, col("id") == id)
     t = one(found, else_=NotFound("item"))
     a = {where}
-    b = where(mine, {contains})
-    c = derive(mine, hours={diff})
+    b = where(visible, {contains})
+    c = derive(visible, hours={diff})
     e = {sort}
     r = {require}
     d = {update}
@@ -723,3 +723,30 @@ def example(
     result = check_source(source, PROFILE)
     errors = [d.render() for d in result.diagnostics if d.severity.value == "error"]
     assert result.ok and errors == [], errors
+
+
+def test_both_arms_tell_accessible_rows_from_the_callers_own_rows() -> None:
+    """The owned()/mine() distinction (thin slice: "my items" written as owned() leaked
+    every row to admins) is stated once in each arm's reference part, with equal
+    information: access filter = Admin sees every row; own rows = Admin too."""
+    from lattice.llm.api_prompt import BASELINE_OWN_ROWS, LATTICE_OWN_ROWS
+
+    assert LATTICE_OWN_ROWS == (
+        "- `owned(t, by=user)` = rows the caller may access (admins: all rows). "
+        "`mine(t, by=user)` = the caller's own rows only (admins too) — use it for "
+        "'my …' features."
+    )
+    assert "owner_id == current_user.id" in BASELINE_OWN_ROWS
+    assert "superusers" in BASELINE_OWN_ROWS and "'my …' features" in BASELINE_OWN_ROWS
+    assert 0.7 <= len(BASELINE_OWN_ROWS) / len(LATTICE_OWN_ROWS) <= 1.3
+    for hints in (True, False):
+        assert LATTICE_OWN_ROWS in api_lattice_system_prompt(hints=hints)
+        assert BASELINE_OWN_ROWS in api_baseline_system_prompt(hints=hints)
+
+
+def test_owned_results_are_never_named_as_the_callers_own() -> None:
+    """Every owned() result in the Lattice guide reads as visible rows, not as "mine"."""
+    prompt = api_lattice_system_prompt(hints=True)
+    bindings = re.findall(r"\b(\w+) = owned\(", prompt)
+    assert bindings and all(b.startswith("visible") for b in bindings), bindings
+    assert not re.search(r"\b(mine|my_\w+) = ", prompt)

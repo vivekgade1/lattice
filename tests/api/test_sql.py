@@ -501,3 +501,41 @@ def test_owned_through_a_parent_is_one_statement(commerce) -> None:
     assert mine == expected and mine
     every = conn.execute(query.text, bind_values(query, user_id=1, is_admin=True)).fetchall()
     assert len(every) == conn.execute("SELECT COUNT(*) FROM order_items").fetchone()[0]
+
+
+def test_mine_keeps_only_the_callers_rows_even_for_an_admin(commerce) -> None:
+    _, conn, _, _ = commerce
+    rels = _orders_rels()
+    rels["m"] = Rel("m", "mine", ("o",), {"owner": "customer_id"}, rels["o"].schema)
+    query = compile_select(rels, "m")
+    assert query.user and "__is_admin" not in query.text
+    expected = conn.execute(
+        "SELECT id, customer_id, status FROM orders WHERE customer_id = 1 ORDER BY id"
+    ).fetchall()
+    assert expected
+    for admin in (False, True):
+        rows = conn.execute(query.text, bind_values(query, user_id=1, is_admin=admin)).fetchall()
+        assert rows == expected
+
+
+def test_mine_through_a_parent_follows_the_owned_chain(commerce) -> None:
+    _, conn, _, _ = commerce
+    items = Schema.from_pairs([("id", S.INT), ("order_id", S.INT), ("qty", S.INT)])
+    rels = {
+        "i": Rel("i", "fetch", (), {"table": "order_items", "order": ("id",)}, items),
+        "m": Rel("m", "mine", ("i",), {"via": ("order_id", "orders", "id", "customer_id")}, items),
+    }
+    query = compile_select(rels, "m")
+    assert (
+        '"order_id" IN (SELECT "id" FROM "orders" WHERE "customer_id" = :__user_id)'
+        in query.text
+    )
+    assert "__is_admin" not in query.text and sqlite3.complete_statement(query.text + ";")
+    expected = conn.execute(
+        "SELECT i.id, i.order_id, i.qty FROM order_items i JOIN orders o ON o.id = i.order_id "
+        "WHERE o.customer_id = 1 ORDER BY i.id"
+    ).fetchall()
+    assert expected
+    for admin in (False, True):
+        rows = conn.execute(query.text, bind_values(query, user_id=1, is_admin=admin)).fetchall()
+        assert rows == expected

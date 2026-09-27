@@ -32,6 +32,7 @@ from lattice.catalog import (
     IMPORTABLE,
     OP_ALIASES,
     PUBLIC_ROLE,
+    SOFT_API_NAMES,
     TABLE_OPS,
     USER_PARAM,
 )
@@ -107,6 +108,9 @@ class _Resolver:
         self.consts = Scope(self.globals_)
         self.tables = Scope(self.consts)
         self.step_scopes: list[Scope] = []
+        # the soft API names (SOFT_API_NAMES) the current body may bind: those it never
+        # calls as an op
+        self.soft: frozenset[str] = frozenset()
         self.reported: set[tuple[str, str, int]] = set()
         # module-level table / constant names -> first binding line; later steps -> def line
         for stmt in module.body:
@@ -123,6 +127,7 @@ class _Resolver:
     def run(self) -> None:
         if self.ctx.profile.api is not None:
             self._reserved_names()
+        self.soft = self._bindable_soft_names(self.module)
         for stmt in self.module.body:
             match stmt:
                 case ast.ImportFrom():
@@ -183,7 +188,25 @@ class _Resolver:
             return True
         return is_constant_expr(stmt.value)
 
+    def _bindable_soft_names(self, node: ast.AST) -> frozenset[str]:
+        """The soft API names `node` may bind as variables: the ones it never calls."""
+        if self.ctx.profile.api is None:
+            return frozenset()
+        called = {
+            n.func.id
+            for n in ast.walk(node)
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+        }
+        return SOFT_API_NAMES - called
+
     def _step(self, fn: ast.FunctionDef) -> None:
+        outer_soft, self.soft = self.soft, self._bindable_soft_names(fn)
+        try:
+            self._step_body(fn)
+        finally:
+            self.soft = outer_soft
+
+    def _step_body(self, fn: ast.FunctionDef) -> None:
         scope = Scope(self.consts)
         self.step_scopes.append(scope)
         where = _StepCtx(fn.name, fn.lineno)
@@ -285,8 +308,18 @@ class _Resolver:
             existing = None
             for s in visible:
                 existing = existing or s.lookup(name)
+            if existing is not None and existing.kind == "ambient" and name in self.soft:
+                existing = None  # e.g. `mine = owned(...)` in a body that never calls mine()
             if existing is not None:
-                if existing.kind == "ambient":
+                if existing.kind == "ambient" and name in SOFT_API_NAMES:
+                    self.ctx.error(
+                        "L205",
+                        node,
+                        f"'{name}' names the operation {name}() this body calls; it "
+                        "cannot also be a variable",
+                        "use a different name, e.g. 'own'",
+                    )
+                elif existing.kind == "ambient":
                     self.ctx.error(
                         "L205",
                         node,

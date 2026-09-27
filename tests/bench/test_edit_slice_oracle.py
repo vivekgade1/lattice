@@ -26,10 +26,11 @@ from bench.edit_slice.reference import (
     reference_files,
     reference_variant,
 )
-from bench.edit_slice.tickets import TICKETS, ticket
+from bench.edit_slice.tickets import BASELINE, HELD_OUT, TICKETS, ticket
 from bench.edit_slice.variant import load_variant
 from bench.template_app import make_app
 from bench.template_app.seed import TEMPLATE_USERS, build_template_db
+from lattice.importer.verify import verify
 
 IDS = [t.id for t in TICKETS]
 API = "/api/v1"
@@ -41,20 +42,35 @@ EXPECTED_COUNTS = {
     "t4_restore": (10, 5),
     "t5_title_window": (25, 9),
     "t6_stats": (6, 6),
+    "t7_deactivate": (18, 11),
+    "t8_user_filter": (15, 14),
+    "t9_item_quota": (20, 7),
+    "t10_owner_counts": (15, 6),
+    "t11_title_trim": (45, 13),
+    "t12_transfer": (17, 14),
 }
 
 
 # ---- tickets -------------------------------------------------------------------------------
 
 
-def test_six_tickets_with_their_routes_and_files():
-    assert IDS == [
+def test_twelve_tickets_with_their_routes_and_files():
+    assert IDS == [*BASELINE, *HELD_OUT]
+    assert list(BASELINE) == [
         "t1_search",
         "t2_since",
         "t3_soft_delete",
         "t4_restore",
         "t5_title_window",
         "t6_stats",
+    ]
+    assert list(HELD_OUT) == [
+        "t7_deactivate",
+        "t8_user_filter",
+        "t9_item_quota",
+        "t10_owner_counts",
+        "t11_title_trim",
+        "t12_transfer",
     ]
     for t in TICKETS:
         assert t.title and t.text and t.routes and t.files
@@ -74,6 +90,12 @@ def test_six_tickets_with_their_routes_and_files():
         ("t3_soft_delete", ["count", "404"]),
         ("t5_title_window", ["timezone", "naive"]),
         ("t6_stats", ["route order", "before"]),
+        ("t7_deactivate", ["hashed_password", "normal user", "other admin"]),
+        ("t8_user_filter", ["truth", "filtered count", "admin-only"]),
+        ("t9_item_quota", ["own items only", "49", "51"]),
+        ("t10_owner_counts", ["zero", "no items", "route order", "inactive"]),
+        ("t11_title_trim", ["description only", "tab", "newline"]),
+        ("t12_transfer", ["not enough permissions", "owner or", "before"]),
     ],
 )
 def test_the_traps_are_not_spelled_out(tid, spelled_out):
@@ -135,6 +157,20 @@ def test_each_reference_is_correct_against_its_own_oracle(tid, reference_outcome
     assert outcome.kind == "correct", outcome.render()
     assert outcome.unverified == (), outcome.render()
     assert {c.verdict for c in outcome.cases.values()} == {"equal"}
+
+
+@pytest.mark.parametrize("tid", HELD_OUT)
+def test_held_out_references_never_crash(tid):
+    """A reference 5xx would be 'equal' to a candidate crashing the same way, hiding a
+    broken case; only the template's own null-title IntegrityError is allowed."""
+    o = oracle.ticket_oracle(tid)
+    result = verify(o.reference_factory, o.reference_factory, o.db_factory, o.cases,
+                    oracle.RULES, {}, login=o.login)  # fmt: skip
+    crashed = {n for n, rec in result.original.items() if rec.status >= 500}
+    allowed = {c.name for c in o.cases
+               if any(v is None and (c.route, k) in oracle.NOT_NULL
+                      for k, v in (c.json or {}).items())}  # fmt: skip
+    assert crashed <= allowed, sorted(crashed - allowed)
 
 
 def test_case_counts(reference_outcomes):
@@ -223,7 +259,123 @@ TRAPS = {
     ),
     # since taken as a str and parsed by hand: an invalid value crashes (500)
     "since-parsed-by-hand": ("t2_since", "loud", lambda: _since_by_hand()),
+    # ---- the held-out tickets
+    # deactivate open to every signed-in user (the admin dependency dropped)
+    "deactivate-without-admin-check": (
+        "t7_deactivate",
+        "silent",
+        lambda: _patched(
+            "t7_deactivate",
+            "api/routes/users.py",
+            '    "/{user_id}/deactivate",\n'
+            "    dependencies=[Depends(get_current_active_superuser)],\n",
+            '    "/{user_id}/deactivate",\n',
+        ),
+    ),
+    # `if is_active:` -- is_active=false skips the filter
+    "is-active-false-ignored": (
+        "t8_user_filter",
+        "silent",
+        lambda: _patched(
+            "t8_user_filter",
+            "api/routes/users.py",
+            "    if is_active is not None:\n",
+            "    if is_active:\n",
+        ),
+    ),
+    # the quota counts every item the caller can see (an admin sees them all)
+    "quota-counts-visible-items": (
+        "t9_item_quota",
+        "silent",
+        lambda: _patched(
+            "t9_item_quota",
+            "api/routes/items.py",
+            "select(func.count()).select_from(Item).where(Item.owner_id == current_user.id)",
+            "select(func.count()).select_from(Item).where(\n"
+            "        col(Item.id).is_not(None) if current_user.is_superuser\n"
+            "        else Item.owner_id == current_user.id\n"
+            "    )",
+        ),
+    ),
+    # the quota refuses the 50th item instead of the 51st
+    "quota-off-by-one": (
+        "t9_item_quota",
+        "silent",
+        lambda: _patched(
+            "t9_item_quota",
+            "api/routes/items.py",
+            "if owned >= ITEM_LIMIT:",
+            "if owned >= ITEM_LIMIT - 1:",
+        ),
+    ),
+    # an inner join: users without items disappear from the counts
+    "counts-drop-users-without-items": (
+        "t10_owner_counts",
+        "silent",
+        lambda: _patched(
+            "t10_owner_counts",
+            "api/routes/users.py",
+            ".outerjoin(Item, col(Item.owner_id) == User.id)",
+            ".join(Item, col(Item.owner_id) == User.id)",
+        ),
+    ),
+    # the counts route declared after /{user_id}: "item-counts" is parsed as a user id
+    "counts-shadowed-by-user-route": (
+        "t10_owner_counts",
+        "silent",
+        lambda: _move_counts_after_read_user(),
+    ),
+    # the title is stripped on create only
+    "trim-on-create-only": (
+        "t11_title_trim",
+        "silent",
+        lambda: _patched(
+            "t11_title_trim",
+            "api/routes/items.py",
+            "    update_dict = _stripped_title(item_in.model_dump(exclude_unset=True))\n",
+            "    update_dict = item_in.model_dump(exclude_unset=True)\n",
+        ),
+    ),
+    # a PUT without a title (description only) crashes: None.strip()
+    "trim-assumes-a-title": (
+        "t11_title_trim",
+        "loud",
+        lambda: _patched(
+            "t11_title_trim",
+            "api/routes/items.py",
+            '    if "title" not in data or data["title"] is None:\n        return data\n'
+            '    title = data["title"].strip()\n',
+            '    title = data.get("title").strip()\n',
+        ),
+    ),
+    # transfer without the ownership check: anyone can take anyone's item
+    "transfer-without-owner-check": (
+        "t12_transfer",
+        "silent",
+        lambda: _patched(
+            "t12_transfer",
+            "api/routes/items.py",
+            "    if not current_user.is_superuser and (item.owner_id != current_user.id):\n"
+            '        raise HTTPException(status_code=403, detail="Not enough permissions")\n'
+            "    new_owner = ",
+            "    new_owner = ",
+        ),
+    ),
+    # the new owner looked up before the ownership check: a stranger can probe emails
+    "transfer-checks-email-first": (
+        "t12_transfer",
+        "silent",
+        lambda: _transfer_email_first(),
+    ),
 }
+
+HELD_OUT_TRAPS = sorted(n for n, (tid, _, _) in TRAPS.items() if tid in HELD_OUT)
+
+
+def test_held_out_traps_score_silent():
+    silent = [n for n in HELD_OUT_TRAPS if TRAPS[n][1] == "silent"]
+    assert len(silent) >= 3
+    assert {TRAPS[n][0] for n in HELD_OUT_TRAPS} == set(HELD_OUT)
 
 
 def _move_stats_after_read_item() -> dict[str, str]:
@@ -235,6 +387,39 @@ def _move_stats_after_read_item() -> dict[str, str]:
     src = src[:start] + src[end:]
     anchor = src.index('@router.post("/"')
     files["api/routes/items.py"] = src[:anchor] + stats + src[anchor:]
+    return files
+
+
+def _move_counts_after_read_user() -> dict[str, str]:
+    files = dict(reference_files("t10_owner_counts"))
+    src = files["api/routes/users.py"]
+    start = src.index('@router.get(\n    "/item-counts"')
+    end = src.index('@router.get("/{user_id}"')
+    counts = src[start:end]
+    src = src[:start] + src[end:]
+    anchor = src.index('@router.patch(\n    "/{user_id}"')
+    files["api/routes/users.py"] = src[:anchor] + counts + src[anchor:]
+    return files
+
+
+def _transfer_email_first() -> dict[str, str]:
+    files = dict(reference_files("t12_transfer"))
+    path = "api/routes/items.py"
+    src = files[path]
+    check = (
+        "    if not current_user.is_superuser and (item.owner_id != current_user.id):\n"
+        '        raise HTTPException(status_code=403, detail="Not enough permissions")\n'
+    )
+    lookup = "    new_owner = crud.get_user_by_email(session=session, email=body.new_owner_email)\n"
+    lookup_block = lookup + (
+        "    if not new_owner:\n"
+        '        raise HTTPException(status_code=404, detail="User not found")\n'
+    )
+    start = src.index('@router.post("/{id}/transfer"')
+    head, tail = src[:start], src[start:]
+    assert tail.count(check + lookup_block) == 1
+    tail = tail.replace(check + lookup_block, lookup_block + check)
+    files[path] = head + tail
     return files
 
 

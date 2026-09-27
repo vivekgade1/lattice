@@ -1,6 +1,7 @@
 """The edit slice's change tickets (plan 2026-09-27 thin slice, node E1).
 
-Six realistic changes to the vendored FastAPI template (``bench/template_app``), written
+Twelve realistic changes to the vendored FastAPI template (``bench/template_app``): the
+baseline six (t1-t6) and a held-out six (t7-t12, see below), written
 the way a PM or engineer files them. Each names what to build and the exact response
 contract (paths, parameter names, status codes, error details) -- the hidden acceptance
 suite compares answers exactly, so the contract has to be stated -- but *not* the
@@ -20,6 +21,34 @@ traps (``bench/edit_slice/oracle.py`` tests each one):
 * ``t6_stats`` -- ``/items/stats`` must not be swallowed by ``/items/{id}``; admins get
   their *own* stats (the list's admin-sees-all rule does not apply); no items is
   ``count: 0``.
+
+**Held-out set (t7-t12).** Written after the language was extended to close the gaps
+t1-t6 exposed, to guard against tuning Lattice to those six. The ticket texts were
+written first, in this order -- t7, t8, t9, t10, t11, t12 -- picked as a real backlog
+would hold them (users/admin features, a plan limit, an aggregate admin page, a
+validation change, an ownership write), before any was checked for Lattice
+expressibility. Their traps:
+
+* ``t7_deactivate`` -- a normal user gets the app's usual superuser 403, even on their
+  own account (not the self-deactivation message); the answer is ``UserPublic`` (no
+  ``hashed_password``); an admin may deactivate *another* admin; activating yourself
+  is allowed;
+* ``t8_user_filter`` -- ``is_active=false`` really filters (a truthiness test skips
+  it); ``count`` is the filtered count; ``q`` ignores case; the list stays admin-only;
+  both filters combine;
+* ``t9_item_quota`` -- the limit counts the caller's *own* items (an admin's too, not
+  every item they can see); reaching 50 is allowed, the 51st is refused (off by one);
+  a refused create writes nothing;
+* ``t10_owner_counts`` -- users with no items are listed with 0 (an inner join drops
+  them); ``/users/item-counts`` must not be swallowed by ``/users/{user_id}``; inactive
+  users are users too; ``count`` is the number of users;
+* ``t11_title_trim`` -- a ``PUT`` without a ``title`` (description only) still works;
+  the stored title is the stripped one (the answer too); tabs and newlines are
+  whitespace; inner spaces stay;
+* ``t12_transfer`` -- only the item's owner or an admin may transfer (anyone else gets
+  the app's 403 "Not enough permissions"), and that is checked *before* the email is
+  looked up (a stranger cannot probe for accounts); an admin may transfer anyone's
+  item; no error writes anything; an unknown item is the app's 404.
 
 ``files`` are the template files the reference changes (paths relative to
 ``bench/template_app/app``); ``routes`` the routes the ticket touches. ``base`` names the
@@ -43,6 +72,7 @@ class Ticket:
 
 ITEMS = "api/routes/items.py"
 MODELS = "models.py"
+USERS = "api/routes/users.py"
 
 TICKETS: tuple[Ticket, ...] = (
     Ticket(
@@ -141,7 +171,104 @@ other item endpoints.""",
         routes=("GET /api/v1/items/stats",),
         files=(MODELS, ITEMS),
     ),
+    # ---- the held-out set (see the module docstring), in the order written ----
+    Ticket(
+        id="t7_deactivate",
+        title="Admin endpoints to deactivate and reactivate a user",
+        text="""\
+Support needs a quick way to lock an account without deleting it, and to undo that.
+Add two admin (superuser) endpoints:
+
+- `POST /api/v1/users/{user_id}/deactivate` sets the user's `is_active` to false;
+- `POST /api/v1/users/{user_id}/activate` sets it back to true.
+
+Both return the user in the same shape as `GET /api/v1/users/{user_id}`. Calling one on
+a user who is already in that state is fine: nothing changes and the user is returned.
+Unknown id: 404 with detail "User not found". An admin must not be able to lock
+themselves out: deactivating your own account is refused with 403 and the detail
+"Super users are not allowed to deactivate themselves".""",
+        routes=(
+            "POST /api/v1/users/{user_id}/deactivate",
+            "POST /api/v1/users/{user_id}/activate",
+        ),
+        files=(USERS,),
+    ),
+    Ticket(
+        id="t8_user_filter",
+        title="Filter and search the admin user list",
+        text="""\
+The admin user list is getting long. Add two optional query parameters to
+`GET /api/v1/users/`:
+
+- `is_active`: `true` or `false`, only users with that status;
+- `q`: only users whose email contains `q`, ignoring case (`q=ALICE` finds
+  "alice@example.com").
+
+They can be combined. `count` is the number of matching users, and `skip`/`limit` page
+through the matching users in the current order. Without the parameters the endpoint
+behaves as it does today.""",
+        routes=("GET /api/v1/users/",),
+        files=(USERS,),
+    ),
+    Ticket(
+        id="t9_item_quota",
+        title="Limit users to 50 items",
+        text="""\
+We're introducing plan limits. Every account, admins included, can own at most 50 items.
+`POST /api/v1/items/` by a user who already owns 50 items is refused with 409 and the
+detail "Item limit reached: you can own at most 50 items". Nothing else about creating
+items changes.""",
+        routes=("POST /api/v1/items/",),
+        files=(ITEMS,),
+    ),
+    Ticket(
+        id="t10_owner_counts",
+        title="Admin page: item counts per user",
+        text="""\
+Admins want to see who is actually using the app. Add `GET /api/v1/users/item-counts`,
+for admins (superusers) only, listing every user with the number of items they own:
+
+    {"data": [{"id": <user id>, "email": <email>, "item_count": <n>}, ...],
+     "count": <number of users>}
+
+Sorted by `item_count`, highest first; users with the same count by email, A to Z.
+`skip` and `limit` work as they do on `GET /api/v1/users/`.""",
+        routes=("GET /api/v1/users/item-counts",),
+        files=(MODELS, USERS),
+    ),
+    Ticket(
+        id="t11_title_trim",
+        title="Strip whitespace from item titles",
+        text="""\
+The exports keep turning up items titled " Groceries " or just "   " -- leading and
+trailing whitespace pasted in from other tools. On `POST /api/v1/items/` and
+`PUT /api/v1/items/{id}`, strip leading and trailing whitespace from `title` before
+saving it. A title that is empty after stripping is refused with 400 and the detail
+"Title must not be blank". Whitespace inside a title stays as it is.""",
+        routes=("POST /api/v1/items/", "PUT /api/v1/items/{id}"),
+        files=(ITEMS,),
+    ),
+    Ticket(
+        id="t12_transfer",
+        title="Transfer an item to another user",
+        text="""\
+People moving between teams need to hand their items over to a colleague. Add
+`POST /api/v1/items/{id}/transfer` with the JSON body `{"new_owner_email": "<email>"}`.
+It makes the user with that email the item's owner and returns the item in the same
+shape as `GET /api/v1/items/{id}`.
+
+- No user has that email: 404 with detail "User not found".
+- The new owner's account is deactivated: 400 with detail "Cannot transfer an item to
+  an inactive user".
+- The item already belongs to that user: 400 with detail "Item already belongs to this
+  user".""",
+        routes=("POST /api/v1/items/{id}/transfer",),
+        files=(MODELS, ITEMS),
+    ),
 )
+
+BASELINE: tuple[str, ...] = tuple(t.id for t in TICKETS[:6])
+HELD_OUT: tuple[str, ...] = tuple(t.id for t in TICKETS[6:])
 
 
 def ticket(ticket_id: str) -> Ticket:

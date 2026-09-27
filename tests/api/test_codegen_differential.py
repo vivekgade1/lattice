@@ -51,7 +51,7 @@ from bench.api_runner import CaseResults, classify, run_cases_fastapi, run_cases
 from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import effects, gaps, loops, partb, realapps
+from tests.api import effects, gaps, loops, mine_owner, partb, realapps
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -803,6 +803,43 @@ GAPS_CASES: tuple[HttpCase, ...] = (
 )
 
 
+# ---- mine(t, by=user) vs owned(t, by=user) (tests/api/mine_owner.py) ----------------------
+
+_M = mine_owner
+_MITEMS = "SELECT id, title, owner_id FROM item ORDER BY rowid"
+
+
+def _mcase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _M.TOKENS[who], **kw)
+
+
+MINE_CASES: tuple[HttpCase, ...] = (
+    *(
+        _mcase(f"{path} {who}", "GET", path, who)
+        for path in ("/items/mine", "/items/visible", "/items/mine/stats")
+        for who in ("admin", "alice", "bob", "carol")
+    ),
+    _mcase("mine page", "GET", "/items/mine", "alice", query={"limit": 1, "skip": 1}),
+    *(
+        _mcase(f"{path} {who}", "GET", path, who)
+        for path in ("/notes/mine", "/notes/visible")
+        for who in ("admin", "alice", "bob", "carol")
+    ),
+    _mcase(
+        "admin retitles alice's", "PUT", f"/items/mine/{_M.ALPHA}", "admin",
+        json={"title": "hijacked"}, status=404, after_sql=_MITEMS,
+    ),  # fmt: skip
+    _mcase(
+        "admin retitles own", "PUT", f"/items/mine/{_M.ZETA}", "admin",
+        json={"title": "Zeta 2"}, after_sql=_MITEMS,
+    ),  # fmt: skip
+    _mcase(
+        "alice retitles own", "PUT", f"/items/mine/{_M.ALPHA}", "alice",
+        json={"title": "A2"}, after_sql=_MITEMS,
+    ),  # fmt: skip
+)
+
+
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
     _R.PROGRAM,
@@ -826,9 +863,13 @@ PROGRAMS["gaps"] = (
     gaps.PROGRAM,
     ApiTask("gaps", "control", "edit-slice gap features", GAPS_CASES + _probes(GAPS_CASES)),
 )
+PROGRAMS["mine"] = (
+    _M.PROGRAM,
+    ApiTask("mine", "control", "mine() vs owned()", MINE_CASES + _probes(MINE_CASES)),
+)
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
-EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb", "loops", "effects", "gaps"]
+EXTRA_IDS = ["numeric", "mapped_join", "realapps", "partb", "loops", "effects", "gaps", "mine"]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -849,6 +890,7 @@ SETUPS = {
     "loops": Setup(loops.PROFILE, loops.build_db),
     "effects": Setup(effects.PROFILE, effects.build_db, effects.NATIVES, effects.NATIVES_FILE),
     "gaps": Setup(gaps.PROFILE, gaps.build_db, gaps.NATIVES, gaps.NATIVES_FILE),
+    "mine": Setup(_M.PROFILE, _M.build_db, _M.NATIVES, _M.NATIVES_FILE),
 }
 
 
@@ -1244,6 +1286,27 @@ def test_the_gaps_program_passes_its_cases(differential_runs):
     assert bodies["create null description"]["description"] is None
     assert bodies["restore"]["title"] == "Delta"
     assert bodies["times"]["hours"] == 106
+
+
+def test_the_mine_program_keeps_an_admins_own_rows_only(differential_runs):
+    """mine() excludes other users' rows for an Admin caller (owned() keeps them),
+    directly and through a parent, on both backends (equal by the differential)."""
+    rt_results, rt_captured, gen_results, _ = differential_runs["mine"]
+    want = {c.name: c.expect_status for c in MINE_CASES}
+    for results in (rt_results, gen_results):
+        assert {c.name: c.status for c in results.cases if c.name in want} == want
+    bodies = {c["name"]: c["body"] for c in rt_captured}
+
+    def owners(name: str) -> set[str]:
+        return {r["owner_id"] for r in bodies[name]["data"]}
+
+    assert owners("/items/mine admin") == {realapps.ADMIN}
+    assert owners("/items/visible admin") == {realapps.ADMIN, realapps.ALICE, realapps.BOB}
+    assert owners("/items/mine alice") == {realapps.ALICE}
+    assert bodies["/items/mine/stats admin"]["count"] == 1
+    assert [r["body"] for r in bodies["/notes/mine admin"]["data"]] == ["note on zeta"]
+    assert len(bodies["/notes/visible admin"]["data"]) == 3
+    assert bodies["admin retitles alice's"]["detail"] == "Item not found"
 
 
 def test_the_generated_realapps_app_imports_its_natives():

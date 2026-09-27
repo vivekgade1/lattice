@@ -241,6 +241,7 @@ OP_ALIASES: Mapping[str, str] = {
 API_OP_SHAPES: Mapping[str, OpShape] = {
     "fetch": OpShape(("table_name",), 0),
     "owned": OpShape(("table",), 1, frozenset({"by"})),
+    "mine": OpShape(("table",), 1, frozenset({"by"})),
     "one": OpShape(("table",), 1, frozenset({"else_"})),
     "require": OpShape(("table", "condition"), 1, frozenset({"else_"})),
     "page": OpShape(("table",), 1, frozenset({"limit"}), frozenset({"offset", "total"})),
@@ -249,6 +250,12 @@ API_OP_SHAPES: Mapping[str, OpShape] = {
     "delete": OpShape(("table",), 1),
 }
 API_OPS = frozenset(API_OP_SHAPES)
+# `owned(t, by=user)` keeps the rows the caller may access (Admin: every row);
+# `mine(t, by=user)` keeps only the caller's own rows, for every role.
+OWNER_FILTERS = frozenset({"owned", "mine"})
+# Ambient API names that programs may still bind as variables (`mine = owned(...)` was
+# the idiom before `mine()` existed): only a body that never calls the op may bind it.
+SOFT_API_NAMES = frozenset({"mine"})
 # insert(..., unique_or=Conflict("...")) / update(..., unique_or=...): the declared 409
 # answered when the write hits a UNIQUE constraint (a reserved keyword, not a column).
 UNIQUE_OR = "unique_or"

@@ -1,7 +1,7 @@
 """Compile relational pipelines and the API expression subset to parameterized SQL.
 
 A pipeline is a DAG of `Rel` nodes — the tabular table ops (where, derive, select,
-rename, group, join, sort, limit) plus the API read ops (fetch, owned, page), the
+rename, group, join, sort, limit) plus the API read ops (fetch, owned, mine, page), the
 caller's row (`user`) and materialized rows of an earlier step (`rows`, bound as one
 JSON parameter). `compile_select` turns the ancestors of one node into ONE statement:
 a chain of CTEs ending in a single SELECT.
@@ -115,7 +115,7 @@ class SqlQuery:
 
 @dataclass(frozen=True)
 class Rel:
-    """One relational node. `op` is a tabular table op or fetch/owned/page/user/rows."""
+    """One relational node. `op` is a tabular table op or fetch/owned/mine/page/user/rows."""
 
     id: str
     op: str
@@ -319,21 +319,25 @@ class _Builder:
             self.sent.append(name)
         return self.d.flag(self.d.bind(sent_bind(name)))
 
-    def owner_cond(self, owner: str | None, via: tuple[str, str, str, str] | None) -> str:
-        """The caller owns the row (directly, or through its parent row), or is an
-        Admin: owned()'s filter and owner_is()'s condition."""
+    def owner_cond(
+        self, owner: str | None, via: tuple[str, str, str, str] | None, *, admin: bool = True
+    ) -> str:
+        """The caller owns the row (directly, or through its parent row), or -- with
+        `admin` -- is an Admin: owned()'s filter and owner_is()'s condition. Without
+        `admin` it is mine()'s filter: the caller's own rows, for every role."""
         q = self.q
-        uid, admin = self.user_ref()
-        admin = self.d.flag(admin)
+        uid, is_admin = self.user_ref()
         if via is not None:
             # owned through a parent: the foreign key names a parent row the caller
             # owns (a subquery of the same statement)
             fk, parent, key, parent_owner = via
             mine = f"SELECT {q(key)} FROM {q(parent)} WHERE {q(parent_owner)} = {uid}"
-            return f"({admin} OR {q(fk)} IN ({mine}))"
-        if owner is None:
+            own = f"{q(fk)} IN ({mine})"
+        elif owner is None:
             raise LatticeInternalError("an ownership condition without an owner column")
-        return f"({admin} OR {q(owner)} = {uid})"
+        else:
+            own = f"{q(owner)} = {uid}"
+        return f"({self.d.flag(is_admin)} OR {own})" if admin else f"({own})"
 
     def rows_cte(self, step: str, columns: tuple[str, ...]) -> str:
         """A CTE over a step's materialized rows (one JSON parameter)."""
@@ -389,8 +393,8 @@ class _Builder:
                 return f"SELECT {keep} FROM {self.rows_cte(p['step'], cols)}"
             case "where":
                 return f"SELECT {keep} FROM {ins[0]} WHERE {self.expr(p['predicate'])}"
-            case "owned":
-                cond = self.owner_cond(p.get("owner"), p.get("via"))
+            case "owned" | "mine":
+                cond = self.owner_cond(p.get("owner"), p.get("via"), admin=rel.op == "owned")
                 return f"SELECT {keep} FROM {ins[0]} WHERE {cond}"
             case "derive":
                 exprs = {name: self.expr(node) for name, node in p["columns"]}

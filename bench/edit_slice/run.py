@@ -28,10 +28,23 @@ A round whose smoke run passes is final.
 Outcome of a run: the oracle's ``correct`` / ``loud`` / ``silent``; a final round
 without a runnable candidate (no file blocks, a refused program, a refusal) is loud.
 
+Each round records the model's stop reason (``stop_reasons``). An answer cut off at the
+output limit (``max_tokens``) is never built: its round's problem is ``truncated`` (not
+``no_code``), repaired by asking for the complete files again, so these runs are
+distinguishable from format errors.
+
+Artefacts: a live run (or any run given ``artefact_root``) writes, per round,
+``<root>/<model>/<arm>/<ticket>/rep<N>/round<k>/`` with ``response.md`` (the model's
+text), ``round.json`` (stop reason, problem, feedback) and ``files/`` (the complete
+candidate: arm P the start overlay plus every returned app file, relative to the app
+package; arm L every program and ``profile.py``), once the answer had file blocks. The
+CLI's root is ``<out>.artefacts`` next to the JSONL, and the record's ``artefacts`` is the
+run's ``rep<N>`` directory.
+
 ``python -m bench.edit_slice.run --model M --arm P|L --tickets ... --reps N --out
-results.jsonl [--dry-run-reference]``; ``--estimate`` prints the prompt sizes and the
-live run's cost estimate instead (no generation). The dry run feeds the hand-written
-references through each arm (no API call).
+results.jsonl [--max-tokens 16000] [--dry-run-reference]``; ``--estimate`` prints the
+prompt sizes and the live run's cost estimate instead (no generation). The dry run
+feeds the hand-written references through each arm (no API call).
 """
 
 from __future__ import annotations
@@ -71,6 +84,7 @@ from lattice.llm.client import Generation, GenerationRefused, Generator, Scripte
 Arm = Literal["P", "L"]
 ARMS: tuple[Arm, ...] = ("P", "L")
 MAX_REPAIRS = 2
+MAX_TOKENS = 16000  # the default output limit per model call (--max-tokens)
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_PACKAGE = "bench.template_app.app"
 CHARS_PER_TOKEN = 3.5  # the prompt-size estimate when no token count is available
@@ -159,6 +173,8 @@ class RunRecord:
     detail: str = ""
     rounds: int = 0
     round_problems: list[str | None] = field(default_factory=list)
+    # each round's stop reason (end_turn / max_tokens / refusal / ...)
+    stop_reasons: list[str | None] = field(default_factory=list)
     # the oracle's per-case tally (equal / equal_under_rule / deviation / silent / loud)
     cases: dict[str, int] = field(default_factory=dict)
     cases_generated: int = 0
@@ -194,8 +210,11 @@ class RunRecord:
     mean_queries: float | None = None
     max_queries: int | None = None
     max_repairs: int = MAX_REPAIRS
+    max_tokens: int | None = None  # the output limit per call (None: not a live run)
     hints: bool = False
     dry_run: bool = False
+    # the run's artefact directory (every round's output and candidate files), if kept
+    artefacts: str | None = None
 
     def to_json(self) -> str:
         return json.dumps(dataclasses.asdict(self))
@@ -310,7 +329,8 @@ class Candidate:
     the feedback a developer would see."""
 
     factory: Callable[[Path], Any] | None = None
-    problem: str | None = None  # no_code | bad_file | start | static | smoke | refused
+    # no_code | truncated | bad_file | start | static | smoke | refused
+    problem: str | None = None
     feedback: str = ""
     code: tuple[int, int] = (0, 0)  # (lines, AST nodes) of the code that runs
     cleanup: Callable[[], None] = lambda: None
@@ -319,6 +339,10 @@ class Candidate:
 NO_FILES = (
     "Your answer contained no file in the required format: a heading line `### <file>` "
     "followed by one ```python block with the file's complete content."
+)
+TRUNCATED = (
+    "Your answer was cut off at the output limit before it was complete, so none of it "
+    "was applied. Return the files again, each complete, with less prose."
 )
 
 
@@ -354,6 +378,10 @@ class _PythonArm:
         after = {r: s for r, s in self.edits.items() if s != p_view(self.overlay, r)}
         return {r: p_view(self.overlay, r) for r in after}, after
 
+    def candidate_files(self) -> dict[str, str]:
+        """The candidate's files beyond the template (paths relative to the app)."""
+        return {**self.overlay, **self.edits}
+
 
 def load_profile_source(source: str) -> Any:
     """The Profile a profile module's source defines (its ``profile()``)."""
@@ -376,6 +404,10 @@ class _LatticeArm:
     def edited(self) -> tuple[dict[str, str | None], dict[str, str]]:
         after = {n: s for n, s in self.state.items() if s != self.start.get(n)}
         return {n: self.start.get(n) for n in after}, after
+
+    def candidate_files(self) -> dict[str, str]:
+        """Every program and the profile."""
+        return dict(self.state)
 
     def build(self, text: str) -> Candidate:
         from lattice.check import check_source
@@ -462,13 +494,33 @@ def run_arm(
     max_repairs: int = MAX_REPAIRS,
     hints: bool = False,
     dry_run: bool = False,
+    max_tokens: int | None = None,
+    artefact_root: Path | None = None,
 ) -> RunRecord:
-    """One run of ``arm`` on ``ticket_id`` (see the module docstring)."""
+    """One run of ``arm`` on ``ticket_id`` (see the module docstring). ``max_tokens`` is
+    recorded (the generator applies it); ``artefact_root``: keep every round's output
+    and candidate files under it."""
     started = time.perf_counter()
     t = ticket(ticket_id)
     record = RunRecord(
-        ticket_id, arm, model, rep, max_repairs=max_repairs, hints=hints, dry_run=dry_run
+        ticket_id,
+        arm,
+        model,
+        rep,
+        max_repairs=max_repairs,
+        max_tokens=max_tokens,
+        hints=hints,
+        dry_run=dry_run,
     )
+    rep_dir = (
+        None
+        if artefact_root is None
+        else artefact_root / _path_part(model or "model") / arm / ticket_id / f"rep{rep}"
+    )
+    if rep_dir is not None:
+        shutil.rmtree(rep_dir, ignore_errors=True)
+        rep_dir.mkdir(parents=True)
+        record.artefacts = str(rep_dir)
     state: _PythonArm | _LatticeArm
     if arm == "P":
         state, (system, user) = _PythonArm(t), p_prompt(ticket_id)
@@ -491,12 +543,19 @@ def run_arm(
                 record.failure, record.detail = "refused", str(exc)[:_DETAIL_LIMIT]
                 record.rounds = len(generations) + 1
                 record.round_problems.append("refused")
+                record.stop_reasons.append("refusal")
                 candidate.cleanup()
-                candidate = Candidate(problem="refused")
+                candidate = Candidate(problem="refused", feedback=str(exc))
+                _save_round(rep_dir, attempt + 1, None, "refusal", candidate, None)
                 break
             generations.append(generation)
+            record.stop_reasons.append(generation.stop_reason)
             candidate.cleanup()
-            candidate = state.build(generation.text)
+            truncated = generation.stop_reason == "max_tokens"
+            if truncated:
+                candidate = Candidate(problem="truncated", feedback=TRUNCATED)
+            else:
+                candidate = state.build(generation.text)
             if candidate.factory is not None:
                 result = smoke.run_smoke(ticket_id, candidate.factory)
                 if not result.started:
@@ -505,6 +564,19 @@ def run_arm(
                     candidate.problem = "smoke"
                 candidate.feedback = smoke.smoke_feedback(result) if candidate.problem else ""
             record.round_problems.append(candidate.problem)
+            applied = (
+                not truncated
+                and candidate.problem != "bad_file"
+                and bool(prompts.parse_files(generation.text))
+            )
+            _save_round(
+                rep_dir,
+                attempt + 1,
+                generation.text,
+                generation.stop_reason,
+                candidate,
+                state.candidate_files() if applied else None,
+            )
             if candidate.problem is None or attempt == max_repairs:
                 break
             messages.append({"role": "assistant", "content": generation.text})
@@ -521,6 +593,41 @@ def run_arm(
         candidate.cleanup()
     record.wall_s = time.perf_counter() - started
     return record
+
+
+def _path_part(name: str) -> str:
+    """``name`` as one path segment (a model id may hold '/' or ':')."""
+    return "".join(c if c.isalnum() or c in "-_." else "_" for c in name) or "_"
+
+
+def _save_round(
+    rep_dir: Path | None,
+    k: int,
+    text: str | None,
+    stop_reason: str | None,
+    candidate: Candidate,
+    files: Mapping[str, str] | None,
+) -> None:
+    """Round ``k``'s artefacts: the model's text, its stop reason, problem and feedback,
+    and the candidate's files (None: the answer had no file blocks to apply)."""
+    if rep_dir is None:
+        return
+    round_dir = rep_dir / f"round{k}"
+    round_dir.mkdir(parents=True, exist_ok=True)
+    if text is not None:
+        (round_dir / "response.md").write_text(text)
+    meta = {
+        "stop_reason": stop_reason,
+        "problem": candidate.problem,
+        "feedback": candidate.feedback,
+    }
+    (round_dir / "round.json").write_text(json.dumps(meta, indent=2) + "\n")
+    for rel, src in (files or {}).items():
+        target = (round_dir / "files" / rel).resolve()
+        if not target.is_relative_to(round_dir.resolve()):
+            continue  # a bad_file path outside the round's directory
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(src)
 
 
 def _account(
@@ -729,7 +836,12 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--reps", type=int, default=1)
     p.add_argument("--out", default="results/edit_slice/results.jsonl")
     p.add_argument("--max-repairs", type=int, default=MAX_REPAIRS)
-    p.add_argument("--max-tokens", type=int, default=16000)
+    p.add_argument(
+        "--max-tokens",
+        type=int,
+        default=MAX_TOKENS,
+        help=f"output limit per model call (default {MAX_TOKENS})",
+    )
     p.add_argument("--effort", default="high")
     p.add_argument("--hints", action="store_true", help="keep the Lattice guide's Advice")
     p.add_argument(
@@ -772,6 +884,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
+    artefact_root = out.with_name(out.name + ".artefacts")
     for rep in range(args.reps):
         for tid in tickets:
             for arm in arms:
@@ -793,6 +906,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                             rep=rep,
                             max_repairs=args.max_repairs,
                             hints=args.hints,
+                            max_tokens=args.max_tokens,
+                            artefact_root=artefact_root,
                         )
                 except Exception as exc:  # noqa: BLE001 -- one run's harness crash is recorded
                     record = RunRecord(
