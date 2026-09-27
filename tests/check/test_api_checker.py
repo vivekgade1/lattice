@@ -742,8 +742,14 @@ def test_l811_int_needs_only_a_lower_bound():
         row = insert(Reviews, owner=user, product_id=product_id, rating=rating, body="ok")
         return row
     """
-    assert errors(src) == []
-    assert errors(src.replace("product_id: Int(ge=1)", "product_id: Int")) == ["L811"]
+    from bench.api_datasets import api_profile
+
+    def bench_errors(program: str) -> list[str]:
+        result = check_source("# lattice: v1\n" + dedent(program), api_profile())
+        return [d.code for d in result.diagnostics if d.severity is Severity.ERROR]
+
+    assert bench_errors(src) == []
+    assert bench_errors(src.replace("product_id: Int(ge=1)", "product_id: Int")) == ["L811"]
 
 
 def test_l811_float_still_needs_both_bounds():
