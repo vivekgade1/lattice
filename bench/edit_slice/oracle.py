@@ -32,6 +32,14 @@ same seeded database, and classifies the candidate:
 Silent dominates loud: one silent case makes the run silent even if another crashed. A
 case where the reference itself answers 5xx (the template's IntegrityError on a null
 title) is equal when the candidate crashes the same way.
+
+This module describes the template's tables, auth and tickets (t1-t12). A ticket on a
+held-out repo (``Ticket.repo``: t19-t24) gets its oracle from :mod:`bench.edit_slice.repos`
+in the same :class:`TicketOracle` shape; three knobs cover what differs there: the
+password-hash columns the normaliser hides, a frozen clock the whole suite runs under
+(JustNotes stamps rows with ``int(time.time())``, which no normaliser can tell apart), and
+a record canonicaliser tried on a mismatch (TaskFlow stamps ``updated_at`` with a fresh
+``utc_now()`` per write: one or several stamps in one request are equally valid).
 """
 
 from __future__ import annotations
@@ -40,6 +48,7 @@ import tempfile
 import uuid
 from collections import Counter
 from collections.abc import Callable, Mapping, Sequence
+from contextlib import AbstractContextManager, nullcontext
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta, timezone
 from functools import cache
@@ -50,7 +59,7 @@ from sqlalchemy import Engine, text
 from sqlmodel import Session
 
 from bench.edit_slice.reference import make_reference_app, reference_variant
-from bench.edit_slice.tickets import TICKETS, ticket
+from bench.edit_slice.tickets import ALL_TICKETS, TICKETS, ticket
 from bench.template_app import sqlite_engine
 from bench.template_app.app.core import security
 from bench.template_app.app.core.config import settings
@@ -73,10 +82,13 @@ from lattice.importer.suite import (
 )
 from lattice.importer.verify import (
     Case,
+    CaseRecord,
     DatetimeWire,
     Deviation,
     Login,
+    Mismatch,
     ValidationEnvelope,
+    agreement,
     classify,
     verify,
 )
@@ -801,15 +813,29 @@ class TicketOracle:
     branches: Mapping[str, Sequence[Callable[..., Any]]]
     db_factory: Callable[[str, Path], Path]
     login: Login | None
+    # the columns holding password hashes (the normaliser's <hash:seed>/<hash:new>)
+    hash_columns: tuple[str, ...] = ("hashed_password",)
+    # the clock both apps run under (None: the real one); see the module docstring
+    clock: Callable[[], AbstractContextManager[Any]] | None = None
+    # tried on a mismatch: records equal once canonicalised are "equal_under_rule"
+    canon: Callable[[CaseRecord], CaseRecord] | None = None
+    canon_name: str = ""
 
     def reference_factory(self, db_path: Path) -> Any:
         return make_reference_app(self.ticket_id, db_path)
+
+    def frozen_clock(self) -> AbstractContextManager[Any]:
+        """The clock the suite runs under (a no-op for the template)."""
+        return self.clock() if self.clock is not None else nullcontext()
 
 
 @cache
 def ticket_oracle(ticket_id: str) -> TicketOracle:
     """The acceptance suite of ``ticket_id`` (built once per process)."""
-    ticket(ticket_id)  # KeyError for an unknown ticket
+    if ticket(ticket_id).repo != "template":  # KeyError for an unknown ticket
+        from bench.edit_slice.repos import repo_ticket_oracle
+
+        return repo_ticket_oracle(ticket_id)
     ref = reference_variant(ticket_id)
     models = ref.module("models")
     routes = ROUTES[ticket_id]
@@ -913,29 +939,39 @@ def _dispose(app: Any) -> None:
         engine.dispose()
 
 
+def _agree(original: CaseRecord, candidate: CaseRecord) -> bool:
+    try:
+        agreement(original, candidate, RULES)
+    except Mismatch:
+        return False
+    return True
+
+
 def evaluate(ticket_id: str, candidate_app_factory: AppFactory) -> Outcome:
     """Run ticket ``ticket_id``'s acceptance suite against ``candidate_app_factory``
     (``db_path -> ASGI app``), the reference as the original; see the module docstring
     for the classification."""
     o = ticket_oracle(ticket_id)
     try:
-        with tempfile.TemporaryDirectory(prefix="edit-slice-probe-") as tmp:
+        with o.frozen_clock(), tempfile.TemporaryDirectory(prefix="edit-slice-probe-") as tmp:
             _dispose(candidate_app_factory(o.db_factory("seed", Path(tmp) / "probe.db")))
     except Exception as e:  # noqa: BLE001 -- any import/startup failure is loud
         return Outcome(ticket_id, "loud", specific_names=o.specific,
                        error=f"app failed to start: {type(e).__name__}: {e}")  # fmt: skip
     declared = {name: alts[0] for name, alts in o.accepted.items()}
     try:
-        result = verify(
-            o.reference_factory,
-            candidate_app_factory,
-            o.db_factory,
-            o.cases,
-            RULES,
-            declared,
-            login=o.login,
-            branches=o.branches,
-        )
+        with o.frozen_clock():
+            result = verify(
+                o.reference_factory,
+                candidate_app_factory,
+                o.db_factory,
+                o.cases,
+                RULES,
+                declared,
+                login=o.login,
+                hash_columns=o.hash_columns,
+                branches=o.branches,
+            )
     except Exception as e:  # noqa: BLE001 -- e.g. the candidate's login broke
         return Outcome(ticket_id, "loud", specific_names=o.specific,
                        error=f"suite aborted: {type(e).__name__}: {e}")  # fmt: skip
@@ -945,6 +981,9 @@ def evaluate(ticket_id: str, candidate_app_factory: AppFactory) -> Outcome:
             cases[name] = CaseVerdict(name, oc.kind, deviation=oc.deviation, reason=oc.reason)
             continue
         original, candidate = result.original[name], result.lattice[name]
+        if o.canon is not None and _agree(o.canon(original), o.canon(candidate)):
+            cases[name] = CaseVerdict(name, "equal_under_rule", reason=o.canon_name)
+            continue
         for dev in o.accepted.get(name, ())[1:]:
             if classify(original, candidate, RULES, dev).kind == "deviation":
                 cases[name] = CaseVerdict(name, "deviation", deviation=dev.id, reason=dev.reason)
@@ -966,4 +1005,12 @@ def evaluate(ticket_id: str, candidate_app_factory: AppFactory) -> Outcome:
     )
 
 
-__all__ = ["TICKETS", "Outcome", "CaseVerdict", "TicketOracle", "evaluate", "ticket_oracle"]
+__all__ = [
+    "ALL_TICKETS",
+    "TICKETS",
+    "CaseVerdict",
+    "Outcome",
+    "TicketOracle",
+    "evaluate",
+    "ticket_oracle",
+]

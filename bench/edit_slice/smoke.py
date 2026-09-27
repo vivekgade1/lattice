@@ -7,8 +7,12 @@ body and, for a server error, the traceback). Both arms get exactly this as repa
 feedback, besides arm L's checker diagnostics.
 
 The smoke database is built the way a developer's is: the candidate app creates its
-tables on an empty file (so new columns exist), then the template's seed rows (users
-and items, :mod:`bench.template_app.seed`) are copied into the columns both have.
+tables on an empty file (so new columns exist), then the app's own seed rows are copied
+into the columns both have -- the template's users and items
+(:mod:`bench.template_app.seed`), or a held-out repo's ``seed.py`` (TaskFlow's users and
+tasks, JustNotes' users, notes, tags and keywords), per ``Ticket.repo``. The requests
+sign in as that seed's users, through the app's own login route
+(:mod:`bench.edit_slice.apps`).
 """
 
 from __future__ import annotations
@@ -23,7 +27,9 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
-from bench.template_app.seed import TEMPLATE_USERS, build_template_db
+from bench.edit_slice.apps import Repo, repo
+from bench.edit_slice.tickets import ticket
+from bench.template_app.seed import TEMPLATE_USERS
 
 API = "/api/v1"
 AppFactory = Callable[[Path], Any]
@@ -57,6 +63,8 @@ _ITEM = f"{API}/items/{CREATED}"
 _USERS = f"{API}/users/"
 _ALICE = TEMPLATE_USERS["alice"][2]
 _BOB_EMAIL = TEMPLATE_USERS["bob"][0]
+_TASKS = f"{API}/tasks"
+_TASK = f"{_TASKS}/{CREATED}"
 
 # The happy paths each ticket's text describes (the requests a developer would try).
 SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
@@ -99,7 +107,30 @@ SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
         SmokeRequest("alice", "POST", _ITEMS, json={"title": "Smoke test"}, save=True),
         SmokeRequest("alice", "POST", f"{_ITEM}/transfer", json={"new_owner_email": _BOB_EMAIL}),
     ),
-}
+    # round 3: the held-out repos (their own seed users, alice and bob)
+    "t19_task_summary": (SmokeRequest("alice", "GET", f"{_TASKS}/summary"),),
+    "t20_bulk_status": (  # tasks 1 and 2 are alice's in TaskFlow's seed
+        SmokeRequest("alice", "POST", f"{_TASKS}/bulk-status",
+                     json={"task_ids": [1, 2], "status": "done"}),
+    ),
+    "t21_completed_at": (
+        SmokeRequest("alice", "POST", _TASKS, expect=201, json={"title": "Smoke test"},
+                     save=True),
+        SmokeRequest("alice", "PATCH", _TASK, json={"status": "done"}),
+        SmokeRequest("alice", "GET", _TASK),
+    ),
+    "t22_copy_note": (
+        SmokeRequest("alice", "POST", "/notes/create", expect=201,
+                     json={"title": "Smoke test", "text": "Hello", "isPublic": False},
+                     save=True),
+        SmokeRequest("alice", "POST", f"/notes/{CREATED}/copy", expect=201),
+    ),
+    "t23_note_filter": (
+        SmokeRequest("alice", "GET", "/notes", params={"tag_id": 1}),
+        SmokeRequest("alice", "GET", "/notes", params={"q": "MILK"}),
+    ),
+    "t24_note_stats": (SmokeRequest("alice", "GET", "/notes/stats"),),
+}  # fmt: skip
 
 
 @dataclass
@@ -125,17 +156,17 @@ def format_exception(exc: BaseException) -> str:
 
 
 @cache
-def _seed_db() -> Path:
+def _seed_db(repo_name: str = "template") -> Path:
     root = Path(tempfile.mkdtemp(prefix="edit-slice-smoke-seed-"))
-    return build_template_db(root / "seed.db")
+    return repo(repo_name).seed()(root / "seed.db")
 
 
-def _copy_seed(db_path: Path) -> None:
-    """Copy the seed's users and items into ``db_path``'s tables (shared columns)."""
+def _copy_seed(db_path: Path, repo_name: str = "template") -> None:
+    """Copy the app's seed rows into ``db_path``'s tables (shared columns)."""
     conn = sqlite3.connect(db_path)
     try:
-        conn.execute("ATTACH DATABASE ? AS seed", (str(_seed_db()),))
-        for table in ("user", "item"):
+        conn.execute("ATTACH DATABASE ? AS seed", (str(_seed_db(repo_name)),))
+        for table in repo(repo_name).seed_tables:
             mine = [r[1] for r in conn.execute(f'PRAGMA main.table_info("{table}")')]
             theirs = {r[1] for r in conn.execute(f'PRAGMA seed.table_info("{table}")')}
             cols = ", ".join(f'"{c}"' for c in mine if c in theirs)
@@ -145,20 +176,21 @@ def _copy_seed(db_path: Path) -> None:
         conn.close()
 
 
-def build_app(factory: AppFactory, root: Path) -> Any:
+def build_app(factory: AppFactory, root: Path, repo_name: str = "template") -> Any:
     """The candidate app on a fresh seeded smoke database under ``root`` (raises what
     the candidate raises)."""
     db = root / "smoke.db"
     if db.exists():
         db.unlink()
     app = factory(db)
-    _copy_seed(db)
+    _copy_seed(db, repo_name)
     return app
 
 
-def _login(client: Any, handle: str) -> str:
-    email, password, _ = TEMPLATE_USERS[handle]
-    r = client.post(f"{API}/login/access-token", data={"username": email, "password": password})
+def _login(client: Any, handle: str, app: Repo | None = None) -> str:
+    app = app or repo("template")
+    username, password = app.users()[handle]
+    r = client.post(app.login_path, data={"username": username, "password": password})
     if r.status_code != 200:
         raise RuntimeError(f"login as {handle} answered {r.status_code}: {r.text[:BODY_CHARS]}")
     return r.json()["access_token"]
@@ -168,16 +200,17 @@ def run_smoke(ticket_id: str, factory: AppFactory) -> SmokeResult:
     """Build the app on a smoke database and issue the ticket's happy-path requests."""
     from fastapi.testclient import TestClient
 
+    app_repo = repo(ticket(ticket_id).repo)
     root = Path(tempfile.mkdtemp(prefix="edit-slice-smoke-"))
     try:
         try:
-            app = build_app(factory, root)
+            app = build_app(factory, root, app_repo.name)
         except Exception as exc:  # noqa: BLE001 -- the developer sees the traceback
             return SmokeResult(False, ["The app failed to start:", format_exception(exc)], True)
         result = SmokeResult(True)
         try:
             with TestClient(app, raise_server_exceptions=True) as client:
-                _requests(ticket_id, client, result)
+                _requests(ticket_id, client, result, app_repo)
         except Exception as exc:  # noqa: BLE001 -- e.g. the lifespan failed
             result.failed = True
             result.lines += ["The app failed while serving:", format_exception(exc)]
@@ -190,7 +223,7 @@ def run_smoke(ticket_id: str, factory: AppFactory) -> SmokeResult:
         shutil.rmtree(root, ignore_errors=True)
 
 
-def _requests(ticket_id: str, client: Any, result: SmokeResult) -> None:
+def _requests(ticket_id: str, client: Any, result: SmokeResult, app: Repo) -> None:
     tokens: dict[str, str] = {}
     created: str | None = None
     for req in SMOKE[ticket_id]:
@@ -198,7 +231,7 @@ def _requests(ticket_id: str, client: Any, result: SmokeResult) -> None:
         if req.user is not None:
             if req.user not in tokens:
                 try:
-                    tokens[req.user] = _login(client, req.user)
+                    tokens[req.user] = _login(client, req.user, app)
                 except Exception as exc:  # noqa: BLE001
                     result.failed = True
                     result.lines += [f"login as {req.user} failed:", format_exception(exc)]

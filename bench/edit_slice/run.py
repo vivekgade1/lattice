@@ -9,15 +9,27 @@ candidate with the hidden oracle (:func:`bench.edit_slice.oracle.evaluate`):
   the ticket's files plus ``models.py`` / ``api/deps.py`` (``crud.py`` when referenced)
   and returns complete files; the candidate is
   :func:`bench.edit_slice.variant.load_variant` of the start overlay with them.
-* **L (Lattice edit).** Start state: the verified import of the template
-  (:func:`lattice.importer.lift.lift_repo`), or the base ticket's Lattice reference
-  (:mod:`bench.edit_slice.lattice_reference`). The model gets the ticket, the touched
-  router's Lattice program and the profile source, with the Lattice API guide, and
-  returns edited program(s) (and the profile when it changes); the candidate is checked,
+* **L (Lattice edit).** Start state: the verified import of the ticket's app
+  (:func:`start_lattice`; for the template :func:`lattice.importer.lift.lift_repo`), or
+  the base ticket's Lattice reference (:mod:`bench.edit_slice.lattice_reference`). The
+  model gets the ticket, the touched router's Lattice program and the profile source,
+  with the Lattice API guide, and returns edited program(s) (and the profile when it
+  changes); the candidate is checked,
   emitted (:func:`lattice.emit.thin.emit_into_template`) and mounted
   (:func:`lattice.emit.thin.make_emitted_app`): its routes replace the template routes
   the start programs lifted (a lifted route the edit drops is gone), and every other
   template route (``/users/signup``, ``/users/{user_id}``, ...) is kept as it is.
+
+**The ticket's app.** A ticket targets the template or a held-out repo (``Ticket.repo``:
+TaskFlow or JustNotes, round 3's t19-t24; :mod:`bench.edit_slice.apps`). Arm P works the
+same on every app: the variant, smoke run and oracle take the ticket's app, and the
+prompt describes it (:func:`bench.edit_slice.prompts.p_system`). Arm L's start state for
+a held-out repo must be the *importer's* output -- those repos are held out from the
+language and lifter work, so no Lattice is written for them here. The two hooks the
+importer's output plugs into are :func:`start_lattice` (programs + profile) and
+:func:`emit_lattice` (emit and mount them into that app); both raise
+``NotImplementedError`` for ``taskflow``/``justnotes`` until then, and the dry run
+reports arm L on those tickets as ``not_imported``.
 
 Both arms have the same repair budget (``max_repairs``, default 2). A round is repaired
 when its answer has no file blocks (or names a file the arm cannot take), when the app
@@ -44,7 +56,8 @@ CLI's root is ``<out>.artefacts`` next to the JSONL, and the record's ``artefact
 run's ``rep<N>`` directory.
 
 ``python -m bench.edit_slice.run --model M --arm P|L --tickets ... --reps N --out
-results.jsonl [--max-tokens 16000] [--dry-run-reference]``; ``--estimate`` prints the
+results.jsonl [--max-tokens 16000] [--dry-run-reference]`` (``--tickets all``: the template's
+t1-t12; ``repos``: the held-out repos' t19-t24; or comma-separated ids); ``--estimate`` prints the
 prompt sizes and the live run's cost estimate instead (no generation). The dry run
 feeds the hand-written references through each arm (no API call).
 """
@@ -71,6 +84,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 from bench.edit_slice import prompts, smoke
+from bench.edit_slice.apps import REPOS
 from bench.edit_slice.lattice_reference import (
     GAPS,
     has_lattice_reference,
@@ -78,8 +92,8 @@ from bench.edit_slice.lattice_reference import (
 )
 from bench.edit_slice.oracle import Outcome, evaluate
 from bench.edit_slice.reference import reference_files
-from bench.edit_slice.tickets import TICKETS, Ticket, ticket
-from bench.edit_slice.variant import load_variant, template_source
+from bench.edit_slice.tickets import REPO_TICKETS, TICKETS, Ticket, ticket
+from bench.edit_slice.variant import app_source, load_variant
 from bench.metrics import cost_usd
 from lattice.llm.client import Generation, GenerationRefused, Generator, ScriptedGenerator
 
@@ -91,6 +105,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_PACKAGE = "bench.template_app.app"
 CHARS_PER_TOKEN = 3.5  # the prompt-size estimate when no token count is available
 LOGIN_PATH = "/api/v1/login/access-token"
+LOGIN_PATHS = tuple(dict.fromkeys(r.login_path for r in REPOS.values()))
 _DETAIL_LIMIT = 2000
 
 # ---- start states ---------------------------------------------------------------------------
@@ -109,17 +124,57 @@ def imported() -> tuple[dict[str, str], str]:
     return programs, result.profile.source
 
 
+# The held-out repos' imports, once the importer produces them: repo -> a function
+# returning ({program file: source}, profile source), as imported() does for the template.
+LATTICE_STARTS: dict[str, Callable[[], tuple[dict[str, str], str]]] = {"template": imported}
+
+
+def has_lattice_start(repo: str) -> bool:
+    """Whether arm L has a start state (an import) for the app ``repo``."""
+    return repo in LATTICE_STARTS
+
+
+def start_lattice(repo: str) -> tuple[dict[str, str], str]:
+    """Arm L's start state for the app ``repo``: the verified import's programs
+    (``{"<router>.lattice.py": source}``) and profile source.
+
+    **The hook for the held-out repos.** Their start state must come from the importer
+    (``lattice/importer``), never from Lattice written by hand: TaskFlow and JustNotes are
+    held out from the language and lifter work. Register the importer's output in
+    :data:`LATTICE_STARTS` (and teach :func:`emit_lattice` to mount it into that app);
+    until then this raises ``NotImplementedError``."""
+    start = LATTICE_STARTS.get(repo)
+    if start is None:
+        raise NotImplementedError(
+            f"arm L has no start state for {repo!r}: it must be the importer's output "
+            "(lift the held-out repo with lattice.importer and register it in "
+            "bench.edit_slice.run.LATTICE_STARTS); no Lattice is written by hand for it"
+        )
+    return start()
+
+
+def emit_lattice(repo: str, programs: Mapping[str, str], profile_src: str, out: Path,
+                 lifted: Sequence[str]) -> Any:  # fmt: skip
+    """Emit arm L's programs into the app ``repo`` (the second hook: the template's
+    emitter mounts into the template; a held-out repo needs its own)."""
+    if repo != "template":
+        raise NotImplementedError(f"no emitter mounts Lattice into {repo!r} yet")
+    from lattice.emit.thin import emit_into_template
+
+    return emit_into_template(programs, profile_src, out, lifted=lifted)
+
+
 def p_start(t: Ticket) -> dict[str, str]:
     """Arm P's start overlay (the base ticket's reference files, or nothing)."""
     return dict(reference_files(t.base)) if t.base else {}
 
 
-def p_view(overlay: Mapping[str, str], rel: str) -> str | None:
+def p_view(overlay: Mapping[str, str], rel: str, repo: str = "template") -> str | None:
     """The source of ``rel`` in the app ``overlay`` describes (None: no such file)."""
     if rel in overlay:
         return overlay[rel]
     try:
-        return template_source(rel)
+        return app_source(rel, repo)
     except FileNotFoundError:
         return None
 
@@ -127,7 +182,7 @@ def p_view(overlay: Mapping[str, str], rel: str) -> str | None:
 def l_start(t: Ticket) -> tuple[dict[str, str], str]:
     """Arm L's start state: programs and profile source (the import, with the base
     ticket's Lattice reference applied)."""
-    programs, profile = imported()
+    programs, profile = start_lattice(t.repo)
     programs = dict(programs)
     if t.base:
         for name, src in lattice_reference_files(t.base).items():
@@ -142,9 +197,9 @@ def p_prompt(ticket_id: str) -> tuple[str, str]:
     """(system, first user message) of arm P."""
     t = ticket(ticket_id)
     overlay = p_start(t)
-    names = [*t.files, "models.py", "api/deps.py", "crud.py"]
-    files = {rel: src for rel in names if (src := p_view(overlay, rel)) is not None}
-    return prompts.P_SYSTEM, prompts.p_user_message(t, files)
+    names = [*t.files, "models.py", "api/deps.py", "crud.py", *REPOS[t.repo].context]
+    files = {rel: src for rel in names if (src := p_view(overlay, rel, t.repo)) is not None}
+    return prompts.p_system(t.repo), prompts.p_user_message(t, files)
 
 
 def l_prompt(ticket_id: str, *, hints: bool = False) -> tuple[str, str]:
@@ -312,7 +367,7 @@ def instrumented(factory: Callable[[Path], Any], sink: list[tuple[str, str, floa
 
 def request_stats(sink: Sequence[tuple[str, str, float, int]]) -> tuple[float, float, int] | None:
     """(mean ms, mean statements, max statements) over the non-login requests."""
-    rows = [(ms, q) for _, path, ms, q in sink if not path.endswith(LOGIN_PATH)]
+    rows = [(ms, q) for _, path, ms, q in sink if not path.endswith(LOGIN_PATHS)]
     if not rows:
         return None
     return (
@@ -353,6 +408,7 @@ class _PythonArm:
     (a file it does not return again keeps its last version)."""
 
     def __init__(self, t: Ticket) -> None:
+        self.repo = t.repo
         self.overlay = p_start(t)
         self.edits: dict[str, str] = {}
 
@@ -371,14 +427,14 @@ class _PythonArm:
                 )
             edits[rel] = src
         self.edits.update(edits)
-        variant = load_variant({**self.overlay, **self.edits})
+        variant = load_variant({**self.overlay, **self.edits}, repo=self.repo)
         after = self.edited()[1]
         return Candidate(factory=variant.make_app, code=_python_size(list(after.values())))
 
     def edited(self) -> tuple[dict[str, str | None], dict[str, str]]:
         """(before, after) of the files the edit changed."""
-        after = {r: s for r, s in self.edits.items() if s != p_view(self.overlay, r)}
-        return {r: p_view(self.overlay, r) for r in after}, after
+        after = {r: s for r, s in self.edits.items() if s != p_view(self.overlay, r, self.repo)}
+        return {r: p_view(self.overlay, r, self.repo) for r in after}, after
 
     def candidate_files(self) -> dict[str, str]:
         """The candidate's files beyond the template (paths relative to the app)."""
@@ -399,6 +455,7 @@ class _LatticeArm:
     """Arm L's state: the start programs and profile and the files returned so far."""
 
     def __init__(self, t: Ticket) -> None:
+        self.repo = t.repo
         programs, profile = l_start(t)
         self.start = {**programs, prompts.PROFILE_FILE: profile}
         self.state = dict(self.start)
@@ -426,7 +483,7 @@ class _LatticeArm:
     def build(self, text: str) -> Candidate:
         from lattice.check import check_source
         from lattice.diagnostics import Severity, render_for_llm
-        from lattice.emit.thin import EmitError, emit_into_template, make_emitted_app
+        from lattice.emit.thin import EmitError, make_emitted_app
 
         files = prompts.parse_files(text)
         if not files:
@@ -467,7 +524,7 @@ class _LatticeArm:
             shutil.rmtree(root, ignore_errors=True)
 
         try:
-            emitted = emit_into_template(programs, profile_src, out, lifted=self.lifted())
+            emitted = emit_lattice(self.repo, programs, profile_src, out, self.lifted())
         except EmitError as exc:
             cleanup()
             errors = [d for d in exc.diagnostics if d.severity is Severity.ERROR]
@@ -714,7 +771,7 @@ def reference_answer(arm: Arm, ticket_id: str) -> str | None:
         files = {
             prompts.APP_PREFIX + rel: src
             for rel, src in reference_files(ticket_id).items()
-            if src != p_view(overlay, rel)
+            if src != p_view(overlay, rel, t.repo)
         }
         return prompts.render_files(files)
     if not has_lattice_reference(ticket_id):
@@ -726,7 +783,18 @@ def reference_answer(arm: Arm, ticket_id: str) -> str | None:
 
 
 def dry_run(arm: Arm, ticket_id: str) -> RunRecord:
-    """The reference fed through ``arm`` (no API call); a gap is ``not_expressible``."""
+    """The reference fed through ``arm`` (no API call); a gap is ``not_expressible``, and
+    arm L on an app without an import (:func:`start_lattice`) is ``not_imported``."""
+    repo = ticket(ticket_id).repo
+    if arm == "L" and not has_lattice_start(repo):
+        return RunRecord(
+            ticket_id,
+            arm,
+            "reference",
+            outcome="not_imported",
+            detail=f"arm L on {repo!r} needs the importer's output (start_lattice)",
+            dry_run=True,
+        )
     answer = reference_answer(arm, ticket_id)
     if answer is None:
         return RunRecord(
@@ -775,9 +843,11 @@ def estimate(models: Sequence[str], tickets: Sequence[str], reps: int) -> dict[s
         count = token_counter(model)
         price = price_for(model) or (0.0, 0.0)
         for tid in tickets:
-            answers = {a: reference_answer(a, tid) for a in ARMS}
+            # arm L only where it has a start state (the held-out repos wait for the importer)
+            arms = [a for a in ARMS if a == "P" or has_lattice_start(ticket(tid).repo)]
+            answers = {a: reference_answer(a, tid) for a in arms}
             p_answer = answers["P"] or ""
-            for arm in ARMS:
+            for arm in arms:
                 system, user = p_prompt(tid) if arm == "P" else l_prompt(tid)
                 prompt = count(system, user)
                 answer = answers[arm]
@@ -846,7 +916,11 @@ def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="python -m bench.edit_slice.run", description=__doc__)
     p.add_argument("--model", default="claude-sonnet-5")
     p.add_argument("--arm", default="P,L", help="P, L or P,L")
-    p.add_argument("--tickets", default="all", help="comma-separated ticket ids, or all")
+    p.add_argument(
+        "--tickets",
+        default="all",
+        help="comma-separated ticket ids, all (the template's t1-t12) or repos (t19-t24)",
+    )
     p.add_argument("--reps", type=int, default=1)
     p.add_argument("--out", default="results/edit_slice/results.jsonl")
     p.add_argument("--max-repairs", type=int, default=MAX_REPAIRS)
@@ -875,6 +949,8 @@ def _parser() -> argparse.ArgumentParser:
 def _tickets(spec: str) -> list[str]:
     if spec == "all":
         return [t.id for t in TICKETS]
+    if spec == "repos":
+        return [t.id for t in REPO_TICKETS]
     ids = [s.strip() for s in spec.split(",") if s.strip()]
     for tid in ids:
         ticket(tid)
