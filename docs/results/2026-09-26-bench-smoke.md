@@ -486,3 +486,38 @@ Next:
 - Save candidate sources in the records.
 - Re-run the same 72 runs.
 - Add a fresh held-out ticket set to guard against tuning the language to these six tickets.
+
+### Round 2: after the gap features, `mine()`, and route-preserving emit (144 runs)
+
+Changes since the baseline (committed before this run):
+- the six gap features;
+- `mine()`, plus the guide/lifter renames;
+- the emitter keeps routes it didn't lift;
+- a held-out ticket set t7–t12, written before checking expressibility.
+
+| model | arm | t1–t6 (tuned-on) | t7–t12 (held-out) | silent total | $/correct | mean rounds |
+|---|---|---|---|---:|---:|---:|
+| sonnet-5 | P | 15/18 | **18/18** | 3 | 0.036–0.039 | 1.00 |
+| sonnet-5 | L | 15/18 | 14/18 (t12 is a gap: 3 loud) | 3 | 0.060–0.181 | 1.44–1.61 |
+| haiku-4-5 | P | 12/18 | 15/18 | 9 | 0.022 | 1.06–1.17 |
+| haiku-4-5 | L | 10/18 | 6/18 | 9 | 0.046–0.120 | 1.72–1.83 |
+
+- **Improvement from the baseline:** Sonnet L went from 3/18 to 15/18 on the same six tickets, and Haiku L from 3/18 to 10/18.
+- **Held-out tickets:** Sonnet L reaches 14/15 of the expressible ones. Haiku L falls to 6/18.
+- **Silent failures:** there is no reduction yet. Both arms have the same count: 3 on Sonnet, 9 on Haiku.
+
+Silent and loud L failures, diagnosed from the saved artefacts:
+1. **t2 (L, both models): the default null ordering differs from the source app.** Lattice sorts nulls last. The template's SQLAlchemy + SQLite ascending order puts them first. The ticket never says where undated items go, so P inherits the original behaviour for free and L silently changes it. This is an importer issue: an imported profile must preserve the source platform's defaults.
+2. **t9, t6 (Haiku L): `owned` is still chosen for "own" features.** Sonnet uses `mine` correctly after the fix; Haiku still reaches for `owned`.
+3. **t7 (Haiku L): no clean way to refer to the caller's id or admin status inside an expression.** The model wrote a self-check that compares the target with itself. Other runs tried `user.id` (refused, L106). The references needed a rename + join trick.
+4. **t5, t11 (Haiku L, loud):** checker rules the model couldn't satisfy in two repairs (L302, L802, L126 annotated assignment).
+5. **t12 (all L, loud):** owner transfer is not expressible (a recorded gap).
+
+The P arm's silent failures are:
+- t2 timezone offsets (both models);
+- t4 missing admin check (Haiku);
+- t11 whitespace (Haiku).
+
+**Cost.** L costs 1.7–5× more per correct result. The L system prompt is 15k characters, against 1k for P, and L needs more repair rounds.
+
+**Verdict.** The gap-closing round moved Sonnet on Lattice to parity on the tuned tickets and near parity on the held-out ones. The core claim, fewer silent bugs through Lattice, is **not yet supported**: L's silent failures moved to new places, namely semantic defaults, ownership intent and caller references.
