@@ -265,3 +265,20 @@ def test_error_without_message_gets_a_default_detail():
     check = plan.steps[1]
     assert isinstance(check, CheckStep)
     assert check.error == ErrorSpec("NotFound", 404, "not found")
+
+
+def test_owned_users_filters_by_the_callers_own_key():
+    plan = one_plan(
+        """
+@endpoint("GET", "/me/rows", auth=Customer)
+def me_rows(user: CurrentUser) -> Page:
+    users = fetch(Users)
+    mine = owned(users, by=user)
+    shown = select(mine, cols=["id", "email"])
+    result = page(shown, limit=5)
+    return result
+"""
+    )
+    read = plan.steps[0]
+    assert isinstance(read, ReadStep)
+    assert '"id" = :__user_id' in read.sql.text

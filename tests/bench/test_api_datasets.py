@@ -204,7 +204,8 @@ def test_private_columns_never_null_and_tokens_unique(db: sqlite3.Connection) ->
 
 
 def test_owner_metadata() -> None:
-    assert USERS.owner is None
+    assert USERS.owner == "id"  # each user owns their own row (its key)
+    assert USERS.admin_write == frozenset({"role"})
     assert PRODUCTS.owner is None
     assert ORDERS.owner == "customer_id"
     assert ORDER_ITEMS.owner is None  # owned through its parent order
@@ -217,6 +218,7 @@ def test_private_metadata() -> None:
     assert USERS.private == frozenset({"password_hash", "token"})
     for schema in (PRODUCTS, ORDERS, ORDER_ITEMS, REVIEWS, ADDRESSES):
         assert schema.private == frozenset()
+        assert schema.admin_write == frozenset()
 
 
 def test_keys_metadata() -> None:

@@ -52,7 +52,10 @@ USERS: Schema = Schema.from_pairs(
         ("password_hash", S.STR),
     ],
     keys=[("id",)],
+    # a user row is owned by that user (its own key); only Admin endpoints set roles
+    owner="id",
     private=["password_hash", "token"],
+    admin_write=["role"],
 )
 
 PRODUCTS: Schema = Schema.from_pairs(
@@ -612,7 +615,9 @@ def schema_description() -> str:
         if schema.keys:
             key_cols = ", ".join(schema.keys[0])
             lines.append(f"    key: {key_cols}")
-        if schema.owner:
+        if schema.owner and any(schema.owner in k for k in schema.keys):
+            lines.append(f"    owner column: {schema.owner} (each user owns only their own row)")
+        elif schema.owner:
             lines.append(f"    owner column: {schema.owner} (rows are owned by this user id)")
         if schema.owner_via:
             fk, parent = schema.owner_via
@@ -623,6 +628,11 @@ def schema_description() -> str:
         if schema.private:
             private_cols = ", ".join(sorted(schema.private))
             lines.append(f"    private columns (never returned to clients): {private_cols}")
+        if schema.admin_write:
+            admin_cols = ", ".join(sorted(schema.admin_write))
+            lines.append(
+                f"    admin-only columns (only Admin endpoints may change them): {admin_cols}"
+            )
     lines.append("")
     lines.append(f"Roles: {', '.join(sorted(ROLES))}. Admin may access every role's endpoints.")
     lines.append(

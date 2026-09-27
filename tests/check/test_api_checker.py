@@ -617,9 +617,12 @@ def test_insert_unknown_column_and_type():
         row = insert(Products, VALUE)
         return row
     """
-    assert errors(base.replace("VALUE", "nam=name")) == ["L401"]
-    assert errors(base.replace("VALUE", "price=name")) == ["L402"]
-    assert errors(base.replace("VALUE", "name=name")) == []
+    rest = "price=1.0, stock=1"
+    assert errors(base.replace("VALUE", f"name=name, nam=name, {rest}")) == ["L401"]
+    assert errors(base.replace("VALUE", "name=name, price=name, stock=1")) == ["L402"]
+    assert errors(base.replace("VALUE", f"name=name, {rest}")) == []
+    # every non-nullable column but the generated key must be set (L404)
+    assert errors(base.replace("VALUE", "name=name")) == ["L404"]
 
 
 def test_update_type_mismatch():
@@ -866,10 +869,11 @@ def product_ratings(limit: Int(ge=1, le=100) = 20, offset: Int(ge=0) = 0) -> Pag
 
 def test_public_aggregate_over_owned_table_is_ok():
     assert bench_errors(REVIEW_STATS) == []
+    # any aggregate reading the owner column keeps the rows per-owner (spec 5.11 item 21)
     distinct = REVIEW_STATS.replace(
         "agg.count(),", 'agg.count(), reviewers=agg.count_distinct(col("customer_id")),'
     )
-    assert bench_errors(distinct) == []
+    assert bench_errors(distinct) == ["L802"]
 
 
 def stats(by: str, pre: str, src: str) -> str:
@@ -1030,8 +1034,9 @@ def test_insert_into_items_without_owning_the_order_is_l802():
     unchecked = ADD_ITEM.replace("mine = owned(orders, by=user)\n    ", "").replace(
         "where(mine,", "where(orders,"
     )
+    # one() over another customer's order already answers differently (L802)
     d = bench_diag(unchecked, "L802")
-    assert "OrderItems" in d.message and "order_id" in d.message
+    assert "Orders" in d.message
     assert bench_errors(unchecked) == ["L802"]
     no_lookup = """
     @endpoint("POST", "/orders/{order_id}/items", auth=Customer)

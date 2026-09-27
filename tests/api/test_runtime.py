@@ -310,6 +310,114 @@ def test_body_must_be_a_json_object(db: Path):
     assert r1.status_code == 422 and r2.status_code == 422
 
 
+# ---- accepted-but-unrepresentable inputs are 422, never 500 (B5) -----------------------------
+
+WIDE = """
+@endpoint("POST", "/reviews", auth=Customer)
+def review(user: CurrentUser, product_id: Int(ge=1), rating: Int(ge=1, le=5),
+           body: Str(max_len=500)) -> Created:
+    row = insert(Reviews, owner=user, product_id=product_id, rating=rating, body=body)
+    return row
+
+@endpoint("GET", "/scaled", auth=Public)
+def scaled(k: Float, n: Int) -> Page:
+    p = fetch(Products)
+    d = derive(p, scaled=col("price") * k, n=col("id") + n)
+    s = sort(d, by=["id"])
+    result = page(s, limit=2)
+    return result
+"""
+
+
+def _validation_loc(r) -> list[object]:
+    assert r.status_code == 422, (r.status_code, r.text)
+    body = r.json()
+    assert body["error"] == "validation"
+    return body["detail"][0]["loc"]
+
+
+@pytest.mark.parametrize(
+    "bad", ["99999999999999999999", "9223372036854775808", "-9223372036854775809", "١٢"]
+)
+def test_out_of_range_or_non_ascii_path_int_is_422(db: Path, bad: str):
+    with app_for(CANCEL, db) as client:
+        r = client.post(f"/orders/{bad}/cancel", headers=auth("alice"))
+    assert _validation_loc(r) == ["path", "order_id"]
+
+
+def test_int64_bounds_are_accepted(db: Path):
+    with app_for(WIDE, db) as client:
+        top = client.get("/scaled", params={"k": "1", "n": str(2**63 - 1 - 100)})
+        bottom = client.get("/scaled", params={"k": "1", "n": str(-(2**63))})
+    assert top.status_code == 200 and bottom.status_code == 200
+
+
+def test_out_of_range_query_offset_is_422(db: Path):
+    with app_for(LIST, db) as client:
+        r = client.get("/orders", params={"offset": "99999999999999999999"}, headers=auth("alice"))
+    assert _validation_loc(r) == ["query", "offset"]
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        b'{"product_id": 99999999999999999999, "rating": 3, "body": "x"}',
+        b'{"product_id": 1e300, "rating": 3, "body": "x"}',
+    ],
+)
+def test_out_of_range_body_int_is_422(db: Path, payload: bytes):
+    before = rows(db, "SELECT COUNT(*) FROM reviews")[0][0]
+    headers = {**auth("alice"), "content-type": "application/json"}
+    with app_for(WIDE, db) as client:
+        r = client.post("/reviews", content=payload, headers=headers)
+    assert _validation_loc(r) == ["body", "product_id"]
+    assert rows(db, "SELECT COUNT(*) FROM reviews")[0][0] == before
+
+
+@pytest.mark.parametrize("k", ["1" + "0" * 400, "1e999", "nan", "inf", "١٢", "1_0"])
+def test_unrepresentable_query_float_is_422(db: Path, k: str):
+    with app_for(WIDE, db) as client:
+        r = client.get("/scaled", params={"k": k, "n": "0"})
+    assert _validation_loc(r) == ["query", "k"]
+
+
+def test_huge_body_number_for_a_float_is_422(db: Path):
+    src = """
+    @endpoint("POST", "/price", auth=Admin)
+    def price(p: Float(ge=0, le=1000), user: CurrentUser) -> Created:
+        r = insert(Products, name="n", category="c", price=p, stock=1, active=True)
+        return r
+    """
+    headers = {**auth("admin"), "content-type": "application/json"}
+    with app_for(src, db) as client:
+        r = client.post("/price", content=b'{"p": 1' + b"0" * 400 + b"}", headers=headers)
+        nan = client.post("/price", content=b'{"p": NaN}', headers=headers)
+    assert _validation_loc(r) == ["body", "p"]
+    assert _validation_loc(nan) == ["body", "p"]
+
+
+def test_lone_surrogate_string_is_422(db: Path):
+    before = rows(db, "SELECT COUNT(*) FROM reviews")[0][0]
+    headers = {**auth("alice"), "content-type": "application/json"}
+    with app_for(WIDE, db) as client:
+        r = client.post(
+            "/reviews",
+            content=b'{"product_id": 1, "rating": 3, "body": "\\ud800"}',
+            headers=headers,
+        )
+    assert _validation_loc(r) == ["body", "body"]
+    assert rows(db, "SELECT COUNT(*) FROM reviews")[0][0] == before
+
+
+def test_non_finite_result_floats_serialize_as_null(db: Path):
+    with app_for(WIDE, db) as client:
+        r = client.get("/scaled", params={"k": "1e308", "n": "0"})
+    assert r.status_code == 200, r.text
+    items = r.json()["items"]
+    assert items and all(item["scaled"] is None for item in items)
+    assert all(isinstance(item["price"], float) for item in items)
+
+
 def test_delete_persists_and_respects_ownership(db: Path):
     alice_addr = rows(db, "SELECT id FROM addresses WHERE customer_id = ?", USER_IDS["alice"])
     assert alice_addr
@@ -424,13 +532,23 @@ def test_unexpected_database_error_is_a_500(db: Path):
     src = """
     @endpoint("POST", "/addresses", auth=Customer)
     def add(user: CurrentUser, line1: Str(max_len=80)) -> Created:
-        row = insert(Addresses, owner=user, line1=line1)
+        row = insert(Addresses, owner=user, line1=line1, city="c", zip="12345")
         return row
     """
+    # The checker now rejects inserts that miss NOT NULL columns (L404), so the
+    # database error comes from a trigger the program cannot know about.
+    conn = sqlite3.connect(str(db))
+    conn.execute(
+        "CREATE TRIGGER no_addresses BEFORE INSERT ON addresses "
+        "BEGIN SELECT RAISE(ABORT, 'addresses are frozen'); END"
+    )
+    conn.commit()
+    conn.close()
     before = rows(db, "SELECT COUNT(*) FROM addresses")[0][0]
     with app_for(src, db) as client:
         r = client.post("/addresses", json={"line1": "x"}, headers=auth("alice"))
     assert r.status_code == 500 and r.json()["error"] == "internal"
+    assert "addresses are frozen" in r.json()["detail"]
     assert rows(db, "SELECT COUNT(*) FROM addresses")[0][0] == before
 
 

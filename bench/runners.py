@@ -686,8 +686,10 @@ def _api_visible_failure(results: Any) -> tuple[str, str] | None:
     """(label, error text) for a loud failure the model may be told about, or
     None. Only three things are ever surfaced, and never a case's name, request
     or expected values: the app did not start (its error output), a happy case
-    crashed the app (the traceback), or every happy case failed (the status
-    codes received). Trap-case results are never surfaced."""
+    got a server error (the same for both arms: the server-side traceback when the
+    app raised, else the 5xx body's ``detail`` -- for the Lattice runtime, the
+    rendered runtime error), or every happy case failed (the status codes
+    received). Trap-case results are never surfaced."""
     if not results.started:
         return ("timeout" if results.timed_out else "start_error", results.start_error)
     happy = [c for c in results.cases if c.kind == "happy"]
@@ -725,7 +727,10 @@ def _api_verdict(results: Any) -> tuple[bool, str | None, str]:
         return False, visible[0], results.start_error[:_DETAIL_LIMIT]
     if any(c.kind == "happy" and c.reason.startswith(_API_SERVER_ERROR) for c in failed):
         return False, "crash", detail
-    return False, "happy_failed", detail
+    if any(c.kind == "happy" for c in failed):
+        return False, "happy_failed", detail
+    # Every happy case passed; a trap case got a 5xx: loud, but never surfaced.
+    return False, "server_error", detail
 
 
 def _api_outcome(ledger: _Ledger, results: Any, **kwargs: Any) -> TaskOutcome:

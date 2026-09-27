@@ -8,6 +8,7 @@ from bench.report import read_outcomes
 from bench.safety import outcome_class
 
 FIXTURES = Path(__file__).parent / "fixtures" / "api"
+LOUD_NAIVE = frozenset({"e01", "e05"})  # as in tests/test_api_solutions.py
 
 # Rejected by the checker (L802: an owned table returned without owned()), then repaired.
 BROKEN_LATTICE = """# lattice: v1
@@ -50,9 +51,11 @@ def test_api_suite_end_to_end(tmp_path: Path) -> None:
 
     for task in API_TASKS:
         trap = (FIXTURES / task.id / "fastapi_naive.py").exists()
+        # A naive slip that is a 500 on a trap case is loud, never surfaced (spec §5.4).
+        expected = "correct" if not trap else "loud" if task.id in LOUD_NAIVE else "silent"
         for arm in "AP":
             o = outcomes[(arm, task.id)]
-            assert outcome_class(o) == ("silent" if trap else "correct"), (arm, task.id, o.detail)
+            assert outcome_class(o) == expected, (arm, task.id, o.detail)
             assert o.rounds == 1  # a running-but-wrong app is never repaired
         b, c = outcomes[("B", task.id)], outcomes[("C", task.id)]
         assert (outcome_class(b), b.rounds) == ("correct", 2), (task.id, b.detail)

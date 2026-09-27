@@ -101,8 +101,9 @@ def _task(task_id: str, family: str, spec: str, cases: list[tuple]) -> ApiTask:
     return ApiTask(task_id, family, " ".join(spec.split()), tuple(built))
 
 
-def _ids(*ids: int) -> list[dict[str, int]]:
-    return [{"id": i} for i in ids]
+def _rows(fields: tuple[str, ...], *rows: tuple[object, ...]) -> list[dict[str, object]]:
+    """Expected response objects, each with exactly ``fields`` (the spec's field set)."""
+    return [dict(zip(fields, row, strict=True)) for row in rows]
 
 
 # ---------------------------------------------------------------------------
@@ -152,7 +153,22 @@ O01 = _task(
                 }
             },
         ),
-        ("admin_any", "happy", "GET", "/orders/8", ADMIN, 200, {"expect_json": {"id": 8}}),
+        (
+            "admin_any",
+            "happy",
+            "GET",
+            "/orders/8",
+            ADMIN,
+            200,
+            {
+                "expect_json": {
+                    "id": 8,
+                    "status": "cancelled",
+                    "created_at": "2024-04-11",
+                    "total": 1228.9,
+                }
+            },
+        ),
         ("missing", "happy", "GET", "/orders/9999", ALICE, 404, {}),
         ("alice_reads_bobs", "trap", "GET", "/orders/8", ALICE, 404, {}),
         ("bob_reads_alices", "trap", "GET", "/orders/1", BOB, 404, {}),
@@ -290,7 +306,12 @@ O04 = _task(
             200,
             {
                 "json": {"rating": 2, "body": "Broke after a month."},
-                "expect_json": {"id": 8, "rating": 2, "body": "Broke after a month."},
+                "expect_json": {
+                    "id": 8,
+                    "product_id": 23,
+                    "rating": 2,
+                    "body": "Broke after a month.",
+                },
             },
         ),
         (
@@ -357,7 +378,15 @@ O05 = _task(
             200,
             {
                 "query": {"limit": 2, "offset": 1},
-                "expect_json": {"items": _ids(23, 24), "limit": 2, "offset": 1},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "product_id", "qty", "unit_price"),
+                        (23, 29, 1, 434.65),
+                        (24, 24, 3, 120.49),
+                    ),
+                    "limit": 2,
+                    "offset": 1,
+                },
                 "ordered": True,
             },
         ),
@@ -465,7 +494,12 @@ O07 = _task(
             200,
             {
                 "json": {"line1": "9 Elm Ct", "city": "Madison", "zip": "53703"},
-                "expect_json": {"id": 27, "city": "Madison", "zip": "53703"},
+                "expect_json": {
+                    "id": 27,
+                    "line1": "9 Elm Ct",
+                    "city": "Madison",
+                    "zip": "53703",
+                },
             },
         ),
         (
@@ -573,7 +607,13 @@ V01 = _task(
             201,
             {
                 "json": {"product_id": 2, "rating": 1, "body": "Wobbly."},
-                "expect_json": {"product_id": 2, "customer_id": DAVE_ID, "rating": 1},
+                "expect_json": {
+                    "id": 121,
+                    "product_id": 2,
+                    "customer_id": DAVE_ID,
+                    "rating": 1,
+                    "body": "Wobbly.",
+                },
             },
         ),
         (
@@ -669,7 +709,13 @@ V02 = _task(
             201,
             {
                 "json": {"line1": "3 Oak Ave", "city": "Austin", "zip": "73301"},
-                "expect_json": {"customer_id": DAVE_ID, "zip": "73301"},
+                "expect_json": {
+                    "id": 61,
+                    "customer_id": DAVE_ID,
+                    "line1": "3 Oak Ave",
+                    "city": "Austin",
+                    "zip": "73301",
+                },
             },
         ),
         (
@@ -987,7 +1033,15 @@ V06 = _task(
             200,
             {
                 "query": {"category": "outdoor", "limit": 2, "offset": 1},
-                "expect_json": {"items": _ids(16, 18), "limit": 2, "offset": 1},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "name", "price"),
+                        (16, "Slate Pan", 73.96),
+                        (18, "Reef Shelf", 343.16),
+                    ),
+                    "limit": 2,
+                    "offset": 1,
+                },
                 "ordered": True,
             },
         ),
@@ -1046,7 +1100,11 @@ V07 = _task(
             200,
             {
                 "json": {"name": "D"},
-                "expect_json": {"id": DAVE_ID, "name": "D"},
+                "expect_json": {
+                    "id": DAVE_ID,
+                    "email": "dave@example.com",
+                    "name": "D",
+                },
                 "after_sql": _USER_NAME.format(DAVE_ID),
                 "after_expect": ["D"],
             },
@@ -1177,7 +1235,15 @@ E01 = _task(
             "/products/2",
             None,
             200,
-            {"expect_json": {"id": 2, "name": "Cobalt Chair", "stock": 0}},
+            {
+                "expect_json": {
+                    "id": 2,
+                    "name": "Cobalt Chair",
+                    "category": "office",
+                    "price": 39.71,
+                    "stock": 0,
+                }
+            },
         ),
         ("missing", "trap", "GET", "/products/999", None, 404, {}),
         ("missing_just_past_end", "trap", "GET", "/products/31", None, 404, {}),
@@ -1308,7 +1374,13 @@ E04 = _task(
             "/products/2/stock",
             ADMIN,
             200,
-            {"expect_json": {"id": 2, "stock": 0}},
+            {
+                "expect_json": {
+                    "id": 2,
+                    "name": "Cobalt Chair",
+                    "stock": 0,
+                }
+            },
         ),
         ("missing", "happy", "GET", "/products/999/stock", ALICE, 404, {}),
         ("no_token", "trap", "GET", "/products/1/stock", None, 401, {}),
@@ -1397,7 +1469,13 @@ E06 = _task(
             201,
             {
                 "json": {"rating": 3, "body": "Fine."},
-                "expect_json": {"product_id": 23, "customer_id": DAVE_ID, "rating": 3},
+                "expect_json": {
+                    "id": 121,
+                    "product_id": 23,
+                    "customer_id": DAVE_ID,
+                    "rating": 3,
+                    "body": "Fine.",
+                },
             },
         ),
         (
@@ -1507,15 +1585,16 @@ E08 = _task(
             200,
             {
                 "expect_json": {
-                    "items": [
-                        {"id": 1, "status": "pending", "created_at": "2024-01-21"},
-                        {"id": 2, "status": "paid", "created_at": "2024-10-27"},
-                        {"id": 3, "status": "shipped", "created_at": "2024-03-22"},
-                        {"id": 4, "status": "cancelled", "created_at": "2024-05-31"},
-                        {"id": 5, "status": "shipped", "created_at": "2024-09-04"},
-                        {"id": 6, "status": "paid", "created_at": "2024-08-24"},
-                        {"id": 7, "status": "cancelled", "created_at": "2024-02-23"},
-                    ],
+                    "items": _rows(
+                        ("id", "status", "created_at", "total"),
+                        (1, "pending", "2024-01-21", 1557.18),
+                        (2, "paid", "2024-10-27", 1216.39),
+                        (3, "shipped", "2024-03-22", 2311.75),
+                        (4, "cancelled", "2024-05-31", 2886.87),
+                        (5, "shipped", "2024-09-04", 2574.63),
+                        (6, "paid", "2024-08-24", 2277.26),
+                        (7, "cancelled", "2024-02-23", 1843.27),
+                    ),
                     "limit": 20,
                     "offset": 0,
                 },
@@ -1543,8 +1622,6 @@ E08 = _task(
 
 _F = "efficiency"
 
-_BOB_UNITS = {8: 7, 9: 10, 10: 8, 11: 4, 12: 11, 13: 14, 14: 10, 15: 9, 16: 11, 17: 9, 18: 8}
-
 F01 = _task(
     "f01",
     _F,
@@ -1565,7 +1642,20 @@ F01 = _task(
             200,
             {
                 "expect_json": {
-                    "items": [{"id": k, "units": v} for k, v in _BOB_UNITS.items()],
+                    "items": _rows(
+                        ("id", "status", "created_at", "total", "units"),
+                        (8, "cancelled", "2024-04-11", 1228.9, 7),
+                        (9, "pending", "2024-03-07", 2617.78, 10),
+                        (10, "paid", "2024-03-09", 1439.15, 8),
+                        (11, "cancelled", "2024-09-24", 870.27, 4),
+                        (12, "pending", "2024-07-30", 3053.21, 11),
+                        (13, "pending", "2024-04-29", 2662.64, 14),
+                        (14, "paid", "2024-11-21", 2945.67, 10),
+                        (15, "shipped", "2024-08-21", 1286.89, 9),
+                        (16, "pending", "2024-11-25", 2828.1, 11),
+                        (17, "cancelled", "2024-02-14", 3927.43, 9),
+                        (18, "paid", "2024-06-17", 1858.92, 8),
+                    ),
                     "limit": 20,
                     "offset": 0,
                 },
@@ -1582,11 +1672,12 @@ F01 = _task(
             {
                 "query": {"limit": 3, "offset": 2},
                 "expect_json": {
-                    "items": [
-                        {"id": 10, "status": "paid", "total": 1439.15, "units": 8},
-                        {"id": 11, "status": "cancelled", "total": 870.27, "units": 4},
-                        {"id": 12, "status": "pending", "total": 3053.21, "units": 11},
-                    ],
+                    "items": _rows(
+                        ("id", "status", "created_at", "total", "units"),
+                        (10, "paid", "2024-03-09", 1439.15, 8),
+                        (11, "cancelled", "2024-09-24", 870.27, 4),
+                        (12, "pending", "2024-07-30", 3053.21, 11),
+                    ),
                     "limit": 3,
                     "offset": 2,
                 },
@@ -1610,21 +1701,27 @@ F01 = _task(
             BOB,
             200,
             {
-                "expect_json": {"items": _ids(*_BOB_UNITS)},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "status", "created_at", "total", "units"),
+                        (8, "cancelled", "2024-04-11", 1228.9, 7),
+                        (9, "pending", "2024-03-07", 2617.78, 10),
+                        (10, "paid", "2024-03-09", 1439.15, 8),
+                        (11, "cancelled", "2024-09-24", 870.27, 4),
+                        (12, "pending", "2024-07-30", 3053.21, 11),
+                        (13, "pending", "2024-04-29", 2662.64, 14),
+                        (14, "paid", "2024-11-21", 2945.67, 10),
+                        (15, "shipped", "2024-08-21", 1286.89, 9),
+                        (16, "pending", "2024-11-25", 2828.1, 11),
+                        (17, "cancelled", "2024-02-14", 3927.43, 9),
+                        (18, "paid", "2024-06-17", 1858.92, 8),
+                    )
+                },
                 "max_queries": QUERY_BUDGET,
             },
         ),
     ],
 )
-
-
-def _order_names(first: int, last: int) -> list[dict[str, object]]:
-    names = {range(1, 8): "Alice Nguyen", range(8, 19): "Bob Martinez"}
-    out: list[dict[str, object]] = []
-    for oid in range(first, last + 1):
-        name = next((n for r, n in names.items() if oid in r), "Carol Kim")
-        out.append({"id": oid, "customer_name": name})
-    return out
 
 
 F02 = _task(
@@ -1644,7 +1741,33 @@ F02 = _task(
             ADMIN,
             200,
             {
-                "expect_json": {"items": _order_names(1, 20), "limit": 20, "offset": 0},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "customer_id", "customer_name", "status", "total"),
+                        (1, 1, "Alice Nguyen", "pending", 1557.18),
+                        (2, 1, "Alice Nguyen", "paid", 1216.39),
+                        (3, 1, "Alice Nguyen", "shipped", 2311.75),
+                        (4, 1, "Alice Nguyen", "cancelled", 2886.87),
+                        (5, 1, "Alice Nguyen", "shipped", 2574.63),
+                        (6, 1, "Alice Nguyen", "paid", 2277.26),
+                        (7, 1, "Alice Nguyen", "cancelled", 1843.27),
+                        (8, 2, "Bob Martinez", "cancelled", 1228.9),
+                        (9, 2, "Bob Martinez", "pending", 2617.78),
+                        (10, 2, "Bob Martinez", "paid", 1439.15),
+                        (11, 2, "Bob Martinez", "cancelled", 870.27),
+                        (12, 2, "Bob Martinez", "pending", 3053.21),
+                        (13, 2, "Bob Martinez", "pending", 2662.64),
+                        (14, 2, "Bob Martinez", "paid", 2945.67),
+                        (15, 2, "Bob Martinez", "shipped", 1286.89),
+                        (16, 2, "Bob Martinez", "pending", 2828.1),
+                        (17, 2, "Bob Martinez", "cancelled", 3927.43),
+                        (18, 2, "Bob Martinez", "paid", 1858.92),
+                        (19, 3, "Carol Kim", "pending", 3506.85),
+                        (20, 3, "Carol Kim", "paid", 1913.7),
+                    ),
+                    "limit": 20,
+                    "offset": 0,
+                },
                 "ordered": True,
             },
         ),
@@ -1658,10 +1781,14 @@ F02 = _task(
             {
                 "query": {"limit": 10, "offset": 295},
                 "expect_json": {
-                    "items": [
-                        {"id": i, "customer_id": 40, "customer_name": "Elle Weber"}
-                        for i in range(296, 301)
-                    ],
+                    "items": _rows(
+                        ("id", "customer_id", "customer_name", "status", "total"),
+                        (296, 40, "Elle Weber", "paid", 2954.77),
+                        (297, 40, "Elle Weber", "cancelled", 3986.89),
+                        (298, 40, "Elle Weber", "pending", 2587.24),
+                        (299, 40, "Elle Weber", "cancelled", 3704.95),
+                        (300, 40, "Elle Weber", "cancelled", 1852.63),
+                    ),
                     "limit": 10,
                     "offset": 295,
                 },
@@ -1703,7 +1830,33 @@ F03 = _task(
             200,
             {
                 "query": {"limit": 20},
-                "expect_json": {"items": _ids(*range(1, 21)), "limit": 20, "offset": 0},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "name", "category", "price", "stock"),
+                        (1, "Terra Tent", "electronics", 417.89, 81),
+                        (2, "Cobalt Chair", "office", 39.71, 0),
+                        (3, "Amber Monitor", "kitchen", 306.41, 284),
+                        (4, "Crest Bottle", "sports", 89.2, 178),
+                        (5, "Arc Headset", "kitchen", 465.2, 125),
+                        (6, "Crest Bottle", "electronics", 461.95, 89),
+                        (7, "Halo Bottle", "sports", 23.17, 266),
+                        (8, "Drift Shelf", "home", 480.91, 7),
+                        (9, "Cobalt Rack", "office", 335.13, 125),
+                        (10, "Solid Cooler", "office", 388.09, 247),
+                        (11, "Ridge Lamp", "outdoor", 330.92, 17),
+                        (12, "Quartz Mat", "electronics", 435.84, 74),
+                        (13, "Cobalt Lamp", "outdoor", 74.1, 269),
+                        (14, "Cobalt Chair", "home", 450.22, 187),
+                        (15, "Halo Fan", "office", 244.81, 244),
+                        (16, "Slate Pan", "outdoor", 73.96, 5),
+                        (17, "Vivid Chair", "outdoor", 298.87, 127),
+                        (18, "Reef Shelf", "outdoor", 343.16, 70),
+                        (19, "Crest Mat", "electronics", 97.41, 228),
+                        (20, "Solid Speaker", "sports", 144.26, 155),
+                    ),
+                    "limit": 20,
+                    "offset": 0,
+                },
                 "ordered": True,
             },
         ),
@@ -1746,35 +1899,40 @@ F03 = _task(
             "/catalog",
             None,
             200,
-            {"expect_json": {"items": _ids(*range(1, 21)), "limit": 20, "offset": 0}},
+            {
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "name", "category", "price", "stock"),
+                        (1, "Terra Tent", "electronics", 417.89, 81),
+                        (2, "Cobalt Chair", "office", 39.71, 0),
+                        (3, "Amber Monitor", "kitchen", 306.41, 284),
+                        (4, "Crest Bottle", "sports", 89.2, 178),
+                        (5, "Arc Headset", "kitchen", 465.2, 125),
+                        (6, "Crest Bottle", "electronics", 461.95, 89),
+                        (7, "Halo Bottle", "sports", 23.17, 266),
+                        (8, "Drift Shelf", "home", 480.91, 7),
+                        (9, "Cobalt Rack", "office", 335.13, 125),
+                        (10, "Solid Cooler", "office", 388.09, 247),
+                        (11, "Ridge Lamp", "outdoor", 330.92, 17),
+                        (12, "Quartz Mat", "electronics", 435.84, 74),
+                        (13, "Cobalt Lamp", "outdoor", 74.1, 269),
+                        (14, "Cobalt Chair", "home", 450.22, 187),
+                        (15, "Halo Fan", "office", 244.81, 244),
+                        (16, "Slate Pan", "outdoor", 73.96, 5),
+                        (17, "Vivid Chair", "outdoor", 298.87, 127),
+                        (18, "Reef Shelf", "outdoor", 343.16, 70),
+                        (19, "Crest Mat", "electronics", 97.41, 228),
+                        (20, "Solid Speaker", "sports", 144.26, 155),
+                    ),
+                    "limit": 20,
+                    "offset": 0,
+                }
+            },
         ),
         ("limit_too_large", "trap", "GET", "/catalog", None, 422, {"query": {"limit": 1000}}),
         ("limit_zero", "trap", "GET", "/catalog", None, 422, {"query": {"limit": 0}}),
     ],
 )
-
-_REVIEWS_HEAD = [
-    (1, "Dave Okafor", "Slate Pan"),
-    (2, "Elle Weber", "Arc Shelf"),
-    (3, "Nora Haddad", "Halo Fan"),
-    (4, "Ivy Novak", "Slate Kettle"),
-    (5, "Ethan Haddad", "Slate Pan"),
-    (6, "Mia Nguyen", "Arc Mat"),
-    (7, "Jude Ivanov", "Halo Fan"),
-    (8, "Bob Martinez", "Amber Lamp"),
-    (9, "Jude Garcia", "Onyx Rack"),
-    (10, "Max Diaz", "Arc Mat"),
-    (11, "Nora Haddad", "Onyx Rack"),
-    (12, "Elle Costa", "Crest Mat"),
-    (13, "Ruby Ali", "Arc Rack"),
-    (14, "Max Moreau", "Vivid Chair"),
-    (15, "Liam Weber", "Arc Mat"),
-    (16, "Sara Okafor", "Amber Monitor"),
-    (17, "Ivy Chen", "Cobalt Lamp"),
-    (18, "Finn Patel", "Terra Jacket"),
-    (19, "Nora Haddad", "Arc Rack"),
-    (20, "Ivy Novak", "Amber Lamp"),
-]
 
 F04 = _task(
     "f04",
@@ -1795,10 +1953,41 @@ F04 = _task(
             200,
             {
                 "expect_json": {
-                    "items": [
-                        {"id": i, "reviewer_name": r, "product_name": p}
-                        for i, r, p in _REVIEWS_HEAD
-                    ],
+                    "items": _rows(
+                        ("id", "rating", "body", "reviewer_name", "product_name"),
+                        (1, 4, "Solid build quality, would buy again.", "Dave Okafor", "Slate Pan"),
+                        (2, 1, "Would not recommend.", "Elle Weber", "Arc Shelf"),
+                        (3, 4, "Arrived damaged, disappointed.", "Nora Haddad", "Halo Fan"),
+                        (4, 2, "Good value for the price.", "Ivy Novak", "Slate Kettle"),
+                        (5, 5, "Stopped working after a week.", "Ethan Haddad", "Slate Pan"),
+                        (6, 3, "Good value for the price.", "Mia Nguyen", "Arc Mat"),
+                        (7, 5, "Perfect fit for my needs.", "Jude Ivanov", "Halo Fan"),
+                        (8, 4, "Average product, nothing special.", "Bob Martinez", "Amber Lamp"),
+                        (9, 2, "Stopped working after a week.", "Jude Garcia", "Onyx Rack"),
+                        (10, 3, "Excellent, exceeded expectations.", "Max Diaz", "Arc Mat"),
+                        (11, 1, "Excellent, exceeded expectations.", "Nora Haddad", "Onyx Rack"),
+                        (12, 1, "Perfect fit for my needs.", "Elle Costa", "Crest Mat"),
+                        (13, 3, "Would not recommend.", "Ruby Ali", "Arc Rack"),
+                        (
+                            14,
+                            3,
+                            "Solid build quality, would buy again.",
+                            "Max Moreau",
+                            "Vivid Chair",
+                        ),
+                        (15, 1, "Good value for the price.", "Liam Weber", "Arc Mat"),
+                        (
+                            16,
+                            2,
+                            "Excellent, exceeded expectations.",
+                            "Sara Okafor",
+                            "Amber Monitor",
+                        ),
+                        (17, 3, "Solid build quality, would buy again.", "Ivy Chen", "Cobalt Lamp"),
+                        (18, 4, "Arrived damaged, disappointed.", "Finn Patel", "Terra Jacket"),
+                        (19, 4, "Perfect fit for my needs.", "Nora Haddad", "Arc Rack"),
+                        (20, 4, "Works great, exactly as described.", "Ivy Novak", "Amber Lamp"),
+                    ),
                     "limit": 20,
                     "offset": 0,
                 },
@@ -1846,7 +2035,43 @@ F04 = _task(
             ADMIN,
             200,
             {
-                "expect_json": {"items": _ids(*range(1, 21))},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "rating", "body", "reviewer_name", "product_name"),
+                        (1, 4, "Solid build quality, would buy again.", "Dave Okafor", "Slate Pan"),
+                        (2, 1, "Would not recommend.", "Elle Weber", "Arc Shelf"),
+                        (3, 4, "Arrived damaged, disappointed.", "Nora Haddad", "Halo Fan"),
+                        (4, 2, "Good value for the price.", "Ivy Novak", "Slate Kettle"),
+                        (5, 5, "Stopped working after a week.", "Ethan Haddad", "Slate Pan"),
+                        (6, 3, "Good value for the price.", "Mia Nguyen", "Arc Mat"),
+                        (7, 5, "Perfect fit for my needs.", "Jude Ivanov", "Halo Fan"),
+                        (8, 4, "Average product, nothing special.", "Bob Martinez", "Amber Lamp"),
+                        (9, 2, "Stopped working after a week.", "Jude Garcia", "Onyx Rack"),
+                        (10, 3, "Excellent, exceeded expectations.", "Max Diaz", "Arc Mat"),
+                        (11, 1, "Excellent, exceeded expectations.", "Nora Haddad", "Onyx Rack"),
+                        (12, 1, "Perfect fit for my needs.", "Elle Costa", "Crest Mat"),
+                        (13, 3, "Would not recommend.", "Ruby Ali", "Arc Rack"),
+                        (
+                            14,
+                            3,
+                            "Solid build quality, would buy again.",
+                            "Max Moreau",
+                            "Vivid Chair",
+                        ),
+                        (15, 1, "Good value for the price.", "Liam Weber", "Arc Mat"),
+                        (
+                            16,
+                            2,
+                            "Excellent, exceeded expectations.",
+                            "Sara Okafor",
+                            "Amber Monitor",
+                        ),
+                        (17, 3, "Solid build quality, would buy again.", "Ivy Chen", "Cobalt Lamp"),
+                        (18, 4, "Arrived damaged, disappointed.", "Finn Patel", "Terra Jacket"),
+                        (19, 4, "Perfect fit for my needs.", "Nora Haddad", "Arc Rack"),
+                        (20, 4, "Works great, exactly as described.", "Ivy Novak", "Amber Lamp"),
+                    )
+                },
                 "max_queries": QUERY_BUDGET,
             },
         ),
@@ -1899,11 +2124,12 @@ F05 = _task(
             {
                 "query": {"offset": 27},
                 "expect_json": {
-                    "items": [
-                        {"id": 28, "review_count": 3, "avg_rating": 2.3333333333333335},
-                        {"id": 29, "review_count": 4, "avg_rating": 2.75},
-                        {"id": 30, "review_count": 5, "avg_rating": 2.6},
-                    ],
+                    "items": _rows(
+                        ("id", "name", "review_count", "avg_rating"),
+                        (28, "Ember Desk", 3, 2.3333333333333335),
+                        (29, "Arc Shelf", 4, 2.75),
+                        (30, "Onyx Rack", 5, 2.6),
+                    ),
                     "limit": 20,
                     "offset": 27,
                 },
@@ -1918,35 +2144,36 @@ F05 = _task(
             None,
             200,
             {
-                "expect_json": {"items": _ids(*range(1, 21))},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "name", "review_count", "avg_rating"),
+                        (1, "Terra Tent", 2, 4.0),
+                        (2, "Cobalt Chair", 5, 3.0),
+                        (3, "Amber Monitor", 6, 3.1666666666666665),
+                        (4, "Crest Bottle", 1, 4.0),
+                        (5, "Arc Headset", 1, 1.0),
+                        (6, "Crest Bottle", 5, 4.2),
+                        (7, "Halo Bottle", 6, 2.8333333333333335),
+                        (8, "Drift Shelf", 3, 2.6666666666666665),
+                        (9, "Cobalt Rack", 3, 3.3333333333333335),
+                        (10, "Solid Cooler", 3, 2.6666666666666665),
+                        (11, "Ridge Lamp", 4, 2.25),
+                        (12, "Quartz Mat", 6, 3.5),
+                        (13, "Cobalt Lamp", 5, 4.0),
+                        (14, "Cobalt Chair", 3, 3.6666666666666665),
+                        (15, "Halo Fan", 5, 3.8),
+                        (16, "Slate Pan", 5, 3.6),
+                        (17, "Vivid Chair", 3, 4.0),
+                        (18, "Reef Shelf", 2, 2.0),
+                        (19, "Crest Mat", 4, 2.0),
+                        (20, "Solid Speaker", 4, 2.5),
+                    )
+                },
                 "max_queries": QUERY_BUDGET,
             },
         ),
     ],
 )
-
-_CUSTOMER_STATS = [
-    (1, "Alice Nguyen", 5, 9937.21),
-    (2, "Bob Martinez", 8, 18692.36),
-    (3, "Carol Kim", 7, 17831.26),
-    (4, "Dave Okafor", 0, 0.0),
-    (8, "Ethan Haddad", 6, 15620.19),
-    (9, "Ethan Suzuki", 6, 15085.27),
-    (10, "Finn Suzuki", 0, 0.0),
-    (11, "Mia Nguyen", 8, 16427.55),
-    (12, "Ivy Chen", 6, 19860.33),
-    (13, "Max Moreau", 3, 8888.07),
-    (14, "Jude Garcia", 3, 7532.69),
-    (15, "Ruby Nguyen", 5, 10395.53),
-    (16, "Kai Patel", 9, 20308.26),
-    (17, "Jude Ivanov", 8, 18818.91),
-    (18, "Noah Diaz", 11, 26383.23),
-    (19, "Leo Okafor", 12, 34815.57),
-    (20, "Liam Weber", 0, 0.0),
-    (21, "Owen Larsen", 9, 32559.56),
-    (22, "Ivy Novak", 8, 21923.18),
-    (23, "Nora Kim", 9, 27861.3),
-]
 
 F06 = _task(
     "f06",
@@ -1968,10 +2195,29 @@ F06 = _task(
             200,
             {
                 "expect_json": {
-                    "items": [
-                        {"id": i, "name": n, "order_count": c, "total_spent": t}
-                        for i, n, c, t in _CUSTOMER_STATS
-                    ],
+                    "items": _rows(
+                        ("id", "name", "email", "order_count", "total_spent"),
+                        (1, "Alice Nguyen", "alice@example.com", 5, 9937.210000000001),
+                        (2, "Bob Martinez", "bob@example.com", 8, 18692.36),
+                        (3, "Carol Kim", "carol@example.com", 7, 17831.260000000002),
+                        (4, "Dave Okafor", "dave@example.com", 0, 0),
+                        (8, "Ethan Haddad", "ethan.haddad8@example.com", 6, 15620.19),
+                        (9, "Ethan Suzuki", "ethan.suzuki9@example.com", 6, 15085.27),
+                        (10, "Finn Suzuki", "finn.suzuki10@example.com", 0, 0),
+                        (11, "Mia Nguyen", "mia.nguyen11@example.com", 8, 16427.55),
+                        (12, "Ivy Chen", "ivy.chen12@example.com", 6, 19860.33),
+                        (13, "Max Moreau", "max.moreau13@example.com", 3, 8888.07),
+                        (14, "Jude Garcia", "jude.garcia14@example.com", 3, 7532.69),
+                        (15, "Ruby Nguyen", "ruby.nguyen15@example.com", 5, 10395.53),
+                        (16, "Kai Patel", "kai.patel16@example.com", 9, 20308.26),
+                        (17, "Jude Ivanov", "jude.ivanov17@example.com", 8, 18818.91),
+                        (18, "Noah Diaz", "noah.diaz18@example.com", 11, 26383.23),
+                        (19, "Leo Okafor", "leo.okafor19@example.com", 12, 34815.57),
+                        (20, "Liam Weber", "liam.weber20@example.com", 0, 0),
+                        (21, "Owen Larsen", "owen.larsen21@example.com", 9, 32559.559999999998),
+                        (22, "Ivy Novak", "ivy.novak22@example.com", 8, 21923.18),
+                        (23, "Nora Kim", "nora.kim23@example.com", 9, 27861.3),
+                    ),
                     "limit": 20,
                     "offset": 0,
                 },
@@ -1988,17 +2234,12 @@ F06 = _task(
             {
                 "query": {"limit": 3, "offset": 34},
                 "expect_json": {
-                    "items": [
-                        {
-                            "id": 38,
-                            "name": "Max Diaz",
-                            "email": "max.diaz38@example.com",
-                            "order_count": 11,
-                            "total_spent": 30896.51,
-                        },
-                        {"id": 39, "order_count": 9, "total_spent": 30598.54},
-                        {"id": 40, "order_count": 5, "total_spent": 11450.04},
-                    ],
+                    "items": _rows(
+                        ("id", "name", "email", "order_count", "total_spent"),
+                        (38, "Max Diaz", "max.diaz38@example.com", 11, 30896.51),
+                        (39, "Mia Costa", "mia.costa39@example.com", 9, 30598.54),
+                        (40, "Elle Weber", "elle.weber40@example.com", 5, 11450.039999999999),
+                    ),
                     "limit": 3,
                     "offset": 34,
                 },
@@ -2014,7 +2255,31 @@ F06 = _task(
             ADMIN,
             200,
             {
-                "expect_json": {"items": [{"id": row[0]} for row in _CUSTOMER_STATS]},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "name", "email", "order_count", "total_spent"),
+                        (1, "Alice Nguyen", "alice@example.com", 5, 9937.210000000001),
+                        (2, "Bob Martinez", "bob@example.com", 8, 18692.36),
+                        (3, "Carol Kim", "carol@example.com", 7, 17831.260000000002),
+                        (4, "Dave Okafor", "dave@example.com", 0, 0),
+                        (8, "Ethan Haddad", "ethan.haddad8@example.com", 6, 15620.19),
+                        (9, "Ethan Suzuki", "ethan.suzuki9@example.com", 6, 15085.27),
+                        (10, "Finn Suzuki", "finn.suzuki10@example.com", 0, 0),
+                        (11, "Mia Nguyen", "mia.nguyen11@example.com", 8, 16427.55),
+                        (12, "Ivy Chen", "ivy.chen12@example.com", 6, 19860.33),
+                        (13, "Max Moreau", "max.moreau13@example.com", 3, 8888.07),
+                        (14, "Jude Garcia", "jude.garcia14@example.com", 3, 7532.69),
+                        (15, "Ruby Nguyen", "ruby.nguyen15@example.com", 5, 10395.53),
+                        (16, "Kai Patel", "kai.patel16@example.com", 9, 20308.26),
+                        (17, "Jude Ivanov", "jude.ivanov17@example.com", 8, 18818.91),
+                        (18, "Noah Diaz", "noah.diaz18@example.com", 11, 26383.23),
+                        (19, "Leo Okafor", "leo.okafor19@example.com", 12, 34815.57),
+                        (20, "Liam Weber", "liam.weber20@example.com", 0, 0),
+                        (21, "Owen Larsen", "owen.larsen21@example.com", 9, 32559.559999999998),
+                        (22, "Ivy Novak", "ivy.novak22@example.com", 8, 21923.18),
+                        (23, "Nora Kim", "nora.kim23@example.com", 9, 27861.3),
+                    )
+                },
                 "max_queries": QUERY_BUDGET,
             },
         ),
@@ -2079,11 +2344,12 @@ F07 = _task(
             200,
             {
                 "expect_json": {
-                    "items": [
-                        {"id": 22, "product_name": "Solid Speaker"},
-                        {"id": 23, "product_name": "Arc Shelf"},
-                        {"id": 24, "product_name": "Reef Bottle"},
-                    ],
+                    "items": _rows(
+                        ("id", "product_id", "product_name", "qty", "unit_price"),
+                        (22, 20, "Solid Speaker", 3, 144.26),
+                        (23, 29, "Arc Shelf", 1, 434.65),
+                        (24, 24, "Reef Bottle", 3, 120.49),
+                    ),
                     "limit": 20,
                     "offset": 0,
                 },
@@ -2098,7 +2364,17 @@ F07 = _task(
             "/orders/1/lines",
             ALICE,
             200,
-            {"expect_json": {"items": _ids(1, 2, 3)}, "max_queries": QUERY_BUDGET},
+            {
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "product_id", "product_name", "qty", "unit_price"),
+                        (1, 18, "Reef Shelf", 4, 343.16),
+                        (2, 7, "Halo Bottle", 1, 23.17),
+                        (3, 26, "Slate Kettle", 3, 53.79),
+                    )
+                },
+                "max_queries": QUERY_BUDGET,
+            },
         ),
     ],
 )
@@ -2123,16 +2399,12 @@ F08 = _task(
             {
                 "query": {"role": "Admin", "limit": 20},
                 "expect_json": {
-                    "items": [
-                        {
-                            "id": 5,
-                            "email": "admin@example.com",
-                            "name": "Admin User",
-                            "role": "Admin",
-                        },
-                        {"id": 6, "role": "Admin"},
-                        {"id": 7, "role": "Admin"},
-                    ],
+                    "items": _rows(
+                        ("id", "email", "name", "role"),
+                        (5, "admin@example.com", "Admin User", "Admin"),
+                        (6, "finn.ivanov6@example.com", "Finn Ivanov", "Admin"),
+                        (7, "jude.rossi7@example.com", "Jude Rossi", "Admin"),
+                    ),
                     "limit": 20,
                     "offset": 0,
                 },
@@ -2148,7 +2420,18 @@ F08 = _task(
             200,
             {
                 "query": {"limit": 5, "offset": 2},
-                "expect_json": {"items": _ids(3, 4, 8, 9, 10), "limit": 5, "offset": 2},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "email", "name", "role"),
+                        (3, "carol@example.com", "Carol Kim", "Customer"),
+                        (4, "dave@example.com", "Dave Okafor", "Customer"),
+                        (8, "ethan.haddad8@example.com", "Ethan Haddad", "Customer"),
+                        (9, "ethan.suzuki9@example.com", "Ethan Suzuki", "Customer"),
+                        (10, "finn.suzuki10@example.com", "Finn Suzuki", "Customer"),
+                    ),
+                    "limit": 5,
+                    "offset": 2,
+                },
                 "ordered": True,
             },
         ),
@@ -2162,7 +2445,29 @@ F08 = _task(
             200,
             {
                 "expect_json": {
-                    "items": _ids(1, 2, 3, 4, *range(8, 24)),
+                    "items": _rows(
+                        ("id", "email", "name", "role"),
+                        (1, "alice@example.com", "Alice Nguyen", "Customer"),
+                        (2, "bob@example.com", "Bob Martinez", "Customer"),
+                        (3, "carol@example.com", "Carol Kim", "Customer"),
+                        (4, "dave@example.com", "Dave Okafor", "Customer"),
+                        (8, "ethan.haddad8@example.com", "Ethan Haddad", "Customer"),
+                        (9, "ethan.suzuki9@example.com", "Ethan Suzuki", "Customer"),
+                        (10, "finn.suzuki10@example.com", "Finn Suzuki", "Customer"),
+                        (11, "mia.nguyen11@example.com", "Mia Nguyen", "Customer"),
+                        (12, "ivy.chen12@example.com", "Ivy Chen", "Customer"),
+                        (13, "max.moreau13@example.com", "Max Moreau", "Customer"),
+                        (14, "jude.garcia14@example.com", "Jude Garcia", "Customer"),
+                        (15, "ruby.nguyen15@example.com", "Ruby Nguyen", "Customer"),
+                        (16, "kai.patel16@example.com", "Kai Patel", "Customer"),
+                        (17, "jude.ivanov17@example.com", "Jude Ivanov", "Customer"),
+                        (18, "noah.diaz18@example.com", "Noah Diaz", "Customer"),
+                        (19, "leo.okafor19@example.com", "Leo Okafor", "Customer"),
+                        (20, "liam.weber20@example.com", "Liam Weber", "Customer"),
+                        (21, "owen.larsen21@example.com", "Owen Larsen", "Customer"),
+                        (22, "ivy.novak22@example.com", "Ivy Novak", "Customer"),
+                        (23, "nora.kim23@example.com", "Nora Kim", "Customer"),
+                    ),
                     "limit": 20,
                     "offset": 0,
                 },
@@ -2210,7 +2515,14 @@ C01 = _task(
             "/me",
             ADMIN,
             200,
-            {"expect_json": {"id": 5, "email": "admin@example.com", "role": "Admin"}},
+            {
+                "expect_json": {
+                    "id": 5,
+                    "email": "admin@example.com",
+                    "name": "Admin User",
+                    "role": "Admin",
+                }
+            },
         ),
         ("no_token", "happy", "GET", "/me", None, 401, {}),
     ],
@@ -2258,7 +2570,16 @@ C02 = _task(
             BOB,
             200,
             {
-                "expect_json": {"items": _ids(9, 23, 27), "limit": 20, "offset": 0},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "line1", "city", "zip"),
+                        (9, "5741 Sunset St", "Riverton", "07151"),
+                        (23, "2589 Elm St", "Georgetown", "72982"),
+                        (27, "1574 Maple St", "Madison", "72306"),
+                    ),
+                    "limit": 20,
+                    "offset": 0,
+                },
                 "ordered": True,
             },
         ),
@@ -2271,7 +2592,14 @@ C02 = _task(
             200,
             {
                 "query": {"limit": 1, "offset": 1},
-                "expect_json": {"items": _ids(38), "limit": 1, "offset": 1},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "line1", "city", "zip"),
+                        (38, "1721 Birch St", "Madison", "97976"),
+                    ),
+                    "limit": 1,
+                    "offset": 1,
+                },
                 "ordered": True,
             },
         ),
@@ -2351,7 +2679,15 @@ C04 = _task(
             200,
             {
                 "query": {"limit": 2, "offset": 3},
-                "expect_json": {"items": _ids(5, 30), "limit": 2, "offset": 3},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "name", "price"),
+                        (5, "Arc Headset", 465.2),
+                        (30, "Onyx Rack", 473.79),
+                    ),
+                    "limit": 2,
+                    "offset": 3,
+                },
                 "ordered": True,
             },
         ),
@@ -2530,7 +2866,18 @@ C08 = _task(
             CAROL,
             200,
             {
-                "expect_json": {"items": _ids(30, 32, 57, 60, 94), "limit": 20, "offset": 0},
+                "expect_json": {
+                    "items": _rows(
+                        ("id", "product_id", "rating", "body"),
+                        (30, 12, 1, "Good value for the price."),
+                        (32, 28, 4, "Works great, exactly as described."),
+                        (57, 17, 4, "Stopped working after a week."),
+                        (60, 30, 5, "Would not recommend."),
+                        (94, 2, 1, "Perfect fit for my needs."),
+                    ),
+                    "limit": 20,
+                    "offset": 0,
+                },
                 "ordered": True,
             },
         ),

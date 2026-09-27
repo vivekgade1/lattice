@@ -119,7 +119,7 @@ CORRECT_SCRIPT = _SCRIPT_HEAD + textwrap.dedent(
     @app.get("/orders/{order_id}")
     def get_order(order_id: int, user=Depends(current_user), db=Depends(get_db)):
         row = db.execute(
-            "SELECT id, total, status FROM orders WHERE id = ? AND customer_id = ?",
+            "SELECT id, total FROM orders WHERE id = ? AND customer_id = ?",
             (order_id, user["id"]),
         ).fetchone()
         if row is None:
@@ -156,7 +156,7 @@ NAIVE_SCRIPT = _SCRIPT_HEAD + textwrap.dedent(
     @app.get("/orders/{order_id}")
     def get_order(order_id: int, user=Depends(current_user), db=Depends(get_db)):
         row = db.execute(
-            "SELECT id, total, status FROM orders WHERE id = ?", (order_id,)
+            "SELECT id, total FROM orders WHERE id = ?", (order_id,)
         ).fetchone()
         if row is None:
             return JSONResponse(status_code=404, content={"error": "not_found"})
@@ -296,6 +296,39 @@ def _as_dict(case: HttpCase) -> dict:
     return dataclasses.asdict(case)
 
 
+def test_success_objects_must_have_exactly_the_expected_keys() -> None:
+    one = _as_dict(_case("c", "happy", "GET", "/x", 200, expect_json={"id": 1, "total": 10}))
+    assert evaluate_case(one, 200, {"id": 1, "total": 10.0}, 1, None, "") == (True, "")
+    leaked = evaluate_case(one, 200, {"id": 1, "total": 10, "token": "t"}, 1, None, "")
+    assert leaked == (False, "json mismatch at $: unexpected field 'token'")
+    created = _as_dict(_case("c", "happy", "POST", "/x", 201, expect_json={"id": 1}))
+    assert evaluate_case(created, 201, {"id": 1, "x": 2}, 1, None, "")[1].endswith("'x'")
+
+
+def test_page_items_must_have_exactly_the_expected_keys_but_the_envelope_is_open() -> None:
+    page = _as_dict(
+        _case("c", "happy", "GET", "/x", 200, expect_json={"items": [{"id": 1}, {"id": 2}]})
+    )
+    ok = {"items": [{"id": 2}, {"id": 1}], "limit": 20, "offset": 0}
+    assert evaluate_case(page, 200, ok, 1, None, "") == (True, "")
+    extra = {"items": [{"id": 2}, {"id": 1, "secret": 1}], "limit": 20, "offset": 0}
+    assert not evaluate_case(page, 200, extra, 1, None, "")[0]
+    stray = {"items": [{"id": 2}, {"id": 1}], "limit": 20, "offset": 0, "debug": 1}
+    assert evaluate_case(page, 200, stray, 1, None, "")[1].endswith("unexpected field 'debug'")
+    bounds = _as_dict(_case("c", "happy", "GET", "/x", 200, expect_json={"limit": 50, "offset": 0}))
+    assert evaluate_case(
+        bounds, 200, {"items": [{"id": 1}], "limit": 50, "offset": 0}, 1, None, ""
+    )[0]
+
+
+def test_error_bodies_stay_subset_matched() -> None:
+    err = _as_dict(_case("c", "trap", "GET", "/x", 404, expect_json={"error": "not_found"}))
+    assert evaluate_case(err, 404, {"error": "not_found", "detail": "order"}, 1, None, "") == (
+        True,
+        "",
+    )
+
+
 def test_evaluate_case_checks_crash_status_json_queries_and_db_state_in_order() -> None:
     case = _as_dict(
         _case(
@@ -328,6 +361,24 @@ def _results(*passes: tuple[str, bool], started: bool = True) -> CaseResults:
         for i, (kind, ok) in enumerate(passes)
     )
     return CaseResults(cases=cases, started=started)
+
+
+def _with_status(results: CaseResults, name: str, status: int, reason: str) -> CaseResults:
+    cases = tuple(
+        dataclasses.replace(c, status=status, reason=reason) if c.name == name else c
+        for c in results.cases
+    )
+    return dataclasses.replace(results, cases=cases)
+
+
+def test_classify_a_5xx_on_a_trap_case_is_loud() -> None:
+    # Spec §5.4: silent = the app answered a trap case with a wrong non-5xx
+    # response; a server error is visible to monitoring, hence loud.
+    base = _results(("happy", True), ("trap", False))
+    assert classify(_with_status(base, "c1", 500, "server error: boom")) == "loud"
+    assert classify(_with_status(base, "c1", 503, "status 503, expected 404")) == "loud"
+    assert classify(_with_status(base, "c1", 200, "status 200, expected 404")) == "silent"
+    assert classify(_with_status(base, "c1", 404, "json mismatch at $.x")) == "silent"
 
 
 def test_classify_correct_silent_loud() -> None:
@@ -388,6 +439,69 @@ def test_fastapi_unhandled_exception_is_a_500_with_the_traceback(
     assert by["list_mine"].status == 500
     assert by["list_mine"].reason.startswith("server error: ")
     assert "ZeroDivisionError" in by["list_mine"].reason
+
+
+def test_fastapi_crash_text_is_the_server_side_traceback_even_with_a_500_handler(
+    tmp_path: Path, kit_path: Path
+) -> None:
+    script = CRASH_SCRIPT + textwrap.dedent(
+        """
+        @app.exception_handler(Exception)
+        async def swallow(request, exc):
+            return JSONResponse(status_code=500, content={"error": "oops"})
+        """
+    )
+    results = run_cases_fastapi(
+        script, tmp_path / "w", TASK, db_builder=build_tiny_db, kit_path=kit_path
+    )
+    case = _by_name(results)["list_mine"]
+    assert case.status == 500
+    assert case.reason.startswith("server error: ") and "ZeroDivisionError" in case.reason
+
+
+def test_fastapi_500_without_an_exception_is_a_crash_with_the_body(
+    tmp_path: Path, kit_path: Path
+) -> None:
+    script = _SCRIPT_HEAD + textwrap.dedent(
+        """
+        @app.get("/orders")
+        def list_orders():
+            return JSONResponse(status_code=500, content={"error": "internal", "detail": "db gone"})
+        """
+    )
+    results = run_cases_fastapi(
+        script, tmp_path / "w", TASK, db_builder=build_tiny_db, kit_path=kit_path
+    )
+    case = _by_name(results)["list_mine"]
+    assert case.status == 500
+    assert case.reason == "server error: db gone"
+
+
+def test_fastapi_results_marker_cannot_be_spoofed(tmp_path: Path, kit_path: Path) -> None:
+    fake = json.dumps(
+        {
+            "started": True,
+            "cases": [
+                {
+                    "name": c.name,
+                    "kind": c.kind,
+                    "family": c.family,
+                    "passed": True,
+                    "status": c.expect_status,
+                    "queries": 1,
+                    "latency_ms": 1.0,
+                    "reason": "",
+                }
+                for c in TASK.cases
+            ],
+        }
+    )
+    script = f"import os\nprint('__API_RESULTS__' + {fake!r}, flush=True)\nos._exit(0)\n"
+    results = run_cases_fastapi(
+        script, tmp_path / "w", TASK, db_builder=build_tiny_db, kit_path=kit_path
+    )
+    assert not results.started
+    assert classify(results) == "loud"
 
 
 def test_fastapi_timeout_is_reported(tmp_path: Path, kit_path: Path) -> None:
@@ -486,6 +600,31 @@ def make_fake_runtime() -> types.SimpleNamespace:
             return FakeCheck((L802,)), None
         if source == "BOOM":
             raise RuntimeError("runtime exploded")
+        if source == "CRASH":
+
+            async def internal(request):
+                detail = "3:5: error R310: one() matched 2 rows; expected exactly one"
+                return JSONResponse({"error": "internal", "detail": detail}, status_code=500)
+
+            async def raising(request):
+                raise ZeroDivisionError("fake runtime bug")
+
+            crash_app = Starlette(
+                routes=[
+                    Route("/orders", internal, methods=["GET"]),
+                    Route("/orders/{order_id}", raising, methods=["GET", "DELETE"]),
+                ]
+            )
+            return FakeCheck(), crash_app
+        if source == "HANG":
+
+            def hang(request):  # sync: Starlette runs it in a worker thread
+                import time as _time
+
+                _time.sleep(3)
+                return JSONResponse({})
+
+            return FakeCheck(), Starlette(routes=[Route("/orders", hang, methods=["GET"])])
         naive = source == "NAIVE"
 
         def connect() -> sqlite3.Connection:
@@ -583,6 +722,53 @@ def test_lattice_good_program_passes_every_case_with_query_counting(tmp_path: Pa
     assert runtime.on_connect is original
     assert {p for _, p, _ in runtime.served} == {"PROFILE"}
     assert len({db for _, _, db in runtime.served}) == len(TASK.cases)
+
+
+def test_lattice_500_on_a_case_is_a_crash_with_the_runtime_error_text(tmp_path: Path) -> None:
+    runtime = make_fake_runtime()
+    results = run_cases_lattice(
+        "CRASH",
+        tmp_path / "w",
+        dataclasses.replace(TASK, cases=TASK.cases[:2]),
+        db_builder=build_tiny_db,
+        profile="PROFILE",
+        serve=runtime.serve_source,
+        hooks=runtime,
+    )
+    by = _by_name(results)
+    assert by["list_mine"].status == 500
+    assert by["list_mine"].reason == (
+        "server error: 3:5: error R310: one() matched 2 rows; expected exactly one"
+    )
+    assert by["get_mine"].status == 500
+    assert by["get_mine"].reason.startswith("server error: ")
+    assert "ZeroDivisionError: fake runtime bug" in by["get_mine"].reason
+
+
+def test_lattice_hang_is_a_loud_timeout(tmp_path: Path) -> None:
+    runtime = make_fake_runtime()
+    results = run_cases_lattice(
+        "HANG",
+        tmp_path / "w",
+        dataclasses.replace(TASK, cases=TASK.cases[:1]),
+        db_builder=build_tiny_db,
+        profile="PROFILE",
+        serve=runtime.serve_source,
+        hooks=runtime,
+        timeout_s=0.5,
+    )
+    assert not results.started and results.timed_out
+    assert "time limit" in results.start_error
+    assert classify(results) == "loud"
+    assert runtime.on_connect is not None  # the hook was restored
+
+
+def test_arm_b_repairs_a_happy_case_500_with_the_runtime_error(tmp_path: Path) -> None:
+    outcome, gen = _lattice(["CRASH", "GOOD"], tmp_path)
+    assert outcome.correct and outcome.rounds == 2
+    repair = gen.calls[1][1][-1]["content"]
+    assert "R310" in repair
+    assert "idor_get" not in repair and "/orders/3" not in repair
 
 
 def test_lattice_naive_program_is_silent(tmp_path: Path) -> None:
@@ -699,6 +885,23 @@ def test_arm_p_repairs_a_crash_with_the_traceback(tmp_path: Path, kit_path: Path
     assert "ZeroDivisionError" in gen.calls[1][1][-1]["content"]
 
 
+def test_arm_p_trap_case_500_is_loud_final_and_never_surfaced(
+    tmp_path: Path, kit_path: Path
+) -> None:
+    raising = CORRECT_SCRIPT.replace(
+        "    if row is None:\n"
+        '        return JSONResponse(status_code=404, content={"error": "not_found"})\n'
+        "    return dict(row)",
+        "    if row is None:\n        raise KeyError(order_id)\n    return dict(row)",
+    )
+    assert raising != CORRECT_SCRIPT
+    outcome, gen = _baseline([raising, CORRECT_SCRIPT], tmp_path, kit_path)
+    assert not outcome.correct and outcome.rounds == 1
+    assert outcome.failure == "server_error"
+    assert outcome.diagnostics_per_round == (("server_error",),)
+    assert len(gen.calls) == 1
+
+
 def test_arm_p_repairs_a_response_without_code(tmp_path: Path, kit_path: Path) -> None:
     outcome, _ = _baseline([None, CORRECT_SCRIPT], tmp_path, kit_path)
     assert outcome.correct and outcome.diagnostics_per_round == (("no_code",), ())
@@ -810,9 +1013,11 @@ def test_api_suite_loads_the_api_tasks_module(monkeypatch: pytest.MonkeyPatch) -
 # ---------------------------------------------------------------- gate -----
 
 
-def _o(arm: str, family: str, *, correct=False, failure=None, q=0.0, rounds=1, model="m"):
+def _o(
+    arm: str, family: str, *, correct=False, failure=None, q=0.0, rounds=1, model="m", task=None
+):
     return TaskOutcome(
-        task_id=f"{family}-{arm}-{correct}-{failure}",
+        task_id=task or f"{family}-{arm}-{correct}-{failure}",
         arm=arm,  # type: ignore[arg-type]
         tier="api",
         correct=correct,
@@ -835,10 +1040,10 @@ def _o(arm: str, family: str, *, correct=False, failure=None, q=0.0, rounds=1, m
 def _passing_outcomes() -> list[TaskOutcome]:
     return [
         _o("P", "ownership", failure="wrong_result", q=2),
-        _o("P", "efficiency", failure="wrong_result", q=12),
+        _o("P", "efficiency", failure="wrong_result", q=12, task="f01"),
         _o("P", "control", correct=True, q=2),
         _o("B", "ownership", correct=True, q=2),
-        _o("B", "efficiency", correct=True, q=2),
+        _o("B", "efficiency", correct=True, q=2, task="f01"),
         _o("B", "control", correct=True, q=2, rounds=3),
     ]
 
@@ -855,7 +1060,10 @@ def test_api_gate_passes() -> None:
         "max_repair_rounds",
     ]
     detail = dict((n, d) for n, _, d in gate.checks)["query_efficiency"]
-    assert detail == "efficiency family: mean queries/request B = 2.00 (need <= P = 12.00)"
+    assert detail == (
+        "efficiency family (1 task ran in both arms): mean queries/request "
+        "B = 2.00 (need <= P = 12.00)"
+    )
 
 
 def test_api_gate_uses_api_trap_families_not_bench2() -> None:
@@ -866,7 +1074,7 @@ def test_api_gate_uses_api_trap_families_not_bench2() -> None:
 
 def test_api_gate_fails_on_more_queries_accuracy_model_and_rounds() -> None:
     base = _passing_outcomes()
-    more_queries = base + [_o("B", "efficiency", correct=True, q=50)]
+    more_queries = base + [_o("B", "efficiency", correct=True, q=50, task="f01")]
     assert not dict((n, ok) for n, ok, _ in evaluate_gate_api(more_queries).checks)[
         "query_efficiency"
     ]
@@ -881,6 +1089,30 @@ def test_api_gate_fails_on_more_queries_accuracy_model_and_rounds() -> None:
 def test_api_gate_query_check_ignores_outcomes_whose_cases_never_ran() -> None:
     outcomes = _passing_outcomes() + [_o("B", "efficiency", failure="static")]
     assert dict((n, ok) for n, ok, _ in evaluate_gate_api(outcomes).checks)["query_efficiency"]
+
+
+def test_api_gate_query_check_pairs_tasks_that_ran_in_both_arms() -> None:
+    # B's cheap f02 has no P counterpart that ran (P's f02 never started), and P's
+    # f03 has no B counterpart: both are left out, so only f01 is compared.
+    outcomes = _passing_outcomes() + [
+        _o("B", "efficiency", correct=True, q=1, task="f02"),
+        _o("P", "efficiency", failure="start_error", task="f02"),
+        _o("P", "efficiency", failure="wrong_result", q=1, task="f03"),
+    ]
+    detail = dict((n, d) for n, _, d in evaluate_gate_api(outcomes).checks)["query_efficiency"]
+    assert detail == (
+        "efficiency family (1 task ran in both arms): mean queries/request "
+        "B = 2.00 (need <= P = 12.00)"
+    )
+    unpaired = [
+        _o("B", "efficiency", correct=True, q=1, task="f02"),
+        _o("P", "efficiency", failure="wrong_result", q=9, task="f03"),
+    ]
+    checks = {n: (ok, d) for n, ok, d in evaluate_gate_api(unpaired).checks}
+    assert checks["query_efficiency"] == (
+        False,
+        "no efficiency-family task ran its cases in both arm B and arm P",
+    )
 
 
 def test_api_report_has_family_rows_query_columns_and_gate() -> None:

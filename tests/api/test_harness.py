@@ -19,7 +19,8 @@ PROGRAM = source(
         order = one(found, else_=NotFound("order"))
         ok = require(order, col("status") == "pending", else_=Conflict("order is not pending"))
         done = update(ok, status="cancelled")
-        return done
+        shown = select(done, cols=["id", "status"])
+        return shown
 
     @endpoint("GET", "/orders", auth=Customer)
     def list_orders(user: CurrentUser, limit: Int(ge=1, le=100) = 20,

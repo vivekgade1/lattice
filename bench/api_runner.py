@@ -10,7 +10,9 @@ Expectation semantics (``evaluate_case``), checked in this order:
 
 1. the request did not crash (an unhandled exception is status 500);
 2. ``status == expect_status``;
-3. ``expect_json`` (if set) subset-matches the JSON body (see ``_match_value``);
+3. ``expect_json`` (if set) matches the JSON body (see ``_match_body``): on a 2xx
+   expectation every response object (a One/Created row, each Page item) must have
+   exactly the expected fields; error bodies are subset-matched;
 4. ``queries <= max_queries`` (if set);
 5. ``after_sql`` (if set) returns exactly ``after_expect`` from the DB after
    the request (see ``_match_rows``).
@@ -26,6 +28,7 @@ import dataclasses
 import importlib
 import inspect
 import json
+import secrets
 import shutil
 import sqlite3
 import threading
@@ -40,11 +43,13 @@ from bench.sandbox import run_python_script
 
 DbBuilder = Callable[[Path], None]
 
-_RESULTS_MARK = "__API_RESULTS__"
+_RESULTS_MARK = "__API_RESULTS_"  # + a per-run nonce + "__"
+_NONCE_NAME = "_api_nonce"
 _DRIVER_NAME = "_api_driver.py"
 _PRISTINE = "pristine.db"
 _KIT_NAME = "platform_kit.py"
 _ERROR_LIMIT = 3000
+SERVER_ERROR_PREFIX = "server error: "
 
 
 @dataclass(frozen=True)
@@ -99,12 +104,15 @@ def _match_scalar(expected: object, actual: object, where: str) -> str | None:
     return f"{where}: expected {_short(expected)}, got {_short(actual)}"
 
 
-def _match_value(expected: object, actual: object, ordered: bool, where: str = "$") -> str | None:
+def _match_value(
+    expected: object, actual: object, ordered: bool, where: str = "$", exact: bool = False
+) -> str | None:
     """None when ``actual`` matches ``expected``; else a one-line reason.
 
-    Objects: subset match (every expected key present and matching). Lists: same
-    length, element-wise match -- positional when ``ordered``, otherwise a
-    perfect matching between expected and actual elements (multiset).
+    Objects: every expected key present and matching; with ``exact`` the actual
+    object must also have no other key (applies to nested objects too). Lists: same
+    length, element-wise match -- positional when ``ordered``, otherwise a perfect
+    matching between expected and actual elements (multiset).
     """
     if isinstance(expected, dict):
         if not isinstance(actual, dict):
@@ -112,9 +120,13 @@ def _match_value(expected: object, actual: object, ordered: bool, where: str = "
         for key, value in expected.items():
             if key not in actual:
                 return f"{where}.{key}: missing"
-            reason = _match_value(value, actual[key], ordered, f"{where}.{key}")
+            reason = _match_value(value, actual[key], ordered, f"{where}.{key}", exact)
             if reason is not None:
                 return reason
+        if exact:
+            for key in actual:
+                if key not in expected:
+                    return f"{where}: unexpected field {key!r}"
         return None
     if isinstance(expected, list | tuple):
         if not isinstance(actual, list | tuple):
@@ -123,18 +135,18 @@ def _match_value(expected: object, actual: object, ordered: bool, where: str = "
             return f"{where}: expected {len(expected)} items, got {len(actual)}"
         if ordered:
             for i, (e, a) in enumerate(zip(expected, actual, strict=True)):
-                reason = _match_value(e, a, ordered, f"{where}[{i}]")
+                reason = _match_value(e, a, ordered, f"{where}[{i}]", exact)
                 if reason is not None:
                     return reason
             return None
-        return _match_unordered(list(expected), list(actual), where)
+        return _match_unordered(list(expected), list(actual), where, exact)
     return _match_scalar(expected, actual, where)
 
 
-def _match_unordered(expected: list, actual: list, where: str) -> str | None:
+def _match_unordered(expected: list, actual: list, where: str, exact: bool = False) -> str | None:
     """Perfect bipartite matching (Kuhn's algorithm) of expected to actual items."""
     fits = [
-        [j for j, a in enumerate(actual) if _match_value(e, a, False, where) is None]
+        [j for j, a in enumerate(actual) if _match_value(e, a, False, where, exact) is None]
         for e in expected
     ]
     owner: dict[int, int] = {}
@@ -155,6 +167,32 @@ def _match_unordered(expected: list, actual: list, where: str) -> str | None:
     return None
 
 
+def _match_body(expected: object, actual: object, ordered: bool, success: bool) -> str | None:
+    """Match a response body. A success (2xx) body is a response object -- a One /
+    Created row, or a page whose ``items`` are rows -- and every row must have
+    exactly the expected fields (a leaked or extra field fails). The page envelope
+    may carry only ``items``, ``limit`` and ``offset``; ``limit``/``offset`` are
+    checked when expected. Error bodies are subset-matched (their ``detail`` text is
+    free-form)."""
+    if not success:
+        return _match_value(expected, actual, ordered)
+    envelope = ("items", "limit", "offset")
+    if isinstance(expected, dict) and expected and all(k in envelope for k in expected):
+        if not isinstance(actual, dict):
+            return f"$: expected an object, got {_short(actual)}"
+        for key in actual:
+            if key not in ("items", "limit", "offset"):
+                return f"$: unexpected field {key!r}"
+        for key, value in expected.items():
+            if key not in actual:
+                return f"$.{key}: missing"
+            reason = _match_value(value, actual[key], ordered, f"$.{key}", key == "items")
+            if reason is not None:
+                return reason
+        return None
+    return _match_value(expected, actual, ordered, "$", True)
+
+
 def _match_rows(expected: list, actual: list, ordered: bool) -> str | None:
     """Compare DB rows: a bare scalar is a one-column row; columns positional;
     row order significant only when ``ordered``."""
@@ -170,6 +208,23 @@ def _match_rows(expected: list, actual: list, ordered: bool) -> str | None:
     )
 
 
+def _server_error(status: int, body: object, text: str, raised: str) -> str:
+    """The crash text of one response ("" for none), the same for both arms.
+
+    ``raised`` is the server-side traceback when the app raised (captured around
+    the ASGI app, so an exception handler that turns it into a 500 hides nothing);
+    otherwise a 5xx response is a crash whose text is the body's ``detail`` string
+    (the Lattice runtime puts the rendered runtime error there) or the raw body.
+    Nothing here comes from the case's expectations."""
+    if raised:
+        return raised
+    if status < 500:
+        return ""
+    if isinstance(body, dict) and isinstance(body.get("detail"), str) and body["detail"]:
+        return body["detail"]
+    return f"the app responded with status {status} and body {text[:500]!r}"
+
+
 def evaluate_case(
     case: dict,
     status: int,
@@ -180,13 +235,14 @@ def evaluate_case(
 ) -> tuple[bool, str]:
     """(passed, reason) for one case; ``case`` is ``dataclasses.asdict(HttpCase)``."""
     if crash:
-        return False, "server error: " + crash
+        return False, "server error: " + crash  # == SERVER_ERROR_PREFIX (driver copy)
     if status != case["expect_status"]:
         return False, f"status {status}, expected {case['expect_status']}"
     if case.get("expect_json") is not None:
         if body is None:
             return False, "response body is not JSON"
-        reason = _match_value(case["expect_json"], body, bool(case.get("ordered")))
+        success = 200 <= int(case["expect_status"]) < 300
+        reason = _match_body(case["expect_json"], body, bool(case.get("ordered")), success)
         if reason is not None:
             return False, "json mismatch at " + reason
     limit = case.get("max_queries")
@@ -211,7 +267,9 @@ _HELPERS = (
     _match_scalar,
     _match_value,
     _match_unordered,
+    _match_body,
     _match_rows,
+    _server_error,
     evaluate_case,
 )
 
@@ -229,7 +287,11 @@ import traceback
 sys.path.insert(0, os.getcwd())
 sys.dont_write_bytecode = True
 
-MARK = __MARK__
+# The results marker carries a per-run nonce, read from a file the harness wrote
+# and deleted before any model code runs, so the app cannot print a fake result line.
+with open(__NONCE_FILE__) as _f:
+    MARK = __MARK_PREFIX__ + _f.read().strip() + "__"
+os.remove(__NONCE_FILE__)
 CASES = json.loads(__CASES__)
 ERROR_LIMIT = __ERROR_LIMIT__
 with open(__PRISTINE__, "rb") as _f:
@@ -295,10 +357,21 @@ def _run_case(case, app):
     if case["token"] is not None:
         headers["Authorization"] = "Bearer " + case["token"]
     status, body, crash = 500, None, ""
+    raised = []
+
+    async def guarded(scope, receive, send):
+        # Starlette's ServerErrorMiddleware re-raises after sending the 500, so the
+        # server-side traceback is captured here; the client just sees the 500.
+        try:
+            await app(scope, receive, send)
+        except BaseException:
+            raised.append(_tail(traceback.format_exc()))
+            raise
+
     _counter[0] = 0
     started = time.perf_counter()
     try:
-        with TestClient(app) as client:
+        with TestClient(guarded, raise_server_exceptions=False) as client:
             response = client.request(
                 case["method"],
                 case["path"],
@@ -311,8 +384,9 @@ def _run_case(case, app):
             body = response.json() if response.content else None
         except ValueError:
             body = None
+        crash = _server_error(status, body, response.text, raised[-1] if raised else "")
     except BaseException:
-        crash = _tail(traceback.format_exc())
+        crash = raised[-1] if raised else _tail(traceback.format_exc())
     latency_ms = (time.perf_counter() - started) * 1000.0
     queries = _counter[0]
     after_rows = None
@@ -373,18 +447,20 @@ def driver_source(task: ApiTask) -> str:
     cases = json.dumps([_case_dict(c) for c in task.cases], default=str)
     return (
         _DRIVER_TEMPLATE.replace("__HELPERS__", helpers)
-        .replace("__MARK__", repr(_RESULTS_MARK))
+        .replace("__MARK_PREFIX__", repr(_RESULTS_MARK))
+        .replace("__NONCE_FILE__", repr(_NONCE_NAME))
         .replace("__CASES__", repr(cases))
         .replace("__ERROR_LIMIT__", str(_ERROR_LIMIT))
         .replace("__PRISTINE__", repr(_PRISTINE))
     )
 
 
-def _parse_driver_output(stdout: str) -> dict | None:
+def _parse_driver_output(stdout: str, nonce: str) -> dict | None:
+    mark = f"{_RESULTS_MARK}{nonce}__"
     for line in reversed(stdout.splitlines()):
-        if line.startswith(_RESULTS_MARK):
+        if line.startswith(mark):
             try:
-                return json.loads(line[len(_RESULTS_MARK) :])
+                return json.loads(line[len(mark) :])
             except ValueError:
                 return None
     return None
@@ -416,11 +492,16 @@ def run_cases_fastapi(
     pristine = workdir / _PRISTINE
     pristine.unlink(missing_ok=True)
     db_builder(pristine)
+    nonce = secrets.token_hex(16)
+    (workdir / _NONCE_NAME).write_text(nonce)
 
-    result = run_python_script(
-        driver_source(task), workdir, timeout_s=timeout_s, script_name=_DRIVER_NAME
-    )
-    payload = _parse_driver_output(result.stdout)
+    try:
+        result = run_python_script(
+            driver_source(task), workdir, timeout_s=timeout_s, script_name=_DRIVER_NAME
+        )
+    finally:
+        (workdir / _NONCE_NAME).unlink(missing_ok=True)
+    payload = _parse_driver_output(result.stdout, nonce)
     if payload is None:
         if result.timed_out:
             return CaseResults(
@@ -461,10 +542,20 @@ def _run_case_in_process(app: Any, case: HttpCase, db_path: Path, counter: list[
 
     headers = {"Authorization": f"Bearer {case.token}"} if case.token is not None else {}
     status, body, crash = 500, None, ""
+    raised: list[str] = []
+
+    async def guarded(scope: Any, receive: Any, send: Any) -> None:
+        # Same capture as the sandbox driver: the arms see a server error alike.
+        try:
+            await app(scope, receive, send)
+        except BaseException:
+            raised.append(traceback.format_exc()[-_ERROR_LIMIT:])
+            raise
+
     counter[0] = 0
     started = time.perf_counter()
     try:
-        with TestClient(app) as client:
+        with TestClient(guarded, raise_server_exceptions=False) as client:
             response = client.request(
                 case.method,
                 case.path,
@@ -477,8 +568,9 @@ def _run_case_in_process(app: Any, case: HttpCase, db_path: Path, counter: list[
             body = response.json() if response.content else None
         except ValueError:
             body = None
+        crash = _server_error(status, body, response.text, raised[-1] if raised else "")
     except Exception:
-        crash = traceback.format_exc()[-_ERROR_LIMIT:]
+        crash = raised[-1] if raised else traceback.format_exc()[-_ERROR_LIMIT:]
     latency_ms = (time.perf_counter() - started) * 1000.0
     queries = counter[0]
     after_rows = None
@@ -519,6 +611,7 @@ def run_cases_lattice(
     profile: Any,
     serve: Callable[..., tuple[Any, Any]] | None = None,
     hooks: Any = None,
+    timeout_s: float = 60,
 ) -> CaseResults:
     """Run ``task``'s cases against a Lattice API program, in process.
 
@@ -528,14 +621,17 @@ def run_cases_lattice(
     calls for every new SQLite connection (default: the runtime module); it is
     replaced for the duration of the run with a wrapper that installs the
     statement-counting trace callback, then restored.
+
+    The cases run in a worker thread with a wall-clock budget of ``timeout_s`` for
+    the whole run (like the sandboxed FastAPI driver's): past it the run is a loud
+    timeout (not started, ``timed_out``). A hung worker cannot be killed; it is a
+    daemon thread and is abandoned.
     """
     if serve is None:
         runtime = importlib.import_module("lattice.api.runtime")
         serve = runtime.serve_source
         if hooks is None:
             hooks = runtime
-
-    from lattice.diagnostics import render_for_llm
 
     workdir.mkdir(parents=True, exist_ok=True)
     pristine = workdir / _PRISTINE
@@ -548,7 +644,15 @@ def run_cases_lattice(
         if _is_counted_statement(sql):
             counter[0] += 1
 
-    results: list[CaseResult] = []
+    done: list[CaseResults] = []
+    failed: list[BaseException] = []
+
+    def work() -> None:
+        try:
+            done.append(_lattice_cases(source, workdir, task, profile, serve, counter))
+        except BaseException as exc:  # re-raised in the calling thread
+            failed.append(exc)
+
     with _LATTICE_LOCK:
         previous = getattr(hooks, "on_connect", None) if hooks is not None else None
 
@@ -560,48 +664,78 @@ def run_cases_lattice(
         if hooks is not None:
             hooks.on_connect = on_connect
         try:
-            for index, case in enumerate(task.cases):
-                db_path = workdir / f"case_{index:02d}.db"
-                _fresh_copy(pristine, db_path)
-                try:
-                    try:
-                        check, app = serve(source, profile, db_path)
-                    except Exception as exc:
-                        return CaseResults(
-                            cases=(), started=False, start_error=_render_start_error(exc)
-                        )
-                    if not check.ok:
-                        return CaseResults(
-                            cases=(),
-                            started=False,
-                            start_error=render_for_llm(check.diagnostics),
-                            diagnostics=tuple(check.diagnostics),
-                        )
-                    if app is None:
-                        return CaseResults(
-                            cases=(), started=False, start_error="the runtime built no app"
-                        )
-                    results.append(_run_case_in_process(app, case, db_path, counter))
-                finally:
-                    for suffix in ("", "-journal", "-wal", "-shm"):
-                        Path(f"{db_path}{suffix}").unlink(missing_ok=True)
+            worker = threading.Thread(target=work, name=f"lattice-cases-{task.id}", daemon=True)
+            worker.start()
+            worker.join(timeout_s)
+            if worker.is_alive():
+                return CaseResults(
+                    cases=(),
+                    started=False,
+                    start_error=f"the app exceeded the {timeout_s:g}s time limit",
+                    timed_out=True,
+                )
         finally:
             if hooks is not None:
                 hooks.on_connect = previous
+    if failed:
+        raise failed[0]
+    return done[0]
+
+
+def _lattice_cases(
+    source: str,
+    workdir: Path,
+    task: ApiTask,
+    profile: Any,
+    serve: Callable[..., tuple[Any, Any]],
+    counter: list[int],
+) -> CaseResults:
+    from lattice.diagnostics import render_for_llm
+
+    results: list[CaseResult] = []
+    for index, case in enumerate(task.cases):
+        db_path = workdir / f"case_{index:02d}.db"
+        _fresh_copy(workdir / _PRISTINE, db_path)
+        try:
+            try:
+                check, app = serve(source, profile, db_path)
+            except Exception as exc:
+                return CaseResults(cases=(), started=False, start_error=_render_start_error(exc))
+            if not check.ok:
+                return CaseResults(
+                    cases=(),
+                    started=False,
+                    start_error=render_for_llm(check.diagnostics),
+                    diagnostics=tuple(check.diagnostics),
+                )
+            if app is None:
+                return CaseResults(cases=(), started=False, start_error="the runtime built no app")
+            results.append(_run_case_in_process(app, case, db_path, counter))
+        finally:
+            for suffix in ("", "-journal", "-wal", "-shm"):
+                Path(f"{db_path}{suffix}").unlink(missing_ok=True)
     return CaseResults(cases=tuple(results), started=True)
 
 
 Classification = Literal["correct", "silent", "loud"]
 
 
+def is_server_error(case: CaseResult) -> bool:
+    """A case the app answered with a 5xx, or during which it raised."""
+    return case.status >= 500 or case.reason.startswith(SERVER_ERROR_PREFIX)
+
+
 def classify(results: CaseResults) -> Classification:
-    """Spec §5.4: not started or any happy case failed -> loud; all happy cases
-    pass and a trap case fails -> silent; everything passes -> correct."""
+    """Spec §5.4 / §7. Loud: the app did not start (or timed out), a happy case
+    failed, or any case got a server error (5xx or an unhandled exception -- visible
+    to monitoring). Silent: every failure is a trap case the app answered with a
+    wrong non-5xx response. Correct: every case passed."""
     if not results.started:
         return "loud"
-    if any(not c.passed for c in results.cases if c.kind == "happy"):
+    failed = [c for c in results.cases if not c.passed]
+    if any(c.kind == "happy" or is_server_error(c) for c in failed):
         return "loud"
-    if any(not c.passed for c in results.cases):
+    if failed:
         return "silent"
     return "correct"
 

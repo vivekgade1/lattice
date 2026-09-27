@@ -49,6 +49,9 @@ class Schema:
     # belongs to the owner of its order). The parent must have a direct owner column
     # and a single-column key (checked by `validate_owner_via`).
     owner_via: tuple[str, str] | None = field(default=None, compare=False)
+    # Columns only an Admin endpoint may write (e.g. a user's role): update()/insert()
+    # setting one in any other endpoint is L802.
+    admin_write: frozenset[str] = field(default=frozenset(), compare=False)
 
     def __post_init__(self) -> None:
         names = [n for n, _ in self.columns]
@@ -70,6 +73,9 @@ class Schema:
                 raise ValueError(f"owner_via column {fk!r} not in schema")
             if self.owner is not None:
                 raise ValueError("a schema has either an owner column or owner_via, not both")
+        if not self.admin_write <= known:
+            extra = sorted(self.admin_write - known)
+            raise ValueError(f"admin_write columns {extra} not in schema")
 
     @staticmethod
     def from_pairs(
@@ -80,6 +86,7 @@ class Schema:
         owner: str | None = None,
         private: Iterable[str] = (),
         owner_via: tuple[str, str] | None = None,
+        admin_write: Iterable[str] = (),
     ) -> Schema:
         return Schema(
             tuple(pairs),
@@ -88,6 +95,7 @@ class Schema:
             owner,
             frozenset(private),
             owner_via,
+            frozenset(admin_write),
         )
 
     def names(self) -> tuple[str, ...]:
@@ -149,6 +157,31 @@ def via_parent_key(parent: Schema) -> str:
     return parent.keys[0][0]
 
 
+def identity_columns(schema: Schema) -> frozenset[str]:
+    """Columns that identify a row or its owner: key columns, the owner column and the
+    owner_via foreign key."""
+    cols = {c for k in schema.keys for c in k}
+    if schema.owner is not None:
+        cols.add(schema.owner)
+    if schema.owner_via is not None:
+        cols.add(schema.owner_via[0])
+    return frozenset(cols)
+
+
+def plain_columns(schema: Schema) -> frozenset[str]:
+    """Stored columns that neither identify a row/owner nor are private."""
+    return frozenset(schema.names()) - identity_columns(schema) - schema.private
+
+
+def generated_key(schema: Schema) -> str | None:
+    """The key column the database assigns on insert: a one-column Int first key."""
+    if schema.keys and len(schema.keys[0]) == 1:
+        key = schema.keys[0][0]
+        if schema.get(key) is Scalar.INT:
+            return key
+    return None
+
+
 # ---- checker types (synthesized attributes stored in the checker's side table) ----
 
 
@@ -188,6 +221,11 @@ class TableT:
     source: str | None = field(default=None, compare=False)
     # The result of page(...) (kept by derive/select/rename).
     paged: bool = field(default=False, compare=False)
+    # "Plain" columns: unmodified stored values of a database column that is not a key,
+    # owner-identifying or private column (kept by row ops, select, rename, group keys;
+    # never a derived value). Only a group whose keys are all plain and whose aggregates
+    # read no owner-identifying or private column yields rows that are not per-owner.
+    plain: frozenset[str] = field(default=frozenset(), compare=False)
 
     @property
     def unchecked_owned(self) -> frozenset[str]:

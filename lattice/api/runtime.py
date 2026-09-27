@@ -73,7 +73,14 @@ def _connect(db_path: Path) -> sqlite3.Connection:
 
 # ---- parameters ------------------------------------------------------------------------
 
-_INT = re.compile(r"[+-]?\d+")
+# ASCII digits only (`\d` would accept any Unicode decimal digit, which `int()` then
+# converts); a float additionally allows a fraction and an exponent, but no `_`,
+# `inf` or `nan` spellings.
+_INT = re.compile(r"[+-]?[0-9]+", re.ASCII)
+_FLOAT = re.compile(r"[+-]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?", re.ASCII)
+# SQLite INTEGER is a signed 64-bit value: an int outside it cannot be bound.
+INT_MIN = -(2**63)
+INT_MAX = 2**63 - 1
 _TRUE = frozenset({"true", "1", "yes", "on"})
 _FALSE = frozenset({"false", "0", "no", "off"})
 _TYPE_NAMES = {
@@ -87,34 +94,51 @@ _TYPE_NAMES = {
 
 def _convert(spec: ParamSpec, raw: object, *, text: bool) -> object:
     """The typed value of one parameter, or raise ValueError(message). `text`: the raw
-    value comes from the path or the query string (always a string)."""
+    value comes from the path or the query string (always a string).
+
+    Every accepted value is representable in SQLite: an Int must lie in the signed
+    64-bit range, a Float must be finite, and a Str must be encodable as UTF-8 (a
+    JSON body may carry a lone surrogate such as "\\ud800"); anything else is a 422.
+    """
     want = spec.scalar
     bad = ValueError(f"must be {_TYPE_NAMES[want]}") if want is not None else ValueError()
     match want:
         case Scalar.INT:
+            number: int
             if text and isinstance(raw, str) and _INT.fullmatch(raw.strip()):
-                return int(raw)
-            if not text and isinstance(raw, int) and not isinstance(raw, bool):
-                return raw
-            if not text and isinstance(raw, float) and raw.is_integer():
-                return int(raw)
-            raise bad
-        case Scalar.FLOAT:
-            value: float
-            if text and isinstance(raw, str):
                 try:
-                    value = float(raw)
-                except ValueError:
-                    raise bad from None
-            elif not text and isinstance(raw, int | float) and not isinstance(raw, bool):
-                value = float(raw)
+                    number = int(raw.strip())
+                except ValueError:  # beyond Python's int-from-string digit limit
+                    raise _out_of_range() from None
+            elif not text and isinstance(raw, int) and not isinstance(raw, bool):
+                number = raw
+            elif not text and isinstance(raw, float) and raw.is_integer():
+                number = int(raw)
             else:
                 raise bad
+            if not INT_MIN <= number <= INT_MAX:
+                raise _out_of_range()
+            return number
+        case Scalar.FLOAT:
+            value: float
+            try:
+                if text and isinstance(raw, str) and _FLOAT.fullmatch(raw.strip()):
+                    value = float(raw.strip())
+                elif not text and isinstance(raw, int | float) and not isinstance(raw, bool):
+                    value = float(raw)  # a huge JSON integer overflows here
+                else:
+                    raise bad
+            except OverflowError:
+                raise bad from None
             if not math.isfinite(value):
                 raise bad
             return value
         case Scalar.STR:
             if isinstance(raw, str):
+                try:
+                    raw.encode("utf-8")
+                except UnicodeEncodeError:
+                    raise ValueError("must be valid UTF-8 text") from None
                 return raw
             raise bad
         case Scalar.BOOL:
@@ -132,6 +156,10 @@ def _convert(spec: ParamSpec, raw: object, *, text: bool) -> object:
             raise bad
         case _:
             raise LatticeInternalError(f"parameter '{spec.name}' has no scalar type")
+
+
+def _out_of_range() -> ValueError:
+    return ValueError(f"must be an integer between {INT_MIN} and {INT_MAX}")
 
 
 def _constrain(spec: ParamSpec, value: object) -> None:
@@ -313,7 +341,7 @@ def _respond(plan: EndpointPlan, results: Mapping[str, Result], values: Mapping[
     names = plan.schema.names()
     types = dict(plan.schema.columns)
     items = [
-        {c: decode(v, types[c]) for c, v in zip(names, row, strict=True)}
+        {c: _finite(decode(v, types[c])) for c, v in zip(names, row, strict=True)}
         for row in _project(results[plan.returns], names)
     ]
     if plan.success == "Page":
@@ -329,6 +357,14 @@ def _respond(plan: EndpointPlan, results: Mapping[str, Result], values: Mapping[
             "R310", plan.span, f"the response has {len(items)} rows; expected exactly one"
         )
     return JSONResponse(items[0], status_code=201 if plan.success == "Created" else 200)
+
+
+def _finite(value: object) -> object:
+    """A non-finite float (an arithmetic overflow such as 1e308 * 10) serializes as
+    JSON null: JSON has no inf/NaN, and the value is not an error of the request."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
 
 
 def _internal(detail: str) -> JSONResponse:

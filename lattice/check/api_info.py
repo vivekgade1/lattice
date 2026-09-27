@@ -25,7 +25,7 @@ from lattice.catalog import (
 from lattice.check.astutil import literal_value
 from lattice.diagnostics import Span, span_of
 from lattice.profile import ApiProfile
-from lattice.typesys import SCALAR_NAMES, Scalar, TableT
+from lattice.typesys import SCALAR_NAMES, Scalar, TableT, plain_columns
 
 
 class _Missing:
@@ -377,15 +377,19 @@ def user_table(api: ApiProfile) -> TableT | None:
     schema = api.tables.get(api.users_table)
     if schema is None:
         return None
+    owner_cols = frozenset({schema.owner}) if schema.owner is not None else frozenset()
     return TableT(
         schema,
         at_most_one_row=True,
         keys=schema.keys,
         nullable=schema.nullable,
         owner=schema.owner,
+        owned_from=frozenset({api.users_table}) if schema.owner is not None else frozenset(),
+        owner_cols=owner_cols,
         owner_checked=True,  # the caller's own row
         private=schema.private,
         source=api.users_table,
+        plain=plain_columns(schema),
     )
 
 

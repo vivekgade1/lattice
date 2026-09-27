@@ -2,8 +2,8 @@
 
 - ``fastapi_correct.py`` passes every case (classified "correct");
 - ``fastapi_naive.py`` (trap tasks) is the natural-but-flawed script: it passes every
-  happy case and fails at least one trap case (classified "silent") -- proving the trap
-  is real and fair;
+  happy case and fails at least one trap case (classified "silent", or "loud" when the
+  slip is a 500 -- ``LOUD_NAIVE``) -- proving the trap is real and fair;
 - ``lattice.py`` checks with zero errors under ``api_profile()`` and, once the Lattice
   runtime (``lattice.api.runtime``) exists, passes every case too.
 
@@ -104,10 +104,23 @@ def test_fastapi_correct_passes_every_case(task_id: str, fastapi_runs):
     assert len(results.cases) == len(TASKS[task_id].cases)
 
 
+# Naive scripts whose slip is an unhandled exception on a trap case (a missing row
+# -> 500): a server error is loud (spec §5.4: silent = a wrong non-5xx answer).
+LOUD_NAIVE = frozenset({"e01", "e05"})
+
+
 @pytest.mark.parametrize("task_id", TRAP_IDS)
-def test_fastapi_naive_is_silently_wrong(task_id: str, fastapi_runs):
+def test_fastapi_naive_fails_a_trap_case(task_id: str, fastapi_runs):
     results = fastapi_runs[(task_id, "fastapi_naive")]
-    assert classify(results) == "silent", _describe(results)
+    assert results.started, _describe(results)
+    assert all(c.passed for c in results.cases if c.kind == "happy"), _describe(results)
+    failed = [c for c in results.cases if not c.passed]
+    assert failed and all(c.kind == "trap" for c in failed), _describe(results)
+    if task_id in LOUD_NAIVE:
+        assert classify(results) == "loud", _describe(results)
+        assert any(c.status >= 500 for c in failed), _describe(results)
+    else:
+        assert classify(results) == "silent", _describe(results)
 
 
 @pytest.mark.parametrize("task_id", ALL_IDS)

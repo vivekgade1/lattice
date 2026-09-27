@@ -121,6 +121,8 @@ class _Resolver:
     # ---- walk ---------------------------------------------------------------
 
     def run(self) -> None:
+        if self.ctx.profile.api is not None:
+            self._reserved_names()
         for stmt in self.module.body:
             match stmt:
                 case ast.ImportFrom():
@@ -220,6 +222,38 @@ class _Resolver:
         self._bind(self.globals_, fn.name, "step", fn, (self.globals_, self.tables))
         if endpoint and fn.name in self.globals_.bindings:
             self.globals_.bindings[fn.name].used = True  # endpoints are called by HTTP
+
+    def _reserved_names(self) -> None:
+        """L205 (API profile): names starting with `__` are reserved for the SQL the
+        runtime generates (the hidden `__ord` row-order column, `__ok_*` check flags,
+        `__user_id` bind parameters): no column created by derive/group/rename and no
+        endpoint parameter may use one."""
+        for node in ast.walk(self.module):
+            match node:
+                case ast.Call(func=ast.Name(id="derive" | "group")):
+                    for kw in node.keywords:
+                        if kw.arg is not None and kw.arg.startswith("__"):
+                            self._reserved(kw, kw.arg)
+                case ast.Call(func=ast.Name(id="rename")):
+                    for kw in node.keywords:
+                        v = kw.value
+                        if isinstance(v, ast.Constant) and isinstance(v.value, str):
+                            if v.value.startswith("__"):
+                                self._reserved(v, v.value)
+                case ast.FunctionDef() if endpoint_decorator(node) is not None:
+                    for a in node.args.args:
+                        if a.arg.startswith("__"):
+                            self._reserved(a, a.arg)
+                case _:
+                    pass
+
+    def _reserved(self, node: ast.AST, name: str) -> None:
+        self.ctx.error(
+            "L205",
+            node,
+            f"'{name}' is reserved: names starting with '__' are internal",
+            f"use a name without the leading underscores, e.g. '{name.lstrip('_') or 'value'}'",
+        )
 
     # ---- bindings -----------------------------------------------------------
 

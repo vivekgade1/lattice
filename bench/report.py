@@ -675,31 +675,39 @@ API_TRAP_FAMILIES: tuple[str, ...] = ("ownership", "validation", "errors", "effi
 API_EFFICIENCY_FAMILY = "efficiency"
 
 
-def _mean_queries(outcomes: Sequence[TaskOutcome], arm: str) -> float | None:
-    """Mean over the efficiency-family outcomes of ``arm`` whose cases ran of the
-    per-task mean SQL statements per request."""
-    ran = [
-        o.mean_queries
-        for o in outcomes
-        if o.arm == arm and o.family == API_EFFICIENCY_FAMILY and _ran_cases(o)
-    ]
-    return sum(ran) / len(ran) if ran else None
+def _efficiency_ran(outcomes: Sequence[TaskOutcome], arm: str) -> dict[str, list[float]]:
+    """task id -> the per-task mean SQL statements per request of ``arm``'s
+    efficiency-family outcomes whose cases ran."""
+    ran: dict[str, list[float]] = {}
+    for o in outcomes:
+        if o.arm == arm and o.family == API_EFFICIENCY_FAMILY and _ran_cases(o):
+            ran.setdefault(o.task_id, []).append(o.mean_queries)
+    return ran
 
 
 def _query_efficiency_check(outcomes: Sequence[TaskOutcome]) -> tuple[str, bool, str]:
-    b = _mean_queries(outcomes, "B")
-    p = _mean_queries(outcomes, "P")
-    if b is None or p is None:
-        missing = "B" if b is None else "P"
+    """Mean queries/request B <= P on the efficiency family, paired: only tasks whose
+    cases ran in both arms count, so neither arm is credited for tasks whose
+    (possibly expensive) cases never ran in the other."""
+    b_ran = _efficiency_ran(outcomes, "B")
+    p_ran = _efficiency_ran(outcomes, "P")
+    paired = sorted(b_ran.keys() & p_ran.keys())
+    if not paired:
         return (
             "query_efficiency",
             False,
-            f"no arm {missing} efficiency-family outcome ran its cases",
+            "no efficiency-family task ran its cases in both arm B and arm P",
         )
+    b_values = [q for t in paired for q in b_ran[t]]
+    p_values = [q for t in paired for q in p_ran[t]]
+    b = sum(b_values) / len(b_values)
+    p = sum(p_values) / len(p_values)
+    tasks = f"{len(paired)} task{'s' if len(paired) != 1 else ''}"
     return (
         "query_efficiency",
         b <= p,
-        f"efficiency family: mean queries/request B = {b:.2f} (need <= P = {p:.2f})",
+        f"efficiency family ({tasks} ran in both arms): mean queries/request "
+        f"B = {b:.2f} (need <= P = {p:.2f})",
     )
 
 

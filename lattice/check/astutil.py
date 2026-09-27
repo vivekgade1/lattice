@@ -134,3 +134,29 @@ def is_constant_expr(node: ast.expr) -> bool:
             case _:
                 pass
     return True
+
+
+def step_mentions(steps: dict[str, ast.FunctionDef], name: str) -> frozenset[str]:
+    """Every column name a step body (and the steps it calls) may read or produce:
+    its string constants and keyword names. A conservative over-approximation used to
+    carry private / owner lineage through a step called from an endpoint."""
+    found: set[str] = set()
+    seen: set[str] = set()
+    todo = [name]
+    while todo:
+        current = todo.pop()
+        if current in seen or current not in steps:
+            continue
+        seen.add(current)
+        for stmt in steps[current].body:
+            for node in ast.walk(stmt):
+                match node:
+                    case ast.Constant(value=str(text)):
+                        found.add(text)
+                    case ast.keyword(arg=str(arg)):
+                        found.add(arg)
+                    case ast.Call(func=ast.Name(id=callee)) if callee in steps:
+                        todo.append(callee)
+                    case _:
+                        pass
+    return frozenset(found)
