@@ -46,6 +46,16 @@ _CONTAINER_METHODS = frozenset(
     }
 )  # fmt: skip
 
+# words in a function name that mark a call made for its effect (a comprehension of such
+# calls is a per-row action)
+_EFFECT_WORDS = frozenset(
+    {
+        "send", "notify", "post", "publish", "email", "mail", "enqueue", "emit", "alert",
+        "push", "dispatch", "broadcast", "sms", "webhook", "deliver", "trigger", "fire",
+        "log", "charge", "refund",
+    }
+)  # fmt: skip
+
 _WINDOW = (
     "a value carried across rows (running total, previous row, rank): use "
     'window(t, by=[...], order=[...], name=win.cum_sum(col("x"))), or win.lag / '
@@ -106,6 +116,15 @@ def _call_name(call: ast.Call) -> str | None:
 def _is_action(call: ast.AST) -> bool:
     """A call made for its effect: not a local container mutation."""
     return isinstance(call, ast.Call) and _call_name(call) not in _CONTAINER_METHODS
+
+
+def _is_effect_call(node: ast.AST) -> bool:
+    """`send_email(u)`: a bare-name call whose name reads as a side effect. A method call
+    (`s.strip()`) or another function (`round(v, 2)`) is taken for a map."""
+    if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)):
+        return False
+    parts = {part for part in node.func.id.lower().split("_") if part}
+    return bool(parts & _EFFECT_WORDS)
 
 
 def _walks_links(loop: ast.While) -> bool:
@@ -218,15 +237,23 @@ def loop_hint(loop: ast.For | ast.AsyncFor | ast.While, api: bool) -> str:
 
 
 def comprehension_hint(
-    node: ast.ListComp | ast.SetComp | ast.DictComp | ast.GeneratorExp, api: bool, default: str
+    node: ast.ListComp | ast.SetComp | ast.DictComp | ast.GeneratorExp,
+    api: bool,
+    default: str,
+    *,
+    discarded: bool = False,
 ) -> str:
     """The hint for a rejected comprehension (L121): a construct only when the shape is
-    clear, otherwise `default` (a comprehension is usually a map/filter: derive/where)."""
+    clear, otherwise `default` (a comprehension is usually a map/filter: derive/where).
+    It is a per-row action (for_each) when its value is `discarded` (a bare expression
+    statement) and its element is a call, or when the element calls an effect-named
+    function (`send_email(u)`)."""
     words = _words(node)
     if words & _TREE_WORDS:
         return _TRAVERSE
     element = node.key if isinstance(node, ast.DictComp) else node.elt
-    if _is_action(element) and not isinstance(node, ast.DictComp):
+    action = (discarded and _is_action(element)) or _is_effect_call(element)
+    if action and not isinstance(node, ast.DictComp):
         return _FOR_EACH if api else _FOR_EACH_TABULAR
     if words & _WINDOW_WORDS:
         return _WINDOW

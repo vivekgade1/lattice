@@ -160,3 +160,37 @@ def test_loops_inside_steps_and_endpoints_get_the_hint_too() -> None:
         + "    return users\n"
     )
     assert "for_each(" in (loop_diag(endpoint, effects.PROFILE).hint or "")
+
+
+@pytest.mark.parametrize(
+    "expr",
+    [
+        "[s.strip() for s in names]",  # a method call is a map, not an action
+        "[round(v, 2) for v in xs]",  # a pure function call is a map
+        "{s.lower() for s in names}",
+        "(fmt(v) for v in xs)",
+    ],
+)
+def test_a_map_comprehension_keeps_the_table_op_hint(expr: str) -> None:
+    diag = loop_diag(f"x = f({expr})\n", code="L121")
+    assert diag.hint == "use a table op (derive/where/group)", diag.hint
+
+
+@pytest.mark.parametrize(
+    "expr",
+    [
+        "[send_email(u) for u in users]",
+        "[notify(u.id) for u in users]",
+        "[publish_event(e) for e in events]",
+    ],
+)
+def test_an_effect_named_call_per_element_gets_the_for_each_hint(expr: str) -> None:
+    assert "for_each(" in (loop_diag(f"x = f({expr})\n", code="L121").hint or "")
+
+
+def test_a_discarded_comprehension_is_a_per_row_action() -> None:
+    """A comprehension statement throws its list away: it runs for the calls' effects."""
+    hint = loop_diag("[send_email(u) for u in users]\n", code="L121").hint or ""
+    assert "for_each(" in hint and "API" in hint
+    hint = loop_diag("[s.strip() for s in names]\n", code="L121").hint or ""
+    assert "for_each(" in hint, hint

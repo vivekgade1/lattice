@@ -633,7 +633,7 @@ LOOPS_CASES: tuple[HttpCase, ...] = (
 # ---- the effects program (sub-project 1b N3: for_each through the outbox) ---------------------
 
 _ET = effects.TOKENS
-_OUTBOX = effects.OUTBOX_AFTER  # the outbox rows, without id and created_at
+_OUTBOX = effects.OUTBOX_AFTER  # the outbox rows, without id, created_at and claimed_at
 _HAS_OUTBOX = "SELECT COUNT(*) FROM sqlite_master WHERE name = 'lattice_outbox'"
 _ITEMS = "SELECT id, owner_id, title, due, done FROM items ORDER BY id"
 
@@ -1199,12 +1199,13 @@ def test_the_effects_program_passes_its_cases(differential_runs):
                 "done",
                 None,
                 1,
+                1,
             ]
         ]
         assert after["signup taken (rolled back)"] == [[0]]
         assert after["create refused after the outbox insert"] == [[0]]
         assert [r[3:] for r in after["create, dispatch fails"]] == [
-            ["failed", "ValueError: boom refused", 1]
+            ["failed", "ValueError: boom refused", 1, 1]
         ]
         assert [r[2] for r in after["recent alice"]] == [
             '{"types":["Int","Str","Str"],"values":[4,"BOOM","seen"]}',

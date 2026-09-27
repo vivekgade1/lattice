@@ -82,8 +82,8 @@ def client(db: Path) -> Iterator[TestClient]:
 
 
 def outbox_rows(db: Path) -> list[tuple] | None:
-    """(endpoint, native, args, status, error, attempts) per outbox row, or None when
-    the table does not exist."""
+    """(endpoint, native, args, status, error, attempts, claimed) per outbox row, or None
+    when the table does not exist (`claimed`: 1 when the row has a claimed_at)."""
     conn = sqlite3.connect(db)
     try:
         exists = conn.execute(
@@ -92,7 +92,7 @@ def outbox_rows(db: Path) -> list[tuple] | None:
         if exists is None:
             return None
         rows = conn.execute(effects.OUTBOX_AFTER).fetchall()
-        return [(e, n, json.loads(a), s, err, k) for e, n, a, s, err, k in rows]
+        return [(e, n, json.loads(a), s, err, k, c) for e, n, a, s, err, k, c in rows]
     finally:
         conn.close()
 
@@ -135,6 +135,7 @@ def test_signup_dispatches_after_commit(client: TestClient, db: Path):
             args(["Str", "Str"], ["new@example.com", "New"]),
             "done",
             None,
+            1,
             1,
         )
     ]
@@ -334,7 +335,7 @@ def test_the_retry_command(client: TestClient, db: Path):
     assert out.returncode == 0, out.stderr
     assert "1 done, 0 failed" in out.stdout
     stored = outbox_rows(db)
-    assert stored is not None and stored[0][3:] == ("done", None, 2)
+    assert stored is not None and stored[0][3:6] == ("done", None, 2)
 
 
 def test_the_retry_command_fails_when_a_row_still_fails(client: TestClient, db: Path):
@@ -357,6 +358,179 @@ def test_the_retry_command_fails_when_a_row_still_fails(client: TestClient, db: 
     )
     assert out.returncode == 1
     assert "0 done, 1 failed" in out.stdout
+
+
+# ---- claims, lost marks and the grace period ----------------------------------------------
+
+LATER = dt.datetime.now(dt.UTC) + dt.timedelta(seconds=outbox.GRACE_SECONDS + 60)
+
+
+def _statuses(db: Path) -> list[tuple[str, int, int]]:
+    stored = outbox_rows(db)
+    assert stored is not None
+    return [(row[3], row[5], row[6]) for row in stored]
+
+
+def test_rows_are_claimed_before_they_are_sent(client: TestClient, db: Path):
+    assert client.patch("/items/1/done", headers=_h("alice")).status_code == 200
+    conn = sqlite3.connect(db)
+    try:
+        (claimed_at,) = conn.execute("SELECT claimed_at FROM lattice_outbox").fetchone()
+    finally:
+        conn.close()
+    assert claimed_at is not None and claimed_at.endswith("Z")
+    assert _statuses(db) == [("done", 1, 1)]
+
+
+def test_a_lost_mark_is_retried_after_the_grace_period(
+    client: TestClient, db: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    monkeypatch.setattr(outbox, "MARK_DONE_SQL", "UPDATE no_such_table SET x = ?, y = ?")
+    monkeypatch.setattr(outbox, "MARK_BACKOFF", 0.0)
+    with caplog.at_level("WARNING", logger="lattice.outbox"):
+        assert client.patch("/items/1/done", headers=_h("alice")).status_code == 200
+    assert effects_natives.SENT == [("item_done", 1, dt.date(2000, 1, 5))]
+    # sent, but the done mark was lost: the row stays claimed (in flight), and it is logged
+    assert _statuses(db) == [("dispatching", 1, 1)]
+    assert any("could not mark outbox row" in r.getMessage() for r in caplog.records)
+    monkeypatch.undo()
+    # a fresh claim is in flight: the default retry leaves it alone
+    report = outbox.retry(db, NATIVES)
+    assert (report.done, report.failed) == (0, 0)
+    assert len(effects_natives.SENT) == 1
+    # after the grace period the row is re-sent (at-least-once) and marked done
+    report = outbox.retry(db, NATIVES, now=LATER)
+    assert (report.done, report.failed) == (1, 0)
+    assert len(effects_natives.SENT) == 2
+    assert _statuses(db) == [("done", 2, 1)]
+
+
+def test_a_mark_that_fails_once_is_retried(client: TestClient, db: Path, monkeypatch):
+    monkeypatch.setattr(outbox, "MARK_BACKOFF", 0.0)
+    effects_natives.FAIL_ALWAYS.add("item_done")
+    assert client.patch("/items/1/done", headers=_h("alice")).status_code == 200
+    effects_natives.FAIL_ALWAYS.clear()
+
+    class Flaky:
+        """A connection whose first done mark fails (e.g. the database is locked)."""
+
+        def __init__(self, conn: sqlite3.Connection) -> None:
+            self.conn = conn
+            self.failed = False
+
+        def execute(self, sql: str, params: tuple = ()):
+            if sql == outbox.MARK_DONE_SQL and not self.failed:
+                self.failed = True
+                raise sqlite3.OperationalError("database is locked")
+            return self.conn.execute(sql, params)
+
+    conn = sqlite3.connect(db, isolation_level=None)
+    try:
+        rows = conn.execute(outbox.RETRY_SQL, (LATER.isoformat(),)).fetchall()
+        flaky = Flaky(conn)
+        assert outbox.dispatch(flaky, rows, NATIVES) == (1, 0)
+        assert flaky.failed
+    finally:
+        conn.close()
+    assert _statuses(db) == [("done", 2, 1)]
+
+
+def test_retry_leaves_fresh_pending_and_in_flight_rows_alone(client: TestClient, db: Path):
+    assert client.patch("/items/1/done", headers=_h("alice")).status_code == 200
+    assert client.patch("/items/2/done", headers=_h("alice")).status_code == 200
+    now = dt.datetime.now(dt.UTC).isoformat()
+    conn = sqlite3.connect(db, isolation_level=None)
+    try:
+        # row 1: written, never claimed (its request is about to dispatch it)
+        conn.execute(
+            "UPDATE lattice_outbox SET status = 'pending', claimed_at = NULL, attempts = 0, "
+            "created_at = ? WHERE id = 1",
+            (now,),
+        )
+        # row 2: claimed just now and being sent
+        conn.execute(
+            "UPDATE lattice_outbox SET status = 'dispatching', claimed_at = ? WHERE id = 2",
+            (now,),
+        )
+    finally:
+        conn.close()
+    effects_natives.SENT.clear()
+    report = outbox.retry(db, NATIVES)
+    assert (report.done, report.failed) == (0, 0)
+    assert effects_natives.SENT == []
+    # --pending takes the pending row whatever its age, never the in-flight one
+    report = outbox.retry(db, NATIVES, pending=True)
+    assert (report.done, report.failed) == (1, 0)
+    assert effects_natives.SENT == [("item_done", 1, dt.date(2000, 1, 5))]
+    # both are stale later on
+    report = outbox.retry(db, NATIVES, now=LATER)
+    assert (report.done, report.failed) == (1, 0)
+    assert effects_natives.SENT[-1] == ("item_done", 2, None)
+
+
+def test_claiming_prevents_a_double_dispatch(client: TestClient, db: Path):
+    effects_natives.FAIL_ALWAYS.add("item_done")
+    assert client.patch("/items/1/done", headers=_h("alice")).status_code == 200
+    effects_natives.FAIL_ALWAYS.clear()
+    first = sqlite3.connect(db, isolation_level=None)
+    second = sqlite3.connect(db, isolation_level=None)
+    try:
+        rows = first.execute(outbox.RETRY_SQL, (LATER.isoformat(),)).fetchall()
+        assert len(rows) == 1
+        raced: list[tuple[int, int]] = []
+
+        def item_done(item_id: int, due: dt.date | None) -> None:
+            # a second dispatcher selected the same failed row and races the first
+            raced.append(outbox.dispatch(second, rows, NATIVES))
+            effects_natives.item_done(item_id, due)
+
+        assert outbox.dispatch(first, rows, {**NATIVES, "item_done": item_done}) == (1, 0)
+        assert raced == [(0, 0)]
+        # once done, a stale selection claims nothing either
+        assert outbox.dispatch(second, rows, NATIVES) == (0, 0)
+    finally:
+        first.close()
+        second.close()
+    assert effects_natives.SENT == [("item_done", 1, dt.date(2000, 1, 5))]
+    assert _statuses(db) == [("done", 2, 1)]
+
+
+def test_an_outbox_without_claimed_at_gains_the_column(db: Path):
+    conn = sqlite3.connect(db, isolation_level=None)
+    try:
+        conn.execute(
+            'CREATE TABLE "lattice_outbox" ("id" INTEGER PRIMARY KEY, "endpoint" TEXT NOT NULL, '
+            '"native" TEXT NOT NULL, "args" TEXT NOT NULL, "status" TEXT NOT NULL, '
+            '"error" TEXT, "created_at" TEXT NOT NULL, "attempts" INTEGER NOT NULL)'
+        )
+        conn.execute(
+            "INSERT INTO lattice_outbox VALUES (1, 'x', 'item_done', ?, 'failed', 'e', ?, 1)",
+            (json.dumps(args(["Int", "Date"], [1, None])), "2000-01-01T00:00:00.000000Z"),
+        )
+    finally:
+        conn.close()
+    with TestClient(build_app(_plans(), db, natives=NATIVES)) as c:
+        assert c.patch("/items/2/done", headers=_h("alice")).status_code == 200
+    report = outbox.retry(db, NATIVES)
+    assert (report.done, report.failed) == (1, 0)
+    assert _statuses(db) == [("done", 2, 1), ("done", 1, 1)]
+
+
+def test_the_retry_command_takes_a_grace_period(client: TestClient, db: Path, monkeypatch):
+    monkeypatch.setattr(outbox, "MARK_DONE_SQL", "UPDATE no_such_table SET x = ?, y = ?")
+    monkeypatch.setattr(outbox, "MARK_BACKOFF", 0.0)
+    assert client.patch("/items/1/done", headers=_h("alice")).status_code == 200
+    monkeypatch.undo()
+    base = [sys.executable, "-m", "lattice.api.outbox", "retry", "--db", str(db)]
+    base += ["--natives", "tests.api.effects_natives"]
+    run = dict(cwd=ROOT, capture_output=True, text=True, timeout=60)
+    out = subprocess.run(base, **run)  # type: ignore[call-overload]
+    assert out.returncode == 0, out.stderr
+    assert "retried 0 row(s)" in out.stdout
+    out = subprocess.run([*base, "--grace", "0"], **run)  # type: ignore[call-overload]
+    assert out.returncode == 0, out.stderr
+    assert "1 done, 0 failed" in out.stdout
+    assert _statuses(db) == [("done", 2, 1)]
 
 
 # ---- the generated app -----------------------------------------------------------------------
@@ -425,8 +599,53 @@ def test_the_generated_app_retries_with_its_own_natives(apps):
     module = sys.modules["generated_effects"]
     assert module.retry_outbox() == (1, 0)
     stored = outbox_rows(gen_db)
-    assert stored is not None and stored[0][3:] == ("done", None, 2)
+    assert stored is not None and stored[0][3:6] == ("done", None, 2)
     assert gen_natives.SENT[-1] == ("item_done", 1, dt.date(2000, 1, 5))
+
+
+def test_the_generated_app_recovers_a_lost_mark(apps):
+    _, _, gen, gen_db = apps
+    module = sys.modules["generated_effects"]
+    with pytest.MonkeyPatch.context() as mp:  # not `monkeypatch`: apps chdir'ed with it
+        mp.setattr(module, "OUTBOX_DONE", "UPDATE no_such_table SET x = ?, y = ?")
+        mp.setattr(module, "OUTBOX_MARK_BACKOFF", 0.0)
+        assert gen.patch("/items/1/done", headers=_h("alice")).status_code == 200
+    assert _statuses(gen_db) == [("dispatching", 1, 1)]
+    assert module.retry_outbox() == (0, 0)  # in flight
+    assert module.retry_outbox(now=LATER) == (1, 0)
+    assert _statuses(gen_db) == [("done", 2, 1)]
+    gen_natives = sys.modules["natives"]
+    assert gen_natives.SENT.count(("item_done", 1, dt.date(2000, 1, 5))) == 2
+
+
+def test_the_generated_app_claims_before_sending(apps):
+    _, _, gen, gen_db = apps
+    module = sys.modules["generated_effects"]
+    gen_natives = sys.modules["natives"]
+    gen_natives.FAIL_ALWAYS.add("item_done")
+    assert gen.patch("/items/1/done", headers=_h("alice")).status_code == 200
+    gen_natives.FAIL_ALWAYS.clear()
+    first = module.connect()
+    second = module.connect()
+    try:
+        rows = first.execute(module.OUTBOX_RETRY, (LATER.isoformat(),)).fetchall()
+        raced: list[tuple[int, int]] = []
+        real = module.EFFECTS["item_done"]
+
+        def item_done(item_id: int, due: dt.date | None) -> None:
+            raced.append(module.dispatch_outbox(second, rows))
+            real(item_id, due)
+
+        module.EFFECTS["item_done"] = item_done
+        try:
+            assert module.dispatch_outbox(first, rows) == (1, 0)
+        finally:
+            module.EFFECTS["item_done"] = real
+        assert raced == [(0, 0)]
+    finally:
+        first.close()
+        second.close()
+    assert _statuses(gen_db) == [("done", 2, 1)]
 
 
 def test_the_generated_effects_app_is_ruff_formatted(tmp_path: Path):
@@ -463,5 +682,5 @@ def ping(user: CurrentUser) -> One:
     assert effects_natives.SENT == [("send_welcome", "bob@example.com", "BOB")]
     stored = outbox_rows(db)
     assert stored is not None and [row[:2] + row[3:] for row in stored] == [
-        ("ping", "send_welcome", "done", None, 1)
+        ("ping", "send_welcome", "done", None, 1, 1)
     ]

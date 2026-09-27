@@ -448,3 +448,59 @@ def test_for_each_over_the_caller_and_its_private_columns():
     assert api_codes(ok) == []
     leak = ok.replace('col("full_name"))', 'col("token"))')
     assert "L803" in api_codes(leak)
+
+
+# ---- L802 through for_each -------------------------------------------------------------------
+
+_UNOWNED_FOR_EACH = (
+    "items = fetch(Items)\n"
+    'target = where(items, col("id") == item_id)\n'
+    "top = limit(target, n=1)\n"
+    'for_each(top, native.item_viewed, col("id"), col("title"), "x")\n'
+)
+_OWNED_RETURN = (
+    "mine = owned(items, by=user)\n"
+    'found = where(mine, col("id") == item_id)\n'
+    "row = one(found, else_=NotFound())\n"
+    "return row\n"
+)
+
+
+def test_l802_for_each_over_rows_without_an_ownership_check():
+    """for_each sends a row's columns to an effect: another customer's rows must not reach
+    it (review of 1b: for_each is a statement, so the returned-table check never saw it)."""
+    src = endpoint(
+        _UNOWNED_FOR_EACH + _OWNED_RETURN, "item_id: Int(ge=1), user: CurrentUser", "One | NotFound"
+    )
+    assert "L802" in api_codes(src)
+
+
+def test_l802_for_each_over_a_window_or_traverse_result_reaches_the_check():
+    src = endpoint(
+        "items = fetch(Items)\n"
+        'ranked = window(items, by=["owner_id"], order=["id"], n=win.row_number())\n'
+        "top = limit(ranked, n=1)\n"
+        'for_each(top, native.item_viewed, col("id"), col("title"), "x")\n' + _OWNED_RETURN,
+        "item_id: Int(ge=1), user: CurrentUser",
+        "One | NotFound",
+    )
+    found = api_codes(src)
+    assert "L802" in found, found
+
+
+def test_l802_negative_for_each_over_owned_rows():
+    src = endpoint(
+        "items = fetch(Items)\n"
+        "mine = owned(items, by=user)\n"
+        'target = where(mine, col("id") == item_id)\n'
+        "top = limit(target, n=1)\n"
+        'for_each(top, native.item_viewed, col("id"), col("title"), "x")\n'
+        'found = where(mine, col("id") == item_id)\n'
+        "row = one(found, else_=NotFound())\n"
+        "return row\n",
+        "item_id: Int(ge=1), user: CurrentUser",
+        "One | NotFound",
+    )
+    found = api_codes(src)
+    assert "L802" not in found, found
+    assert check_source(src, effects.PROFILE).program is not None

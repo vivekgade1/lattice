@@ -132,7 +132,7 @@ def run(module: ast.Module, ctx: CheckContext) -> None:
             case ast.Assign():
                 _check_assign(stmt, ctx)
             case ast.Expr():
-                _check_expr(stmt.value, ctx)
+                _check_expr(stmt.value, ctx, discarded=True)
             case ast.FunctionDef() if api and endpoint_decorator(stmt) is not None:
                 _check_endpoint(stmt, ctx)
             case ast.FunctionDef():
@@ -485,7 +485,7 @@ def _check_endpoint_signature(fn: ast.FunctionDef, ctx: CheckContext) -> None:
 # ---- expressions ------------------------------------------------------------
 
 
-def _check_expr(node: ast.expr, ctx: CheckContext) -> None:
+def _check_expr(node: ast.expr, ctx: CheckContext, discarded: bool = False) -> None:
     match node:
         case ast.Constant() | ast.UnaryOp(op=ast.USub()) if isinstance(
             literal_value(node), int
@@ -546,7 +546,8 @@ def _check_expr(node: ast.expr, ctx: CheckContext) -> None:
             if banned is not None:
                 code, msg, hint = banned
                 if isinstance(node, _COMPREHENSIONS) and hint is not None:
-                    hint = comprehension_hint(node, ctx.profile.api is not None, hint)
+                    api = ctx.profile.api is not None
+                    hint = comprehension_hint(node, api, hint, discarded=discarded)
                 ctx.error(code, node, msg, hint)
             else:
                 ctx.error(

@@ -46,8 +46,10 @@ Effect natives (`for_each`, sub-project 1b) are imported from the natives module
 into `EFFECTS` (never registered as SQL functions). A for_each step creates the outbox
 table when missing and INSERTs its rows in the request's transaction (the plan's SQL,
 verbatim); after COMMIT `serve` dispatches them in order with `dispatch_outbox` (a port
-of `lattice.api.outbox.dispatch`: done, or failed with the error; the response is
-already decided), and `retry_outbox()` re-sends failed rows from the app itself.
+of `lattice.api.outbox.dispatch`: claim the row, send it, then mark it done or failed
+with the error, trying a failing mark again and then logging it; the response is
+already decided), and `retry_outbox()` re-sends failed rows and pending / in-flight
+rows older than the grace period from the app itself.
 
 The profile-wide Part B settings (sub-project 1b) become prelude constants as well:
 `ERROR_BODY` with `UNAUTHORIZED_DETAIL`/`FORBIDDEN_DETAIL` (the error body style and the
@@ -82,11 +84,17 @@ from lattice.api.ir import (
     lower_api,
 )
 from lattice.api.outbox import (
+    ADD_CLAIMED_SQL,
+    CLAIM_SQL,
+    COLUMNS_SQL,
     CREATE_SQL,
     ERROR_LIMIT,
     EXISTS_SQL,
+    GRACE_SECONDS,
+    MARK_BACKOFF,
     MARK_DONE_SQL,
     MARK_FAILED_SQL,
+    MARK_TRIES,
     RETRY_PENDING_SQL,
     RETRY_SQL,
 )
@@ -107,9 +115,11 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import logging
 import math
 import re
 import sqlite3
+import time
 import urllib.parse
 import uuid
 from collections.abc import Callable, Mapping, Sequence
@@ -428,12 +438,19 @@ def _native_function(name: str, native: Native) -> Callable[..., object]:
 # Effect natives: called once per outbox row after COMMIT, never inside SQL.
 EFFECTS: dict[str, Callable[..., object]] = {}  # filled below when the program sends any
 OUTBOX_DDL = ""
+OUTBOX_COLUMNS = ""
+OUTBOX_ADD_CLAIMED = ""
+OUTBOX_CLAIM = ""
 OUTBOX_DONE = ""
 OUTBOX_FAILED = ""
 OUTBOX_EXISTS = ""
 OUTBOX_RETRY = ""
 OUTBOX_RETRY_PENDING = ""
 OUTBOX_ERROR_LIMIT = 500
+OUTBOX_GRACE = 300  # seconds: a younger claim (or unclaimed row) may still be in flight
+OUTBOX_MARK_TRIES = 3  # a failing done / failed mark is tried this often, then logged
+OUTBOX_MARK_BACKOFF = 0.05  # seconds before the 2nd try (doubling)
+outbox_log = logging.getLogger("lattice.outbox")
 
 
 def _outbox_args(args: str) -> list[object]:
@@ -445,11 +462,69 @@ def _outbox_args(args: str) -> list[object]:
     ]
 
 
-def dispatch_outbox(conn: sqlite3.Connection, rows: Sequence[Sequence[Any]]) -> tuple[int, int]:
-    """Call each (id, native, args) row's effect native, in id order, and mark the row
-    done or failed with the error. Never raises. Returns (done, failed)."""
+def _outbox_claimed_at(conn: sqlite3.Connection) -> None:
+    """Add the claimed_at column to an outbox table created without it."""
+    if "claimed_at" in {row[0] for row in conn.execute(OUTBOX_COLUMNS).fetchall()}:
+        return
+    try:
+        conn.execute(OUTBOX_ADD_CLAIMED)
+    except sqlite3.OperationalError as err:
+        if "duplicate column" not in str(err):  # another process added it first
+            raise
+
+
+def _outbox_cutoff(now: dt.datetime, grace: float) -> str:
+    return (now - dt.timedelta(seconds=grace)).isoformat()
+
+
+def _outbox_mark(
+    conn: sqlite3.Connection, sql: str, params: tuple[Any, ...], row_id: object
+) -> None:
+    """A done / failed mark, tried again briefly; still failing, it is logged (the row
+    stays claimed, and a retry re-sends it after the grace period)."""
+    for attempt in range(OUTBOX_MARK_TRIES):
+        try:
+            conn.execute(sql, params)
+            return
+        except sqlite3.Error as err:
+            if attempt + 1 == OUTBOX_MARK_TRIES:
+                outbox_log.warning(
+                    "could not mark outbox row %s (%s: %s); a retry re-sends it after "
+                    "the grace period",
+                    row_id,
+                    type(err).__name__,
+                    err,
+                )
+                return
+            time.sleep(OUTBOX_MARK_BACKOFF * 2**attempt)
+
+
+def dispatch_outbox(
+    conn: sqlite3.Connection,
+    rows: Sequence[Sequence[Any]],
+    now: dt.datetime | None = None,
+    grace: float = OUTBOX_GRACE,
+) -> tuple[int, int]:
+    """Claim each (id, native, args) row, in id order, then call its effect native and
+    mark the row done or failed with the error. A row another dispatcher holds is
+    skipped. Never raises for a failing native or mark. Returns (done, failed)."""
     done = failed = 0
+    if not rows:
+        return done, failed
+    _outbox_claimed_at(conn)
     for row_id, native, args in sorted(rows, key=lambda r: r[0]):
+        stamp = now if now is not None else dt.datetime.now(dt.UTC)
+        claimed_at = datetime_text(stamp)
+        try:
+            claim = (claimed_at, row_id, _outbox_cutoff(stamp, grace))
+            claimed = conn.execute(OUTBOX_CLAIM, claim)
+        except sqlite3.Error as err:  # not claimed, not sent: a retry takes it later
+            outbox_log.warning(
+                "could not claim outbox row %s (%s: %s)", row_id, type(err).__name__, err
+            )
+            continue
+        if claimed.rowcount != 1:
+            continue  # another dispatcher holds it, or it is done
         fn = EFFECTS.get(native)
         error: str | None = None
         if fn is None:
@@ -459,29 +534,30 @@ def dispatch_outbox(conn: sqlite3.Connection, rows: Sequence[Sequence[Any]]) -> 
                 fn(*_outbox_args(args))
             except Exception as err:  # the effect failed: recorded, retried later
                 error = f"{type(err).__name__}: {err}"[:OUTBOX_ERROR_LIMIT]
-        try:
-            if error is None:
-                conn.execute(OUTBOX_DONE, (row_id,))
-            else:
-                conn.execute(OUTBOX_FAILED, (error, row_id))
-        except sqlite3.Error:
-            pass  # the row keeps its status; a retry sends it again (at-least-once)
         if error is None:
+            _outbox_mark(conn, OUTBOX_DONE, (row_id, claimed_at), row_id)
             done += 1
         else:
+            _outbox_mark(conn, OUTBOX_FAILED, (error, row_id, claimed_at), row_id)
             failed += 1
     return done, failed
 
 
-def retry_outbox(pending: bool = False) -> tuple[int, int]:
-    """Re-send the failed outbox rows (with `pending`, also rows never dispatched), in
-    id order. Returns (done, failed)."""
+def retry_outbox(
+    pending: bool = False, grace: float = OUTBOX_GRACE, now: dt.datetime | None = None
+) -> tuple[int, int]:
+    """Re-send, in id order, the failed outbox rows and the pending / dispatching rows
+    claimed (or created) more than `grace` seconds ago; with `pending`, every pending
+    row. Returns (done, failed)."""
+    now = now if now is not None else dt.datetime.now(dt.UTC)
     conn = connect()
     try:
         if conn.execute(OUTBOX_EXISTS).fetchone() is None:
             return 0, 0
+        _outbox_claimed_at(conn)
         sql = OUTBOX_RETRY_PENDING if pending else OUTBOX_RETRY
-        return dispatch_outbox(conn, conn.execute(sql).fetchall())
+        rows = conn.execute(sql, (_outbox_cutoff(now, grace),)).fetchall()
+        return dispatch_outbox(conn, rows, now, grace)
     finally:
         conn.close()
 
@@ -940,7 +1016,7 @@ def serve(
         if pending:  # after COMMIT: the response is already decided
             try:
                 dispatch_outbox(conn, pending)
-            except Exception:  # e.g. the connection broke: the rows stay pending
+            except Exception:  # e.g. the connection broke: a retry takes the rows later
                 pass
         return response
     except ErrorResponse as err:
@@ -1543,12 +1619,18 @@ def generate_fastapi(
     prelude = _PRELUDE.replace(kit, kit + imports, 1)
     for name, value in (
         ("OUTBOX_DDL", CREATE_SQL),
+        ("OUTBOX_COLUMNS", COLUMNS_SQL),
+        ("OUTBOX_ADD_CLAIMED", ADD_CLAIMED_SQL),
+        ("OUTBOX_CLAIM", CLAIM_SQL),
         ("OUTBOX_DONE", MARK_DONE_SQL),
         ("OUTBOX_FAILED", MARK_FAILED_SQL),
         ("OUTBOX_EXISTS", EXISTS_SQL),
         ("OUTBOX_RETRY", RETRY_SQL),
         ("OUTBOX_RETRY_PENDING", RETRY_PENDING_SQL),
         ("OUTBOX_ERROR_LIMIT", ERROR_LIMIT),
+        ("OUTBOX_GRACE", GRACE_SECONDS),
+        ("OUTBOX_MARK_TRIES", MARK_TRIES),
+        ("OUTBOX_MARK_BACKOFF", MARK_BACKOFF),
     ):
         literal = _sql_constant(value) if isinstance(value, str) else _literal(value)
         prelude = _set_constant(prelude, name, literal)

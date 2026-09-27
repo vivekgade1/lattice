@@ -258,13 +258,18 @@ class _Endpoint:
     def _for_each_inputs(self) -> None:
         """L439: for_each sends one effect per input row, so its input must be bounded:
         the result of one(), insert(), an update() of one row, a page(), or limit(n=N)
-        with N <= FOR_EACH_MAX_ROWS -- or a row filter / row-wise op of such rows."""
+        with N <= FOR_EACH_MAX_ROWS -- or a row filter / row-wise op of such rows.
+        L802: its rows must also have passed an ownership check, like returned rows."""
         for call in _for_each_calls(self.fn):
             if len(call.args) < 2:
                 continue  # P3 reported the call shape
             arg = call.args[0]
-            if not isinstance(arg, ast.Name) or self._name_type(arg.id) is None:
+            t = self._name_type(arg.id) if isinstance(arg, ast.Name) else None
+            if not isinstance(arg, ast.Name) or t is None:
                 continue  # P3/P4 reported it
+            # L802: for_each hands each row's columns to an effect, so its rows reach the
+            # outside world like a returned table does (a statement, never seen by _response)
+            self._ownership(call, t, arg.id)
             if not self._bounded(arg.id, set()):
                 self.ctx.error(
                     "L439",

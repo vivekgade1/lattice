@@ -128,6 +128,8 @@ def finish_item(item_id: Int(ge=1), user: CurrentUser) -> One | NotFound:
     return finished
 """
 
+# created_at and claimed_at are instants of the run: only whether a row was claimed counts
 OUTBOX_AFTER = (
-    "SELECT endpoint, native, args, status, error, attempts FROM lattice_outbox ORDER BY id"
+    "SELECT endpoint, native, args, status, error, attempts, claimed_at IS NOT NULL "
+    "FROM lattice_outbox ORDER BY id"
 )

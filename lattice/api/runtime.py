@@ -647,7 +647,7 @@ def _dispatch(
     raised (the response does not depend on it)."""
     try:
         outbox.dispatch(conn, pending, effects)
-    except Exception:  # e.g. the connection broke: the rows stay pending (retry)
+    except Exception:  # e.g. the connection broke: a retry takes the rows later
         pass
 
 
