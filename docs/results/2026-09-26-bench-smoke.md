@@ -237,3 +237,19 @@ Findings:
 - **First-shot Lattice (C)** fails loudly more often (Haiku 28/40) — the checker catches the errors and repair (B) fixes almost all of them.
 
 Implication: with explicit specs, models already write secure, efficient CRUD. Lattice's structural value would show when requirements are implicit (org-wide policies not restated in every ticket) — the next experiment.
+
+## API profile — implicit-requirements condition (`--implicit`)
+
+Ownership and efficiency tickets with org-policy sentences removed (visibility rules, the 100-item page cap); hidden tests unchanged (403 or 404 accepted where the ticket no longer says which). Silent failures on the 16 implicit tasks:
+
+| Model | hints: A / P / **B** / C | no hints: A / P / **B** / C | cost per correct task B vs P (hints / no hints) |
+|---|---|---|---|
+| claude-haiku-4-5 | 1 / 0 / **0** / 0 | 2 / 2 / **0** / 0 | 1.37× / 1.19× |
+| claude-sonnet-5 | 1 / 2 / **0** / 0 | 2 / 2 / **0** / 0 | 0.81× / 0.98× |
+| claude-opus-5 | 0 / 0 / **0** / 0 | 2 / 2 / **0** / 0 | 0.69× / 0.67× |
+
+- **Every silent failure is the same policy bug:** `limit=1000` accepted (200) instead of rejected (422) on f03/f08 when the ticket did not restate the page-size cap. Lattice cannot express it: `page()` enforces `limit ≤ 100` in the language.
+- **With hints (fair: both arms' system prompts state the cap)**, Haiku and Sonnet FastAPI still dropped the stated cap in 1–3 of 4 opportunities; Opus kept it. Lattice: 0 on every model.
+- **Without hints** the comparison is not information-equal (the cap is stated only as a Lattice language rule), so those rows measure "policy in the language vs policy nowhere" — which is the Lattice thesis, but report it separately.
+- **Ownership** never failed silently in either arm: the schema facts ("owner column: customer_id") were enough for every model to scope queries correctly.
+- Lattice + repair (B) was correct on 38–40/40 in every run; first-shot C failures were loud (checker), mostly missing `owned()` on OrderItems or page bounds, all repaired in B.
