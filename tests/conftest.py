@@ -78,6 +78,20 @@ class FakeClaudeCli:
 
 
 @pytest.fixture
+def realapps_source() -> str:
+    from tests.api import realapps
+
+    return realapps.PROGRAM
+
+
+@pytest.fixture
+def realapps_profile():
+    from tests.api import realapps
+
+    return realapps.PROFILE
+
+
+@pytest.fixture
 def fake_claude(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> FakeClaudeCli:
     """A `claude` executable on PATH that pops canned JSON responses off a queue
     (``fake_claude.queue([...])``) instead of calling the real CLI or API."""
