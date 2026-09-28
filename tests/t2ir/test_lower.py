@@ -102,6 +102,73 @@ def test_fuel_sites_match_the_instrumented_source():
     assert set(total) == {*_GROW_METHOD.values(), *kinds}
 
 
+def _fuel_calls(compiled: str) -> list[str]:
+    """Every `<fuel>.<method>(` in the instrumented source, in text order, without the
+    procedures' entry/exit."""
+    found = re.findall(r"\b_lt_fuel\d*\.(\w+)\(", compiled)
+    return [m for m in found if m not in ("enter", "leave")]
+
+
+def _ir_fuel_order(node: object) -> list[str]:
+    """The IR's fuel sites in the order their `<fuel>.<method>(` calls appear in the
+    source `lattice.t2.compile` writes: a pre-order walk, except that an augmented
+    assignment's `aug` follows its operands (bound to temporaries first) and an `IfExp`
+    is written `body if test else orelse`."""
+    out: list[str] = []
+
+    def walk(x: object) -> None:
+        match x:
+            case n.AugAssign(grow=True):
+                walk(x.target)
+                walk(x.value)
+                out.append("aug")
+                return
+            case n.IfExp():
+                walk(x.body)
+                walk(x.test)
+                walk(x.orelse)
+                return
+            case n.Tick():
+                out.append("tick")
+            case n.Each():
+                out.append("each")
+            case n.Bulk():
+                out.append("bulk")
+            case n.Charged() | n.Sized(kind="replace" | "join" | "sub" | "dumps"):
+                out.append("call")
+            case n.Sized(kind="pad"):
+                out.append("width")
+            case n.Grow(op=op):
+                out.append(_GROW_METHOD[op])
+            case n.Scan():
+                out.append("scan")
+            case n.FPart(spec=spec) if spec != "":
+                out.append("fmt")
+        if is_dataclass(x):
+            for f in fields(x):
+                walk(getattr(x, f.name))
+        elif isinstance(x, tuple):
+            for y in x:
+                walk(y)
+
+    walk(node)
+    return out
+
+
+def test_fuel_sites_come_in_the_instrumented_order():
+    """The IR's fuel sites, walked in source order, are the instrumented source's
+    `<fuel>.<method>(` calls in the same order -- over the corpus and every golden."""
+    from lattice.t2 import compile_t2
+    from tests.t2ir.corpus import all_t2_programs
+
+    goldens = [(c, checked((GOLDEN / f"{c}.lattice.py").read_text()).program) for c in CASES]
+    for name, program in [*all_t2_programs(), *goldens]:
+        source = ast.parse(program.source)
+        want = _fuel_calls(compile_t2(program.t2, source).source)
+        got = _ir_fuel_order(lower_t2(program.t2, source).procedures)
+        assert got == want, name
+
+
 def test_module_parts_match_the_compiled_module():
     from tests.api import t2prog
 
@@ -157,6 +224,39 @@ def test_unreachable_statements_are_not_lowered():
     assert [type(s) for s in proc.body] == [n.For, n.Return]
     (loop,) = [s for s in proc.body if isinstance(s, n.For)]
     assert [type(s) for s in loop.body] == [n.Tick, n.If, n.Break]
+
+
+SRC_BARE_AFTER_ENDLESS_LOOP = """
+    @procedure
+    def f(x: Int) -> Int:
+        while True:
+            pass
+        x
+"""
+
+SRC_BARE_AFTER_RETURNING_IF = """
+    @procedure
+    def f(x: Int) -> Int:
+        if x > 0:
+            return 1
+        else:
+            return 2
+        x
+"""
+
+
+@pytest.mark.parametrize("src", [SRC_BARE_AFTER_ENDLESS_LOOP, SRC_BARE_AFTER_RETURNING_IF])
+def test_an_unreachable_bare_expression_is_dropped(src):
+    """The checker does not check (so does not reject) a bare expression it proves
+    unreachable; lowering drops it instead of failing on its missing type."""
+    from lattice.t2 import compile_t2
+
+    program = checked(src).program
+    source = ast.parse(program.source)
+    (proc,) = lower_t2(program.t2, source).procedures
+    assert [type(s) for s in proc.body] in ([n.While], [n.If])
+    compiled = compile_t2(program.t2, source).source  # the legacy path handles it too
+    assert _fuel_calls(compiled) == _ir_fuel_order(lower_t2(program.t2, source).procedures)
 
 
 def test_chained_assignments_and_dict_unpacking():

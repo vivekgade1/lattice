@@ -7,10 +7,8 @@ Fuel placement (mirrors `lattice.t2.compile._Instrument`):
 
 * every `for`/`while` body starts with `Tick()`;
 * every comprehension iterable is `Each(iter)`;
-* a call whose target is not `proc:` is `Charged(Call(...))` -- the step is charged
-  after the callee (for a method: the receiver, `args[0]`) is evaluated and before
-  the other arguments are; a `proc:` call is a plain `Call` (the callee's entry
-  charges);
+* a call whose target is not `proc:` is `Charged(Call(...))`; a `proc:` call is a
+  plain `Call` (the callee's entry charges);
 * the arguments a builtin/method consumes whole (`_CONSUMERS`) are `Bulk(arg)`
   (`min`/`max` only in their one-argument form);
 * `+ * ** <<` are `Grow(op, a, b)`; their augmented forms are `AugAssign(grow=True)`;
@@ -24,9 +22,21 @@ Fuel placement (mirrors `lattice.t2.compile._Instrument`):
 * `f"{x:spec}"` is `FPart(x, spec, conversion)`; a non-empty spec is charged by the
   emitter (`<fuel>.fmt`), a bare conversion (`{x!r}`) is not.
 
+When the step is charged (the order R620 is raised in, relative to other charges):
+
+* `Charged(Call(method:..., (receiver, *args)))` evaluates the receiver first, then
+  charges, then evaluates the other arguments (`<fuel>.call(recv.m)(args)`); a
+  `Charged` non-method call charges, then evaluates its arguments;
+* `Sized(kind, (call,))` for replace/join/sub/dumps charges its step *before* the
+  receiver and arguments are evaluated (`<fuel>.call(<fuel>.<kind>)(recv, args)`),
+  then checks the size after they are;
+* `AugAssign(grow=True)` evaluates the target's container and index, then the value,
+  then runs the size check (`<fuel>.aug`), then the assignment.
+
 Statements the checker leaves untyped because they cannot run (after a `return`,
-`break`, `continue`, or an endless `while True`) are dropped: they never run, so they
-charge nothing.
+`break`, `continue`, an endless `while True`, or an `if` whose branches all return)
+are dropped: they never run, so they charge nothing. A statement is untyped when it
+holds expressions and none of them is in the checker's side table.
 """
 
 from __future__ import annotations
@@ -173,25 +183,18 @@ class _Proc:
         return tuple(out)
 
     def _reached(self, s: ast.stmt) -> bool:
-        """False for a statement the checker did not type because it cannot run: its
-        first evaluated expression has no type (a `try`: its first statement's)."""
-        head: ast.AST | None
-        match s:
-            case ast.Try(body=[first, *_]):
-                return self._reached(first)
-            case ast.Assign(value=v) | ast.AugAssign(value=v) | ast.Expr(value=ast.Call() as v):
-                head = v
-            case ast.AnnAssign(target=t, value=v):
-                head = v if v is not None else t
-            case ast.If(test=t) | ast.While(test=t):
-                head = t
-            case ast.For(iter=it):
-                head = it
-            case ast.Return(value=v):
-                head = v
-            case _:
-                head = None
-        return head is None or id(head) in self.proc.types
+        """False for a statement the checker did not type because it cannot run: it
+        holds expressions, and none of them has a type. A reached statement always has
+        a typed expression (the checker types what it checks), except a docstring and
+        one without expressions (`pass`, `break`, a bare `return`), which do nothing."""
+        if (
+            isinstance(s, ast.Expr)
+            and isinstance(s.value, ast.Constant)
+            and isinstance(s.value.value, str)
+        ):
+            return True  # a docstring: never typed
+        exprs = [e for e in ast.walk(s) if isinstance(e, ast.expr)]
+        return not exprs or any(id(e) in self.proc.types for e in exprs)
 
     def stmt(self, s: ast.stmt) -> list[n.Stmt]:
         match s:
