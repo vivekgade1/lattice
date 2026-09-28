@@ -657,3 +657,47 @@ The routes the import did not lift stay the original code. A fake-LLM run (the s
 - **JustNotes' cost per route.** About $0.07–1.2 per route; 25 routes were never attempted within the cap.
 - **JustNotes' nested-resource 403s** (6 tag/keyword routes: `/notes/{note_id}/tags/{tag_id}`). The suite never requests another user's note there, so those routes would end as suite-gap islands even with budget.
 - **t21 and t23 touch islands.** Arm L can add routes but not change those.
+
+## Thin slice round 3: T2 language, 24 tickets across 3 apps (288 runs, 2026-09-27)
+
+Setup:
+- The language now has T2 procedures, the round-2 fixes and the review fixes.
+- Tickets:
+  - t1–t6 were **tuned on** (the language was fixed after seeing them);
+  - t7–t18 are **held-out template** tickets;
+  - t19–t24 are **held-out apps** (TaskFlow, JustNotes). Their arm-L start state is the live import, which verified 5/10 and 2/30 routes.
+- Total cost is $18.67.
+
+| model | arm | t1–t6 tuned | t7–t18 held-out template | t19–t24 held-out apps | silent total | $/correct |
+|---|---|---|---|---|---:|---:|
+| sonnet-5 | P | 15/18 (3 S) | **33/36** (3 S) | **12/18** (6 S) | 12 | 0.064 |
+| sonnet-5 | L | **18/18** (0 S) | 26/36 (4 L, 6 S) | 0/18 (14 L, 4 S) | 10 | 0.237 |
+| haiku-4-5 | P | 12/18 (6 S) | **27/36** (9 S) | **12/18** (6 S) | 21 | 0.032 |
+| haiku-4-5 | L | **16/18** (2 S) | 15/36 (11 L, 10 S) | 0/18 (17 L, 1 S) | 13 | 0.089 |
+
+**On tuned tickets, Lattice now beats Python on both correctness and silent bugs.** Sonnet scores 18/18 with 0 silent (P: 15/18, 3 silent); Haiku 16/18 with 2 silent (P: 12/18, 6 silent). t2 (timezone offsets) and t4 (the admin check) are exactly the traps Lattice's semantics catch.
+
+**On held-out template tickets, Lattice loses.** Sonnet scores 26/36 vs 33/36, and Haiku 15/36 vs 27/36; silent failures are about even. Two tickets fail identically in both arms because the oracle over-specifies:
+- t14: bounds on `current_password`;
+- t17: a missing field.
+
+These should be treated as oracle defects. Most of the other L failures are loud checker refusals of ordinary Python idioms:
+- `row.title` attribute access (L106);
+- `a + b` on strings (L402, "use fn.concat");
+- several ops in one statement (L302);
+- keyword forms of `when`.
+
+**On held-out apps, Lattice scores 0/18.** The causes, from the saved artefacts:
+- **Sonnet:** truncated at the 16k output limit in 9/18 runs while writing whole imported files for an unfamiliar profile.
+- **Haiku:** checker refusals (L821, L402, L803).
+- **Imported auth policy:** on t24 (Sonnet, silent) the imported auth policy answers bad tokens differently from the original, which is an importer defect.
+
+These results say more about how ready the import is than about the language.
+
+**Verdict.**
+1. Lattice's guarantees work: wherever the language fits the task, it removes silent bugs and beats Python.
+2. Generalisation is the weak point. On new tickets, and especially on new apps, the strict canonical surface (one op per statement, no attribute access, no `+` on strings, `col()` everywhere) makes models fail loudly far more often than Python does, and the import pipeline is not yet good enough to start edits from on unfamiliar apps.
+3. The "familiar surface, strict core" principle is under-delivered: the surface is still too far from Python. The next leverage is to **accept ordinary Python spellings in T0 and normalise them in the checker** (canonicalise rather than reject), while keeping the guarantees. Separately, fix the import-readiness issues:
+   - output-size-aware editing (edit only the touched endpoint, not whole files);
+   - the imported auth-policy mismatch;
+   - more lifter coverage.
