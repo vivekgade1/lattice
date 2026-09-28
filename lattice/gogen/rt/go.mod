@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	golang.org/x/text v0.42.0
-	modernc.org/libc v1.75.7
+	modernc.org/libc v1.75.7 // must equal the version modernc.org/sqlite requires (rawsql.go; TestLibcMatchesSqlite)
 	modernc.org/sqlite v1.59.0
 )
 

@@ -2,6 +2,7 @@ package rt
 
 import (
 	"database/sql/driver"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -20,11 +21,26 @@ import (
 
 // handle is the sqlite3* and TLS of a modernc driver connection (its unexported db and
 // tls fields; the module version is pinned by go.sum).
+// It panics when the layout is not the expected one, rather than misuse memory.
 func handle(dc any) (uintptr, *libc.TLS) {
+	t := reflect.TypeOf(dc)
+	if t == nil || t.Kind() != reflect.Pointer || t.Elem().Kind() != reflect.Struct ||
+		t.Elem().PkgPath() != "modernc.org/sqlite" || t.Elem().Name() != "conn" {
+		panic(layoutChanged(fmt.Sprintf("the driver connection is %v, not *sqlite.conn", t)))
+	}
 	v := reflect.ValueOf(dc).Elem()
-	db := uintptr(v.FieldByName("db").Uint())
-	tls := (*libc.TLS)(unsafe.Pointer(v.FieldByName("tls").Pointer()))
-	return db, tls
+	dbField, tlsField := v.FieldByName("db"), v.FieldByName("tls")
+	if !dbField.IsValid() || dbField.Kind() != reflect.Uintptr {
+		panic(layoutChanged("conn.db is not a uintptr"))
+	}
+	if !tlsField.IsValid() || tlsField.Type() != reflect.TypeFor[*libc.TLS]() {
+		panic(layoutChanged("conn.tls is not a *libc.TLS"))
+	}
+	return uintptr(dbField.Uint()), (*libc.TLS)(unsafe.Pointer(tlsField.Pointer()))
+}
+
+func layoutChanged(what string) string {
+	return "modernc.org/sqlite connection layout changed; update rawsql.go (" + what + ")"
 }
 
 // rawError is the Python sqlite3 exception for the connection's last error.
