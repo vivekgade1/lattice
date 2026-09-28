@@ -47,6 +47,15 @@
 - **The plan IR is the core, not Python.** Lattice source uses Python syntax only as its input format (parsed by Python's own parser, then checked). The checked program is lowered to a language-neutral plan; SQL, polars and generated FastAPI are targets of that plan.
 - **Escape hatches are typed.** Logic Lattice cannot express lives in native functions whose signatures (inputs, outputs, errors, effects) are checked; only their bodies are trusted.
 
+### 3.1 AST-first: what is valid in the idea
+
+The model does not write raw ASTs or a binary encoding. Source text is already a lossless serialization of the AST, and tree formats cost roughly 10× more tokens and are out of distribution. What does hold:
+
+- **A canonical AST as the source of truth.** Unison stores code as content-addressed ASTs. That gives rename-free refactors and no merge conflicts on formatting, which is useful for agents.
+- **Structured edits.** Having the model emit tree operations ("replace node X") instead of text diffs is an open research area and could beat text patches for large refactors.
+- **Checking on the AST.** Types, effects and policies are checked against the tree, and that's where the value is.
+- **Compactness through abstraction, not encoding.** Lattice API programs were about 55% smaller than the equivalent FastAPI because `page()`, `owned()` and friends say more per token, not because of the file format.
+
 ## 4. Lattice as the interface for changing existing code
 
 ### 4.1 The workflow
@@ -112,3 +121,31 @@ Tabular + API profiles, checker, plan IR, polars/SQL runtimes, FastAPI code gene
 
 ### Later
 Learning loop (verified-program corpus, retrieval few-shots, failure clustering proposing constructs), optimizer pass, more targets (TypeScript/Go), optional fine-tuned Lattice models.
+
+## 7. Long-term direction: agents own the code, humans own the intent
+
+**Humans specify and observe, agents change a checked IR, compilers produce whatever runs.**
+
+In the long run the user talks only to an agent. Source code becomes a hidden intermediate, as assembly did. The agent changes the Lattice IR with structured edits, and deterministic compilers produce the code that runs.
+
+```
+User ──intent, policies, examples──► Agent
+                                       │ structured edits
+                                       ▼
+                        Lattice IR (source of truth, checked:
+                        types, effects, ownership, bounds)
+                                       │ compilers (deterministic, differentially tested)
+                ┌──────────────┬───────┴───────┬──────────────┐
+             Python/FastAPI   SQL          Wasm/LLVM       (future)
+                                       │
+                        readable projection + explanations on demand
+```
+
+Principles:
+- **The agent's job ends at the IR.** It never generates machine code. Compilers are deterministic, tested and optimized; an LLM writing machine code is none of these. Wasm and LLVM are future targets of the same plan IR, added as ordinary compiler work.
+- **With no human reviewer, the checker is the reviewer.** Guarantees matter more, not less, when code is not read.
+- **Correctness depends on intent, not on the code.** Every silent failure measured so far was an intent failure (null ordering, what "my items" means for an admin, the page cap). The interface that matters is how users state intent: specs, policies, examples and acceptance tests.
+- **Integration is most of the work.** Programs still call databases, HTTP APIs, cloud SDKs and auth providers. Targets must link against existing ecosystems, which is why Python and SQL come first.
+- **Hidden by default, never impossible to inspect.** Incidents, audits and regulated domains need a readable projection of the IR and explanations of its behaviour on demand.
+
+**Prerequisite (not yet shown):** the checker must measurably reduce silent bugs in *unattended* changes. The thin slice so far shows equal silent failures in both arms (§2, `docs/results/2026-09-26-bench-smoke.md`). The deciding experiment compares Lattice with direct Python edits guarded by the same policies as a Python checker, on implicit-policy tickets in an untouched repo. New targets wait until this holds.
