@@ -155,7 +155,7 @@ The Go baseline gets `bench/api_kit_go/`, the Go counterpart of `bench/api_kit/p
 
 ## 7. Build order
 
-1. `targets.py`, `p8_target` (L880–L882), the RE2 rule, R623 in the Python runtime
+1. `targets.py`, `p8_target` (L890–L892), the RE2 rule, R623 in the Python runtime
 2. T2 IR: nodes, lowering, `emit_py`; differential against the instrumentation path, then delete it
 3. Go prelude and SQLite functions, with `go test`
 4. Go T2 emitter, through the shared semantics suite
