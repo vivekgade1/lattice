@@ -636,9 +636,16 @@ def test_else_must_be_an_error():
 
 
 def test_nesting_rules_apply():
-    src = CANCEL.replace(
+    # a table op nested as a table argument is split into its own statement (N1) ...
+    split = CANCEL.replace(
         'found = where(mine, col("id") == order_id)\n    order = one(found,',
         'order = one(where(mine, col("id") == order_id),',
+    )
+    assert errors(split) == errors(CANCEL)
+    # ... anywhere else it is still L301
+    src = CANCEL.replace(
+        'found = where(mine, col("id") == order_id)',
+        'found = where(mine, col("id") == limit(mine, n=1))',
     )
     assert "L301" in errors(src)
 

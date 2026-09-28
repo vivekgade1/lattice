@@ -77,7 +77,7 @@ from lattice.importer.carve import (
     with_procedures,
 )
 from lattice.importer.context import Evidence, assemble
-from lattice.importer.graph import route_slice
+from lattice.importer.graph import route_slice, slice_source
 from lattice.importer.intent import IntentNotes, NotesDisagreement, disagreements
 from lattice.importer.lift import (
     HEADER,
@@ -94,6 +94,7 @@ from lattice.llm.client import Generation, GenerationRefused, Generator, Usage, 
 __all__ = [
     "Attempt",
     "Budget",
+    "COMPACT",
     "CloseResult",
     "CorpusLog",
     "LoopConfig",
@@ -112,6 +113,13 @@ DEFAULT_CORPUS = Path(__file__).resolve().parents[2] / "corpus" / "imports.jsonl
 TRUNCATED = (
     "Your answer was cut off at the output limit before the code block ended. Return the "
     "complete endpoint again, shorter, in one ```python block."
+)
+# After a truncated answer the next call asks for less (never the same settings again): a
+# fresh conversation with this instruction; a truncated answer to it ends the rung.
+COMPACT = (
+    "Return only the endpoint: one ```python block holding the `@endpoint` function and "
+    "only the constants or helpers it calls. No explanation, no alternatives, no "
+    "comments; keep your reasoning brief."
 )
 MAX_MISMATCHES_SHOWN = 8
 MAX_DIFF_CHARS = 700
@@ -498,7 +506,21 @@ class Budget:
         self.cost_usd = 0.0
         self.route_rounds: dict[str, int] = {}
         self.route_cost: dict[str, float] = {}
+        self.route_share: dict[str, tuple[float | None, int | None]] = {}
         self.exhausted_by: str | None = None
+
+    def allot(self, key: str, remaining: int) -> None:
+        """Give route ``key`` its share of the repo caps: what is left of them over the
+        ``remaining`` routes still to run (this one included) -- so the repo budget is
+        not spent first-come, and what a route leaves goes to the routes after it."""
+        n = max(remaining, 1)
+        cost = None
+        if self.max_cost_usd is not None:
+            cost = max(self.max_cost_usd - self.cost_usd, 0.0) / n
+        rounds = None
+        if self.max_rounds is not None:
+            rounds = max((self.max_rounds - self.rounds) // n, 1)
+        self.route_share[key] = (cost, rounds)
 
     def charge(self, key: str | None, cost: float) -> None:
         self.rounds += 1
@@ -529,6 +551,11 @@ class Budget:
             self.max_route_cost_usd
         ):
             return f"the route's cost cap (${self.max_route_cost_usd:.2f}) is reached"
+        cost, rounds = self.route_share.get(key, (None, None))
+        if rounds is not None and self.route_rounds.get(key, 0) >= rounds:
+            return f"the route's share of the repo budget ({rounds} rounds) is reached"
+        if cost is not None and self.route_cost.get(key, 0.0) >= cost:
+            return f"the route's share of the repo budget (${cost:.2f}) is reached"
         return None
 
     def to_dict(self) -> dict[str, Any]:
@@ -688,6 +715,7 @@ class _Loop:
         config: LoopConfig,
         *,
         strong_generator: Generator | None,
+        relift_generator: Generator | None = None,
         evidence: Evidence,
         carve: CarveOut | PlannedCarveOut | None,
         corpus: CorpusLog | None,
@@ -698,6 +726,7 @@ class _Loop:
         self.ctx = result.context
         self.generator = generator
         self.strong = strong_generator or generator
+        self.relift = relift_generator or self.strong
         self.config = config
         self.evidence = evidence
         self.carve = carve
@@ -706,6 +735,20 @@ class _Loop:
         self.budget = config.budget()
         self.system = system_prompt(result.profile.source, hints=config.hints)
         self.tokens = [0, 0]
+        self.compact: set[str] = set()  # routes with a truncated answer: ask for less
+
+    def _compact(self, key: str, ask: str) -> str:
+        return f"{ask}\n\n{COMPACT}" if key in self.compact else ask
+
+    def _cut_off(self, o: RouteOutcome, att: Attempt, compact: bool) -> bool:
+        """After a truncated answer: True when the rung ends (it was already asked for
+        less); else the route's next calls ask for only the endpoint."""
+        if att.outcome != "truncated":
+            return False
+        if compact:
+            return True
+        self.compact.add(o.key)
+        return False
 
     # -- one round --
 
@@ -876,13 +919,15 @@ class _Loop:
         else:
             ask = "No deterministic lifter lifted this route. Write its Lattice endpoint."
         messages = [{"role": "user",
-                     "content": self.context(r, [], partial=True) + "\n" + ask}]  # fmt: skip
+                     "content": self.context(r, [], partial=True) + "\n"
+                     + self._compact(o.key, ask)}]  # fmt: skip
         rounds = self.config.repair_rounds + (0 if has_lift else 1)
         for i in range(rounds):
             blocked = self._blocked(o)
             if blocked is not None:
                 return blocked
             kind = "repair" if has_lift or i > 0 else "lift"
+            compact = o.key in self.compact
             att, gen, verdict = self.round(
                 o, "R1", i + 1, kind, self.generator, self.config.model, self.system, messages
             )
@@ -893,8 +938,16 @@ class _Loop:
                 return self._island(o, "unverified branch: " + att.feedback)
             if att.outcome in ("refused", "error"):
                 return None  # R2 may still succeed (another model or effort)
+            if att.outcome == "truncated":
+                if self._cut_off(o, att, compact):
+                    return None  # never the same settings again: on to R2
+                # a fresh conversation asking for less (not the cut-off answer back)
+                content = self.context(r, history, partial=True) + "\n" + ask
+                messages = [{"role": "user", "content": self._compact(o.key, content)}]
+                continue
             messages.append({"role": "assistant", "content": gen.text if gen else ""})
-            messages.append({"role": "user", "content": _repair_message(att.feedback)})
+            repair = _repair_message(att.feedback)
+            messages.append({"role": "user", "content": self._compact(o.key, repair)})
         return None
 
     def r2(self, o: RouteOutcome, history: list[str]) -> RouteOutcome | None:
@@ -908,9 +961,10 @@ class _Loop:
             blocked = self._blocked(o)
             if blocked is not None:
                 return blocked
-            content = self.context(r, history, partial=False) + "\n" + ask
+            compact = o.key in self.compact
+            content = self.context(r, history, partial=False) + "\n" + self._compact(o.key, ask)
             att, _, verdict = self.round(
-                o, "R2", j + 1, "relift", self.strong, model, self.system,
+                o, "R2", j + 1, "relift", self.relift, model, self.system,
                 [{"role": "user", "content": content}],
             )  # fmt: skip
             if att.outcome == "verified" and verdict is not None:
@@ -918,6 +972,8 @@ class _Loop:
             history.append(self._history(att))
             if att.outcome == "suite_gap":
                 return self._island(o, "unverified branch: " + att.feedback)
+            if self._cut_off(o, att, compact):
+                return None
         return None
 
     def r3(self, o: RouteOutcome, history: list[str]) -> RouteOutcome | None:
@@ -980,7 +1036,8 @@ class _Loop:
             blocked = self._blocked(o)
             if blocked is not None:
                 return blocked
-            content = self.context(r, history, partial=False) + "\n" + ask
+            compact = o.key in self.compact
+            content = self.context(r, history, partial=False) + "\n" + self._compact(o.key, ask)
             att, _, verdict = self.round(
                 o, "R3", k + 1, f"carve-{plan.kind}", self.strong,
                 self.config.strong_model or self.config.model, system,
@@ -995,6 +1052,8 @@ class _Loop:
             history.append(self._history(att))
             if att.outcome == "suite_gap":
                 return self._island(o, "unverified branch: " + att.feedback)
+            if self._cut_off(o, att, compact):
+                return None
         return None
 
     def _procedure_ask(self, plan: CarvePlan) -> str:
@@ -1206,6 +1265,7 @@ def close_gap(
     *,
     config: LoopConfig | None = None,
     strong_generator: Generator | None = None,
+    relift_generator: Generator | None = None,
     intent: IntentNotes | None = None,
     carve: CarveOut | PlannedCarveOut | None = None,
     corpus: CorpusLog | None = None,
@@ -1213,9 +1273,13 @@ def close_gap(
     evidence: Evidence | None = None,
     only: Sequence[str] | None = None,
 ) -> CloseResult:
-    """Run the ladder over every route of ``result`` the lifters did not verify (in route
-    order; ``only`` limits them) and join the verified routes (see the module
-    docstring). ``carve`` defaults to :class:`~lattice.importer.carve.ProcedureCarveOut`
+    """Run the ladder over every route of ``result`` the lifters did not verify (``only``
+    limits them) and join the verified routes (see the module docstring). The routes
+    run cheapest first (by the size of their code slice), each with its share of the
+    repo budget (:meth:`Budget.allot`); the outcomes are in route order. R1 runs on
+    ``generator``, R2 on ``relift_generator`` (default: ``strong_generator``), R3 on
+    ``strong_generator`` (default: ``generator``). ``carve`` defaults to
+    :class:`~lattice.importer.carve.ProcedureCarveOut`
     (a T2 procedure, then a typed native only for logic outside the T2 subset);
     ``intent`` supplies S3 for the arms that use it. ``result`` is not modified."""
     started = time.perf_counter()
@@ -1226,6 +1290,7 @@ def close_gap(
         generator,
         config,
         strong_generator=strong_generator,
+        relift_generator=relift_generator,
         evidence=ev,
         carve=carve if carve is not None else ProcedureCarveOut(),
         corpus=corpus,
@@ -1242,21 +1307,28 @@ def close_gap(
             loop.tokens[1] += gen.usage.output_tokens
 
         intent.charge = charge
-    outcomes: list[RouteOutcome] = []
+    done: dict[str, RouteOutcome] = {}
     try:
+        laddered: list[LiftResult] = []
         for r in result.results:
             if r.status == "lifted-verified":
-                outcomes.append(_r0(r))
+                done[r.key] = _r0(r)
             elif only is not None and r.key not in only:
-                outcomes.append(RouteOutcome(r.key, r, "needs-llm", "needs-llm", reason=r.reason))
-            elif (why := loop.budget.repo_blocked()) is not None:
-                o = RouteOutcome(r.key, r, "island", "R4")
-                outcomes.append(loop._island(o, f"budget: {why}"))
+                done[r.key] = RouteOutcome(r.key, r, "needs-llm", "needs-llm", reason=r.reason)
             else:
-                outcomes.append(loop.ladder(r))
+                laddered.append(r)
+        laddered.sort(key=lambda r: _slice_size(ev, r))  # stable: route order on ties
+        for i, r in enumerate(laddered):
+            if (why := loop.budget.repo_blocked()) is not None:
+                o = RouteOutcome(r.key, r, "island", "R4")
+                done[r.key] = loop._island(o, f"budget: {why}")
+                continue
+            loop.budget.allot(r.key, len(laddered) - i)
+            done[r.key] = loop.ladder(r)
     finally:
         if evidence is None:
             ev.close()
+    outcomes = [done[r.key] for r in result.results]
     programs, profile_source, natives = _join(outcomes, result.profile.source, _route_order(result))
     close = CloseResult(
         result,
@@ -1277,6 +1349,15 @@ def close_gap(
     _log_routes(close, corpus)
     close.wall_s = time.perf_counter() - started
     return close
+
+
+def _slice_size(ev: Evidence, r: LiftResult) -> int:
+    """The size of the route's code slice (characters of its source): the cheaper
+    routes run first. A route missing from the code graph counts as the largest."""
+    try:
+        return len(slice_source(route_slice(ev.graph, f"{r.route.module}:{r.route.name}")))
+    except Exception:  # noqa: BLE001 -- never fail the run over the order
+        return 1 << 30
 
 
 def _observed(o: RouteOutcome) -> set[int] | None:

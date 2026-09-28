@@ -173,16 +173,26 @@ def _aggregate_line() -> str:
     return f"{head} {simple} {_AGG_DOCS[0][1]}; {rest}."
 
 
+# The checker normalises these (lattice.check.normalise, spec 2026-09-27
+# lattice-surface-design §2); both Lattice guides say so in one sentence.
+ACCEPTED_SPELLINGS = (
+    "Ordinary Python spellings like `row.title` (inside an op over `row`), `a + b` on "
+    "strings, `and`/`or`/`not`, `x if c else y`, `s.lower()`, `x is None`, nested ops, "
+    "a named column expression (`big = col(\"qty\") > 2`, then `where(t, big)`), "
+    "`r.title` of a one-row `r` in insert/update/derive values and `otherwise=None` "
+    "are accepted and normalised."
+)
+
+
 def _expression_library_section() -> str:
     lines = [
         "## Expression library",
         "",
         'Column expressions use only: `col("name")`; `+ - * / %` on numbers; comparisons '
-        "`== != < <= > >=`; `&`, `|`, `~` on Bool (never `and`/`or`/`not`); "
-        "`when(cond, then=a, otherwise=b)`, the only conditional (nest `when` only in "
-        "`otherwise`, never in `then`); `coalesce(a, b)` (first non-null); `is_null(a)`. "
-        "No loops, `if`, lambdas, comprehensions, method calls, subscripts or f-strings "
-        "anywhere.",
+        "`== != < <= > >=`; `&`, `|`, `~` on Bool; `when(cond, then=a, otherwise=b)` "
+        "(nest `when` only in `otherwise`, never in `then`); `coalesce(a, b)` (first "
+        f"non-null); `is_null(a)`. {ACCEPTED_SPELLINGS} No loops, statement `if`, lambdas, "
+        "comprehensions or subscripts anywhere.",
         "",
         "`fn.*` (no aliases):",
         "",
@@ -237,10 +247,9 @@ _RULES_SECTION = """## Rules
 Write only the output file named in the task.
 - No imports are needed: all ops, `col`, `when`, `coalesce`, `is_null`, `fn`, \
 `agg`, `step`, the type names and the input schema names are always available.
-- Each statement assigns one table op or `@step` call to a new name. Never reassign \
+- Each statement assigns a table op or `@step` call to a new name. Never reassign \
 a name or use a built-in name (op, function, type or schema, e.g. \
 `where`, `Orders`) as a variable, step or parameter.
-- Never nest calls: table arguments are plain names.
 - A statement may also bind a named constant `name = <expr>` using no columns \
 (literals, operators, `fn.*` on literals, earlier constants, a step's scalar \
 parameters), e.g. `cutoff = fn.to_date("2025-01-01", format="%Y-%m-%d")`, usable \

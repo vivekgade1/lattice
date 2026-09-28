@@ -49,10 +49,10 @@ EXPECTED_COUNTS = {
     "t11_title_trim": (45, 13),
     "t12_transfer": (17, 14),
     "t13_password_reset": (21, 7),
-    "t14_email_change": (19, 6),
+    "t14_email_change": (17, 6),
     "t15_duplicate_item": (9, 5),
     "t16_admin_audit": (15, 8),
-    "t17_page_size_preference": (24, 8),
+    "t17_page_size_preference": (23, 8),
     "t18_duplicate_title_guard": (45, 8),
 }
 

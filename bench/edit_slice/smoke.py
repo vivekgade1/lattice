@@ -63,8 +63,10 @@ _ITEM = f"{API}/items/{CREATED}"
 _USERS = f"{API}/users/"
 _ALICE = TEMPLATE_USERS["alice"][2]
 _BOB_EMAIL = TEMPLATE_USERS["bob"][0]
+_BOB_ID = TEMPLATE_USERS["bob"][2]
 _TASKS = f"{API}/tasks"
 _TASK = f"{_TASKS}/{CREATED}"
+_TASKFLOW_BOB_EMAIL = "bob@example.com"
 
 # The happy paths each ticket's text describes (the requests a developer would try).
 SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
@@ -152,6 +154,27 @@ SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
         SmokeRequest("alice", "GET", "/notes", params={"q": "MILK"}),
     ),
     "t24_note_stats": (SmokeRequest("alice", "GET", "/notes/stats"),),
+    # N4's fresh held-out set (t25-t30; see bench.edit_slice.tickets docstring)
+    "t25_bulk_delete_items": (
+        SmokeRequest("alice", "POST", f"{_ITEMS}bulk-delete", json={"item_ids": []}),
+    ),
+    "t26_move_items": (
+        SmokeRequest("admin", "POST", f"{_USERS}{_ALICE}/move-items",
+                     json={"to_user_id": str(_BOB_ID)}),
+    ),
+    "t27_item_description_coverage": (
+        SmokeRequest("alice", "GET", f"{_ITEMS}description-coverage"),
+    ),
+    "t28_task_reassign": (
+        SmokeRequest("alice", "POST", _TASKS, expect=201, json={"title": "Smoke test"},
+                     save=True),
+        SmokeRequest("alice", "POST", f"{_TASK}/reassign",
+                     json={"new_owner_email": _TASKFLOW_BOB_EMAIL}),
+    ),
+    "t29_tag_summary": (SmokeRequest("alice", "GET", "/tags/summary"),),
+    "t30_bulk_delete_notes": (
+        SmokeRequest("alice", "POST", "/notes/bulk-delete", json={"note_ids": []}),
+    ),
 }  # fmt: skip
 
 

@@ -1961,8 +1961,31 @@ class _Extractor:
             if at[0] >= len(positional):
                 continue
             if self._decode_call(hmod, helper, positional[at[0]].arg) is not None:
-                return node, ()
+                return node, self._raised_classes(mod, hmod, helper)
         return None
+
+    def _raised_classes(
+        self, mod: str, hmod: str, helper: ast.FunctionDef | ast.AsyncFunctionDef
+    ) -> tuple[str, ...]:
+        """The exception classes a decode helper raises from its ``except`` handlers (a
+        bad token answered with ``raise HTTPException(...)``), spelled as the module
+        ``mod`` calling it names them: the native catches them (a null, the invalid-token
+        answer) instead of failing."""
+        out: list[str] = []
+        for node in ast.walk(helper):
+            if not isinstance(node, ast.ExceptHandler):
+                continue
+            for sub in ast.walk(node):
+                if not isinstance(sub, ast.Raise) or sub.exc is None:
+                    continue
+                exc = sub.exc.func if isinstance(sub.exc, ast.Call) else sub.exc
+                qual = self.ix.resolve(hmod, exc)
+                if qual is None:
+                    continue
+                short = qual.split(":")[-1].split(".")[-1]
+                if self.ix.resolve(mod, ast.Name(short, ast.Load())) == qual:
+                    out.append(short)
+        return tuple(dict.fromkeys(out))
 
     def _find_decode(self, mod: str, root: ast.AST, token: str) -> ast.Call | None:
         for node in ast.walk(root):

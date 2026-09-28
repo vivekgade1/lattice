@@ -57,6 +57,9 @@ def summary(rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
                 "not_expressible": sum(r["outcome"] == "not_expressible" for r in rs),
                 "cost_usd": cost,
                 "cost_per_correct": cost / len(correct) if correct else None,
+                "truncation_rate": sum(r.get("truncated", False) for r in rs) / len(rs)
+                if rs
+                else None,
                 "mean_rounds": _mean([r["rounds"] for r in scored]),
                 "mean_lines_changed": _mean([r["lines_changed"] for r in scored]),
                 "mean_code_lines": _mean([r["code_lines"] for r in scored if r["code_lines"]]),
@@ -78,16 +81,19 @@ def summary(rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
 def render(rows: Sequence[dict[str, Any]]) -> str:
     lines = [
         "| model | arm | runs | correct | loud | silent | error | $ total | $/correct "
-        "| rounds | lines changed | code lines | prompt tok | in tok | out tok | wall s "
-        "| ms/req | queries/req |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| trunc% | rounds | lines changed | code lines | prompt tok | in tok | out tok "
+        "| wall s | ms/req | queries/req |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+        "---:|---:|---:|",
     ]
     for s in summary(rows):
         err = s["error"] + s["not_expressible"]
+        trunc_pct = None if s["truncation_rate"] is None else s["truncation_rate"] * 100
         lines.append(
             f"| {s['model']} | {s['arm']} | {s['runs']} | {s['correct']} | {s['loud']} "
             f"| {s['silent']} | {err} | {s['cost_usd']:.4f} | {_fmt(s['cost_per_correct'], '.4f')} "
-            f"| {_fmt(s['mean_rounds'], '.2f')} | {_fmt(s['mean_lines_changed'])} "
+            f"| {_fmt(trunc_pct, '.0f')} | {_fmt(s['mean_rounds'], '.2f')} "
+            f"| {_fmt(s['mean_lines_changed'])} "
             f"| {_fmt(s['mean_code_lines'], '.0f')} | {_fmt(s['mean_prompt_tokens'], '.0f')} "
             f"| {_fmt(s['mean_input_tokens'], '.0f')} | {_fmt(s['mean_output_tokens'], '.0f')} "
             f"| {_fmt(s['mean_wall_s'])} | {_fmt(s['mean_latency_ms'])} "

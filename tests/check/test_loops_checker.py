@@ -154,9 +154,14 @@ def test_window_without_columns_is_a_no_op() -> None:
     assert codes('x = window(s, order=["id"])\n' + W) == ["L304"]
 
 
-def test_window_table_argument_must_be_a_name() -> None:
-    body = 'x = window(where(s, col("amount") > 1), order=["id"], n=win.row_number())\n' + W
-    assert "L301" in codes(body)
+def test_window_table_argument_nested_op_is_split() -> None:
+    # N1: the nested where() becomes its own statement; the result checks like the
+    # canonical spelling
+    nested = 'x = window(where(s, col("amount") > 1), order=["id"], n=win.row_number())\n'
+    canonical = (
+        'w = where(s, col("amount") > 1)\nx = window(w, order=["id"], n=win.row_number())\n'
+    )
+    assert codes(nested + W) == codes(canonical + W) == []
 
 
 # ---- L430 ---------------------------------------------------------------------------------
@@ -243,11 +248,17 @@ def test_traverse_adds_depth_and_keeps_the_edges_columns() -> None:
     ok(up)
 
 
-def test_traverse_start_must_be_a_name() -> None:
+def test_traverse_start_nested_op_is_split() -> None:
+    # N1: the nested where() becomes its own statement
     body = (
         'x = traverse(t, where(t, col("id") == 1), parent="parent_id", child="id", max_depth=3)\n'
     )
-    assert "L301" in codes(body + W)
+    canonical = (
+        'st = where(t, col("id") == 1)\n'
+        'x = traverse(t, st, parent="parent_id", child="id", max_depth=3)\n'
+    )
+    assert codes(body + W) == codes(canonical + W)
+    assert "L301" not in codes(body + W)
 
 
 def test_traverse_direction_is_down_or_up() -> None:

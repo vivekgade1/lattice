@@ -56,18 +56,22 @@ CLI's root is ``<out>.artefacts`` next to the JSONL, and the record's ``artefact
 run's ``rep<N>`` directory.
 
 ``python -m bench.edit_slice.run --model M --arm P|L --tickets ... --reps N --out
-results.jsonl [--max-tokens 16000] [--dry-run-reference]`` (``--tickets all``: the template's
-t1-t18; ``repos``: the held-out repos' t19-t24; ``round3``: every ticket, t1-t24; or
-comma-separated ids); ``--estimate`` prints the
-prompt sizes and the live run's cost estimate instead (no generation). The dry run
-feeds the hand-written references through each arm (no API call); arm L on t13-t18 has no
-reference to feed (they are held out from the language work, see
-:mod:`bench.edit_slice.tickets`) and is reported as ``no_reference``.
+results.jsonl [--max-tokens 16000] [--dry-run-reference | --dry-run-partial]`` (``--tickets
+all``: the template's t1-t18; ``repos``: the held-out repos' t19-t24; ``round3``: every
+ticket, t1-t24; ``round4``: t1-t30 (round3 plus N4's fresh held-out set, t25-t30, no
+Lattice reference); or comma-separated ids); ``--estimate`` prints the prompt sizes and the
+live run's cost estimate instead (no generation). The dry run feeds the hand-written
+references through each arm (no API call); arm L on t13-t18 has no reference to feed
+(they are held out from the language work, see :mod:`bench.edit_slice.tickets`) and is
+reported as ``no_reference``. ``--dry-run-partial`` feeds each reference as a partial
+answer (endpoint-scoped edits, diffed against the start down to the top-level names
+that changed -- :func:`partial_reference_answer`) instead of the whole file.
 """
 
 from __future__ import annotations
 
 import argparse
+import ast
 import contextvars
 import dataclasses
 import difflib
@@ -95,7 +99,14 @@ from bench.edit_slice.lattice_reference import (
 )
 from bench.edit_slice.oracle import Outcome, evaluate
 from bench.edit_slice.reference import reference_files
-from bench.edit_slice.tickets import ALL_TICKETS, REPO_TICKETS, TICKETS, Ticket, ticket
+from bench.edit_slice.tickets import (
+    ALL_TICKETS,
+    REPO_TICKETS,
+    ROUND4_TICKETS,
+    TICKETS,
+    Ticket,
+    ticket,
+)
 from bench.edit_slice.variant import app_source, load_variant
 from bench.metrics import cost_usd
 from lattice.llm.client import Generation, GenerationRefused, Generator, ScriptedGenerator
@@ -358,6 +369,10 @@ class RunRecord:
     dry_run: bool = False
     # the run's artefact directory (every round's output and candidate files), if kept
     artefacts: str | None = None
+    # whole (every answer resent everything) or partial (a round used the merge-by-name
+    # option -- an omitted name, a `# delete:`, or a profile delta -- on any file)
+    answer_mode: str = "whole"
+    truncated: bool = False  # any round was cut off at the output limit (see round_problems)
 
     def to_json(self) -> str:
         return json.dumps(dataclasses.asdict(self))
@@ -472,11 +487,12 @@ class Candidate:
     the feedback a developer would see."""
 
     factory: Callable[[Path], Any] | None = None
-    # no_code | truncated | bad_file | start | static | smoke | refused
+    # no_code | truncated | bad_file | merge | start | static | smoke | refused
     problem: str | None = None
     feedback: str = ""
     code: tuple[int, int] = (0, 0)  # (lines, AST nodes) of the code that runs
     cleanup: Callable[[], None] = lambda: None
+    partial: bool = False  # the answer used the merge-by-name option on some file
 
 
 NO_FILES = (
@@ -502,7 +518,8 @@ class _PythonArm:
         files = prompts.parse_files(text)
         if not files:
             return Candidate(problem="no_code", feedback=NO_FILES)
-        edits: dict[str, str] = {}
+        merged: dict[str, str] = {}
+        partial = False
         for name, src in files.items():
             rel = name.removeprefix("./").removeprefix(prompts.APP_PREFIX)
             if not rel.endswith(".py") or rel.startswith("/") or ".." in rel.split("/"):
@@ -511,11 +528,19 @@ class _PythonArm:
                     feedback=f"`{name}` is not a Python file of the app (answer with paths "
                     "such as `app/api/routes/items.py`).",
                 )
-            edits[rel] = src
-        self.edits.update(edits)
+            base = self.edits.get(rel, p_view(self.overlay, rel, self.repo))
+            try:
+                result = prompts.merge_top_level(base, src, allow_constants=False)
+            except prompts.PartialAnswerError as exc:
+                return Candidate(problem="merge", feedback=f"`{name}`: {exc}")
+            merged[rel] = result.text
+            partial = partial or result.partial
+        self.edits.update(merged)
         variant = load_variant({**self.overlay, **self.edits}, repo=self.repo)
         after = self.edited()[1]
-        return Candidate(factory=variant.make_app, code=_python_size(list(after.values())))
+        return Candidate(
+            factory=variant.make_app, code=_python_size(list(after.values())), partial=partial
+        )
 
     def edited(self) -> tuple[dict[str, str | None], dict[str, str]]:
         """(before, after) of the files the edit changed."""
@@ -535,6 +560,155 @@ def load_profile_source(source: str) -> Any:
     if not callable(fn):
         raise ValueError(f"{prompts.PROFILE_FILE} must define profile() returning a Profile")
     return fn()
+
+
+class ProfileDeltaError(ValueError):
+    """A ``profile.delta`` (:func:`bench.edit_slice.prompts.parse_profile_delta`) could
+    not be applied: an unknown table/column/type, or a ``profile.py`` shape too far from
+    the generated convention (``ApiProfile(tables=..., responses=...)`` naming module-
+    level ``Schema.from_pairs(...)``/dict assignments) for this add-only edit to make.
+    The complete ``profile.py`` is always accepted instead."""
+
+
+def _find_call(tree: ast.AST, func_name: str) -> ast.Call | None:
+    return next(
+        (
+            n
+            for n in ast.walk(tree)
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == func_name
+        ),
+        None,
+    )
+
+
+def _kwarg(call: ast.Call, name: str) -> ast.expr | None:
+    return next((kw.value for kw in call.keywords if kw.arg == name), None)
+
+
+def _module_assign(tree: ast.Module, name: str) -> ast.Assign | ast.AnnAssign | None:
+    """The top-level ``name = ...`` or ``name: T = ...`` assignment (``RESPONSES``'s is
+    usually annotated)."""
+    for stmt in tree.body:
+        if (
+            isinstance(stmt, ast.Assign)
+            and len(stmt.targets) == 1
+            and isinstance(stmt.targets[0], ast.Name)
+            and stmt.targets[0].id == name
+        ):
+            return stmt
+        if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name):
+            if stmt.target.id == name:
+                return stmt
+    return None
+
+
+def _splice(source: str, stmt: ast.stmt, new_text: str) -> str:
+    """``source`` with ``stmt``'s lines replaced by ``new_text``."""
+    lines = source.splitlines()
+    start = min([d.lineno for d in getattr(stmt, "decorator_list", [])] + [stmt.lineno])
+    return "\n".join([*lines[: start - 1], new_text, *lines[stmt.end_lineno :]])
+
+
+def _list_kwarg_add(call: ast.Call, name: str, value: str) -> None:
+    """Add ``value`` to ``call``'s list keyword argument ``name`` (creating it, e.g.
+    ``private=[...]``, if ``call`` has none)."""
+    for kw in call.keywords:
+        if kw.arg == name and isinstance(kw.value, ast.List):
+            kw.value.elts.append(ast.Constant(value))
+            return
+    call.keywords.append(
+        ast.keyword(arg=name, value=ast.List(elts=[ast.Constant(value)], ctx=ast.Load()))
+    )
+
+
+def apply_profile_delta(profile_src: str, delta: prompts.ProfileDelta) -> str:
+    """``profile_src`` with ``delta``'s columns and response models added: an add-only
+    edit of the ``Schema.from_pairs(...)`` and responses-dict module-level assignments
+    the profile's ``ApiProfile(tables=..., responses=...)`` call names. Raises
+    :class:`ProfileDeltaError` on an unknown table/type, an existing column, or a shape
+    it does not recognise (the complete ``profile.py`` is always accepted instead)."""
+    from lattice.typesys import SCALAR_NAMES
+
+    source = profile_src
+    for col in delta.columns:
+        tree = ast.parse(source)
+        api_call = _find_call(tree, "ApiProfile")
+        tables = api_call and _kwarg(api_call, "tables")
+        if api_call is None or not isinstance(tables, ast.Dict):
+            raise ProfileDeltaError("profile.delta needs the complete profile.py here")
+        var_name = next(
+            (
+                v.id
+                for k, v in zip(tables.keys, tables.values, strict=True)
+                if isinstance(k, ast.Constant)
+                and k.value == col.table
+                and isinstance(v, ast.Name)
+            ),
+            None,
+        )
+        if var_name is None:
+            raise ProfileDeltaError(f"profile.delta: no table named {col.table!r}")
+        assign = _module_assign(tree, var_name)
+        if assign is None or not isinstance(assign.value, ast.Call):
+            raise ProfileDeltaError(f"profile.delta: {col.table}'s schema is not editable here")
+        call = assign.value
+        scalar = SCALAR_NAMES.get(col.scalar_name)
+        if scalar is None:
+            raise ProfileDeltaError(f"profile.delta: unknown type {col.scalar_name!r}")
+        if not call.args or not isinstance(call.args[0], ast.List):
+            raise ProfileDeltaError(f"profile.delta: {col.table}'s schema is not editable here")
+        pairs = call.args[0]
+        if any(
+            isinstance(e, ast.Tuple)
+            and e.elts
+            and isinstance(e.elts[0], ast.Constant)
+            and e.elts[0].value == col.name
+            for e in pairs.elts
+        ):
+            raise ProfileDeltaError(f"profile.delta: column {col.table}.{col.name} already exists")
+        pairs.elts.append(
+            ast.Tuple(
+                elts=[
+                    ast.Constant(col.name),
+                    ast.Attribute(
+                        value=ast.Name(id="Scalar", ctx=ast.Load()),
+                        attr=scalar.name,
+                        ctx=ast.Load(),
+                    ),
+                ],
+                ctx=ast.Load(),
+            )
+        )
+        _list_kwarg_add(call, "nullable", col.name)
+        if col.private:
+            _list_kwarg_add(call, "private", col.name)
+        if col.admin_write:
+            _list_kwarg_add(call, "admin_write", col.name)
+        source = _splice(source, assign, ast.unparse(assign))
+    for resp in delta.responses:
+        tree = ast.parse(source)
+        api_call = _find_call(tree, "ApiProfile")
+        responses = api_call and _kwarg(api_call, "responses")
+        if api_call is None or not isinstance(responses, ast.Name):
+            raise ProfileDeltaError("profile.delta needs the complete profile.py here")
+        assign = _module_assign(tree, responses.id)
+        if assign is None or not isinstance(assign.value, ast.Dict):
+            raise ProfileDeltaError("profile.delta: the responses mapping is not editable here")
+        d = assign.value
+        kept = [
+            (k, v)
+            for k, v in zip(d.keys, d.values, strict=True)
+            if not (isinstance(k, ast.Constant) and k.value == resp.name)
+        ]
+        kept.append(
+            (
+                ast.Constant(resp.name),
+                ast.Tuple(elts=[ast.Constant(f) for f in resp.fields], ctx=ast.Load()),
+            )
+        )
+        d.keys, d.values = [k for k, _ in kept], [v for _, v in kept]
+        source = _splice(source, assign, ast.unparse(assign))
+    return source
 
 
 class _LatticeArm:
@@ -574,14 +748,36 @@ class _LatticeArm:
         files = prompts.parse_files(text)
         if not files:
             return Candidate(problem="no_code", feedback=NO_FILES)
-        for name in files:
-            if name != prompts.PROFILE_FILE and not name.endswith(".lattice.py"):
+        merged: dict[str, str] = {}
+        partial = False
+        for name, src in files.items():
+            if name == prompts.PROFILE_DELTA_FILE:
+                try:
+                    delta = prompts.parse_profile_delta(src)
+                    base_profile = merged.get(
+                        prompts.PROFILE_FILE, self.state[prompts.PROFILE_FILE]
+                    )
+                    merged[prompts.PROFILE_FILE] = apply_profile_delta(base_profile, delta)
+                except (prompts.PartialAnswerError, ProfileDeltaError) as exc:
+                    return Candidate(problem="merge", feedback=f"`{name}`: {exc}")
+                partial = True
+                continue
+            if name == prompts.PROFILE_FILE:
+                merged[name] = src
+                continue
+            if not name.endswith(".lattice.py"):
                 return Candidate(
                     problem="bad_file",
-                    feedback=f"`{name}` is neither a Lattice program (`<router>.lattice.py`) "
-                    f"nor `{prompts.PROFILE_FILE}`.",
+                    feedback=f"`{name}` is neither a Lattice program (`<router>.lattice.py`), "
+                    f"`{prompts.PROFILE_FILE}` nor `{prompts.PROFILE_DELTA_FILE}`.",
                 )
-        self.state.update(files)
+            try:
+                result = prompts.merge_top_level(self.state.get(name), src)
+            except prompts.PartialAnswerError as exc:
+                return Candidate(problem="merge", feedback=f"`{name}`: {exc}")
+            merged[name] = result.text
+            partial = partial or result.partial
+        self.state.update(merged)
         programs = {n: s for n, s in self.state.items() if n != prompts.PROFILE_FILE}
         profile_src = self.state[prompts.PROFILE_FILE]
         try:
@@ -631,6 +827,7 @@ class _LatticeArm:
             factory=lambda path: make_emitted_app(out, path),
             code=(emitted.lines, emitted.ast_nodes),
             cleanup=cleanup,
+            partial=partial,
         )
 
 
@@ -691,6 +888,7 @@ def run_arm(
     messages: list[dict[str, str]] = [{"role": "user", "content": user}]
     generations: list[Generation] = []
     candidate = Candidate()
+    any_partial = False
     try:
         for attempt in range(max_repairs + 1):
             try:
@@ -713,6 +911,7 @@ def run_arm(
                 candidate = Candidate(problem="truncated", feedback=TRUNCATED)
             else:
                 candidate = state.build(generation.text)
+            any_partial = any_partial or candidate.partial
             if candidate.factory is not None:
                 result = smoke.run_smoke(ticket_id, candidate.factory)
                 if not result.started:
@@ -748,6 +947,8 @@ def run_arm(
         _score(record, ticket_id, candidate, *state.edited())
     finally:
         candidate.cleanup()
+    record.answer_mode = "partial" if any_partial else "whole"
+    record.truncated = "truncated" in record.round_problems
     record.wall_s = time.perf_counter() - started
     return record
 
@@ -868,13 +1069,70 @@ def reference_answer(arm: Arm, ticket_id: str) -> str | None:
     return prompts.render_files(files)
 
 
-def dry_run(arm: Arm, ticket_id: str) -> RunRecord:
-    """The reference fed through ``arm`` (no API call). Three ways arm L can have nothing
-    to run: no import at all for the app (``not_imported``, a held-out repo before the
-    importer's output is registered); current Lattice cannot express the ticket, a
-    recorded gap (``not_expressible``); or the ticket is held out from the language and
-    lifter work on purpose, with no Lattice reference written for it at all
-    (``no_reference`` -- round 3's t13-t18, see :mod:`bench.edit_slice.tickets`)."""
+def _partial_or_whole(before: str | None, after: str, *, allow_constants: bool) -> str:
+    """``after`` as a partial-answer fragment against ``before`` (endpoint-scoped edits,
+    spec 2026-09-27-lattice-surface-design.md §3) when merging that fragment back into
+    ``before`` reproduces ``after`` exactly; the whole file otherwise (``before`` cannot
+    express the change by name alone -- e.g. a new arm-P constant), or when ``before`` is
+    None (a new file, nothing to diff against)."""
+    if before is None:
+        return after
+    # merging only ever touches named items; a change to anything else (an import, or
+    # for arm P another constant) cannot be expressed this way -- the whole file only
+    if prompts.fixed_content(before, allow_constants=allow_constants) != prompts.fixed_content(
+        after, allow_constants=allow_constants
+    ):
+        return after
+    fragment = prompts.diff_top_level(before, after, allow_constants=allow_constants)
+    merged = prompts.merge_top_level(before, fragment, allow_constants=allow_constants)
+    same = prompts.named_items(merged.text, allow_constants=allow_constants) == prompts.named_items(
+        after, allow_constants=allow_constants
+    )
+    return fragment if same else after
+
+
+def partial_reference_answer(arm: Arm, ticket_id: str) -> str | None:
+    """The hand-written reference as a *partial* answer (see :func:`_partial_or_whole`):
+    each changed file, diffed against the start down to its top-level names wherever that
+    is expressible, whole otherwise. Feeding this through :func:`run_arm` exercises the
+    same merge-by-name code a live partial answer would (None: a gap, as
+    :func:`reference_answer`)."""
+    t = ticket(ticket_id)
+    if arm == "P":
+        overlay = p_start(t)
+        files = {
+            prompts.APP_PREFIX + rel: _partial_or_whole(
+                p_view(overlay, rel, t.repo), src, allow_constants=False
+            )
+            for rel, src in reference_files(ticket_id).items()
+            if src != p_view(overlay, rel, t.repo)
+        }
+        return prompts.render_files(files)
+    if not has_lattice_reference(ticket_id):
+        return None
+    programs, profile = l_start(t)
+    start = {**programs, prompts.PROFILE_FILE: profile}
+    files = {}
+    for n, s in lattice_reference_files(ticket_id).items():
+        if s == start.get(n):
+            continue
+        # profile.py itself is whole-file only (a partial profile change goes through
+        # profile.delta instead, see prompts.PROFILE_DELTA_FILE); every program is merged
+        files[n] = s if n == prompts.PROFILE_FILE else _partial_or_whole(
+            start.get(n), s, allow_constants=True
+        )
+    return prompts.render_files(files)
+
+
+def dry_run(arm: Arm, ticket_id: str, *, partial: bool = False) -> RunRecord:
+    """The reference fed through ``arm`` (no API call); ``partial``: as a partial answer
+    (:func:`partial_reference_answer`) instead of the whole file
+    (:func:`reference_answer`) -- both should score every ticket the same way. Three ways
+    arm L can have nothing to run: no import at all for the app (``not_imported``, a
+    held-out repo before the importer's output is registered); current Lattice cannot
+    express the ticket, a recorded gap (``not_expressible``); or the ticket is held out
+    from the language and lifter work on purpose, with no Lattice reference written for
+    it at all (``no_reference`` -- round 3's t13-t18, see :mod:`bench.edit_slice.tickets`)."""
     repo = ticket(ticket_id).repo
     if arm == "L" and not has_lattice_start(repo):
         return RunRecord(
@@ -894,7 +1152,7 @@ def dry_run(arm: Arm, ticket_id: str) -> RunRecord:
             detail=f"{ticket_id!r} is held out: no Lattice reference is written for it",
             dry_run=True,
         )
-    answer = reference_answer(arm, ticket_id)
+    answer = (partial_reference_answer if partial else reference_answer)(arm, ticket_id)
     if answer is None:
         return RunRecord(
             ticket_id,
@@ -1040,6 +1298,12 @@ def _parser() -> argparse.ArgumentParser:
         help="feed the hand-written references through the arms (no API call)",
     )
     p.add_argument(
+        "--dry-run-partial",
+        action="store_true",
+        help="like --dry-run-reference, but each reference as a partial answer "
+        "(endpoint-scoped edits), diffed against the start",
+    )
+    p.add_argument(
         "--estimate",
         action="store_true",
         help="print prompt sizes and the live run's cost estimate",
@@ -1055,6 +1319,8 @@ def _tickets(spec: str) -> list[str]:
         return [t.id for t in REPO_TICKETS]
     if spec == "round3":
         return [t.id for t in ALL_TICKETS]
+    if spec == "round4":
+        return [t.id for t in ROUND4_TICKETS]
     ids = [s.strip() for s in spec.split(",") if s.strip()]
     for tid in ids:
         ticket(tid)
@@ -1083,8 +1349,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         for tid in tickets:
             for arm in arms:
                 try:
-                    if args.dry_run_reference:
-                        record = dry_run(arm, tid)
+                    if args.dry_run_reference or args.dry_run_partial:
+                        record = dry_run(arm, tid, partial=args.dry_run_partial)
                         record.rep = rep
                     else:
                         from lattice.llm.client import ClaudeGenerator
@@ -1104,14 +1370,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                             artefact_root=artefact_root,
                         )
                 except Exception as exc:  # noqa: BLE001 -- one run's harness crash is recorded
+                    dry = args.dry_run_reference or args.dry_run_partial
                     record = RunRecord(
                         tid,
                         arm,
-                        "reference" if args.dry_run_reference else args.model,
+                        "reference" if dry else args.model,
                         rep,
                         outcome="error",
                         detail=f"{type(exc).__name__}: {exc}"[:_DETAIL_LIMIT],
-                        dry_run=args.dry_run_reference,
+                        dry_run=dry,
                     )
                 with out.open("a") as f:
                     f.write(record.to_json() + "\n")

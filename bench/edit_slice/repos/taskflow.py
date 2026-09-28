@@ -32,6 +32,7 @@ from bench.edit_slice.variant import TASKFLOW_SECRET, Variant
 from lattice.importer.suite import (
     ACTOR,
     ADMIN,
+    INACTIVE,
     OTHER,
     AuthSpec,
     ColumnSpec,
@@ -137,10 +138,18 @@ UPDATE = RouteSpec("update_task", "PATCH", f"{TASKS}/{{task_id}}", "update", "ta
                    params=(TASK_ID, UPDATE_TITLE, DESCRIPTION),
                    errors=(NOT_FOUND, NOT_OWNER))  # fmt: skip
 
+# ---- N4's fresh held-out set's route (t28; see bench.edit_slice.tickets docstring) --------
+REASSIGN = RouteSpec(
+    "reassign_task", "POST", f"{TASKS}/{{task_id}}/reassign", "other", "tasks",
+    params=(TASK_ID, P("new_owner_email", "email", "body")),
+    errors=(NOT_FOUND, NOT_OWNER),
+)  # fmt: skip
+
 ROUTES: dict[str, tuple[RouteSpec, ...]] = {
     "t19_task_summary": (SUMMARY,),
     "t20_bulk_status": (BULK,),
     "t21_completed_at": (CREATE, LIST, READ, UPDATE),
+    "t28_task_reassign": (REASSIGN,),
 }
 # route name -> the reference functions whose raise sites the route's cases must reach
 FUNCTIONS: dict[str, tuple[str, ...]] = {
@@ -150,6 +159,7 @@ FUNCTIONS: dict[str, tuple[str, ...]] = {
     "read_tasks": ("read_tasks",),
     "read_task": ("read_task", "require_task"),
     "update_task": ("update_task", "require_task"),
+    "reassign_task": ("reassign_task", "require_task"),
 }
 
 
@@ -311,8 +321,30 @@ def t21_cases(plan: SeedPlan) -> list[Case]:
     ]  # fmt: skip
 
 
+def t28_cases(plan: SeedPlan) -> list[Case]:
+    a1 = _own(plan, ACTOR)
+    b1 = _own(plan, OTHER)
+    alice_email = plan.user(ACTOR).email
+    bob_email = plan.user(OTHER).email
+    inactive_email = plan.user(INACTIVE).email
+
+    def c(what: str, task_id: int, email: str, user: str = ACTOR) -> Case:
+        return Case(f"t28.{what}", "POST", f"{TASKS}/{task_id}/reassign", user=user,
+                    json={"new_owner_email": email}, tables=("tasks",),
+                    route="reassign_task")  # fmt: skip
+
+    return [
+        c("alice_reassigns_to_bob", a1, bob_email),
+        c("bobs_task_is_not_found", b1, alice_email),
+        c("unknown_email", a1, "nobody@example.com"),
+        c("inactive_target", a1, inactive_email),
+        c("already_belongs_to_caller", a1, alice_email),
+        c("missing_task", 999, bob_email),
+    ]
+
+
 SPECIFIC = {"t19_task_summary": t19_cases, "t20_bulk_status": t20_cases,
-            "t21_completed_at": t21_cases}  # fmt: skip
+            "t21_completed_at": t21_cases, "t28_task_reassign": t28_cases}  # fmt: skip
 
 # ---- a request's fresh timestamps -------------------------------------------------------------
 

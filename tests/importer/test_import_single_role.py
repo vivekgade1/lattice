@@ -297,7 +297,10 @@ def test_the_profile_is_single_role_with_a_username_lookup(imported: ImportResul
     api = imported.lattice_profile.api
     assert api is not None
     assert api.roles_from == NoRoles("Customer")
-    assert api.auth == NativeToken("decode_token", lookup="username")
+    credentials = (401, "Could not validate credentials")
+    assert api.auth == NativeToken(
+        "decode_token", lookup="username", invalid=credentials, unknown=credentials
+    )
     assert ("username",) in api.tables["User"].keys
     assert api.natives["decode_token"].settings == ("secret_key",)
     assert not [u for u in imported.unclear if "single-role" in u.reason]
@@ -334,11 +337,13 @@ def test_a_value_outside_the_enum_is_requested_and_agrees(imported: ImportResult
 
 def test_the_credentials_exception_idiom_is_read(imported: ImportResult) -> None:
     """``raise credentials_exception``: the or-ed active check is the profile's (401 with
-    the exception's detail), and the bad-token answer a declared token policy."""
+    the exception's detail), and so are the bad-token and unknown-user answers
+    (``NativeToken(invalid=, unknown=)``): those cases are equal, not declared."""
     api = imported.lattice_profile.api
     assert api is not None
     assert (api.active_column, api.inactive_status, api.inactive_detail) == (
         "is_active", 401, "Could not validate credentials",
     )  # fmt: skip
+    assert api.auth.invalid == api.auth.unknown == (401, "Could not validate credentials")  # type: ignore[union-attr]
     me = imported.result("read_user_me")
-    assert any(n.endswith("bad_token") for n in me.deviations), me.deviations
+    assert not [n for n in me.deviations if "token" in n], me.deviations

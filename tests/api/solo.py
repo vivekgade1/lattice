@@ -217,3 +217,17 @@ def read_me(user: CurrentUser) -> One:
     shown = select(greeted, cols=["id", "username", "greeting", "admin"])
     return shown
 """
+
+
+# the token answers of an imported app (spec 2026-09-27 surface §4.1): an undecodable
+# token and one naming no user are answered as the original does, on every endpoint
+API_ANSWERS = replace(
+    API,
+    auth=NativeToken(
+        "decode_token",
+        lookup="username",
+        invalid=(401, "Could not validate credentials"),
+        unknown=(403, "User not found"),
+    ),
+)
+PROFILE_ANSWERS = Profile(schemas={}, api=API_ANSWERS)

@@ -25,6 +25,13 @@ class CheckContext:
     # The program's checked @procedure / @record part (None without one): the T0 passes
     # read it to type procedure calls in endpoints.
     t2: T2Program | None = None
+    # N1: the `a + b` nodes P4 typed as Str concatenations (id -> node); replaced by
+    # fn.concat(a, b) right after P4 (lattice.check.normalise.resolve_concats). The
+    # nodes are kept alive here so their ids stay unique while `types` refers to them.
+    concats: dict[int, ast.BinOp] = field(default_factory=dict)
+    # N1b: ids of the `r.x` row-value reads the normaliser found in endpoint write/derive
+    # values (P1 accepts them; P4 types them; P6 checks their source row)
+    row_reads: frozenset[int] = frozenset()
 
     def _add(
         self, code: str, sev: Severity, where: ast.AST | Span, message: str, hint: str | None

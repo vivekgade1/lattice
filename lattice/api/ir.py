@@ -304,6 +304,10 @@ class EndpointPlan:
     error_body: str = "lattice"
     unauthorized_detail: str | None = None
     forbidden_detail: str | None = None
+    # NativeToken.invalid / .unknown: (status, detail) for a token the auth native
+    # decodes to null / whose decoded value matches no users row (None: the 401).
+    token_invalid: tuple[int, str] | None = None
+    token_unknown: tuple[int, str] | None = None
     # ApiProfile.datetime_wire: how responses spell DateTime values.
     datetime_wire: str = "iso_z"
     # The effect natives the plan's for_each steps send (never SQL functions).
@@ -381,6 +385,65 @@ class _Substitute(ast.NodeTransformer):
         if value is None:
             return node
         return ast.copy_location(copy.deepcopy(value), node)
+
+
+class _RowRef(ast.expr):
+    """`r.x` in a write/derive value, lowered in phase 1: column `column` of the one row
+    of value `val` (the checker made sure r has exactly one row). Emission turns it into
+    a RowsValue over r's materialized rows: a scalar subquery in the statement."""
+
+    _fields = ()
+
+    def __init__(self, val: _Val | None = None, column: str = "") -> None:
+        super().__init__()
+        self.val = val
+        self.column = column
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> _RowRef:
+        return ast.copy_location(_RowRef(self.val, self.column), self)
+
+
+class _RowRefs(ast.NodeTransformer):
+    """r.x (r a table value of the endpoint, not the caller) -> _RowRef."""
+
+    def __init__(self, env: Mapping[str, _Val]) -> None:
+        self.env = env
+
+    def visit_Attribute(self, node: ast.Attribute) -> ast.expr:
+        name = node.value.id if isinstance(node.value, ast.Name) else None
+        if name is not None and name != USER_PARAM and name in self.env:
+            return ast.copy_location(_RowRef(self.env[name], node.attr), node)
+        return self.generic_visit(node)  # type: ignore[return-value]
+
+
+def _has_row_ref(value: Any) -> bool:
+    if isinstance(value, ast.AST):
+        return any(isinstance(n, _RowRef) for n in ast.walk(value))
+    if isinstance(value, tuple | list):
+        return any(_has_row_ref(v) for v in value)
+    return False
+
+
+def _map_row_refs(value: Any, lower: Any) -> Any:
+    """`value` (an expression, or tuples/lists of them) with every _RowRef lowered."""
+    if isinstance(value, _RowRef):
+        return lower(value)
+    if isinstance(value, ast.AST):
+        if not _has_row_ref(value):
+            return value
+
+        class _Lower(ast.NodeTransformer):
+            def visit(self, node: ast.AST) -> Any:
+                if isinstance(node, _RowRef):
+                    return ast.copy_location(lower(node), node)
+                return super().visit(node)
+
+        return _Lower().visit(copy.deepcopy(value))  # the plan's own copy stays as it is
+    if isinstance(value, tuple):
+        return tuple(_map_row_refs(v, lower) for v in value)
+    if isinstance(value, list):
+        return [_map_row_refs(v, lower) for v in value]
+    return value
 
 
 class _Caller(ast.NodeTransformer):
@@ -606,7 +669,42 @@ class _Endpoint:
             out = ast.fix_missing_locations(_Substitute(subst).visit(copy.deepcopy(node)))
         if mentions_caller(out):
             out = _Caller(self.user_key).visit(copy.deepcopy(out) if out is node else out)
+        if any(
+            isinstance(n, ast.Attribute)
+            and isinstance(n.value, ast.Name)
+            and n.value.id in self.env
+            and n.value.id != USER_PARAM
+            for n in ast.walk(out)
+        ):  # r.x: a value of a one-row table (N1b)
+            out = _RowRefs(self.env).visit(copy.deepcopy(out) if out is node else out)
         return out
+
+    def _lower_row_refs(self, value: Any, rows_of: Any, span: Span) -> Any:
+        """`value` with every _RowRef read from its row's materialized step."""
+
+        def lower(ref: _RowRef) -> RowsValue:
+            assert ref.val is not None
+            step = rows_of(ref.val, span)
+            return RowsValue(step, self._schema_of(ref.val).names(), ref.column)
+
+        return _map_row_refs(value, lower)
+
+    def _resolve_rels(
+        self, rid: str, rows_of: Any, materialized: Mapping[str, Any], span: Span
+    ) -> None:
+        """Lower the _RowRefs of `rid` and the relations it reads (not yet materialized):
+        their rows are read first, so the statement binds them."""
+        stack, seen = [rid], set()
+        while stack:
+            r = stack.pop()
+            if r in seen or r in materialized or r not in self.rels:
+                continue
+            seen.add(r)
+            rel = self.rels[r]
+            if _has_row_ref(tuple(rel.params.values())):
+                params = {k: self._lower_row_refs(v, rows_of, span) for k, v in rel.params.items()}
+                self.rels[r] = replace(rel, params=params)
+            stack.extend(rel.inputs)
 
     def _schema(self, call: ast.Call) -> Schema:
         t = self.program.types.get(id(call))
@@ -1294,6 +1392,9 @@ class _Endpoint:
             if page is not None and self.page_of[page].total and page not in total_step:
                 total_of = self.rels[page].inputs[0]
                 total_step[page] = rid
+            self._resolve_rels(rid, rows_of, materialized, span)
+            if total_of is not None:
+                self._resolve_rels(total_of, rows_of, materialized, span)
             sql = compile_select(
                 self.rels,
                 rid,
@@ -1325,6 +1426,7 @@ class _Endpoint:
                         else:  # rows read earlier (the caller, a write, a view): one SELECT
                             rid = self._rel_of(ev.input)
                             flag_step = f"{ev.id}#cond"
+                            self._resolve_rels(rid, rows_of, materialized, ev.span)
                             sql = compile_select(
                                 self.rels,
                                 rid,
@@ -1362,6 +1464,7 @@ class _Endpoint:
                             # rows read earlier (a write, the caller, a view): one SELECT
                             rid = self._rel_of(ev.input)
                             args_step = f"{ev.id}#args"
+                            self._resolve_rels(rid, rows_of, materialized, ev.span)
                             sql = compile_select(
                                 self.rels,
                                 rid,
@@ -1398,12 +1501,16 @@ class _Endpoint:
         users = self.api.tables.get(self.api.users_table)
         token_column, auth_native, token_lookup = "token", None, None
         runtime_unique = False
+        token_invalid: tuple[int, str] | None = None
+        token_unknown: tuple[int, str] | None = None
         match self.api.auth:
             case TokenColumn(column=column):
                 token_column = column
             case NativeToken(native=native, lookup=lookup, unique=unique):
                 auth_native, token_lookup = native, lookup
                 runtime_unique = unique == "runtime"
+                token_invalid = getattr(self.api.auth, "invalid", None)
+                token_unknown = getattr(self.api.auth, "unknown", None)
         role_column, admin_flag, flag_role, fixed_role = "role", None, "", None
         match self.api.roles_from:
             case RoleColumn(column=column):
@@ -1448,6 +1555,8 @@ class _Endpoint:
             error_body=getattr(self.api, "error_body", "lattice"),
             unauthorized_detail=getattr(self.api, "unauthorized_detail", None),
             forbidden_detail=getattr(self.api, "forbidden_detail", None),
+            token_invalid=token_invalid,
+            token_unknown=token_unknown,
             datetime_wire=getattr(self.api, "datetime_wire", "iso_z"),
             effects=tuple(
                 (name, self.api.natives[name])
@@ -1515,6 +1624,8 @@ class _Endpoint:
         rows_of: Any,
         materialized: Mapping[str, tuple[str, tuple[str, ...]]],
     ) -> WriteStep:
+        if _has_row_ref(ev.values):  # r.x: read r's row first (a scalar subquery)
+            ev = replace(ev, values=self._lower_row_refs(ev.values, rows_of, ev.span))
         table = self.api.table_names[ev.table]
         values = tuple((c, _sql_text(e)) for c, e in ev.values)
         if ev.kind == "insert_many":  # every row of a procedure's value, one statement

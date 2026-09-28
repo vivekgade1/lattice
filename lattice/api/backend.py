@@ -256,6 +256,8 @@ _SQLITE_FN: Mapping[str, Callable[[str, Mapping[str, str]], str]] = {
     # str.lower, the Unicode lowercase polars' to_lowercase applies too)
     "icontains": lambda x, k: f"(instr(lattice_lower({x}), lattice_lower({k['sub']})) > 0)",
     "starts_with": lambda x, k: f"(substr({x}, 1, length({k['prefix']})) = {k['prefix']})",
+    # fn.concat(a, b): null if either is null, like polars' concat_str
+    "concat": lambda x, k: f"({x} || {k['other']})",
     "year": _date_part("%Y"),
     "month": _date_part("%m"),
     "day": _date_part("%d"),

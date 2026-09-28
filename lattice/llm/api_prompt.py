@@ -24,7 +24,12 @@ from lattice.catalog import (
     API_OP_SHAPES,
     PAGE_LIMIT_MAX,
 )
-from lattice.llm.prompt import _OUTPUT_FORMAT_SECTION, _render_fn_sig, _render_op_shape
+from lattice.llm.prompt import (
+    _OUTPUT_FORMAT_SECTION,
+    ACCEPTED_SPELLINGS,
+    _render_fn_sig,
+    _render_op_shape,
+)
 
 if TYPE_CHECKING:
     from bench.api_model import ApiTask
@@ -190,9 +195,9 @@ def _lattice_expressions_section() -> str:
         "## Expressions\n\n"
         'Column expressions use only: `col("name")`; literals; endpoint parameters and '
         "constants as plain values; `+ - * / %`; comparisons `== != < <= > >=`; `&`, `|`, "
-        "`~` on Bool (never `and`/`or`/`not`); `when(cond, then=a, otherwise=b)`; "
-        "`coalesce(a, b)`; `is_null(a)`. No loops, `if`, lambdas, comprehensions, method "
-        "calls, subscripts or f-strings anywhere.\n\n"
+        "`~` on Bool; `when(cond, then=a, otherwise=b)`; `coalesce(a, b)`; `is_null(a)`. "
+        f"{ACCEPTED_SPELLINGS} No loops, statement `if`, lambdas, comprehensions or "
+        "subscripts anywhere.\n\n"
         f"Functions: {fns}.\n\n"
         f"Aggregates (only as `group()` keyword values): {aggs}; `agg.count()` counts rows; "
         "`agg.at_min(x, of=o)` / `agg.at_max(x, of=o)` give `x` on the group's row with the "
@@ -321,12 +326,10 @@ _LATTICE_RULES_SECTION = f"## Rules\n\n{LATTICE_OWN_ROWS}\n" + """\
 - No imports are needed: all operations, `col`, `when`, `coalesce`, `is_null`, `fn`, \
 `agg`, `endpoint`, `step`, the parameter types, success kinds, errors, roles, \
 `CurrentUser` and the table names (`Users`, `Orders`, ...) are always available.
-- Each statement assigns one operation or `@step` call to a new name. Never reassign a \
+- Each statement assigns an operation or `@step` call to a new name. Never reassign a \
 name or use a built-in name (operation, function, type or table, e.g. `where`, \
 `Orders`) as a variable or step name. A parameter's name is its query/JSON field name, \
 so parameters may also be named like a Python builtin (`zip`, `id`, `type`) or `limit`/`sort`.
-- Never nest calls: table arguments are plain names (`found = where(...)` then \
-`order = one(found, ...)`, not `one(where(...))`).
 - The body ends with exactly one `return <name>`. Names bound by `one`, `require`, \
 `insert`, `update` and `delete` may stay unused (they act by their effect).
 - `update` and `delete` need rows of one database table that still contain its key \

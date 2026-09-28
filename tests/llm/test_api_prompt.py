@@ -136,7 +136,7 @@ def test_lattice_prompt_documents_the_api_surface() -> None:
     assert "owned through a parent" in prompt and "`zip`" in prompt
     for constraint in ("Int(ge=, le=)", "Str(min_len=, max_len=)", "OneOf(", "Bool", "Date"):
         assert constraint in prompt, constraint
-    for rule in ("Never nest calls", "new name", "exactly one `return", "No imports"):
+    for rule in ("accepted and normalised", "new name", "exactly one `return", "No imports"):
         assert rule in prompt, rule
     for status in ("401", "403", "422", "201", "204"):
         assert status in prompt, status

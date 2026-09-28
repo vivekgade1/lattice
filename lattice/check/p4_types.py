@@ -81,7 +81,7 @@ from lattice.check.exprs import (
     did_you_mean,
     reported_name_spans,
 )
-from lattice.check.nullability import expr_nullable
+from lattice.check.nullability import expr_nullable, may_write_null
 from lattice.check.t2.types import Opt as T2Opt
 from lattice.check.t2.types import RecordT as T2RecordT
 from lattice.check.t2.types import RowT as T2RowT
@@ -376,6 +376,9 @@ class _Types:
         t = self._unit(value, scope) or UNKNOWN
         if not scope.bound(name):
             scope.env[name] = t
+            if isinstance(t, TableT) and self.in_endpoint:
+                for column in t.nullable:  # a row value `name.<column>` may be missing
+                    scope.nullconsts[f"{name}.{column}"] = True
         elif name not in scope.env:
             scope.env[name] = UNKNOWN  # a constant rebound as a table: silence table uses
 
@@ -1950,7 +1953,7 @@ class _Types:
             return UNKNOWN
         return replace(t, owner_checked=True)
 
-    def _compatible(self, value: ast.expr, got: Scalar, want: Scalar, column: str) -> None:
+    def _compatible(self, value: ast.expr, got: Scalar, want: Scalar, column: str) -> bool:
         if not (got is want or (want is Scalar.FLOAT and got is Scalar.INT)):
             self.ctx.error(
                 "L402",
@@ -1958,6 +1961,8 @@ class _Types:
                 f"column '{column}' is {want.value}, got {got.value}",
                 None,
             )
+            return False
+        return True
 
     def _insert(self, call: ast.Call, scope: _Scope) -> TableOrUnknown:
         found = self._db_table(call.args[0])
@@ -1993,11 +1998,12 @@ class _Types:
                 continue
             if self._null_write(kw, schema, name):
                 continue
-            self._one_of_write(kw, schema, name)
+            self._one_of_write(kw, schema, name, scope)
             vt = typer.type_of(kw.value)
             want = schema.get(kw.arg)
             if not isinstance(vt, UnknownT) and want is not None:
-                self._compatible(kw.value, vt.scalar, want, kw.arg)
+                if self._compatible(kw.value, vt.scalar, want, kw.arg):
+                    self._maybe_null_write(kw, schema, name, scope)
         self._insert_columns(call, name, schema)
         return TableT(
             schema,
@@ -2122,11 +2128,12 @@ class _Types:
             if schema is not None and self._null_write(kw, schema, t.source or ""):
                 continue
             if schema is not None:
-                self._one_of_write(kw, schema, t.source or "")
+                self._one_of_write(kw, schema, t.source or "", scope)
             vt = typer.type_of(kw.value)
             want = schema.get(kw.arg) if schema is not None else None
-            if not isinstance(vt, UnknownT) and want is not None:
-                self._compatible(kw.value, vt.scalar, want, kw.arg)
+            if not isinstance(vt, UnknownT) and want is not None and schema is not None:
+                if self._compatible(kw.value, vt.scalar, want, kw.arg):
+                    self._maybe_null_write(kw, schema, t.source or "", scope)
         return t
 
     def _new_owner(
@@ -2185,13 +2192,54 @@ class _Types:
         if not isinstance(vt, UnknownT) and want is not None:
             self._compatible(value, vt.scalar, want, schema.owner)
 
-    def _one_of_write(self, kw: ast.keyword, schema: Schema, table: str) -> None:
+    def _maybe_null_write(self, kw: ast.keyword, schema: Schema, table: str, scope: _Scope) -> None:
+        """L410: a value that may be None through a typed null (when(..., otherwise=None))
+        or a nullable column of a one-row table value, written to a required column."""
+        column = kw.arg or ""
+        if column in schema.nullable:
+            return
+        rows = {
+            k: v
+            for k, v in scope.nullconsts.items()
+            if "." in k and not k.startswith(f"{USER_PARAM}.")
+        }
+        if may_write_null(kw.value, rows):
+            self.ctx.error(
+                "L410",
+                kw,
+                f"column '{column}' of {table} is not nullable, but the written value may "
+                "be None",
+                "give every when() branch a value, or write coalesce(<value>, <default>)",
+            )
+
+    def _row_choices(self, value: ast.expr, scope: _Scope) -> tuple[str, ...] | None:
+        """The values a row value `r.x` can hold: x's choices when it is the stored value
+        of a OneOf column of r's database table (None: unknown)."""
+        match value:
+            case ast.Attribute(value=ast.Name(id=name), attr=attr) if (
+                id(value) in self.ctx.row_reads
+            ):
+                t = scope.env.get(name)
+                if not isinstance(t, TableT) or t.source is None or attr not in t.plain:
+                    return None
+                source = self.schemas.get(t.source)
+                return source.choices(attr) if source is not None else None
+            case _:
+                return None
+
+    def _one_of_write(
+        self, kw: ast.keyword, schema: Schema, table: str, scope: _Scope | None = None
+    ) -> None:
         """L407: a OneOf column (Schema.one_of) is written only a listed literal or an
         endpoint parameter declared OneOf(...) with listed values -- so a request with
-        any other value is refused at the API boundary (422), before the write."""
+        any other value is refused at the API boundary (422), before the write. A row
+        value of a OneOf column holding only listed values is accepted too."""
         column, value = kw.arg or "", kw.value
         allowed = schema.choices(column)
         if allowed is None:
+            return
+        held = self._row_choices(value, scope) if scope is not None else None
+        if held is not None and set(held) <= set(allowed):
             return
         where = f"column '{column}' of {table} holds only {_listed(allowed)}"
         hint = f'a parameter `{column}: OneOf({", ".join(_q(v) for v in allowed)})`'

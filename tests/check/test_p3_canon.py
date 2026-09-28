@@ -36,9 +36,15 @@ def test_valid_program(diags):
     assert diags(src) == ()
 
 
-def test_chained_ops(diags):
+def test_chained_ops_are_split(diags):
+    # N1: a table op nested as a table argument becomes its own statement
     src = prog('x = where(derive(raw, a=col("qty")), col("a") > 1)', 'write(x, "o.csv")')
-    assert p3(diags, src) == [("L301", 5, 11)]
+    assert p3(diags, src) == []
+
+
+def test_op_nested_in_an_expression(diags):
+    src = prog('x = where(raw, col("qty") > limit(raw, n=1))', 'write(x, "o.csv")')
+    assert p3(diags, src) == [("L301", 5, 29)]
 
 
 def test_table_arg_must_be_name(diags):
@@ -160,7 +166,7 @@ def test_step_call_ok(diags):
 
 def test_step_body_is_checked(diags):
     src = STEP.replace(
-        'y = where(t, col("qty") > n)', 'y = where(where(t, col("qty") > n), col("qty") < 9)'
+        'y = where(t, col("qty") > n)', 'y = where(t, col("qty") > limit(t, n=1))'
     )
     src += 'z = f(raw, n=2)\nwrite(z, "o.csv")\n'
     assert [c for c, *_ in p3(diags, src)] == ["L301"]

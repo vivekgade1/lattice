@@ -54,7 +54,9 @@ rows older than the grace period from the app itself.
 The profile-wide Part B settings (sub-project 1b) become prelude constants as well:
 `ERROR_BODY` with `UNAUTHORIZED_DETAIL`/`FORBIDDEN_DETAIL` (the error body style and the
 automatic 401/403 texts), `DATETIME_WIRE` (how responses spell a DateTime), and
-`ACTIVE_COLUMN`/`INACTIVE_STATUS`/`INACTIVE_DETAIL` (the active check in auth). A write
+`ACTIVE_COLUMN`/`INACTIVE_STATUS`/`INACTIVE_DETAIL` (the active check in auth),
+`TOKEN_INVALID`/`TOKEN_UNKNOWN`/`TOKEN_DECODE` (NativeToken's answers to a token naming
+no caller). A write
 with `unique_or=Conflict(...)` runs through `write(...)`, which answers the declared 409
 on a UNIQUE violation. Every error body, the precedence (401, then the inactive status,
 then 403, then 422 validation) and the Admin rule are the runtime's.
@@ -103,7 +105,7 @@ from lattice.api.outbox import (
     RETRY_PENDING_SQL,
     RETRY_SQL,
 )
-from lattice.api.runtime import ambiguous_caller, auth_sql
+from lattice.api.runtime import ambiguous_caller, auth_sql, decode_sql
 from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, caller_bind, sent_bind
 from lattice.catalog import EMAIL_MAX_LEN, LIST_KIND, T2_EFFECT_PREFIX, USER_PARAM
 from lattice.check import CheckResult, check_source
@@ -241,7 +243,13 @@ FORBIDDEN_DETAIL: str | None = None
 ACTIVE_COLUMN: str | None = None
 INACTIVE_STATUS = 400
 INACTIVE_DETAIL = "Inactive user"
-STATUS_CODES = {400: "bad_request", 401: "unauthorized", 403: "forbidden"}
+STATUS_CODES = {400: "bad_request", 401: "unauthorized", 403: "forbidden", 404: "not_found"}
+# NativeToken.invalid / .unknown: (status, detail) for a token the auth native decodes to
+# null / whose value matches no users row (None: the 401); TOKEN_DECODE applies the native
+# ("": not needed).
+TOKEN_INVALID: tuple[int, str] | None = None
+TOKEN_UNKNOWN: tuple[int, str] | None = None
+TOKEN_DECODE = ""
 
 
 def error_body(status: int, code: str, detail: object = None) -> dict[str, object]:
@@ -837,6 +845,12 @@ def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
     every endpoint)."""
     rows = conn.execute(ep.auth_sql, (token,)).fetchmany(2)
     if not rows:
+        answer = None
+        if TOKEN_DECODE:
+            decoded = conn.execute(TOKEN_DECODE, (token,)).fetchone()[0]
+            answer = TOKEN_INVALID if decoded is None else TOKEN_UNKNOWN
+        if answer is not None:
+            raise ErrorResponse(answer[0], STATUS_CODES[answer[0]], answer[1])
         raise ErrorResponse(401, "unauthorized", UNAUTHORIZED_DETAIL)
     if len(rows) > 1:  # never pick one of them
         raise Failure(ep.ambiguous or "error R311: ambiguous caller")
@@ -1864,6 +1878,8 @@ _PROFILE_CONSTANTS = (
     ("ACTIVE_COLUMN", "active_column"),
     ("INACTIVE_STATUS", "inactive_status"),
     ("INACTIVE_DETAIL", "inactive_detail"),
+    ("TOKEN_INVALID", "token_invalid"),
+    ("TOKEN_UNKNOWN", "token_unknown"),
 )
 
 
@@ -1960,6 +1976,13 @@ def generate_fastapi(
             raise LatticeInternalError(f"plans disagree on {field}: {sorted(map(repr, values))}")
         if values:
             prelude = _set_constant(prelude, name, _literal(values.pop()))
+    decoders = {
+        decode_sql(p, SQLITE)
+        for p in plans
+        if p.auth_native is not None and (p.token_invalid or p.token_unknown)
+    }
+    if decoders:
+        prelude = _set_constant(prelude, "TOKEN_DECODE", _sql_constant(decoders.pop()))
     parts = [header + "\n".join(routes) + "\n\n" + prelude.rstrip("\n")]
     if register:
         parts.append(register)

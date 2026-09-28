@@ -1,10 +1,10 @@
 # lattice: v1
 # ruff: noqa: F821, F841 -- Lattice names are ambient; some bindings exist for their effect
-# Lifted from bench.import_repos.taskflow.app.routes by lattice.importer (deterministic lifters and the LLM loop: create_task, read_tasks, read_task; every route verified).
-@endpoint("POST", "/api/v1/tasks", auth=Customer, response="TaskPublic")
+# Lifted from bench.import_repos.taskflow.app.routes by lattice.importer (deterministic lifters and the LLM loop: create_task, read_tasks, read_task, delete_task; every route verified).
+@endpoint("POST", "/api/v1/tasks", auth=Customer)
 def create_task(
-    title: Str(min_len=3, max_len=120),
     user: CurrentUser,
+    title: Str(min_len=3, max_len=120),
     description: Str(min_len=0, max_len=1000) | None = None,
     status: OneOf("todo", "in_progress", "done") = "todo",
     priority: OneOf("low", "medium", "high") = "medium",
@@ -18,10 +18,14 @@ def create_task(
         status=status,
         priority=priority,
         due_date=due_date,
-        created_at=native.utc_now(),
-        updated_at=native.utc_now(),
+        created_at=fn.now(),
+        updated_at=fn.datetime_add(fn.now(), seconds=1),
     )
-    return created
+    result = select(
+        created,
+        cols=["title", "description", "status", "priority", "due_date", "id", "owner_id", "created_at", "updated_at"],
+    )
+    return result
 
 
 @endpoint("GET", "/api/v1/tasks", auth=Customer)
@@ -37,26 +41,32 @@ def read_tasks(
     own = where(tasks, col("owner_id") == user.id)
     by_status = where(own, is_null(status) | (col("status") == status))
     by_priority = where(by_status, is_null(priority) | (col("priority") == priority))
-    matched = where(
+    searched = where(
         by_priority,
         is_null(search)
         | fn.contains(col("title"), sub=search, ignore_case=True)
         | fn.contains(col("description"), sub=search, ignore_case=True),
     )
-    slim = select(
-        matched,
-        cols=["title", "description", "status", "priority", "due_date", "id", "owner_id", "created_at", "updated_at"],
-    )
-    ordered = sort(slim, by=["created_at", "id"], desc=[True, True])
+    ordered = sort(searched, by=["created_at"], desc=True)
     result = page(ordered, limit=limit, offset=offset, total=True)
     return result
 
 
-@endpoint("GET", "/api/v1/tasks/{task_id}", auth=Customer, response="TaskPublic")
+@endpoint("GET", "/api/v1/tasks/{task_id}", auth=Customer)
 def read_task(task_id: Int, user: CurrentUser) -> One | NotFound:
     tasks = fetch(Task)
-    mine_only = where(tasks, col("owner_id") == user.id)
-    found = where(mine_only, col("id") == task_id)
+    mine = where(tasks, col("owner_id") == user.id)
+    found = where(mine, col("id") == task_id)
+    slim = select(found, cols=["title", "description", "status", "priority", "due_date", "id", "owner_id", "created_at", "updated_at"])
+    task = one(slim, else_=NotFound("Task not found"))
+    return task
+
+
+@endpoint("DELETE", "/api/v1/tasks/{task_id}", auth=Customer)
+def delete_task(task_id: Int, user: CurrentUser) -> NoContent | NotFound:
+    tasks = fetch(Task)
+    mine_tasks = where(tasks, col("owner_id") == user.id)
+    found = where(mine_tasks, col("id") == task_id)
     task = one(found, else_=NotFound("Task not found"))
-    result = select(task, cols=["title", "description", "status", "priority", "due_date", "id", "owner_id", "created_at", "updated_at"])
-    return result
+    deleted = delete(task)
+    return deleted

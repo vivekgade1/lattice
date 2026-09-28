@@ -70,6 +70,8 @@ class TokenColumn:
 
 
 TOKEN_UNIQUE = ("declared", "runtime")
+# the statuses NativeToken.invalid / .unknown may answer
+TOKEN_ANSWER_STATUSES = (400, 401, 403, 404)
 
 
 @dataclass(frozen=True)
@@ -82,15 +84,41 @@ class NativeToken:
     unless `unique="runtime"`: then the column need not be declared unique (an app that
     enforces uniqueness in code only), and the runtime checks it on every request: no
     row answers 401, more than one a loud 500 (R311, an ambiguous caller) -- never one
-    of them picked silently."""
+    of them picked silently.
+
+    `invalid` / `unknown`: how a token naming no caller is answered, as (status,
+    detail) -- `invalid` when the native decodes it to null (a bad, expired or claimless
+    token), `unknown` when the decoded value matches no users row. None: 401 with
+    `ApiProfile.unauthorized_detail`, like a missing token. An imported app sets them to
+    the original's answers (its current-user dependency's raise sites), so every
+    endpoint -- one added later included -- answers like the original."""
 
     native: str
     lookup: str | None = None
     unique: str = "declared"  # "declared": a key of the users table; "runtime": checked
+    invalid: tuple[int, str] | None = None
+    unknown: tuple[int, str] | None = None
 
     def __post_init__(self) -> None:
         if self.unique not in TOKEN_UNIQUE:
             raise ValueError(f"NativeToken.unique must be one of {TOKEN_UNIQUE}")
+        for name in ("invalid", "unknown"):
+            answer = getattr(self, name)
+            if answer is None:
+                continue
+            ok = (
+                isinstance(answer, tuple)
+                and len(answer) == 2
+                and type(answer[0]) is int
+                and answer[0] in TOKEN_ANSWER_STATUSES
+                and isinstance(answer[1], str)
+                and bool(answer[1])
+            )
+            if not ok:
+                raise ValueError(
+                    f"NativeToken.{name} must be (status, detail): a status in "
+                    f"{TOKEN_ANSWER_STATUSES} and a non-empty text, or None"
+                )
 
 
 AuthScheme = TokenColumn | NativeToken

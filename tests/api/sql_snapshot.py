@@ -41,7 +41,9 @@ def _tabular(compile_select: Any, dialect: Any = None) -> dict[str, Any]:
     for name in sorted(CASES):
         body = LOAD + CASES[name] + '\nwrite(x, "out.csv")\n'
         check = check_source(program(body), PROFILE)
-        if check.program is None:  # e.g. the nested-call "constants" spelling
+        # the snapshot predates normalisation (N1): the nested-call "constants" spelling,
+        # refused then, is normalised now and stays out of this frozen record
+        if check.program is None or check.normalisations:
             continue
         plan = lower(check.program)
         written = next(n for n in plan.nodes if n.op == "write")

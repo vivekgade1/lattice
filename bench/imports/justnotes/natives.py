@@ -33,156 +33,145 @@ ISLANDS: dict[str, dict[str, Any]] = {'add_keyword_to_note': {'function': 'bench
                          'gap': 'budget',
                          'method': 'POST',
                          'path': '/notes/{note_id}/keywords/{keyword_id}',
-                         'reason': "budget: the repo's cost cap ($2.70) is "
-                                   'reached'},
+                         'reason': "budget: the route's share of the repo "
+                                   'budget ($0.18) is reached'},
  'add_tag_to_note': {'function': 'bench.import_repos.justnotes.app.api.tags:add_tag_to_note',
                      'gap': 'budget',
                      'method': 'POST',
                      'path': '/notes/{note_id}/tags/{tag_id}',
-                     'reason': "budget: the repo's cost cap ($2.70) is "
-                               'reached'},
+                     'reason': "budget: the route's share of the repo budget "
+                               '($0.20) is reached'},
  'create_keyword': {'function': 'bench.import_repos.justnotes.app.api.tags:create_keyword',
                     'gap': 'budget',
                     'method': 'POST',
                     'path': '/keywords',
-                    'reason': "budget: the repo's cost cap ($2.70) is reached"},
+                    'reason': "budget: the route's share of the repo budget "
+                              '($0.22) is reached'},
  'create_notes': {'function': 'bench.import_repos.justnotes.app.api.notes:create_notes',
                   'gap': 'budget',
                   'method': 'POST',
                   'path': '/notes/create',
-                  'reason': "budget: the repo's cost cap ($2.70) is reached"},
+                  'reason': "budget: the route's share of the repo budget "
+                            '($0.22) is reached'},
  'create_tag': {'function': 'bench.import_repos.justnotes.app.api.tags:create_tag',
                 'gap': 'budget',
                 'method': 'POST',
                 'path': '/tags',
-                'reason': "budget: the repo's cost cap ($2.70) is reached"},
- 'delete_keyword': {'function': 'bench.import_repos.justnotes.app.api.tags:delete_keyword',
-                    'gap': 'budget',
-                    'method': 'DELETE',
-                    'path': '/keywords/{keyword_id}',
-                    'reason': "budget: the repo's cost cap ($2.70) is reached"},
- 'delete_note': {'function': 'bench.import_repos.justnotes.app.api.notes:delete_note',
-                 'gap': 'budget',
-                 'method': 'DELETE',
-                 'path': '/notes/{id}',
-                 'reason': "budget: the repo's cost cap ($2.70) is reached"},
- 'delete_tag': {'function': 'bench.import_repos.justnotes.app.api.tags:delete_tag',
-                'gap': 'budget',
-                'method': 'DELETE',
-                'path': '/tags/{tag_id}',
-                'reason': "budget: the repo's cost cap ($2.70) is reached"},
+                'reason': "budget: the route's share of the repo budget "
+                          '($0.22) is reached'},
  'get_note': {'function': 'bench.import_repos.justnotes.app.api.notes:get_note',
               'gap': 'budget',
               'method': 'GET',
               'path': '/notes/{id}',
-              'reason': "budget: the repo's cost cap ($2.70) is reached"},
+              'reason': "budget: the route's share of the repo budget ($0.22) "
+                        'is reached'},
  'get_note_keywords': {'function': 'bench.import_repos.justnotes.app.api.tags:get_note_keywords',
                        'gap': 'budget',
                        'method': 'GET',
                        'path': '/notes/{note_id}/keywords',
-                       'reason': "budget: the repo's cost cap ($2.70) is "
-                                 'reached'},
+                       'reason': "budget: the route's share of the repo budget "
+                                 '($0.12) is reached'},
  'get_note_tags': {'function': 'bench.import_repos.justnotes.app.api.tags:get_note_tags',
                    'gap': 'budget',
                    'method': 'GET',
                    'path': '/notes/{note_id}/tags',
-                   'reason': "budget: the repo's cost cap ($2.70) is reached"},
+                   'reason': "budget: the route's share of the repo budget "
+                             '($0.14) is reached'},
  'get_notes': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes',
                'gap': 'budget',
                'method': 'GET',
                'path': '/notes',
-               'reason': "budget: the repo's cost cap ($2.70) is reached"},
+               'reason': "budget: the route's share of the repo budget ($0.22) "
+                         'is reached'},
  'get_notes_auto_tag': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_auto_tag',
                         'gap': 'budget',
                         'method': 'GET',
                         'path': '/notes/{id}/auto-tag',
-                        'reason': "budget: the repo's cost cap ($2.70) is "
-                                  'reached'},
- 'get_notes_extend': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_extend',
-                      'gap': 'budget',
-                      'method': 'GET',
-                      'path': '/notes/{id}/extend',
-                      'reason': "budget: the repo's cost cap ($2.70) is "
-                                'reached'},
+                        'reason': "budget: the route's share of the repo "
+                                  'budget ($0.10) is reached'},
  'get_notes_keywords': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_keywords',
                         'gap': 'budget',
                         'method': 'GET',
                         'path': '/notes/{id}/keywords',
-                        'reason': "budget: the repo's cost cap ($2.70) is "
-                                  'reached'},
+                        'reason': "budget: the route's share of the repo "
+                                  'budget ($0.10) is reached'},
  'get_notes_related': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_related',
                        'gap': 'budget',
                        'method': 'GET',
                        'path': '/notes/{id}/related',
-                       'reason': "budget: the repo's cost cap ($2.70) is "
+                       'reason': "budget: the repo's cost cap ($6.50) is "
                                  'reached'},
  'get_notes_sentiment': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_sentiment',
                          'gap': 'budget',
                          'method': 'GET',
                          'path': '/notes/{id}/sentiment',
-                         'reason': "budget: the repo's cost cap ($2.70) is "
+                         'reason': "budget: the repo's cost cap ($6.50) is "
                                    'reached'},
  'get_notes_summarize': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_summarize',
                          'gap': 'budget',
                          'method': 'GET',
                          'path': '/notes/{id}/summarize',
-                         'reason': "budget: the repo's cost cap ($2.70) is "
-                                   'reached'},
+                         'reason': "budget: the route's share of the repo "
+                                   'budget ($0.18) is reached'},
  'get_notes_translate': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_translate',
                          'gap': 'budget',
                          'method': 'GET',
                          'path': '/notes/{id}/translate/{target_language}',
-                         'reason': "budget: the repo's cost cap ($2.70) is "
+                         'reason': "budget: the repo's cost cap ($6.50) is "
                                    'reached'},
  'get_public_notes': {'function': 'bench.import_repos.justnotes.app.api.notes:get_public_notes',
                       'gap': 'budget',
                       'method': 'GET',
                       'path': '/notes/public',
-                      'reason': "budget: the repo's cost cap ($2.70) is "
-                                'reached'},
+                      'reason': "budget: the route's share of the repo budget "
+                                '($0.23) is reached'},
  'get_user_keywords': {'function': 'bench.import_repos.justnotes.app.api.tags:get_user_keywords',
                        'gap': 'budget',
                        'method': 'GET',
                        'path': '/keywords',
-                       'reason': "budget: the repo's cost cap ($2.70) is "
-                                 'reached'},
+                       'reason': "budget: the route's share of the repo budget "
+                                 '($0.22) is reached'},
  'get_user_tags': {'function': 'bench.import_repos.justnotes.app.api.tags:get_user_tags',
                    'gap': 'budget',
                    'method': 'GET',
                    'path': '/tags',
-                   'reason': "budget: the repo's cost cap ($2.70) is reached"},
+                   'reason': "budget: the route's share of the repo budget "
+                             '($0.22) is reached'},
  'list_users': {'function': 'bench.import_repos.justnotes.app.api.users:list_users',
                 'gap': 'budget',
                 'method': 'GET',
                 'path': '/user/list',
-                'reason': "budget: the repo's cost cap ($2.70) is reached"},
+                'reason': "budget: the route's share of the repo budget "
+                          '($0.22) is reached'},
  'login': {'function': 'bench.import_repos.justnotes.app.api.auth:login',
-           'gap': 'missing construct',
+           'gap': 'budget',
            'method': 'POST',
            'path': '/auth/login',
-           'reason': 'cut off'},
+           'reason': "budget: the route's share of the repo budget ($0.22) is "
+                     'reached'},
  'register': {'function': 'bench.import_repos.justnotes.app.api.auth:register',
-              'gap': 'missing construct',
+              'gap': 'budget',
               'method': 'POST',
               'path': '/auth/register',
-              'reason': 'cut off'},
+              'reason': "budget: the route's share of the repo budget ($0.23) "
+                        'is reached'},
  'remove_keyword_from_note': {'function': 'bench.import_repos.justnotes.app.api.tags:remove_keyword_from_note',
                               'gap': 'budget',
                               'method': 'DELETE',
                               'path': '/notes/{note_id}/keywords/{keyword_id}',
-                              'reason': "budget: the repo's cost cap ($2.70) "
-                                        'is reached'},
+                              'reason': "budget: the route's share of the repo "
+                                        'budget ($0.19) is reached'},
  'remove_tag_from_note': {'function': 'bench.import_repos.justnotes.app.api.tags:remove_tag_from_note',
                           'gap': 'budget',
                           'method': 'DELETE',
                           'path': '/notes/{note_id}/tags/{tag_id}',
-                          'reason': "budget: the repo's cost cap ($2.70) is "
-                                    'reached'},
+                          'reason': "budget: the route's share of the repo "
+                                    'budget ($0.20) is reached'},
  'update_note': {'function': 'bench.import_repos.justnotes.app.api.notes:update_note',
-                 'gap': 'budget',
+                 'gap': 'unsupported framework feature: dynamic dispatch',
                  'method': 'PUT',
                  'path': '/notes/{id}',
-                 'reason': "budget: the repo's cost cap ($2.70) is reached"}}
+                 'reason': 'cut off'}}
 
 NEEDS_LLM: dict[str, dict[str, Any]] = {}
 
@@ -210,10 +199,6 @@ def island_get_public_notes(*args: Any, **kwargs: Any) -> Any:
 def island_get_notes_summarize(*args: Any, **kwargs: Any) -> Any:
     'Island GET /notes/{id}/summarize: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.notes:get_notes_summarize')(*args, **kwargs)
-
-def island_get_notes_extend(*args: Any, **kwargs: Any) -> Any:
-    'Island GET /notes/{id}/extend: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.notes:get_notes_extend')(*args, **kwargs)
 
 def island_get_notes_translate(*args: Any, **kwargs: Any) -> Any:
     'Island GET /notes/{id}/translate/{target_language}: the original route, unchanged.'
@@ -243,10 +228,6 @@ def island_update_note(*args: Any, **kwargs: Any) -> Any:
     'Island PUT /notes/{id}: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.notes:update_note')(*args, **kwargs)
 
-def island_delete_note(*args: Any, **kwargs: Any) -> Any:
-    'Island DELETE /notes/{id}: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.notes:delete_note')(*args, **kwargs)
-
 def island_get_user_tags(*args: Any, **kwargs: Any) -> Any:
     'Island GET /tags: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.tags:get_user_tags')(*args, **kwargs)
@@ -254,10 +235,6 @@ def island_get_user_tags(*args: Any, **kwargs: Any) -> Any:
 def island_create_tag(*args: Any, **kwargs: Any) -> Any:
     'Island POST /tags: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.tags:create_tag')(*args, **kwargs)
-
-def island_delete_tag(*args: Any, **kwargs: Any) -> Any:
-    'Island DELETE /tags/{tag_id}: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.tags:delete_tag')(*args, **kwargs)
 
 def island_add_tag_to_note(*args: Any, **kwargs: Any) -> Any:
     'Island POST /notes/{note_id}/tags/{tag_id}: the original route, unchanged.'
@@ -278,10 +255,6 @@ def island_get_user_keywords(*args: Any, **kwargs: Any) -> Any:
 def island_create_keyword(*args: Any, **kwargs: Any) -> Any:
     'Island POST /keywords: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.tags:create_keyword')(*args, **kwargs)
-
-def island_delete_keyword(*args: Any, **kwargs: Any) -> Any:
-    'Island DELETE /keywords/{keyword_id}: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.tags:delete_keyword')(*args, **kwargs)
 
 def island_add_keyword_to_note(*args: Any, **kwargs: Any) -> Any:
     'Island POST /notes/{note_id}/keywords/{keyword_id}: the original route, unchanged.'

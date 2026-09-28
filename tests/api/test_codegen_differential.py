@@ -58,6 +58,7 @@ from tests.api import (
     hardening,
     loops,
     mine_owner,
+    n1b,
     partb,
     realapps,
     round2,
@@ -1058,6 +1059,20 @@ SOLO_RUNTIME_CASES: tuple[HttpCase, ...] = (
     _socase("after 500 nothing written", "GET", "/tasks", "bob"),
 )
 
+# NativeToken(invalid=, unknown=): the original's answers to a token naming no caller,
+# on every endpoint (spec 2026-09-27 surface §4.1)
+SOLO_ANSWERS_CASES: tuple[HttpCase, ...] = tuple(
+    _socase(f"{path} {who}", method, path, who, status=status, **kw)
+    for method, path, kw in (
+        ("GET", "/me", {}),
+        ("GET", "/tasks", {}),
+        ("GET", "/tasks/1", {}),
+        ("POST", "/tasks", {"json": {"title": "x"}, "after_sql": _STASKS}),
+    )
+    for who, status in (("forged", 401), ("ghost", 403), (None, 401), ("alice", 200))
+    if not (who == "alice" and method == "POST")
+)
+
 
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
@@ -1103,9 +1118,44 @@ PROGRAMS["solo_runtime"] = (
         SOLO_RUNTIME_CASES + _probes(SOLO_RUNTIME_CASES),
     ),
 )
+PROGRAMS["solo_answers"] = (
+    _SO.PROGRAM,
+    ApiTask(
+        "solo_answers",
+        "control",
+        "NativeToken(invalid=, unknown=)",
+        SOLO_ANSWERS_CASES + _probes(SOLO_ANSWERS_CASES),
+    ),
+)
 PROGRAMS["t2"] = (
     _T2.PROGRAM,
     ApiTask("t2", "control", "procedures in endpoints", T2_CASES + _probes(T2_CASES)),
+)
+
+# ---- N1b (tests/api/n1b.py): named column expressions, row values in insert/update/derive,
+# when(..., otherwise=None) -- on the gap-features profile and database
+_N1B = n1b
+N1B_CASES: tuple[HttpCase, ...] = (
+    _gcase("dup", "POST", f"/items/{_G.uid(101)}/duplicate", "alice", status=201,
+           after_sql=_GITEMS),  # fmt: skip
+    _gcase("dup null desc", "POST", f"/items/{_G.uid(102)}/duplicate", "alice", status=201),
+    _gcase("dup other", "POST", f"/items/{_G.uid(103)}/duplicate", "alice", status=403),
+    _gcase("dup missing", "POST", f"/items/{_G.uid(999)}/duplicate", "alice", status=404),
+    _gcase("title from", "PUT", f"/items/{_G.uid(101)}/title-from/{_G.uid(102)}", "alice",
+           after_sql=_GITEMS),  # fmt: skip
+    _gcase("title from desc", "PUT", f"/items/{_G.uid(102)}/title-from/{_G.uid(104)}", "alice"),
+    _gcase("title from other", "PUT", f"/items/{_G.uid(101)}/title-from/{_G.uid(103)}", "alice",
+           status=404),  # fmt: skip
+    _gcase("around", "GET", f"/items/{_G.uid(101)}/around", "alice"),
+    _gcase("around admin", "GET", f"/items/{_G.uid(103)}/around", "admin"),
+    _gcase("around missing", "GET", f"/items/{_G.uid(103)}/around", "alice", status=404),
+    _gcase("stamp clear", "POST", f"/items/{_G.uid(101)}/stamp", "alice", json={"clear": True},
+           after_sql=_GITEMS),  # fmt: skip
+    _gcase("stamp now", "POST", f"/items/{_G.uid(102)}/stamp", "alice", json={"clear": False}),
+)
+PROGRAMS["n1b"] = (
+    _N1B.PROGRAM,
+    ApiTask("n1b", "control", "N1b spellings", N1B_CASES + _probes(N1B_CASES)),
 )
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
@@ -1122,6 +1172,8 @@ EXTRA_IDS = [
     "t2",
     "solo",
     "solo_runtime",
+    "solo_answers",
+    "n1b",
 ]
 
 
@@ -1151,6 +1203,10 @@ SETUPS = {
     "solo_runtime": Setup(
         _SO.PROFILE_RUNTIME, _SO.build_db_runtime, _SO.NATIVES, _SO.NATIVES_FILE, _SO.SETTINGS
     ),
+    "solo_answers": Setup(
+        _SO.PROFILE_ANSWERS, _SO.build_db, _SO.NATIVES, _SO.NATIVES_FILE, _SO.SETTINGS
+    ),
+    "n1b": Setup(n1b.PROFILE, n1b.build_db, n1b.NATIVES, n1b.NATIVES_FILE),
 }
 
 

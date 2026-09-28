@@ -57,7 +57,7 @@ from lattice.importer.adapt import SuiteInputs, adapt
 from lattice.importer.extract import RepoModel, Route, _Index, extract, route_function
 from lattice.importer.lifters import RouteLift, lift_route
 from lattice.importer.lifters.base import RouteSource
-from lattice.importer.policy import Policy, auth_policies, deviations_for
+from lattice.importer.policy import Policy, auth_policies, deviations_for, token_answers
 from lattice.importer.profile_gen import ProfileResult, Unclear, generate_profile
 from lattice.importer.suite import GeneratedSuite, generate_suite
 from lattice.importer.verify import Deviation, Rule, ValidationEnvelope, VerifyResult, verify
@@ -232,7 +232,12 @@ def lift_repo(
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
     model = extract(root, app_package)
-    generated = generate_profile(model)
+    index = _Index(root, app_package)
+    try:
+        answers = token_answers(model, index)
+    except Exception:  # noqa: BLE001 -- an unfamiliar auth shape: the default answers
+        answers = None
+    generated = generate_profile(model, answers)
     module = load_profile(generated, f"lattice_import_profile_{uuid.uuid4().hex}")
     profile: Profile = module.profile()
     api = profile.api
@@ -240,7 +245,6 @@ def lift_repo(
         raise ValueError("the generated profile has no API settings")
     natives: dict[str, Callable[..., Any]] = dict(module.NATIVES)
     settings = app_settings(module, app_factory)
-    index = _Index(root, app_package)
     inputs = adapt(model, api, index, natives, settings)
     try:
         token_policies = auth_policies(model, index, api)

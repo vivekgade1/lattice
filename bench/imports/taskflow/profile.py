@@ -138,7 +138,7 @@ def profile() -> Profile:
             'decode_token': NativeSig((Scalar.STR,), Scalar.INT, nullable=True, settings=('secret_key',)),
         },
         settings={'secret_key': Scalar.STR},
-        auth=NativeToken('decode_token'),
+        auth=NativeToken('decode_token', invalid=(401, 'Could not validate credentials'), unknown=(401, 'Could not validate credentials')),
         roles_from=NoRoles('Customer'),
         backend='sqlite',
         uuid_storage='hex32',

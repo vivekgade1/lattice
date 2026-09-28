@@ -248,11 +248,20 @@ def test_operators_errors(profile, src):
     assert ty(profile, src) == (UNKNOWN, ["L402"])
 
 
-def test_str_plus_str_hint(profile):
+def test_str_plus_str_is_a_concatenation(profile):
+    # N1: typed Str and recorded for the rewrite to fn.concat after P4
     ctx, t = typer(profile)
-    t.type_of(ast.parse('col("region") + col("status")', mode="eval").body)
+    node = ast.parse('col("region") + col("status")', mode="eval").body
+    assert t.type_of(node) == ColT(Scalar.STR)
+    assert not ctx.diagnostics
+    assert ctx.concats == {id(node): node}
+
+
+def test_str_plus_int_is_l402(profile):
+    ctx, t = typer(profile)
+    t.type_of(ast.parse('col("region") + col("qty")', mode="eval").body)
     (d,) = ctx.diagnostics
-    assert d.code == "L402" and "fn.concat" in d.hint and "Str" in d.message
+    assert d.code == "L402" and "'+' cannot combine Str and Int" in d.message
 
 
 def test_float_equality_warns(profile):

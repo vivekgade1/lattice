@@ -28,12 +28,7 @@ HELPERS: dict[str, str] = {'create_access_token': 'bench.import_repos.taskflow.a
 
 CARVE_OUTS: dict[str, str] = {}
 
-ISLANDS: dict[str, dict[str, Any]] = {'delete_task': {'function': 'bench.import_repos.taskflow.app.routes:delete_task',
-                 'gap': 'missing construct',
-                 'method': 'DELETE',
-                 'path': '/api/v1/tasks/{task_id}',
-                 'reason': 'cut off'},
- 'health_check': {'function': 'bench.import_repos.taskflow.app.main:health_check',
+ISLANDS: dict[str, dict[str, Any]] = {'health_check': {'function': 'bench.import_repos.taskflow.app.main:health_check',
                   'gap': 'unsupported framework feature: a route defined '
                          'inside an app factory',
                   'method': 'GET',
@@ -42,10 +37,11 @@ ISLANDS: dict[str, dict[str, Any]] = {'delete_task': {'function': 'bench.import_
                             'the original cannot be referenced for branch '
                             'coverage'},
  'login': {'function': 'bench.import_repos.taskflow.app.auth_routes:login',
-           'gap': 'missing construct',
+           'gap': 'budget',
            'method': 'POST',
            'path': '/api/v1/auth/token',
-           'reason': 'cut off'},
+           'reason': "budget: the route's share of the repo budget ($0.29) is "
+                     'reached'},
  'service_info': {'function': 'bench.import_repos.taskflow.app.main:service_info',
                   'gap': 'unsupported framework feature: a route defined '
                          'inside an app factory',
@@ -78,7 +74,3 @@ def island_health_check(*args: Any, **kwargs: Any) -> Any:
 def island_update_task(*args: Any, **kwargs: Any) -> Any:
     'Island PATCH /api/v1/tasks/{task_id}: the original route, unchanged.'
     return original('bench.import_repos.taskflow.app.routes:update_task')(*args, **kwargs)
-
-def island_delete_task(*args: Any, **kwargs: Any) -> Any:
-    'Island DELETE /api/v1/tasks/{task_id}: the original route, unchanged.'
-    return original('bench.import_repos.taskflow.app.routes:delete_task')(*args, **kwargs)

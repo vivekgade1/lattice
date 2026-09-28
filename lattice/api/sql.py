@@ -826,7 +826,7 @@ class _Builder:
     def _fn(self, name: str, node: ast.Call) -> str:
         if name == "now" and not node.args and not node.keywords:
             return self.now_ref()
-        if len(node.args) != (2 if name == "datetime_diff" else 1):
+        if len(node.args) != (2 if name in ("datetime_diff", "concat") else 1):
             raise LatticeInternalError(f"fn.{name} has the wrong number of arguments")
         x = self.expr(node.args[0])
         keywords = list(node.keywords)
@@ -841,6 +841,8 @@ class _Builder:
         kw = {str(k.arg): self.expr(k.value) for k in keywords}
         if name == "datetime_diff":
             kw["start"] = self.expr(node.args[1])
+        if name == "concat":  # the second string is passed as "other"
+            kw["other"] = self.expr(node.args[1])
         out = self.d.function(name, x, kw)
         if out is None:
             raise LatticeInternalError(f"fn.{name} has no SQL translation")

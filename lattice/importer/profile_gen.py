@@ -21,6 +21,7 @@ rest is an ``Unclear`` and is left unset, so the checker (or a human) has to sup
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from lattice.importer.extract import (
     LANGUAGE_GAP,
@@ -30,6 +31,9 @@ from lattice.importer.extract import (
     RepoModel,
     TableModel,
 )
+
+if TYPE_CHECKING:
+    from lattice.importer.policy import TokenAnswers
 
 SCALAR_ATTR = {
     "Str": "STR",
@@ -419,7 +423,11 @@ def _decoder(n: NativeCandidate) -> list[str]:
     ]
 
 
-def generate_profile(model: RepoModel) -> ProfileResult:
+def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> ProfileResult:
+    """The profile module's source for ``model``. ``answers``: the original's answers to
+    a token naming no caller (:func:`lattice.importer.policy.token_answers`); the token
+    auth answers so where they differ from its default 401 (``NativeToken(invalid=,
+    unknown=)``), on every route."""
     g = _Generator(model)
     users = g.users_table()
     responses, envelopes = g.responses()
@@ -615,10 +623,19 @@ def generate_profile(model: RepoModel) -> ProfileResult:
             f"{name!r}: Scalar.{SCALAR_ATTR[t]}" for name, t, _ in decoder.settings
         )
         api.append(f"settings={{{declared}}}")
+    unauthorized = (
+        FASTAPI_UNAUTHORIZED if not model.exception_handlers and token_dep is not None else None
+    )
     if decoder is not None:
         lookup = f", lookup={decoder.lookup!r}" if decoder.lookup else ""
         if decoder.lookup and decoder.lookup_unique != "declared":
             lookup += f", unique={decoder.lookup_unique!r}"
+        for name, answer in (
+            ("invalid", answers.invalid if answers else None),
+            ("unknown", answers.unknown if answers else None),
+        ):
+            if answer is not None and answer != (401, unauthorized):
+                lookup += f", {name}={answer!r}"
         api.append(f"auth=NativeToken({decoder.name!r}{lookup})")
     if admin is not None and admin.admin_column:
         api.append(f"roles_from=AdminFlag({admin.admin_column!r}, {CUSTOMER!r})")
@@ -637,8 +654,8 @@ def generate_profile(model: RepoModel) -> ProfileResult:
             api.append(f"inactive_detail={active.active_detail!r}")
     if not model.exception_handlers:
         api.append("error_body='fastapi'")
-        if token_dep is not None:
-            api.append(f"unauthorized_detail={FASTAPI_UNAUTHORIZED!r}")
+        if unauthorized is not None:
+            api.append(f"unauthorized_detail={unauthorized!r}")
         if admin is not None and admin.admin_detail:
             api.append(f"forbidden_detail={admin.admin_detail!r}")
     if sqlite and not model.custom_serialization:

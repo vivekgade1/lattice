@@ -42,7 +42,18 @@ from lattice.check.context import CheckContext
 from lattice.check.t2_calls import scalar_call
 from lattice.diagnostics import Severity, Span, span_of
 from lattice.profile import NativeSig
-from lattice.typesys import NUMERIC, ORDERED, UNKNOWN, ColT, LitT, Scalar, Schema, UnknownT, unify
+from lattice.typesys import (
+    NUMERIC,
+    ORDERED,
+    UNKNOWN,
+    ColT,
+    LitT,
+    Scalar,
+    Schema,
+    TableT,
+    UnknownT,
+    unify,
+)
 
 ExprT = ColT | LitT | UnknownT
 
@@ -102,6 +113,10 @@ def _scalars(ts: frozenset[Scalar]) -> str:
 def _wrap(scalar: Scalar, operands: list[ColT | LitT]) -> ColT | LitT:
     """LitT if every operand is constant, else ColT."""
     return LitT(scalar) if all(isinstance(o, LitT) for o in operands) else ColT(scalar)
+
+
+def _is_none(node: ast.expr) -> bool:
+    return isinstance(node, ast.Constant) and node.value is None
 
 
 def _known(ts: list[ExprT]) -> list[ColT | LitT] | None:
@@ -233,6 +248,10 @@ class ExprTyper:
                 name == USER_PARAM and self.api
             ):
                 return self._caller_attr(node, value, attr)
+            case ast.Attribute(value=ast.Name(id=name), attr=attr) if (
+                id(node) in self.ctx.row_reads
+            ):
+                return self._row_value(node, name, attr)
             case ast.Attribute(value=ast.Name(id=ns), attr=attr):
                 return self._err(
                     "L411", node, f"'{ns}.{attr}' is not a column expression", "call it"
@@ -369,14 +388,57 @@ class ExprTyper:
         self.ctx.error("L404", node, f"{what} has the wrong arguments", f"write {usage}")
         return False
 
+    def _row_value(self, node: ast.Attribute, name: str, attr: str) -> ExprT:
+        """r.x in a write/derive value: column x of the one row of table value r, the
+        same on every row (P6 checks that r has exactly one row, passed an ownership
+        check and that x is not private outside Admin endpoints)."""
+        t = self.tables.get(name) if isinstance(self.tables, Mapping) else None
+        if isinstance(t, UnknownT) or span_of(node.value) in self.reported:
+            return UNKNOWN
+        if not isinstance(t, TableT):
+            return self._err(
+                "L106",
+                node,
+                f"attribute access '.{attr}' is not allowed: '{name}' is not a table",
+                f"'{name}.{attr}' reads a column of a one-row table, e.g. "
+                f'row = one(t, else_=NotFound("...")), then row.{attr}',
+            )
+        scalar = t.schema.get(attr)
+        if scalar is None:
+            names = t.schema.names()
+            return self._err(
+                "L401",
+                node,
+                f"unknown column '{attr}' of '{name}'; it has {{{', '.join(names)}}}",
+                did_you_mean(attr, names),
+            )
+        return LitT(scalar)
+
     def _when(self, node: ast.Call) -> ExprT:
         usage = "when(cond, then=..., otherwise=...)"
         if not self._arity(node, "when()", 1, frozenset({"then", "otherwise"}), usage):
             return UNKNOWN
         kws = {kw.arg: kw.value for kw in node.keywords}
         cond = self.type_of(node.args[0])
-        then = self.type_of(kws["then"])
-        other = self.type_of(kws["otherwise"])
+        # a None branch is a typed null: the other branch's type, and the result is
+        # nullable (lattice.check.nullability)
+        nulls = [kws[b] for b in ("then", "otherwise") if _is_none(kws[b])]
+        if len(nulls) == 2:
+            return self._err(
+                "L410",
+                node,
+                "when() has None in both branches; one of them needs a value",
+                "write a value in then= or otherwise=, or write None directly",
+            )
+        if nulls:
+            (value,) = [kws[b] for b in ("then", "otherwise") if not _is_none(kws[b])]
+            vt = self.type_of(value)
+            if not isinstance(vt, UnknownT):
+                self.ctx.set_type(nulls[0], LitT(vt.scalar))
+            then = other = vt
+        else:
+            then = self.type_of(kws["then"])
+            other = self.type_of(kws["otherwise"])
         bad_cond = False
         if not isinstance(cond, UnknownT) and cond.scalar is not Scalar.BOOL:
             self.ctx.error(
@@ -734,10 +796,13 @@ class ExprTyper:
                 if a in NUMERIC and b in NUMERIC:
                     both_int = a is Scalar.INT and b is Scalar.INT
                     return _wrap(Scalar.INT if both_int else Scalar.FLOAT, known)
-                hint = None
                 if sym == "+" and a is Scalar.STR and b is Scalar.STR:
-                    hint = "join strings with fn.concat(a, b)"
-                elif sym == "-" and a is Scalar.DATE and b is Scalar.DATE:
+                    # N1: a concatenation, replaced by fn.concat(a, b) after P4
+                    # (lattice.check.normalise.resolve_concats)
+                    self.ctx.concats[id(node)] = node
+                    return _wrap(Scalar.STR, known)
+                hint = None
+                if sym == "-" and a is Scalar.DATE and b is Scalar.DATE:
                     hint = 'use fn.date_diff(a, b, unit="days")'
                 return self._mismatch(node, sym, a, b, hint)
             case ast.Div():

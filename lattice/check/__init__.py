@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 
 from lattice.check import (
     list_consts,
+    normalise,
     p1_nodes,
     p2_names,
     p3_canon,
@@ -23,7 +24,7 @@ from lattice.check.context import CheckContext
 from lattice.check.t2 import T2Program
 from lattice.check.tiers import compute_tiers
 from lattice.check.tiers import tier_summary as _tier_summary
-from lattice.diagnostics import Diagnostic, has_errors, sort_key
+from lattice.diagnostics import Diagnostic, Span, has_errors, sort_key
 from lattice.parse import parse, too_deep
 from lattice.profile import Profile
 from lattice.typesys import StepT, Type
@@ -54,6 +55,10 @@ class CheckedProgram:
 class CheckResult:
     program: CheckedProgram | None
     diagnostics: tuple[Diagnostic, ...]
+    # N1: every ordinary-Python spelling rewritten to canonical Lattice, as (kind, span of
+    # the user's text); kinds are lattice.check.normalise's constants. Recorded even when
+    # the program is refused (the benchmark counts how often the surface is used).
+    normalisations: tuple[tuple[str, Span], ...] = ()
 
     @property
     def ok(self) -> bool:
@@ -96,31 +101,52 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
     # T2: procedures, records (and their imports) are checked by their own checker;
     # the T0 passes see only the T0 statements.
     t0_body, t2_stmts = t2.split(module, api=profile.api is not None)
+    # N1: ordinary Python spellings -> canonical Lattice, before P1 (never in T2 code)
+    norm = normalise.normalise(t0_body, api=profile.api is not None)
+    ctx.diagnostics.extend(norm.warnings)
+    records = list(norm.records)
+    t0_body = norm.body
+    ctx.row_reads = norm.row_reads
     t2_program = t2.run(t2_stmts, t0_body, ctx) if t2_stmts else None
     ctx.t2 = t2_program
-    if t2_stmts:
+    if t2_stmts or norm.records or norm.row_reads:
         module = ast.Module(body=t0_body, type_ignores=module.type_ignores)
+
+    def result(program: CheckedProgram | None) -> CheckResult:
+        diags = [
+            normalise.humanise(normalise.annotate(d, norm.macro_uses), norm.fresh)
+            for d in ctx.diagnostics
+        ]
+        if norm.macro_uses:  # a column expression used twice inside another: report once
+            seen: set[Diagnostic] = set()
+            diags = [
+                d
+                for d in diags
+                if d.span not in norm.macro_uses or not (d in seen or seen.add(d))
+            ]
+        return CheckResult(program, _sorted(diags), tuple(records))
 
     before = ctx.error_count()
     p1_nodes.run(module, ctx)
     if ctx.error_count() > before:
         # Later passes assume P1's shape guarantees; stop to avoid cascades.
-        return CheckResult(None, _sorted(ctx.diagnostics))
+        return result(None)
 
     p2_names.run(module, ctx)
     before = ctx.error_count()
     list_consts.run(module, ctx)  # B6: select(cols=NAME) -> the list; NAME dropped
     if ctx.error_count() > before:
-        return CheckResult(None, _sorted(ctx.diagnostics))
+        return result(None)
     p3_canon.run(module, ctx)
     steps = p4_types.run(module, ctx)
+    # N1: the `+` P4 typed as Str concatenation becomes fn.concat(a, b)
+    records += normalise.resolve_concats(module, ctx.concats, ctx.types)
     p5_effects.run(module, ctx)
     endpoints = p6_api.run(module, ctx)
     p7_backend.run(module, ctx)
 
-    diags = _sorted(ctx.diagnostics)
-    if has_errors(diags):
-        return CheckResult(None, diags)
+    if has_errors(ctx.diagnostics):
+        return result(None)
     program = CheckedProgram(
         module,
         parsed.source,
@@ -131,4 +157,4 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
         t2_program,
         compute_tiers(endpoints, t2_program),
     )
-    return CheckResult(program, diags)
+    return result(program)

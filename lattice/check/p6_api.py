@@ -246,6 +246,7 @@ class _Endpoint:
         self._owner_is_checks()
         self._private_reads()
         self._optional_params()
+        self._row_reads()
         self._writes()
         self._errors()
         self._pages()
@@ -708,6 +709,44 @@ class _Endpoint:
                 inputs = frozenset().union(*(t.private for t in args))
                 return step_mentions(self.p.steps, op) & inputs
         return frozenset()
+
+    # ---- row values: r.x in write/derive values (N1b) -----------------------------------
+
+    def _row_reads(self) -> None:
+        """`r.x` reads column x of the one row of r: r must have exactly one row (L404),
+        r's rows must have passed an ownership check like returned rows (L802), and x
+        must not be private outside Admin endpoints (L803)."""
+        for stmt in self.fn.body:
+            for node in ast.walk(stmt):
+                if not (
+                    isinstance(node, ast.Attribute)
+                    and id(node) in self.ctx.row_reads
+                    and isinstance(node.value, ast.Name)
+                ):
+                    continue
+                name, attr = node.value.id, node.attr
+                t = self._name_type(name)
+                if t is None or attr not in t.schema:
+                    continue  # P4 reported it
+                if not self._exactly_one(node.value, set()):
+                    self.ctx.error(
+                        "L404",
+                        node,
+                        f"'{name}.{attr}' reads the value of one row, but '{name}' is not "
+                        "known to have exactly one row",
+                        f'reduce it to one row first: row = one({name}, else_=NotFound("...")), '
+                        f"then read row.{attr}",
+                    )
+                    continue
+                self._ownership(node, t, name)
+                if attr in t.private and not self.admin:
+                    self.ctx.error(
+                        "L803",
+                        node,
+                        f"'{name}.{attr}' reads the private column {attr}; the response "
+                        "would reveal its value",
+                        "only Admin endpoints may read private columns; use the other columns",
+                    )
 
     # ---- L802 / L811 ------------------------------------------------------------------
 

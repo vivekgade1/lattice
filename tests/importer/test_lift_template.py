@@ -119,9 +119,29 @@ def _sub(token: str | None) -> str | None:
     return "sub:" + jwt.decode(token, options={"verify_signature": False})["sub"]
 
 
+# The hand-written template profile answers every token naming no caller with Lattice's
+# 401 and declares the template's answers as deviations; the import carries them in the
+# profile instead (NativeToken(invalid=, unknown=), spec 2026-09-27 surface §4.1), so
+# those cases are equal, not declared.
+TOKEN_DEVIATIONS = frozenset({"invalid-token-401", "unknown-user-token", "claimless-token"})
+TEMPLATE_TOKEN_ANSWERS = ((403, "Could not validate credentials"), (404, "User not found"))
+
+
+def test_the_profile_carries_the_templates_token_answers(imported, lifted_plans):
+    auth = imported.lattice_profile.api.auth
+    assert (auth.invalid, auth.unknown) == TEMPLATE_TOKEN_ANSWERS
+    for plan in lifted_plans.values():
+        if plan.auth != "Public":
+            assert (plan.token_invalid, plan.token_unknown) == TEMPLATE_TOKEN_ANSWERS
+
+
 def test_the_deviations_are_the_hand_written_proofs_case_by_case(imported):
     ours = {n: d for name in ROUTES for n, d in imported.result(name).deviations.items()}
-    theirs = hand.deviations_for(hand.generated().cases)
+    theirs = {
+        n: d
+        for n, d in hand.deviations_for(hand.generated().cases).items()
+        if d.id not in TOKEN_DEVIATIONS
+    }
     assert set(ours) == set(theirs)
     for name, d in theirs.items():
         assert (ours[name].id, ours[name].kind, ours[name].status, ours[name].body) == (
@@ -135,7 +155,9 @@ def test_the_deviations_are_the_hand_written_proofs_case_by_case(imported):
 def test_the_tally_is_the_hand_written_proofs(imported):
     tallies = [imported.result(n).tally() for n in ROUTES]
     total = tuple(sum(t[i] for t in tallies) for i in range(4))
-    assert total == (91, 18, 29, 0)  # hand: the same, with the Email finding now closed
+    # hand: (91, 18, 29, 0), with the Email finding now closed; its 16 token deviations
+    # are exact matches here
+    assert total == (107, 18, 13, 0)
     kinds = Counter(
         o.deviation
         for n in ROUTES
@@ -143,8 +165,6 @@ def test_the_tally_is_the_hand_written_proofs(imported):
         if o.kind == "deviation"
     )
     assert kinds == {
-        "invalid-token-401": 8,
-        "unknown-user-token": 8,
         "bounded-page-size": 3,
         "non-negative-page-window": 6,
         "null-into-required-column": 4,
@@ -202,8 +222,10 @@ def lifted_plans(imported):
 
 @pytest.mark.parametrize("name", ROUTES)
 def test_the_lifted_plan_equals_the_hand_written_plan(lifted_plans, name):
+    """Equal but for the token answers (the template's, carried by the profile)."""
     reference = {p.name: p for p in template_plans()}[name]
-    assert _shape(lifted_plans[name]) == _shape(reference)
+    lifted = dataclasses.replace(lifted_plans[name], token_invalid=None, token_unknown=None)
+    assert _shape(lifted) == _shape(reference)
 
 
 def test_the_plan_comparison_sees_a_difference(imported):
@@ -229,12 +251,14 @@ def test_the_template_differential_passes_on_the_lifted_programs(imported, lifte
         return build_app(plans, path, natives=imported.natives)
 
     template_utils.OUTBOX.clear()
-    result = proof._verify(make_app, factory)
+    declared = {k: d for k, d in proof.DEVIATIONS.items() if d.id not in TOKEN_DEVIATIONS}
+    result = proof._verify(make_app, factory, deviations=declared)
     tally = {
         "suite": result.tally([c.name for c in proof.TEMPLATE_SUITE])[:3],
         "extra": result.tally([c.name for c in proof.EXTRA_CASES])[:3],
     }
-    assert tally == proof.EXPECTED_TALLY
+    # the proof's tally with its token deviations (2 suite, 1 extra) now exact matches
+    assert tally == {"suite": (42, 9, 2), "extra": (9, 0, 0)}
     assert result.mismatches == {} and result.ok, result.render()
 
 

@@ -7,6 +7,7 @@ import ast
 from lattice.catalog import (
     API_AMBIENT,
     API_OP_SHAPES,
+    ELSE_KW,
     FOR_EACH,
     IMPORTABLE,
     ITERATE,
@@ -48,6 +49,7 @@ class _Canon:
             self.shapes.update(T2_T0_SHAPES)
             self.known = self.known | T2_T0_NAMES | self.procedures
         self.endpoints = frozenset(fn.name for fn in endpoints_of(module)) if api else frozenset()
+        self.fn: ast.FunctionDef | None = None  # the function whose body is being checked
 
     def _unit(self, node: ast.AST) -> str | None:
         """The op or step name if `node` is a unit call, else None."""
@@ -63,6 +65,7 @@ class _Canon:
                 case ast.Assign() | ast.Expr():
                     self._statement(stmt)
                 case ast.FunctionDef():
+                    self.fn = stmt
                     for inner in stmt.body:
                         match inner:
                             case ast.Assign() | ast.Expr():
@@ -159,7 +162,7 @@ class _Canon:
                 "L303",
                 call,
                 f"'{op}' requires keyword argument '{missing}'",
-                f"add {missing}=...",
+                self._one_hint(call) if (op, missing) == ("one", ELSE_KW) else f"add {missing}=...",
             )
         if not shape.var_kw:
             allowed = shape.required_kw | shape.optional_kw
@@ -173,6 +176,59 @@ class _Canon:
                         f"allowed keywords: {expected}",
                     )
         self._no_op(call, op)
+
+    def _one_hint(self, call: ast.Call) -> str:
+        """one(t) without else_=: no default. The 404's detail is part of the API and apps
+        word it their own way ("Item not found"), so a default would answer a wrong detail
+        silently; the hint spells the error out for t's table and says where to declare
+        it."""
+        entity = self._fetched(call.args[0] if call.args else None) or "Row"
+        hint = (
+            f'add else_=NotFound("{entity} not found") (the 404 when no row matches; '
+            "use the app's own wording)"
+        )
+        declared = self._declared_errors()
+        if declared is not None and "NotFound" not in declared[1]:
+            shown = " | ".join([declared[0], *declared[1], "NotFound"])
+            hint += f", and declare it: -> {shown}"
+        return hint
+
+    def _fetched(self, node: ast.expr | None) -> str | None:
+        """The database table a local's rows were fetched from, through row ops."""
+        if self.fn is None:
+            return None
+        values = {}
+        for stmt in self.fn.body:
+            if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1:
+                target = stmt.targets[0]
+                if isinstance(target, ast.Name):
+                    values.setdefault(target.id, stmt.value)
+        seen: set[str] = set()
+        while isinstance(node, ast.Name) and node.id not in seen:
+            seen.add(node.id)
+            value = values.get(node.id)
+            if not (isinstance(value, ast.Call) and isinstance(value.func, ast.Name)):
+                return None
+            if value.func.id == "fetch":
+                table = value.args[0] if value.args else None
+                return table.id if isinstance(table, ast.Name) else None
+            node = value.args[0] if value.args else None
+        return None
+
+    def _declared_errors(self) -> tuple[str, list[str]] | None:
+        """(success, errors) of the endpoint's `-> One | NotFound` annotation."""
+        if self.fn is None or self.fn.name not in self.endpoints:
+            return None
+        names: list[str] = []
+        node = self.fn.returns
+        while isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+            if not isinstance(node.right, ast.Name):
+                return None
+            names.insert(0, node.right.id)
+            node = node.left
+        if not isinstance(node, ast.Name):
+            return None
+        return node.id, names
 
     def _for_each_shape(self, call: ast.Call) -> None:
         """for_each(t, native.<name>, <one column expression per argument>): a table

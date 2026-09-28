@@ -14,10 +14,11 @@ like the original is a mismatch (``verify``: "declared but the import agrees").
   them is a 422 where the original passes it to SQL.
 * :class:`NotNull` -- an optional body field (``str | None``) writing a NOT NULL column:
   an explicit null is a 422 where the original writes it and fails (500).
-* :class:`TokenPolicy` -- Lattice's auth answers every token that names no caller (an
-  invalid token, or a valid one for a user that does not exist) with 401 and the
-  profile's text; the original's own answer (read from its current-user dependency by
-  :func:`auth_policies`) is kept in the policy.
+* :class:`TokenPolicy` -- a token that names no caller (an invalid token, a claimless
+  one, or a valid one for a user that does not exist) the import answers otherwise
+  than the original. The profile carries the original's answers
+  (``NativeToken(invalid=, unknown=)``, read by :func:`token_answers`), so this
+  remains only for what the profile cannot say.
 """
 
 from __future__ import annotations
@@ -59,6 +60,8 @@ class TokenPolicy:
     id: str
     reason: str
     original: tuple[int, str]
+    # what the imported app answers instead (default: the 401 with the profile's text)
+    lattice: tuple[int, str | None] | None = None
 
 
 Policy = PageBound | NotNull | TokenPolicy
@@ -89,7 +92,7 @@ def deviations_for(
     cases: Sequence[Case], policies: Sequence[Policy], api: ApiProfile
 ) -> dict[str, Deviation]:
     """The declared deviation of every case one of ``policies`` covers."""
-    from lattice.api.runtime import error_body
+    from lattice.api.runtime import STATUS_CODES, error_body
 
     pages = [p for p in policies if isinstance(p, PageBound)]
     nulls = [p.field for p in policies if isinstance(p, NotNull)]
@@ -103,12 +106,13 @@ def deviations_for(
         what = c.name.removeprefix(f"{c.route}.") if c.route else c.name
         if what in tokens:
             t = tokens[what]
+            status, detail = t.lattice or (401, api.unauthorized_detail)
             out[c.name] = Deviation(
                 t.id,
                 "policy",
                 t.reason,
-                401,
-                error_body(api.error_body, 401, "unauthorized", api.unauthorized_detail),
+                status,
+                error_body(api.error_body, status, STATUS_CODES[status], detail),
             )
             continue
         params = c.params or {}
@@ -149,26 +153,71 @@ def _b(name: str, v: int | None) -> str:
 # ---- auth ---------------------------------------------------------------------------------
 
 
-def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[TokenPolicy, ...]:
-    """The token policies for routes behind the current-user dependency: how that
-    dependency answers an undecodable token (the ``raise HTTPException`` in the handler
-    of the ``try`` around the decode) and a token naming no user (the ``raise`` guarding
-    the ``session.get`` of the caller), each where it differs from Lattice's 401. A
-    dependency of another shape yields no policy (those cases then fail verification)."""
+@dataclass(frozen=True)
+class TokenAnswers:
+    """The original's (status, detail) for a token naming no caller, read from its
+    current-user dependency's raise sites: ``invalid`` an undecodable token (the decode
+    helper's raise, or the guard on its result), ``claimless`` a valid token without the
+    caller's claim, ``unknown`` a valid token naming a user that does not exist. None:
+    not found."""
+
+    invalid: tuple[int, str] | None = None
+    claimless: tuple[int, str] | None = None
+    unknown: tuple[int, str] | None = None
+
+
+def token_answers(model: RepoModel, index: _Index) -> TokenAnswers:
+    """The original's answers to the tokens naming no caller (see :class:`TokenAnswers`):
+    the ``raise HTTPException`` in the handler of the ``try`` around the decode -- in the
+    dependency, or in the decode helper it passes the token to -- or the guard on the
+    decoded payload; the guard on the claim; the guard on the caller's lookup."""
     dep = next((d for d in model.dependencies if d.kind == "current_user"), None)
     if dep is None:
-        return ()
+        return TokenAnswers()
     found = index.node(f"{dep.module}:{dep.name}")
     if found is None or not isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
-        return ()
+        return TokenAnswers()
     fn = found[1]
-    lattice = (401, api.unauthorized_detail)
-    out: list[TokenPolicy] = []
     token = next(
         (a.arg for a in fn.args.args if a.arg == "token" or "token" in a.arg.lower()), None
     )
-    bad = _handler_raise(fn, dep.module, index) or _decoded_raise(fn, dep.module, index, token)
-    if bad is not None and bad != lattice:
+    bad = (
+        _handler_raise(fn, dep.module, index)
+        or _helper_raise(fn, dep.module, index, token)
+        or _decoded_raise(fn, dep.module, index, token)
+    )
+    unknown = _missing_user_raise(fn, dep.module, index)
+    # no guard on the claim itself: the missing claim reaches the caller's lookup
+    claimless = _claim_raise(fn, dep.module, index) or unknown
+    return TokenAnswers(bad, claimless, unknown)
+
+
+def lattice_token_answers(api: ApiProfile) -> TokenAnswers:
+    """What the imported app answers each such token: NativeToken's ``invalid`` for a
+    token its native decodes to null (a bad one, and a claimless one: the generated
+    decode returns null without the claim), its ``unknown`` for one naming no row --
+    else the 401 with the profile's text."""
+    from lattice.profile import NativeToken
+
+    default = (401, api.unauthorized_detail)
+    auth = api.auth
+    invalid = (auth.invalid if isinstance(auth, NativeToken) else None) or default
+    unknown = (auth.unknown if isinstance(auth, NativeToken) else None) or default
+    return TokenAnswers(invalid, invalid, unknown)  # type: ignore[arg-type]
+
+
+def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[TokenPolicy, ...]:
+    """The token policies for routes behind the current-user dependency: each token
+    naming no caller (:func:`token_answers`) the imported app answers otherwise than the
+    original (:func:`lattice_token_answers`). The profile carries the original's
+    answers (``NativeToken(invalid=, unknown=)``), so a policy remains only for what it
+    cannot say (a claimless token answered unlike a bad one). A dependency of another
+    shape yields no policy (those cases then fail verification)."""
+    original = token_answers(model, index)
+    ours = lattice_token_answers(api)
+    out: list[TokenPolicy] = []
+    bad = original.invalid
+    if bad is not None and bad != ours.invalid:
         out.append(
             TokenPolicy(
                 "bad_token",
@@ -176,23 +225,24 @@ def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[Tok
                 f"The original answers an invalid bearer token with {bad[0]} {bad[1]!r}; "
                 "Lattice's auth answers every missing or invalid credential with 401.",
                 bad,
+                ours.invalid,
             )
         )
-    unknown = _missing_user_raise(fn, dep.module, index)
-    # no guard on the claim itself: the missing claim reaches the caller's lookup
-    claimless = _claim_raise(fn, dep.module, index) or unknown
-    if claimless is not None and claimless != lattice:
+    claimless = original.claimless
+    if claimless is not None and claimless != ours.claimless:
         out.append(
             TokenPolicy(
                 "claimless_token",
                 "claimless-token",
                 f"A valid token without the caller's claim: the original answers "
-                f"{claimless[0]} {claimless[1]!r}; Lattice's token auth answers 401 like any "
-                "token naming no caller.",
+                f"{claimless[0]} {claimless[1]!r}; Lattice's token auth answers it like "
+                "an invalid token.",
                 claimless,
+                ours.claimless,
             )
         )
-    if unknown is not None and unknown != lattice:
+    unknown = original.unknown
+    if unknown is not None and unknown != ours.unknown:
         out.append(
             TokenPolicy(
                 "unknown_user_token",
@@ -201,9 +251,33 @@ def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[Tok
                 f"{unknown[0]} {unknown[1]!r}; Lattice's token auth answers 401 like any "
                 "token naming no caller.",
                 unknown,
+                ours.unknown,
             )
         )
     return tuple(out)
+
+
+def _helper_raise(
+    fn: ast.AST, module: str, index: _Index, token: str | None
+) -> tuple[int, str] | None:
+    """The decode helper's own raise: ``helper(token)`` a package function whose ``try``
+    around the decode answers a bad token with ``raise HTTPException(...)``."""
+    if token is None:
+        return None
+    for node in ast.walk(fn):
+        if not isinstance(node, ast.Call):
+            continue
+        if not any(isinstance(a, ast.Name) and a.id == token for a in node.args):
+            continue
+        qual = index.resolve(module, node.func)
+        found = index.node(qual) if qual else None
+        if found is None or not isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
+            continue
+        hmod, helper = found
+        answer = _handler_raise(helper, hmod, index)
+        if answer is not None:
+            return answer
+    return None
 
 
 def _pairs(fn: ast.AST) -> list[tuple[ast.stmt, ast.stmt]]:
@@ -346,7 +420,10 @@ __all__ = [
     "NotNull",
     "PageBound",
     "Policy",
+    "TokenAnswers",
     "TokenPolicy",
     "auth_policies",
+    "lattice_token_answers",
+    "token_answers",
     "deviations_for",
 ]

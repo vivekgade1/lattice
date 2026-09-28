@@ -72,17 +72,14 @@ PRE = H + "from lattice.ops import load, col\n"
         ("from lattice.ops import where as w\n", "L104", 3),
         ("x = t.filter(col('a') > 1)\n", "L105", 3),
         ("x = f(t.status)\n", "L106", 3),
-        ("x = f(not a)\n", "L107", 3),
-        ("x = load('a') and y\n", "L107", 3),
         ("x = y = load('a')\n", "L108", 3),
         ("a, b = load('a')\n", "L108", 3),
-        ("x = f(1 < a < 3)\n", "L109", 3),
+        ("x = f(a < b in c)\n", "L109", 3),
         ("def f(t: Table[Orders]) -> Table:\n    y = g(t)\n    return y\n", "L110", 3),
         ("@other\ndef f(t: Table[Orders]) -> Table:\n    y = g(t)\n    return y\n", "L110", 3),
         ("from lattice.ops import filtre\n", "L112", 3),
         ("from lattice.schemas import Nope\n", "L112", 3),
-        ("x = f(a is None)\n", "L113", 3),
-        ("x = f(a in b)\n", "L113", 3),
+        ("x = f(a is b)\n", "L113", 3),
         ("x = f(lambda r: r)\n", "L120", 3),
         ("x = f({a for a in b})\n", "L121", 3),
         ("x = f({a: 1 for a in b})\n", "L121", 3),
@@ -163,7 +160,7 @@ def test_L601(diags, sig, line):
     [
         ("    return t\n", 4),  # no assignment
         ("    y = where(t, col('a') > 1)\n", 4),  # no return
-        ("    y = where(t, col('a') > 1)\n    return where(y, col('b') > 1)\n", 6),
+        ("    y = where(t, col('a') > 1)\n    return y.a\n", 6),
         ("    y = where(t, col('a') > 1)\n    return y\n    z = where(y, col('b') > 1)\n", 6),
         ("    y = where(t, col('a') > 1)\n    write(y, 'o.csv')\n    return y\n", 6),
     ],
@@ -177,22 +174,23 @@ def test_comprehension_no_cascade(codes):
     assert codes(PRE + "df = [x for x in y]\n") == ["L121"]
 
 
-def test_ifexp_hint_mentions_when(diags):
-    (d,) = diags(PRE + "a = b if c else d\n")
-    assert d.code == "L122" and "when" in d.hint
+def test_ifexp_is_normalised_to_when(diags):
+    # N1: no L122 -- the conditional expression is when(c, then=b, otherwise=d)
+    assert "L122" not in [d.code for d in diags(PRE + "a = b if c else d\n")]
 
 
 def test_method_call(codes):
     assert codes(PRE + "x = t.filter(col('a') > 1)\n") == ["L105"]
 
 
-def test_boolop(codes):
-    assert codes(PRE + "x = load('a') and y\n") == ["L107"]
+def test_boolop_is_normalised(codes):
+    # N1: `and` is `&`; what remains are the ordinary errors of `load('a') & y`
+    assert "L107" not in codes(PRE + "x = load('a') and y\n")
 
 
 def test_three_independent_violations(codes):
-    src = PRE + "x = a if b else c\ny = [a for a in b]\nimport os\n"
-    assert codes(src) == ["L122", "L121", "L103"]
+    src = PRE + "x = a[0]\ny = [a for a in b]\nimport os\n"
+    assert codes(src) == ["L123", "L121", "L103"]
 
 
 def test_annotations_not_walked(codes):

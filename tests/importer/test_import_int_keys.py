@@ -326,7 +326,11 @@ def imported(tmp_path_factory: pytest.TempPathFactory) -> ImportResult:
 
 def test_the_profile_has_int_keys_and_an_int_token_decoder(imported: ImportResult) -> None:
     api = imported.lattice_profile.api
-    assert api is not None and api.auth == NativeToken("decode_token")
+    assert api is not None and api.auth == NativeToken(
+        "decode_token",
+        invalid=(403, "Could not validate credentials"),
+        unknown=(404, "User not found"),
+    )  # the original's answers to a token naming no caller
     assert api.tables["Book"].keys == (("id",),) and api.tables["User"].keys == (("id",),)
     assert "int(claim)" in imported.profile.source
     assert api.datetime_wire == "naive" and api.datetime_storage == "sql_space"

@@ -20,8 +20,9 @@ REPOS = ("taskflow", "justnotes")
 REPO_IDS = [t.id for t in REPO_TICKETS]
 
 # per ticket, whether the routes it touches are Lattice in arm L's start state (the
-# import's verified routes), islands (kept as the original code) or new -- the record in
-# docs/results/2026-09-26-bench-smoke.md, "Held-out import (live)"
+# import's verified routes), islands (kept as the original code) or new -- the record of
+# the N3 live re-import (32k tokens, effort medium, per-route budgets; spec 2026-09-27
+# surface §4)
 LIFT_STATUS: dict[str, dict[str, str]] = {
     "t19_task_summary": {"GET /api/v1/tasks/summary": "new"},
     "t20_bulk_status": {"POST /api/v1/tasks/bulk-status": "new"},
@@ -125,3 +126,39 @@ def test_the_committed_import_emits_exactly_its_verified_routes(name):
             if r.split(" ", 1)[1].startswith(("/docs", "/redoc", "/openapi"))
         ]
     )
+
+
+# the committed live import (N3): repo -> (routes, verified, R0, R1, R2, R3, R4)
+LIVE_COVERAGE = {
+    "taskflow": (10, 6, 1, 4, 1, 0, 4),
+    "justnotes": (30, 6, 1, 5, 0, 0, 24),
+}
+# the original's answers to a bad token and to one naming no user (spec §4.1)
+TOKEN_ANSWERS = {
+    "taskflow": ((401, "Could not validate credentials"), (401, "Could not validate credentials")),
+    "justnotes": ((401, "Could not validate credentials"), (401, "User not found")),
+}
+
+
+@pytest.mark.parametrize("name", REPOS)
+def test_the_committed_live_coverage(name):
+    import json
+
+    cov = json.loads((run.import_dir(name) / "report.json").read_text())["coverage"]
+    got = tuple(cov[k] for k in ("routes", "verified", "R0", "R1", "R2", "R3", "R4"))
+    assert got == LIVE_COVERAGE[name]
+
+
+@pytest.mark.parametrize("name", REPOS)
+def test_the_committed_profile_answers_tokens_like_the_original(name):
+    """Profile-level, so a route an edit adds answers them too (round 3's t24)."""
+    import json
+
+    from lattice.importer.llm_lift import load_profile_source
+
+    out = run.import_dir(name)
+    auth = load_profile_source((out / "profile.py").read_text()).profile().api.auth
+    assert (auth.invalid, auth.unknown) == TOKEN_ANSWERS[name]
+    report = json.loads((out / "report.json").read_text())
+    declared = [json.dumps(r.get("deviations", [])) for r in report["routes"]]
+    assert "token" not in "".join(declared)

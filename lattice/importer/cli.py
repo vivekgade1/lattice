@@ -5,7 +5,8 @@
 
     python -m lattice.importer <repo_root> --package P --app-factory mod:fn --out DIR
         [--no-llm] [--method M1..M6] [--model M] [--strong-model M] [--effort E]
-        [--strong-effort E] [--max-rounds N] [--max-cost-usd X] [--max-route-cost-usd X]
+        [--relift-effort E] [--strong-effort E] [--max-tokens N] [--max-rounds N]
+        [--max-cost-usd X] [--max-route-cost-usd X]
         [--max-repo-rounds N] [--only KEY,...] [--corpus PATH | --no-corpus]
         [--notes-cache DIR] [--artefacts DIR]
 
@@ -14,8 +15,14 @@
 otherwise every route they do not verify goes through the close-the-gap loop
 (:mod:`lattice.importer.llm_lift`). Budgets: ``--max-rounds`` and
 ``--max-route-cost-usd`` cap each route, ``--max-cost-usd`` and ``--max-repo-rounds``
-the whole repo; when a cap is reached the remaining routes are islands with reason
-"budget" and the output is still complete.
+the whole repo -- shared per route (the rest of it over the routes still to run, the
+cheapest route first); when a cap is reached the remaining routes are islands with
+reason "budget" and the output is still complete.
+
+Generators (spec 2026-09-27 surface §4.2): R1 on ``--model`` at ``--effort``, R2 on the
+strong model (``--strong-model``, default ``--model``) at ``--relift-effort``, R3 on the
+strong model at ``--strong-effort``; every call may answer ``--max-tokens`` (32k:
+medium effort leaves room for the answer, so fewer are cut off).
 """
 
 from __future__ import annotations
@@ -37,6 +44,11 @@ __all__ = ["main", "parser", "resolve_factory"]
 
 DEFAULT_METHOD = "M2"  # until the method experiment (I6b) picks the winner
 DEFAULT_NOTES_CACHE = DEFAULT_CORPUS.parent / "intent-cache"
+DEFAULT_MAX_TOKENS = 32000
+# the SDK refuses a non-streaming call that may outlast its default timeout (about 21k
+# output tokens) unless the client sets its own
+DEFAULT_SDK_TIMEOUT = 600.0
+LONG_CALL_TIMEOUT = 1800.0
 
 
 def resolve_factory(spec: str) -> Callable[[Path], Any]:
@@ -63,9 +75,10 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--method", choices=sorted(METHODS), default=DEFAULT_METHOD)
     p.add_argument("--model", default="claude-opus-5")
     p.add_argument("--strong-model", default=None, help="R2/R3 model (default: --model)")
-    p.add_argument("--effort", default="high")
-    p.add_argument("--strong-effort", default="max")
-    p.add_argument("--max-tokens", type=int, default=16000)
+    p.add_argument("--effort", default="medium", help="R1 effort")
+    p.add_argument("--relift-effort", default="medium", help="R2 effort (the strong model)")
+    p.add_argument("--strong-effort", default="max", help="R3 effort (the strong model)")
+    p.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS)
     p.add_argument("--max-rounds", type=int, default=None, help="LLM rounds per route")
     p.add_argument("--max-route-cost-usd", type=float, default=None, help="USD per route")
     p.add_argument("--max-repo-rounds", type=int, default=None, help="LLM rounds per repo")
@@ -95,7 +108,9 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
     if args.no_llm:
         close = no_llm(result, corpus=corpus)
     else:
-        gen, strong, notes_gen = generators or _claude(args)
+        gens = tuple(generators or _claude(args))
+        gen, strong, notes_gen = gens[:3]
+        relift = gens[3] if len(gens) > 3 else None
         intent = None
         if "S3" in METHODS[args.method]:
             from lattice.importer.intent import IntentNotes
@@ -112,8 +127,9 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
             max_repo_cost_usd=args.max_cost_usd,
         )
         only = args.only.split(",") if args.only else None
-        close = close_gap(result, gen, config=config, strong_generator=strong, intent=intent,
-                          corpus=corpus, artefacts=args.artefacts, only=only)  # fmt: skip
+        close = close_gap(result, gen, config=config, strong_generator=strong,
+                          relift_generator=relift, intent=intent, corpus=corpus,
+                          artefacts=args.artefacts, only=only)  # fmt: skip
     out = write_import(close, args.out, repo_root=root, package=args.package,
                        app_factory=args.app_factory)  # fmt: skip
     cov = load_report(out)["coverage"]
@@ -125,12 +141,19 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
     return 0
 
 
-def _claude(args: argparse.Namespace) -> tuple[Any, Any, Any]:
+def _claude(args: argparse.Namespace) -> tuple[Any, Any, Any, Any]:
+    """(R1 generator, R3 strong generator, notes generator, R2 relift generator)."""
+    import anthropic
+
     from lattice.llm.client import ClaudeGenerator
 
-    gen = ClaudeGenerator(model=args.model, effort=args.effort, max_tokens=args.max_tokens)
-    strong = ClaudeGenerator(
-        model=args.strong_model or args.model, effort=args.strong_effort,
-        max_tokens=args.max_tokens,
-    )  # fmt: skip
-    return gen, strong, gen
+    timeout = LONG_CALL_TIMEOUT if args.max_tokens > 20000 else DEFAULT_SDK_TIMEOUT
+    client = anthropic.Anthropic(timeout=timeout)
+    strong_model = args.strong_model or args.model
+
+    def make(model: str, effort: str) -> ClaudeGenerator:
+        return ClaudeGenerator(model=model, effort=effort, max_tokens=args.max_tokens,
+                               client=client)  # fmt: skip
+
+    gen = make(args.model, args.effort)
+    return gen, make(strong_model, args.strong_effort), gen, make(strong_model, args.relift_effort)

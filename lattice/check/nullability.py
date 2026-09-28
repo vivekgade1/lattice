@@ -36,6 +36,8 @@ def expr_nullable(
             return True
         case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
             return name in nullable_cols
+        case ast.Constant(value=None):  # a typed null: when(c, then=x, otherwise=None)
+            return True
         case ast.Constant():
             return False
         case ast.Name(id=name):
@@ -104,3 +106,33 @@ def _nullable_where_present(
             return rec(node, nullable_cols - {name})
         case _:
             return rec(node, nullable_cols)
+
+
+def may_write_null(node: ast.expr, row_nulls: Mapping[str, bool]) -> bool:
+    """Whether a written value may be null through a typed null (a None branch of
+    when(...)) or a nullable column of a one-row table value (`r.x`, keyed "r.x" in
+    `row_nulls`), propagated through operators and fn.* calls (L410 for a column
+    that is not nullable). Other sources of null keep their own rules."""
+
+    def rec(n: ast.expr) -> bool:
+        return may_write_null(n, row_nulls)
+
+    match node:
+        case ast.Constant(value=None):
+            return True
+        case ast.Attribute(value=ast.Name(id=name), attr=attr):
+            return row_nulls.get(f"{name}.{attr}", False)
+        case ast.Call(func=ast.Name(id="when"), keywords=kws):
+            return any(rec(kw.value) for kw in kws)
+        case ast.Call(func=ast.Name(id="coalesce"), args=args):
+            return bool(args) and all(rec(a) for a in args)
+        case ast.Call(func=ast.Attribute(value=ast.Name(id="fn")), args=args, keywords=kws):
+            return any(rec(a) for a in args) or any(rec(kw.value) for kw in kws)
+        case ast.BinOp(left=a, right=b):
+            return rec(a) or rec(b)
+        case ast.Compare(left=a, comparators=rest):
+            return any(rec(x) for x in [a, *rest])
+        case ast.UnaryOp(operand=a):
+            return rec(a)
+        case _:
+            return False

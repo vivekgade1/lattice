@@ -137,7 +137,7 @@ def profile() -> Profile:
             'verify_password': NativeSig((Scalar.STR, Scalar.STR), Scalar.BOOL, reads_private=True),
             'decode_token': NativeSig((Scalar.STR,), Scalar.STR, nullable=True),
         },
-        auth=NativeToken('decode_token', lookup='username', unique='runtime'),
+        auth=NativeToken('decode_token', lookup='username', unique='runtime', invalid=(401, 'Could not validate credentials'), unknown=(401, 'User not found')),
         roles_from=NoRoles('Customer'),
         backend='sqlite',
         uuid_storage='hex32',

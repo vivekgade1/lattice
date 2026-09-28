@@ -156,7 +156,8 @@ def test_an_unknown_user_column_is_l106() -> None:
 
 @pytest.mark.parametrize(
     "expr",
-    ["orders.id", "user.id.real", 'col("x").id', "limit.real"],
+    # (orders.id reads the input's column: visible is filtered from orders -- N1)
+    ["Products.id", "user.id.real", 'col("x").id', "limit.real"],
 )
 def test_other_attribute_access_stays_l106(expr: str) -> None:
     src = endpoint(

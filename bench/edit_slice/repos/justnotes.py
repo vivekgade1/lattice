@@ -170,10 +170,16 @@ LIST = RouteSpec(
 )  # fmt: skip
 STATS = RouteSpec("get_note_stats", "GET", "/notes/stats", "other", "note")
 
+# ---- N4's fresh held-out set's routes (t29, t30; see bench.edit_slice.tickets docstring) --
+TAG_SUMMARY = RouteSpec("get_tag_summary", "GET", "/tags/summary", "other", "tag")
+BULK_DELETE_NOTES = RouteSpec("bulk_delete_notes", "POST", "/notes/bulk-delete", "other", "note")
+
 ROUTES: dict[str, tuple[RouteSpec, ...]] = {
     "t22_copy_note": (COPY,),
     "t23_note_filter": (LIST,),
     "t24_note_stats": (STATS,),
+    "t29_tag_summary": (TAG_SUMMARY,),
+    "t30_bulk_delete_notes": (BULK_DELETE_NOTES,),
 }
 
 
@@ -188,6 +194,11 @@ def branches(ticket_id: str) -> Callable[[Variant], dict[str, list[Callable[...,
                                   crud.get_note_by_id]}  # fmt: skip
         if ticket_id == "t23_note_filter":
             return {"get_notes": [notes.get_notes, crud.check_tag_access]}
+        if ticket_id == "t29_tag_summary":
+            tags = ref.module("api.tags")
+            return {"get_tag_summary": [tags.get_tag_summary]}
+        if ticket_id == "t30_bulk_delete_notes":
+            return {"bulk_delete_notes": [notes.bulk_delete_notes, crud.get_note_by_id]}
         return {"get_note_stats": [notes.get_note_stats]}
 
     return of
@@ -305,8 +316,46 @@ def t24_cases(plan: SeedPlan) -> list[Case]:
     ]  # fmt: skip
 
 
+def t29_cases(plan: SeedPlan) -> list[Case]:
+    def c(what: str, user: str) -> Case:
+        return Case(f"t29.{what}", "GET", "/tags/summary", user=user, route="get_tag_summary")
+
+    return [
+        # alice's "home" tag is also linked to bob's note 7 (the tag-link routes never
+        # check whose tag they attach); her "travel" tag is linked to two of her own
+        c("alice_tags_summary", ACTOR),
+        c("bob_tags_summary", OTHER),
+        # carol's "books" tag has one of her own notes linked, "food" none at all
+        c("carol_tags_summary", INACTIVE),
+        # admin's two tags ("urgent", "ops") are never linked to any note
+        c("admin_tags_summary", ADMIN),
+    ]
+
+
+def t30_cases(plan: SeedPlan) -> list[Case]:
+    a_private, a_public = _note(plan, ACTOR, False), _note(plan, ACTOR, True)
+    b_public = _note(plan, OTHER, True)
+
+    def c(what: str, ids: list[int], user: str = ACTOR) -> Case:
+        return Case(f"t30.{what}", "POST", "/notes/bulk-delete", user=user,
+                    json={"note_ids": ids}, tables=("note",),
+                    route="bulk_delete_notes")  # fmt: skip
+
+    return [
+        c("alice_deletes_both_own", [a_private, a_public]),
+        c("bobs_note_in_alices_list", [a_private, b_public]),
+        c("unknown_id_in_list", [a_private, MISSING]),
+        c("repeated_id_counted_once", [a_private, a_private]),
+        c("empty_list", []),
+        # JustNotes has no admin bypass (unlike the template): an admin deleting
+        # someone else's note gets the same 403 anyone else would
+        c("admin_cannot_delete_others_note", [b_public], user=ADMIN),
+    ]
+
+
 SPECIFIC = {"t22_copy_note": t22_cases, "t23_note_filter": t23_cases,
-            "t24_note_stats": t24_cases}  # fmt: skip
+            "t24_note_stats": t24_cases, "t29_tag_summary": t29_cases,
+            "t30_bulk_delete_notes": t30_cases}  # fmt: skip
 
 
 def oracle_spec(ticket_id: str) -> RepoOracle:

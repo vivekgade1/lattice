@@ -229,6 +229,20 @@ SET_PREFERENCES = RouteSpec(
 READ_PREFERENCES = RouteSpec("read_preferences", "GET", f"{API}/users/me/preferences",
                              "other", "user")  # fmt: skip
 
+# ---- N4's fresh held-out template set's routes (t25-t27; no Lattice reference) -----------
+BULK_DELETE_ITEMS = RouteSpec("bulk_delete_items", "POST", f"{API}/items/bulk-delete",
+                              "other", "item")  # fmt: skip
+FROM_ID = P("from_id", "uuid", "path")
+MOVE_ITEMS = RouteSpec(
+    "move_items", "POST", f"{API}/users/{{from_id}}/move-items", "other", "user",
+    auth="admin", params=(FROM_ID, P("to_user_id", "uuid", "body")),
+    errors=(USER_NOT_FOUND, NOT_ADMIN),
+)  # fmt: skip
+ITEM_DESCRIPTION_COVERAGE = RouteSpec(
+    "read_item_description_coverage", "GET", f"{API}/items/description-coverage",
+    "other", "item",
+)  # fmt: skip
+
 ROUTES: dict[str, tuple[RouteSpec, ...]] = {
     "t1_search": (_read_items(P("q", "str", "query", required=False)),),
     "t2_since": (
@@ -261,6 +275,9 @@ ROUTES: dict[str, tuple[RouteSpec, ...]] = {
     "t16_admin_audit": (ITEM_AUDIT,),
     "t17_page_size_preference": (SET_PREFERENCES, READ_PREFERENCES),
     "t18_duplicate_title_guard": (CREATE_ITEM, UPDATE_ITEM),
+    "t25_bulk_delete_items": (BULK_DELETE_ITEMS,),
+    "t26_move_items": (MOVE_ITEMS,),
+    "t27_item_description_coverage": (ITEM_DESCRIPTION_COVERAGE,),
 }
 
 # ---- database variants --------------------------------------------------------------------
@@ -399,6 +416,17 @@ def _variant_writer(ticket_id: str, plan: SeedPlan) -> dict[str, Callable[[Engin
         _fill(engine, ticket_id, extra_id("user/erin"), "bulk/erin", 1)
         _fill(engine, ticket_id, extra_id("user/frank"), "bulk/frank", 1)
 
+    def mixed_descriptions(engine: Engine) -> None:
+        """t27_item_description_coverage: alice's two seeded items given a blank and a
+        non-empty description (a blank description counts as not having one, the same
+        as null)."""
+        alice_items = plan.owned("item", ACTOR)
+        with engine.begin() as conn:
+            conn.execute(text("UPDATE item SET description = '' WHERE id = :i"),
+                        {"i": alice_items[0]["id"].hex})  # fmt: skip
+            conn.execute(text("UPDATE item SET description = 'Keep this' WHERE id = :i"),
+                        {"i": alice_items[1]["id"].hex})  # fmt: skip
+
     own = {h: len(plan.owned("item", h)) for h in uid}
     return {"search": search, "soft": soft, "fresh": fresh, "no_bob_items": no_bob_items,
             "undated": undated, "no_items": no_items,
@@ -409,6 +437,7 @@ def _variant_writer(ticket_id: str, plan: SeedPlan) -> dict[str, Callable[[Engin
             "alice_at_limit": owning(alice=QUOTA - own[ACTOR]),
             "alice_below_limit": owning(alice=QUOTA - 1 - own[ACTOR]),
             "admin_at_limit": owning(admin=QUOTA - own[ADMIN]),
+            "mixed_descriptions": mixed_descriptions,
             }  # fmt: skip
 
 
@@ -844,6 +873,96 @@ def _t18_cases(plan: SeedPlan) -> list[Case]:
     ]
 
 
+# ---- N4's fresh held-out template set (t25-t27; see the module docstring) ------------------
+
+
+def _t25_cases(plan: SeedPlan) -> list[Case]:
+    path = f"{API}/items/bulk-delete"
+    alice0, alice1 = _row(plan, ACTOR)["id"], _row(plan, ACTOR, 1)["id"]
+    bob0 = _row(plan, OTHER)["id"]
+    admin0 = _row(plan, ADMIN)["id"]
+
+    def c(what: str, ids: list[Any], user: str = ACTOR) -> Case:
+        return Case(f"t25.{what}", "POST", path, user=user,
+                    json={"item_ids": [str(i) for i in ids]},
+                    tables=("item",), route="bulk_delete_items")  # fmt: skip
+
+    return [
+        c("alice_deletes_both_own", [alice0, alice1]),
+        c("bobs_item_in_alices_list", [alice0, bob0]),
+        c("alices_item_in_bobs_list_first", [bob0, alice0], user=OTHER),
+        c("missing_id_in_list", [alice0, MISSING_ID]),
+        c("admin_deletes_bobs_and_own", [bob0, admin0], user=ADMIN),
+        c("repeated_id_counted_once", [alice0, alice0]),
+        c("empty_list", []),
+    ]
+
+
+def _t26_cases(plan: SeedPlan) -> list[Case]:
+    path = f"{API}/users/{{from_id}}/move-items"
+    uid = {h: plan.user(h).id for h in (ACTOR, OTHER, ADMIN, INACTIVE)}
+    gina = extra_id("user/gina")  # more_users: owns nothing
+
+    def c(what: str, from_id: Any, to_user_id: Any, user: str = ADMIN,
+          db: str = "seed") -> Case:  # fmt: skip
+        return Case(f"t26.{what}", "POST", path.format(from_id=from_id), user=user,
+                    json={"to_user_id": str(to_user_id)}, db=db, tables=("item",),
+                    route="move_items")  # fmt: skip
+
+    return [
+        c("alice_moves_to_bob", uid[ACTOR], uid[OTHER]),
+        c("to_user_missing", uid[ACTOR], MISSING_ID),
+        c("same_user", uid[ACTOR], uid[ACTOR]),
+        c("to_user_inactive", uid[OTHER], uid[INACTIVE]),
+        c("from_user_inactive_is_fine", uid[INACTIVE], uid[OTHER]),
+        c("from_user_owns_nothing", gina, uid[OTHER], db="more_users"),
+        c("admin_moves_into_self", uid[OTHER], uid[ADMIN]),
+        c("alice_not_admin", uid[OTHER], uid[ADMIN], user=ACTOR),
+    ]
+
+
+def _t27_cases(plan: SeedPlan) -> list[Case]:
+    path = f"{API}/items/description-coverage"
+
+    def c(what: str, user: str, db: str = "seed") -> Case:
+        return Case(f"t27.{what}", "GET", path, user=user, db=db,
+                    route="read_item_description_coverage")  # fmt: skip
+
+    return [
+        c("alice_own_only", ACTOR),
+        c("admin_own_only", ADMIN),
+        c("blank_and_non_empty", ACTOR, "mixed_descriptions"),
+        c("no_items", OTHER, "no_items"),
+        Case("t27.item_route_still_works", "GET", f"{API}/items/{_row(plan, ACTOR)['id']}",
+             user=ACTOR, route="read_item_description_coverage"),
+    ]  # fmt: skip
+
+
+# ---- benchmark hygiene (N4, 2026-09-27 lattice-surface-design.md §5) ----------------------
+#
+# Generated cases that probe behaviour the ticket text never states, so both arms failed
+# them identically in round 3 (docs/results/2026-09-26-bench-smoke.md): not a Lattice gap,
+# an over-specified oracle case. Dropped from the suite entirely (never scored), rather
+# than declared an accepted alternative, because there is no single "other" answer to
+# accept -- the ticket gives no basis for expecting any particular status at all.
+#
+# * t14_email_change: ``current_password`` has no stated length rule (only ``new_password``
+#   in other tickets, e.g. t13, does -- "the same length rules as everywhere else"); the
+#   generated boundary probes (7 and 129 chars) exercise a bound the reference happens to
+#   validate (mirroring ``UpdatePassword``) but the ticket never asks for.
+# * t17_page_size_preference: the ticket states the body shape and that null clears the
+#   preference, but never says what an entirely missing ``default_page_size`` field
+#   should do (a different question from sending null).
+EXCLUDED_CASES: dict[str, frozenset[str]] = {
+    "t14_email_change": frozenset({
+        "change_email.boundary.current_password.below_min",
+        "change_email.boundary.current_password.above_max",
+    }),
+    "t17_page_size_preference": frozenset({
+        "set_preferences.missing.default_page_size",
+    }),
+}  # fmt: skip
+
 SPECIFIC: dict[str, Callable[[SeedPlan], list[Case]]] = {
     "t1_search": _t1_cases,
     "t2_since": _t2_cases,
@@ -863,6 +982,9 @@ SPECIFIC: dict[str, Callable[[SeedPlan], list[Case]]] = {
     "t16_admin_audit": _t16_cases,
     "t17_page_size_preference": _t17_cases,
     "t18_duplicate_title_guard": _t18_cases,
+    "t25_bulk_delete_items": _t25_cases,
+    "t26_move_items": _t26_cases,
+    "t27_item_description_coverage": _t27_cases,
 }
 
 # ---- declared deviations ------------------------------------------------------------------
@@ -1050,7 +1172,9 @@ def ticket_oracle(ticket_id: str) -> TicketOracle:
         return path
 
     specific = SPECIFIC[ticket_id](suite.plan)
-    cases = (*suite.cases, *specific)
+    excluded = EXCLUDED_CASES.get(ticket_id, frozenset())
+    generated = tuple(c for c in suite.cases if c.name not in excluded)
+    cases = (*generated, *specific)
     deps = ref.module("api.deps")
     branches: dict[str, list[Callable[..., Any]]] = {}
     for r in routes:

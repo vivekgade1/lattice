@@ -64,7 +64,12 @@ _BANNED_EXPRS: dict[type[ast.AST], tuple[str, str, str | None]] = {
         "use when(cond, then=..., otherwise=...)",
     ),
     ast.Subscript: ("L123", "subscripts are not allowed", 'reference columns with col("name")'),
-    ast.JoinedStr: ("L124", "f-strings are not allowed", "use fn.concat(a, b)"),
+    ast.JoinedStr: (
+        "L124",
+        "this f-string is not allowed",
+        'join strings with +, e.g. a + " " + b (an f-string needs a text part and no '
+        "format spec or conversion)",
+    ),
     ast.NamedExpr: ("L125", "assignment expressions (:=) are not allowed", None),
     ast.BoolOp: (
         "L107",
@@ -505,9 +510,20 @@ def _check_expr(node: ast.expr, ctx: CheckContext, discarded: bool = False) -> N
             name == USER_PARAM and ctx.profile.api is not None
         ):
             return  # user.<column>: a caller reference (P4 types it)
+        case ast.Attribute() if id(node) in ctx.row_reads:
+            return  # r.x in a write/derive value: a row value (P4 types it, P6 checks r)
         case ast.Attribute():
             if not (isinstance(node.value, ast.Name) and node.value.id in _namespaces(ctx)):
-                hint = f'reference columns with col("{node.attr}"); only agg.* and fn.* use dots'
+                if isinstance(node.value, ast.Name):
+                    # N1 rewrote t.x inside an op over t; this one is outside such an op
+                    t = node.value.id
+                    hint = (
+                        f"{t}.{node.attr} reads a column only inside an op whose input is "
+                        f"{t}, e.g. where({t}, {t}.{node.attr} == ...); elsewhere use "
+                        f'col("{node.attr}") in an op over the table that has it'
+                    )
+                else:
+                    hint = f'reference columns with col("{node.attr}")'
                 if ctx.profile.api is not None:
                     hint += f", and {USER_PARAM}.<column> for the caller's values (e.g. user.id)"
                 ctx.error("L106", node, f"attribute access '.{node.attr}' is not allowed", hint)
@@ -541,7 +557,7 @@ def _check_expr(node: ast.expr, ctx: CheckContext, discarded: bool = False) -> N
                     "L113",
                     node,
                     f"comparison '{type(node.ops[0]).__name__}' is not allowed",
-                    "use is_null(...) for null tests and == combined with | for membership",
+                    "compare with == or !=; test for null with `x is None` or is_null(x)",
                 )
             _check_expr(node.left, ctx)
             for c in node.comparators:

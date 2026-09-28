@@ -132,6 +132,46 @@ across owners, a filtered list, an aggregate), before any oracle case. Their tra
   they can open; ``tagged`` counts notes, not links (a note with two tags counts once,
   and a note tagged with someone else's tag counts); no notes is 0s and null.
 
+**Fresh held-out set (t25-t30, N4, benchmark hygiene: 2026-09-27
+lattice-surface-design.md §5).** Six more tickets, written before any normalisation
+work (the round-4 rerun this node feeds) was visible to their author, to hold that rerun
+to the same held-out standard as t7-t24: three more on the template (t25-t27) and three
+on the held-out repos (t28-t30, spread across TaskFlow and JustNotes). **No Lattice
+reference is written for any of them** -- like t13-t18, they are held out from the
+language and lifter work entirely; :func:`~bench.edit_slice.lattice_reference.has_lattice_reference`
+answers False for each (no directory, no ``GAPS`` entry) and the dry run reports them
+``no_reference``. The texts were written first, in this order -- t25, t26, t27, t28,
+t29, t30 -- as a backlog would hold them (a cleanup write, a re-org write, a coverage
+read; an ownership write, a usage read, a cleanup write), before any oracle case. Their
+traps:
+
+* ``t25_bulk_delete_items`` -- all or nothing: an unknown or not-owned id anywhere in
+  the list deletes nothing, even the caller's own items listed before it; a repeated id
+  is counted once; an admin may bulk-delete anyone's items (the template's usual
+  ownership bypass);
+* ``t26_move_items`` -- both ids are checked before anything moves (an unknown
+  ``to_user_id`` moves nothing, even when ``from_id`` owns items); moving into an
+  inactive user is refused, but an inactive ``from_id`` (or an inactive caller, since
+  this is admin-only anyway) is fine; there is no self-lockout analogous to deactivate
+  -- an admin may move items into their own account; a user who owns nothing moves 0,
+  not an error;
+* ``t27_item_description_coverage`` -- ``/items/description-coverage`` must not be
+  swallowed by ``/items/{id}``; the signed-in user's *own* items only (an admin does not
+  get everyone's, as the list endpoint's admin-sees-all rule does not apply here
+  either); the two counts always add up to the total, including 0 items;
+* ``t28_task_reassign`` -- another user's task is TaskFlow's usual 404 "Task not
+  found", not a 403 (the lookup must stay owner-scoped, or a stranger could reassign
+  anyone's task); the new owner is looked up only after that scoped lookup succeeds;
+  reassigning to the task's current owner is refused, not a silent no-op;
+* ``t29_tag_summary`` -- a tag's ``note_count`` is the caller's *own* notes carrying
+  it, not every note linked to it (JustNotes' tag-link routes never check whose tag they
+  attach, so another user's note can carry the caller's tag); ``count`` is the number of
+  tags, independent of their note counts; an unused tag lists 0, not absent;
+* ``t30_bulk_delete_notes`` -- all or nothing: an unknown or not-owned id anywhere in
+  the list deletes nothing, even the caller's own notes listed before it (JustNotes'
+  usual order: existence before ownership, "Note not found" before "Not authorized to
+  delete this note"); a repeated id is counted once.
+
 ``files`` are the app files the reference changes (paths relative to the app package:
 ``bench/template_app/app`` for the template, ``bench/import_repos/<repo>/app`` for the
 held-out repos); ``routes`` the routes the ticket touches. ``base`` names the ticket
@@ -563,9 +603,122 @@ HELD_OUT_REPOS: tuple[str, ...] = tuple(t.id for t in REPO_TICKETS)
 # every ticket: the template's (TICKETS, what `--tickets all` runs) and the held-out repos'
 ALL_TICKETS: tuple[Ticket, ...] = (*TICKETS, *REPO_TICKETS)
 
+# ---- N4's fresh held-out set (t25-t30, see the module docstring); no Lattice reference ----
+
+TAGS_API = "api/tags.py"
+
+ROUND4_TEMPLATE: tuple[Ticket, ...] = (
+    Ticket(
+        id="t25_bulk_delete_items",
+        title="Delete several items at once",
+        text="""\
+Cleaning out old items one at a time is tedious. Add `POST /api/v1/items/bulk-delete`
+with the JSON body `{"item_ids": [<item id>, ...]}`. Each listed item is deleted, exactly
+as if `DELETE /api/v1/items/{id}` had been called on it. The answer is `{"deleted":
+<number of different items listed>}`.
+
+- An item that doesn't belong to the caller (and the caller isn't an admin): 403 with
+  detail "Not enough permissions".
+- An unknown id: 404 with detail "Item not found".""",
+        routes=("POST /api/v1/items/bulk-delete",),
+        files=(ITEMS,),
+    ),
+    Ticket(
+        id="t26_move_items",
+        title="Admin endpoint to move all of one user's items to another",
+        text="""\
+Two accounts sometimes need to be consolidated after a re-org. Add
+`POST /api/v1/users/{from_id}/move-items` with the JSON body `{"to_user_id": "<user
+id>"}`, for admins (superusers) only. It makes every item currently owned by the user
+with id `from_id` belong to `to_user_id` instead, and answers `{"moved": <number of
+items moved>}`.
+
+- Either id names no user: 404 with detail "User not found".
+- `from_id` and `to_user_id` are the same user: 400 with detail "Cannot move items to
+  the same user".
+- The `to_user_id` account is deactivated: 400 with detail "Cannot move items to an
+  inactive user".""",
+        routes=("POST /api/v1/users/{from_id}/move-items",),
+        files=(USERS,),
+    ),
+    Ticket(
+        id="t27_item_description_coverage",
+        title="Item description coverage for the signed-in user",
+        text="""\
+The dashboard wants a quick view of how thoroughly people are filling in their items. Add
+`GET /api/v1/items/description-coverage`, returning for the signed-in user's own items:
+
+    {"total": <number of items>, "with_description": <count>, "without_description":
+     <count>}
+
+An item counts as having a description when its `description` is neither null nor an
+empty string. There's no paging: it covers every item the caller owns. Same
+authentication as the other item endpoints.""",
+        routes=("GET /api/v1/items/description-coverage",),
+        files=(ITEMS,),
+    ),
+)
+
+ROUND4_REPO_TICKETS: tuple[Ticket, ...] = (
+    Ticket(
+        id="t28_task_reassign",
+        title="Reassign a task to another user",
+        text="""\
+People switching teams need to hand their open tasks to a teammate. Add
+`POST /api/v1/tasks/{task_id}/reassign` with the JSON body
+`{"new_owner_email": "<email>"}`. It makes the user with that email the task's owner and
+answers with the task in the same shape as `GET /api/v1/tasks/{task_id}`.
+
+- No user has that email: 404 with detail "User not found".
+- The new owner's account is deactivated: 400 with detail "Cannot reassign a task to an
+  inactive user".
+- The task already belongs to that user: 400 with detail "Task already belongs to this
+  user".""",
+        routes=("POST /api/v1/tasks/{task_id}/reassign",),
+        files=(TASKFLOW_ROUTES,),
+        repo="taskflow",
+    ),
+    Ticket(
+        id="t29_tag_summary",
+        title="Tag usage summary for the signed-in user",
+        text="""\
+People want to see how their tags are actually used. Add `GET /tags/summary`, returning
+
+    {"data": [{"id": <tag id>, "name": <name>, "note_count": <n>}, ...],
+     "count": <number of tags>}
+
+for the signed-in user's own tags, ordered by name, A to Z. A tag nobody has used yet
+lists `note_count: 0`.""",
+        routes=("GET /tags/summary",),
+        files=(TAGS_API,),
+        repo="justnotes",
+    ),
+    Ticket(
+        id="t30_bulk_delete_notes",
+        title="Delete several notes at once",
+        text="""\
+People clearing out old notes want to remove several at once instead of one at a time.
+Add `POST /notes/bulk-delete` with the JSON body `{"note_ids": [<note id>, ...]}`. Each
+listed note is deleted, exactly as if `DELETE /notes/{id}` had been called on it. The
+answer is `{"deleted": <number of different notes listed>}`.
+
+- If a listed note can't be found: 404 with detail "Note not found".
+- If a listed note isn't the caller's own: 403 with detail "Not authorized to delete this
+  note".""",
+        routes=("POST /notes/bulk-delete",),
+        files=(NOTES,),
+        repo="justnotes",
+    ),
+)
+
+# t25-t30, the order they were written in (see the module docstring)
+ROUND4_NEW: tuple[str, ...] = tuple(t.id for t in (*ROUND4_TEMPLATE, *ROUND4_REPO_TICKETS))
+# every ticket, t1-t30: what `--tickets round4` runs (round3's t1-t24 plus the fresh set)
+ROUND4_TICKETS: tuple[Ticket, ...] = (*ALL_TICKETS, *ROUND4_TEMPLATE, *ROUND4_REPO_TICKETS)
+
 
 def ticket(ticket_id: str) -> Ticket:
-    for t in ALL_TICKETS:
+    for t in ROUND4_TICKETS:
         if t.id == ticket_id:
             return t
     raise KeyError(f"unknown ticket {ticket_id!r}")

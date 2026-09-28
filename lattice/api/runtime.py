@@ -411,7 +411,7 @@ def _authenticate(
     that may not call the endpoint: 403 -- in that order."""
     rows = conn.execute(auth_sql(plan, dialect), (token,)).fetchmany(2)
     if not rows:
-        raise _unauthorized(plan)
+        raise _no_caller(plan, dialect, conn, token)
     if len(rows) > 1:  # NativeToken(unique="runtime"): never pick one of them
         raise ApiRuntimeError("R311", plan.span, ambiguous_caller(plan.token_lookup))
     row = rows[0]
@@ -438,6 +438,26 @@ def _project(result: Result, columns: Sequence[str]) -> list[tuple[Any, ...]]:
 
 def _unauthorized(plan: EndpointPlan) -> _ErrorResponse:
     return _ErrorResponse(401, "unauthorized", plan.unauthorized_detail)
+
+
+def decode_sql(plan: EndpointPlan, dialect: Dialect) -> str:
+    """The auth native applied to the token (NativeToken.invalid / .unknown tell an
+    undecodable token from one naming no user)."""
+    assert plan.auth_native is not None
+    return "SELECT " + dialect.native(plan.auth_native, [dialect.positional_bind()])
+
+
+def _no_caller(plan: EndpointPlan, dialect: Dialect, conn: Any, token: str) -> _ErrorResponse:
+    """A token naming no caller: NativeToken.invalid when the native decodes it to null,
+    NativeToken.unknown when the value matches no row -- else the 401."""
+    if plan.auth_native is None or (plan.token_invalid is None and plan.token_unknown is None):
+        return _unauthorized(plan)
+    decoded = conn.execute(decode_sql(plan, dialect), (token,)).fetchone()[0]
+    answer = plan.token_invalid if decoded is None else plan.token_unknown
+    if answer is None:
+        return _unauthorized(plan)
+    status, detail = answer
+    return _ErrorResponse(status, STATUS_CODES[status], detail)
 
 
 def _error(err: ErrorSpec) -> _ErrorResponse:

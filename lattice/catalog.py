@@ -331,7 +331,8 @@ API_AMBIENT = (
 )
 # The expression subset the API profile compiles to SQL (anything else is L841).
 API_FN_FUNCS = frozenset(
-    {"lower", "upper", "strip", "len", "contains", "starts_with", "year", "month", "day"}
+    {"lower", "upper", "strip", "len", "contains", "starts_with", "concat", "year", "month",
+     "day"}
     | API_ONLY_FNS
 )
 API_AGG_FUNCS = frozenset(

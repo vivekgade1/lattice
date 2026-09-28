@@ -13,7 +13,7 @@ def test_multi_error_program(profile, program):
         'raw = load("orders.csv", schema=Orders)\n'
         'paid = where(raw, col("status") == "paid")\n'
         'paid = where(raw, col("qty") > 1)\n'  # L201
-        'w = derive(where(raw, col("qty") > 2), t=col("qty"))\n'  # L301
+        'w = derive(raw, t=limit(raw, n=1))\n'  # L301
         'bad = derive(raw, t=col("prce") * 2)\n'  # L401
         'nb = where(raw, col("qty"))\n'  # L403
         'write(paid, "/tmp/out.parquet")\n'  # L501

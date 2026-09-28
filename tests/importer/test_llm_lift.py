@@ -385,10 +385,13 @@ def test_repo_cost_exhaustion_leaves_a_consistent_import(two_broken, tmp_path):
     close = _run(two_broken, gen, tmp_path, config=config)
     assert len(gen.calls) == 2  # the cap is reached after the second call
     assert close.budget is not None and close.budget.exhausted_by is not None
+    # each route gets its share of the repo budget (one call each), cheapest first
     first, second = close.outcome("read_item"), close.outcome("delete_item")
     assert first.status == second.status == "island"
-    assert first.reason.startswith("budget: the repo's cost cap")
-    assert second.reason.startswith("budget: the repo's cost cap") and second.attempts == []
+    assert len(first.attempts) == len(second.attempts) == 1
+    reasons = sorted(o.reason for o in (first, second))
+    assert reasons[0].startswith("budget: the repo's cost cap")
+    assert reasons[1].startswith("budget: the route's share of the repo budget")
     assert close.outcome("read_items").rung == "R0"
 
     out = write_import(close, tmp_path / "lattice_import", repo_root=REPO_ROOT, package=PACKAGE)

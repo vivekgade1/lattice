@@ -10,31 +10,31 @@
     "routes": 10,
     "R0": 1,
     "R1": 4,
-    "R2": 0,
+    "R2": 1,
     "R3": 0,
-    "R4": 5,
+    "R4": 4,
     "needs-llm": 0,
-    "verified": 5,
-    "lattice_pct": 50.0,
+    "verified": 6,
+    "lattice_pct": 60.0,
     "carve_out_pct": 0.0,
-    "island_pct": 50.0,
+    "island_pct": 40.0,
     "needs_llm_pct": 0.0,
-    "verified_pct": 50.0,
+    "verified_pct": 60.0,
     "complete": false,
     "lines": {
-      "lattice": 51,
-      "island": 61
+      "lattice": 62,
+      "island": 50
     },
     "ast_nodes": {
-      "lattice": 303,
-      "island": 335
+      "lattice": 362,
+      "island": 276
     },
     "tiers": {
-      "T0": 5,
+      "T0": 6,
       "T1": 0,
       "T2": 0,
       "T3": 0,
-      "island": 5,
+      "island": 4,
       "needs-llm": 0
     },
     "carve_kinds": {
@@ -44,22 +44,22 @@
   },
   "budget": {
     "max_rounds": null,
-    "max_cost_usd": 4.0,
+    "max_cost_usd": 2.4,
     "max_route_rounds": null,
     "max_route_cost_usd": null,
-    "rounds": 33,
-    "cost_usd": 2.93898,
+    "rounds": 26,
+    "cost_usd": 1.455058,
     "exhausted": false,
     "exhausted_by": null
   },
   "cost": {
-    "usd": 2.93898,
+    "usd": 1.455058,
     "notes_usd": 0,
-    "per_llm_verified_route_usd": 0.734745,
-    "input_tokens": 472833,
-    "output_tokens": 244252,
-    "llm_rounds": 33,
-    "wall_s": 2656.794
+    "per_llm_verified_route_usd": 0.291012,
+    "input_tokens": 405861,
+    "output_tokens": 106196,
+    "llm_rounds": 26,
+    "wall_s": 1158.139
   },
   "routes": [
     {
@@ -85,7 +85,7 @@
       },
       "deviations": [],
       "rounds": 3,
-      "cost_usd": 0.087704,
+      "cost_usd": 0.065176,
       "attempts": [
         {
           "route": "register",
@@ -96,10 +96,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.065427,
-          "input_tokens": 11561,
-          "output_tokens": 3738,
-          "latency_s": 39.369,
+          "cost_usd": 0.04426,
+          "input_tokens": 11630,
+          "output_tokens": 1604,
+          "latency_s": 16.291,
           "tally": null
         },
         {
@@ -110,16 +110,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: register.boundary.password.max: status differs",
-          "cost_usd": 0.009462,
-          "input_tokens": 11892,
-          "output_tokens": 341,
-          "latency_s": 4.044,
+          "reason": "verification failed: register.boundary.password.below_min: status differs; register.boundary.password.above_max: status differs",
+          "cost_usd": 0.009288,
+          "input_tokens": 11972,
+          "output_tokens": 320,
+          "latency_s": 4.408,
           "tally": [
-            12,
-            7,
+            13,
+            5,
             0,
-            1
+            2
           ]
         },
         {
@@ -131,10 +131,10 @@
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.012814,
-          "input_tokens": 12783,
-          "output_tokens": 498,
-          "latency_s": 5.893,
+          "cost_usd": 0.011628,
+          "input_tokens": 13377,
+          "output_tokens": 273,
+          "latency_s": 4.326,
           "tally": [
             13,
             7,
@@ -168,12 +168,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 39, 40, 46, 51",
-      "reason": "cut off",
-      "gap": "missing construct",
+      "reason": "budget: the route's share of the repo budget ($0.29) is reached",
+      "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 7,
-      "cost_usd": 1.002979,
+      "rounds": 4,
+      "cost_usd": 0.45988,
       "attempts": [
         {
           "route": "login",
@@ -181,13 +181,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.16585,
-          "input_tokens": 11791,
-          "output_tokens": 16000,
-          "latency_s": 173.357,
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.083684,
+          "input_tokens": 11860,
+          "output_tokens": 7782,
+          "latency_s": 86.176,
           "tally": null
         },
         {
@@ -196,13 +196,13 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.165982,
-          "input_tokens": 11857,
-          "output_tokens": 16000,
-          "latency_s": 176.177,
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.038924,
+          "input_tokens": 12315,
+          "output_tokens": 3215,
+          "latency_s": 34.406,
           "tally": null
         },
         {
@@ -211,13 +211,13 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "invalid",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.117944,
-          "input_tokens": 11923,
-          "output_tokens": 11183,
-          "latency_s": 123.331,
+          "reason": "The answer is not a single endpoint for this route: line 4: `id_to_str` is neither @endpoint nor @step",
+          "cost_usd": 0.09492,
+          "input_tokens": 12868,
+          "output_tokens": 8704,
+          "latency_s": 97.128,
           "tally": null
         },
         {
@@ -229,55 +229,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.026532,
-          "input_tokens": 12257,
-          "output_tokens": 1975,
-          "latency_s": 21.353,
-          "tally": null
-        },
-        {
-          "route": "login",
-          "rung": "R2",
-          "round": 1,
-          "kind": "relift",
-          "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.19016,
-          "input_tokens": 12617,
-          "output_tokens": 16000,
-          "latency_s": 174.492,
-          "tally": null
-        },
-        {
-          "route": "login",
-          "rung": "R2",
-          "round": 2,
-          "kind": "relift",
-          "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.167628,
-          "input_tokens": 12680,
-          "output_tokens": 16000,
-          "latency_s": 166.43,
-          "tally": null
-        },
-        {
-          "route": "login",
-          "rung": "R3",
-          "round": 1,
-          "kind": "carve-procedure",
-          "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.168882,
-          "input_tokens": 13307,
-          "output_tokens": 16000,
-          "latency_s": 169.448,
+          "cost_usd": 0.242352,
+          "input_tokens": 13319,
+          "output_tokens": 23357,
+          "latency_s": 261.23,
           "tally": null
         }
       ],
@@ -287,9 +242,7 @@
       "procedure_count": 0,
       "procedure_lines": 0,
       "procedures": [],
-      "notes": [
-        "R3: bench.import_repos.taskflow.app.auth:authenticate_user: outside the T2 subset (uses the module 'sqlmodel', outside the T2 standard-library allowlist) and not a simple native (parameter 'session' is not a required scalar)"
-      ],
+      "notes": [],
       "original": {
         "lines": 21,
         "ast_nodes": 110
@@ -313,34 +266,12 @@
       "reason": "",
       "gap": null,
       "tally": {
-        "equal": 4,
+        "equal": 7,
         "equal_under_rule": 0,
-        "deviation": 3,
+        "deviation": 0,
         "mismatch": 0
       },
-      "deviations": [
-        {
-          "case": "read_current_user.bad_token",
-          "id": "invalid-token-401",
-          "kind": "policy",
-          "status": 401,
-          "reason": "The original answers an invalid bearer token with 401 'Could not validate credentials'; Lattice's auth answers every missing or invalid credential with 401."
-        },
-        {
-          "case": "read_current_user.unknown_user_token",
-          "id": "unknown-user-token",
-          "kind": "policy",
-          "status": 401,
-          "reason": "A valid token naming a user that does not exist: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller."
-        },
-        {
-          "case": "read_current_user.claimless_token",
-          "id": "claimless-token",
-          "kind": "policy",
-          "status": 401,
-          "reason": "A valid token without the caller's claim: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller."
-        }
-      ],
+      "deviations": [],
       "rounds": 0,
       "cost_usd": 0,
       "attempts": [],
@@ -429,43 +360,21 @@
       "path": "/api/v1/tasks",
       "auth": "Customer",
       "status": "verified",
-      "rung": "R1",
+      "rung": "R2",
       "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 43",
       "reason": "",
       "gap": null,
       "tally": {
-        "equal": 14,
+        "equal": 17,
         "equal_under_rule": 6,
-        "deviation": 3,
+        "deviation": 0,
         "mismatch": 0
       },
-      "deviations": [
-        {
-          "case": "create_task.bad_token",
-          "id": "invalid-token-401",
-          "kind": "policy",
-          "status": 401,
-          "reason": "The original answers an invalid bearer token with 401 'Could not validate credentials'; Lattice's auth answers every missing or invalid credential with 401."
-        },
-        {
-          "case": "create_task.unknown_user_token",
-          "id": "unknown-user-token",
-          "kind": "policy",
-          "status": 401,
-          "reason": "A valid token naming a user that does not exist: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller."
-        },
-        {
-          "case": "create_task.claimless_token",
-          "id": "claimless-token",
-          "kind": "policy",
-          "status": 401,
-          "reason": "A valid token without the caller's claim: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller."
-        }
-      ],
-      "rounds": 4,
-      "cost_usd": 0.122398,
+      "deviations": [],
+      "rounds": 6,
+      "cost_usd": 0.177666,
       "attempts": [
         {
           "route": "create_task",
@@ -476,10 +385,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.043313,
-          "input_tokens": 12039,
-          "output_tokens": 1431,
-          "latency_s": 14.284,
+          "cost_usd": 0.01284,
+          "input_tokens": 12108,
+          "output_tokens": 648,
+          "latency_s": 6.894,
           "tally": null
         },
         {
@@ -488,19 +397,14 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "mismatch",
+          "outcome": "checker",
           "stop_reason": "end_turn",
-          "reason": "verification failed: create_task.happy: database effects differ; create_task.admin: database effects differ; create_task.boundary.title.min: database effects differ; create_task.boundary.title.below_min: status differs; create_task.boundary.title.max: database effects differ; create_task.boundary.title.above_max: status differs; create_task.boundary.description.max: database effects differ; create_task.boundary.description.above_max: status differs; create_task.extra.unknown: database effects differ; create_task.extra.columns: database effects differ; create_task.hyp.0: database effects differ; create_task.hyp.1: database effects differ; create_task.hyp.2: database effects differ; create_task.hyp.3: database effects differ; create_task.hyp.4: database effects differ",
-          "cost_usd": 0.010652,
-          "input_tokens": 12422,
-          "output_tokens": 354,
-          "latency_s": 4.168,
-          "tally": [
-            2,
-            3,
-            3,
-            15
-          ]
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.01003,
+          "input_tokens": 12473,
+          "output_tokens": 294,
+          "latency_s": 2.632,
+          "tally": null
         },
         {
           "route": "create_task",
@@ -510,16 +414,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: create_task.happy: database effects differ; create_task.admin: database effects differ; create_task.boundary.title.min: database effects differ; create_task.boundary.title.max: database effects differ; create_task.boundary.description.max: database effects differ; create_task.extra.unknown: database effects differ; create_task.extra.columns: database effects differ; create_task.hyp.0: database effects differ; create_task.hyp.1: database effects differ; create_task.hyp.2: database effects differ; create_task.hyp.3: database effects differ; create_task.hyp.4: database effects differ",
-          "cost_usd": 0.028102,
-          "input_tokens": 19522,
-          "output_tokens": 679,
-          "latency_s": 8.448,
+          "reason": "verification failed: create_task.happy: database effects differ; create_task.admin: database effects differ; create_task.boundary.title.min: database effects differ; create_task.boundary.title.below_min: status differs; create_task.boundary.title.max: database effects differ; create_task.boundary.title.above_max: status differs; create_task.boundary.description.max: database effects differ; create_task.boundary.description.above_max: status differs; create_task.extra.unknown: database effects differ; create_task.extra.columns: database effects differ; create_task.hyp.0: database effects differ; create_task.hyp.1: database effects differ; create_task.hyp.2: database effects differ; create_task.hyp.3: database effects differ; create_task.hyp.4: database effects differ",
+          "cost_usd": 0.011762,
+          "input_tokens": 12904,
+          "output_tokens": 381,
+          "latency_s": 4.644,
           "tally": [
-            2,
-            6,
+            5,
             3,
-            12
+            0,
+            15
           ]
         },
         {
@@ -528,17 +432,57 @@
           "round": 4,
           "kind": "repair",
           "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: create_task.happy: database effects differ; create_task.admin: database effects differ; create_task.boundary.title.min: database effects differ; create_task.boundary.title.max: database effects differ; create_task.boundary.description.max: database effects differ; create_task.extra.unknown: database effects differ; create_task.extra.columns: database effects differ; create_task.hyp.0: database effects differ; create_task.hyp.1: database effects differ; create_task.hyp.2: database effects differ; create_task.hyp.3: database effects differ; create_task.hyp.4: database effects differ",
+          "cost_usd": 0.026958,
+          "input_tokens": 20052,
+          "output_tokens": 471,
+          "latency_s": 5.598,
+          "tally": [
+            5,
+            6,
+            0,
+            12
+          ]
+        },
+        {
+          "route": "create_task",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: create_task.happy: database effects differ; create_task.admin: database effects differ; create_task.boundary.title.min: database effects differ; create_task.boundary.title.max: database effects differ; create_task.boundary.description.max: database effects differ; create_task.extra.unknown: database effects differ; create_task.extra.columns: database effects differ; create_task.hyp.0: database effects differ; create_task.hyp.1: database effects differ; create_task.hyp.2: database effects differ; create_task.hyp.3: database effects differ; create_task.hyp.4: database effects differ",
+          "cost_usd": 0.0376,
+          "input_tokens": 25748,
+          "output_tokens": 396,
+          "latency_s": 4.899,
+          "tally": [
+            5,
+            6,
+            0,
+            12
+          ]
+        },
+        {
+          "route": "create_task",
+          "rung": "R2",
+          "round": 2,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.04033,
-          "input_tokens": 25181,
-          "output_tokens": 770,
-          "latency_s": 8.841,
+          "cost_usd": 0.078476,
+          "input_tokens": 31461,
+          "output_tokens": 3341,
+          "latency_s": 38.582,
           "tally": [
-            14,
+            17,
             6,
-            3,
+            0,
             0
           ]
         }
@@ -571,36 +515,14 @@
       "reason": "",
       "gap": null,
       "tally": {
-        "equal": 12,
+        "equal": 15,
         "equal_under_rule": 11,
-        "deviation": 3,
+        "deviation": 0,
         "mismatch": 0
       },
-      "deviations": [
-        {
-          "case": "read_tasks.bad_token",
-          "id": "invalid-token-401",
-          "kind": "policy",
-          "status": 401,
-          "reason": "The original answers an invalid bearer token with 401 'Could not validate credentials'; Lattice's auth answers every missing or invalid credential with 401."
-        },
-        {
-          "case": "read_tasks.unknown_user_token",
-          "id": "unknown-user-token",
-          "kind": "policy",
-          "status": 401,
-          "reason": "A valid token naming a user that does not exist: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller."
-        },
-        {
-          "case": "read_tasks.claimless_token",
-          "id": "claimless-token",
-          "kind": "policy",
-          "status": 401,
-          "reason": "A valid token without the caller's claim: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller."
-        }
-      ],
-      "rounds": 3,
-      "cost_usd": 0.073145,
+      "deviations": [],
+      "rounds": 2,
+      "cost_usd": 0.027122,
       "attempts": [
         {
           "route": "read_tasks",
@@ -611,10 +533,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.016328,
-          "input_tokens": 12830,
-          "output_tokens": 840,
-          "latency_s": 8.886,
+          "cost_usd": 0.012752,
+          "input_tokens": 12899,
+          "output_tokens": 481,
+          "latency_s": 4.816,
           "tally": null
         },
         {
@@ -623,37 +545,17 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "mismatch",
-          "stop_reason": "end_turn",
-          "reason": "verification failed: read_tasks.boundary.task_status.not_a_choice: status differs",
-          "cost_usd": 0.01482,
-          "input_tokens": 13381,
-          "output_tokens": 579,
-          "latency_s": 5.889,
-          "tally": [
-            11,
-            11,
-            3,
-            1
-          ]
-        },
-        {
-          "route": "read_tasks",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.041996,
-          "input_tokens": 14304,
-          "output_tokens": 3112,
-          "latency_s": 33.655,
+          "cost_usd": 0.01437,
+          "input_tokens": 13433,
+          "output_tokens": 536,
+          "latency_s": 5.578,
           "tally": [
-            12,
+            15,
             11,
-            3,
+            0,
             0
           ]
         }
@@ -686,36 +588,14 @@
       "reason": "",
       "gap": null,
       "tally": {
-        "equal": 7,
+        "equal": 10,
         "equal_under_rule": 1,
-        "deviation": 3,
+        "deviation": 0,
         "mismatch": 0
       },
-      "deviations": [
-        {
-          "case": "read_task.bad_token",
-          "id": "invalid-token-401",
-          "kind": "policy",
-          "status": 401,
-          "reason": "The original answers an invalid bearer token with 401 'Could not validate credentials'; Lattice's auth answers every missing or invalid credential with 401."
-        },
-        {
-          "case": "read_task.unknown_user_token",
-          "id": "unknown-user-token",
-          "kind": "policy",
-          "status": 401,
-          "reason": "A valid token naming a user that does not exist: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller."
-        },
-        {
-          "case": "read_task.claimless_token",
-          "id": "claimless-token",
-          "kind": "policy",
-          "status": 401,
-          "reason": "A valid token without the caller's claim: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller."
-        }
-      ],
+      "deviations": [],
       "rounds": 2,
-      "cost_usd": 0.019504,
+      "cost_usd": 0.017964,
       "attempts": [
         {
           "route": "read_task",
@@ -726,10 +606,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.008464,
-          "input_tokens": 12043,
-          "output_tokens": 211,
-          "latency_s": 3.034,
+          "cost_usd": 0.008418,
+          "input_tokens": 12112,
+          "output_tokens": 205,
+          "latency_s": 2.532,
           "tally": null
         },
         {
@@ -741,14 +621,14 @@
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.01104,
-          "input_tokens": 12371,
-          "output_tokens": 403,
-          "latency_s": 4.559,
+          "cost_usd": 0.009546,
+          "input_tokens": 12401,
+          "output_tokens": 260,
+          "latency_s": 3.244,
           "tally": [
-            7,
+            10,
             1,
-            3,
+            0,
             0
           ]
         }
@@ -783,7 +663,7 @@
       "tally": null,
       "deviations": [],
       "rounds": 7,
-      "cost_usd": 0.811067,
+      "cost_usd": 0.688522,
       "attempts": [
         {
           "route": "update_task",
@@ -794,10 +674,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.100138,
-          "input_tokens": 12730,
-          "output_tokens": 9241,
-          "latency_s": 96.221,
+          "cost_usd": 0.034652,
+          "input_tokens": 12799,
+          "output_tokens": 2691,
+          "latency_s": 28.825,
           "tally": null
         },
         {
@@ -809,10 +689,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.102652,
-          "input_tokens": 13322,
-          "output_tokens": 9374,
-          "latency_s": 104.96,
+          "cost_usd": 0.04026,
+          "input_tokens": 13378,
+          "output_tokens": 3136,
+          "latency_s": 33.096,
           "tally": null
         },
         {
@@ -821,19 +701,14 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "mismatch",
+          "outcome": "checker",
           "stop_reason": "end_turn",
-          "reason": "verification failed: update_task.boundary.title.below_min: status differs; update_task.boundary.title.above_max: status differs; update_task.boundary.description.above_max: status differs; update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
-          "cost_usd": 0.016336,
-          "input_tokens": 13834,
-          "output_tokens": 640,
-          "latency_s": 7.119,
-          "tally": [
-            19,
-            3,
-            3,
-            8
-          ]
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.019444,
+          "input_tokens": 14025,
+          "output_tokens": 925,
+          "latency_s": 10.057,
+          "tally": null
         },
         {
           "route": "update_task",
@@ -841,14 +716,19 @@
           "round": 4,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.027592,
-          "input_tokens": 17847,
-          "output_tokens": 963,
-          "latency_s": 9.321,
-          "tally": null
+          "reason": "verification failed: update_task.happy: database effects differ; update_task.boundary.title.min: database effects differ; update_task.boundary.title.below_min: status differs; update_task.boundary.title.max: database effects differ; update_task.boundary.title.above_max: status differs; update_task.boundary.description.max: database effects differ; update_task.boundary.description.above_max: status differs; update_task.extra.unknown: database effects differ; update_task.extra.columns: database effects differ; update_task.partial.title: database effects differ; update_task.partial.title_null: body differs; update_task.partial.description: database effects differ; update_task.partial.description_null: database effects differ; update_task.partial.status: database effects differ; update_task.partial.status_null: body differs; update_task.partial.priority: database effects differ; update_task.partial.priority_null: body differs; update_task.partial.due_date: database effects differ; update_task.partial.due_date_null: database effects differ; update_task.partial.empty: database effects differ; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+          "cost_usd": 0.01544,
+          "input_tokens": 14513,
+          "output_tokens": 427,
+          "latency_s": 5.31,
+          "tally": [
+            8,
+            3,
+            0,
+            22
+          ]
         },
         {
           "route": "update_task",
@@ -856,14 +736,19 @@
           "round": 1,
           "kind": "relift",
           "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.202583,
-          "input_tokens": 18829,
-          "output_tokens": 16000,
-          "latency_s": 173.825,
-          "tally": null
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: update_task.partial.title: database effects differ; update_task.partial.title_null: body differs; update_task.partial.description: database effects differ; update_task.partial.description_null: database effects differ; update_task.partial.status: database effects differ; update_task.partial.status_null: body differs; update_task.partial.priority: database effects differ; update_task.partial.priority_null: body differs; update_task.partial.due_date: database effects differ; update_task.partial.due_date_null: database effects differ; update_task.partial.empty: database effects differ; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+          "cost_usd": 0.030538,
+          "input_tokens": 21807,
+          "output_tokens": 478,
+          "latency_s": 5.663,
+          "tally": [
+            14,
+            6,
+            0,
+            13
+          ]
         },
         {
           "route": "update_task",
@@ -871,13 +756,13 @@
           "round": 2,
           "kind": "relift",
           "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.180052,
-          "input_tokens": 18892,
-          "output_tokens": 16000,
-          "latency_s": 170.756,
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.170122,
+          "input_tokens": 24779,
+          "output_tokens": 13842,
+          "latency_s": 151.318,
           "tally": null
         },
         {
@@ -889,10 +774,10 @@
           "outcome": "truncated",
           "stop_reason": "max_tokens",
           "reason": "cut off",
-          "cost_usd": 0.181712,
-          "input_tokens": 19722,
-          "output_tokens": 16000,
-          "latency_s": 171.652,
+          "cost_usd": 0.378066,
+          "input_tokens": 26553,
+          "output_tokens": 32000,
+          "latency_s": 334.476,
           "tally": null
         }
       ],
@@ -918,17 +803,22 @@
       "method": "DELETE",
       "path": "/api/v1/tasks/{task_id}",
       "auth": "Customer",
-      "status": "island",
-      "rung": "R4",
-      "by": null,
+      "status": "verified",
+      "rung": "R1",
+      "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 105, 106, 107",
-      "reason": "cut off",
-      "gap": "missing construct",
-      "tally": null,
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 9,
+        "equal_under_rule": 1,
+        "deviation": 0,
+        "mismatch": 0
+      },
       "deviations": [],
-      "rounds": 7,
-      "cost_usd": 0.822184,
+      "rounds": 2,
+      "cost_usd": 0.018728,
       "attempts": [
         {
           "route": "delete_task",
@@ -939,10 +829,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.031291,
-          "input_tokens": 12323,
+          "cost_usd": 0.008648,
+          "input_tokens": 12392,
           "output_tokens": 172,
-          "latency_s": 2.356,
+          "latency_s": 2.479,
           "tally": null
         },
         {
@@ -951,236 +841,40 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "mismatch",
+          "outcome": "verified",
           "stop_reason": "end_turn",
-          "reason": "verification failed: delete_task.happy: status differs; delete_task.other_user_row: status differs; delete_task.missing_id: status differs; delete_task.malformed_id: status differs",
-          "cost_usd": 0.011076,
-          "input_tokens": 12614,
-          "output_tokens": 358,
-          "latency_s": 4.33,
+          "reason": "",
+          "cost_usd": 0.01008,
+          "input_tokens": 12683,
+          "output_tokens": 257,
+          "latency_s": 3.48,
           "tally": [
-            3,
+            9,
+            1,
             0,
-            3,
-            4
+            0
           ]
-        },
-        {
-          "route": "delete_task",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "mismatch",
-          "stop_reason": "end_turn",
-          "reason": "verification failed: delete_task.happy: status differs; delete_task.other_user_row: status differs; delete_task.missing_id: status differs; delete_task.malformed_id: status differs",
-          "cost_usd": 0.153516,
-          "input_tokens": 13609,
-          "output_tokens": 14403,
-          "latency_s": 167.717,
-          "tally": [
-            3,
-            0,
-            3,
-            4
-          ]
-        },
-        {
-          "route": "delete_task",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "mismatch",
-          "stop_reason": "end_turn",
-          "reason": "verification failed: delete_task.happy: status differs; delete_task.other_user_row: status differs; delete_task.missing_id: status differs; delete_task.malformed_id: status differs",
-          "cost_usd": 0.081356,
-          "input_tokens": 14609,
-          "output_tokens": 6987,
-          "latency_s": 80.065,
-          "tally": [
-            3,
-            0,
-            3,
-            4
-          ]
-        },
-        {
-          "route": "delete_task",
-          "rung": "R2",
-          "round": 1,
-          "kind": "relift",
-          "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.196115,
-          "input_tokens": 15595,
-          "output_tokens": 16000,
-          "latency_s": 178.579,
-          "tally": null
-        },
-        {
-          "route": "delete_task",
-          "rung": "R2",
-          "round": 2,
-          "kind": "relift",
-          "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.173584,
-          "input_tokens": 15658,
-          "output_tokens": 16000,
-          "latency_s": 176.508,
-          "tally": null
-        },
-        {
-          "route": "delete_task",
-          "rung": "R3",
-          "round": 1,
-          "kind": "carve-procedure",
-          "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.175244,
-          "input_tokens": 16488,
-          "output_tokens": 16000,
-          "latency_s": 167.654,
-          "tally": null
         }
       ],
       "natives": [],
-      "tier": "island",
+      "tier": "T0",
       "carve_kind": "none",
       "procedure_count": 0,
       "procedure_lines": 0,
       "procedures": [],
-      "notes": [
-        "R3: bench.import_repos.taskflow.app.crud:get_task: outside the T2 subset (uses the module 'sqlmodel', outside the T2 standard-library allowlist) and not a simple native (parameter 'session' is not a required scalar); bench.import_repos.taskflow.app.crud:delete_task: outside the T2 subset (effectful (bench.import_repos.taskflow.app.crud:delete_task: session.delete; session.commit)) and not a simple native (parameter 'session' is not a required scalar)"
-      ],
+      "notes": [],
       "original": {
         "lines": 11,
         "ast_nodes": 59
       }
     }
   ],
-  "behaviour_changes": [
-    {
-      "route": "read_current_user",
-      "id": "invalid-token-401",
-      "kind": "policy",
-      "reason": "The original answers an invalid bearer token with 401 'Could not validate credentials'; Lattice's auth answers every missing or invalid credential with 401.",
-      "cases": [
-        "read_current_user.bad_token"
-      ]
-    },
-    {
-      "route": "read_current_user",
-      "id": "unknown-user-token",
-      "kind": "policy",
-      "reason": "A valid token naming a user that does not exist: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller.",
-      "cases": [
-        "read_current_user.unknown_user_token"
-      ]
-    },
-    {
-      "route": "read_current_user",
-      "id": "claimless-token",
-      "kind": "policy",
-      "reason": "A valid token without the caller's claim: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller.",
-      "cases": [
-        "read_current_user.claimless_token"
-      ]
-    },
-    {
-      "route": "create_task",
-      "id": "invalid-token-401",
-      "kind": "policy",
-      "reason": "The original answers an invalid bearer token with 401 'Could not validate credentials'; Lattice's auth answers every missing or invalid credential with 401.",
-      "cases": [
-        "create_task.bad_token"
-      ]
-    },
-    {
-      "route": "create_task",
-      "id": "unknown-user-token",
-      "kind": "policy",
-      "reason": "A valid token naming a user that does not exist: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller.",
-      "cases": [
-        "create_task.unknown_user_token"
-      ]
-    },
-    {
-      "route": "create_task",
-      "id": "claimless-token",
-      "kind": "policy",
-      "reason": "A valid token without the caller's claim: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller.",
-      "cases": [
-        "create_task.claimless_token"
-      ]
-    },
-    {
-      "route": "read_tasks",
-      "id": "invalid-token-401",
-      "kind": "policy",
-      "reason": "The original answers an invalid bearer token with 401 'Could not validate credentials'; Lattice's auth answers every missing or invalid credential with 401.",
-      "cases": [
-        "read_tasks.bad_token"
-      ]
-    },
-    {
-      "route": "read_tasks",
-      "id": "unknown-user-token",
-      "kind": "policy",
-      "reason": "A valid token naming a user that does not exist: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller.",
-      "cases": [
-        "read_tasks.unknown_user_token"
-      ]
-    },
-    {
-      "route": "read_tasks",
-      "id": "claimless-token",
-      "kind": "policy",
-      "reason": "A valid token without the caller's claim: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller.",
-      "cases": [
-        "read_tasks.claimless_token"
-      ]
-    },
-    {
-      "route": "read_task",
-      "id": "invalid-token-401",
-      "kind": "policy",
-      "reason": "The original answers an invalid bearer token with 401 'Could not validate credentials'; Lattice's auth answers every missing or invalid credential with 401.",
-      "cases": [
-        "read_task.bad_token"
-      ]
-    },
-    {
-      "route": "read_task",
-      "id": "unknown-user-token",
-      "kind": "policy",
-      "reason": "A valid token naming a user that does not exist: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller.",
-      "cases": [
-        "read_task.unknown_user_token"
-      ]
-    },
-    {
-      "route": "read_task",
-      "id": "claimless-token",
-      "kind": "policy",
-      "reason": "A valid token without the caller's claim: the original answers 401 'Could not validate credentials'; Lattice's token auth answers 401 like any token naming no caller.",
-      "cases": [
-        "read_task.claimless_token"
-      ]
-    }
-  ],
+  "behaviour_changes": [],
   "islands": [
     {
       "route": "login",
-      "reason": "cut off",
-      "gap": "missing construct"
+      "reason": "budget: the route's share of the repo budget ($0.29) is reached",
+      "gap": "budget"
     },
     {
       "route": "service_info",
@@ -1194,11 +888,6 @@
     },
     {
       "route": "update_task",
-      "reason": "cut off",
-      "gap": "missing construct"
-    },
-    {
-      "route": "delete_task",
       "reason": "cut off",
       "gap": "missing construct"
     }
