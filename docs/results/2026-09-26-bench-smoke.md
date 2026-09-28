@@ -798,3 +798,65 @@ t19-t24's status is unchanged from the previous import (TaskFlow's task routes a
 | JustNotes | 6/30 | 10/30 | **+4 routes** (`get_notes_summarize`, `get_notes_related`, `get_note`, `get_user_keywords`, `list_users` newly verified; `get_notes_extend` no longer verified, net +4); ownership now sound on 5 tables (was 0, all "unclear"); cost $6.57 -> $6.01 |
 
 TaskFlow's verified/island route *membership* didn't move -- it's still bottlenecked by `login`'s checker refusal and `update_task`'s `PATCH`-partial-null semantics, not by ownership -- but its one ownership decision (`Task`) went from unclear to sound. JustNotes gained 4 routes net, and -- more importantly for round 5's arm L -- every table it touches now has a sound owner or `owner_via`, so edits that write `accessible()`/`owner=` against Note, Tag, Keyword or their link tables are no longer refused for a profile gap (this is exactly the lever the round-4 write-up above flagged: "the imported TaskFlow and JustNotes profiles leave table owners unset... every `accessible`/`mine`/`owner=` the model writes is refused"). No importer bug was hit in this run; both re-imports completed under budget with no CLI usage-limit error.
+
+## Round 5 — pre-registered decision experiment: language vs checks (900 runs, Claude CLI, 2026-09-28)
+
+**Setup.**
+- Spec: `docs/superpowers/specs/2026-09-28-lattice-round5-decision-experiment.md`.
+- 5 arms × 30 tickets × 2 models × 3 reps, sent through `claude -p` with context isolated and the API key stripped.
+- About $59 at list prices, charged to the plan. Two usage-limit pauses; both resumed cleanly, with no error records.
+
+### Results on the decision scope t7–t30 (pre-registered)
+
+| model | P | L | Q | L+ | Q+ |
+|---|---|---|---|---|---|
+| sonnet-5: correct / silent / loud | **64**/72 · 8 · 0 | 34 · 31 · 7 | 60 · 12 · 0 | 36 · 32 · 4 | 60 · 12 · 0 |
+| sonnet-5: $/correct | 0.078 | 0.137 | 0.076 | 0.186 | 0.106 |
+| haiku-4-5: correct / silent / loud | 51 · 20 · 1 | 30 · **14** · 28 | 55 · 17 · 0 | 31 · 20 · 21 | **61** · **11** · 0 |
+| haiku-4-5: $/correct | 0.063 | 0.200 | 0.071 | 0.211 | 0.075 |
+
+### Decision rule (§5), applied mechanically
+
+- **Rule 1 ("checks are enough")** holds on Sonnet (S_Q 12 ≤ 33, C_Q 60 ≥ 34, $ within 1.5×). It fails on Haiku by one run: S_Q 17 against S_L + 2 = 16.
+- **Rule 2 ("the language is needed")** fails on both models.
+- **Outcome: MIXED (§5.3).**
+
+### Secondary: L+ and Q+ (§7)
+
+- **L+** closed 2 of the 30-point correctness gap to P on Sonnet, and 1 of 21 on Haiku. The context aids do **not** fix the knowledge problem, so the §7 criterion is not met.
+- **Q+** improved Haiku markedly: 61/72 correct with 11 silent, against P's 51 with 20. It made no difference on Sonnet.
+
+### Confound found in the results
+
+The imported **JustNotes** start state (arm L's starting app) is **unfaithful before any edit**:
+- `GET /notes/{id}` answers `owner: <id>` where the original returns the nested owner object;
+- another user's *public* note answers 404 where the original answers 200.
+
+These lifted routes passed the importer's generated verification, but the ticket oracles cover cases it didn't. So L/L+ on t22–t24 and t29–t30 were scored against an app that was already wrong. That accounts for most of Sonnet-L's 31 silent failures (20 are on held-out apps). The TaskFlow start state checks out.
+
+**Post-hoc views.** These are not pre-registered and are reported for interpretation only.
+
+| scope | model | P | L | Q | Q+ |
+|---|---|---|---|---|---|
+| t7–t30 without the JustNotes tickets | sonnet | 50/57 · S7 | 34 · S19 | 45 · S12 | 45 · S12 |
+| t7–t30 without the JustNotes tickets | haiku | 45 · S11 | 30 · **S7** (20 loud) | 46 · S11 | **52 · S5** |
+| template tickets only (t7–t18, t25–t27) | sonnet | **38/45** · **S7** | 32 · S11 | 33 · S12 | 33 · S12 |
+| template tickets only (t7–t18, t25–t27) | haiku | 37 · S7 | 29 · **S4** (12 loud) | 36 · S9 | **42 · S3** |
+
+### What this says
+
+1. **Lattice as the editing interface did not earn its keep in round 5.** Its correctness is well below plain Python on every scope and on both models. Its silent-bug advantage **did not replicate on Sonnet**, even on the unconfounded template tickets (11 vs 7). It shows only on Haiku (4 vs 7), and there at the price of many loud failures.
+2. **Plain Python on a frontier model is already strong.** Sonnet-P has 64/72 correct and only 8 silent failures on t7–t30. Round 4's P had more silent failures; sampling variance at 3 reps is large.
+3. **Checks + aids on ordinary code (Q+) are the most practical configuration for weaker models.** On Haiku, Q+ is the best arm on correctness and on silent failures, at P's cost.
+4. **The importer's verification is too weak for real use:** it passed routes that the ticket oracles show to be wrong. The generated suite needs cases for "another user's public row" and for nested response shapes.
+
+### Honest bottom line and recommendation
+
+The pre-registered rule says MIXED. The weight of evidence points to the **checker plus verified-edit loop on ordinary code** as the product, with Lattice's IR kept as an internal representation where it is lossless (SQL compilation, verified generation). Lattice as the language LLMs write is not supported.
+
+Caveats:
+- 3 reps per cell is noisy.
+- Round 5 changed the transport (the CLI) and several arms at once.
+- The JustNotes confound affects the held-out-app half of the scope.
+
+A confirmatory round with more reps on the template tickets alone would settle the Sonnet silent-failure question cheaply.
