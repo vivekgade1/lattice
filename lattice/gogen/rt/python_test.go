@@ -244,9 +244,29 @@ func TestFuelEnterDepth(t *testing.T) {
 	}
 }
 
+// Python's T2Fuel.each charges an element as it is produced: with one unit left, the
+// first element's body runs and the second element's charge is R620 (checked against
+// lattice.t2.T2Fuel(1).each([10, 20]): body ran for [10], then R620, left == -1).
+func TestFuelEachChargesPerElement(t *testing.T) {
+	f := NewFuel(1)
+	ran := []int64{}
+	got := outcome(func() string {
+		for _, x := range []int64{10, 20} {
+			f.Each()
+			ran = append(ran, x)
+		}
+		return ""
+	})
+	if !strings.HasPrefix(got, "!R620: procedure ran out of fuel") || fmt.Sprint(ran) != "[10]" || f.Left != -1 {
+		t.Fatalf("got %q, ran %v, left %d", got, ran, f.Left)
+	}
+}
+
 func TestFuelEachBulkGrowBits(t *testing.T) {
 	f := NewFuel(100)
-	f.Each(3)
+	f.Each()
+	f.Each()
+	f.Each()
 	f.Bulk(10)
 	f.Grow(15) // 15 // 16 == 0
 	f.Grow(32) // 2

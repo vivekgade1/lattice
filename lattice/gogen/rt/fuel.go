@@ -60,9 +60,12 @@ func (f *Fuel) Enter() {
 // Leave ends a procedure call (T2Fuel.leave).
 func (f *Fuel) Leave() { f.Depth-- }
 
-// Each charges n comprehension elements, one step each (T2Fuel.each; the outcome of
-// charging them one at a time or together is the same: Left ends at -1 on failure).
-func (f *Fuel) Each(n int) { f.charge(int64(n)) }
+// Each charges one comprehension element (T2Fuel.each). Generated code calls it once
+// per element, as the element is produced and before that element's body runs, so
+// earlier elements' bodies (their effects and catchable errors) happen before a later
+// element runs out of fuel. Never charge a comprehension's elements up front; Bulk is
+// only for a sized argument a builtin consumes whole.
+func (f *Fuel) Each() { f.charge(1) }
 
 // Bulk charges a sized argument a builtin consumes whole: its length, up front
 // (T2Fuel.bulk).
