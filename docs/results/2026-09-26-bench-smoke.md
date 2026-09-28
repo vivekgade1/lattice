@@ -701,3 +701,48 @@ These results say more about how ready the import is than about the language.
    - output-size-aware editing (edit only the touched endpoint, not whole files);
    - the imported auth-policy mismatch;
    - more lifter coverage.
+
+## Thin slice round 4: familiar surface, scoped edits, import fixes (360 runs, 2026-09-28)
+
+Changes since round 3:
+- **Language:** normalisation of Python spellings (N1/N1b).
+- **Harness:** partial answers are merged by name in both arms (N2).
+- **Import:** token-answer fidelity, and a re-import at TaskFlow 6/10 and JustNotes 6/30 (N3).
+- **Benchmark:** oracle hygiene for t14/t17, and fresh held-out tickets t25–t30 (N4).
+- **Review fixes:** 43537da.
+
+Total cost is $23.21.
+
+| model | arm | t1–t6 tuned | t7–t18 held-out template | t19–t24 held-out apps | t25–t30 fresh | **silent** | correct | $/correct |
+|---|---|---|---|---|---|---:|---:|---:|
+| sonnet-5 | P | 15/18 (3S) | **36/36** | **13/18** (5S) | **12/18** (6S) | 14 | **76/90** | 0.061 |
+| sonnet-5 | L | 15/18 (3L) | 32/36 (4S) | 0/18 (18L) | 9/18 (9L, **0S**) | **4** | 56/90 | 0.225 |
+| haiku-4-5 | P | 11/18 (7S) | **28/36** (8S) | **11/18** (7S) | **9/18** (9S) | 31 | **59/90** | 0.037 |
+| haiku-4-5 | L | **16/18** | 16/36 (15L, 5S) | 0/18 (11L, 7S) | 6/18 (10L, 2S) | **15** | 38/90 | 0.099 |
+
+**Round-3 rescoring under the corrected t14/t17 oracle:** 17 of 24 runs changed from silent to correct. The changes were in both arms, which confirms those cases were oracle defects.
+
+**Findings**
+
+1. **The core safety claim now holds on every ticket group, on both models.** Lattice's silent (wrong but plausible) answers are 4 vs 14 on Sonnet and 15 vs 31 on Haiku. On the fresh held-out tickets Sonnet-L produced **0** silent answers, against 6 for Python.
+2. **The price is loud failures.** Arm P never fails loudly. Arm L's loud failures, from the saved artefacts, are:
+   - **Truncation** (Sonnet): 18 runs hit the 16k output limit in some round, and 7 ended that way. The model's long thinking on Lattice consumes the budget. Arm P never truncates.
+   - **Checker refusals for real guarantee violations** (L802 ownership, L803 private columns, L404, L834 response shape). The checker is doing its job, but models don't reach a passing program within 2 repairs. First-round checker pass rate is 37/90 (Sonnet) and 27/90 (Haiku).
+   - **The held-out apps (0/18 for L on both models) are an import problem.** The imported TaskFlow and JustNotes profiles leave table **owners unset**: owner inference reports them "unclear" rather than guessing. As a result, every `accessible`/`mine`/`owner=` the model writes is refused (L404 "needs an owner column"), and existing programs trip L802 once edited.
+3. **Excluding the held-out apps** (72 runs per arm):
+
+   | model | arm | correct | silent |
+   |---|---|---:|---:|
+   | sonnet-5 | L | 56/72 | 4 |
+   | sonnet-5 | P | 63/72 | 9 |
+   | haiku-4-5 | L | 38/72 | 8 |
+   | haiku-4-5 | P | 48/72 | 24 |
+4. **Normalisation had a small effect.** Accepting ordinary Python spellings moved round-3 refusals little (2/37). The remaining refusals are about guarantees and the shape of the data, not about spelling.
+
+**Verdict.** Lattice now delivers what it promises: far fewer silent bugs, on tickets and apps it wasn't tuned for. It does not yet deliver equal-or-better correctness. It trades silent failures for loud ones at 2.7–3.7× the cost per correct answer.
+
+The next levers, in order of expected impact:
+1. **Import ownership:** infer owners from foreign keys to the users table plus route usage, or let the edit declare them in the profile delta. This unblocks the held-out apps.
+2. **Output budget:** raise `max_tokens` in both arms equally (e.g. 32k) and use lower effort for edits.
+3. **More repair rounds with better checker feedback:** each guarantee error should point at the exact fix in the model's own code.
+4. **Cost:** prompt caching of the static Lattice guide. The guide is identical across runs and is ~60% of arm L's input tokens.
