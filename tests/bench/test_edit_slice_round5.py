@@ -23,7 +23,7 @@ from bench.edit_slice.lattice_reference import lattice_reference_files
 from bench.edit_slice.reference import reference_files
 from bench.edit_slice.tickets import ROUND4_TICKETS, ticket
 from lattice.diagnostics import Diagnostic, Fix, Severity, Span, render_for_llm
-from lattice.llm.client import ScriptedGenerator
+from lattice.llm.client import GenerationRefused, ScriptedGenerator, Usage
 
 ROUND4_IDS = [t.id for t in ROUND4_TICKETS]
 HELD_OUT = [tid for tid in ROUND4_IDS if tid not in aids.CORPUS]  # t13-t30
@@ -153,15 +153,42 @@ def test_retrieval_never_returns_the_current_ticket_or_a_held_out_one(ticket_id)
     assert not set(got) & set(HELD_OUT)
 
 
+def _chain(tid: str) -> list[str]:
+    out, base = [], ticket(tid).base
+    while base:
+        out.append(base)
+        base = ticket(base).base
+    return out
+
+
+def test_retrieval_excludes_a_ticket_built_on_the_current_one_and_its_bases():
+    """t4 starts from t3's reference (``base="t3_soft_delete"``): t4's verified answer
+    contains t3's solution, so t3 must not retrieve t4, nor t4 retrieve t3 (review I1)."""
+    assert "t3_soft_delete" not in aids.retrieve("t4_restore")
+    assert "t4_restore" not in aids.retrieve("t3_soft_delete")
+    ranked = {t for t, _ in aids.similarities("t3_soft_delete")}
+    assert not {"t3_soft_delete", "t4_restore"} & ranked
+    assert aids.related("t4_restore", "t3_soft_delete")
+    assert aids.related("t3_soft_delete", "t4_restore")
+    assert not aids.related("t1_search", "t3_soft_delete")
+
+
+@pytest.mark.parametrize("ticket_id", ROUND4_IDS)
+def test_retrieval_never_returns_a_ticket_of_the_same_base_chain(ticket_id):
+    for got in aids.retrieve(ticket_id):
+        assert got not in _chain(ticket_id), (ticket_id, got)
+        assert ticket_id not in _chain(got), (ticket_id, got)
+
+
 def test_the_corpus_is_t1_to_t12_only():
     assert aids.CORPUS == tuple(ROUND4_IDS[:12])
     assert all(tid.split("_")[0] in {f"t{i}" for i in range(1, 13)} for tid in aids.CORPUS)
 
 
 def test_retrieval_is_tf_idf_similarity_and_deterministic():
-    # t4 (restore a soft-deleted item) is closest to t3 (soft delete)
-    assert aids.retrieve("t4_restore")[0] == "t3_soft_delete"
-    assert aids.retrieve("t3_soft_delete")[0] == "t4_restore"
+    # t4 (restore a soft-deleted item) is textually closest to t3 (soft delete) ...
+    assert aids.similarities("t4_restore", keep_related=True)[0][0] == "t3_soft_delete"
+    assert aids.similarities("t3_soft_delete", keep_related=True)[0][0] == "t4_restore"
     scores = [s for _, s in aids.similarities("t25_bulk_delete_items")]
     assert scores == sorted(scores, reverse=True)
     assert aids.retrieve("t25_bulk_delete_items") == aids.retrieve("t25_bulk_delete_items")
@@ -189,15 +216,20 @@ def test_both_arms_get_the_same_examples_in_their_own_language(ticket_id):
 
 
 def test_the_mistakes_tables_are_committed_and_the_same_size():
+    """The same character budget (the smaller full table), each table the longest prefix
+    of its ranked rows that fits."""
     lattice, python = aids.mistakes_section("lattice"), aids.mistakes_section("python")
-    assert abs(len(lattice) - len(python)) <= 0.15 * max(len(lattice), len(python))
+    budgets = set()
     for lang, text in (("lattice", lattice), ("python", python)):
         data = json.loads(aids.TABLE_FILES[lang].read_text())
+        budgets.add(data["chars_budget"])
         assert data["chars"] == len(text) <= data["chars_budget"]
         assert 1 <= len(data["rows"]) <= build_aids.MAX_ROWS
         for row in data["rows"]:
             assert len(row["mistake"]) <= build_aids.CELL_CHARS
             assert len(row["fix"]) <= build_aids.CELL_CHARS
+    assert len(budgets) == 1
+    assert max(len(lattice), len(python)) == budgets.pop()  # the smaller full table
     assert all(r.code.startswith("L") for r in aids.load_table("lattice"))
     assert all(r.code.startswith("PY") for r in aids.load_table("python"))
 
@@ -317,3 +349,49 @@ def test_the_cli_accepts_the_five_arms(tmp_path, capsys):
     assert run.main(["--arm", "P,L,Q,L+,Q+", "--tickets", "t1_search", "--estimate",
                      "--estimate-models", "claude-sonnet-5"]) == 0  # fmt: skip
     assert "| L+ |" in capsys.readouterr().out
+
+
+# ---- review fixes: the harness (I2, minor) -------------------------------------------------------
+
+
+def test_round_findings_align_with_round_problems():
+    """One entry per round, ``None`` for a round never built (no files, truncated,
+    refused)."""
+    gen = ScriptedGenerator(["no files here", _p_answer("t1_search")])
+    record = run.run_arm("Q", "t1_search", gen)
+    assert record.round_problems == ["no_code", None]
+    assert record.round_findings == [None, []]
+    assert len(record.round_findings) == len(record.round_problems)
+
+
+def test_a_refused_round_has_no_findings_entry_but_keeps_alignment():
+    class _Refuses:
+        def generate(self, system, messages):
+            raise GenerationRefused("no", usage=Usage(3, 1), cost_usd=0.05,
+                                    cost_basis="cli_list_estimate")  # fmt: skip
+
+    record = run.run_arm("Q", "t1_search", _Refuses())
+    assert record.round_problems == ["refused"]
+    assert record.round_findings == [None]
+    # a refused call's transport-reported cost is kept (review: cost over refusals)
+    assert record.cost_usd == pytest.approx(0.05)
+    assert record.cost_basis == "cli_list_estimate"
+
+
+def test_joined_program_diagnostics_show_no_exact_fix(monkeypatch):
+    """A fix's line/col point into the joined program, not the model's file: suppressed."""
+    from lattice.emit.thin import EmitError
+
+    fix = Fix(Span(40, 5), Span(40, 9), "row.title")
+    diag = Diagnostic("L401", Severity.ERROR, Span(40, 5), "no input rows", "read the row", fix)
+
+    def refuse(*args, **kwargs):
+        raise EmitError([diag])
+
+    monkeypatch.setattr(run, "emit_lattice", refuse)
+    gen = ScriptedGenerator([prompts.render_files(lattice_reference_files("t1_search"))])
+    record = run.run_arm("L", "t1_search", gen, max_repairs=0)
+    assert record.round_problems == ["static"]
+    assert "refused the joined program" in record.detail
+    assert "L401 at line 40" in record.detail
+    assert "Exact fix" not in record.detail

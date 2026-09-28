@@ -1,7 +1,8 @@
 """The edit slice's report (plan 2026-09-27 thin slice, node E3).
 
 ``python -m bench.edit_slice.report results.jsonl [...]`` prints one table per model x
-arm: runs, correct / loud / silent (and harness errors), cost per correct run, mean
+arm: runs, correct / loud / silent (and harness errors, with their rate: ``err%``, the
+share of runs that are ``error`` records), cost per correct run, mean
 rounds, mean edit size (lines changed in the edited artefact: Python files for P,
 Lattice programs and profile for L), mean emitted/edited code size, mean prompt size,
 tokens and wall time; then the per-ticket outcomes.
@@ -54,6 +55,7 @@ def summary(rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
                 "runs": len(rs),
                 **{k: sum(r["outcome"] == k for r in rs) for k in KINDS},
                 "error": sum(r["outcome"] == "error" for r in rs),
+                "error_rate": sum(r["outcome"] == "error" for r in rs) / len(rs),
                 "not_expressible": sum(r["outcome"] == "not_expressible" for r in rs),
                 "cost_usd": cost,
                 "cost_per_correct": cost / len(correct) if correct else None,
@@ -80,10 +82,10 @@ def summary(rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def render(rows: Sequence[dict[str, Any]]) -> str:
     lines = [
-        "| model | arm | runs | correct | loud | silent | error | $ total | $/correct "
+        "| model | arm | runs | correct | loud | silent | error | err% | $ total | $/correct "
         "| trunc% | rounds | lines changed | code lines | prompt tok | in tok | out tok "
         "| wall s | ms/req | queries/req |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
         "---:|---:|---:|",
     ]
     for s in summary(rows):
@@ -91,7 +93,8 @@ def render(rows: Sequence[dict[str, Any]]) -> str:
         trunc_pct = None if s["truncation_rate"] is None else s["truncation_rate"] * 100
         lines.append(
             f"| {s['model']} | {s['arm']} | {s['runs']} | {s['correct']} | {s['loud']} "
-            f"| {s['silent']} | {err} | {s['cost_usd']:.4f} | {_fmt(s['cost_per_correct'], '.4f')} "
+            f"| {s['silent']} | {err} | {s['error_rate'] * 100:.0f} | {s['cost_usd']:.4f} "
+            f"| {_fmt(s['cost_per_correct'], '.4f')} "
             f"| {_fmt(trunc_pct, '.0f')} | {_fmt(s['mean_rounds'], '.2f')} "
             f"| {_fmt(s['mean_lines_changed'])} "
             f"| {_fmt(s['mean_code_lines'], '.0f')} | {_fmt(s['mean_prompt_tokens'], '.0f')} "

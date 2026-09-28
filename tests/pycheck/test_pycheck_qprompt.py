@@ -6,30 +6,25 @@ checks enforce)."""
 
 from __future__ import annotations
 
-import types
+import re
 from pathlib import Path
 
 import pytest
 
-from bench.edit_slice import prompts
-from bench.edit_slice.apps import repo
-from bench.edit_slice.qcheck import repo_policy
+from bench.edit_slice import prompts, qcheck, run
+from bench.edit_slice.qcheck import derived_policy, repo_policy, start_ownership
 from bench.edit_slice.tickets import ROUND4_TICKETS
 from lattice.catalog import PAGE_LIMIT_MAX
-from lattice.importer.extract import extract
-from lattice.importer.profile_gen import generate_profile
 
 ROOT = Path(__file__).resolve().parents[2]
 APPS = ("template", "taskflow", "justnotes")
 
 
 def lattice_profile(name: str):
-    """The importer's profile of the original app: what arm L is shown."""
-    app = repo(name)
-    source = generate_profile(extract(ROOT, app.package)).source
-    module = types.ModuleType(f"_qprompt_profile_{name}")
-    exec(compile(source, "<profile.py>", "exec"), module.__dict__)  # noqa: S102
-    return module.profile()
+    """Arm L's start profile of the app: the template's lifted import, a held-out
+    repo's committed import (``bench/imports/<repo>/profile.py``), read now."""
+    _, source = run.start_lattice(name)
+    return run.load_profile_source(source)
 
 
 @pytest.mark.parametrize("ticket", ROUND4_TICKETS, ids=lambda t: t.id)
@@ -73,6 +68,8 @@ def test_fairness_the_statement_states_what_arm_ls_profile_states(name):
     for table, col in policy.owners.items():
         assert api.tables[table].owner == col  # L's profile names the same owner
         assert f"`{table}.{col}`" in text
+    for table in policy.shared:
+        assert f"`{table}`" in text
     for table, cols in policy.private.items():
         assert set(cols) <= set(api.tables[table].private)  # L's private columns
         for col in cols:
@@ -91,3 +88,69 @@ def test_fairness_the_statement_states_what_arm_ls_profile_states(name):
     answers = [s for s in text.split(". ") if s.startswith("Another user's")]
     for table, answer in policy.not_owned.items():
         assert any(f"`{table}`" in s and f"answers {answer.status}" in s for s in answers), table
+
+
+# ---- the ownership facts come from arm L's start profile (review C2) ----------------------------
+
+
+@pytest.mark.parametrize("name", APPS)
+def test_fairness_q_states_exactly_the_owners_of_arm_ls_start_profile(name):
+    """Q's owners, owner_via and shared tables are the ones arm L's start profile
+    declares -- not a separate inference -- and its not-owned answers cover only those
+    owned tables."""
+    policy = repo_policy(name)
+    api = lattice_profile(name).api
+    owners = {t: s.owner for t, s in api.tables.items() if s.owner}
+    owner_via = {t: s.owner_via for t, s in api.tables.items() if s.owner_via}
+    assert dict(policy.owners) == owners
+    assert dict(policy.owner_via) == owner_via
+    unowned = {t for t in api.tables if t not in owners and t not in owner_via}
+    assert set(policy.shared) == unowned - {api.users_table} - set(policy.links)
+    assert set(policy.not_owned) <= set(owners) | set(owner_via)
+    assert set(policy.examples) <= set(owners)
+    text = prompts.q_policy_statement(name)
+    for table, col in owners.items():
+        assert f"`{table}` rows belong to the user in `{table}.{col}`" in text
+    for table in policy.shared:
+        assert f"`{table}`" in text
+
+
+def test_the_template_ownership_is_template_profile_and_agrees_with_pycheck():
+    """The template's facts come from ``bench/template_profile.py``; pycheck's own
+    derivation (the fallback) agrees with it."""
+    from bench.template_profile import template_profile
+
+    start = start_ownership("template")
+    assert start is not None and start.source == "bench/template_profile.py"
+    tables = template_profile().api.tables
+    assert dict(start.owners) == {t: s.owner for t, s in tables.items() if s.owner}
+    derived = derived_policy("template")
+    assert dict(derived.owners) == dict(start.owners)
+    assert dict(derived.owner_via) == dict(start.owner_via)
+    assert tuple(derived.shared) == tuple(start.shared)
+
+
+def test_a_held_out_repo_reads_its_committed_import_at_call_time(tmp_path, monkeypatch):
+    """No build-time cache: the ownership is read from ``bench/imports/<repo>`` each time
+    (the round-5 re-import rewrites it), and a missing import falls back to pycheck's own
+    derivation."""
+    src = (run.import_dir("taskflow") / "profile.py").read_text()
+    fake = tmp_path / "imports"
+    (fake / "taskflow").mkdir(parents=True)
+    monkeypatch.setattr(run, "IMPORTS", fake)
+
+    assert start_ownership("taskflow") is None  # no import: the fallback
+    assert dict(repo_policy("taskflow").owners) == dict(derived_policy("taskflow").owners)
+
+    unowned = re.sub(r"\n\s*owner='owner_id',", "", src)
+    at = unowned.index("keys=[('id',)],", unowned.index("TABLE_TASK = "))
+    owned = unowned[:at] + "owner='owner_id', " + unowned[at:]
+    for text, expected in ((owned, {"Task": "owner_id"}), (unowned, {})):
+        (fake / "taskflow" / "profile.py").write_text(text)
+        got = start_ownership("taskflow")
+        assert got is not None and dict(got.owners) == expected
+        assert dict(repo_policy("taskflow").owners) == expected
+        statement = prompts.q_policy_statement("taskflow")
+        assert ("`Task.owner_id`" in statement) == bool(expected)
+    assert "Task" in repo_policy("taskflow").shared
+    assert qcheck.check_files("taskflow", {}, strict=True) == []

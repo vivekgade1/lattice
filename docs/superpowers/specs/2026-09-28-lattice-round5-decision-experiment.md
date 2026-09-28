@@ -102,3 +102,41 @@ These record how §3 and §7 are wired in `bench/edit_slice/run.py`. They change
 - **Placement.** The table is appended to the system prompt, and the examples come before the first user message. Nothing else of the base arm's prompt changes; a test pins this.
 - **Dry run.** Fed through Q and Q+, P's references score correct on t1–t30 with 0 pycheck findings. Fed through L+, the Lattice references score correct on t1–t12.
 - **Harness fix (`--workers`).** Building an emitted app used to swap the template's module-global `api_router`. Parallel workers could interleave those swaps and leave the router empty. App construction no longer mutates shared state, and `load_variant` is atomic. Round 5 must run on this fixed harness.
+
+### 8.1 Review fixes (2026-09-28, before any live round-5 run)
+
+A review found problems that would bias the experiment. Each is fixed, with a test, before any live run. They change no hypothesis, metric or decision rule (§1–§7). Where a bullet above says otherwise, this subsection supersedes it.
+
+- **C1. The mistakes tables are ticket-neutral and oracle-blind.** The Q+ table used to name t29's route and its exact fix, and t4's and t2's traps. Its rows were selected by the oracle's silent verdict and shown to every Q+ run, including those tickets. The L+ table named `Note`. One rule now builds both tables, and they are regenerated (`python -m bench.edit_slice.build_aids`):
+  - **Neutral rows.** The evidence only ranks codes. Each row is its code's generic text (`build_aids.GENERIC_ROWS`): the checker's or pycheck's message and hint, with every app-specific identifier (route paths, function, table and column names, program variables) replaced by placeholders (`<Table>`, `<column>`, `<caller>`, …).
+  - **No evidence selected by the hidden oracle.** L+ ranks codes by C3 persistence of checker refusals, as before. Q+ now ranks pycheck codes by how often they fire on the final round of *every* round-4 arm-P run, whatever the oracle said. The build reads only the saved artefacts, never the results JSONL that holds the verdicts. The pycheck policy is arm Q's (C2).
+  - **Budget.** The equal character budget and the longest-prefix rule are unchanged.
+  - **Tests** (`tests/bench/test_edit_slice_aids_neutral.py`): no row contains a route path, function name, table or column name, a string the references add, an oracle trap case name or a trap name. The scan checks both tables and every generic row, and it catches each pre-fix leak. Every row is its code's generic row. The Q+ build counts every final round from artefacts whose JSONL is not even JSON. The builders' source reads no `outcome`.
+- **C2. Q's ownership facts come from L's start profile.** Q's policy used to take owners from today's importer inference, while L started from the committed import. That meant Q was told JustNotes' `Note`/`Tag`/`Keyword` and TaskFlow's `Task` were owned when L's profile declared them shared. Q's owners, `owner_via` and shared tables now come from arm L's start profile: `bench/template_profile.py` for the template, and `bench/imports/<repo>/profile.py` for a held-out repo. That file is read each time the policy is requested, never cached across a change. Link tables, not-owned answers and examples follow from those owners. pycheck's own derivation (`qcheck.derived_policy`) remains the fallback when there is no import. The statement names shared tables ("… rows declare no owner: they are shared …").
+  - **Tests** (`tests/pycheck/test_pycheck_qprompt.py`, `test_pycheck_bench.py`): for every repo, Q's owners, `owner_via` and shared tables equal L's start profile. On the template, the template profile and pycheck's derivation agree. Rewriting the import changes Q's policy and statement, with no restart. pycheck's accuracy tests (trap recall, the round-4 ceiling) use `derived_policy`, so they don't depend on the import's state.
+- **I1. Retrieval excludes a ticket's base chain both ways.** t4 starts from t3's reference, so t4's verified answer contains t3's solution. A ticket never retrieves a ticket in its base chain, and never a ticket whose base chain contains it (`aids.related`). t3 no longer retrieves t4, and t4 no longer retrieves t3.
+- **I2. Harness errors are neither dropped nor skipped.**
+  - `--resume` does not count `error` records as completed.
+  - The CLI client scans stderr as well as stdout and the JSON `result`, with broader plan-limit patterns ("hit your limit", "usage limit", "limit reached" unless it is a rate limit's, "resets", "credit balance", …). A 429 or 529 rate limit is still transient and retried.
+  - A run stops after 3 consecutive `CliError` records, with exit code 4 and a clear message.
+  - The report has an `err%` column.
+  - Tested with the fake `claude` and fake clients.
+- **I3. The CLI never bills the API account.** Every `claude -p` call runs with a copy of the environment that drops `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_BASE_URL` and every `CLAUDE_CODE_USE_*` provider switch (`cli_client.cli_env`). The fake `claude` echoes back which of those variables it sees.
+- **I4. No race on `sys.modules`.** Building an emitted app drops its package's modules through an atomic snapshot (`thin._forget_package`, `list(sys.modules)`). It no longer iterates the live dict while other workers import. The concurrency test adds threads that mutate `sys.modules` during the builds.
+- **Minor fixes.**
+  - A refused CLI attempt's reported cost is added to the run's cost.
+  - `round_findings` aligns with `round_problems`, with `None` for a round never built.
+  - Diagnostics of the joined program show no `Exact fix`, because their line and column are the joined program's, not the model's file.
+  - A missing CLI `stop_reason` is recorded as `unknown` and logged, not taken as `end_turn`.
+  - `CLAUDE_CODE_MAX_OUTPUT_TOKENS` is set from `--max-tokens`, so both transports have the same cap.
+- **Real-CLI canaries** (Claude Code 2.1.283, `claude-haiku-4-5`; `tests/llm/test_cli_client.py::TestLiveCanaries`, `-m live`):
+  - **Auth without the key.** It authenticates through the logged-in CLI with `ANTHROPIC_API_KEY` removed, and with an invalid key set and then scrubbed.
+  - **`stop_reason`.** The CLI's JSON carries `stop_reason` (`end_turn`).
+  - **The output cap.** With `CLAUDE_CODE_MAX_OUTPUT_TOKENS=50` the CLI enforces the cap, but not as a `max_tokens` stop. It makes up to three continuation attempts (4 turns, 4×50 output tokens, all billed), then answers `is_error` ("exceeded the 50 output token maximum"), `stop_reason: stop_sequence`, exit 1, and the answer text is lost. The client maps this to `stop_reason="max_tokens"` with empty text: the harness's truncation, as on the API. It is not retried. A truncated CLI round therefore costs up to 4× the cap in output tokens. The API arm pays once.
+  - **CLAUDE.md exclusion.** The model says no when asked whether its context mentions "CodeGraph", which the user-level `~/.claude/CLAUDE.md` names. Input was 467 tokens.
+- **Regenerated tables.** Both tables have a 772-character budget.
+  - **L+:** 1 row, 605 characters: L404, the generic row. The next row, L302, does not fit.
+  - **Q+:** 2 rows, 772 characters: PY805 and PY806. Of 180 arm-P final rounds, 12 are flagged. PY801 no longer ranks: under the committed imports' ownership, t29's link-table reads are not a violation.
+  - **Rebuild after the re-import.** The Q+ ranking depends on the committed imports through arm Q's policy (C2). The tables must be rebuilt (`build_aids`) after the round-5 re-import of `bench/imports/*` finishes. `test_the_committed_tables_are_what_the_script_builds` fails until they are.
+- **Dry run after the fixes.** Fed through Q and Q+, P's references score correct on t1–t30 (60/60) with 0 pycheck findings. Fed through L and L+, the Lattice references score correct on t1–t12 (24/24).
+- **Test fix.** `test_the_committed_import_emits_exactly_its_verified_routes` counts `@endpoint` functions only. The re-imported TaskFlow program has a `@step` procedure (`search_tasks`), which is not a route.

@@ -63,11 +63,16 @@ class GenerationRefused(Exception):
         usage: Usage | None = None,
         latency_s: float = 0.0,
         model: str = "",
+        cost_usd: float | None = None,
+        cost_basis: str | None = None,
     ) -> None:
         super().__init__(message)
         self.usage = usage if usage is not None else Usage(0, 0)
         self.latency_s = latency_s
         self.model = model
+        # as Generation's: a transport-reported cost of the refused call(s), or None
+        self.cost_usd = cost_usd
+        self.cost_basis = cost_basis
 
 
 class Generator(Protocol):

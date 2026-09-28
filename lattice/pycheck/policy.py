@@ -41,6 +41,9 @@ class Policy:
     owners: Mapping[str, str] = field(default_factory=dict)
     # table class -> (foreign key, owned parent table class): owned through the parent
     owner_via: Mapping[str, tuple[str, str]] = field(default_factory=dict)
+    # the table classes with no owner (neither owners nor owner_via, not the users table
+    # and not a link table): their rows are shared by every signed-in user
+    shared: tuple[str, ...] = ()
     # table class -> ((foreign key, owned parent), ...): a link table between owned rows
     links: Mapping[str, tuple[tuple[str, str], ...]] = field(default_factory=dict)
     # table class -> the columns that never reach a non-admin response

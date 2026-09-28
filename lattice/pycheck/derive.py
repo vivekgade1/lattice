@@ -2,12 +2,16 @@
 
 Once per app, before any edit:
 
-* **owners, owner_via, private** -- the importer's own inference
+* **owners, owner_via** -- given by the caller (``ownership``: e.g. the owners a Lattice
+  profile declares, so a checker and a Lattice arm state the same facts), or else the
+  importer's own inference (below).
+* **private** (and owners when not given) -- the importer's own inference
   (:mod:`lattice.importer.profile_gen`: a table's owner is its one users foreign key that
   routes check or set from the caller; private columns are those no response model of
   the table returns). A table the importer leaves *unclear* has no owner here either, so
   pycheck never guesses one. A non-owned table whose foreign keys point at owned tables
-  is a *link* table (``NoteTagLink``).
+  is a *link* table (``NoteTagLink``). Every other table but the users table is
+  *shared*: its rows belong to no one.
 * private columns the original itself puts in a response dict are dropped: the app
   treats them as public (JustNotes returns ``owner_id`` in every note dict).
 * **admin** -- the superuser dependency, its flag column and its answer.
@@ -23,6 +27,7 @@ Once per app, before any edit:
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Mapping
 from dataclasses import replace
 from pathlib import Path
 
@@ -31,29 +36,44 @@ from lattice.pycheck.checks import all_findings, derive_not_owned, private_leaks
 from lattice.pycheck.policy import AdminConcept, Policy
 from lattice.pycheck.view import AppView
 
+Ownership = tuple[Mapping[str, str], Mapping[str, tuple[str, str]]]
 
-def derive_policy(app_dir: Path, package: str) -> Policy:
-    """The policy of the original app at ``app_dir`` (the directory of ``package``)."""
+
+def derive_policy(app_dir: Path, package: str, *, ownership: Ownership | None = None) -> Policy:
+    """The policy of the original app at ``app_dir`` (the directory of ``package``).
+    ``ownership``: (owners, owner_via) to use instead of the importer's inference."""
     view = AppView(Path(app_dir), package)
     gen = _Generator(view.model)
     users = gen.users_table()
     responses, _ = gen.responses()
     plans = gen.table_plans(users, responses)
 
-    owners = {p.table.name: p.owner for p in plans if p.owner}
-    owner_via = {p.table.name: p.owner_via for p in plans if p.owner_via}
+    if ownership is None:
+        owners = {p.table.name: p.owner for p in plans if p.owner}
+        owner_via = {p.table.name: p.owner_via for p in plans if p.owner_via}
+    else:
+        owners = {t: c for t, c in ownership[0].items() if c}
+        owner_via = {t: tuple(v) for t, v in ownership[1].items() if v}
     by_sql_name = {p.table.table_name: p for p in plans}
     links: dict[str, tuple[tuple[str, str], ...]] = {}
     for p in plans:
-        if p.table.name == users or p.owner or p.owner_via:
+        if p.table.name == users or p.table.name in owners or p.table.name in owner_via:
             continue
         pairs = []
         for c in p.table.columns:
             parent = by_sql_name.get((c.foreign_key or "").split(".")[0])
-            if parent is not None and parent.owner:
+            if parent is not None and parent.table.name in owners:
                 pairs.append((c.name, parent.table.name))
         if pairs:
             links[p.table.name] = tuple(pairs)
+    shared = tuple(
+        p.table.name
+        for p in plans
+        if p.table.name != users
+        and p.table.name not in owners
+        and p.table.name not in owner_via
+        and p.table.name not in links
+    )
     private = {p.table.name: tuple(p.private) for p in plans if p.private}
 
     admin = None
@@ -69,7 +89,8 @@ def derive_policy(app_dir: Path, package: str) -> Policy:
         users_table=users,
         caller=names.most_common(1)[0][0] if names else "current_user",
         owners=owners,
-        owner_via=owner_via,
+        owner_via=owner_via,  # type: ignore[arg-type]
+        shared=shared,
         links=links,
         private=private,
         admin=admin,

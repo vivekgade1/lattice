@@ -117,7 +117,15 @@ def test_the_committed_import_emits_exactly_its_verified_routes(name):
         plans, errors = check_program(path.read_text(), profile)
         assert plans is not None, (path.name, errors)
         tree = ast.parse(path.read_text())
-        emitted |= {n.name for n in tree.body if isinstance(n, ast.FunctionDef)}
+        emitted |= {  # the endpoints (a @step is a procedure, not a route)
+            n.name
+            for n in tree.body
+            if isinstance(n, ast.FunctionDef)
+            and any(
+                isinstance(d, ast.Call) and getattr(d.func, "id", None) == "endpoint"
+                for d in n.decorator_list
+            )
+        }
     assert emitted == verified
     assert len(report["routes"]) == len(app_routes(run.APP_FACTORIES[name])) - len(
         [

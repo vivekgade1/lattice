@@ -1,30 +1,24 @@
 {
   "source": "bench/results/edit_slice/round4_*_P.jsonl",
-  "method": "round-4 arm-P silent runs' final candidates checked by pycheck; codes ranked by silent runs flagged; row text: the most frequent message and hint",
-  "candidates": 3,
-  "silent_runs": 45,
-  "silent_runs_flagged": 18,
-  "chars_budget": 1119,
+  "method": "the final candidate of every round-4 arm-P run (whatever the oracle said) checked by pycheck with arm Q's policy; codes ranked by runs flagged; row text: the code's generic, ticket-neutral row",
+  "candidates": 2,
+  "final_rounds": 180,
+  "final_rounds_flagged": 12,
+  "chars_budget": 772,
   "cell_chars": 280,
   "max_rows": 8,
-  "chars": 1119,
+  "chars": 772,
   "rows": [
     {
-      "code": "PY801",
-      "mistake": "GET /tags/summary (get_tags_summary) reads NoteTagLink rows, which link Note rows, without checking that those Note rows are the caller's (Note.owner_id)",
-      "fix": "join Note and add `.where(Note.owner_id == current_user.id)` for the Note rows NoteTagLink links to (as `get_notes` does)",
-      "count": 6
-    },
-    {
       "code": "PY805",
-      "mistake": "restore_item refuses a non-admin with 403 \"Not enough permissions\"; this app's admin check (get_current_active_superuser) answers 403 \"The user doesn't have enough privileges\"",
-      "fix": "use the app's admin check: `dependencies=[Depends(get_current_active_superuser)]` on the route (it answers 403 \"The user doesn't have enough privileges\"), or raise exactly that",
+      "mistake": "an HTTP error differs from the app's own answer for the same case (e.g. a non-admin refused with another status or detail than the app's admin check gives)",
+      "fix": "reuse the app's dependency for the case (e.g. `dependencies=[Depends(<admin check>)]` on the route), or raise exactly its status and detail",
       "count": 6
     },
     {
       "code": "PY806",
-      "mistake": "the request datetime 'since' may carry any UTC offset, but Item.created_at is stored as naive UTC: the SQL comparison mixes them",
-      "fix": "convert it first: `if since.tzinfo is not None: since = since.astimezone(UTC).replace(tzinfo=None)`",
+      "mistake": "a request datetime, which may carry any UTC offset, is compared with a stored datetime that the database returns as naive UTC",
+      "fix": "convert it first: `if <datetime>.tzinfo is not None: <datetime> = <datetime>.astimezone(UTC).replace(tzinfo=None)`",
       "count": 6
     }
   ]

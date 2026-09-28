@@ -6,7 +6,8 @@ language:
 (a) **Two retrieved worked examples** (:func:`retrieve`, :func:`worked_examples`): the
     most similar *other* tickets by TF-IDF cosine over the ticket text (title and body),
     from the corpus :data:`CORPUS` -- t1-t12, the only tickets with a verified Lattice
-    reference -- never the current ticket. t13-t30 are not in the corpus at all, so
+    reference -- never the current ticket, nor a ticket that starts from it or that it
+    starts from (:func:`related`: t4 is built on t3). t13-t30 are not in the corpus at all, so
     nothing held out can leak. L+ is shown each example's verified Lattice answer, Q+
     its verified Python answer (both exactly the answers the dry run feeds through the
     arms: :func:`bench.edit_slice.run.reference_answer`). The retrieval is the same for
@@ -15,9 +16,10 @@ language:
 (b) **A "common mistakes -> exact fix" table** (:func:`mistakes_section`), read from the
     committed data files :data:`TABLE_FILES`, which ``python -m
     bench.edit_slice.build_aids`` generates deterministically from the round-4 artefacts:
-    L+'s from the C3 repair-persistence analysis of arm L's checker refusals, Q+'s from
-    round-4 arm-P silent failures as classified by pycheck. Both have the same number of
-    rows and the same per-cell cap.
+    L+'s codes ranked by the C3 repair-persistence analysis of arm L's checker refusals,
+    Q+'s by how often pycheck fired on the final round of every round-4 arm-P run
+    (whatever the oracle said); every row is its code's generic, ticket-neutral text.
+    Both have the same character budget and the same per-cell cap.
 
 The table goes into the system prompt (it is the same for every ticket), the examples
 into the first user message, before the ticket. Nothing else of the base arm's prompt
@@ -86,22 +88,42 @@ def _vector(counts: Mapping[str, int], idf: Mapping[str, float]) -> dict[str, fl
     return {t: x / norm for t, x in v.items()}
 
 
-def similarities(ticket_id: str) -> list[tuple[str, float]]:
-    """Every corpus ticket except ``ticket_id`` itself, most similar first (cosine of
-    TF-IDF vectors; ties by corpus order)."""
+def base_chain(ticket_id: str) -> tuple[str, ...]:
+    """The tickets ``ticket_id`` starts from: its base, the base's base, ..."""
+    out: list[str] = []
+    base = ticket(ticket_id).base
+    while base is not None and base not in out:
+        out.append(base)
+        base = ticket(base).base
+    return tuple(out)
+
+
+def related(a: str, b: str) -> bool:
+    """Whether ``a`` and ``b`` are the same ticket or one starts from the other (one is
+    in the other's base chain): the later one's verified answer contains the earlier's
+    solution (t4_restore starts from t3_soft_delete), so neither may be retrieved for
+    the other."""
+    return a == b or a in base_chain(b) or b in base_chain(a)
+
+
+def similarities(ticket_id: str, *, keep_related: bool = False) -> list[tuple[str, float]]:
+    """Every corpus ticket except ``ticket_id`` itself and the tickets of its base chain
+    either way (:func:`related`; ``keep_related=True`` keeps those), most similar first
+    (cosine of TF-IDF vectors; ties by corpus order)."""
     idf, vectors = _index()
     q = _vector(Counter(_tokens(ticket_document(ticket_id))), idf)
     scored = [
         (tid, sum(w * vectors[tid].get(t, 0.0) for t, w in q.items()))
         for tid in CORPUS
-        if tid != ticket_id
+        if tid != ticket_id and (keep_related or not related(tid, ticket_id))
     ]
     order = {tid: i for i, tid in enumerate(CORPUS)}
     return sorted(scored, key=lambda s: (-s[1], order[s[0]]))
 
 
 def retrieve(ticket_id: str, k: int = EXAMPLES) -> list[str]:
-    """The ``k`` corpus tickets most similar to ``ticket_id`` (never ``ticket_id``)."""
+    """The ``k`` corpus tickets most similar to ``ticket_id`` (never ``ticket_id``, nor
+    a ticket of its base chain either way)."""
     return [tid for tid, _ in similarities(ticket_id)[:k]]
 
 
@@ -179,6 +201,8 @@ __all__ = [
     "mistakes_section",
     "render_table",
     "retrieve",
+    "base_chain",
+    "related",
     "similarities",
     "ticket_document",
     "worked_examples",
