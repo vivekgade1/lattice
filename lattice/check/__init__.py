@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import ast
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from lattice.check import (
     list_consts,
@@ -107,6 +107,7 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
     records = list(norm.records)
     t0_body = norm.body
     ctx.row_reads = norm.row_reads
+    ctx.fresh = norm.fresh
     t2_program = t2.run(t2_stmts, t0_body, ctx) if t2_stmts else None
     ctx.t2 = t2_program
     if t2_stmts or norm.records or norm.row_reads:
@@ -116,6 +117,12 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
         diags = [
             normalise.humanise(normalise.annotate(d, norm.macro_uses), norm.fresh)
             for d in ctx.diagnostics
+        ]
+        # a fix edits the source at the diagnostic's span; a column expression reported at
+        # its use was written elsewhere (at its definition), so no edit is offered there
+        diags = [
+            replace(d, fix=None) if d.fix is not None and d.span in norm.macro_uses else d
+            for d in diags
         ]
         if norm.macro_uses:  # a column expression used twice inside another: report once
             seen: set[Diagnostic] = set()

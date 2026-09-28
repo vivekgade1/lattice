@@ -51,7 +51,7 @@ def test_without_accessible_it_is_l802_and_the_hint_names_accessible() -> None:
         "sort(visible,", "sort(orders,"
     )
     d = diag(leaky, "L802")
-    assert d.hint is not None and "accessible(orders, by=user)" in d.hint
+    assert d.hint is not None and "orders = accessible(all_orders, by=user)" in d.hint
 
 
 def test_accessible_filters_by_the_caller() -> None:

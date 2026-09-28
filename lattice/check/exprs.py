@@ -40,7 +40,7 @@ from lattice.catalog import (
 from lattice.check.astutil import LiteralValue, literal_value
 from lattice.check.context import CheckContext
 from lattice.check.t2_calls import scalar_call
-from lattice.diagnostics import Severity, Span, span_of
+from lattice.diagnostics import Severity, Span, fix_of, span_of
 from lattice.profile import NativeSig
 from lattice.typesys import (
     NUMERIC,
@@ -371,6 +371,8 @@ class ExprTyper:
         t = self.schema.get(name)
         if t is None:
             names = self.schema.names()
+            if not names:
+                return self._rowless_col(node, name)
             return self._err(
                 "L401",
                 node,
@@ -378,6 +380,36 @@ class ExprTyper:
                 did_you_mean(name, names),
             )
         return ColT(t)
+
+    def _rowless_col(self, node: ast.Call, name: str) -> UnknownT:
+        """L401: col() where no table is the input (an insert() value, a constant, a
+        call() argument). In an endpoint, the value of a one-row table in scope that has
+        the column is `row.<column>` (N1b row values): named, with a Fix."""
+        rows = (
+            [
+                n
+                for n, t in self.tables.items()
+                if isinstance(t, TableT) and t.at_most_one_row and name in t.schema
+            ]
+            if self.endpoint and isinstance(self.tables, Mapping)
+            else []
+        )
+        message = (
+            f'col("{name}") has no input rows here (insert() values, constants and call() '
+            "arguments read no table)"
+        )
+        if not rows:
+            return self._err("L401", node, message, "compute it with an op over a table first")
+        row = rows[-1]  # the latest one-row table bound
+        value = f"{row}.{name}"
+        self.ctx.error(
+            "L401",
+            node,
+            message,
+            f"read the value of the one row `{row}`: {value}",
+            fix_of(node, value),
+        )
+        return UNKNOWN
 
     def _arity(
         self, node: ast.Call, what: str, n_args: int, kws: frozenset[str], usage: str

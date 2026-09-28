@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import ast
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from lattice.diagnostics import Diagnostic, Severity, Span, span_of
+from lattice.diagnostics import Diagnostic, Fix, Severity, Span, span_of
 from lattice.profile import Profile
 from lattice.typesys import Type
 
@@ -32,15 +33,31 @@ class CheckContext:
     # N1b: ids of the `r.x` row-value reads the normaliser found in endpoint write/derive
     # values (P1 accepts them; P4 types them; P6 checks their source row)
     row_reads: frozenset[int] = frozenset()
+    # N1: the fresh names the normaliser bound to lifted nested ops (name -> line of the
+    # statement they came from); hints never name them
+    fresh: Mapping[str, int] = field(default_factory=dict)
 
     def _add(
-        self, code: str, sev: Severity, where: ast.AST | Span, message: str, hint: str | None
+        self,
+        code: str,
+        sev: Severity,
+        where: ast.AST | Span,
+        message: str,
+        hint: str | None,
+        fix: Fix | None = None,
     ) -> None:
         span = where if isinstance(where, Span) else span_of(where)
-        self.diagnostics.append(Diagnostic(code, sev, span, message, hint))
+        self.diagnostics.append(Diagnostic(code, sev, span, message, hint, fix))
 
-    def error(self, code: str, node: ast.AST | Span, message: str, hint: str | None = None) -> None:
-        self._add(code, Severity.ERROR, node, message, hint)
+    def error(
+        self,
+        code: str,
+        node: ast.AST | Span,
+        message: str,
+        hint: str | None = None,
+        fix: Fix | None = None,
+    ) -> None:
+        self._add(code, Severity.ERROR, node, message, hint, fix)
 
     def warn(self, code: str, node: ast.AST | Span, message: str, hint: str | None = None) -> None:
         self._add(code, Severity.WARNING, node, message, hint)

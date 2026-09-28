@@ -52,7 +52,9 @@ from lattice.check.astutil import (
 )
 from lattice.check.context import CheckContext
 from lattice.check.exprs import did_you_mean
+from lattice.check.fix_hints import PROFILE_FILE, owner_candidate
 from lattice.check.p4_types import cols_read, is_owner_is
+from lattice.diagnostics import Fix, fix_of
 from lattice.profile import AdminFlag, NoRoles
 from lattice.typesys import Scalar, TableT, generated_key, uuid_key, via_parent_key
 
@@ -90,6 +92,15 @@ def _call_name(node: ast.AST) -> str | None:
 
 def _kw(call: ast.Call, name: str) -> ast.expr | None:
     return next((kw.value for kw in call.keywords if kw.arg == name), None)
+
+
+def _assign_stmts(fn: ast.FunctionDef) -> Iterator[tuple[ast.Assign, str]]:
+    """Every `name = value` statement of an endpoint body, with its name."""
+    for stmt in fn.body:
+        if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1:
+            target = stmt.targets[0]
+            if isinstance(target, ast.Name):
+                yield stmt, target.id
 
 
 def _assigns(fn: ast.FunctionDef) -> Iterator[tuple[str, ast.expr]]:
@@ -623,9 +634,43 @@ class _Endpoint:
                     node,
                     f"'{node.id}' is optional (default UNSET): use it only directly as an "
                     "update() value, e.g. update(t, col=" + node.id + f"), or test sent({node.id})",
-                    f"to compute with it or filter by it, make '{node.id}' required or give "
-                    "it a default value",
+                    self._optional_hint(node.id),
                 )
+
+    def _optional_hint(self, param: str) -> str:
+        """L404's hint for an `= UNSET` parameter used in a computation: compute with the
+        column the endpoint's update() stores it in (named, with its line), or change the
+        parameter's declaration (written out)."""
+        arg = next((a for a in self.fn.args.args if a.arg == param), None)
+        ann = ast.unparse(arg.annotation) if arg is not None and arg.annotation else "T"
+        redeclare = f"make it `{param}: {ann} | None = None` and test is_null({param})"
+        for stmt, name in _assign_stmts(self.fn):
+            call = stmt.value
+            if not (_call_name(call) == "update" and isinstance(call, ast.Call) and call.args):
+                continue
+            kw = next(
+                (
+                    k
+                    for k in call.keywords
+                    if isinstance(k.value, ast.Name) and k.value.id == param and k.arg
+                ),
+                None,
+            )
+            if kw is None:
+                continue
+            more = ", ..." if len(call.keywords) > 1 else ""
+            written = f"{name} = update({ast.unparse(call.args[0])}, {kw.arg}={param}{more})"
+            column = f'col("{kw.arg}")'
+            return (
+                "it has no value when the request omits it. Compute with the stored value "
+                f"instead: after line {stmt.lineno} `{written}`, use {column} of `{name}` "
+                f"guarded by sent({param}), e.g. `checked = require({name}, ~sent({param}) | "
+                f"<condition on {column}>, else_=...)`"
+            )
+        return (
+            "it has no value when the request omits it: make it required (drop `= UNSET`), "
+            f"or {redeclare}"
+        )
 
     # ---- L803: private values as an oracle ---------------------------------------------
 
@@ -650,23 +695,60 @@ class _Endpoint:
                     "pass the other columns; only Admin endpoints may read private columns",
                 )
                 return
-        for _, value in _assigns(self.fn):
+        for bound, value in _assigns(self.fn):
             op = _call_name(value)
             if op is None:
                 continue
             assert isinstance(value, ast.Call)
             read = self._private_read(op, value)
             if read:
-                cols = ", ".join(sorted(read))
-                self.ctx.error(
-                    "L803",
-                    value,
-                    f"{op}() reads private column(s) {cols}; the response would reveal "
-                    "their values",
-                    "only Admin endpoints may filter, sort, join or aggregate on private "
-                    "columns; use the other columns",
+                cols = sorted(read)
+                listed = ", ".join(f"'{c}'" for c in cols)
+                what = (
+                    f"the private column {listed}; a {self.info.auth} endpoint's response "
+                    "would reveal its values"
+                    if len(cols) == 1
+                    else f"the private columns {listed}; a {self.info.auth} endpoint's "
+                    "response would reveal their values"
                 )
+                hint = self._private_hint(op, value, bound, cols[0])
+                self.ctx.error("L803", value, f"{op}() reads {what}", hint)
                 return
+
+    def _private_hint(self, op: str, call: ast.Call, bound: str, column: str) -> str:
+        """L803's hint for an op reading a private column: an owner comparison is
+        mine()/owner_is() (after declaring the owner, if the profile has none); any other
+        private column is Admin-only, or not private at all."""
+        arg = call.args[0] if call.args else None
+        t = self._name_type(arg.id) if isinstance(arg, ast.Name) else None
+        schema = self.api.tables.get(t.source) if t is not None and t.source else None
+        if isinstance(arg, ast.Name) and t is not None and t.source and schema is not None:
+            table, rows = t.source, arg.id
+            if op == "where":
+                check = (
+                    f"write `{bound} = mine({rows}, by=user)` (or accessible({rows}, by=user) "
+                    "to let Admin callers see every row)"
+                )
+            else:
+                check = f'check it with `require({rows}, owner_is(user), else_=Forbidden("..."))`'
+            if schema.owner == column:
+                return (
+                    f"'{column}' is {table}'s owner column: to keep the caller's own rows, "
+                    f"{check}"
+                )
+            if owner_candidate(schema, self.api) == column:
+                return (
+                    f"to keep the caller's own rows, declare owner='{column}' on {table} in "
+                    f"{PROFILE_FILE} and {check}"
+                )
+        verb = {"where": "filter", "require": "check", "sort": "sort", "join": "join"}.get(
+            op, "aggregate"
+        )
+        return (
+            f"only Admin endpoints may {verb} on '{column}'. If it is not secret (it only has "
+            f"to stay out of responses), declare it in {PROFILE_FILE} without private: "
+            "select() and the response model keep it out of responses"
+        )
 
     def _private_read(self, op: str, call: ast.Call) -> frozenset[str]:
         tables = [self._name_type(a.id) for a in call.args if isinstance(a, ast.Name)]
@@ -754,25 +836,103 @@ class _Endpoint:
         if self.admin or self.reported_ownership or not t.unchecked_owned:
             return
         self.reported_ownership = True
-        fetched = next(
-            (
-                name
-                for name, value in self.locals.items()
-                if _call_name(value) == "fetch"
-                and isinstance(value, ast.Call)
-                and value.args
-                and isinstance(value.args[0], ast.Name)
-                and value.args[0].id in t.unchecked_owned
-            ),
-            arg_name,
-        )
         tables = ", ".join(sorted(t.unchecked_owned))
+        hint, fix = self._ownership_hint(t, arg_name)
         self.ctx.error(
             "L802",
             node,
             f"rows of {tables} reach the caller without an ownership check",
-            f"filter with accessible({fetched}, by=user) before returning or writing",
+            hint,
+            fix,
         )
+
+    def _ownership_hint(self, t: TableT, arg_name: str) -> tuple[str, Fix | None]:
+        """L802's hint with the program's names: the binding already checked by owner
+        that should be read instead, or else the fetch whose rows are never filtered and
+        the exact line that filters them; a Fix when one edit does it (one table, one
+        fetch of it, one use to change)."""
+        fetches = [
+            (stmt, name)
+            for stmt, name in _assign_stmts(self.fn)
+            if _call_name(stmt.value) == "fetch"
+            and isinstance(stmt.value, ast.Call)
+            and stmt.value.args
+            and isinstance(stmt.value.args[0], ast.Name)
+            and stmt.value.args[0].id in t.unchecked_owned
+        ]
+        single = len(fetches) <= 1 and len(t.unchecked_owned) == 1
+        for unchecked in dict.fromkeys([arg_name, *(name for _, name in fetches[:1])]):
+            checked = self._checked_binding(unchecked)
+            if checked is None:
+                continue
+            name, line, op = checked
+            uses = [
+                n
+                for s in self.fn.body
+                if s.lineno > line
+                for n in ast.walk(s)
+                if isinstance(n, ast.Name) and n.id == unchecked and isinstance(n.ctx, ast.Load)
+            ]
+            if uses:
+                lines = ", ".join(str(n) for n in sorted({u.lineno for u in uses}))
+                return (
+                    f"use `{name}` (line {line}, checked by {op}()) instead of `{unchecked}` "
+                    f"at line{'s' if ',' in lines else ''} {lines}",
+                    fix_of(uses[0], name) if single and len(uses) == 1 else None,
+                )
+        if not fetches:
+            return f"filter with accessible({arg_name}, by=user) before returning or writing", None
+        stmt, fetched = fetches[0]
+        assert isinstance(stmt.value, ast.Call)
+        call = stmt.value
+        table = ast.unparse(call.args[0])
+        if fetched in self.ctx.fresh:  # a nested fetch(T) the normaliser lifted out
+            wrapped = f"accessible({ast.unparse(call)}, by=user)"
+            return (
+                f"the {ast.unparse(call)} at line {call.lineno} reads every {table} row: "
+                f"filter it by owner, `{wrapped}`",
+                fix_of(call, wrapped) if single else None,
+            )
+        everything = self._unused_name(f"all_{fetched}")
+        indent = " " * stmt.col_offset
+        first = f"{everything} = {ast.unparse(call)}"
+        second = f"{fetched} = accessible({everything}, by=user)"
+        return (
+            f"the rows fetched at line {stmt.lineno} are never filtered by owner: replace "
+            f"line {stmt.lineno} with `{first}` and `{second}` (the later lines keep using "
+            f"`{fetched}`)",
+            fix_of(stmt, f"{first}\n{indent}{second}")
+            if single and stmt.lineno == stmt.end_lineno
+            else None,
+        )
+
+    def _checked_binding(self, rows: str) -> tuple[str, int, str] | None:
+        """The first `x = accessible(rows, by=user)` (or owned/mine) or `x = require(rows,
+        owner_is(user), ...)`: (x, its line, the checking op)."""
+        for stmt, name in _assign_stmts(self.fn):
+            value = stmt.value
+            op = _call_name(value)
+            if not (
+                isinstance(value, ast.Call)
+                and value.args
+                and isinstance(value.args[0], ast.Name)
+                and value.args[0].id == rows
+            ):
+                continue
+            if op in ("accessible", "owned", "mine"):
+                return name, stmt.lineno, op
+            if op == "require" and len(value.args) > 1 and is_owner_is(value.args[1]):
+                return name, stmt.lineno, "owner_is"
+        return None
+
+    def _unused_name(self, base: str) -> str:
+        """`base`, or base_2, base_3, ...: a name the endpoint does not bind or read."""
+        used = {n.id for n in ast.walk(self.fn) if isinstance(n, ast.Name)}
+        used |= {a.arg for a in self.fn.args.args} | set(self.p.steps)
+        name, k = base, 2
+        while name in used:
+            name, k = f"{base}_{k}", k + 1
+        return name
 
     def _writes(self) -> None:
         for op in _TABLE_ARG_OPS:
@@ -1362,7 +1522,10 @@ class _Endpoint:
                 )
             return
         self._ownership(ret, t, name)
-        if t.private:
+        fields = self.api.responses.get(self.info.response or "")
+        if t.private and fields is not None and t.private.isdisjoint(fields):
+            pass  # L834 reports them, as extra (private) columns, with the select line
+        elif t.private:
             cols = ", ".join(sorted(t.private))
             keep = [c for c in t.schema.names() if c not in t.private]
             listed = ", ".join(f'"{c}"' for c in keep)
@@ -1466,14 +1629,30 @@ class _Endpoint:
         if missing:
             parts.append("missing " + ", ".join(f"'{f}'" for f in missing))
         if extra:
-            parts.append("extra " + ", ".join(f"'{c}'" for c in extra))
+            parts.append(
+                "extra "
+                + ", ".join(f"'{c}'" + (" (private)" if c in t.private else "") for c in extra)
+            )
         listed = ", ".join(f'"{f}"' for f in fields)
+        returned_name = ret.value.id
+        shown = self._unused_name("shown")
+        first = f"{shown} = select({returned_name}, cols=[{listed}])"
+        hint = (
+            f"return exactly its fields: replace line {ret.lineno} with `{first}` and "
+            f"`return {shown}`"
+        )
+        fix = None
+        if missing:
+            hint += ", after deriving or renaming " + ", ".join(f"'{f}'" for f in missing)
+        elif ret.lineno == ret.end_lineno:
+            indent = " " * ret.col_offset
+            fix = fix_of(ret, f"{first}\n{indent}return {shown}")
         self.ctx.error(
             "L834",
             ret,
             f"the returned columns do not match response model '{name}': " + "; ".join(parts),
-            f"return exactly its fields, e.g. select(..., cols=[{listed}]) "
-            "(derive or rename the missing ones first)",
+            hint,
+            fix,
         )
 
 

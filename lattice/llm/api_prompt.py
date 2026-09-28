@@ -147,7 +147,8 @@ _API_OP_DOCS: dict[str, tuple[str, str]] = {
     "insert": (
         "insert(Table, owner=user, col=<expr>, ...)",
         "insert one row (id assigned automatically) and return it; `owner=user` for "
-        "tables with an owner column, never otherwise",
+        "tables whose schema declares an owner (`owner='owner_id'` in the profile), never "
+        "otherwise (there, set the column itself, e.g. `owner_id=user.id`)",
     ),
     "update": (
         "update(t, col=<expr>, ...)",

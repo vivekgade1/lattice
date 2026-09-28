@@ -201,7 +201,11 @@ def test_l802_owned_rows_returned_without_owned():
         "where(mine,", "where(orders,"
     )
     d = diag(src, "L802")
-    assert d.hint == "filter with accessible(orders, by=user) before returning or writing"
+    assert d.hint == (
+        "the rows fetched at line 4 are never filtered by owner: replace line 4 with "
+        "`all_orders = fetch(Orders)` and `orders = accessible(all_orders, by=user)` "
+        "(the later lines keep using `orders`)"
+    )
     assert errors(src) == ["L802"]  # one mistake, one diagnostic (at the update)
 
 
@@ -967,7 +971,11 @@ def test_items_read_without_owned_is_l802():
     )
     d = bench_diag(src, "L802")
     assert "OrderItems" in d.message
-    assert d.hint == "filter with accessible(items, by=user) before returning or writing"
+    assert d.hint == (
+        "the rows fetched at line 4 are never filtered by owner: replace line 4 with "
+        "`all_items = fetch(OrderItems)` and `items = accessible(all_items, by=user)` "
+        "(the later lines keep using `items`)"
+    )
     assert bench_errors(src) == ["L802"]
     assert bench_errors(src.replace("auth=Customer", "auth=Admin")) == []
 

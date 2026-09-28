@@ -81,6 +81,7 @@ from lattice.check.exprs import (
     did_you_mean,
     reported_name_spans,
 )
+from lattice.check.fix_hints import declare_owner, owner_candidate, users_key
 from lattice.check.nullability import expr_nullable, may_write_null
 from lattice.check.t2.types import Opt as T2Opt
 from lattice.check.t2.types import RecordT as T2RecordT
@@ -93,7 +94,7 @@ from lattice.check.t2_calls import (
     is_row_call,
     whole_call,
 )
-from lattice.diagnostics import span_of
+from lattice.diagnostics import fix_of, span_of
 from lattice.typesys import (
     NUMERIC,
     SCALAR_NAMES,
@@ -289,6 +290,8 @@ class _Types:
         self.reported = reported_name_spans(ctx)
         self.sigs: dict[str, _Sig] = {}
         self.in_endpoint = False  # typing an @endpoint body (API profile)
+        # insert() calls whose owner= on an unowned table was reported with a column fix
+        self.owner_as_column: set[int] = set()
         self.endpoint_admin = False  # ... of an auth=Admin endpoint
         # T2: the program's procedures, and those whose result may be None
         self.t2 = ctx.t2 if self.api is not None else None
@@ -1863,12 +1866,12 @@ class _Types:
                 )
                 return UNKNOWN
         if t.owner is None and t.owner_via is None:
-            owned = sorted(n for n, s in self.schemas.items() if s.owner is not None or s.owner_via)
             self.ctx.error(
                 "L404",
                 cond,
-                "owner_is() needs rows of a table with an owner column; this table has none",
-                "remove the check: only " + (", ".join(owned) or "no tables") + " are per-user",
+                "owner_is() needs rows of a table with an owner column; "
+                + self._no_owner_said(t),
+                self._no_owner_hint(t, "drop the owner_is() check"),
             )
             return UNKNOWN
         self.ctx.set_type(cond, ColT(Scalar.BOOL))
@@ -1943,15 +1946,38 @@ class _Types:
                 self.ctx.error("L404", by, f"{op}() filters by the caller", "write by=user")
             return UNKNOWN
         if t.owner is None and t.owner_via is None:
-            owned = sorted(n for n, s in self.schemas.items() if s.owner is not None or s.owner_via)
+            arg = f"`{ast.unparse(call.args[0])}` itself" if call.args else "its input"
             self.ctx.error(
                 "L404",
                 call,
-                f"{op}() needs rows of a table with an owner column; this table has none",
-                f"remove {op}(): only " + (", ".join(owned) or "no tables") + " are per-user",
+                f"{op}() needs rows of a table with an owner column; " + self._no_owner_said(t),
+                self._no_owner_hint(t, f"drop {op}() and use {arg}"),
             )
             return UNKNOWN
         return replace(t, owner_checked=True)
+
+    def _no_owner_said(self, t: TableT) -> str:
+        if t.source is None:
+            return "these rows have none"
+        return f"the profile declares none for {t.source}, so its rows are shared"
+
+    def _no_owner_hint(self, t: TableT, otherwise: str) -> str:
+        """What to do about an ownership op on an unowned table: declare the owner (when
+        a column looks like one) or drop the op."""
+        schema = self.api.tables.get(t.source) if self.api and t.source else None
+        column = owner_candidate(schema, self.api) if schema is not None and self.api else None
+        if t.source is not None and column is not None:
+            return (
+                f"if each {t.source} belongs to the user in its '{column}' column, "
+                f"{declare_owner(t.source, column)}; otherwise {otherwise}"
+            )
+        owned = sorted(n for n, s in self.schemas.items() if s.owner is not None or s.owner_via)
+        per_user = (
+            "the per-user tables are " + ", ".join(owned)
+            if owned
+            else "no table in this profile is per-user"
+        )
+        return f"{otherwise} ({per_user})"
 
     def _compatible(self, value: ast.expr, got: Scalar, want: Scalar, column: str) -> bool:
         if not (got is want or (want is Scalar.FLOAT and got is Scalar.INT)):
@@ -1987,12 +2013,7 @@ class _Types:
                         f"remove owner=user; set {fk}= to the id of a {parent} row the caller owns",
                     )
                 elif schema.owner is None:
-                    self.ctx.error(
-                        "L404",
-                        kw,
-                        f"'{name}' has no owner column",
-                        "remove owner=user",
-                    )
+                    self._owner_kw_on_unowned(call, kw, name, schema, "insert")
                 continue
             if not self._require_columns([kw.arg], schema, kw):
                 continue
@@ -2018,6 +2039,41 @@ class _Types:
             source=name,
             plain=plain_columns(schema),
         )
+
+    def _owner_kw_on_unowned(
+        self,
+        call: ast.Call | None,
+        kw: ast.keyword,
+        name: str,
+        schema: Schema,
+        op: str,
+        given: set[str | None] | None = None,
+    ) -> None:
+        """L404: owner= on a table the profile gives no owner. When a column looks like
+        the owner column, the value goes there instead (one edit: a Fix)."""
+        column = owner_candidate(schema, self.api) if self.api is not None else None
+        if given is None and call is not None:
+            given = {k.arg for k in call.keywords}
+        message = f"'{name}' has no owner declared in the profile, so {op}() takes no owner="
+        if column is None or (given is not None and column in given):
+            self.ctx.error("L404", kw, message, f"remove owner=: {name} rows are shared")
+            return
+        value = kw.value
+        if isinstance(value, ast.Name) and value.id == USER_PARAM:
+            text, what = f"{column}=user.id", "to the caller"
+        elif (
+            isinstance(value, ast.Name)
+            and value.id not in self.param_specs  # a parameter is the id itself
+            and self.api is not None
+            and users_key(self.api)
+        ):
+            text, what = f"{column}={value.id}.{users_key(self.api)}", "instead"
+        else:
+            text, what = f"{column}={ast.unparse(value)}", "instead"
+        self.ctx.error(
+            "L404", kw, message, f"set its '{column}' column {what}: {text}", fix_of(kw, text)
+        )
+        self.owner_as_column.add(id(call) if call is not None else id(kw))
 
     def _insert_columns(self, call: ast.Call, name: str, schema: Schema) -> None:
         """L404: an insert never sets the key the database assigns, and sets every other
@@ -2048,6 +2104,8 @@ class _Types:
             if c not in (key, schema.owner, uuid_key(schema))
             and c not in schema.nullable
             and c not in given
+            # owner= on an unowned table was reported with this column as its fix
+            and not (id(call) in self.owner_as_column and c == owner_candidate(schema, self.api))
         ]
         if missing:
             listed = ", ".join(f"'{c}'" for c in missing)
@@ -2154,7 +2212,7 @@ class _Types:
             )
             return
         if schema.owner is None:
-            self.ctx.error("L404", kw, f"'{table}' has no owner column", "remove owner=")
+            self._owner_kw_on_unowned(None, kw, table, schema, "update", given)
             return
         if schema.owner in given:
             self.ctx.error(
@@ -2651,6 +2709,8 @@ class _Types:
             if c not in (key, schema.owner, uuid_key(schema))
             and c not in schema.nullable
             and c not in given
+            # owner= on an unowned table was reported with this column as its fix
+            and not (id(call) in self.owner_as_column and c == owner_candidate(schema, self.api))
         ]
         if missing:
             listed = ", ".join(f"'{c}'" for c in missing)

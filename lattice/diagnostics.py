@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import ast
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 
 
@@ -22,12 +22,31 @@ class Severity(StrEnum):
 
 
 @dataclass(frozen=True)
+class Fix:
+    """A machine-applicable suggestion: replace the source text from `start` up to (not
+    including) `end` with `text`. Offered only when one edit fixes the error and the edit
+    is unambiguous; the checker never applies it (the author, or model, makes the change;
+    a harness may show it in repair feedback)."""
+
+    start: Span
+    end: Span
+    text: str
+
+    def render(self) -> str:
+        return (
+            f"replace line {self.start.line} col {self.start.col} to line {self.end.line} "
+            f"col {self.end.col} with: {self.text}"
+        )
+
+
+@dataclass(frozen=True)
 class Diagnostic:
     code: str
     severity: Severity
     span: Span
     message: str
     hint: str | None = None
+    fix: Fix | None = field(default=None, compare=False)
 
     def render(self) -> str:
         text = (
@@ -45,6 +64,16 @@ def span_of(node: ast.AST) -> Span:
     if line is None or col is None:
         return Span(1, 1)
     return Span(line, col + 1)
+
+
+def fix_of(node: ast.AST, text: str) -> Fix | None:
+    """A Fix replacing exactly the source of `node` with `text` (None without a position)."""
+    line, col = getattr(node, "lineno", None), getattr(node, "col_offset", None)
+    end_line, end_col = getattr(node, "end_lineno", None), getattr(node, "end_col_offset", None)
+    if None in (line, col, end_line, end_col):
+        return None
+    assert line is not None and col is not None and end_line is not None and end_col is not None
+    return Fix(Span(line, col + 1), Span(end_line, end_col + 1), text)
 
 
 def has_errors(diags: Iterable[Diagnostic]) -> bool:
