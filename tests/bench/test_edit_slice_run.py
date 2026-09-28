@@ -803,3 +803,160 @@ def test_the_cli_dry_run_partial_flag_is_wired(tmp_path):
         "partial",
         "correct",
     )
+
+
+# ---- the CLI transport (--backend cli), --resume and --workers ---------------------------
+
+
+def test_backend_cli_is_wired_instead_of_the_api_client(tmp_path, monkeypatch):
+    import lattice.llm.cli_client as cli_client
+
+    seen: dict[str, object] = {}
+
+    class _FakeCli:
+        def __init__(self, model: str, max_tokens: int, effort: str) -> None:
+            seen["model"], seen["max_tokens"], seen["effort"] = model, max_tokens, effort
+
+        def generate(self, system, messages):
+            return Generation(
+                text=_l_answer("t6_stats"),
+                usage=Usage(10, 5),
+                latency_s=0.001,
+                stop_reason="end_turn",
+                model="claude-haiku-4-5",
+                cost_usd=0.0042,
+                cost_basis="cli_list_estimate",
+            )
+
+    monkeypatch.setattr(cli_client, "ClaudeCliClient", _FakeCli)
+    out = tmp_path / "res.jsonl"
+    args = [
+        "--model", "fake-cli-model", "--arm", "L", "--tickets", "t6_stats",
+        "--out", str(out), "--backend", "cli",
+    ]  # fmt: skip
+    assert run.main(args) == 0
+    record = json.loads(out.read_text().splitlines()[0])
+    assert record["backend"] == "cli"
+    assert record["cost_basis"] == "cli_list_estimate"
+    assert record["cost_usd"] == pytest.approx(0.0042)
+    assert seen == {"model": "fake-cli-model", "max_tokens": run.MAX_TOKENS, "effort": "high"}
+
+
+def test_backend_defaults_to_api(tmp_path):
+    assert run._parser().parse_args([]).backend == "api"
+
+
+def test_backend_cli_usage_limit_stops_cleanly_without_recording_a_failure(tmp_path, monkeypatch):
+    import lattice.llm.cli_client as cli_client
+
+    class _FakeCli:
+        def __init__(self, model, max_tokens, effort):
+            pass
+
+        def generate(self, system, messages):
+            raise cli_client.CliUsageLimitError("plan usage limit reached")
+
+    monkeypatch.setattr(cli_client, "ClaudeCliClient", _FakeCli)
+    out = tmp_path / "res.jsonl"
+    args = [
+        "--model", "m", "--arm", "P", "--tickets", "t6_stats,t1_search",
+        "--reps", "1", "--out", str(out), "--backend", "cli",
+    ]  # fmt: skip
+
+    assert run.main(args) == 3
+    assert not out.exists() or out.read_text() == ""
+
+
+def test_resume_skips_already_completed_tuples(tmp_path):
+    out = tmp_path / "res.jsonl"
+    pre = run.dry_run("P", "t6_stats", partial=True)
+    pre.rep = 0
+    out.write_text(pre.to_json() + "\n")
+
+    args = [
+        "--model", "reference", "--arm", "P", "--tickets", "t6_stats,t1_search",
+        "--reps", "1", "--out", str(out), "--dry-run-partial", "--resume",
+    ]  # fmt: skip
+    assert run.main(args) == 0
+
+    lines = out.read_text().splitlines()
+    assert len(lines) == 2
+    assert [json.loads(line)["ticket"] for line in lines] == ["t6_stats", "t1_search"]
+
+
+def test_completed_ignores_malformed_lines():
+    import tempfile
+    from pathlib import Path
+
+    with tempfile.TemporaryDirectory() as d:
+        out = Path(d) / "res.jsonl"
+        out.write_text('not json\n{"model": "m", "arm": "P", "ticket": "t1", "rep": 0}\n')
+        assert run._completed(out) == {("m", "P", "t1", 0)}
+
+
+def test_workers_parallel_output_matches_sequential_order(tmp_path):
+    common = [
+        "--model", "reference", "--arm", "P,L", "--tickets", "t6_stats,t1_search,t4_restore",
+        "--reps", "1", "--dry-run-partial",
+    ]  # fmt: skip
+    out1 = tmp_path / "seq.jsonl"
+    out4 = tmp_path / "par.jsonl"
+    assert run.main([*common, "--out", str(out1)]) == 0
+    assert run.main([*common, "--out", str(out4), "--workers", "4"]) == 0
+
+    lines1 = out1.read_text().splitlines()
+    lines4 = out4.read_text().splitlines()
+    assert len(lines1) == len(lines4) == 6
+    keys1 = [(json.loads(ln)["ticket"], json.loads(ln)["arm"]) for ln in lines1]
+    keys4 = [(json.loads(ln)["ticket"], json.loads(ln)["arm"]) for ln in lines4]
+    assert keys1 == keys4
+
+
+def test_workers_run_concurrently_and_write_safely(tmp_path, monkeypatch):
+    import threading
+    import time as time_mod
+
+    import lattice.llm.cli_client as cli_client
+
+    # Measure overlap of the generate() calls themselves, not run.main()'s total wall
+    # time: each round also runs a real smoke test and oracle evaluation (ASGI + SQLite,
+    # CPU-bound), which the GIL serialises across threads regardless of --workers and
+    # would swamp a total-time budget with unrelated cost. Concurrent dispatch of the
+    # (I/O-bound, in production) model calls is what --workers buys, so that's what this
+    # asserts: every fake call starts within one sleep-window of the first.
+    lock = threading.Lock()
+    starts: list[float] = []
+
+    class _SlowFakeCli:
+        def __init__(self, model, max_tokens, effort):
+            pass
+
+        def generate(self, system, messages):
+            with lock:
+                starts.append(time_mod.perf_counter())
+            time_mod.sleep(0.2)
+            return Generation(
+                text=_l_answer("t6_stats"),
+                usage=Usage(1, 1),
+                latency_s=0.0,
+                stop_reason="end_turn",
+                model="m",
+                cost_usd=0.001,
+                cost_basis="cli_list_estimate",
+            )
+
+    monkeypatch.setattr(cli_client, "ClaudeCliClient", _SlowFakeCli)
+    out = tmp_path / "res.jsonl"
+    args = [
+        "--model", "m", "--arm", "L", "--tickets", "t6_stats", "--reps", "4",
+        "--out", str(out), "--backend", "cli", "--workers", "4",
+    ]  # fmt: skip
+
+    assert run.main(args) == 0
+
+    lines = out.read_text().splitlines()
+    assert len(lines) == 4
+    for line in lines:
+        json.loads(line)  # every line parses whole: no interleaved/corrupted writes
+    assert len(starts) == 4
+    assert max(starts) - min(starts) < 0.2  # all 4 dispatched within one sleep-window

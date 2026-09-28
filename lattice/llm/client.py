@@ -40,6 +40,13 @@ class Generation:
     stop_reason: str
     model: str = ""  # the model that actually served the request (audited by the gate)
     refusals: int = 0  # refused attempts that were retried before this answer
+    # A transport that already knows the call's dollar cost (the CLI transport's
+    # `total_cost_usd`) sets these; None means "no such figure -- derive it from usage
+    # and the price table instead" (lattice.llm.client callers, e.g.
+    # bench.edit_slice.run._account, fall back that way). cost_basis names how cost_usd
+    # was priced, e.g. "cli_list_estimate" for the CLI transport's own list-price figure.
+    cost_usd: float | None = None
+    cost_basis: str | None = None
 
 
 class GenerationRefused(Exception):

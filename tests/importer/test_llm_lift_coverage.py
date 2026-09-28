@@ -168,3 +168,59 @@ def test_the_cli_defaults_to_32k_tokens_at_effort_medium_for_r1_and_r2(monkeypat
     assert (strong.model, strong.effort) == ("claude-opus-5", "max")
     # a non-streaming call with 32k output tokens needs an explicit timeout
     assert gen.client.timeout != cli.DEFAULT_SDK_TIMEOUT
+
+
+def test_the_cli_backend_flag_defaults_to_api():
+    args = cli.parser().parse_args([".", "--package", "p", "--app-factory", "m:f"])
+    assert args.backend == "api"
+
+
+def test_the_cli_backend_cli_builds_claude_cli_clients_with_the_same_settings_as_claude(
+    monkeypatch,
+):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key-not-used")
+    args = cli.parser().parse_args(
+        [".", "--package", "p", "--app-factory", "m:f", "--model", "claude-sonnet-5",
+         "--strong-model", "claude-opus-5", "--backend", "cli"]
+    )  # fmt: skip
+    assert args.max_tokens == 32000
+    gen, strong, notes, relift = cli._cli(args)
+    from lattice.llm.cli_client import ClaudeCliClient
+
+    assert isinstance(gen, ClaudeCliClient) and isinstance(strong, ClaudeCliClient)
+    assert (gen.model, gen.effort, gen.max_tokens) == ("claude-sonnet-5", "medium", 32000)
+    assert (relift.model, relift.effort, relift.max_tokens) == ("claude-opus-5", "medium", 32000)
+    assert (strong.model, strong.effort) == ("claude-opus-5", "max")
+    assert notes is gen
+    # a non-streaming call with 32k output tokens needs the same long timeout as _claude
+    assert gen.timeout != cli.DEFAULT_SDK_TIMEOUT and gen.timeout == cli.LONG_CALL_TIMEOUT
+
+
+def test_the_cli_main_uses_cli_backend_when_asked(tmp_path, monkeypatch):
+    """``--backend cli`` (no injected ``generators``) builds ``ClaudeCliClient``s instead
+    of talking to the Anthropic API: the loop as a whole is wired to the CLI transport by
+    the flag alone. Every fake call errors (``close_gap`` ends that route's ladder on any
+    generator exception, per-route, not the whole run -- see ``lattice.importer.llm_lift``
+    ``_ask``), so the import still completes; what this checks is that the CLI transport
+    was the one asked at all."""
+    import lattice.llm.cli_client as cli_client
+    from lattice.importer.cli import main
+    from tests.importer.test_importer_cli import ARGS
+
+    seen = []
+
+    class _FakeCli:
+        def __init__(self, model, max_tokens, effort, timeout=600.0):
+            seen.append(model)
+
+        def generate(self, system, messages):
+            raise cli_client.CliError("no real call: wiring test only")
+
+    monkeypatch.setattr(cli_client, "ClaudeCliClient", _FakeCli)
+    out = tmp_path / "li"
+    code = main(
+        [*ARGS, "--out", str(out), "--method", "M1", "--backend", "cli",
+         "--corpus", str(tmp_path / "c.jsonl")],
+    )  # fmt: skip
+    assert code == 0
+    assert seen  # ClaudeCliClient was constructed, not ClaudeGenerator/anthropic.Anthropic

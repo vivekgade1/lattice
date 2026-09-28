@@ -66,6 +66,15 @@ references through each arm (no API call); arm L on t13-t18 has no reference to 
 reported as ``no_reference``. ``--dry-run-partial`` feeds each reference as a partial
 answer (endpoint-scoped edits, diffed against the start down to the top-level names
 that changed -- :func:`partial_reference_answer`) instead of the whole file.
+
+``--backend api|cli`` (default ``api``) picks the live transport: the Anthropic SDK, or
+the local ``claude -p`` (:class:`lattice.llm.cli_client.ClaudeCliClient`) -- identical
+prompts either way; the record's ``backend`` says which one ran. ``--resume`` skips
+(model, arm, ticket, rep) tuples already in ``--out``, so a round a CLI usage limit cut
+short can continue without redoing finished work (a usage limit stops the whole run --
+exit code 3 -- rather than being recorded as a failure). ``--workers N`` (default 1)
+runs that many (ticket, arm, rep) tasks concurrently; the JSONL is still written in the
+same order a ``--workers 1`` run would produce, by a single writer on the main thread.
 """
 
 from __future__ import annotations
@@ -82,9 +91,11 @@ import shutil
 import statistics
 import sys
 import tempfile
+import threading
 import time
 import types
 from collections.abc import Callable, Mapping, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from functools import cache
 from pathlib import Path
@@ -109,6 +120,7 @@ from bench.edit_slice.tickets import (
 )
 from bench.edit_slice.variant import app_source, load_variant
 from bench.metrics import cost_usd
+from lattice.llm.cli_client import CliUsageLimitError
 from lattice.llm.client import Generation, GenerationRefused, Generator, ScriptedGenerator
 
 Arm = Literal["P", "L"]
@@ -340,6 +352,12 @@ class RunRecord:
     cache_read_tokens: int = 0
     cache_creation_tokens: int = 0
     cost_usd: float = 0.0
+    # how cost_usd was priced, comma-joined over the run's calls (as served_model joins
+    # served models): "cli_list_estimate" for a call the CLI transport itself priced
+    # (its total_cost_usd); empty for a call priced here instead from usage tokens and
+    # bench.metrics.PRICES (every API-arm call, and a refused CLI call, which carries no
+    # reported cost)
+    cost_basis: str = ""
     served_model: str = ""
     refused_attempts: int = 0
     # wall time: the whole run, the model calls, the oracle
@@ -367,6 +385,7 @@ class RunRecord:
     max_tokens: int | None = None  # the output limit per call (None: not a live run)
     hints: bool = False
     dry_run: bool = False
+    backend: str = "api"  # transport for live model calls: api (Anthropic SDK) or cli (`claude -p`)
     # the run's artefact directory (every round's output and candidate files), if kept
     artefacts: str | None = None
     # whole (every answer resent everything) or partial (a round used the merge-by-name
@@ -991,24 +1010,35 @@ def _save_round(
 def _account(
     record: RunRecord, generations: Sequence[Generation], refused: GenerationRefused | None
 ) -> None:
-    usages = [(g.model, g.usage, g.latency_s) for g in generations]
+    # (served model, usage, latency, transport-reported cost or None, its cost_basis)
+    usages = [(g.model, g.usage, g.latency_s, g.cost_usd, g.cost_basis) for g in generations]
     if refused is not None:
-        usages.append((refused.model, refused.usage, refused.latency_s))
-    for served, usage, latency in usages:
+        # GenerationRefused carries no cost figure (the CLI's total_cost_usd is not
+        # captured on a refusal); this call's cost is always derived from usage below.
+        usages.append((refused.model, refused.usage, refused.latency_s, None, None))
+    bases = []
+    for served, usage, latency, call_cost, basis in usages:
         record.input_tokens += usage.total_input_tokens
         record.output_tokens += usage.output_tokens
         record.cache_read_tokens += usage.cache_read_input_tokens
         record.cache_creation_tokens += usage.cache_creation_input_tokens
         record.llm_s += latency
-        record.cost_usd += cost_usd(
-            served,
-            input_tokens=usage.total_input_tokens,
-            output_tokens=usage.output_tokens,
-            cache_read_tokens=usage.cache_read_input_tokens,
-            cache_creation_tokens=usage.cache_creation_input_tokens,
+        record.cost_usd += (
+            call_cost
+            if call_cost is not None
+            else cost_usd(
+                served,
+                input_tokens=usage.total_input_tokens,
+                output_tokens=usage.output_tokens,
+                cache_read_tokens=usage.cache_read_input_tokens,
+                cache_creation_tokens=usage.cache_creation_input_tokens,
+            )
         )
-    served_models = list(dict.fromkeys(m for m, _, _ in usages if m))
+        if basis:
+            bases.append(basis)
+    served_models = list(dict.fromkeys(m for m, *_ in usages if m))
     record.served_model = ",".join(served_models)
+    record.cost_basis = ",".join(dict.fromkeys(bases))
     record.refused_attempts = sum(g.refusals for g in generations)
 
 
@@ -1309,6 +1339,25 @@ def _parser() -> argparse.ArgumentParser:
         help="print prompt sizes and the live run's cost estimate",
     )
     p.add_argument("--estimate-models", default="claude-sonnet-5,claude-haiku-4-5")
+    p.add_argument(
+        "--backend",
+        choices=("api", "cli"),
+        default="api",
+        help="transport for a live model call: api (Anthropic SDK, default) or cli "
+        "(the local `claude -p`, identical prompts)",
+    )
+    p.add_argument(
+        "--resume",
+        action="store_true",
+        help="skip (model, arm, ticket, rep) tuples already in --out, so a round "
+        "interrupted (e.g. by a CLI usage limit) can continue without redoing work",
+    )
+    p.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="run this many (ticket, arm, rep) tasks concurrently (default 1)",
+    )
     return p
 
 
@@ -1325,6 +1374,80 @@ def _tickets(spec: str) -> list[str]:
     for tid in ids:
         ticket(tid)
     return ids
+
+
+def _make_generator(args: argparse.Namespace) -> Generator:
+    """The generator for a live (non-dry-run) call, per ``--backend``: the Anthropic API
+    (default) or the local ``claude -p`` CLI, identical prompts either way."""
+    if args.backend == "cli":
+        from lattice.llm.cli_client import ClaudeCliClient
+
+        return ClaudeCliClient(model=args.model, max_tokens=args.max_tokens, effort=args.effort)
+    from lattice.llm.client import ClaudeGenerator
+
+    return ClaudeGenerator(model=args.model, max_tokens=args.max_tokens, effort=args.effort)
+
+
+def _completed(out: Path) -> set[tuple[str | None, str | None, str | None, int | None]]:
+    """(model, arm, ticket, rep) tuples already written to ``out`` -- what ``--resume``
+    skips, so a round interrupted (e.g. by a CLI usage limit) can continue without
+    redoing work already on disk. A line that fails to parse is ignored (not counted as
+    done): it is likely a partially-written line from an interrupted run."""
+    done: set[tuple[str | None, str | None, str | None, int | None]] = set()
+    if not out.exists():
+        return done
+    with out.open() as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            done.add((d.get("model"), d.get("arm"), d.get("ticket"), d.get("rep")))
+    return done
+
+
+def _run_one(
+    arm: Arm, tid: str, rep: int, args: argparse.Namespace, artefact_root: Path
+) -> RunRecord:
+    """One (arm, ticket, rep)'s record. A harness-side failure (a bug, a bad ticket, a
+    transient :class:`~lattice.llm.cli_client.CliError`) becomes an ``error`` record --
+    except :class:`~lattice.llm.cli_client.CliUsageLimitError`, which is not caught here:
+    it must stop the whole run (see ``main``), never be recorded as one run's failure."""
+    dry = args.dry_run_reference or args.dry_run_partial
+    try:
+        if dry:
+            record = dry_run(arm, tid, partial=args.dry_run_partial)
+            record.rep = rep
+        else:
+            generator = _make_generator(args)
+            record = run_arm(
+                arm,
+                tid,
+                generator,
+                model=args.model,
+                rep=rep,
+                max_repairs=args.max_repairs,
+                hints=args.hints,
+                max_tokens=args.max_tokens,
+                artefact_root=artefact_root,
+            )
+    except CliUsageLimitError:
+        raise
+    except Exception as exc:  # noqa: BLE001 -- one run's harness crash is recorded
+        record = RunRecord(
+            tid,
+            arm,
+            "reference" if dry else args.model,
+            rep,
+            outcome="error",
+            detail=f"{type(exc).__name__}: {exc}"[:_DETAIL_LIMIT],
+            dry_run=dry,
+        )
+    record.backend = args.backend
+    return record
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -1344,53 +1467,54 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
+    out.touch(exist_ok=True)  # so the report below can always load it, even 0 runs in
     artefact_root = out.with_name(out.name + ".artefacts")
-    for rep in range(args.reps):
-        for tid in tickets:
-            for arm in arms:
-                try:
-                    if args.dry_run_reference or args.dry_run_partial:
-                        record = dry_run(arm, tid, partial=args.dry_run_partial)
-                        record.rep = rep
-                    else:
-                        from lattice.llm.client import ClaudeGenerator
 
-                        generator = ClaudeGenerator(
-                            model=args.model, max_tokens=args.max_tokens, effort=args.effort
-                        )
-                        record = run_arm(
-                            arm,
-                            tid,
-                            generator,
-                            model=args.model,
-                            rep=rep,
-                            max_repairs=args.max_repairs,
-                            hints=args.hints,
-                            max_tokens=args.max_tokens,
-                            artefact_root=artefact_root,
-                        )
-                except Exception as exc:  # noqa: BLE001 -- one run's harness crash is recorded
-                    dry = args.dry_run_reference or args.dry_run_partial
-                    record = RunRecord(
-                        tid,
-                        arm,
-                        "reference" if dry else args.model,
-                        rep,
-                        outcome="error",
-                        detail=f"{type(exc).__name__}: {exc}"[:_DETAIL_LIMIT],
-                        dry_run=dry,
-                    )
-                with out.open("a") as f:
-                    f.write(record.to_json() + "\n")
-                print(
-                    f"{record.model} {arm} {tid} rep{rep}: {record.outcome} "
-                    f"rounds={record.rounds} ${record.cost_usd:.4f}",
-                    file=sys.stderr,
-                )
+    dry = args.dry_run_reference or args.dry_run_partial
+    model_key = "reference" if dry else args.model
+    tasks = [(rep, tid, arm) for rep in range(args.reps) for tid in tickets for arm in arms]
+    if args.resume:
+        done = _completed(out)
+        tasks = [t for t in tasks if (model_key, t[2], t[1], t[0]) not in done]
+
+    write_lock = threading.Lock()
+
+    def _write(record: RunRecord) -> None:
+        # a single writer (this closure only ever runs on the main thread, called on
+        # each future's result in submission order) -- JSONL append safety needs no
+        # lock for that alone, but the print alongside it shares stderr, so keep both
+        # under one lock for tidy, non-interleaved output.
+        with write_lock:
+            with out.open("a") as f:
+                f.write(record.to_json() + "\n")
+            print(
+                f"{record.model} {record.arm} {record.ticket} rep{record.rep}: "
+                f"{record.outcome} rounds={record.rounds} ${record.cost_usd:.4f}",
+                file=sys.stderr,
+            )
+
+    stopped_early = False
+    with ThreadPoolExecutor(max_workers=max(1, args.workers)) as ex:
+        # submit every task up front, then collect results in submission order: workers
+        # run concurrently, but the JSONL/report stay in the same deterministic order a
+        # --workers 1 run would produce.
+        futures = [
+            ex.submit(_run_one, arm, tid, rep, args, artefact_root) for rep, tid, arm in tasks
+        ]
+        for fut in futures:
+            try:
+                record = fut.result()
+            except CliUsageLimitError as exc:
+                print(f"usage limit reached, stopping cleanly: {exc}", file=sys.stderr)
+                ex.shutdown(wait=False, cancel_futures=True)
+                stopped_early = True
+                break
+            _write(record)
+
     from bench.edit_slice.report import load, render
 
     print(render(load([out])))
-    return 0
+    return 3 if stopped_early else 0
 
 
 if __name__ == "__main__":

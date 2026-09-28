@@ -8,7 +8,7 @@
         [--relift-effort E] [--strong-effort E] [--max-tokens N] [--max-rounds N]
         [--max-cost-usd X] [--max-route-cost-usd X]
         [--max-repo-rounds N] [--only KEY,...] [--corpus PATH | --no-corpus]
-        [--notes-cache DIR] [--artefacts DIR]
+        [--notes-cache DIR] [--artefacts DIR] [--backend api|cli]
 
 ``--app-factory mod:fn`` names a callable building the original app on a SQLite file
 (``fn(db_path) -> app``). ``--no-llm`` runs the deterministic lifters only (no API key);
@@ -23,6 +23,10 @@ Generators (spec 2026-09-27 surface §4.2): R1 on ``--model`` at ``--effort``, R
 strong model (``--strong-model``, default ``--model``) at ``--relift-effort``, R3 on the
 strong model at ``--strong-effort``; every call may answer ``--max-tokens`` (32k:
 medium effort leaves room for the answer, so fewer are cut off).
+
+``--backend api|cli`` (default ``api``) picks the transport for all four generators: the
+Anthropic SDK, or the local ``claude -p``
+(:class:`lattice.llm.cli_client.ClaudeCliClient`) -- identical prompts either way.
 """
 
 from __future__ import annotations
@@ -89,6 +93,13 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--notes-cache", type=Path, default=DEFAULT_NOTES_CACHE)
     p.add_argument("--artefacts", type=Path, default=None)
     p.add_argument("--hypothesis-bodies", type=int, default=5)
+    p.add_argument(
+        "--backend",
+        choices=("api", "cli"),
+        default="api",
+        help="transport for the close-the-gap loop's model calls: api (Anthropic SDK, "
+        "default) or cli (the local `claude -p`, identical prompts)",
+    )
     return p
 
 
@@ -108,7 +119,7 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
     if args.no_llm:
         close = no_llm(result, corpus=corpus)
     else:
-        gens = tuple(generators or _claude(args))
+        gens = tuple(generators or (_cli(args) if args.backend == "cli" else _claude(args)))
         gen, strong, notes_gen = gens[:3]
         relift = gens[3] if len(gens) > 3 else None
         intent = None
@@ -154,6 +165,23 @@ def _claude(args: argparse.Namespace) -> tuple[Any, Any, Any, Any]:
     def make(model: str, effort: str) -> ClaudeGenerator:
         return ClaudeGenerator(model=model, effort=effort, max_tokens=args.max_tokens,
                                client=client)  # fmt: skip
+
+    gen = make(args.model, args.effort)
+    return gen, make(strong_model, args.strong_effort), gen, make(strong_model, args.relift_effort)
+
+
+def _cli(args: argparse.Namespace) -> tuple[Any, Any, Any, Any]:
+    """(R1 generator, R3 strong generator, notes generator, R2 relift generator), each
+    calling the local ``claude -p`` instead of the Anthropic API (``--backend cli``) --
+    same prompts, same shape as :func:`_claude`."""
+    from lattice.llm.cli_client import ClaudeCliClient
+
+    strong_model = args.strong_model or args.model
+    timeout = LONG_CALL_TIMEOUT if args.max_tokens > 20000 else DEFAULT_SDK_TIMEOUT
+
+    def make(model: str, effort: str) -> ClaudeCliClient:
+        return ClaudeCliClient(model=model, effort=effort, max_tokens=args.max_tokens,
+                               timeout=timeout)  # fmt: skip
 
     gen = make(args.model, args.effort)
     return gen, make(strong_model, args.strong_effort), gen, make(strong_model, args.relift_effort)
