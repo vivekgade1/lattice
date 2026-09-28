@@ -218,7 +218,11 @@ def test_owner_unclear_when_a_route_compares_another_column(tmp_path: Path) -> N
     assert load(result).profile().api.tables["Note"].owner is None
 
 
-def test_owner_unclear_when_a_customer_route_ignores_ownership(tmp_path: Path) -> None:
+def test_a_customer_route_returning_rows_unchecked_makes_the_table_shared(
+    tmp_path: Path,
+) -> None:
+    """An authenticated non-admin route returning the table's rows without an owner
+    check: the table is shared (a decision, recorded with the route), not owned."""
     models = MODELS.replace(
         '    created_by: uuid.UUID | None = Field(default=None, foreign_key="user.id")\n', ""
     )
@@ -230,17 +234,20 @@ def test_owner_unclear_when_a_customer_route_ignores_ownership(tmp_path: Path) -
         """
     )
     result = generate(tmp_path, models=models, routes=routes)
-    assert ("owner", "Note") in topics(result)
-    assert "read_any" in next(u.reason for u in result.unclear if u.topic == "owner")
+    assert ("owner", "Note") not in topics(result)
+    assert result.ownership["Note"] == "shared"
+    assert "read_any" in result.ownership_reasons["Note"]
+    assert load(result).profile().api.tables["Note"].owner is None
 
 
-def test_user_fk_never_compared_is_unclear(tmp_path: Path) -> None:
+def test_user_fk_never_compared_but_its_rows_returned_is_shared(tmp_path: Path) -> None:
     models = MODELS.replace(
         '    created_by: uuid.UUID | None = Field(default=None, foreign_key="user.id")\n', ""
     )
     routes = ROUTES_OWNER_ID.replace("if note.owner_id != current_user.id:", "if not note:")
     result = generate(tmp_path, models=models, routes=routes)
-    assert ("owner", "Note") in topics(result)
+    assert result.ownership["Note"] == "shared"
+    assert load(result).profile().api.tables["Note"].owner is None
 
 
 # ---- auth (review focus #2) -----------------------------------------------------------------

@@ -6,9 +6,17 @@ the original functions (``NATIVES``), one ``Schema`` per table and ``profile()``
 returning the ``Profile``. Each rule below only decides what the evidence settles; the
 rest is an ``Unclear`` and is left unset, so the checker (or a human) has to supply it:
 
-* owner: the one foreign key to the users table that every non-admin route touching the
-  table compares or assigns to the caller's id (review focus #1: two user foreign keys,
-  a disagreeing route or no comparison at all -> unclear);
+* owner (plan node C2): a table's owner is its single foreign key to the users table
+  (a) when some route -- directly or through the helpers and repository methods it hands
+  the caller or the caller's id (``Route.owner_uses``) -- filters or checks that column
+  against the caller (b) or sets it from the caller (c), and no route contradicts it.
+  A contradiction is an authenticated non-admin route returning rows of the table
+  without any owner check: the table is then *shared*, a decision recorded as such
+  (``ProfileResult.ownership``), not an unclear one. Two user foreign keys, a route
+  comparing another column or no evidence at all -> unclear. A table with no user
+  foreign key whose foreign-key parent is owned, and whose routes check through that
+  parent, is owned through it (``owner_via``). A wrong owner is never silent: every
+  lifted route is still verified against the original;
 * private: the columns no response model mapped to the table returns;
 * admin_write: the columns only admin routes' request bodies write;
 * auth / roles / active: the token-decoding native, the superuser and active checks;
@@ -29,6 +37,7 @@ from lattice.importer.extract import (
     Dependency,
     NativeCandidate,
     RepoModel,
+    Route,
     TableModel,
 )
 from lattice.profile import TOKEN_ANSWER_STATUSES
@@ -78,10 +87,20 @@ class Unclear:
     candidates: tuple[str, ...] = ()
 
 
+OWNED = "owner"
+OWNED_VIA = "owner_via"
+SHARED = "shared"
+UNCLEAR = "unclear"
+
+
 @dataclass(frozen=True)
 class ProfileResult:
     source: str  # the profile module (natives + schemas + profile())
     unclear: list[Unclear] = field(default_factory=list)
+    # table -> owner / owner_via / shared / unclear: the ownership decision for every
+    # table with a user foreign key or an owned foreign-key parent, and why
+    ownership: dict[str, str] = field(default_factory=dict)
+    ownership_reasons: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -91,6 +110,9 @@ class _TablePlan:
     keys: list[tuple[str, ...]]
     nullable: list[str]
     owner: str | None = None
+    owner_via: tuple[str, str] | None = None
+    ownership: str | None = None  # OWNED, OWNED_VIA, SHARED, UNCLEAR or None
+    ownership_reason: str = ""
     private: list[str] = field(default_factory=list)
     admin_write: list[str] = field(default_factory=list)
     one_of: dict[str, tuple[str, ...]] = field(default_factory=dict)
@@ -225,9 +247,15 @@ class _Generator:
             plan.one_of, plan.one_of_stored = one_of, stored
             plan.private = self.private(table, responses, kept)
             if table.name != users:
-                plan.owner = self.owner(table, users_name)
-            plan.admin_write = self.admin_write(table, kept, plan)
+                self.owner(plan, users_name)
             plans.append(plan)
+        by_table_name = {p.table.table_name: p for p in plans}
+        for plan in plans:
+            if plan.table.name != users and plan.ownership is None:
+                self.owner_via(plan, by_table_name)
+        for plan in plans:
+            kept = {n for n, _ in plan.columns}
+            plan.admin_write = self.admin_write(plan.table, kept, plan)
         return plans
 
     def private(
@@ -254,57 +282,153 @@ class _Generator:
             return True
         return model_name.startswith(table.name) and not model_name[len(table.name) :][:1].islower()
 
-    def owner(self, table: TableModel, users_name: str | None) -> str | None:
+    def _returns_rows(self, route: Route, table: TableModel) -> bool:
+        """Whether ``route`` answers with rows of ``table``: its return values, or its
+        response model (an envelope's items) mapped to the table."""
+        if route.returns == table.name:
+            return True
+        name = route.response_model
+        if name is None:
+            return False
+        if self._maps_to(name, table):
+            return True
+        model = self.models.get(name)
+        item = _envelope_item(model) if model is not None else None
+        return item is not None and (item == table.name or self._maps_to(item, table))
+
+    def _unchecked(self, table: TableModel, checked: tuple[str, ...]) -> list[str]:
+        """The authenticated non-admin routes returning rows of ``table`` with no owner
+        check on any of the ``checked`` tables: each makes the table shared."""
+        return sorted(
+            r.name
+            for r in self.m.routes
+            if table.name in r.tables
+            and r.auth == CUSTOMER
+            and not any(u.table in checked for u in r.owner_uses)
+            and self._returns_rows(r, table)
+        )
+
+    def _decide(self, plan: _TablePlan, kind: str, reason: str) -> None:
+        plan.ownership, plan.ownership_reason = kind, reason
+
+    def owner(self, plan: _TablePlan, users_name: str | None) -> None:
+        table = plan.table
         if users_name is None:
-            return None
+            return
         fks = [c.name for c in table.columns if (c.foreign_key or "").split(".")[0] == users_name]
         if not fks:
-            return None
-        if len(fks) > 1:
-            self.note(
-                "owner",
-                table.name,
-                f"{table.name} has {len(fks)} foreign keys to the users table; "
-                "the owner is not inferred",
-                tuple(fks),
+            return
+        unchecked = self._unchecked(table, (table.name,))
+        if unchecked:
+            self._decide(
+                plan,
+                SHARED,
+                f"authenticated routes {', '.join(unchecked)} return {table.name} rows "
+                "without an owner check",
             )
-            return None
+            return
+        if len(fks) > 1:
+            reason = (
+                f"{table.name} has {len(fks)} foreign keys to the users table; "
+                "the owner is not inferred"
+            )
+            self.note("owner", table.name, reason, tuple(fks))
+            self._decide(plan, UNCLEAR, reason)
+            return
         fk = fks[0]
         touching = [r for r in self.m.routes if table.name in r.tables]
         used = {u.column for r in touching for u in r.owner_uses if u.table == table.name}
         other = sorted(used - {fk})
         if other:
-            routes = sorted({r.name for r in touching for u in r.owner_uses if u.column in other})
-            self.note(
-                "owner",
-                table.name,
-                f"routes {', '.join(routes)} compare {', '.join(other)} (not {fk}) to the caller",
-                (fk, *other),
+            routes = sorted(
+                {
+                    r.name
+                    for r in touching
+                    for u in r.owner_uses
+                    if u.table == table.name and u.column in other
+                }
             )
-            return None
+            reason = (
+                f"routes {', '.join(routes)} compare {', '.join(other)} (not {fk}) "
+                "to the caller"
+            )
+            self.note("owner", table.name, reason, (fk, *other))
+            self._decide(plan, UNCLEAR, reason)
+            return
         if not used:
-            self.note(
-                "owner",
-                table.name,
-                f"no route compares {table.name}.{fk} to the caller's id",
-                (fk,),
-            )
-            return None
-        ignoring = sorted(
-            r.name
-            for r in touching
-            if r.auth != ADMIN and not any(u.table == table.name for u in r.owner_uses)
+            reason = f"no route filters, checks or sets {table.name}.{fk} from the caller"
+            self.note("owner", table.name, reason, (fk,))
+            self._decide(plan, UNCLEAR, reason)
+            return
+        evidence = sorted(
+            {r.name for r in touching for u in r.owner_uses if u.table == table.name}
         )
-        if ignoring:
-            self.note(
-                "owner",
-                table.name,
-                f"non-admin routes {', '.join(ignoring)} touch {table.name} without "
-                f"comparing {fk} to the caller",
-                (fk,),
+        plan.owner = fk
+        self._decide(
+            plan,
+            OWNED,
+            f"its one users foreign key, which {', '.join(evidence)} filter, check or set "
+            "from the caller",
+        )
+
+    def owner_via(self, plan: _TablePlan, by_table_name: dict[str, _TablePlan]) -> None:
+        """``owner_via`` (foreign key, parent): the one foreign key to an owned parent (by
+        its one-column key) the routes touching the table check the caller through."""
+        table = plan.table
+        candidates: list[tuple[str, _TablePlan]] = []
+        for c in table.columns:
+            if not c.foreign_key or "." not in c.foreign_key:
+                continue
+            ref_table, ref_col = c.foreign_key.split(".", 1)
+            parent = by_table_name.get(ref_table)
+            if (
+                parent is not None
+                and parent is not plan
+                and parent.owner is not None
+                and len(parent.keys) == 1
+                and parent.keys[0] == (ref_col,)
+            ):
+                candidates.append((c.name, parent))
+        if not candidates:
+            return
+        parents = tuple(p.table.name for _, p in candidates)
+        unchecked = self._unchecked(table, (table.name, *parents))
+        if unchecked:
+            self._decide(
+                plan,
+                SHARED,
+                f"authenticated routes {', '.join(unchecked)} return {table.name} rows "
+                f"without an owner check (on it or on {', '.join(parents)})",
             )
-            return None
-        return fk
+            return
+        checked = [
+            (fk, parent)
+            for fk, parent in candidates
+            if any(
+                table.name in r.tables
+                and any(u.table == parent.table.name for u in r.owner_uses)
+                for r in self.m.routes
+            )
+        ]
+        if len(checked) != 1:
+            reason = (
+                f"no route touching {table.name} checks the caller through "
+                f"{', '.join(parents)}"
+                if not checked
+                else f"routes touching {table.name} check the caller through several "
+                f"owned parents ({', '.join(p.table.name for _, p in checked)})"
+            )
+            self.note("owner", table.name, reason, tuple(fk for fk, _ in candidates))
+            self._decide(plan, UNCLEAR, reason)
+            return
+        fk, parent = checked[0]
+        plan.owner_via = (fk, parent.table.name)
+        self._decide(
+            plan,
+            OWNED_VIA,
+            f"its foreign key {fk} to {parent.table.name} (owned), which its routes check "
+            "the caller through",
+        )
 
     def admin_write(self, table: TableModel, kept: set[str], plan: _TablePlan) -> list[str]:
         admin: set[str] = set()
@@ -317,6 +441,8 @@ class _Generator:
         exclude = {c for k in plan.keys for c in k} | set(plan.private)
         if plan.owner:
             exclude.add(plan.owner)
+        if plan.owner_via:
+            exclude.add(plan.owner_via[0])
         return [c.name for c in table.columns if c.name in admin - others - exclude]
 
     def _body_fields(self, name: str) -> tuple:
@@ -574,6 +700,8 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
         ]
     out += ["# ---- tables ----", ""]
     for plan in plans:
+        if plan.ownership in (OWNED, OWNED_VIA, SHARED):
+            out.append(f"# {plan.table.name}: {plan.ownership} -- {plan.ownership_reason}")
         out.append(f"{_const_name(plan.table.name)} = Schema.from_pairs(")
         out.append("    [")
         out += [f"        ({name!r}, Scalar.{attr})," for name, attr in plan.columns]
@@ -590,6 +718,8 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
         out.append(f"    nullable={plan.nullable!r},")
         if plan.owner:
             out.append(f"    owner={plan.owner!r},")
+        if plan.owner_via:
+            out.append(f"    owner_via={plan.owner_via!r},")
         if plan.private:
             out.append(f"    private={plan.private!r},")
         if plan.admin_write:
@@ -688,7 +818,13 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
         )
         api = [a for a in api if not a.startswith(AUTH_SETTINGS)]
         source = _render_profile(out, api)
-    return ProfileResult(source, g.unclear)
+    decided = [p for p in plans if p.ownership is not None]
+    return ProfileResult(
+        source,
+        g.unclear,
+        {p.table.name: p.ownership for p in decided},  # type: ignore[misc]
+        {p.table.name: p.ownership_reason for p in decided},
+    )
 
 
 AUTH_SETTINGS = (

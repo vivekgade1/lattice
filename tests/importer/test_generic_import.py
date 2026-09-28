@@ -702,10 +702,14 @@ def test_a_conflict_on_a_unique_column_gets_a_case_without_a_known_table(
 def test_the_seed_owns_rows_through_the_one_foreign_key_to_the_users_table(
     tmp_path: Path,
 ) -> None:
-    """The profile does not infer ``Ticket.owner_id`` as the owner (no route compares
-    it), but the suite still spreads and requests rows by it: a route's "own" id is a
-    row of the acting user, not whichever row comes first."""
-    model = model_of(tmp_path)
+    """With ``repo.mine`` handed the caller's id, ``Ticket.owner_id`` is the owner (the
+    repository method filters it). Without it the profile does not infer the owner (no
+    route filters it: the table is shared), but the suite still spreads and requests rows
+    by it: a route's "own" id is a row of the acting user, not whichever row comes
+    first."""
+    owned = load(generate_profile(model_of(tmp_path / "owned"))).profile().api
+    assert owned.tables["Ticket"].owner == "owner_id"
+    model = model_of(tmp_path, routes=ROUTES.replace("repo.mine(caller.id)", "repo.mine(0)"))
     api = load(generate_profile(model)).profile().api
     assert api.tables["Ticket"].owner is None
     ticket = next(t for t in model.tables if t.name == "Ticket")

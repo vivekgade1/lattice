@@ -39,6 +39,7 @@ import copy
 import dataclasses
 import json
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -174,6 +175,8 @@ class Route:
     line: int
     # the function the route is defined in (an app factory's local app/router), if any
     enclosing: str | None = None
+    # the table the route returns rows of, read from its return values (None: unknown)
+    returns: str | None = None
 
 
 @dataclass(frozen=True)
@@ -297,6 +300,8 @@ EFFECT_CALLS = frozenset({"builtins:print", "builtins:open"})
 EFFECT_MODULES = ("smtplib", "requests", "httpx", "urllib", "subprocess", "socket", "emails")
 MUTATING_METHODS = frozenset({"append", "extend", "add", "update", "insert", "pop", "remove"})
 USER_DEP_KINDS = frozenset({"current_user", "active_user", "admin"})
+# how deep owner evidence is followed into helpers handed the caller (or its id)
+OWNER_HELPER_DEPTH = 5
 # The marker of a reason (an Unclear decision, an island) that is a gap in the language.
 LANGUAGE_GAP = "language gap"
 # pydantic's datetime aliases (naive / aware / past / future): all a DateTime.
@@ -1338,6 +1343,7 @@ class _Extractor:
             body_models=tuple(p.type for p in params if p.source == "body" and p.type),
             line=fn.lineno,
             enclosing=enclosing,
+            returns=self._returned_table(mod, fn),
         )
 
     def _param(
@@ -1478,11 +1484,39 @@ class _Extractor:
     def _owner_uses(
         self, mod: str, fn: ast.AST, callers: set[str], tables: set[str]
     ) -> list[OwnerUse]:
+        """Where ``fn`` -- or a helper / repository method it hands the caller or the
+        caller's id to, followed through the arguments -- compares (``compare``) or sets
+        (``assign``) a column of ``tables`` to the caller's id."""
         if not callers:
             return []
-        var_tables = self._var_tables(mod, fn)
+        out: list[OwnerUse] = []
+        self._owner_uses_in(
+            mod, fn, callers, set(), {}, tables, None, set(), {}, out, depth=0
+        )
+        return out
+
+    def _owner_uses_in(
+        self,
+        mod: str,
+        fn: ast.AST,
+        callers: set[str],
+        ids: set[str],
+        typed: dict[str, str],
+        tables: set[str],
+        self_class: str | None,
+        visited: set[tuple[str, frozenset[str], frozenset[str]]],
+        seen: dict[tuple[str, str, str], OwnerUse],
+        out: list[OwnerUse],
+        depth: int,
+    ) -> None:
+        """``callers``: names holding the caller; ``ids``: names holding the caller's id
+        (a helper parameter bound to ``caller.id``); ``typed``: names holding a row of a
+        known table (a helper parameter bound to one)."""
+        var_tables = {**typed, **self._var_tables(mod, fn)}
 
         def is_caller_id(e: ast.expr) -> bool:
+            if isinstance(e, ast.Name):
+                return e.id in ids
             return (
                 isinstance(e, ast.Attribute)
                 and isinstance(e.value, ast.Name)
@@ -1491,10 +1525,14 @@ class _Extractor:
             )
 
         def by_column(col: str) -> list[str]:
+            # a table's own key compared to the caller's id names the caller's row, not
+            # an owner column: never a guess
             return [
                 t
                 for t in sorted(tables)
-                if any(c.name == col for c in self.table_by_name[t].columns)
+                if any(
+                    c.name == col and not c.primary_key for c in self.table_by_name[t].columns
+                )
             ]
 
         def col_ref(e: ast.expr) -> list[tuple[str, str]]:
@@ -1509,16 +1547,21 @@ class _Extractor:
                 return [(self.tables[qual].name, e.attr)]
             if isinstance(e.value, ast.Name) and e.value.id in var_tables:
                 return [(var_tables[e.value.id], e.attr)]
-            return [(t, e.attr) for t in by_column(e.attr)]
-
-        out: list[OwnerUse] = []
-        seen: set[tuple[str, str, str]] = set()
+            found = by_column(e.attr)
+            if isinstance(e.value, ast.Name):
+                # an untyped ``note.owner_id`` (a tuple unpacked, a loop variable): the
+                # table the variable is named after, when it is one of the candidates
+                named = [t for t in found if t.lower() == e.value.id.replace("_", "").lower()]
+                if named:
+                    found = named
+            return [(t, e.attr) for t in found]
 
         def add(table: str, col: str, how: str, line: int) -> None:
             if (table, col, how) not in seen:
-                seen.add((table, col, how))
-                out.append(OwnerUse(table, col, how, line))
+                seen[(table, col, how)] = use = OwnerUse(table, col, how, line)
+                out.append(use)
 
+        receivers = self._receivers(mod, fn, self_class)
         for node in ast.walk(fn):
             if isinstance(node, ast.Compare) and len(node.ops) == 1:
                 left, right = node.left, node.comparators[0]
@@ -1541,11 +1584,17 @@ class _Extractor:
                             [target_table] if direct and target_table else by_column(kw.arg)
                         ):
                             add(table, kw.arg, "assign", node.lineno)
+                if depth < OWNER_HELPER_DEPTH:
+                    self._owner_follow(
+                        mod, node, receivers, callers, is_caller_id, var_tables, tables,
+                        visited, seen, out, depth,
+                    )  # fmt: skip
             elif isinstance(node, ast.Dict):
                 for key, value in zip(node.keys, node.values, strict=True):
                     if (
                         isinstance(key, ast.Constant)
                         and isinstance(key.value, str)
+                        and value is not None
                         and is_caller_id(value)
                     ):
                         for table in by_column(key.value):
@@ -1555,7 +1604,67 @@ class _Extractor:
                     if isinstance(target, ast.Attribute):
                         for table, col in col_ref(target):
                             add(table, col, "assign", node.lineno)
-        return out
+
+    def _owner_follow(
+        self,
+        mod: str,
+        call: ast.Call,
+        receivers: dict[str, str],
+        callers: set[str],
+        is_caller_id: Callable[[ast.expr], bool],
+        var_tables: dict[str, str],
+        tables: set[str],
+        visited: set[tuple[str, frozenset[str], frozenset[str]]],
+        seen: dict[tuple[str, str, str], OwnerUse],
+        out: list[OwnerUse],
+        depth: int,
+    ) -> None:
+        """Follow ``call`` into a package helper or repository method when it is handed
+        the caller or the caller's id: the matching parameters carry them inside."""
+        method = self._receiver_call(call, receivers)
+        cls: str | None = None
+        if method is not None:
+            tmod, target, cls = method
+            qual = f"{cls}.{target.name}"
+        else:
+            qual = self.ix.resolve(mod, call.func)  # type: ignore[assignment]
+            found = self.ix.node(qual)
+            if not (found and isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef)):
+                return
+            tmod, target = found[0], found[1]
+            if _is_route(target) or qual in self.dep_memo:
+                return
+        params = [a.arg for a, _ in _args_with_defaults(target.args)]
+        positional = [a.arg for a in [*target.args.posonlyargs, *target.args.args]]
+        if cls is not None:
+            positional = positional[1:]  # self
+        bound: list[tuple[str, ast.expr]] = []
+        for i, arg in enumerate(call.args):
+            if isinstance(arg, ast.Starred):
+                break
+            if i < len(positional):
+                bound.append((positional[i], arg))
+        bound += [(kw.arg, kw.value) for kw in call.keywords if kw.arg in params]
+        inner_callers: set[str] = set()
+        inner_ids: set[str] = set()
+        inner_typed: dict[str, str] = {}
+        for name, value in bound:
+            if is_caller_id(value):
+                inner_ids.add(name)
+            elif isinstance(value, ast.Name) and value.id in callers:
+                inner_callers.add(name)
+            elif isinstance(value, ast.Name) and value.id in var_tables:
+                inner_typed[name] = var_tables[value.id]
+        if not (inner_callers or inner_ids):
+            return
+        key = (qual, frozenset(inner_callers), frozenset(inner_ids))
+        if key in visited:
+            return
+        visited.add(key)
+        self._owner_uses_in(
+            tmod, target, inner_callers, inner_ids, inner_typed, tables, cls, visited, seen,
+            out, depth + 1,
+        )  # fmt: skip
 
     # -- natives --
 

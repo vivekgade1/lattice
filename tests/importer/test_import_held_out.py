@@ -32,6 +32,20 @@ COVERAGE = {
     ),
     "justnotes": (30, 1, 0, 29, {}),
 }  # fmt: skip
+# the ownership each repo's profile infers (plan node C2: a single users foreign key the
+# routes -- or the CRUD helpers / repository methods they hand the caller's id --
+# filter, check or set from the caller; owner_via a link table's owned parent). The
+# coverage above is unchanged by it: those routes have no deterministic lifter.
+OWNERS: dict[str, dict[str, object]] = {
+    "taskflow": {"Task": "owner_id"},
+    "justnotes": {
+        "Note": "owner_id",
+        "Tag": "owner_id",
+        "Keyword": "owner_id",
+        "NoteTagLink": ("note_id", "Note"),
+        "NoteKeywordLink": ("note_id", "Note"),
+    },
+}
 # the gaps each repo's profile records as unclear decisions
 PROFILE_GAPS: dict[str, set[str]] = {
     "taskflow": set(),
@@ -133,3 +147,15 @@ def test_the_closed_gaps_stay_closed(run):
     for gap in CLOSED_GAPS:
         assert f"{LANGUAGE_GAP} ({gap})" not in reasons, gap
     assert "which a native cannot import" not in reasons  # the TaskFlow secret: a setting
+
+
+def test_the_inferred_owners(run):
+    repo, out, report = run
+    tables = load_profile_source((out / "profile.py").read_text()).profile().api.tables
+    got = {
+        name: schema.owner or schema.owner_via
+        for name, schema in tables.items()
+        if schema.owner or schema.owner_via
+    }
+    assert got == OWNERS[repo]
+    assert not [u for u in report["unclear"] if u["topic"] == "owner"]
