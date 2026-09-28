@@ -1,9 +1,10 @@
 """Checked T2 AST -> T2 IR (spec 2026-09-28 go-target §2). Types come from the
 checker's side table (`CheckedProcedure.types`), calls from its resolved targets;
-fuel and size checks are placed here, exactly where `lattice.t2.compile` used to
-instrument them, so every emitter charges the same amounts at the same points.
+fuel and size checks are placed here, exactly where the former AST instrumenter
+(replaced by `lattice.t2.emit_py`) charged them, so every emitter charges the same
+amounts at the same points.
 
-Fuel placement (mirrors `lattice.t2.compile._Instrument`):
+Fuel placement (as the former instrumenter placed it):
 
 * every `for`/`while` body starts with `Tick()`;
 * every comprehension iterable is `Each(iter)`;
@@ -401,7 +402,7 @@ class _Proc:
 
 def _constants(t2: T2Program, source: ast.Module | None) -> tuple[tuple[str, T2Type, n.Expr], ...]:
     """The module constants procedures may read, in source order -- selected exactly as
-    `lattice.t2.compile._constants` selects them, and copied without fuel (the compiled
+    the former instrumenter selected them, and copied without fuel (the emitted
     module binds them uncharged)."""
     if source is None or not t2.constants:
         return ()

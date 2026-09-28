@@ -1,6 +1,6 @@
 """Lowering checked T2 procedures to T2 IR: one golden dump per construct, every T2
 program the test suites check lowers, and the module-level parts (constants, natives,
-records) come out as `lattice.t2.compile` builds them."""
+records) come out as the emitted module binds them."""
 
 from __future__ import annotations
 
@@ -13,7 +13,6 @@ from pathlib import Path
 import pytest
 
 from lattice.runtime import LatticeInternalError
-from lattice.t2.compile import _constants
 from lattice.t2ir import nodes as n
 from lattice.t2ir.dump import dump
 from lattice.t2ir.lower import lower_t2
@@ -80,9 +79,9 @@ def _ir_fuel_sites(node: object, counts: Counter[str]) -> None:
             _ir_fuel_sites(x, counts)
 
 
-def test_fuel_sites_match_the_instrumented_source():
+def test_fuel_sites_match_the_emitted_source():
     """Across the corpus, the IR has exactly as many fuel sites of each kind as
-    `lattice.t2.compile` instruments (every `<fuel>.<method>(` in its source)."""
+    the emitted Python charges (every `<fuel>.<method>(` in its source)."""
     from lattice.t2 import compile_t2
     from tests.t2ir.corpus import all_t2_programs
 
@@ -103,7 +102,7 @@ def test_fuel_sites_match_the_instrumented_source():
 
 
 def _fuel_calls(compiled: str) -> list[str]:
-    """Every `<fuel>.<method>(` in the instrumented source, in text order, without the
+    """Every `<fuel>.<method>(` in the emitted source, in text order, without the
     procedures' entry/exit."""
     found = re.findall(r"\b_lt_fuel\d*\.(\w+)\(", compiled)
     return [m for m in found if m not in ("enter", "leave")]
@@ -111,7 +110,7 @@ def _fuel_calls(compiled: str) -> list[str]:
 
 def _ir_fuel_order(node: object) -> list[str]:
     """The IR's fuel sites in the order their `<fuel>.<method>(` calls appear in the
-    source `lattice.t2.compile` writes: a pre-order walk, except that an augmented
+    source `lattice.t2.emit_py` writes: a pre-order walk, except that an augmented
     assignment's `aug` follows its operands (bound to temporaries first) and an `IfExp`
     is written `body if test else orelse`."""
     out: list[str] = []
@@ -155,8 +154,8 @@ def _ir_fuel_order(node: object) -> list[str]:
     return out
 
 
-def test_fuel_sites_come_in_the_instrumented_order():
-    """The IR's fuel sites, walked in source order, are the instrumented source's
+def test_fuel_sites_come_in_the_emitted_order():
+    """The IR's fuel sites, walked in source order, are the emitted source's
     `<fuel>.<method>(` calls in the same order -- over the corpus and every golden."""
     from lattice.t2 import compile_t2
     from tests.t2ir.corpus import all_t2_programs
@@ -175,7 +174,6 @@ def test_module_parts_match_the_compiled_module():
     program = checked(t2prog.PROCEDURES.removeprefix("# lattice: v1\n"), t2prog.PROFILE).program
     source = ast.parse(program.source)
     module = lower_t2(program.t2, source)
-    assert [c for c, _, _ in module.constants] == [c for c, _ in _constants(program.t2, source)]
     assert [c for c, _, _ in module.constants] == ["LOCK_AFTER", "LOCK_MINUTES", "PREFIX"]
     assert module.constants[0][2] == n.Const(3, program.t2.constants["LOCK_AFTER"])
     assert module.natives == ("send_digest", "slugify")
@@ -255,7 +253,7 @@ def test_an_unreachable_bare_expression_is_dropped(src):
     source = ast.parse(program.source)
     (proc,) = lower_t2(program.t2, source).procedures
     assert [type(s) for s in proc.body] in ([n.While], [n.If])
-    compiled = compile_t2(program.t2, source).source  # the legacy path handles it too
+    compiled = compile_t2(program.t2, source).source  # the emitter handles it too
     assert _fuel_calls(compiled) == _ir_fuel_order(lower_t2(program.t2, source).procedures)
 
 

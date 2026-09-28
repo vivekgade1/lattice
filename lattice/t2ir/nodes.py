@@ -145,7 +145,7 @@ class FPart:
     """A `{value!conversion:spec}` replacement field inside an `FStr`; not itself typed.
     `spec` is the literal spec text ("" when there is none), or an `FStr` when the spec
     has replacement fields of its own (`f"{s:>{n}}"`). `conversion` is "", "s", "r" or
-    "a". Only a non-empty spec is charged (`lattice.t2.compile`: `<fuel>.fmt`)."""
+    "a". Only a non-empty spec is charged (`lattice.t2.emit_py`: `<fuel>.fmt`)."""
 
     value: Expr
     spec: str | FStr

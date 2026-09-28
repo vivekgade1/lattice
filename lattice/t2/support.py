@@ -676,7 +676,7 @@ def _t2_import(name: str, *args: object, **kwargs: object) -> object:
 
 
 def t2_load(source: str, natives: dict[str, object] | None = None) -> dict[str, object]:
-    """Run compiled T2 source (`lattice.t2.compile`) in a fresh restricted namespace:
+    """Run compiled T2 source (`lattice.t2.emit_py`) in a fresh restricted namespace:
     no ambient builtins (only a restricted `__import__` the standard library uses
     internally), only what its preamble binds through the loader functions
     (allowlisted builtins, stdlib names, Duration helpers, records, constants) and
