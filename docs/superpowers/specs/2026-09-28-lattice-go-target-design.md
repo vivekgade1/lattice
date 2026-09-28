@@ -58,7 +58,11 @@ Lattice's meaning is currently whatever Python does. v1.1 writes it down once, i
 | `Str` | `len`, indexing and slicing are over code points | Go helpers on `[]rune` |
 | `list` | Negative indexes and Python slice rules (clamped bounds, steps); every slice read is a **new list** (Go copies, never aliases); slice assignment stays rejected (L913) | Go slice helpers |
 | `dict` | Insertion-ordered iteration | Generated Go `OrderedMap[K, V]` |
-| Regex | RE2 subset: lookaround and backreferences rejected on every target | New checker rule next to `check/redos.py` |
+| `set` | Insertion-ordered iteration on every target (Python's string hashing is seeded per process) | Generated Go `OrderedSet[T]` |
+| `Counter.most_common` | Ties in insertion order | Prelude |
+| Regex | RE2 subset: lookaround and backreferences rejected on every target; also rejects possessive repeats and atomic groups; `\d \w \s \b` are ASCII (Python compiles with `re.ASCII`) | New checker rule next to `check/redos.py` |
+| `str.upper/lower/casefold/title` | Full Unicode case mapping (`'ß'.upper() == 'SS'`) | Prelude |
+| `str()` / f-string of a `list`, `dict`, `set` or `tuple` | L892 on Go in this sub-project | `p8_target` |
 | `DateTime` / `Duration` | UTC, microsecond precision, the existing wire format | Prelude |
 | `IndexError` / `KeyError` | Catchable Lattice errors on both targets; Go returns typed errors, never `panic` for them | Go T2 support |
 | Fuel, depth, size | Charged exactly where T2 IR places `Fuel` and size-check nodes; R620/R621/R622 at the same step on both targets | T2 IR |
@@ -67,9 +71,9 @@ Lattice's meaning is currently whatever Python does. v1.1 writes it down once, i
 
 | Code | Rule |
 |---|---|
-| L880 | `decimal` is not available on target `go` |
-| L881 | A `native.<name>` call (or `NativeToken` auth) needs a native implementation for the target; none exist for `go` in this sub-project |
-| L882 | A tabular-profile program has no `go` target yet |
+| L890 | A `native.<name>` call (or `NativeToken` auth) needs a native implementation for the target; none exist for `go` in this sub-project |
+| L891 | A tabular-profile program has no `go` target yet |
+| L892 | A T2 call (builtin, method or stdlib function) the target does not implement yet — the staging mechanism |
 
 The target is a check option (`--target python|go`, default `python`). A program passes for Go only if it passes for Python and `p8_target` finds nothing.
 
@@ -86,6 +90,7 @@ Request flow: parse and constrain parameters → authenticate (one statement) �
 | Parameter or constraint violation | 422, existing validation envelope |
 | Unknown token | 401 |
 | Declared `ErrorSpec` | Its status and JSON body |
+| `IndexError`/`KeyError` | Raised as a Lattice error value (`*rt.Error`) that `try` blocks catch and the handler turns into a 500; never an unrecovered panic |
 | R310, R620, R621, R622, R623 | 500 with the located message, logged |
 | Unexpected Go error or panic | 500 `internal`; handlers `recover()`, the server keeps running |
 
@@ -144,7 +149,7 @@ The Go baseline gets `bench/api_kit_go/`, the Go counterpart of `bench/api_kit/p
 | Semantics v1.1 | Shared fixture suite (~150 cases: overflow → R623, floor division, float text, rune slicing, negative indexes, copy-on-slice, dict order, RE2 rejection, datetime wire format), each run on both targets against the expected value |
 | `p8_target` | One positive and one negative test per rule |
 | Go prelude | `go test` unit tests; Python and Go prelude helpers compared on the same inputs |
-| Equivalence gate | Template suite (1,460 requests), loop corpus and the 40 API reference programs run against Lattice→Python and Lattice→Go: 0 mismatches, equal SQL counts |
+| Equivalence gate | The API codegen differential registry (`tests/api/test_codegen_differential.py` `PROGRAMS`: the 40 task programs with probes, plus the t2/hardening/loops/gaps/mine/round2/partb/n1b/solo programs) — every program that passes `check_source(..., target="go")`; programs rejected only with L890 are listed and asserted as the expected exclusions. The FastAPI template suite is excluded: its auth is a native (`NativeToken("decode_token")`). Run against Lattice→Python and Lattice→Go: 0 mismatches, equal SQL counts |
 | Fuel parity | Procedures built to exhaust fuel at a known step fail at the same step on both targets |
 | Harness | Go kit and runner unit tests; dry run of every arm with canned responses before any paid run |
 
