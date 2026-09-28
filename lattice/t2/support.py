@@ -306,11 +306,11 @@ class T2Fuel:
     def sub(self, fn: object, pattern: str, repl: str, s: str, *rest: object) -> str:
         """`re.sub(pattern, repl, s)`: charged its input, then the most it can grow to --
         each match replaced by `repl`, whose group references expand to at most the
-        longest match -- before it runs."""
+        longest match -- before it runs. `\\d \\w \\s \\b` are ASCII (like `fn`, below)."""
         self.scan(s)
         count = 0
         longest = 0
-        for m in t2_re.finditer(pattern, s):
+        for m in t2_re.finditer(pattern, s, flags=t2_re.ASCII):
             count += 1
             longest = max(longest, m.end() - m.start())
         self.grow(len(s) + count * len(repl) * max(longest, 1))
@@ -418,8 +418,24 @@ def _t2_builtins() -> dict[str, object]:
     return {name: getattr(builtins, name) for name in T2_BUILTIN_NAMES}
 
 
+def _t2_re_ascii(name: str) -> object:
+    """`re.fullmatch`/`match`/`search`/`sub`/`findall`/`split`, bound with `re.ASCII`:
+    `\\d \\w \\s \\b` match only ASCII on every target (spec 2026-09-28 go-target §3.1),
+    so Python and Go's RE2 agree."""
+    fn = getattr(t2_re, name)
+
+    def wrapped(*args: object, **kwargs: object) -> object:
+        return fn(*args, flags=t2_re.ASCII, **kwargs)
+
+    wrapped.__name__ = name
+    return wrapped
+
+
 def _t2_std_module(module: str, names: tuple[str, ...]) -> object:
-    """An allowlisted stdlib module as a namespace holding only `names`."""
+    """An allowlisted stdlib module as a namespace holding only `names` (the `re`
+    module's functions bound with `re.ASCII`, see `_t2_re_ascii`)."""
+    if module == "re":
+        return t2_types.SimpleNamespace(**{n: _t2_re_ascii(n) for n in names})
     real = t2_importlib.import_module(module)
     return t2_types.SimpleNamespace(**{n: getattr(real, n) for n in names})
 

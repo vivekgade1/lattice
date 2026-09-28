@@ -42,6 +42,7 @@ from lattice.catalog import (
 from lattice.check.astutil import literal_value
 from lattice.check.context import CheckContext
 from lattice.check.loop_hints import t1_shape_warning
+from lattice.check.re2 import re2_problem
 from lattice.check.redos import redos_risk
 from lattice.check.t2 import types as T
 from lattice.check.t2.model import ProcSig, RecordDef
@@ -1880,6 +1881,14 @@ class BodyChecker:
                 f"{risk}",
                 "make the repeated pieces disjoint, bound the repeat ({0,50}) or make it "
                 "possessive (a++)",
+            )
+        problem = re2_problem(node.value)
+        if problem is not None:
+            self.err(
+                "L926",
+                node,
+                f"the pattern of {label}(): {problem}",
+                "rewrite without lookaround/backreferences, e.g. two matches or a split",
             )
 
     # ---- parameter immutability (L145) -------------------------------------------------

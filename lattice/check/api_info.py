@@ -389,8 +389,9 @@ def _pattern(name: str, node: ast.expr) -> str | Problem:
 
 
 def pattern_problem(spec: ParamType | ParamSpec, value: str) -> str | None:
-    """The 422 message when a Str value does not match the parameter's pattern."""
-    if spec.pattern is None or re.fullmatch(spec.pattern, value):
+    """The 422 message when a Str value does not match the parameter's pattern. ASCII
+    only (`re.ASCII`): `\\d \\w \\s \\b` match the same characters as Go's RE2."""
+    if spec.pattern is None or re.fullmatch(spec.pattern, value, flags=re.ASCII):
         return None
     return "must be an email address" if spec.email else f"must match the pattern {spec.pattern!r}"
 
