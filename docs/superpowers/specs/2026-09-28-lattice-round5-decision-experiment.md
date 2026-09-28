@@ -59,3 +59,30 @@ Let S_x be the silent failures, C_x the correct runs, and $_x the cost per corre
 ## 6. Run size and cost
 
 30 tickets × 3 arms × 2 models × 3 reps = **540 runs**, through the CLI, with resume. Plan usage limits may pause the run; it resumes where it stopped.
+
+## 7. Amendment (2026-09-28, before any round-5 run): context-aid arms L+ and Q+
+
+**Question:** is Lattice's low first-round pass rate (27–37%) mostly a *knowledge* problem that in-context aids can fix?
+
+| Arm | Starts from | Adds |
+|---|---|---|
+| **L+** | arm L | (a) **2 retrieved worked examples**; (b) a **"common mistakes → exact fix" table** |
+| **Q+** | arm Q | the same two aids, in Python form |
+
+**(a) The retrieved worked examples**
+- They are verified Lattice programs for the most similar other tickets, by TF-IDF over the ticket text.
+- The corpus is the Lattice references of t1–t12 only, and **never the current ticket's own reference**.
+- t13–t30 references don't exist in Lattice, so nothing held-out can leak.
+
+**(b) The "common mistakes → exact fix" table**
+- It is built from the round-4 repair-persistence analysis (node C3).
+- It is capped at the same length for both arms.
+
+**What Q+ gets:** retrieved Python references from the same t1–t12 corpus, with the same retrieval, the same exclusion and the same count. Its mistakes table is built from round-4 arm-P silent failures, as classified by the Python checks, at equal length.
+
+**Decision use:**
+- The §5 rule is still applied to **P, L and Q**, unchanged.
+- L+ and Q+ answer a secondary question. If L+ closes at least half of L's correctness gap to P on t7–t30 on both models, the knowledge problem is fixable in context. That strengthens the "language is needed" branch, if it wins.
+- Q+ vs L+ repeats the §5 comparison with aids on both sides.
+
+**Run size:** 30 tickets × 5 arms × 2 models × 3 reps = **900 runs**, through the CLI with resume.
