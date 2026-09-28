@@ -555,6 +555,10 @@ class BodyChecker:
                     self.mutations.append((s, tgt))  # in place: xs += [...]
                 env.types[name] = self._narrowed(res, d)
                 env.drop_paths(name)
+            case ast.Subscript(slice=ast.Slice()):
+                self._load_subscript(tgt, env)  # types the operands (no cascade)
+                # v1.1: `xs[a:b] op= v` assigns a slice, rejected like `xs[a:b] = v`
+                self.err("L913", tgt, "slice assignment is not supported", "build a new list")
             case ast.Subscript():
                 cur = self._load_subscript(tgt, env)
                 res = self.binop(s.op, cur, rt, s, tgt, s.value)

@@ -33,14 +33,15 @@ from __future__ import annotations
 import ast
 import copy
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
 
 from lattice.catalog import T2_STDLIB
 from lattice.check import CheckedProgram
 from lattice.check.astutil import is_constant_expr, is_list_constant_assign
 from lattice.check.t2 import CheckedProcedure, T2Program
 from lattice.runtime import LatticeInternalError
+from lattice.t2.emit_py import T2Code, emit_python
 from lattice.t2.support import T2_BUILTIN_NAMES
+from lattice.t2ir.lower import lower_t2
 
 __all__ = ["T2Code", "compile_program", "compile_t2"]
 
@@ -91,19 +92,6 @@ _HELPERS = ("days", "hours", "minutes", "seconds")
 _FUEL = "_lt_fuel"
 
 
-@dataclass(frozen=True)
-class T2Code:
-    """The compiled T2 part of a program: the module `source`, the procedures it
-    defines with their parameter names in order, and the natives they call."""
-
-    source: str
-    procedures: tuple[tuple[str, tuple[str, ...]], ...]
-    natives: tuple[str, ...]
-
-    def params(self, name: str) -> tuple[str, ...]:
-        return dict(self.procedures)[name]
-
-
 def compile_program(program: CheckedProgram) -> T2Code | None:
     """The compiled T2 part of a checked program (None when it has no procedures or
     records). Module constants procedures read come from the program's source (list
@@ -114,6 +102,13 @@ def compile_program(program: CheckedProgram) -> T2Code | None:
 
 
 def compile_t2(t2: T2Program, module: ast.Module | None = None) -> T2Code:
+    """The Python source of every procedure and record of `t2`, emitted from its T2 IR.
+    `module` is the program's parsed source (the constants procedures read come from
+    it)."""
+    return emit_python(lower_t2(t2, module))
+
+
+def _legacy_compile_t2(t2: T2Program, module: ast.Module | None = None) -> T2Code:
     """The instrumented source of every procedure and record of `t2`. `module` is the
     program's parsed source (the constants procedures read are copied from it)."""
     fuel = _fresh_fuel_name(t2)

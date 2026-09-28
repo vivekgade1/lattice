@@ -414,3 +414,35 @@ SOURCES: tuple[str, ...] = (
     SRC_EXTEND_WITH_ITSELF_KEEPS_PYTHON_SEMANTICS,
     SRC_LOADING_TWICE_GIVES_INDEPENDENT_NAMESPACES,
 )
+
+
+def _calls() -> tuple[tuple[str, str, tuple, int], ...]:
+    now = dt.datetime(2000, 1, 1, 10, 0, tzinfo=dt.UTC)
+    row = T2Row("Items", {"id": 1, "title": "abc"})
+    return (
+        (SRC_A_PROCEDURE_RUNS_AS_PYTHON, "f", ([1, 5, 7], 4), 1_000_000),
+        (SRC_RECORDS_ARE_FROZEN_DATACLASSES, "mk", (3,), 1_000_000),
+        (SRC_HELPERS_STD_IMPORTS_AND_CONSTANTS, "f", (5.9, now), 1_000_000),
+        (SRC_TRY_EXCEPT_AND_COMPREHENSIONS, "parse", (["3", "x", "0", "5"],), 1_000_000),
+        (SRC_ROWS_ARE_IMMUTABLE_VALUES, "title", (row,), 1_000_000),
+        (SRC_NO_AMBIENT_BUILTINS_SRC2, "g", (5.9,), 1_000_000),
+        (INFINITE, "spin", (1,), 5_000),
+        (SRC_DEEP_RECURSION_IS_R620_WITH_A_DEPTH_MESSAGE, "down", (T2_MAX_DEPTH - 1,), 1_000_000),
+        (SRC_DEEP_RECURSION_IS_R620_WITH_A_DEPTH_MESSAGE, "down", (10_000,), 1_000_000),
+        (SRC_DEPTH_IS_RESTORED_AFTER_A_CAUGHT_ERROR, "safe", ([1],), 1000),
+        (SRC_LOOP_ITERATIONS_AND_CALLS_COST_ONE_EACH, "f", (10,), 10**9),
+        (SRC_COMPREHENSION_ELEMENTS_COST_ONE_EACH, "f", ([1] * 100,), 10**9),
+        (SRC_COMPREHENSION_ELEMENTS_COST_ONE_EACH_NESTED, "g", (5,), 10**9),
+        (SRC_BUILTINS_ARE_CHARGED_PER_ELEMENT_THEY_CONSUME, "f", (1000,), 10**9),
+        (SRC_BUILTINS_ARE_CHARGED_PER_ELEMENT_THEY_CONSUME, "f", (10**12,), 1_000_000),
+        (SRC_GENERATOR_ARGUMENTS_ARE_CHARGED_LAZILY, "f", ([1, 2, 3] + [0] * 997,), 10**9),
+        (SRC_THE_BUDGET_IS_CONFIGURABLE_AND_SHARED_ACROSS_CALLS, "f", (10,), 12),
+        (SRC_THE_BUDGET_IS_CONFIGURABLE_AND_SHARED_ACROSS_CALLS, "f", (10,), 11),
+        (SRC_FUEL_EXHAUSTION_IS_NOT_CAUGHT_BY_EXCEPT, "f", (0,), 100),
+        (SRC_EXTEND_WITH_ITSELF_KEEPS_PYTHON_SEMANTICS, "f", ([1, 2],), 1_000_000),
+    )
+
+
+# The (source, procedure, arguments, budget) calls the tests above make, for the
+# differential test of the Python emitter (tests/t2ir/corpus.py all_t2_calls).
+CALLS: tuple[tuple[str, str, tuple, int], ...] = _calls()

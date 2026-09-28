@@ -28,6 +28,7 @@ with its caller.
 from __future__ import annotations
 
 # ---- begin (copied into generated apps) --------------------------------------------------
+import collections as t2_collections
 import dataclasses as t2_dataclasses
 import datetime as t2_dt
 import importlib as t2_importlib
@@ -103,6 +104,197 @@ class T2TooLarge(T2Error):
 
     def __init__(self, message: str) -> None:
         super().__init__("R622", message)
+
+
+# Semantics v1.1 (spec 2026-09-28 go-target §3.1): Int is 64-bit (R623 outside), sets
+# iterate in insertion order, Counter.most_common keeps ties in insertion order. Only
+# the Python emitter's differential test switches it off, to compare with the legacy
+# instrumented compiler.
+V11 = True
+
+
+class T2IntOverflow(T2Error):
+    """An Int result outside the signed 64-bit range (v1.1)."""
+
+    def __init__(self, value: int) -> None:
+        super().__init__("R623", f"integer {value} is outside the 64-bit range")
+
+
+_T2_INT_MIN, _T2_INT_MAX = -(1 << 63), (1 << 63) - 1
+
+
+def t2_int(v: object) -> object:
+    """An Int-typed result, range-checked (R623); anything else passes unchanged."""
+    if (
+        V11
+        and type(v) is int  # noqa: E721 - a bool is not an Int result
+        and not (_T2_INT_MIN <= v <= _T2_INT_MAX)
+    ):
+        raise T2IntOverflow(v)
+    return v
+
+
+def _t2_set_like(other: object) -> bool:
+    return isinstance(other, T2Set | set | frozenset)
+
+
+class T2Set:
+    """A set whose iteration order is insertion order (v1.1). The set algebra orders
+    its result like lattice/gogen/rt/sets.go: the left operand's elements first, in its
+    order, then (union, symmetric difference) the right operand's new ones in its
+    order. Re-adding an element keeps its position; discarding then adding moves it
+    last."""
+
+    __slots__ = ("_d",)
+    __hash__ = None  # type: ignore[assignment] - mutable, like set
+
+    def __init__(self, items: object = ()) -> None:
+        self._d: dict[object, None] = dict.fromkeys(items)  # type: ignore[call-overload]
+
+    # ---- reading ----
+    def __iter__(self):  # noqa: ANN204
+        return iter(self._d)
+
+    def __len__(self) -> int:
+        return len(self._d)
+
+    def __contains__(self, x: object) -> bool:
+        return x in self._d
+
+    def __repr__(self) -> str:
+        if not self._d:
+            return "set()"
+        return "{" + ", ".join(repr(x) for x in self._d) + "}"
+
+    def __eq__(self, other: object) -> bool:
+        if not _t2_set_like(other):
+            return NotImplemented
+        return len(self) == len(other) and all(x in other for x in self._d)  # type: ignore[arg-type,operator]
+
+    def __ne__(self, other: object) -> bool:
+        eq = self.__eq__(other)
+        return eq if eq is NotImplemented else not eq
+
+    def issubset(self, other: object) -> bool:
+        o = other if _t2_set_like(other) else T2Set(other)
+        return len(self) <= len(o) and all(x in o for x in self._d)  # type: ignore[arg-type,operator]
+
+    def issuperset(self, other: object) -> bool:
+        return all(x in self._d for x in other)  # type: ignore[attr-defined]
+
+    def isdisjoint(self, other: object) -> bool:
+        return not any(x in self._d for x in other)  # type: ignore[attr-defined]
+
+    def __le__(self, other: object) -> bool:
+        return self.issubset(other) if _t2_set_like(other) else NotImplemented
+
+    def __lt__(self, other: object) -> bool:
+        if not _t2_set_like(other):
+            return NotImplemented
+        return len(self) < len(other) and self.issubset(other)  # type: ignore[arg-type]
+
+    def __ge__(self, other: object) -> bool:
+        return self.issuperset(other) if _t2_set_like(other) else NotImplemented
+
+    def __gt__(self, other: object) -> bool:
+        if not _t2_set_like(other):
+            return NotImplemented
+        return len(self) > len(other) and self.issuperset(other)  # type: ignore[arg-type]
+
+    # ---- changing ----
+    def add(self, x: object) -> None:
+        self._d[x] = None
+
+    def discard(self, x: object) -> None:
+        self._d.pop(x, None)
+
+    def remove(self, x: object) -> None:
+        del self._d[x]  # KeyError(x), as set.remove
+
+    def clear(self) -> None:
+        self._d.clear()
+
+    def update(self, *others: object) -> None:
+        for other in others:
+            for x in other:  # type: ignore[attr-defined]
+                self._d[x] = None
+
+    def copy(self) -> T2Set:
+        return T2Set(self._d)
+
+    __copy__ = copy
+
+    # ---- algebra: the left operand's order first ----
+    def union(self, *others: object) -> T2Set:
+        out = self.copy()
+        out.update(*others)
+        return out
+
+    def intersection(self, *others: object) -> T2Set:
+        keep = [o if _t2_set_like(o) else T2Set(o) for o in others]
+        return T2Set(x for x in self._d if all(x in o for o in keep))  # type: ignore[operator]
+
+    def difference(self, *others: object) -> T2Set:
+        drop = [o if _t2_set_like(o) else T2Set(o) for o in others]
+        return T2Set(x for x in self._d if not any(x in o for o in drop))  # type: ignore[operator]
+
+    def symmetric_difference(self, other: object) -> T2Set:
+        o = other if isinstance(other, T2Set) else T2Set(other)
+        out = T2Set(x for x in self._d if x not in o)
+        out.update(x for x in o if x not in self._d)
+        return out
+
+    def __or__(self, other: object) -> T2Set:
+        return self.union(other) if _t2_set_like(other) else NotImplemented
+
+    def __and__(self, other: object) -> T2Set:
+        return self.intersection(other) if _t2_set_like(other) else NotImplemented
+
+    def __sub__(self, other: object) -> T2Set:
+        return self.difference(other) if _t2_set_like(other) else NotImplemented
+
+    def __xor__(self, other: object) -> T2Set:
+        return self.symmetric_difference(other) if _t2_set_like(other) else NotImplemented
+
+    # in place (`s |= t` changes s itself, as for set)
+    def __ior__(self, other: object) -> T2Set:
+        if not _t2_set_like(other):
+            return NotImplemented
+        self.update(other)
+        return self
+
+    def __iand__(self, other: object) -> T2Set:
+        if not _t2_set_like(other):
+            return NotImplemented
+        for x in [x for x in self._d if x not in other]:  # type: ignore[operator]
+            del self._d[x]
+        return self
+
+    def __isub__(self, other: object) -> T2Set:
+        if not _t2_set_like(other):
+            return NotImplemented
+        for x in list(other):  # type: ignore[call-overload]
+            self._d.pop(x, None)
+        return self
+
+    def __ixor__(self, other: object) -> T2Set:
+        if not _t2_set_like(other):
+            return NotImplemented
+        o = other if isinstance(other, T2Set) else T2Set(other)
+        common = [x for x in o if x in self._d]
+        new = [x for x in o if x not in self._d]
+        for x in common:
+            del self._d[x]
+        self.update(new)
+        return self
+
+
+class T2Counter(t2_collections.Counter):
+    """collections.Counter whose most_common keeps ties in insertion order (v1.1)."""
+
+    def most_common(self, n: int | None = None) -> list[tuple[object, int]]:
+        ranked = sorted(self.items(), key=lambda kv: -kv[1])  # stable: ties keep order
+        return ranked if n is None else ranked[: max(n, 0)]
 
 
 _T2_SEQ = (str, list, tuple)
@@ -413,9 +605,13 @@ _T2_UNITS = ("days", "hours", "minutes", "seconds")
 
 
 def _t2_builtins() -> dict[str, object]:
+    """The builtins by name; under v1.1 `set` is the insertion-ordered T2Set."""
     import builtins
 
-    return {name: getattr(builtins, name) for name in T2_BUILTIN_NAMES}
+    names = {name: getattr(builtins, name) for name in T2_BUILTIN_NAMES}
+    if V11:
+        names["set"] = T2Set
+    return names
 
 
 def _t2_re_ascii(name: str) -> object:
@@ -434,13 +630,16 @@ def _t2_re_ascii(name: str) -> object:
 def _t2_std_module(module: str, names: tuple[str, ...]) -> object:
     """An allowlisted stdlib module as a namespace holding only `names` (the `re`
     module's functions bound with `re.ASCII`, see `_t2_re_ascii`)."""
-    if module == "re":
-        return t2_types.SimpleNamespace(**{n: _t2_re_ascii(n) for n in names})
-    real = t2_importlib.import_module(module)
-    return t2_types.SimpleNamespace(**{n: getattr(real, n) for n in names})
+    return t2_types.SimpleNamespace(**{n: _t2_std(module, n) for n in names})
 
 
 def _t2_std(module: str, name: str) -> object:
+    """An allowlisted stdlib name: `re` functions bound with `re.ASCII`, and under v1.1
+    `collections.Counter` is T2Counter (most_common ties in insertion order)."""
+    if module == "re":
+        return _t2_re_ascii(name)
+    if V11 and module == "collections" and name == "Counter":
+        return T2Counter
     return getattr(t2_importlib.import_module(module), name)
 
 
@@ -490,10 +689,11 @@ def t2_load(source: str, natives: dict[str, object] | None = None) -> dict[str, 
         "t2_std": _t2_std,
         "t2_helper": _t2_helper,
         "t2_record": _t2_record,
+        "t2_int": t2_int,
         "native": t2_types.SimpleNamespace(**(natives or {})),
     }
     exec(compile(source, "<lattice-procedures>", "exec"), namespace)  # noqa: S102
-    for loader in ("t2_builtin", "t2_std_module", "t2_std", "t2_helper", "t2_record"):
+    for loader in ("t2_builtin", "t2_std_module", "t2_std", "t2_helper", "t2_record", "t2_int"):
         del namespace[loader]
     return namespace
 

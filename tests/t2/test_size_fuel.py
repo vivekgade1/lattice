@@ -137,7 +137,8 @@ def test_big_ints_are_bounded():
     assert call(sq, "f", 3, 2) == 81
     for src in (pw, sh):
         assert code_of(src, "f", 2, 10**6) == "R622"  # a million-bit Int
-    assert code_of(sq, "f", 3, 40) == "R622"
+    # v1.1: repeated squaring leaves the 64-bit range (R623) long before the bit cap
+    assert code_of(sq, "f", 3, 40) == "R623"
 
 
 SRC_JSON_DUMPS_INDENT_IS_BOUNDED = """
@@ -279,7 +280,6 @@ SRC_AUGMENTED_ASSIGNMENTS_KEEP_PYTHON_SEMANTICS = """
         ys = list(xs)
         zs = ys
         ys += [k]
-        ys[0:1] += [k, k]
         d: dict[Str, Str] = {"a": "x"}
         d["a"] *= k
         ys[1 + 0] **= 2
@@ -290,7 +290,7 @@ SRC_AUGMENTED_ASSIGNMENTS_KEEP_PYTHON_SEMANTICS = """
 
 def test_augmented_assignments_keep_python_semantics():
     src = SRC_AUGMENTED_ASSIGNMENTS_KEEP_PYTHON_SEMANTICS
-    assert call(src, "f", [5, 6], 3) == [10, 9, 3, 6, 3, 3]  # as Python computes it
+    assert call(src, "f", [5, 6], 3) == [10, 36, 3, 3]  # as Python computes it
 
 
 # Every procedure source this module loads (tests/t2ir/corpus.py lowers each one).
@@ -308,3 +308,42 @@ SOURCES: tuple[str, ...] = (
     SRC_HUGE_SHIFT,
     SRC_AUGMENTED_ASSIGNMENTS_KEEP_PYTHON_SEMANTICS,
 )
+
+
+def _calls() -> tuple[tuple[str, str, tuple, int], ...]:
+    out: list[tuple[str, str, tuple, int]] = []
+    for name, (_, _, args) in GROWERS.items():
+        s = args[0] if args is not None else "xax"
+        out += [
+            (_src(name), "f", (s, 200_000), 1_000),
+            (_src(name), "f", (s, 7), 1_000_000),
+            (_src(name), "f", (s, 10**11), 1_000_000),
+        ]
+    out += [
+        (_src("replace"), "f", ("a" * 200, 0), 1_000_000),
+        (SRC_CONCATENATION_DOUBLING_IS_BOUNDED, "f", ("ab", 3), 1_000_000),
+        (SRC_CONCATENATION_DOUBLING_IS_BOUNDED, "f", ("ab", 40), 1_000_000),
+        (SRC_CONCATENATION_DOUBLING_IS_BOUNDED_LISTS, "g", (3,), 1_000_000),
+        (SRC_CONCATENATION_DOUBLING_IS_BOUNDED_LISTS, "g", (40,), 1_000_000),
+        (SRC_BIG_INTS_ARE_BOUNDED_PW, "f", (2, 10), 1_000_000),
+        (SRC_BIG_INTS_ARE_BOUNDED_PW, "f", (1, 10**12), 1_000_000),
+        (SRC_BIG_INTS_ARE_BOUNDED_PW, "f", (2, 10**6), 1_000_000),
+        (SRC_BIG_INTS_ARE_BOUNDED_SH, "f", (3, 4), 1_000_000),
+        (SRC_BIG_INTS_ARE_BOUNDED_SH, "f", (2, 10**6), 1_000_000),
+        (SRC_BIG_INTS_ARE_BOUNDED_SQ, "f", (3, 2), 1_000_000),
+        (SRC_BIG_INTS_ARE_BOUNDED_SQ, "f", (3, 40), 1_000_000),
+        (SRC_JSON_DUMPS_INDENT_IS_BOUNDED, "f", ([1, 2], 2), 1_000_000),
+        (SRC_JSON_DUMPS_INDENT_IS_BOUNDED, "f", (list(range(50)), 10_000), 1_000_000),
+        (SRC_A_REGEX_IS_CHARGED_ITS_INPUT_LENGTH, "f", ("a" * 10,), 10**9),
+        (SRC_A_REGEX_IS_CHARGED_ITS_INPUT_LENGTH, "f", ("a" * 200_000,), 1_000),
+        (SRC_SMALL_OPERATIONS_COST_NOTHING_EXTRA, "f", (10,), 10**9),
+        (SRC_HUGE_POWER, "f", (10**9,), 1_000_000),
+        (SRC_HUGE_SHIFT, "f", (10**9,), 1_000_000),
+        (SRC_AUGMENTED_ASSIGNMENTS_KEEP_PYTHON_SEMANTICS, "f", ([5, 6], 3), 1_000_000),
+    ]
+    return tuple(out)
+
+
+# The (source, procedure, arguments, budget) calls the tests above make, for the
+# differential test of the Python emitter (tests/t2ir/corpus.py all_t2_calls).
+CALLS: tuple[tuple[str, str, tuple, int], ...] = _calls()

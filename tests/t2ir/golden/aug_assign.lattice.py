@@ -4,7 +4,6 @@ def aug(xs: list[Int], k: Int) -> Int:
     ys += [k]
     ys[0] -= 1
     ys[1] *= k
-    ys[0:1] += [k]
     s = "a"
     s *= k
     n = 2

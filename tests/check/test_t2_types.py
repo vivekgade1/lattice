@@ -510,3 +510,11 @@ def test_bad_annotation_does_not_cascade():
     src = "from collections import Counter\n" + proc("c: Counter = Counter()\nreturn 0")
     assert errors(src) == ["L902"]
     assert errors(proc("xs: Widget = []\nreturn len(xs)")) == ["L902"]
+
+
+@pytest.mark.parametrize("stmt", ["ys[0:1] += [x]", "ys[:] *= 2", "ys[::2] -= ys", "s[1:] += 'a'"])
+def test_augmented_slice_assignment_is_l913(stmt):
+    """v1.1: `xs[a:b] op= v` is slice assignment, rejected on every target like `xs[a:b] = v`."""
+    src = proc(f"ys = [x]\ns = 'ab'\n{stmt}\nreturn len(ys)")
+    assert errors(src) == ["L913"]
+    assert "slice assignment" in first(src, "L913").message
