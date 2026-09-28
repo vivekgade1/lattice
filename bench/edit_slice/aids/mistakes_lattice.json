@@ -2,16 +2,34 @@
   "source": "bench/results/edit_slice/round4_*_L.jsonl",
   "method": "C3 repair persistence of arm-L checker refusals; codes ranked by repeated refusals, then persistence, then refused rounds; row text: the code's generic, ticket-neutral row",
   "candidates": 8,
-  "chars_budget": 772,
+  "chars_budget": 1144,
   "cell_chars": 280,
   "max_rows": 8,
-  "chars": 605,
+  "chars": 1123,
   "rows": [
     {
       "code": "L404",
       "mistake": "accessible() needs rows of a table with an owner column; the profile declares none for <Table>, so its rows are shared",
       "fix": "if each <Table> row belongs to the user in its <owner column>, declare it in profile.py: add owner='<owner column>' to <Table>'s Schema.from_pairs(...) (then every endpoint that returns or writes its rows filters them with accessible(..., by=user)); otherwise drop accessible()",
       "count": 20
+    },
+    {
+      "code": "L302",
+      "mistake": "each statement must call exactly one table op or step (or bind a constant that uses no columns)",
+      "fix": "split it into one op per statement, e.g. '<name> = derive(<table>, <new_col>=...)'",
+      "count": 6
+    },
+    {
+      "code": "L401",
+      "mistake": "col(\"<column>\") has no input rows here (insert() values, constants and call() arguments read no table)",
+      "fix": "read the value of the one row that holds it: <row>.<column>",
+      "count": 5
+    },
+    {
+      "code": "L411",
+      "mistake": "'<name>' is a table, not a value",
+      "fix": "reference a column with col(\"<column>\"); pass tables to ops by name",
+      "count": 4
     }
   ]
 }

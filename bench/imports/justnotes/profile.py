@@ -47,6 +47,7 @@ NATIVES = {
 
 # ---- tables ----
 
+# Note: owner -- its one users foreign key, which add_keyword_to_note, add_tag_to_note, create_notes, delete_note, get_note, get_note_keywords, get_note_tags, get_notes, get_notes_auto_tag, get_notes_extend, get_notes_keywords, get_notes_related, get_notes_sentiment, get_notes_summarize, get_notes_translate, remove_keyword_from_note, remove_tag_from_note, update_note filter, check or set from the caller
 TABLE_NOTE = Schema.from_pairs(
     [
         ('title', Scalar.STR),
@@ -59,9 +60,11 @@ TABLE_NOTE = Schema.from_pairs(
     ],
     keys=[('id',)],
     nullable=[],
+    owner='owner_id',
     private=['owner_id'],
 )
 
+# NoteTagLink: owner_via -- its foreign key note_id to Note (owned), which its routes check the caller through
 TABLE_NOTETAGLINK = Schema.from_pairs(
     [
         ('note_id', Scalar.INT),
@@ -69,8 +72,10 @@ TABLE_NOTETAGLINK = Schema.from_pairs(
     ],
     keys=[('note_id', 'tag_id')],
     nullable=[],
+    owner_via=('note_id', 'Note'),
 )
 
+# Tag: owner -- its one users foreign key, which create_tag, delete_tag, get_user_tags filter, check or set from the caller
 TABLE_TAG = Schema.from_pairs(
     [
         ('id', Scalar.INT),
@@ -81,8 +86,10 @@ TABLE_TAG = Schema.from_pairs(
     ],
     keys=[('id',)],
     nullable=['category'],
+    owner='owner_id',
 )
 
+# NoteKeywordLink: owner_via -- its foreign key note_id to Note (owned), which its routes check the caller through
 TABLE_NOTEKEYWORDLINK = Schema.from_pairs(
     [
         ('note_id', Scalar.INT),
@@ -90,8 +97,10 @@ TABLE_NOTEKEYWORDLINK = Schema.from_pairs(
     ],
     keys=[('note_id', 'keyword_id')],
     nullable=[],
+    owner_via=('note_id', 'Note'),
 )
 
+# Keyword: owner -- its one users foreign key, which create_keyword, delete_keyword, get_user_keywords filter, check or set from the caller
 TABLE_KEYWORD = Schema.from_pairs(
     [
         ('id', Scalar.INT),
@@ -102,6 +111,7 @@ TABLE_KEYWORD = Schema.from_pairs(
     ],
     keys=[('id',)],
     nullable=[],
+    owner='owner_id',
 )
 
 TABLE_USER = Schema.from_pairs(

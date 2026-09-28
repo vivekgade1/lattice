@@ -30,148 +30,153 @@ HELPERS: dict[str, str] = {'_call_llm_api': 'bench.import_repos.justnotes.app.ap
 CARVE_OUTS: dict[str, str] = {}
 
 ISLANDS: dict[str, dict[str, Any]] = {'add_keyword_to_note': {'function': 'bench.import_repos.justnotes.app.api.tags:add_keyword_to_note',
-                         'gap': 'budget',
+                         'gap': 'unverifiable: a raise site no case reaches',
                          'method': 'POST',
                          'path': '/notes/{note_id}/keywords/{keyword_id}',
-                         'reason': "budget: the route's share of the repo "
-                                   'budget ($0.18) is reached'},
+                         'reason': 'unverified branch: Verification against '
+                                   'the original failed: on every case the '
+                                   "endpoint must answer the original's status "
+                                   'and JSON body and leave the same database '
+                                   'rows.\n'
+                                   "- the original's branch "
+                                   'add_keyword_to_note (tags.py:355) -> 403 '
+                                   'was reached by no case'},
  'add_tag_to_note': {'function': 'bench.import_repos.justnotes.app.api.tags:add_tag_to_note',
-                     'gap': 'budget',
+                     'gap': 'unverifiable: a raise site no case reaches',
                      'method': 'POST',
                      'path': '/notes/{note_id}/tags/{tag_id}',
-                     'reason': "budget: the route's share of the repo budget "
-                               '($0.20) is reached'},
+                     'reason': 'unverified branch: Verification against the '
+                               'original failed: on every case the endpoint '
+                               "must answer the original's status and JSON "
+                               'body and leave the same database rows.\n'
+                               "- the original's branch add_tag_to_note "
+                               '(tags.py:168) -> 403 was reached by no case'},
  'create_keyword': {'function': 'bench.import_repos.justnotes.app.api.tags:create_keyword',
                     'gap': 'budget',
                     'method': 'POST',
                     'path': '/keywords',
                     'reason': "budget: the route's share of the repo budget "
-                              '($0.22) is reached'},
+                              '($0.14) is reached'},
  'create_notes': {'function': 'bench.import_repos.justnotes.app.api.notes:create_notes',
                   'gap': 'budget',
                   'method': 'POST',
                   'path': '/notes/create',
                   'reason': "budget: the route's share of the repo budget "
-                            '($0.22) is reached'},
+                            '($0.15) is reached'},
  'create_tag': {'function': 'bench.import_repos.justnotes.app.api.tags:create_tag',
                 'gap': 'budget',
                 'method': 'POST',
                 'path': '/tags',
                 'reason': "budget: the route's share of the repo budget "
-                          '($0.22) is reached'},
- 'get_note': {'function': 'bench.import_repos.justnotes.app.api.notes:get_note',
-              'gap': 'budget',
-              'method': 'GET',
-              'path': '/notes/{id}',
-              'reason': "budget: the route's share of the repo budget ($0.22) "
-                        'is reached'},
+                          '($0.14) is reached'},
  'get_note_keywords': {'function': 'bench.import_repos.justnotes.app.api.tags:get_note_keywords',
                        'gap': 'budget',
                        'method': 'GET',
                        'path': '/notes/{note_id}/keywords',
                        'reason': "budget: the route's share of the repo budget "
-                                 '($0.12) is reached'},
+                                 '($0.08) is reached'},
  'get_note_tags': {'function': 'bench.import_repos.justnotes.app.api.tags:get_note_tags',
                    'gap': 'budget',
                    'method': 'GET',
                    'path': '/notes/{note_id}/tags',
                    'reason': "budget: the route's share of the repo budget "
-                             '($0.14) is reached'},
+                             '($0.08) is reached'},
  'get_notes': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes',
                'gap': 'budget',
                'method': 'GET',
                'path': '/notes',
-               'reason': "budget: the route's share of the repo budget ($0.22) "
+               'reason': "budget: the route's share of the repo budget ($0.14) "
                          'is reached'},
  'get_notes_auto_tag': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_auto_tag',
                         'gap': 'budget',
                         'method': 'GET',
                         'path': '/notes/{id}/auto-tag',
                         'reason': "budget: the route's share of the repo "
-                                  'budget ($0.10) is reached'},
+                                  'budget ($0.06) is reached'},
+ 'get_notes_extend': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_extend',
+                      'gap': 'budget',
+                      'method': 'GET',
+                      'path': '/notes/{id}/extend',
+                      'reason': "budget: the route's share of the repo budget "
+                                '($0.08) is reached'},
  'get_notes_keywords': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_keywords',
                         'gap': 'budget',
                         'method': 'GET',
                         'path': '/notes/{id}/keywords',
                         'reason': "budget: the route's share of the repo "
-                                  'budget ($0.10) is reached'},
- 'get_notes_related': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_related',
-                       'gap': 'budget',
-                       'method': 'GET',
-                       'path': '/notes/{id}/related',
-                       'reason': "budget: the repo's cost cap ($6.50) is "
-                                 'reached'},
+                                  'budget ($0.07) is reached'},
  'get_notes_sentiment': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_sentiment',
                          'gap': 'budget',
                          'method': 'GET',
                          'path': '/notes/{id}/sentiment',
-                         'reason': "budget: the repo's cost cap ($6.50) is "
-                                   'reached'},
- 'get_notes_summarize': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_summarize',
-                         'gap': 'budget',
-                         'method': 'GET',
-                         'path': '/notes/{id}/summarize',
                          'reason': "budget: the route's share of the repo "
-                                   'budget ($0.18) is reached'},
+                                   'budget ($0.05) is reached'},
  'get_notes_translate': {'function': 'bench.import_repos.justnotes.app.api.notes:get_notes_translate',
                          'gap': 'budget',
                          'method': 'GET',
                          'path': '/notes/{id}/translate/{target_language}',
-                         'reason': "budget: the repo's cost cap ($6.50) is "
-                                   'reached'},
+                         'reason': "budget: the route's share of the repo "
+                                   'budget ($0.05) is reached'},
  'get_public_notes': {'function': 'bench.import_repos.justnotes.app.api.notes:get_public_notes',
                       'gap': 'budget',
                       'method': 'GET',
                       'path': '/notes/public',
                       'reason': "budget: the route's share of the repo budget "
-                                '($0.23) is reached'},
- 'get_user_keywords': {'function': 'bench.import_repos.justnotes.app.api.tags:get_user_keywords',
-                       'gap': 'budget',
-                       'method': 'GET',
-                       'path': '/keywords',
-                       'reason': "budget: the route's share of the repo budget "
-                                 '($0.22) is reached'},
+                                '($0.14) is reached'},
  'get_user_tags': {'function': 'bench.import_repos.justnotes.app.api.tags:get_user_tags',
-                   'gap': 'budget',
+                   'gap': 'missing construct',
                    'method': 'GET',
                    'path': '/tags',
-                   'reason': "budget: the route's share of the repo budget "
-                             '($0.22) is reached'},
- 'list_users': {'function': 'bench.import_repos.justnotes.app.api.users:list_users',
-                'gap': 'budget',
-                'method': 'GET',
-                'path': '/user/list',
-                'reason': "budget: the route's share of the repo budget "
-                          '($0.22) is reached'},
+                   'reason': 'the checker refuses the lifted program'},
  'login': {'function': 'bench.import_repos.justnotes.app.api.auth:login',
            'gap': 'budget',
            'method': 'POST',
            'path': '/auth/login',
-           'reason': "budget: the route's share of the repo budget ($0.22) is "
+           'reason': "budget: the route's share of the repo budget ($0.14) is "
                      'reached'},
  'register': {'function': 'bench.import_repos.justnotes.app.api.auth:register',
-              'gap': 'budget',
+              'gap': 'behaviour not reproduced',
               'method': 'POST',
               'path': '/auth/register',
-              'reason': "budget: the route's share of the repo budget ($0.23) "
-                        'is reached'},
+              'reason': 'verification failed: register.happy: database effects '
+                        'differ; register.extra.unknown: database effects '
+                        'differ; register.extra.columns: database effects '
+                        'differ; register.hyp.0: database effects differ; '
+                        'register.hyp.1: database effects differ; '
+                        'register.hyp.2: database effects differ; '
+                        'register.hyp.3: database effects differ; '
+                        'register.hyp.4: database effects differ'},
  'remove_keyword_from_note': {'function': 'bench.import_repos.justnotes.app.api.tags:remove_keyword_from_note',
-                              'gap': 'budget',
+                              'gap': 'unverifiable: a raise site no case '
+                                     'reaches',
                               'method': 'DELETE',
                               'path': '/notes/{note_id}/keywords/{keyword_id}',
-                              'reason': "budget: the route's share of the repo "
-                                        'budget ($0.19) is reached'},
+                              'reason': 'unverified branch: Verification '
+                                        'against the original failed: on every '
+                                        'case the endpoint must answer the '
+                                        "original's status and JSON body and "
+                                        'leave the same database rows.\n'
+                                        "- the original's branch "
+                                        'remove_keyword_from_note '
+                                        '(tags.py:389) -> 403 was reached by '
+                                        'no case'},
  'remove_tag_from_note': {'function': 'bench.import_repos.justnotes.app.api.tags:remove_tag_from_note',
-                          'gap': 'budget',
+                          'gap': 'unverifiable: a raise site no case reaches',
                           'method': 'DELETE',
                           'path': '/notes/{note_id}/tags/{tag_id}',
-                          'reason': "budget: the route's share of the repo "
-                                    'budget ($0.20) is reached'},
+                          'reason': 'unverified branch: Verification against '
+                                    'the original failed: on every case the '
+                                    "endpoint must answer the original's "
+                                    'status and JSON body and leave the same '
+                                    'database rows.\n'
+                                    "- the original's branch "
+                                    'remove_tag_from_note (tags.py:202) -> 403 '
+                                    'was reached by no case'},
  'update_note': {'function': 'bench.import_repos.justnotes.app.api.notes:update_note',
                  'gap': 'unsupported framework feature: dynamic dispatch',
                  'method': 'PUT',
                  'path': '/notes/{id}',
-                 'reason': 'cut off'}}
+                 'reason': 'the checker refuses the lifted program'}}
 
 NEEDS_LLM: dict[str, dict[str, Any]] = {}
 
@@ -196,9 +201,9 @@ def island_get_public_notes(*args: Any, **kwargs: Any) -> Any:
     'Island GET /notes/public: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.notes:get_public_notes')(*args, **kwargs)
 
-def island_get_notes_summarize(*args: Any, **kwargs: Any) -> Any:
-    'Island GET /notes/{id}/summarize: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.notes:get_notes_summarize')(*args, **kwargs)
+def island_get_notes_extend(*args: Any, **kwargs: Any) -> Any:
+    'Island GET /notes/{id}/extend: the original route, unchanged.'
+    return original('bench.import_repos.justnotes.app.api.notes:get_notes_extend')(*args, **kwargs)
 
 def island_get_notes_translate(*args: Any, **kwargs: Any) -> Any:
     'Island GET /notes/{id}/translate/{target_language}: the original route, unchanged.'
@@ -215,14 +220,6 @@ def island_get_notes_keywords(*args: Any, **kwargs: Any) -> Any:
 def island_get_notes_sentiment(*args: Any, **kwargs: Any) -> Any:
     'Island GET /notes/{id}/sentiment: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.notes:get_notes_sentiment')(*args, **kwargs)
-
-def island_get_notes_related(*args: Any, **kwargs: Any) -> Any:
-    'Island GET /notes/{id}/related: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.notes:get_notes_related')(*args, **kwargs)
-
-def island_get_note(*args: Any, **kwargs: Any) -> Any:
-    'Island GET /notes/{id}: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.notes:get_note')(*args, **kwargs)
 
 def island_update_note(*args: Any, **kwargs: Any) -> Any:
     'Island PUT /notes/{id}: the original route, unchanged.'
@@ -248,10 +245,6 @@ def island_get_note_tags(*args: Any, **kwargs: Any) -> Any:
     'Island GET /notes/{note_id}/tags: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.tags:get_note_tags')(*args, **kwargs)
 
-def island_get_user_keywords(*args: Any, **kwargs: Any) -> Any:
-    'Island GET /keywords: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.tags:get_user_keywords')(*args, **kwargs)
-
 def island_create_keyword(*args: Any, **kwargs: Any) -> Any:
     'Island POST /keywords: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.tags:create_keyword')(*args, **kwargs)
@@ -267,7 +260,3 @@ def island_remove_keyword_from_note(*args: Any, **kwargs: Any) -> Any:
 def island_get_note_keywords(*args: Any, **kwargs: Any) -> Any:
     'Island GET /notes/{note_id}/keywords: the original route, unchanged.'
     return original('bench.import_repos.justnotes.app.api.tags:get_note_keywords')(*args, **kwargs)
-
-def island_list_users(*args: Any, **kwargs: Any) -> Any:
-    'Island GET /user/list: the original route, unchanged.'
-    return original('bench.import_repos.justnotes.app.api.users:list_users')(*args, **kwargs)

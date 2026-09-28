@@ -8,3 +8,4 @@ __pycache__/
 .env
 /bench/results/
 /corpus/
+/.claude/

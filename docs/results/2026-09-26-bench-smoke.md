@@ -746,3 +746,55 @@ The next levers, in order of expected impact:
 2. **Output budget:** raise `max_tokens` in both arms equally (e.g. 32k) and use lower effort for edits.
 3. **More repair rounds with better checker feedback:** each guarantee error should point at the exact fix in the model's own code.
 4. **Cost:** prompt caching of the static Lattice guide. The guide is identical across runs and is ~60% of arm L's input tokens.
+
+## Held-out import (round 5, CLI)
+
+Lever 1 above, closed: sound owner inference (df8c1c5 -- single-user-FK + caller-use, shared tables, `owner_via` for link/child tables) and the Claude Code CLI transport (7931377, `lattice.llm.cli_client.ClaudeCliClient`, identical prompts to the API arm) re-import both held-out apps, replacing the committed `bench/imports/taskflow` and `bench/imports/justnotes` that round 5's arm L starts from:
+
+```
+uv run python -m lattice.importer . --package bench.import_repos.<repo>.app \
+  --app-factory bench.import_repos.<repo>:make_app --out bench/imports/<repo> \
+  --backend cli --method M2 --model claude-sonnet-5 --max-cost-usd 6
+```
+
+Other flags at node N3's defaults: 32k max output tokens, effort medium (R1)/medium (R2 relift)/max (R3), per-route budget shares of the repo cap. Round artefacts are in the gitignored `bench/results/imports/<repo>-r5/`; cost is the CLI's own list-price estimate (`total_cost_usd` from `claude -p --output-format json`, `cost_basis="cli_list_estimate"`), the same figure a user's terminal would show.
+
+| repo | routes | R0 | R1 | R2 | R3 | R4 (islands) | tier mix | cost |
+|---|---:|---:|---:|---:|---:|---:|---|---:|
+| TaskFlow | 10 | 1 | 4 | 1 | 0 | 4 | T0 6, island 4 | $2.02 |
+| JustNotes | 30 | 1 | 9 | 0 | 0 | 20 | T0 10, island 20 | $6.01 |
+
+Total spend: **$8.03** (well inside the $6-per-repo cap, $12 combined authorisation).
+
+**Owners now declared in the profile** (previously unset -- every table read "unclear" and every `accessible()`/`owner=` the edit slice wrote was refused with L404):
+- **TaskFlow:** `Task.owner = 'owner_id'` -- "its one users foreign key, which create_task, delete_task, read_task, read_tasks, update_task filter, check or set from the caller". `User` carries no owner (it's the users table itself). No unclear ownership decisions remain for TaskFlow.
+- **JustNotes:** `Note.owner = 'owner_id'` (also private, since no response model returns it directly), `Tag.owner = 'owner_id'`, `Keyword.owner = 'owner_id'`; the link tables are owned through Note: `NoteTagLink.owner_via = ('note_id', 'Note')`, `NoteKeywordLink.owner_via = ('note_id', 'Note')`. Remaining "Unclear profile decisions" are unrelated to ownership: `NoteTagLink`/`Tag`/`NoteKeywordLink`/`Keyword` have no response model to infer private columns from, and the auth lookup column (`User.username`) is not declared unique so the importer keeps `NativeToken(..., unique="runtime")` (an ambiguous-caller 500, not a 401, on a duplicate username -- unchanged from the previous import).
+
+**Verified routes:**
+- **TaskFlow (6):** `register`, `read_current_user`, `create_task`, `read_tasks`, `read_task`, `delete_task`. Islands (4): `login` (checker refuses the lifted program), `update_task` (behaviour not reproduced: `PATCH`'s partial-null semantics), `service_info`/`health_check` (defined inside `create_app()`, no request suite).
+- **JustNotes (10):** `read_users_me`, `health`, `get_notes_summarize`, `get_notes_related`, `get_note`, `delete_note`, `delete_tag`, `get_user_keywords`, `delete_keyword`, `list_users`. Islands (20): `register` (behaviour not reproduced: database effects differ), `update_note`/`get_user_tags` (checker refuses the lifted program), `add_tag_to_note`/`remove_tag_from_note`/`add_keyword_to_note`/`remove_keyword_from_note` (a 403 branch no suite case reaches), the rest (`login`, `get_notes`, `create_notes`, `get_public_notes`, `get_notes_extend`, `get_notes_translate`, `get_notes_auto_tag`, `get_notes_keywords`, `get_notes_sentiment`, `create_tag`, `get_note_tags`, `create_keyword`, `get_note_keywords`) budget -- the $6 cap was reached before their turn.
+
+**Lift status of the routes t19-t24 and t28-t30 touch, recomputed against this import** (`bench.edit_slice.run.lift_status`):
+
+| ticket | touched routes in the start state |
+|---|---|
+| t19_task_summary | `GET /api/v1/tasks/summary`: new |
+| t20_bulk_status | `POST /api/v1/tasks/bulk-status`: new |
+| t21_completed_at | `POST /api/v1/tasks`, `GET /api/v1/tasks`, `GET /api/v1/tasks/{task_id}`: lifted; `PATCH /api/v1/tasks/{task_id}`: island |
+| t22_copy_note | `POST /notes/{id}/copy`: new |
+| t23_note_filter | `GET /notes`: island (budget) |
+| t24_note_stats | `GET /notes/stats`: new |
+| t28_task_reassign | `POST /api/v1/tasks/{task_id}/reassign`: new |
+| t29_tag_summary | `GET /tags/summary`: new |
+| t30_bulk_delete_notes | `POST /notes/bulk-delete`: new |
+
+t19-t24's status is unchanged from the previous import (TaskFlow's task routes and JustNotes' `/notes` were already lifted/island the same way); t28-t30 touch routes with no prior existence in either app, so they are `new` under any import. A fake-LLM arm-L run (the start programs returned unchanged) builds, emits into the original app and smoke-runs end to end on all nine tickets (`tests/bench/test_edit_slice_imports.py::test_a_fake_llm_arm_l_run_is_end_to_end` for t19/t24, `tests/bench/test_edit_slice_round4.py::test_a_fake_llm_arm_l_run_is_end_to_end` for t28-t30).
+
+**Comparison with the previous import** (TaskFlow 6/10, JustNotes 6/30, both LLM loop on M2/claude-sonnet-5 at the same N3 defaults, API backend):
+
+| repo | verified before | verified now | change |
+|---|---:|---:|---|
+| TaskFlow | 6/10 | 6/10 | **same routes** verified and island as before (`register`, `read_current_user`, `create_task`, `read_tasks`, `read_task`, `delete_task` verified; `login`, `service_info`, `health_check`, `update_task` islands) -- `create_task`/`read_tasks` swapped R1/R2, and `login`/`update_task`'s island reasons changed from the old run's stale-token/cut-off artefacts to a checker refusal and an unreproduced `PATCH`-partial-null; cost $1.46 -> $2.02. Ownership now sound (`Task.owner='owner_id'`, 0 unclear decisions, was 1 "touch Task without comparing owner_id to the caller") |
+| JustNotes | 6/30 | 10/30 | **+4 routes** (`get_notes_summarize`, `get_notes_related`, `get_note`, `get_user_keywords`, `list_users` newly verified; `get_notes_extend` no longer verified, net +4); ownership now sound on 5 tables (was 0, all "unclear"); cost $6.57 -> $6.01 |
+
+TaskFlow's verified/island route *membership* didn't move -- it's still bottlenecked by `login`'s checker refusal and `update_task`'s `PATCH`-partial-null semantics, not by ownership -- but its one ownership decision (`Task`) went from unclear to sound. JustNotes gained 4 routes net, and -- more importantly for round 5's arm L -- every table it touches now has a sound owner or `owner_via`, so edits that write `accessible()`/`owner=` against Note, Tag, Keyword or their link tables are no longer refused for a profile gap (this is exactly the lever the round-4 write-up above flagged: "the imported TaskFlow and JustNotes profiles leave table owners unset... every `accessible`/`mine`/`owner=` the model writes is refused"). No importer bug was hit in this run; both re-imports completed under budget with no CLI usage-limit error.

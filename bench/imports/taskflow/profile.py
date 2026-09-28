@@ -96,6 +96,7 @@ TABLE_USER = Schema.from_pairs(
     private=['password_hash'],
 )
 
+# Task: owner -- its one users foreign key, which create_task, delete_task, read_task, read_tasks, update_task filter, check or set from the caller
 TABLE_TASK = Schema.from_pairs(
     [
         ('title', Scalar.STR),
@@ -110,6 +111,7 @@ TABLE_TASK = Schema.from_pairs(
     ],
     keys=[('id',)],
     nullable=['description', 'due_date'],
+    owner='owner_id',
     one_of={'status': ('todo', 'in_progress', 'done'), 'priority': ('low', 'medium', 'high')},
     one_of_stored={'status': ('TODO', 'IN_PROGRESS', 'DONE'), 'priority': ('LOW', 'MEDIUM', 'HIGH')},
 )

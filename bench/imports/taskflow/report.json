@@ -44,22 +44,22 @@
   },
   "budget": {
     "max_rounds": null,
-    "max_cost_usd": 2.4,
+    "max_cost_usd": 6.0,
     "max_route_rounds": null,
     "max_route_cost_usd": null,
-    "rounds": 26,
-    "cost_usd": 1.455058,
+    "rounds": 25,
+    "cost_usd": 2.020063,
     "exhausted": false,
     "exhausted_by": null
   },
   "cost": {
-    "usd": 1.455058,
+    "usd": 2.020063,
     "notes_usd": 0,
-    "per_llm_verified_route_usd": 0.291012,
-    "input_tokens": 405861,
-    "output_tokens": 106196,
-    "llm_rounds": 26,
-    "wall_s": 1158.139
+    "per_llm_verified_route_usd": 0.404013,
+    "input_tokens": 384640,
+    "output_tokens": 161656,
+    "llm_rounds": 25,
+    "wall_s": 1237.066
   },
   "routes": [
     {
@@ -84,8 +84,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 3,
-      "cost_usd": 0.065176,
+      "rounds": 1,
+      "cost_usd": 0.039214,
       "attempts": [
         {
           "route": "register",
@@ -93,48 +93,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.04426,
-          "input_tokens": 11630,
-          "output_tokens": 1604,
-          "latency_s": 16.291,
-          "tally": null
-        },
-        {
-          "route": "register",
-          "rung": "R1",
-          "round": 2,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "mismatch",
-          "stop_reason": "end_turn",
-          "reason": "verification failed: register.boundary.password.below_min: status differs; register.boundary.password.above_max: status differs",
-          "cost_usd": 0.009288,
-          "input_tokens": 11972,
-          "output_tokens": 320,
-          "latency_s": 4.408,
-          "tally": [
-            13,
-            5,
-            0,
-            2
-          ]
-        },
-        {
-          "route": "register",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.011628,
-          "input_tokens": 13377,
-          "output_tokens": 273,
-          "latency_s": 4.326,
+          "cost_usd": 0.039214,
+          "input_tokens": 12282,
+          "output_tokens": 851,
+          "latency_s": 8.65,
           "tally": [
             13,
             7,
@@ -168,12 +133,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 39, 40, 46, 51",
-      "reason": "budget: the route's share of the repo budget ($0.29) is reached",
-      "gap": "budget",
+      "reason": "the checker refuses the lifted program",
+      "gap": "missing construct",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.45988,
+      "rounds": 7,
+      "cost_usd": 0.808897,
       "attempts": [
         {
           "route": "login",
@@ -184,10 +149,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.083684,
-          "input_tokens": 11860,
-          "output_tokens": 7782,
-          "latency_s": 86.176,
+          "cost_usd": 0.022036,
+          "input_tokens": 12512,
+          "output_tokens": 1401,
+          "latency_s": 12.002,
           "tally": null
         },
         {
@@ -199,10 +164,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.038924,
-          "input_tokens": 12315,
-          "output_tokens": 3215,
-          "latency_s": 34.406,
+          "cost_usd": 0.021076,
+          "input_tokens": 13208,
+          "output_tokens": 1131,
+          "latency_s": 10.132,
           "tally": null
         },
         {
@@ -211,13 +176,13 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "invalid",
+          "outcome": "checker",
           "stop_reason": "end_turn",
-          "reason": "The answer is not a single endpoint for this route: line 4: `id_to_str` is neither @endpoint nor @step",
-          "cost_usd": 0.09492,
-          "input_tokens": 12868,
-          "output_tokens": 8704,
-          "latency_s": 97.128,
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.022701,
+          "input_tokens": 13870,
+          "output_tokens": 1128,
+          "latency_s": 9.103,
           "tally": null
         },
         {
@@ -226,13 +191,58 @@
           "round": 4,
           "kind": "repair",
           "model": "claude-sonnet-5",
+          "outcome": "invalid",
+          "stop_reason": "end_turn",
+          "reason": "The answer is not a single endpoint for this route: line 7: `id_text` is neither @endpoint nor @step",
+          "cost_usd": 0.024168,
+          "input_tokens": 14709,
+          "output_tokens": 1065,
+          "latency_s": 8.284,
+          "tally": null
+        },
+        {
+          "route": "login",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "invalid",
+          "stop_reason": "end_turn",
+          "reason": "The answer is not a single endpoint for this route: line 6: `stringify_id` is neither @endpoint nor @step",
+          "cost_usd": 0.025561,
+          "input_tokens": 13982,
+          "output_tokens": 1386,
+          "latency_s": 11.794,
+          "tally": null
+        },
+        {
+          "route": "login",
+          "rung": "R2",
+          "round": 2,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.242352,
-          "input_tokens": 13319,
-          "output_tokens": 23357,
-          "latency_s": 261.23,
+          "cost_usd": 0.024578,
+          "input_tokens": 14041,
+          "output_tokens": 1273,
+          "latency_s": 11.322,
+          "tally": null
+        },
+        {
+          "route": "login",
+          "rung": "R3",
+          "round": 1,
+          "kind": "carve-procedure",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.668776,
+          "input_tokens": 15028,
+          "output_tokens": 65446,
+          "latency_s": 463.196,
           "tally": null
         }
       ],
@@ -242,7 +252,9 @@
       "procedure_count": 0,
       "procedure_lines": 0,
       "procedures": [],
-      "notes": [],
+      "notes": [
+        "R3: bench.import_repos.taskflow.app.auth:authenticate_user: outside the T2 subset (uses the module 'sqlmodel', outside the T2 standard-library allowlist) and not a simple native (parameter 'session' is not a required scalar)"
+      ],
       "original": {
         "lines": 21,
         "ast_nodes": 110
@@ -360,7 +372,7 @@
       "path": "/api/v1/tasks",
       "auth": "Customer",
       "status": "verified",
-      "rung": "R2",
+      "rung": "R1",
       "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 43",
@@ -373,8 +385,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 6,
-      "cost_usd": 0.177666,
+      "rounds": 3,
+      "cost_usd": 0.061418,
       "attempts": [
         {
           "route": "create_task",
@@ -385,10 +397,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.01284,
-          "input_tokens": 12108,
-          "output_tokens": 648,
-          "latency_s": 6.894,
+          "cost_usd": 0.015356,
+          "input_tokens": 12784,
+          "output_tokens": 665,
+          "latency_s": 6.663,
           "tally": null
         },
         {
@@ -397,28 +409,13 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.01003,
-          "input_tokens": 12473,
-          "output_tokens": 294,
-          "latency_s": 2.632,
-          "tally": null
-        },
-        {
-          "route": "create_task",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
           "reason": "verification failed: create_task.happy: database effects differ; create_task.admin: database effects differ; create_task.boundary.title.min: database effects differ; create_task.boundary.title.below_min: status differs; create_task.boundary.title.max: database effects differ; create_task.boundary.title.above_max: status differs; create_task.boundary.description.max: database effects differ; create_task.boundary.description.above_max: status differs; create_task.extra.unknown: database effects differ; create_task.extra.columns: database effects differ; create_task.hyp.0: database effects differ; create_task.hyp.1: database effects differ; create_task.hyp.2: database effects differ; create_task.hyp.3: database effects differ; create_task.hyp.4: database effects differ",
-          "cost_usd": 0.011762,
-          "input_tokens": 12904,
-          "output_tokens": 381,
-          "latency_s": 4.644,
+          "cost_usd": 0.012416,
+          "input_tokens": 13184,
+          "output_tokens": 271,
+          "latency_s": 3.587,
           "tally": [
             5,
             3,
@@ -429,56 +426,16 @@
         {
           "route": "create_task",
           "rung": "R1",
-          "round": 4,
+          "round": 3,
           "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "mismatch",
-          "stop_reason": "end_turn",
-          "reason": "verification failed: create_task.happy: database effects differ; create_task.admin: database effects differ; create_task.boundary.title.min: database effects differ; create_task.boundary.title.max: database effects differ; create_task.boundary.description.max: database effects differ; create_task.extra.unknown: database effects differ; create_task.extra.columns: database effects differ; create_task.hyp.0: database effects differ; create_task.hyp.1: database effects differ; create_task.hyp.2: database effects differ; create_task.hyp.3: database effects differ; create_task.hyp.4: database effects differ",
-          "cost_usd": 0.026958,
-          "input_tokens": 20052,
-          "output_tokens": 471,
-          "latency_s": 5.598,
-          "tally": [
-            5,
-            6,
-            0,
-            12
-          ]
-        },
-        {
-          "route": "create_task",
-          "rung": "R2",
-          "round": 1,
-          "kind": "relift",
-          "model": "claude-sonnet-5",
-          "outcome": "mismatch",
-          "stop_reason": "end_turn",
-          "reason": "verification failed: create_task.happy: database effects differ; create_task.admin: database effects differ; create_task.boundary.title.min: database effects differ; create_task.boundary.title.max: database effects differ; create_task.boundary.description.max: database effects differ; create_task.extra.unknown: database effects differ; create_task.extra.columns: database effects differ; create_task.hyp.0: database effects differ; create_task.hyp.1: database effects differ; create_task.hyp.2: database effects differ; create_task.hyp.3: database effects differ; create_task.hyp.4: database effects differ",
-          "cost_usd": 0.0376,
-          "input_tokens": 25748,
-          "output_tokens": 396,
-          "latency_s": 4.899,
-          "tally": [
-            5,
-            6,
-            0,
-            12
-          ]
-        },
-        {
-          "route": "create_task",
-          "rung": "R2",
-          "round": 2,
-          "kind": "relift",
           "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.078476,
-          "input_tokens": 31461,
-          "output_tokens": 3341,
-          "latency_s": 38.582,
+          "cost_usd": 0.033646,
+          "input_tokens": 20296,
+          "output_tokens": 616,
+          "latency_s": 6.769,
           "tally": [
             17,
             6,
@@ -508,7 +465,7 @@
       "path": "/api/v1/tasks",
       "auth": "Customer",
       "status": "verified",
-      "rung": "R1",
+      "rung": "R2",
       "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 58, 67",
@@ -521,8 +478,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 2,
-      "cost_usd": 0.027122,
+      "rounds": 5,
+      "cost_usd": 0.12409,
       "attempts": [
         {
           "route": "read_tasks",
@@ -533,10 +490,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.012752,
-          "input_tokens": 12899,
-          "output_tokens": 481,
-          "latency_s": 4.816,
+          "cost_usd": 0.021411,
+          "input_tokens": 13562,
+          "output_tokens": 1076,
+          "latency_s": 9.247,
           "tally": null
         },
         {
@@ -545,13 +502,58 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.024046,
+          "input_tokens": 14252,
+          "output_tokens": 1167,
+          "latency_s": 10.239,
+          "tally": null
+        },
+        {
+          "route": "read_tasks",
+          "rung": "R1",
+          "round": 3,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.023486,
+          "input_tokens": 14864,
+          "output_tokens": 958,
+          "latency_s": 7.918,
+          "tally": null
+        },
+        {
+          "route": "read_tasks",
+          "rung": "R1",
+          "round": 4,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.025374,
+          "input_tokens": 15435,
+          "output_tokens": 1004,
+          "latency_s": 8.913,
+          "tally": null
+        },
+        {
+          "route": "read_tasks",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.01437,
-          "input_tokens": 13433,
-          "output_tokens": 536,
-          "latency_s": 5.578,
+          "cost_usd": 0.029774,
+          "input_tokens": 15879,
+          "output_tokens": 1333,
+          "latency_s": 13.21,
           "tally": [
             15,
             11,
@@ -594,8 +596,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 2,
-      "cost_usd": 0.017964,
+      "rounds": 1,
+      "cost_usd": 0.010326,
       "attempts": [
         {
           "route": "read_task",
@@ -603,28 +605,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.008418,
-          "input_tokens": 12112,
-          "output_tokens": 205,
-          "latency_s": 2.532,
-          "tally": null
-        },
-        {
-          "route": "read_task",
-          "rung": "R1",
-          "round": 2,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.009546,
-          "input_tokens": 12401,
-          "output_tokens": 260,
-          "latency_s": 3.244,
+          "cost_usd": 0.010326,
+          "input_tokens": 12788,
+          "output_tokens": 161,
+          "latency_s": 2.776,
           "tally": [
             10,
             1,
@@ -658,12 +645,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 86, 87, 88, 94",
-      "reason": "cut off",
-      "gap": "missing construct",
+      "reason": "verification failed: update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+      "gap": "behaviour not reproduced",
       "tally": null,
       "deviations": [],
       "rounds": 7,
-      "cost_usd": 0.688522,
+      "cost_usd": 0.965012,
       "attempts": [
         {
           "route": "update_task",
@@ -674,10 +661,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.034652,
-          "input_tokens": 12799,
-          "output_tokens": 2691,
-          "latency_s": 28.825,
+          "cost_usd": 0.019914,
+          "input_tokens": 13475,
+          "output_tokens": 948,
+          "latency_s": 7.87,
           "tally": null
         },
         {
@@ -686,14 +673,19 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.04026,
-          "input_tokens": 13378,
-          "output_tokens": 3136,
-          "latency_s": 33.096,
-          "tally": null
+          "reason": "verification failed: update_task.boundary.title.below_min: status differs; update_task.boundary.title.above_max: status differs; update_task.boundary.description.above_max: status differs; update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+          "cost_usd": 0.018541,
+          "input_tokens": 14054,
+          "output_tokens": 666,
+          "latency_s": 6.871,
+          "tally": [
+            22,
+            3,
+            0,
+            8
+          ]
         },
         {
           "route": "update_task",
@@ -701,14 +693,19 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.019444,
-          "input_tokens": 14025,
-          "output_tokens": 925,
-          "latency_s": 10.057,
-          "tally": null
+          "reason": "verification failed: update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+          "cost_usd": 0.033831,
+          "input_tokens": 18014,
+          "output_tokens": 1205,
+          "latency_s": 11.999,
+          "tally": [
+            22,
+            6,
+            0,
+            5
+          ]
         },
         {
           "route": "update_task",
@@ -718,16 +715,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: update_task.happy: database effects differ; update_task.boundary.title.min: database effects differ; update_task.boundary.title.below_min: status differs; update_task.boundary.title.max: database effects differ; update_task.boundary.title.above_max: status differs; update_task.boundary.description.max: database effects differ; update_task.boundary.description.above_max: status differs; update_task.extra.unknown: database effects differ; update_task.extra.columns: database effects differ; update_task.partial.title: database effects differ; update_task.partial.title_null: body differs; update_task.partial.description: database effects differ; update_task.partial.description_null: database effects differ; update_task.partial.status: database effects differ; update_task.partial.status_null: body differs; update_task.partial.priority: database effects differ; update_task.partial.priority_null: body differs; update_task.partial.due_date: database effects differ; update_task.partial.due_date_null: database effects differ; update_task.partial.empty: database effects differ; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
-          "cost_usd": 0.01544,
-          "input_tokens": 14513,
-          "output_tokens": 427,
-          "latency_s": 5.31,
+          "reason": "verification failed: update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+          "cost_usd": 0.037821,
+          "input_tokens": 19238,
+          "output_tokens": 1298,
+          "latency_s": 11.918,
           "tally": [
-            8,
-            3,
+            22,
+            6,
             0,
-            22
+            5
           ]
         },
         {
@@ -738,16 +735,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: update_task.partial.title: database effects differ; update_task.partial.title_null: body differs; update_task.partial.description: database effects differ; update_task.partial.description_null: database effects differ; update_task.partial.status: database effects differ; update_task.partial.status_null: body differs; update_task.partial.priority: database effects differ; update_task.partial.priority_null: body differs; update_task.partial.due_date: database effects differ; update_task.partial.due_date_null: database effects differ; update_task.partial.empty: database effects differ; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
-          "cost_usd": 0.030538,
-          "input_tokens": 21807,
-          "output_tokens": 478,
-          "latency_s": 5.663,
+          "reason": "verification failed: update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+          "cost_usd": 0.045656,
+          "input_tokens": 20060,
+          "output_tokens": 1876,
+          "latency_s": 18.093,
           "tally": [
-            14,
+            22,
             6,
             0,
-            13
+            5
           ]
         },
         {
@@ -756,14 +753,19 @@
           "round": 2,
           "kind": "relift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.170122,
-          "input_tokens": 24779,
-          "output_tokens": 13842,
-          "latency_s": 151.318,
-          "tally": null
+          "reason": "verification failed: update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+          "cost_usd": 0.047576,
+          "input_tokens": 21116,
+          "output_tokens": 1804,
+          "latency_s": 16.485,
+          "tally": [
+            22,
+            6,
+            0,
+            5
+          ]
         },
         {
           "route": "update_task",
@@ -771,14 +773,19 @@
           "round": 1,
           "kind": "carve-procedure",
           "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.378066,
-          "input_tokens": 26553,
-          "output_tokens": 32000,
-          "latency_s": 334.476,
-          "tally": null
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+          "cost_usd": 0.761674,
+          "input_tokens": 22939,
+          "output_tokens": 72758,
+          "latency_s": 557.083,
+          "tally": [
+            22,
+            6,
+            0,
+            5
+          ]
         }
       ],
       "natives": [],
@@ -817,8 +824,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 2,
-      "cost_usd": 0.018728,
+      "rounds": 1,
+      "cost_usd": 0.011106,
       "attempts": [
         {
           "route": "delete_task",
@@ -826,28 +833,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.008648,
-          "input_tokens": 12392,
-          "output_tokens": 172,
-          "latency_s": 2.479,
-          "tally": null
-        },
-        {
-          "route": "delete_task",
-          "rung": "R1",
-          "round": 2,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.01008,
-          "input_tokens": 12683,
-          "output_tokens": 257,
-          "latency_s": 3.48,
+          "cost_usd": 0.011106,
+          "input_tokens": 13068,
+          "output_tokens": 169,
+          "latency_s": 2.888,
           "tally": [
             9,
             1,
@@ -873,8 +865,8 @@
   "islands": [
     {
       "route": "login",
-      "reason": "budget: the route's share of the repo budget ($0.29) is reached",
-      "gap": "budget"
+      "reason": "the checker refuses the lifted program",
+      "gap": "missing construct"
     },
     {
       "route": "service_info",
@@ -888,20 +880,11 @@
     },
     {
       "route": "update_task",
-      "reason": "cut off",
-      "gap": "missing construct"
+      "reason": "verification failed: update_task.partial.title_null: body differs; update_task.partial.status_null: body differs; update_task.partial.priority_null: body differs; update_task.hyp.1: body differs; update_task.hyp.2: body differs",
+      "gap": "behaviour not reproduced"
     }
   ],
   "carve_out_natives": [],
-  "unclear": [
-    {
-      "topic": "owner",
-      "subject": "Task",
-      "reason": "non-admin routes create_task, delete_task, read_task, update_task touch Task without comparing owner_id to the caller",
-      "candidates": [
-        "owner_id"
-      ]
-    }
-  ],
+  "unclear": [],
   "notes_disagreements": []
 }

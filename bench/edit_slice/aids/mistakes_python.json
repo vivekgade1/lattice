@@ -1,14 +1,20 @@
 {
   "source": "bench/results/edit_slice/round4_*_P.jsonl",
   "method": "the final candidate of every round-4 arm-P run (whatever the oracle said) checked by pycheck with arm Q's policy; codes ranked by runs flagged; row text: the code's generic, ticket-neutral row",
-  "candidates": 2,
+  "candidates": 3,
   "final_rounds": 180,
-  "final_rounds_flagged": 12,
-  "chars_budget": 772,
+  "final_rounds_flagged": 18,
+  "chars_budget": 1144,
   "cell_chars": 280,
   "max_rows": 8,
-  "chars": 772,
+  "chars": 1144,
   "rows": [
+    {
+      "code": "PY801",
+      "mistake": "a route reads, changes or deletes rows of an owned table -- owned directly, through a parent, or linked to owned rows -- without checking that they are the caller's",
+      "fix": "filter by the owner column: `.where(<Table>.<owner column> == <caller>.id)`; for rows owned through a parent or linked to owned rows, join the parent and filter by its owner column",
+      "count": 6
+    },
     {
       "code": "PY805",
       "mistake": "an HTTP error differs from the app's own answer for the same case (e.g. a non-admin refused with another status or detail than the app's admin check gives)",

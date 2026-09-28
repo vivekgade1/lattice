@@ -9,32 +9,32 @@
   "coverage": {
     "routes": 30,
     "R0": 1,
-    "R1": 5,
+    "R1": 9,
     "R2": 0,
     "R3": 0,
-    "R4": 24,
+    "R4": 20,
     "needs-llm": 0,
-    "verified": 6,
-    "lattice_pct": 20.0,
+    "verified": 10,
+    "lattice_pct": 33.3,
     "carve_out_pct": 0.0,
-    "island_pct": 80.0,
+    "island_pct": 66.7,
     "needs_llm_pct": 0.0,
-    "verified_pct": 20.0,
+    "verified_pct": 33.3,
     "complete": false,
     "lines": {
-      "island": 746,
-      "lattice": 106
+      "island": 598,
+      "lattice": 254
     },
     "ast_nodes": {
-      "island": 1986,
-      "lattice": 272
+      "island": 1575,
+      "lattice": 683
     },
     "tiers": {
-      "T0": 6,
+      "T0": 10,
       "T1": 0,
       "T2": 0,
       "T3": 0,
-      "island": 24,
+      "island": 20,
       "needs-llm": 0
     },
     "carve_kinds": {
@@ -44,22 +44,22 @@
   },
   "budget": {
     "max_rounds": null,
-    "max_cost_usd": 6.5,
+    "max_cost_usd": 6.0,
     "max_route_rounds": null,
     "max_route_cost_usd": null,
-    "rounds": 98,
-    "cost_usd": 6.568805,
-    "exhausted": true,
-    "exhausted_by": "the repo's cost cap ($6.50) is reached"
+    "rounds": 95,
+    "cost_usd": 6.014847,
+    "exhausted": false,
+    "exhausted_by": null
   },
   "cost": {
-    "usd": 6.568805,
+    "usd": 6.014848,
     "notes_usd": 0,
-    "per_llm_verified_route_usd": 1.313761,
-    "input_tokens": 1524867,
-    "output_tokens": 510247,
-    "llm_rounds": 98,
-    "wall_s": 6004.598
+    "per_llm_verified_route_usd": 0.668316,
+    "input_tokens": 1639286,
+    "output_tokens": 416269,
+    "llm_rounds": 95,
+    "wall_s": 3298.094
   },
   "routes": [
     {
@@ -75,12 +75,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 127, 128, 129",
-      "reason": "budget: the route's share of the repo budget ($0.23) is reached",
-      "gap": "budget",
+      "reason": "verification failed: register.happy: database effects differ; register.extra.unknown: database effects differ; register.extra.columns: database effects differ; register.hyp.0: database effects differ; register.hyp.1: database effects differ; register.hyp.2: database effects differ; register.hyp.3: database effects differ; register.hyp.4: database effects differ",
+      "gap": "behaviour not reproduced",
       "tally": null,
       "deviations": [],
-      "rounds": 5,
-      "cost_usd": 0.326738,
+      "rounds": 7,
+      "cost_usd": 2.273928,
       "attempts": [
         {
           "route": "register",
@@ -91,10 +91,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.009218,
-          "input_tokens": 12188,
-          "output_tokens": 237,
-          "latency_s": 3.137,
+          "cost_usd": 0.017042,
+          "input_tokens": 13190,
+          "output_tokens": 771,
+          "latency_s": 6.723,
           "tally": null
         },
         {
@@ -106,10 +106,10 @@
           "outcome": "mismatch",
           "stop_reason": "end_turn",
           "reason": "verification failed: register.happy: database effects differ; register.extra.unknown: database effects differ; register.extra.columns: database effects differ; register.hyp.0: status differs; register.hyp.1: database effects differ; register.hyp.2: status differs; register.hyp.3: database effects differ; register.hyp.4: status differs",
-          "cost_usd": 0.01564,
-          "input_tokens": 12519,
-          "output_tokens": 813,
-          "latency_s": 9.824,
+          "cost_usd": 0.018537,
+          "input_tokens": 13680,
+          "output_tokens": 798,
+          "latency_s": 9.08,
           "tally": [
             0,
             2,
@@ -125,16 +125,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: register.happy: database effects differ; register.extra.unknown: database effects differ; register.extra.columns: database effects differ; register.hyp.0: database effects differ; register.hyp.1: database effects differ; register.hyp.2: database effects differ; register.hyp.3: database effects differ; register.hyp.4: database effects differ",
-          "cost_usd": 0.042118,
-          "input_tokens": 17118,
-          "output_tokens": 2541,
-          "latency_s": 34.083,
+          "reason": "verification failed: register.extra.columns: database effects differ",
+          "cost_usd": 0.036727,
+          "input_tokens": 18340,
+          "output_tokens": 1452,
+          "latency_s": 14.933,
           "tally": [
-            0,
+            7,
             2,
             0,
-            8
+            1
           ]
         },
         {
@@ -145,16 +145,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: register.happy: database effects differ; register.extra.unknown: database effects differ; register.extra.columns: database effects differ; register.hyp.0: database effects differ; register.hyp.1: database effects differ; register.hyp.2: database effects differ; register.hyp.3: database effects differ; register.hyp.4: database effects differ",
-          "cost_usd": 0.034204,
-          "input_tokens": 21781,
-          "output_tokens": 817,
-          "latency_s": 12.435,
+          "reason": "verification failed: register.hyp.0: database effects differ; register.hyp.1: database effects differ",
+          "cost_usd": 0.03804,
+          "input_tokens": 19321,
+          "output_tokens": 1338,
+          "latency_s": 15.749,
           "tally": [
-            0,
+            6,
             2,
             0,
-            8
+            2
           ]
         },
         {
@@ -165,11 +165,51 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
+          "reason": "verification failed: register.happy: database effects differ; register.hyp.2: database effects differ; register.hyp.3: database effects differ",
+          "cost_usd": 0.043517,
+          "input_tokens": 21216,
+          "output_tokens": 1412,
+          "latency_s": 14.662,
+          "tally": [
+            5,
+            2,
+            0,
+            3
+          ]
+        },
+        {
+          "route": "register",
+          "rung": "R2",
+          "round": 2,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: register.happy: database effects differ; register.hyp.2: database effects differ; register.hyp.3: database effects differ",
+          "cost_usd": 0.04758,
+          "input_tokens": 23089,
+          "output_tokens": 1350,
+          "latency_s": 15.0,
+          "tally": [
+            5,
+            2,
+            0,
+            3
+          ]
+        },
+        {
+          "route": "register",
+          "rung": "R3",
+          "round": 1,
+          "kind": "carve-procedure",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
           "reason": "verification failed: register.happy: database effects differ; register.extra.unknown: database effects differ; register.extra.columns: database effects differ; register.hyp.0: database effects differ; register.hyp.1: database effects differ; register.hyp.2: database effects differ; register.hyp.3: database effects differ; register.hyp.4: database effects differ",
-          "cost_usd": 0.22556,
-          "input_tokens": 26399,
-          "output_tokens": 19029,
-          "latency_s": 235.209,
+          "cost_usd": 2.072485,
+          "input_tokens": 51112,
+          "output_tokens": 199199,
+          "latency_s": 1496.267,
           "tally": [
             0,
             2,
@@ -203,12 +243,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 150, 152, 159, 160, 163",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 2,
-      "cost_usd": 0.233687,
+      "rounds": 6,
+      "cost_usd": 0.149914,
       "attempts": [
         {
           "route": "login",
@@ -216,14 +256,19 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.158968,
-          "input_tokens": 12773,
-          "output_tokens": 15095,
-          "latency_s": 174.886,
-          "tally": null
+          "reason": "verification failed: login.happy: status differs; login.missing.username: body differs; login.missing.password: body differs; login.admin: status differs; login.unknown_user: status differs; login.error.401.bad_credentials: status differs",
+          "cost_usd": 0.021755,
+          "input_tokens": 13775,
+          "output_tokens": 1096,
+          "latency_s": 10.282,
+          "tally": [
+            0,
+            0,
+            0,
+            6
+          ]
         },
         {
           "route": "login",
@@ -234,11 +279,86 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.07472,
-          "input_tokens": 13159,
-          "output_tokens": 6593,
-          "latency_s": 75.6,
+          "cost_usd": 0.024462,
+          "input_tokens": 15074,
+          "output_tokens": 1042,
+          "latency_s": 8.792,
           "tally": null
+        },
+        {
+          "route": "login",
+          "rung": "R1",
+          "round": 3,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: login.happy: body differs; login.admin: body differs; login.unknown_user: status differs; login.error.401.bad_credentials: status differs",
+          "cost_usd": 0.021022,
+          "input_tokens": 15582,
+          "output_tokens": 571,
+          "latency_s": 6.536,
+          "tally": [
+            0,
+            2,
+            0,
+            4
+          ]
+        },
+        {
+          "route": "login",
+          "rung": "R1",
+          "round": 4,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: login.happy: body differs; login.admin: body differs; login.unknown_user: status differs; login.error.401.bad_credentials: status differs",
+          "cost_usd": 0.025477,
+          "input_tokens": 16364,
+          "output_tokens": 821,
+          "latency_s": 9.227,
+          "tally": [
+            0,
+            2,
+            0,
+            4
+          ]
+        },
+        {
+          "route": "login",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.028922,
+          "input_tokens": 16906,
+          "output_tokens": 1030,
+          "latency_s": 9.405,
+          "tally": null
+        },
+        {
+          "route": "login",
+          "rung": "R2",
+          "round": 2,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: login.happy: body differs; login.admin: body differs; login.unknown_user: status differs; login.error.401.bad_credentials: status differs",
+          "cost_usd": 0.028275,
+          "input_tokens": 17363,
+          "output_tokens": 851,
+          "latency_s": 9.304,
+          "tally": [
+            0,
+            2,
+            0,
+            4
+          ]
         }
       ],
       "natives": [],
@@ -314,8 +434,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 2,
-      "cost_usd": 0.046517,
+      "rounds": 3,
+      "cost_usd": 0.047649,
       "attempts": [
         {
           "route": "health",
@@ -323,13 +443,28 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.031729,
+          "input_tokens": 11112,
+          "output_tokens": 395,
+          "latency_s": 5.4,
+          "tally": null
+        },
+        {
+          "route": "health",
+          "rung": "R1",
+          "round": 2,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
           "reason": "verification failed: health.happy: body differs",
-          "cost_usd": 0.041869,
-          "input_tokens": 10110,
-          "output_tokens": 1678,
-          "latency_s": 22.849,
+          "cost_usd": 0.008942,
+          "input_tokens": 11398,
+          "output_tokens": 409,
+          "latency_s": 5.096,
           "tally": [
             0,
             0,
@@ -340,16 +475,16 @@
         {
           "route": "health",
           "rung": "R1",
-          "round": 2,
+          "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.004648,
-          "input_tokens": 10413,
-          "output_tokens": 135,
-          "latency_s": 1.937,
+          "cost_usd": 0.006977,
+          "input_tokens": 11716,
+          "output_tokens": 133,
+          "latency_s": 3.001,
           "tally": [
             1,
             0,
@@ -383,12 +518,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 72",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.26839,
+      "rounds": 6,
+      "cost_usd": 0.162886,
       "attempts": [
         {
           "route": "get_notes",
@@ -396,13 +531,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "invalid",
+          "outcome": "checker",
           "stop_reason": "end_turn",
-          "reason": "The answer is not a single endpoint for this route: line 3: ClassDef is not allowed here; line 11: `build_owner` is neither @endpoint nor @step",
-          "cost_usd": 0.063438,
-          "input_tokens": 14268,
-          "output_tokens": 5243,
-          "latency_s": 58.378,
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.020192,
+          "input_tokens": 15294,
+          "output_tokens": 560,
+          "latency_s": 5.848,
           "tally": null
         },
         {
@@ -411,14 +546,19 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.096864,
-          "input_tokens": 14696,
-          "output_tokens": 8500,
-          "latency_s": 100.714,
-          "tally": null
+          "reason": "verification failed: get_notes.happy: body differs; get_notes.admin: body differs",
+          "cost_usd": 0.019985,
+          "input_tokens": 15663,
+          "output_tokens": 447,
+          "latency_s": 5.455,
+          "tally": [
+            4,
+            0,
+            0,
+            2
+          ]
         },
         {
           "route": "get_notes",
@@ -426,14 +566,19 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.018064,
-          "input_tokens": 14991,
-          "output_tokens": 561,
-          "latency_s": 6.11,
-          "tally": null
+          "reason": "verification failed: get_notes.happy: body differs; get_notes.admin: body differs",
+          "cost_usd": 0.028707,
+          "input_tokens": 16780,
+          "output_tokens": 1040,
+          "latency_s": 10.394,
+          "tally": [
+            4,
+            0,
+            0,
+            2
+          ]
         },
         {
           "route": "get_notes",
@@ -441,14 +586,54 @@
           "round": 4,
           "kind": "repair",
           "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: get_notes.happy: body differs; get_notes.admin: body differs",
+          "cost_usd": 0.030225,
+          "input_tokens": 18111,
+          "output_tokens": 859,
+          "latency_s": 8.195,
+          "tally": [
+            4,
+            0,
+            0,
+            2
+          ]
+        },
+        {
+          "route": "get_notes",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.090026,
-          "input_tokens": 15487,
-          "output_tokens": 7658,
-          "latency_s": 89.474,
+          "cost_usd": 0.03072,
+          "input_tokens": 18897,
+          "output_tokens": 712,
+          "latency_s": 6.837,
           "tally": null
+        },
+        {
+          "route": "get_notes",
+          "rung": "R2",
+          "round": 2,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: get_notes.happy: body differs; get_notes.admin: body differs",
+          "cost_usd": 0.033057,
+          "input_tokens": 19128,
+          "output_tokens": 888,
+          "latency_s": 9.633,
+          "tally": [
+            4,
+            0,
+            0,
+            2
+          ]
         }
       ],
       "natives": [],
@@ -457,7 +642,9 @@
       "procedure_count": 0,
       "procedure_lines": 0,
       "procedures": [],
-      "notes": [],
+      "notes": [
+        "R3: bench.import_repos.justnotes.app.utils.jwt:verify_token: outside the T2 subset (uses the module 'jose', outside the T2 standard-library allowlist) and not a simple native (the result is not a scalar)"
+      ],
       "original": {
         "lines": 18,
         "ast_nodes": 45
@@ -476,12 +663,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 95",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.15) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.25245,
+      "rounds": 5,
+      "cost_usd": 0.183667,
       "attempts": [
         {
           "route": "create_notes",
@@ -489,13 +676,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "invalid",
+          "outcome": "checker",
           "stop_reason": "end_turn",
-          "reason": "The answer is not a single endpoint for this route: line 4: ClassDef is not allowed here; line 12: `build_owner` is neither @endpoint nor @step",
-          "cost_usd": 0.08343,
-          "input_tokens": 14604,
-          "output_tokens": 7175,
-          "latency_s": 79.059,
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.023947,
+          "input_tokens": 15648,
+          "output_tokens": 847,
+          "latency_s": 7.847,
           "tally": null
         },
         {
@@ -504,14 +691,19 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.083406,
-          "input_tokens": 15152,
-          "output_tokens": 7063,
-          "latency_s": 78.836,
-          "tally": null
+          "reason": "verification failed: create_notes.happy: body differs; create_notes.admin: body differs; create_notes.missing.isPublic: status differs; create_notes.extra.unknown: body differs; create_notes.hyp.0: status differs; create_notes.hyp.1: body differs; create_notes.hyp.2: body differs; create_notes.hyp.3: body differs; create_notes.hyp.4: body differs",
+          "cost_usd": 0.02596,
+          "input_tokens": 16129,
+          "output_tokens": 928,
+          "latency_s": 9.01,
+          "tally": [
+            4,
+            2,
+            0,
+            9
+          ]
         },
         {
           "route": "create_notes",
@@ -519,14 +711,19 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.031294,
-          "input_tokens": 15871,
-          "output_tokens": 1708,
-          "latency_s": 16.789,
-          "tally": null
+          "reason": "verification failed: create_notes.happy: body differs; create_notes.admin: body differs; create_notes.extra.unknown: body differs; create_notes.hyp.0: body differs; create_notes.hyp.1: body differs; create_notes.hyp.2: body differs; create_notes.hyp.3: body differs; create_notes.hyp.4: body differs",
+          "cost_usd": 0.039352,
+          "input_tokens": 19442,
+          "output_tokens": 1439,
+          "latency_s": 13.655,
+          "tally": [
+            4,
+            3,
+            0,
+            8
+          ]
         },
         {
           "route": "create_notes",
@@ -537,11 +734,31 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.054322,
-          "input_tokens": 16635,
-          "output_tokens": 3858,
-          "latency_s": 41.476,
+          "cost_usd": 0.047697,
+          "input_tokens": 23004,
+          "output_tokens": 1383,
+          "latency_s": 11.856,
           "tally": null
+        },
+        {
+          "route": "create_notes",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: create_notes.happy: body differs; create_notes.admin: body differs; create_notes.extra.unknown: body differs; create_notes.hyp.0: body differs; create_notes.hyp.1: body differs; create_notes.hyp.2: body differs; create_notes.hyp.3: body differs; create_notes.hyp.4: body differs",
+          "cost_usd": 0.04671,
+          "input_tokens": 23465,
+          "output_tokens": 1169,
+          "latency_s": 12.323,
+          "tally": [
+            4,
+            3,
+            0,
+            8
+          ]
         }
       ],
       "natives": [],
@@ -569,12 +786,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 109",
-      "reason": "budget: the route's share of the repo budget ($0.23) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 3,
-      "cost_usd": 0.371387,
+      "rounds": 6,
+      "cost_usd": 0.144684,
       "attempts": [
         {
           "route": "get_public_notes",
@@ -585,10 +802,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.037024,
-          "input_tokens": 12796,
-          "output_tokens": 2896,
-          "latency_s": 29.95,
+          "cost_usd": 0.016352,
+          "input_tokens": 13798,
+          "output_tokens": 550,
+          "latency_s": 6.251,
           "tally": null
         },
         {
@@ -597,19 +814,14 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "mismatch",
+          "outcome": "checker",
           "stop_reason": "end_turn",
-          "reason": "verification failed: get_public_notes.happy: body differs",
-          "cost_usd": 0.109104,
-          "input_tokens": 13211,
-          "output_tokens": 10021,
-          "latency_s": 117.602,
-          "tally": [
-            0,
-            0,
-            0,
-            1
-          ]
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.023065,
+          "input_tokens": 14215,
+          "output_tokens": 1117,
+          "latency_s": 10.27,
+          "tally": null
         },
         {
           "route": "get_public_notes",
@@ -619,17 +831,62 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: get_public_notes.happy: body differs",
-          "cost_usd": 0.22526,
-          "input_tokens": 13919,
-          "output_tokens": 21495,
-          "latency_s": 260.129,
+          "reason": "verification failed: get_public_notes.happy: status differs",
+          "cost_usd": 0.024442,
+          "input_tokens": 14698,
+          "output_tokens": 1134,
+          "latency_s": 10.993,
           "tally": [
             0,
             0,
             0,
             1
           ]
+        },
+        {
+          "route": "get_public_notes",
+          "rung": "R1",
+          "round": 4,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.026562,
+          "input_tokens": 15634,
+          "output_tokens": 1112,
+          "latency_s": 10.959,
+          "tally": null
+        },
+        {
+          "route": "get_public_notes",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.026692,
+          "input_tokens": 15434,
+          "output_tokens": 1175,
+          "latency_s": 10.927,
+          "tally": null
+        },
+        {
+          "route": "get_public_notes",
+          "rung": "R2",
+          "round": 2,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.02757,
+          "input_tokens": 16105,
+          "output_tokens": 1095,
+          "latency_s": 10.443,
+          "tally": null
         }
       ],
       "natives": [],
@@ -652,17 +909,22 @@
       "method": "GET",
       "path": "/notes/{id}/summarize",
       "auth": "Customer",
-      "status": "island",
-      "rung": "R4",
-      "by": null,
+      "status": "verified",
+      "rung": "R1",
+      "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 184, 185, 187, 194",
-      "reason": "budget: the route's share of the repo budget ($0.18) is reached",
-      "gap": "budget",
-      "tally": null,
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 7,
+        "equal_under_rule": 1,
+        "deviation": 0,
+        "mismatch": 0
+      },
       "deviations": [],
-      "rounds": 6,
-      "cost_usd": 0.501772,
+      "rounds": 3,
+      "cost_usd": 0.090274,
       "attempts": [
         {
           "route": "get_notes_summarize",
@@ -673,10 +935,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.023376,
-          "input_tokens": 15137,
-          "output_tokens": 1063,
-          "latency_s": 12.365,
+          "cost_usd": 0.024785,
+          "input_tokens": 16163,
+          "output_tokens": 802,
+          "latency_s": 7.748,
           "tally": null
         },
         {
@@ -688,10 +950,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.016148,
-          "input_tokens": 15458,
-          "output_tokens": 276,
-          "latency_s": 2.794,
+          "cost_usd": 0.027652,
+          "input_tokens": 16838,
+          "output_tokens": 920,
+          "latency_s": 8.474,
           "tally": null
         },
         {
@@ -700,70 +962,28 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "verified",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.028354,
-          "input_tokens": 15781,
-          "output_tokens": 1432,
-          "latency_s": 15.18,
-          "tally": null
-        },
-        {
-          "route": "get_notes_summarize",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.052194,
-          "input_tokens": 16166,
-          "output_tokens": 3739,
-          "latency_s": 43.091,
-          "tally": null
-        },
-        {
-          "route": "get_notes_summarize",
-          "rung": "R2",
-          "round": 1,
-          "kind": "relift",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.045654,
-          "input_tokens": 16486,
-          "output_tokens": 3021,
-          "latency_s": 36.382,
-          "tally": null
-        },
-        {
-          "route": "get_notes_summarize",
-          "rung": "R2",
-          "round": 2,
-          "kind": "relift",
-          "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.336048,
-          "input_tokens": 16788,
-          "output_tokens": 32000,
-          "latency_s": 381.716,
-          "tally": null
+          "reason": "",
+          "cost_usd": 0.037837,
+          "input_tokens": 17508,
+          "output_tokens": 1771,
+          "latency_s": 16.534,
+          "tally": [
+            7,
+            1,
+            0,
+            0
+          ]
         }
       ],
       "natives": [],
-      "tier": "island",
+      "tier": "T0",
       "carve_kind": "none",
       "procedure_count": 0,
       "procedure_lines": 0,
       "procedures": [],
-      "notes": [
-        "R3: bench.import_repos.justnotes.app.utils.jwt:verify_token: outside the T2 subset (uses the module 'jose', outside the T2 standard-library allowlist) and not a simple native (the result is not a scalar)"
-      ],
+      "notes": [],
       "original": {
         "lines": 17,
         "ast_nodes": 78
@@ -777,22 +997,17 @@
       "method": "GET",
       "path": "/notes/{id}/extend",
       "auth": "Customer",
-      "status": "verified",
-      "rung": "R1",
-      "by": "llm",
+      "status": "island",
+      "rung": "R4",
+      "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 203, 204, 206, 214",
-      "reason": "",
-      "gap": null,
-      "tally": {
-        "equal": 7,
-        "equal_under_rule": 1,
-        "deviation": 0,
-        "mismatch": 0
-      },
+      "reason": "budget: the route's share of the repo budget ($0.08) is reached",
+      "gap": "budget",
+      "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.157048,
+      "rounds": 3,
+      "cost_usd": 0.086652,
       "attempts": [
         {
           "route": "get_notes_extend",
@@ -803,10 +1018,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.047861,
-          "input_tokens": 15141,
-          "output_tokens": 1271,
-          "latency_s": 15.662,
+          "cost_usd": 0.024695,
+          "input_tokens": 16167,
+          "output_tokens": 792,
+          "latency_s": 7.84,
           "tally": null
         },
         {
@@ -818,10 +1033,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.019326,
-          "input_tokens": 15457,
-          "output_tokens": 594,
-          "latency_s": 6.243,
+          "cost_usd": 0.026242,
+          "input_tokens": 16782,
+          "output_tokens": 793,
+          "latency_s": 7.795,
           "tally": null
         },
         {
@@ -833,35 +1048,15 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.035062,
-          "input_tokens": 15775,
-          "output_tokens": 2104,
-          "latency_s": 25.039,
+          "cost_usd": 0.035715,
+          "input_tokens": 17371,
+          "output_tokens": 1593,
+          "latency_s": 13.985,
           "tally": null
-        },
-        {
-          "route": "get_notes_extend",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "verified",
-          "stop_reason": "end_turn",
-          "reason": "",
-          "cost_usd": 0.0548,
-          "input_tokens": 16074,
-          "output_tokens": 4018,
-          "latency_s": 51.56,
-          "tally": [
-            7,
-            1,
-            0,
-            0
-          ]
         }
       ],
       "natives": [],
-      "tier": "T0",
+      "tier": "island",
       "carve_kind": "none",
       "procedure_count": 0,
       "procedure_lines": 0,
@@ -885,12 +1080,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 241, 242, 244, 252",
-      "reason": "budget: the repo's cost cap ($6.50) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.05) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.364242,
+      "rounds": 2,
+      "cost_usd": 0.05747,
       "attempts": [
         {
           "route": "get_notes_translate",
@@ -901,10 +1096,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.034146,
-          "input_tokens": 15537,
-          "output_tokens": 2060,
-          "latency_s": 23.311,
+          "cost_usd": 0.027275,
+          "input_tokens": 16563,
+          "output_tokens": 951,
+          "latency_s": 8.877,
           "tally": null
         },
         {
@@ -916,40 +1111,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.022658,
-          "input_tokens": 15928,
-          "output_tokens": 833,
-          "latency_s": 9.985,
-          "tally": null
-        },
-        {
-          "route": "get_notes_translate",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.039794,
-          "input_tokens": 16291,
-          "output_tokens": 2474,
-          "latency_s": 31.201,
-          "tally": null
-        },
-        {
-          "route": "get_notes_translate",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.267646,
-          "input_tokens": 16632,
-          "output_tokens": 25191,
-          "latency_s": 297.348,
+          "cost_usd": 0.030195,
+          "input_tokens": 17371,
+          "output_tokens": 1041,
+          "latency_s": 9.298,
           "tally": null
         }
       ],
@@ -978,12 +1143,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 277, 278, 280, 296",
-      "reason": "budget: the route's share of the repo budget ($0.10) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.06) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.105852,
+      "rounds": 3,
+      "cost_usd": 0.091997,
       "attempts": [
         {
           "route": "get_notes_auto_tag",
@@ -994,10 +1159,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.03253,
-          "input_tokens": 15609,
-          "output_tokens": 1884,
-          "latency_s": 21.876,
+          "cost_usd": 0.026095,
+          "input_tokens": 16635,
+          "output_tokens": 815,
+          "latency_s": 7.487,
           "tally": null
         },
         {
@@ -1009,10 +1174,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.018224,
-          "input_tokens": 16071,
-          "output_tokens": 361,
-          "latency_s": 4.745,
+          "cost_usd": 0.03036,
+          "input_tokens": 17297,
+          "output_tokens": 1076,
+          "latency_s": 9.432,
           "tally": null
         },
         {
@@ -1024,25 +1189,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.031388,
-          "input_tokens": 16503,
-          "output_tokens": 1591,
-          "latency_s": 16.857,
-          "tally": null
-        },
-        {
-          "route": "get_notes_auto_tag",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.023712,
-          "input_tokens": 17055,
-          "output_tokens": 713,
-          "latency_s": 8.323,
+          "cost_usd": 0.035542,
+          "input_tokens": 17978,
+          "output_tokens": 1424,
+          "latency_s": 13.274,
           "tally": null
         }
       ],
@@ -1071,12 +1221,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 321, 322, 324, 340",
-      "reason": "budget: the route's share of the repo budget ($0.10) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.07) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.100338,
+      "rounds": 3,
+      "cost_usd": 0.088534,
       "attempts": [
         {
           "route": "get_notes_keywords",
@@ -1087,10 +1237,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.028796,
-          "input_tokens": 15577,
-          "output_tokens": 1517,
-          "latency_s": 18.491,
+          "cost_usd": 0.027495,
+          "input_tokens": 16603,
+          "output_tokens": 963,
+          "latency_s": 9.487,
           "tally": null
         },
         {
@@ -1102,10 +1252,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.020066,
-          "input_tokens": 15922,
-          "output_tokens": 575,
-          "latency_s": 9.577,
+          "cost_usd": 0.027402,
+          "input_tokens": 17330,
+          "output_tokens": 772,
+          "latency_s": 7.233,
           "tally": null
         },
         {
@@ -1117,25 +1267,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.02355,
-          "input_tokens": 16269,
-          "output_tokens": 854,
-          "latency_s": 11.949,
-          "tally": null
-        },
-        {
-          "route": "get_notes_keywords",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.027928,
-          "input_tokens": 16628,
-          "output_tokens": 1220,
-          "latency_s": 13.938,
+          "cost_usd": 0.033637,
+          "input_tokens": 17976,
+          "output_tokens": 1234,
+          "latency_s": 11.046,
           "tally": null
         }
       ],
@@ -1164,13 +1299,44 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 365, 366, 368, 390",
-      "reason": "budget: the repo's cost cap ($6.50) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.05) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 0,
-      "cost_usd": 0,
-      "attempts": [],
+      "rounds": 2,
+      "cost_usd": 0.053287,
+      "attempts": [
+        {
+          "route": "get_notes_sentiment",
+          "rung": "R1",
+          "round": 1,
+          "kind": "lift",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.025885,
+          "input_tokens": 16863,
+          "output_tokens": 737,
+          "latency_s": 7.259,
+          "tally": null
+        },
+        {
+          "route": "get_notes_sentiment",
+          "rung": "R1",
+          "round": 2,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.027402,
+          "input_tokens": 17386,
+          "output_tokens": 758,
+          "latency_s": 8.3,
+          "tally": null
+        }
+      ],
       "natives": [],
       "tier": "island",
       "carve_kind": "none",
@@ -1191,20 +1357,61 @@
       "method": "GET",
       "path": "/notes/{id}/related",
       "auth": "Customer",
-      "status": "island",
-      "rung": "R4",
-      "by": null,
+      "status": "verified",
+      "rung": "R1",
+      "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 415, 416, 418, 420, 426, 427, 434, 460",
-      "reason": "budget: the repo's cost cap ($6.50) is reached",
-      "gap": "budget",
-      "tally": null,
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 7,
+        "equal_under_rule": 1,
+        "deviation": 0,
+        "mismatch": 0
+      },
       "deviations": [],
-      "rounds": 0,
-      "cost_usd": 0,
-      "attempts": [],
+      "rounds": 2,
+      "cost_usd": 0.066887,
+      "attempts": [
+        {
+          "route": "get_notes_related",
+          "rung": "R1",
+          "round": 1,
+          "kind": "lift",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.03393,
+          "input_tokens": 17549,
+          "output_tokens": 1370,
+          "latency_s": 12.125,
+          "tally": null
+        },
+        {
+          "route": "get_notes_related",
+          "rung": "R1",
+          "round": 2,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
+          "outcome": "verified",
+          "stop_reason": "end_turn",
+          "reason": "",
+          "cost_usd": 0.032957,
+          "input_tokens": 18320,
+          "output_tokens": 1080,
+          "latency_s": 10.395,
+          "tally": [
+            7,
+            1,
+            0,
+            0
+          ]
+        }
+      ],
       "natives": [],
-      "tier": "island",
+      "tier": "T0",
       "carve_kind": "none",
       "procedure_count": 0,
       "procedure_lines": 0,
@@ -1223,17 +1430,22 @@
       "method": "GET",
       "path": "/notes/{id}",
       "auth": "Customer",
-      "status": "island",
-      "rung": "R4",
-      "by": null,
+      "status": "verified",
+      "rung": "R1",
+      "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 484, 485, 487, 494, 503",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget",
-      "tally": null,
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 7,
+        "equal_under_rule": 1,
+        "deviation": 0,
+        "mismatch": 0
+      },
       "deviations": [],
       "rounds": 3,
-      "cost_usd": 0.263029,
+      "cost_usd": 0.092707,
       "attempts": [
         {
           "route": "get_note",
@@ -1241,13 +1453,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "invalid",
+          "outcome": "checker",
           "stop_reason": "end_turn",
-          "reason": "The answer is not a single endpoint for this route: line 3: ClassDef is not allowed here; line 11: `make_owner` is neither @endpoint nor @step",
-          "cost_usd": 0.049428,
-          "input_tokens": 14738,
-          "output_tokens": 3748,
-          "latency_s": 38.582,
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.025897,
+          "input_tokens": 15764,
+          "output_tokens": 1013,
+          "latency_s": 8.886,
           "tally": null
         },
         {
@@ -1259,10 +1471,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.074832,
-          "input_tokens": 15365,
-          "output_tokens": 6163,
-          "latency_s": 72.874,
+          "cost_usd": 0.030457,
+          "input_tokens": 16404,
+          "output_tokens": 1309,
+          "latency_s": 12.368,
           "tally": null
         },
         {
@@ -1271,18 +1483,23 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "invalid",
+          "outcome": "verified",
           "stop_reason": "end_turn",
-          "reason": "The answer is not a single endpoint for this route: line 3: `build_owner` is neither @endpoint nor @step",
-          "cost_usd": 0.13877,
-          "input_tokens": 15869,
-          "output_tokens": 12456,
-          "latency_s": 141.246,
-          "tally": null
+          "reason": "",
+          "cost_usd": 0.036352,
+          "input_tokens": 17318,
+          "output_tokens": 1670,
+          "latency_s": 16.55,
+          "tally": [
+            7,
+            1,
+            0,
+            0
+          ]
         }
       ],
       "natives": [],
-      "tier": "island",
+      "tier": "T0",
       "carve_kind": "none",
       "procedure_count": 0,
       "procedure_lines": 0,
@@ -1306,12 +1523,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 532",
-      "reason": "cut off",
+      "reason": "the checker refuses the lifted program",
       "gap": "unsupported framework feature: dynamic dispatch",
       "tally": null,
       "deviations": [],
       "rounds": 1,
-      "cost_usd": 0.355891,
+      "cost_usd": 1.0909,
       "attempts": [
         {
           "route": "update_note",
@@ -1319,13 +1536,13 @@
           "round": 1,
           "kind": "carve-procedure",
           "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.355891,
-          "input_tokens": 15511,
-          "output_tokens": 32000,
-          "latency_s": 346.267,
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 1.0909,
+          "input_tokens": 16537,
+          "output_tokens": 107320,
+          "latency_s": 766.046,
           "tally": null
         }
       ],
@@ -1366,8 +1583,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 3,
-      "cost_usd": 0.149171,
+      "rounds": 1,
+      "cost_usd": 0.02089,
       "attempts": [
         {
           "route": "delete_note",
@@ -1375,43 +1592,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.018884,
-          "input_tokens": 14551,
-          "output_tokens": 731,
-          "latency_s": 8.437,
-          "tally": null
-        },
-        {
-          "route": "delete_note",
-          "rung": "R1",
-          "round": 2,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.016752,
-          "input_tokens": 14850,
-          "output_tokens": 458,
-          "latency_s": 4.896,
-          "tally": null
-        },
-        {
-          "route": "delete_note",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.113536,
-          "input_tokens": 15172,
-          "output_tokens": 10072,
-          "latency_s": 123.077,
+          "cost_usd": 0.02089,
+          "input_tokens": 15577,
+          "output_tokens": 559,
+          "latency_s": 6.725,
           "tally": [
             6,
             1,
@@ -1445,12 +1632,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 80, 81",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget",
+      "reason": "the checker refuses the lifted program",
+      "gap": "missing construct",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.305662,
+      "rounds": 7,
+      "cost_usd": 0.383684,
       "attempts": [
         {
           "route": "get_user_tags",
@@ -1458,14 +1645,19 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.01075,
-          "input_tokens": 13469,
-          "output_tokens": 134,
-          "latency_s": 2.469,
-          "tally": null
+          "reason": "verification failed: get_user_tags.happy: body differs; get_user_tags.admin: body differs",
+          "cost_usd": 0.016357,
+          "input_tokens": 14496,
+          "output_tokens": 376,
+          "latency_s": 4.897,
+          "tally": [
+            4,
+            0,
+            0,
+            2
+          ]
         },
         {
           "route": "get_user_tags",
@@ -1476,10 +1668,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.018616,
-          "input_tokens": 13737,
-          "output_tokens": 867,
-          "latency_s": 11.259,
+          "cost_usd": 0.022542,
+          "input_tokens": 15202,
+          "output_tokens": 818,
+          "latency_s": 7.954,
           "tally": null
         },
         {
@@ -1491,10 +1683,10 @@
           "outcome": "mismatch",
           "stop_reason": "end_turn",
           "reason": "verification failed: get_user_tags.happy: body differs; get_user_tags.admin: body differs",
-          "cost_usd": 0.017158,
-          "input_tokens": 13973,
-          "output_tokens": 674,
-          "latency_s": 9.291,
+          "cost_usd": 0.020287,
+          "input_tokens": 15576,
+          "output_tokens": 499,
+          "latency_s": 6.034,
           "tally": [
             4,
             0,
@@ -1511,10 +1703,65 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.25914,
-          "input_tokens": 14604,
-          "output_tokens": 24746,
-          "latency_s": 304.777,
+          "cost_usd": 0.026087,
+          "input_tokens": 16304,
+          "output_tokens": 897,
+          "latency_s": 9.619,
+          "tally": null
+        },
+        {
+          "route": "get_user_tags",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: get_user_tags.happy: body differs; get_user_tags.admin: body differs",
+          "cost_usd": 0.024202,
+          "input_tokens": 16406,
+          "output_tokens": 683,
+          "latency_s": 7.582,
+          "tally": [
+            4,
+            0,
+            0,
+            2
+          ]
+        },
+        {
+          "route": "get_user_tags",
+          "rung": "R2",
+          "round": 2,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: get_user_tags.happy: body differs; get_user_tags.admin: body differs",
+          "cost_usd": 0.027147,
+          "input_tokens": 17116,
+          "output_tokens": 800,
+          "latency_s": 9.004,
+          "tally": [
+            4,
+            0,
+            0,
+            2
+          ]
+        },
+        {
+          "route": "get_user_tags",
+          "rung": "R3",
+          "round": 1,
+          "kind": "carve-procedure",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.24706,
+          "input_tokens": 18469,
+          "output_tokens": 22453,
+          "latency_s": 166.002,
           "tally": null
         }
       ],
@@ -1524,7 +1771,9 @@
       "procedure_count": 0,
       "procedure_lines": 0,
       "procedures": [],
-      "notes": [],
+      "notes": [
+        "R3: bench.import_repos.justnotes.app.utils.jwt:verify_token: outside the T2 subset (uses the module 'jose', outside the T2 standard-library allowlist) and not a simple native (the result is not a scalar)"
+      ],
       "original": {
         "lines": 24,
         "ast_nodes": 68
@@ -1543,12 +1792,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 109, 110",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
       "rounds": 5,
-      "cost_usd": 0.307152,
+      "cost_usd": 0.175829,
       "attempts": [
         {
           "route": "create_tag",
@@ -1556,13 +1805,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "invalid",
+          "outcome": "checker",
           "stop_reason": "end_turn",
-          "reason": "The code does not parse: parameter without a default follows parameter with a default (<unknown>, line 6)",
-          "cost_usd": 0.098416,
-          "input_tokens": 13717,
-          "output_tokens": 8851,
-          "latency_s": 109.11,
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.023857,
+          "input_tokens": 14756,
+          "output_tokens": 1061,
+          "latency_s": 9.773,
           "tally": null
         },
         {
@@ -1571,14 +1820,19 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.012346,
-          "input_tokens": 13932,
-          "output_tokens": 201,
-          "latency_s": 2.454,
-          "tally": null
+          "reason": "verification failed: create_tag.happy: database effects differ; create_tag.admin: database effects differ; create_tag.extra.unknown: database effects differ; create_tag.extra.columns: database effects differ",
+          "cost_usd": 0.021752,
+          "input_tokens": 15246,
+          "output_tokens": 728,
+          "latency_s": 8.496,
+          "tally": [
+            9,
+            1,
+            0,
+            4
+          ]
         },
         {
           "route": "create_tag",
@@ -1588,16 +1842,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: create_tag.happy: database effects differ; create_tag.admin: database effects differ; create_tag.extra.unknown: database effects differ; create_tag.extra.columns: database effects differ; create_tag.hyp.0: status differs",
-          "cost_usd": 0.041938,
-          "input_tokens": 14218,
-          "output_tokens": 3103,
-          "latency_s": 38.968,
+          "reason": "verification failed: create_tag.happy: database effects differ; create_tag.admin: database effects differ; create_tag.extra.unknown: database effects differ; create_tag.extra.columns: database effects differ; create_tag.hyp.0: database effects differ; create_tag.hyp.1: database effects differ; create_tag.hyp.2: database effects differ; create_tag.hyp.3: database effects differ",
+          "cost_usd": 0.031092,
+          "input_tokens": 17562,
+          "output_tokens": 1083,
+          "latency_s": 11.347,
           "tally": [
-            8,
+            5,
             1,
             0,
-            5
+            8
           ]
         },
         {
@@ -1608,16 +1862,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: create_tag.happy: database effects differ; create_tag.admin: database effects differ; create_tag.extra.unknown: database effects differ; create_tag.extra.columns: database effects differ; create_tag.hyp.0: database effects differ; create_tag.hyp.1: database effects differ",
-          "cost_usd": 0.032246,
-          "input_tokens": 16812,
-          "output_tokens": 1615,
-          "latency_s": 20.479,
+          "reason": "verification failed: create_tag.happy: database effects differ; create_tag.admin: database effects differ; create_tag.extra.unknown: database effects differ; create_tag.extra.columns: database effects differ; create_tag.hyp.0: database effects differ; create_tag.hyp.1: database effects differ; create_tag.hyp.2: database effects differ",
+          "cost_usd": 0.041952,
+          "input_tokens": 22298,
+          "output_tokens": 985,
+          "latency_s": 12.227,
           "tally": [
-            7,
+            6,
             1,
             0,
-            6
+            7
           ]
         },
         {
@@ -1628,16 +1882,16 @@
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: create_tag.happy: database effects differ; create_tag.admin: database effects differ; create_tag.extra.unknown: database effects differ; create_tag.extra.columns: database effects differ; create_tag.hyp.0: database effects differ; create_tag.hyp.1: database effects differ; create_tag.hyp.2: database effects differ; create_tag.hyp.3: database effects differ",
-          "cost_usd": 0.122208,
-          "input_tokens": 20238,
-          "output_tokens": 9926,
-          "latency_s": 120.762,
+          "reason": "verification failed: create_tag.happy: database effects differ; create_tag.admin: database effects differ; create_tag.extra.unknown: database effects differ; create_tag.extra.columns: database effects differ; create_tag.hyp.0: database effects differ; create_tag.hyp.1: database effects differ; create_tag.hyp.2: database effects differ; create_tag.hyp.3: database effects differ; create_tag.hyp.4: database effects differ",
+          "cost_usd": 0.057175,
+          "input_tokens": 25703,
+          "output_tokens": 1656,
+          "latency_s": 18.808,
           "tally": [
-            5,
+            4,
             1,
             0,
-            8
+            9
           ]
         }
       ],
@@ -1675,8 +1929,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 3,
-      "cost_usd": 0.062976,
+      "rounds": 1,
+      "cost_usd": 0.019367,
       "attempts": [
         {
           "route": "delete_tag",
@@ -1684,48 +1938,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.034257,
-          "input_tokens": 13689,
-          "output_tokens": 201,
-          "latency_s": 2.97,
-          "tally": null
-        },
-        {
-          "route": "delete_tag",
-          "rung": "R1",
-          "round": 2,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "mismatch",
-          "stop_reason": "end_turn",
-          "reason": "verification failed: delete_tag.happy: status differs",
-          "cost_usd": 0.014328,
-          "input_tokens": 13973,
-          "output_tokens": 391,
-          "latency_s": 5.477,
-          "tally": [
-            7,
-            1,
-            0,
-            1
-          ]
-        },
-        {
-          "route": "delete_tag",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.014392,
-          "input_tokens": 14310,
-          "output_tokens": 330,
-          "latency_s": 5.008,
+          "cost_usd": 0.019367,
+          "input_tokens": 14716,
+          "output_tokens": 622,
+          "latency_s": 7.951,
           "tally": [
             8,
             1,
@@ -1759,12 +1978,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 166, 167, 172, 173",
-      "reason": "budget: the route's share of the repo budget ($0.20) is reached",
-      "gap": "budget",
+      "reason": "unverified branch: Verification against the original failed: on every case the endpoint must answer the original's status and JSON body and leave the same database rows.\n- the original's branch add_tag_to_note (tags.py:168) -> 403 was reached by no case",
+      "gap": "unverifiable: a raise site no case reaches",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.301116,
+      "rounds": 2,
+      "cost_usd": 0.059802,
       "attempts": [
         {
           "route": "add_tag_to_note",
@@ -1775,10 +1994,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.10105,
-          "input_tokens": 15569,
-          "output_tokens": 8744,
-          "latency_s": 103.682,
+          "cost_usd": 0.032385,
+          "input_tokens": 16571,
+          "output_tokens": 1460,
+          "latency_s": 12.843,
           "tally": null
         },
         {
@@ -1787,44 +2006,19 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "suite_gap",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.020328,
-          "input_tokens": 15933,
-          "output_tokens": 599,
-          "latency_s": 6.217,
-          "tally": null
-        },
-        {
-          "route": "add_tag_to_note",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.080432,
-          "input_tokens": 16320,
-          "output_tokens": 6532,
-          "latency_s": 76.009,
-          "tally": null
-        },
-        {
-          "route": "add_tag_to_note",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.099308,
-          "input_tokens": 16733,
-          "output_tokens": 8337,
-          "latency_s": 97.392,
-          "tally": null
+          "reason": "verification failed: unverified branch: add_tag_to_note (tags.py:168) -> 403",
+          "cost_usd": 0.027417,
+          "input_tokens": 17164,
+          "output_tokens": 815,
+          "latency_s": 8.08,
+          "tally": [
+            4,
+            3,
+            0,
+            0
+          ]
         }
       ],
       "natives": [],
@@ -1852,12 +2046,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 200, 201, 206, 207",
-      "reason": "budget: the route's share of the repo budget ($0.20) is reached",
-      "gap": "budget",
+      "reason": "unverified branch: Verification against the original failed: on every case the endpoint must answer the original's status and JSON body and leave the same database rows.\n- the original's branch remove_tag_from_note (tags.py:202) -> 403 was reached by no case",
+      "gap": "unverifiable: a raise site no case reaches",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.203852,
+      "rounds": 2,
+      "cost_usd": 0.054097,
       "attempts": [
         {
           "route": "remove_tag_from_note",
@@ -1868,10 +2062,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.038699,
-          "input_tokens": 15550,
-          "output_tokens": 273,
-          "latency_s": 3.215,
+          "cost_usd": 0.026657,
+          "input_tokens": 16552,
+          "output_tokens": 892,
+          "latency_s": 8.123,
           "tally": null
         },
         {
@@ -1880,44 +2074,19 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "suite_gap",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.01763,
-          "input_tokens": 15924,
-          "output_tokens": 331,
-          "latency_s": 3.689,
-          "tally": null
-        },
-        {
-          "route": "remove_tag_from_note",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.127782,
-          "input_tokens": 16275,
-          "output_tokens": 11276,
-          "latency_s": 127.282,
-          "tally": null
-        },
-        {
-          "route": "remove_tag_from_note",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.019742,
-          "input_tokens": 16675,
-          "output_tokens": 392,
-          "latency_s": 4.142,
-          "tally": null
+          "reason": "verification failed: unverified branch: remove_tag_from_note (tags.py:202) -> 403",
+          "cost_usd": 0.02744,
+          "input_tokens": 17213,
+          "output_tokens": 805,
+          "latency_s": 8.055,
+          "tally": [
+            4,
+            3,
+            0,
+            0
+          ]
         }
       ],
       "natives": [],
@@ -1945,12 +2114,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 232, 233, 238, 239",
-      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.08) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 5,
-      "cost_usd": 0.223292,
+      "rounds": 3,
+      "cost_usd": 0.093712,
       "attempts": [
         {
           "route": "get_note_tags",
@@ -1961,10 +2130,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.031018,
-          "input_tokens": 16208,
-          "output_tokens": 1613,
-          "latency_s": 17.955,
+          "cost_usd": 0.031462,
+          "input_tokens": 17198,
+          "output_tokens": 1211,
+          "latency_s": 9.88,
           "tally": null
         },
         {
@@ -1976,10 +2145,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.03334,
-          "input_tokens": 16779,
-          "output_tokens": 1731,
-          "latency_s": 17.057,
+          "cost_usd": 0.028922,
+          "input_tokens": 17922,
+          "output_tokens": 776,
+          "latency_s": 7.022,
           "tally": null
         },
         {
@@ -1991,40 +2160,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.029668,
-          "input_tokens": 17443,
-          "output_tokens": 1231,
-          "latency_s": 11.784,
-          "tally": null
-        },
-        {
-          "route": "get_note_tags",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.024412,
-          "input_tokens": 18015,
-          "output_tokens": 591,
-          "latency_s": 5.418,
-          "tally": null
-        },
-        {
-          "route": "get_note_tags",
-          "rung": "R2",
-          "round": 1,
-          "kind": "relift",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.104856,
-          "input_tokens": 18572,
-          "output_tokens": 8524,
-          "latency_s": 93.49,
+          "cost_usd": 0.033327,
+          "input_tokens": 18512,
+          "output_tokens": 1069,
+          "latency_s": 8.907,
           "tally": null
         }
       ],
@@ -2048,17 +2187,22 @@
       "method": "GET",
       "path": "/keywords",
       "auth": "Customer",
-      "status": "island",
-      "rung": "R4",
-      "by": null,
+      "status": "verified",
+      "rung": "R1",
+      "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 265, 266",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget",
-      "tally": null,
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 6,
+        "equal_under_rule": 0,
+        "deviation": 0,
+        "mismatch": 0
+      },
       "deviations": [],
       "rounds": 3,
-      "cost_usd": 0.388128,
+      "cost_usd": 0.056417,
       "attempts": [
         {
           "route": "get_user_keywords",
@@ -2069,10 +2213,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.043621,
-          "input_tokens": 13581,
-          "output_tokens": 1159,
-          "latency_s": 14.538,
+          "cost_usd": 0.01722,
+          "input_tokens": 14609,
+          "output_tokens": 434,
+          "latency_s": 4.918,
           "tally": null
         },
         {
@@ -2084,10 +2228,10 @@
           "outcome": "mismatch",
           "stop_reason": "end_turn",
           "reason": "verification failed: get_user_keywords.happy: body differs; get_user_keywords.admin: body differs",
-          "cost_usd": 0.01302,
-          "input_tokens": 13829,
-          "output_tokens": 289,
-          "latency_s": 5.478,
+          "cost_usd": 0.017002,
+          "input_tokens": 14930,
+          "output_tokens": 332,
+          "latency_s": 4.296,
           "tally": [
             4,
             0,
@@ -2101,18 +2245,23 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "truncated",
-          "stop_reason": "max_tokens",
-          "reason": "cut off",
-          "cost_usd": 0.331488,
-          "input_tokens": 14508,
-          "output_tokens": 32000,
-          "latency_s": 381.48,
-          "tally": null
+          "outcome": "verified",
+          "stop_reason": "end_turn",
+          "reason": "",
+          "cost_usd": 0.022195,
+          "input_tokens": 15619,
+          "output_tokens": 679,
+          "latency_s": 7.199,
+          "tally": [
+            6,
+            0,
+            0,
+            0
+          ]
         }
       ],
       "natives": [],
-      "tier": "island",
+      "tier": "T0",
       "carve_kind": "none",
       "procedure_count": 0,
       "procedure_lines": 0,
@@ -2136,12 +2285,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 294, 297",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.261568,
+      "rounds": 5,
+      "cost_usd": 0.173722,
       "attempts": [
         {
           "route": "create_keyword",
@@ -2149,28 +2298,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.099976,
-          "input_tokens": 13912,
-          "output_tokens": 8968,
-          "latency_s": 110.152,
-          "tally": null
-        },
-        {
-          "route": "create_keyword",
-          "rung": "R1",
-          "round": 2,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
           "reason": "verification failed: create_keyword.happy: database effects differ; create_keyword.admin: database effects differ; create_keyword.extra.unknown: database effects differ; create_keyword.extra.columns: database effects differ; create_keyword.hyp.0: status differs; create_keyword.hyp.1: database effects differ",
-          "cost_usd": 0.018814,
-          "input_tokens": 14326,
-          "output_tokens": 769,
-          "latency_s": 9.576,
+          "cost_usd": 0.02581,
+          "input_tokens": 14953,
+          "output_tokens": 1207,
+          "latency_s": 12.86,
           "tally": [
             7,
             1,
@@ -2181,21 +2315,36 @@
         {
           "route": "create_keyword",
           "rung": "R1",
+          "round": 2,
+          "kind": "repair",
+          "model": "claude-sonnet-5",
+          "outcome": "checker",
+          "stop_reason": "end_turn",
+          "reason": "the checker refuses the lifted program",
+          "cost_usd": 0.029675,
+          "input_tokens": 18975,
+          "output_tokens": 588,
+          "latency_s": 6.291,
+          "tally": null
+        },
+        {
+          "route": "create_keyword",
+          "rung": "R1",
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
           "outcome": "mismatch",
           "stop_reason": "end_turn",
-          "reason": "verification failed: create_keyword.happy: database effects differ; create_keyword.admin: database effects differ; create_keyword.extra.unknown: database effects differ; create_keyword.extra.columns: database effects differ; create_keyword.hyp.0: database effects differ; create_keyword.hyp.1: database effects differ; create_keyword.hyp.2: database effects differ; create_keyword.hyp.3: database effects differ",
-          "cost_usd": 0.050208,
-          "input_tokens": 18233,
-          "output_tokens": 3127,
-          "latency_s": 38.732,
+          "reason": "verification failed: create_keyword.happy: database effects differ; create_keyword.admin: database effects differ; create_keyword.extra.unknown: database effects differ; create_keyword.extra.columns: database effects differ",
+          "cost_usd": 0.03064,
+          "input_tokens": 19253,
+          "output_tokens": 615,
+          "latency_s": 8.087,
           "tally": [
-            5,
+            9,
             1,
             0,
-            8
+            4
           ]
         },
         {
@@ -2207,10 +2356,30 @@
           "outcome": "mismatch",
           "stop_reason": "end_turn",
           "reason": "verification failed: create_keyword.happy: database effects differ; create_keyword.admin: database effects differ; create_keyword.extra.unknown: database effects differ; create_keyword.extra.columns: database effects differ",
-          "cost_usd": 0.092572,
-          "input_tokens": 23115,
-          "output_tokens": 6387,
-          "latency_s": 80.698,
+          "cost_usd": 0.041262,
+          "input_tokens": 21582,
+          "output_tokens": 1095,
+          "latency_s": 11.86,
+          "tally": [
+            9,
+            1,
+            0,
+            4
+          ]
+        },
+        {
+          "route": "create_keyword",
+          "rung": "R2",
+          "round": 1,
+          "kind": "relift",
+          "model": "claude-sonnet-5",
+          "outcome": "mismatch",
+          "stop_reason": "end_turn",
+          "reason": "verification failed: create_keyword.happy: database effects differ; create_keyword.admin: database effects differ; create_keyword.extra.unknown: database effects differ; create_keyword.extra.columns: database effects differ",
+          "cost_usd": 0.046335,
+          "input_tokens": 23635,
+          "output_tokens": 1089,
+          "latency_s": 11.205,
           "tally": [
             9,
             1,
@@ -2253,8 +2422,8 @@
         "mismatch": 0
       },
       "deviations": [],
-      "rounds": 3,
-      "cost_usd": 0.044007,
+      "rounds": 1,
+      "cost_usd": 0.021017,
       "attempts": [
         {
           "route": "delete_keyword",
@@ -2262,48 +2431,13 @@
           "round": 1,
           "kind": "lift",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.012242,
-          "input_tokens": 13800,
-          "output_tokens": 217,
-          "latency_s": 2.819,
-          "tally": null
-        },
-        {
-          "route": "delete_keyword",
-          "rung": "R1",
-          "round": 2,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "mismatch",
-          "stop_reason": "end_turn",
-          "reason": "verification failed: delete_keyword.happy: status differs",
-          "cost_usd": 0.015412,
-          "input_tokens": 14100,
-          "output_tokens": 474,
-          "latency_s": 6.214,
-          "tally": [
-            7,
-            1,
-            0,
-            1
-          ]
-        },
-        {
-          "route": "delete_keyword",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
           "outcome": "verified",
           "stop_reason": "end_turn",
           "reason": "",
-          "cost_usd": 0.016354,
-          "input_tokens": 14456,
-          "output_tokens": 497,
-          "latency_s": 6.477,
+          "cost_usd": 0.021017,
+          "input_tokens": 14828,
+          "output_tokens": 759,
+          "latency_s": 7.443,
           "tally": [
             8,
             1,
@@ -2337,12 +2471,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 353, 354, 359, 360",
-      "reason": "budget: the route's share of the repo budget ($0.18) is reached",
-      "gap": "budget",
+      "reason": "unverified branch: Verification against the original failed: on every case the endpoint must answer the original's status and JSON body and leave the same database rows.\n- the original's branch add_keyword_to_note (tags.py:355) -> 403 was reached by no case",
+      "gap": "unverifiable: a raise site no case reaches",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.197298,
+      "rounds": 2,
+      "cost_usd": 0.05884,
       "attempts": [
         {
           "route": "add_keyword_to_note",
@@ -2353,10 +2487,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.067376,
-          "input_tokens": 15682,
-          "output_tokens": 5354,
-          "latency_s": 59.675,
+          "cost_usd": 0.029577,
+          "input_tokens": 16684,
+          "output_tokens": 1151,
+          "latency_s": 10.139,
           "tally": null
         },
         {
@@ -2365,44 +2499,19 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "suite_gap",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.019242,
-          "input_tokens": 16170,
-          "output_tokens": 443,
-          "latency_s": 4.011,
-          "tally": null
-        },
-        {
-          "route": "add_keyword_to_note",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.084182,
-          "input_tokens": 16635,
-          "output_tokens": 6844,
-          "latency_s": 82.447,
-          "tally": null
-        },
-        {
-          "route": "add_keyword_to_note",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.0265,
-          "input_tokens": 17149,
-          "output_tokens": 973,
-          "latency_s": 9.394,
-          "tally": null
+          "reason": "verification failed: unverified branch: add_keyword_to_note (tags.py:355) -> 403",
+          "cost_usd": 0.029262,
+          "input_tokens": 17338,
+          "output_tokens": 956,
+          "latency_s": 9.014,
+          "tally": [
+            4,
+            3,
+            0,
+            0
+          ]
         }
       ],
       "natives": [],
@@ -2430,12 +2539,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 387, 388, 393, 394",
-      "reason": "budget: the route's share of the repo budget ($0.19) is reached",
-      "gap": "budget",
+      "reason": "unverified branch: Verification against the original failed: on every case the endpoint must answer the original's status and JSON body and leave the same database rows.\n- the original's branch remove_keyword_from_note (tags.py:389) -> 403 was reached by no case",
+      "gap": "unverifiable: a raise site no case reaches",
       "tally": null,
       "deviations": [],
-      "rounds": 3,
-      "cost_usd": 0.306781,
+      "rounds": 2,
+      "cost_usd": 0.056035,
       "attempts": [
         {
           "route": "remove_keyword_from_note",
@@ -2446,10 +2555,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.029056,
-          "input_tokens": 15657,
-          "output_tokens": 1527,
-          "latency_s": 16.882,
+          "cost_usd": 0.027915,
+          "input_tokens": 16659,
+          "output_tokens": 991,
+          "latency_s": 8.877,
           "tally": null
         },
         {
@@ -2458,29 +2567,19 @@
           "round": 2,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "checker",
+          "outcome": "suite_gap",
           "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.018096,
-          "input_tokens": 16082,
-          "output_tokens": 346,
-          "latency_s": 3.02,
-          "tally": null
-        },
-        {
-          "route": "remove_keyword_from_note",
-          "rung": "R1",
-          "round": 3,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.25963,
-          "input_tokens": 16484,
-          "output_tokens": 24419,
-          "latency_s": 285.444,
-          "tally": null
+          "reason": "verification failed: unverified branch: remove_keyword_from_note (tags.py:389) -> 403",
+          "cost_usd": 0.02812,
+          "input_tokens": 17321,
+          "output_tokens": 846,
+          "latency_s": 8.011,
+          "tally": [
+            4,
+            3,
+            0,
+            0
+          ]
         }
       ],
       "natives": [],
@@ -2508,12 +2607,12 @@
       "by": null,
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 419, 420, 425, 426",
-      "reason": "budget: the route's share of the repo budget ($0.12) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.08) is reached",
       "gap": "budget",
       "tally": null,
       "deviations": [],
-      "rounds": 4,
-      "cost_usd": 0.242256,
+      "rounds": 3,
+      "cost_usd": 0.106997,
       "attempts": [
         {
           "route": "get_note_keywords",
@@ -2524,10 +2623,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.0335,
-          "input_tokens": 16344,
-          "output_tokens": 1834,
-          "latency_s": 20.785,
+          "cost_usd": 0.03218,
+          "input_tokens": 17333,
+          "output_tokens": 1249,
+          "latency_s": 10.69,
           "tally": null
         },
         {
@@ -2539,10 +2638,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.034478,
-          "input_tokens": 16863,
-          "output_tokens": 1828,
-          "latency_s": 19.56,
+          "cost_usd": 0.032667,
+          "input_tokens": 18076,
+          "output_tokens": 1112,
+          "latency_s": 10.219,
           "tally": null
         },
         {
@@ -2554,25 +2653,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.053192,
-          "input_tokens": 17355,
-          "output_tokens": 3601,
-          "latency_s": 40.754,
-          "tally": null
-        },
-        {
-          "route": "get_note_keywords",
-          "rung": "R1",
-          "round": 4,
-          "kind": "repair",
-          "model": "claude-sonnet-5",
-          "outcome": "checker",
-          "stop_reason": "end_turn",
-          "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.121088,
-          "input_tokens": 17993,
-          "output_tokens": 10263,
-          "latency_s": 117.384,
+          "cost_usd": 0.04215,
+          "input_tokens": 18685,
+          "output_tokens": 1908,
+          "latency_s": 17.869,
           "tally": null
         }
       ],
@@ -2596,17 +2680,22 @@
       "method": "GET",
       "path": "/user/list",
       "auth": "Customer",
-      "status": "island",
-      "rung": "R4",
-      "by": null,
+      "status": "verified",
+      "rung": "R1",
+      "by": "llm",
       "lifters": [],
       "lifter_reason": "no lifter matches the statements at line 30",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget",
-      "tally": null,
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 6,
+        "equal_under_rule": 0,
+        "deviation": 0,
+        "mismatch": 0
+      },
       "deviations": [],
       "rounds": 3,
-      "cost_usd": 0.228203,
+      "cost_usd": 0.053004,
       "attempts": [
         {
           "route": "list_users",
@@ -2617,10 +2706,10 @@
           "outcome": "checker",
           "stop_reason": "end_turn",
           "reason": "the checker refuses the lifted program",
-          "cost_usd": 0.009238,
-          "input_tokens": 12698,
-          "output_tokens": 137,
-          "latency_s": 2.15,
+          "cost_usd": 0.015227,
+          "input_tokens": 13700,
+          "output_tokens": 462,
+          "latency_s": 4.937,
           "tally": null
         },
         {
@@ -2632,10 +2721,10 @@
           "outcome": "mismatch",
           "stop_reason": "end_turn",
           "reason": "verification failed: list_users.happy: body differs; list_users.admin: body differs",
-          "cost_usd": 0.009642,
-          "input_tokens": 12905,
-          "output_tokens": 136,
-          "latency_s": 2.515,
+          "cost_usd": 0.015195,
+          "input_tokens": 14043,
+          "output_tokens": 373,
+          "latency_s": 4.766,
           "tally": [
             4,
             0,
@@ -2649,23 +2738,23 @@
           "round": 3,
           "kind": "repair",
           "model": "claude-sonnet-5",
-          "outcome": "mismatch",
+          "outcome": "verified",
           "stop_reason": "end_turn",
-          "reason": "verification failed: list_users.happy: body differs; list_users.admin: body differs",
-          "cost_usd": 0.209324,
-          "input_tokens": 13891,
-          "output_tokens": 19907,
-          "latency_s": 242.415,
+          "reason": "",
+          "cost_usd": 0.022582,
+          "input_tokens": 15098,
+          "output_tokens": 848,
+          "latency_s": 9.161,
           "tally": [
-            4,
+            6,
             0,
             0,
-            2
+            0
           ]
         }
       ],
       "natives": [],
-      "tier": "island",
+      "tier": "T0",
       "carve_kind": "none",
       "procedure_count": 0,
       "procedure_lines": 0,
@@ -2681,135 +2770,107 @@
   "islands": [
     {
       "route": "register",
-      "reason": "budget: the route's share of the repo budget ($0.23) is reached",
-      "gap": "budget"
+      "reason": "verification failed: register.happy: database effects differ; register.extra.unknown: database effects differ; register.extra.columns: database effects differ; register.hyp.0: database effects differ; register.hyp.1: database effects differ; register.hyp.2: database effects differ; register.hyp.3: database effects differ; register.hyp.4: database effects differ",
+      "gap": "behaviour not reproduced"
     },
     {
       "route": "login",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_notes",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "create_notes",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_public_notes",
-      "reason": "budget: the route's share of the repo budget ($0.23) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_notes_summarize",
-      "reason": "budget: the route's share of the repo budget ($0.18) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_notes_translate",
-      "reason": "budget: the repo's cost cap ($6.50) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_notes_auto_tag",
-      "reason": "budget: the route's share of the repo budget ($0.10) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_notes_keywords",
-      "reason": "budget: the route's share of the repo budget ($0.10) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_notes_sentiment",
-      "reason": "budget: the repo's cost cap ($6.50) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_notes_related",
-      "reason": "budget: the repo's cost cap ($6.50) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_note",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "update_note",
-      "reason": "cut off",
-      "gap": "unsupported framework feature: dynamic dispatch"
-    },
-    {
-      "route": "get_user_tags",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "create_tag",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "add_tag_to_note",
-      "reason": "budget: the route's share of the repo budget ($0.20) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "remove_tag_from_note",
-      "reason": "budget: the route's share of the repo budget ($0.20) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "get_note_tags",
       "reason": "budget: the route's share of the repo budget ($0.14) is reached",
       "gap": "budget"
     },
     {
-      "route": "get_user_keywords",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
+      "route": "get_notes",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "create_notes",
+      "reason": "budget: the route's share of the repo budget ($0.15) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "get_public_notes",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "get_notes_extend",
+      "reason": "budget: the route's share of the repo budget ($0.08) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "get_notes_translate",
+      "reason": "budget: the route's share of the repo budget ($0.05) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "get_notes_auto_tag",
+      "reason": "budget: the route's share of the repo budget ($0.06) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "get_notes_keywords",
+      "reason": "budget: the route's share of the repo budget ($0.07) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "get_notes_sentiment",
+      "reason": "budget: the route's share of the repo budget ($0.05) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "update_note",
+      "reason": "the checker refuses the lifted program",
+      "gap": "unsupported framework feature: dynamic dispatch"
+    },
+    {
+      "route": "get_user_tags",
+      "reason": "the checker refuses the lifted program",
+      "gap": "missing construct"
+    },
+    {
+      "route": "create_tag",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
+      "gap": "budget"
+    },
+    {
+      "route": "add_tag_to_note",
+      "reason": "unverified branch: Verification against the original failed: on every case the endpoint must answer the original's status and JSON body and leave the same database rows.\n- the original's branch add_tag_to_note (tags.py:168) -> 403 was reached by no case",
+      "gap": "unverifiable: a raise site no case reaches"
+    },
+    {
+      "route": "remove_tag_from_note",
+      "reason": "unverified branch: Verification against the original failed: on every case the endpoint must answer the original's status and JSON body and leave the same database rows.\n- the original's branch remove_tag_from_note (tags.py:202) -> 403 was reached by no case",
+      "gap": "unverifiable: a raise site no case reaches"
+    },
+    {
+      "route": "get_note_tags",
+      "reason": "budget: the route's share of the repo budget ($0.08) is reached",
       "gap": "budget"
     },
     {
       "route": "create_keyword",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.14) is reached",
       "gap": "budget"
     },
     {
       "route": "add_keyword_to_note",
-      "reason": "budget: the route's share of the repo budget ($0.18) is reached",
-      "gap": "budget"
+      "reason": "unverified branch: Verification against the original failed: on every case the endpoint must answer the original's status and JSON body and leave the same database rows.\n- the original's branch add_keyword_to_note (tags.py:355) -> 403 was reached by no case",
+      "gap": "unverifiable: a raise site no case reaches"
     },
     {
       "route": "remove_keyword_from_note",
-      "reason": "budget: the route's share of the repo budget ($0.19) is reached",
-      "gap": "budget"
+      "reason": "unverified branch: Verification against the original failed: on every case the endpoint must answer the original's status and JSON body and leave the same database rows.\n- the original's branch remove_keyword_from_note (tags.py:389) -> 403 was reached by no case",
+      "gap": "unverifiable: a raise site no case reaches"
     },
     {
       "route": "get_note_keywords",
-      "reason": "budget: the route's share of the repo budget ($0.12) is reached",
-      "gap": "budget"
-    },
-    {
-      "route": "list_users",
-      "reason": "budget: the route's share of the repo budget ($0.22) is reached",
+      "reason": "budget: the route's share of the repo budget ($0.08) is reached",
       "gap": "budget"
     }
   ],
   "carve_out_natives": [],
   "unclear": [
-    {
-      "topic": "owner",
-      "subject": "Note",
-      "reason": "non-admin routes create_notes, delete_note, get_note, get_notes, get_notes_auto_tag, get_notes_extend, get_notes_keywords, get_notes_related, get_notes_sentiment, get_notes_summarize, get_notes_translate, get_public_notes, update_note touch Note without comparing owner_id to the caller",
-      "candidates": [
-        "owner_id"
-      ]
-    },
     {
       "topic": "private",
       "subject": "NoteTagLink",
@@ -2823,14 +2884,6 @@
       "candidates": []
     },
     {
-      "topic": "owner",
-      "subject": "Tag",
-      "reason": "non-admin routes create_tag, delete_tag, get_user_tags touch Tag without comparing owner_id to the caller",
-      "candidates": [
-        "owner_id"
-      ]
-    },
-    {
       "topic": "private",
       "subject": "NoteKeywordLink",
       "reason": "no response model returns NoteKeywordLink; its private columns are not inferred",
@@ -2841,14 +2894,6 @@
       "subject": "Keyword",
       "reason": "no response model returns Keyword; its private columns are not inferred",
       "candidates": []
-    },
-    {
-      "topic": "owner",
-      "subject": "Keyword",
-      "reason": "non-admin routes create_keyword, delete_keyword, get_user_keywords touch Keyword without comparing owner_id to the caller",
-      "candidates": [
-        "owner_id"
-      ]
     },
     {
       "topic": "auth",
