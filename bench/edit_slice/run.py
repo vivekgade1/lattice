@@ -955,7 +955,7 @@ def estimate(models: Sequence[str], tickets: Sequence[str], reps: int) -> dict[s
                     answer = prompts.render_files(
                         {n: programs[n] for n in prompts.l_program_files(ticket(tid), programs)}
                     )
-                out = round(count("", answer) * OUTPUT_OVERHEAD)
+                out = round(count("", answer) * OUTPUT_OVERHEAD) if answer.strip() else 0
                 # repair round k's prompt: the first prompt + every earlier answer and
                 # feedback; it happens in REPAIR_RATE[k - 1] of the runs
                 expected_in = prompt + sum(
