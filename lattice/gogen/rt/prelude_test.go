@@ -84,6 +84,26 @@ type answers struct {
 		Error  string `json:"error"`
 		Unique bool   `json:"unique"`
 	} `json:"sql_errors"`
+	Spellings []struct {
+		In       string   `json:"in"`
+		Row      []tagged `json:"row"`
+		Wire     []tagged `json:"wire"`
+		RowsJSON string   `json:"rows_json"`
+	} `json:"spellings"`
+	Outbox struct {
+		Constants map[string]string `json:"constants"`
+		Cutoff    string            `json:"cutoff"`
+		Calls     []string          `json:"calls"`
+		Steps     []struct {
+			Label   string     `json:"label"`
+			Now     string     `json:"now"`
+			Rows    [][]tagged `json:"rows"`
+			Queries int        `json:"queries"`
+			Done    int        `json:"done"`
+			Failed  int        `json:"failed"`
+			After   [][]tagged `json:"after"`
+		} `json:"steps"`
+	} `json:"outbox"`
 	Phrases  map[string]string `json:"phrases"`
 	Internal []struct {
 		Detail string `json:"detail"`
@@ -103,7 +123,8 @@ func loadAnswers(t *testing.T) *answers {
 	}
 	if len(a.ErrorBodies) < 20 || len(a.Params) < 150 || len(a.Tokens) < 10 || len(a.Datetimes) < 50 ||
 		len(a.Dates) < 20 || len(a.UUIDs) < 5 || len(a.SQLFns) < 50 || len(a.Wire) < 30 ||
-		len(a.Renders) < 5 || len(a.RowsJSON) < 3 || len(a.Phrases) < 50 || len(a.Internal) < 2 {
+		len(a.Renders) < 5 || len(a.RowsJSON) < 3 || len(a.Phrases) < 50 || len(a.Internal) < 2 ||
+		len(a.Spellings) < 10 || len(a.Outbox.Steps) != 3 {
 		t.Fatalf("testdata/prelude_answers.json is incomplete")
 	}
 	return &a

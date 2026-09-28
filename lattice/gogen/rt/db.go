@@ -1,14 +1,11 @@
 package rt
 
 import (
-	"context"
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"io"
 	"regexp"
 	"strings"
-	"time"
 
 	"modernc.org/sqlite"
 )
@@ -109,22 +106,7 @@ func sqlError(err error) *SQLError {
 	if m := reDriverMsg.FindStringSubmatch(msg); m != nil {
 		msg = m[1]
 	}
-	kind := "DatabaseError"
-	switch se.Code() & 0xff {
-	case 1, 3, 4, 5, 6, 8, 9, 10, 13, 14, 15, 16, 17: // ERROR PERM ABORT BUSY LOCKED READONLY ...
-		kind = "OperationalError"
-	case 2, 12: // INTERNAL, NOTFOUND
-		kind = "InternalError"
-	case 7:
-		kind = "MemoryError"
-	case 18:
-		kind = "DataError"
-	case 19, 20: // CONSTRAINT, MISMATCH
-		kind = "IntegrityError"
-	case 21, 25: // MISUSE, RANGE
-		kind = "InterfaceError"
-	}
-	return &SQLError{Kind: kind, Msg: msg, Code: se.Code()}
+	return &SQLError{Kind: pyErrorKind(se.Code()), Msg: msg, Code: se.Code()}
 }
 
 // IsUniqueViolation is the prelude's _is_unique_violation.
@@ -174,83 +156,35 @@ func driverArgs(args []any) []driver.NamedValue {
 	return out
 }
 
-// cell restores the stored text of a DATE/DATETIME/TIMESTAMP column, which the driver
-// hands back as a time.Time.
-func cell(v any, declared string) any {
-	t, ok := v.(time.Time)
-	if !ok {
-		return v
-	}
-	if declared == "DATE" && t.Hour() == 0 && t.Minute() == 0 && t.Second() == 0 && t.Nanosecond() == 0 {
-		return t.Format("2006-01-02")
-	}
-	return StoredDateTime(DateTimeOf(t))
-}
-
-// raw runs fn on the driver connection: statements go straight to the driver, so bind
-// names are SQLite's (database/sql refuses names that do not start with a letter).
-func (c *dbConn) raw(fn func(dc any) error) {
-	var inner error
-	if err := c.conn.Raw(func(dc any) error { inner = fn(dc); return inner }); err != nil {
-		if inner == nil {
-			inner = err
-		}
-		panic(sqlError(inner))
-	}
-}
-
-func (c *dbConn) query(sqlText string, args ...any) Result {
+// run executes one statement on the request's connection through rawStatement.
+func (c *dbConn) run(sqlText string, args []any) (Result, int64) {
 	if CountedStatement(sqlText) {
 		c.queries++
 	}
-	res := Result{Rows: [][]any{}}
-	c.raw(func(dc any) error {
-		rows, err := dc.(driver.QueryerContext).QueryContext(context.Background(), sqlText, driverArgs(args))
-		if err != nil {
-			return err
-		}
-		defer rows.Close()
-		res.Cols = rows.Columns()
-		typed, _ := rows.(driver.RowsColumnTypeDatabaseTypeName)
-		for {
-			vals := make([]driver.Value, len(res.Cols))
-			if err := rows.Next(vals); err != nil {
-				if errors.Is(err, io.EOF) {
-					return nil
-				}
-				return err
-			}
-			cells := make([]any, len(vals))
-			for i, v := range vals {
-				if b, ok := v.([]byte); ok {
-					v = append([]byte(nil), b...)
-				}
-				if typed != nil {
-					v = cell(v, typed.ColumnTypeDatabaseTypeName(i))
-				}
-				cells[i] = v
-			}
-			res.Rows = append(res.Rows, cells)
-		}
-	})
+	var res Result
+	var n int64
+	var serr *SQLError
+	if err := c.conn.Raw(func(dc any) error {
+		res, n, serr = rawStatement(dc, sqlText, driverArgs(args))
+		return nil
+	}); err != nil {
+		panic(sqlError(err))
+	}
+	if serr != nil {
+		panic(serr)
+	}
+	return res, n
+}
+
+// query runs one statement and returns its rows.
+func (c *dbConn) query(sqlText string, args ...any) Result {
+	res, _ := c.run(sqlText, args)
 	return res
 }
 
-// exec runs a statement without rows and returns the number of rows it changed
-// (transaction control and DDL are not counted as data statements).
+// exec runs one statement and returns the number of rows it changed.
 func (c *dbConn) exec(sqlText string, args ...any) int64 {
-	if CountedStatement(sqlText) {
-		c.queries++
-	}
-	var n int64
-	c.raw(func(dc any) error {
-		r, err := dc.(driver.ExecerContext).ExecContext(context.Background(), sqlText, driverArgs(args))
-		if err != nil {
-			return err
-		}
-		n, _ = r.RowsAffected()
-		return nil
-	})
+	_, n := c.run(sqlText, args)
 	return n
 }
 

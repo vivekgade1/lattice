@@ -697,6 +697,127 @@ for sql in [
 conn.close()
 out["sql_errors"] = errs
 
+# stored spellings read back from columns declared DATE / DATETIME / TIMESTAMP / TEXT:
+# Python's sqlite3 returns the stored value as it is; the wire value is _decode's
+spellings = []
+conn = sqlite3.connect(":memory:")
+conn.execute("CREATE TABLE s (k INTEGER PRIMARY KEY, d DATE, dt DATETIME, ts TIMESTAMP, x TEXT)")
+for v in [
+    "2026-09-28 10:11:12+02:00",
+    "2026-09-28 10:11:12.000000",
+    "2026-09-28 10:11:12",
+    "2026-09-28T10:11:12.123456789Z",
+    "2026-09-28T10:11:12.500Z",
+    "2026-09-28T10:11:12.000000Z",
+    "2026-09-28 10:11",
+    "2026-09-28T10:11",
+    "2026-09-28",
+    "2026-09-28 1:02:03",
+    "2026-9-28 10:11:12",
+    "2026-09-28 10:11:12.5 +0000 UTC",
+    "2026-09-28 10:11:12 +0200 +0200",
+    "not a date",
+    "123",
+    "",
+]:
+    conn.execute("INSERT INTO s (d, dt, ts, x) VALUES (?, ?, ?, ?)", (v, v, v, v))
+    row = conn.execute("SELECT d, dt, ts, x FROM s ORDER BY k DESC LIMIT 1").fetchone()
+    spellings.append(
+        {
+            "in": v,
+            "row": [tag(c) for c in row],
+            "wire": [
+                tag(P["_finite"](P["_decode"](row[0], "Date"))),
+                *(tag(P["_finite"](P["_decode"](c, "DateTime"))) for c in row[1:]),
+            ],
+            "rows_json": P["rows_json"]((("d", "dt", "ts", "x"), [row]), ("d", "dt", "ts", "x")),
+        }
+    )
+conn.close()
+out["spellings"] = spellings
+
+
+# the outbox: the constants the generator sets, and dispatch_outbox over a traced
+# connection (statement count, outcome, the rows after it)
+from bench.api_runner import _is_counted_statement  # noqa: E402
+from lattice.api import outbox as outbox_module  # noqa: E402
+
+CONSTS = {
+    "OUTBOX_DDL": outbox_module.CREATE_SQL,
+    "OUTBOX_COLUMNS": outbox_module.COLUMNS_SQL,
+    "OUTBOX_ADD_CLAIMED": outbox_module.ADD_CLAIMED_SQL,
+    "OUTBOX_CLAIM": outbox_module.CLAIM_SQL,
+    "OUTBOX_DONE": outbox_module.MARK_DONE_SQL,
+    "OUTBOX_FAILED": outbox_module.MARK_FAILED_SQL,
+    "OUTBOX_EXISTS": outbox_module.EXISTS_SQL,
+    "OUTBOX_RETRY": outbox_module.RETRY_SQL,
+    "OUTBOX_RETRY_PENDING": outbox_module.RETRY_PENDING_SQL,
+}
+P.update(CONSTS)
+counted = [0]
+conn = sqlite3.connect(":memory:", isolation_level=None)
+conn.set_trace_callback(lambda sql: counted.__setitem__(0, counted[0] + _is_counted_statement(sql)))
+conn.execute(outbox_module.CREATE_SQL.replace(', "claimed_at" TEXT', ""))  # an old table
+T0 = dt.datetime(2026, 9, 28, 10, 0, 0, 123456, tzinfo=dt.UTC)
+ARGS = (
+    '{"types": ["Str", "Int", "Uuid", "DateTime", "Bool", "Date", "Float"], "values": '
+    '["ann", 1, "a0eebc999c0b4ef8bb6d6bb9bd380a11", "2026-09-28 10:00:00", 1, "2026-09-28", 2]}'
+)
+for native in ("send", "flaky", "missing"):
+    conn.execute(
+        'INSERT INTO "lattice_outbox" ("endpoint", "native", "args", "status", "error", '
+        '"created_at", "attempts") VALUES (?, ?, ?, ?, NULL, ?, 0)',
+        ("notify", native, ARGS, "pending", P["datetime_text"](T0)),
+    )
+calls: list[str] = []
+
+
+def _send(*args: object) -> None:
+    calls.append(repr(args))
+
+
+def _flaky(*args: object) -> None:
+    raise ValueError("flaky failed")
+
+
+P["EFFECTS"].clear()
+P["EFFECTS"].update({"send": _send, "flaky": _flaky})
+OUTBOX_ROWS = (
+    'SELECT "id", "native", "status", "error", "attempts", "claimed_at" '
+    'FROM "lattice_outbox" ORDER BY "id"'
+)
+steps = []
+pending = conn.execute('SELECT "id", "native", "args" FROM "lattice_outbox"').fetchall()
+for label, now, rows in [
+    ("dispatch", T0, pending),
+    ("again within grace", T0 + dt.timedelta(seconds=10), pending),
+    ("retry after grace", T0 + dt.timedelta(seconds=301), None),
+]:
+    if rows is None:
+        cutoff = P["_outbox_cutoff"](now, P["OUTBOX_GRACE"])
+        rows = conn.execute(P["OUTBOX_RETRY"], (cutoff,)).fetchall()
+        P["EFFECTS"]["flaky"] = _send
+    counted[0] = 0
+    done, failed = P["dispatch_outbox"](conn, rows, now)
+    steps.append(
+        {
+            "label": label,
+            "now": P["datetime_text"](now),
+            "rows": [[tag(v) for v in r] for r in rows],
+            "queries": counted[0],
+            "done": done,
+            "failed": failed,
+            "after": [[tag(v) for v in r] for r in conn.execute(OUTBOX_ROWS).fetchall()],
+        }
+    )
+conn.close()
+out["outbox"] = {
+    "constants": CONSTS,
+    "steps": steps,
+    "calls": calls,
+    "cutoff": P["_outbox_cutoff"](T0, 300),
+}
+
 # ---- wire values and JSON rendering ----------------------------------------------------------
 wire = []
 for style in ("iso_z", "naive"):
