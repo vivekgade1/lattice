@@ -340,3 +340,57 @@ def test_the_emitted_app_answers_like_the_original_on_every_route(app, tmp_path:
     assert _answer(lattice, "/users/me", "alice") == _answer(original, "/users/me", "alice")
     missing = lattice.get("/whoami")
     assert (missing.status_code, missing.json()) == (401, {"detail": "Not authenticated"})
+
+
+# ---- an answer NativeToken cannot carry ------------------------------------------------------
+
+# a bad token 418 (outside 400/401/403/404), an unknown user 404 with an empty detail
+TEAPOT = """
+    def get_current_user(session: SessionDep, token: Annotated[str, Depends(oauth2)]) -> User:
+        try:
+            payload = jwt.decode(token, security.SECRET_KEY, algorithms=["HS256"])
+        except InvalidTokenError:
+            raise HTTPException(status_code=418, detail="I am a teapot")
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=418, detail="I am a teapot")
+        user = session.exec(select(User).where(User.username == username)).first()
+        if user is None:
+            raise HTTPException(status_code=404, detail="")
+        return user
+
+
+    CurrentUser = Annotated[User, Depends(get_current_user)]
+"""
+
+
+@pytest.fixture(scope="module")
+def teapot(tmp_path_factory: pytest.TempPathFactory) -> Iterator[App]:
+    package = "token_answers_teapot"
+    root = tmp_path_factory.mktemp("teapot")
+    pkg = root / package
+    pkg.mkdir()
+    for name, src in dict(COMMON, deps=DEPS_HEAD + TEAPOT).items():
+        (pkg / f"{name}.py").write_text(textwrap.dedent(src).replace("PKG", package))
+    sys.path.insert(0, str(root))
+    try:
+        yield App(root, package)
+    finally:
+        sys.path.remove(str(root))
+        for name in [m for m in sys.modules if m == package or m.startswith(package + ".")]:
+            del sys.modules[name]
+
+
+def test_an_answer_native_token_cannot_carry_falls_back_with_an_unclear_note(teapot: App):
+    """A 418 (or an empty detail) is not a NativeToken answer: the import must not
+    abort. The profile keeps the default answer for it, says why (Unclear), and the
+    route's token cases fall back to a declared token policy."""
+    imported = lift_repo(teapot.root, teapot.package, teapot.factory, hypothesis_bodies=2)
+    api = imported.lattice_profile.api
+    assert api is not None and isinstance(api.auth, NativeToken)
+    assert (api.auth.invalid, api.auth.unknown) == (None, None)
+    notes = [u for u in imported.unclear if u.topic == "token_answer"]
+    assert {n.subject for n in notes} == {"invalid", "unknown"}, notes
+    assert any("418" in n.reason for n in notes)
+    me = imported.result("read_user_me")
+    assert me.status.startswith("lifted"), me.reason

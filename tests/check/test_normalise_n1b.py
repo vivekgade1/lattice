@@ -242,6 +242,79 @@ def test_row_value_of_a_scalar_is_still_refused():
     assert _codes(src)  # not a table: refused, never read as a column
 
 
+_STAGE = "staged = derive(item, extra=text)\n"
+
+
+@pytest.mark.parametrize(
+    ("body", "returns"),
+    [
+        ("copied = insert(Item, owner=user, title=staged.extra)\nreturn copied", "Created"),
+        ("done = update(item, title=staged.extra)\nreturn done", "One"),
+        (
+            'again = derive(staged, more=col("extra"))\n'
+            "copied = insert(Item, owner=user, title=again.more)\nreturn copied",
+            "Created",
+        ),
+        (
+            "again = derive(item, more=staged.extra)\n"
+            "copied = insert(Item, owner=user, title=again.more)\nreturn copied",
+            "Created",
+        ),
+    ],
+)
+def test_row_value_carrying_an_unbounded_parameter_is_l811(body: str, returns: str):
+    """`r.x` writes what r's rows carry: a derive of an unbounded parameter stays L811
+    through row reads and chains of derives, exactly as writing the parameter does."""
+    src = _endpoint(_STAGE + body, f"{returns} | NotFound | Forbidden").replace(
+        "user: CurrentUser)", "user: CurrentUser, text: Str)"
+    )
+    errors = _errors(src)
+    assert [d.code for d in errors] == ["L811"], [d.render() for d in errors]
+    assert "'text'" in errors[0].message
+    assert _codes(src.replace("text: Str)", "text: Str(max_len=50))")) == []
+
+
+_LEAK = """
+@step
+def leak(t: Table[Item], u: Table[User]) -> Table:
+    return derive(t, h=u.COLUMN)
+
+
+@endpoint("GET", "/items/", auth=Customer)
+def read_items(user: CurrentUser) -> Page:
+    items = fetch(Item)
+    mine = owned(items, by=user)
+    u = fetch(User)
+    out = leak(mine, u)
+    shown = select(out, cols=["id", "h"])
+    result = page(shown, limit=10)
+    return result
+"""
+
+
+@pytest.mark.parametrize("column", ["hashed_password", "email"])
+def test_row_value_inside_a_step_is_still_l106(column: str):
+    """Row values are an endpoint spelling: P6 checks them (one row, ownership, private
+    columns) only in endpoint bodies, so inside a step `u.x` stays refused -- otherwise
+    a step could leak a private column of the first of many unchecked rows."""
+    errors = _errors(_LEAK.replace("COLUMN", column))
+    assert [d.code for d in errors] == ["L106"], [d.render() for d in errors]
+    assert f".{column}" in errors[0].message
+
+
+def test_step_mentions_include_attribute_names():
+    """Defence in depth: a step's `r.x` counts as mentioning x, so private / owner
+    lineage is carried through the step even if a row read got past normalisation."""
+    import ast
+
+    from lattice.check.astutil import step_mentions
+
+    module = ast.parse("def leak(t, u):\n    return derive(t, h=u.hashed_password)\n")
+    fn = module.body[0]
+    assert isinstance(fn, ast.FunctionDef)
+    assert "hashed_password" in step_mentions({"leak": fn}, "leak")
+
+
 # ---- 3. when(..., otherwise=None): a typed null ---------------------------------------------
 
 

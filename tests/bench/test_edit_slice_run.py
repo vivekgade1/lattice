@@ -495,6 +495,122 @@ def test_merge_top_level_constants_are_named_only_for_arm_l():
     assert "X = 1" in p_result.text and "X = 2" not in p_result.text  # unnamed for P: kept as is
 
 
+_P_BASE = (
+    "import uuid\n"
+    "from sqlmodel import SQLModel\n\n"
+    "LIMIT = 10\n\n\n"
+    "class ItemPublic(SQLModel):\n    id: uuid.UUID\n\n\n"
+    "def helper():\n    return LIMIT\n\n\n"
+    '@router.get("/a")\ndef read_a():\n    return helper()\n'
+)
+
+
+def test_a_whole_p_file_that_adds_an_import_and_drops_a_helper_is_used_verbatim():
+    whole = (
+        "import uuid\nimport datetime\n"
+        "from sqlmodel import SQLModel\n\n"
+        "LIMIT = 20\n\n\n"
+        "class ItemPublic(SQLModel):\n    id: uuid.UUID\n\n\n"
+        '@router.get("/a")\ndef read_a():\n    return datetime.date.today()\n'
+    )
+    merged = prompts.merge_top_level(_P_BASE, whole, allow_constants=False)
+    assert merged.text == whole and not merged.partial
+
+
+def test_a_whole_file_carrying_base_imports_verbatim_is_whole_even_with_a_changed_import():
+    # starts with an import block: whole, even though base's imports changed
+    whole = (
+        "import uuid, os\nfrom sqlmodel import SQLModel\n\n"
+        '@router.get("/a")\ndef read_a():\n    return os.sep\n'
+    )
+    merged = prompts.merge_top_level(_P_BASE, whole, allow_constants=False)
+    assert merged.text == whole and not merged.partial
+
+
+def test_a_renamed_route_in_a_whole_p_file_leaves_only_the_new_one():
+    whole = _P_BASE.replace("def read_a()", "def read_a_renamed()")
+    merged = prompts.merge_top_level(_P_BASE, whole, allow_constants=False)
+    assert "def read_a_renamed()" in merged.text and "def read_a()" not in merged.text
+    assert not merged.partial
+
+
+def test_a_renamed_route_in_a_whole_l_file_leaves_only_the_new_one():
+    base = (
+        "# lattice: v1\n"
+        '@endpoint("GET", "/a")\ndef a():\n    return 1\n\n\n'
+        '@endpoint("GET", "/b")\ndef b():\n    return 2\n'
+    )
+    whole = base.replace("def a()", "def a2()")
+    merged = prompts.merge_top_level(base, whole)
+    assert merged.text == whole and not merged.partial
+
+
+def test_partial_p_and_l_fragments_still_merge():
+    p = prompts.merge_top_level(
+        _P_BASE, "def helper():\n    return LIMIT + 1\n", allow_constants=False
+    )
+    assert p.partial and "LIMIT + 1" in p.text and "import uuid" in p.text
+    assert "def read_a()" in p.text
+    base = '# lattice: v1\nX = 1\n\n\n@endpoint("GET", "/a")\ndef a():\n    return X\n'
+    lp = prompts.merge_top_level(base, "X = 2\n")
+    assert lp.partial and "X = 2" in lp.text and "def a()" in lp.text
+
+
+def test_a_new_p_class_is_placed_after_the_base_class_it_references():
+    fragment = "class ItemsPublic(SQLModel):\n    data: list[ItemPublic]\n"
+    merged = prompts.merge_top_level(_P_BASE, fragment, allow_constants=False)
+    assert merged.partial
+    assert merged.text.index("class ItemPublic(") < merged.text.index("class ItemsPublic(")
+    pytest.importorskip("sqlmodel")
+    namespace: dict[str, object] = {"router": _Router()}
+    exec(compile(merged.text, "<merged>", "exec"), namespace)  # no NameError at import
+
+
+def test_a_new_p_route_using_no_base_definition_stays_before_the_parameterised_routes():
+    """FastAPI matches routes in declaration order: a new literal route must stay above
+    base's ``/{id}`` unless it uses a definition declared below."""
+    base = _P_BASE + '\n\n@router.get("/{id}")\ndef read_one(id: int):\n    return id\n'
+    fragment = '@router.get("/stats")\ndef read_stats():\n    return LIMIT\n'
+    merged = prompts.merge_top_level(base, fragment, allow_constants=False)
+    assert merged.partial
+    text = merged.text
+    assert text.index("LIMIT = 10") < text.index("def read_stats(") < text.index("def read_one(")
+
+
+class _Router:
+    def get(self, _path):
+        return lambda fn: fn
+
+
+def test_a_new_l_endpoint_is_placed_after_the_step_it_calls():
+    base = (
+        "# lattice: v1\n"
+        '@endpoint("GET", "/a")\ndef a():\n    return 1\n\n\n'
+        "@step\ndef s(t: Table[Item]) -> Table:\n    return t\n"
+    )
+    fragment = '@endpoint("GET", "/c")\ndef c():\n    x = s(fetch(Item))\n    return x\n'
+    merged = prompts.merge_top_level(base, fragment)
+    assert merged.partial
+    assert merged.text.index("def s(") < merged.text.index("def c(")
+
+
+def test_a_new_l_step_or_constant_used_by_a_kept_definition_comes_before_it():
+    base = (
+        "# lattice: v1\n"
+        '@endpoint("GET", "/a")\ndef a():\n    return 1\n'
+    )
+    fragment = (
+        '@endpoint("GET", "/a")\ndef a():\n    x = s2(fetch(Item))\n    return N\n\n\n'
+        "@step\ndef s2(t: Table[Item]) -> Table:\n    return t\n\n\n"
+        "N = 3\n"
+    )
+    merged = prompts.merge_top_level(base, fragment)
+    assert merged.partial
+    text = merged.text
+    assert text.index("def s2(") < text.index("def a(")
+    assert text.index("N = 3") < text.index("def a(")
+
+
 def test_parse_profile_delta_reads_columns_and_responses():
     d = prompts.parse_profile_delta(
         "# a comment\n\n"

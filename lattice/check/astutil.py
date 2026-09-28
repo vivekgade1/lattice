@@ -158,8 +158,9 @@ def is_list_constant_assign(stmt: ast.stmt) -> bool:
 
 def step_mentions(steps: dict[str, ast.FunctionDef], name: str) -> frozenset[str]:
     """Every column name a step body (and the steps it calls) may read or produce:
-    its string constants and keyword names. A conservative over-approximation used to
-    carry private / owner lineage through a step called from an endpoint."""
+    its string constants, keyword names and attribute names. A conservative
+    over-approximation used to carry private / owner lineage through a step called
+    from an endpoint."""
     found: set[str] = set()
     seen: set[str] = set()
     todo = [name]
@@ -175,6 +176,8 @@ def step_mentions(steps: dict[str, ast.FunctionDef], name: str) -> frozenset[str
                         found.add(text)
                     case ast.keyword(arg=str(arg)):
                         found.add(arg)
+                    case ast.Attribute(value=ast.Name(), attr=attr):
+                        found.add(attr)  # r.x: a row read of column x
                     case ast.Call(func=ast.Name(id=callee)) if callee in steps:
                         todo.append(callee)
                     case _:

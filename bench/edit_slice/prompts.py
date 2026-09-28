@@ -199,13 +199,14 @@ def merge_top_level(
     base: str | None, fragment: str, *, allow_constants: bool = True
 ) -> MergedFile:
     """Merge ``fragment``'s named top-level statements into ``base`` by name: a name sent
-    again replaces it (in place), a new name is appended (at the end), and a line
-    ``# delete: <name>`` removes one. ``base`` None: ``fragment`` is a new file, used as
-    is. ``allow_constants``: whether a single-name assignment (a constant) is mergeable
-    (arm L) or must stay in the whole file (arm P: only functions/classes are named).
+    again replaces it (in place), a new name is added (see :func:`_place`: after what it
+    uses, before what uses it), and a line ``# delete: <name>`` removes one. ``base``
+    None: ``fragment`` is a new file, used as is. ``allow_constants``: whether a
+    single-name assignment (a constant) is mergeable (arm L) or must stay in the whole
+    file (arm P: only functions/classes are named).
 
-    A whole-file answer -- every one of ``base``'s names sent again, none deleted -- is
-    returned exactly as sent (:attr:`MergedFile.partial` False), so this is also what a
+    A whole-file answer (see :func:`_is_whole`; none deleted) is returned exactly as
+    sent, its removals included (:attr:`MergedFile.partial` False), so this is also what a
     plain "return the whole file" answer goes through. Raises
     :class:`PartialAnswerError` only for ``# delete:`` of a name that is not present; a
     fragment with a Python syntax error is instead treated as an (unmerged) whole-file
@@ -239,31 +240,114 @@ def merge_top_level(
             items[op.name] = op.text
             seen.add(op.name)
     header = _leading_comment(base)
-    # a genuine whole-file resend carries its own header, even an edited one (or base
-    # has none to carry over): use it verbatim. Otherwise -- e.g. every name sent but
-    # with no header at all, as bench.edit_slice.prompts.diff_top_level's fragments
-    # always are -- this is not really a standalone file, so it still needs
-    # reconstructing with base's header.
-    looks_whole = not header or _leading_comment(fragment)
-    if not used_delete and looks_whole and base_names <= seen:
+    if not used_delete and _is_whole(fragment, blocks, header, base_names, seen):
         return MergedFile(fragment, False)
-    # a new name goes right after every import and constant, before the first
-    # def/class kept from base: a new constant or step this way precedes any base
-    # statement that might reference it (the checker requires a constant/step defined
-    # above its use, L202/L604); endpoint order does not matter (lattice.emit.thin sorts
-    # routes by specificity, not file order) -- but it must still come after an import
-    # or constant it might itself use.
-    first_def = next((i for i, (_, _, is_def) in enumerate(blocks) if is_def), len(blocks))
-    lead = sum(1 for name, _, _ in blocks[:first_def] if name is None or name in items)
     kept = [
-        text if name is None else items[name]
-        for name, text, _ in blocks
+        (name, text if name is None else items[name], is_def)
+        for name, text, is_def in blocks
         if name is None or name in items
     ]
-    rebuilt = kept[:lead] + [items[n] for n in new_names if n in items] + kept[lead:]
+    for name in new_names:
+        if name in items:
+            _place(kept, name, items[name], _is_def_text(items[name]))
+    rebuilt = [text for _, text, _ in kept]
     body = "\n\n\n".join(rebuilt)
     text = f"{header}\n\n{body}\n" if header else f"{body}\n"
     return MergedFile(text, True)
+
+
+def _is_whole(
+    fragment: str,
+    blocks: list[tuple[str | None, str, bool]],
+    header: str,
+    base_names: frozenset[str],
+    seen: set[str],
+) -> bool:
+    """Whether ``fragment`` (with no ``# delete:``) is a whole-file answer, used verbatim
+    -- its removals, renames and fixed statements included -- rather than a partial one
+    merged by name. Whole when it starts with an import block; or carries every one of
+    ``base``'s fixed statements (imports, and for arm P constants too) verbatim; or, for
+    a base with no fixed statements (a Lattice program), starts with base's pragma line
+    (``# lattice: v1``); or sends every one of base's names again with a header."""
+    try:
+        tree = ast.parse(fragment)
+    except SyntaxError:
+        return True
+    if tree.body and isinstance(tree.body[0], ast.Import | ast.ImportFrom):
+        return True
+    fixed = [text for name, text, _ in blocks if name is None]
+    if fixed:
+        lines = fragment.splitlines()
+        sent = {_stmt_source(lines, stmt) for stmt in tree.body}
+        if all(text in sent for text in fixed):
+            return True
+    else:
+        pragma = header.splitlines()[0].strip() if header.strip() else ""
+        own = _leading_comment(fragment)
+        if pragma and own and own.splitlines()[0].strip() == pragma:
+            return True
+    looks_whole = not header or _leading_comment(fragment)
+    return bool(looks_whole) and base_names <= seen
+
+
+def _is_def_text(text: str) -> bool:
+    tree = ast.parse(text)
+    return bool(tree.body) and isinstance(tree.body[0], _NAMED_DEFS)
+
+
+def _names_used(text: str) -> frozenset[str]:
+    """Every bare name ``text`` (one top-level statement) loads, stores or calls."""
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return frozenset()
+    return frozenset(n.id for n in ast.walk(tree) if isinstance(n, ast.Name))
+
+
+def _names_defined(name: str | None, text: str) -> frozenset[str]:
+    """The top-level names statement ``text`` binds: its merge name, or -- for a fixed
+    statement -- its import aliases / assignment targets (``router = APIRouter()``)."""
+    if name is not None:
+        return frozenset({name})
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return frozenset()
+    found: set[str] = set()
+    for stmt in tree.body:
+        if isinstance(stmt, ast.Import | ast.ImportFrom):
+            found |= {(a.asname or a.name).split(".")[0] for a in stmt.names}
+        elif isinstance(stmt, ast.Assign | ast.AnnAssign | ast.AugAssign):
+            targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+            for target in targets:
+                found |= {n.id for n in ast.walk(target) if isinstance(n, ast.Name)}
+    return frozenset(found)
+
+
+def _place(
+    kept: list[tuple[str | None, str, bool]], name: str, text: str, is_def: bool
+) -> None:
+    """Insert the new top-level ``name`` into ``kept`` (in place). By default right after
+    the leading imports/constants, before the first def/class kept from base: a new
+    constant or step this way precedes any statement that might use it (L202/L604), and
+    a new arm-P route precedes base's parameterised ones (FastAPI matches routes in
+    declaration order: ``/stats`` must come before ``/{id}``). Two constraints move it:
+    it goes before the first statement that uses it, and -- winning over that -- after
+    the last statement defining a name it uses (a new ``class X: data:
+    list[ItemPublic]`` after ``ItemPublic``; a new endpoint after an earlier round's step
+    it calls, L604)."""
+    uses = _names_used(text) - {name}
+    lo = 0
+    for i, (other, other_text, _) in enumerate(kept):
+        if _names_defined(other, other_text) & uses:
+            lo = i + 1
+    hi = next(
+        (i for i, (other, t, _) in enumerate(kept) if other != name and name in _names_used(t)),
+        None,
+    )
+    first_def = next((i for i, (_, _, d) in enumerate(kept) if d), len(kept))
+    pos = first_def if hi is None else min(hi, first_def)
+    kept.insert(max(pos, lo), (name, text, is_def))
 
 
 def diff_top_level(before: str, after: str, *, allow_constants: bool = True) -> str:

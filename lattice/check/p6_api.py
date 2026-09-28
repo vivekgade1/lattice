@@ -1096,6 +1096,7 @@ class _Endpoint:
                 for kw in value.keywords:
                     if kw.arg is not None and kw.arg != "owner":
                         held |= self._params_read(kw.value, deps)
+                        held |= self._rows_carried(kw.value, carried)
             carried[name] = held
         reported: set[str] = set()
         for op in ("insert", "update", "insert_many"):
@@ -1105,6 +1106,7 @@ class _Endpoint:
                     if kw.arg == "owner" and op in ("insert", "insert_many"):
                         continue
                     written = self._params_read(kw.value, deps)
+                    written |= self._rows_carried(kw.value, carried)  # r.x values
                     if op == "insert_many" and isinstance(kw.value, ast.Name):
                         written |= carried.get(kw.value.id, set())  # the rows' values
                     if isinstance(source, ast.Name) and _cols_read(kw.value):
@@ -1120,6 +1122,18 @@ class _Endpoint:
                             f"parameter '{p}' is written to the database but is unbounded",
                             _bound_hint(spec),
                         )
+
+    def _rows_carried(self, node: ast.expr, carried: dict[str, set[str]]) -> set[str]:
+        """The parameters the rows read by each `r.x` in `node` may hold."""
+        found: set[str] = set()
+        for n in ast.walk(node):
+            if (
+                isinstance(n, ast.Attribute)
+                and id(n) in self.ctx.row_reads
+                and isinstance(n.value, ast.Name)
+            ):
+                found |= carried.get(n.value.id, set())
+        return found
 
     def _params_read(self, node: ast.expr, deps: dict[str, set[str]]) -> set[str]:
         found: set[str] = set()

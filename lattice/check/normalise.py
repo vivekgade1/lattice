@@ -480,17 +480,25 @@ class _Normaliser:
         out: list[ast.stmt] = []
         for stmt in body:
             if isinstance(stmt, ast.FunctionDef):
-                stmt.body = self._block(stmt.body, {}, function=True)
+                endpoint = has_endpoint_decorator(stmt)
+                stmt.body = self._block(stmt.body, {}, function=True, endpoint=endpoint)
                 out.append(stmt)
             elif isinstance(stmt, ast.Assign | ast.Expr):
-                out.extend(self._block([stmt], module_scope, function=False))
+                out.extend(self._block([stmt], module_scope, function=False, endpoint=False))
             else:
                 out.append(stmt)
         return out
 
     def _block(
-        self, stmts: list[ast.stmt], aliases: dict[str, frozenset[str]], *, function: bool
+        self,
+        stmts: list[ast.stmt],
+        aliases: dict[str, frozenset[str]],
+        *,
+        function: bool,
+        endpoint: bool,
     ) -> list[ast.stmt]:
+        """Normalise `stmts`; `r.x` row values are recorded only inside an endpoint body
+        (`endpoint`), where P6 checks them -- in a step they stay L106."""
         out: list[ast.stmt] = []
         for stmt in stmts:
             if not isinstance(stmt, ast.Assign | ast.Expr | ast.Return) or stmt.value is None:
@@ -511,7 +519,7 @@ class _Normaliser:
                     self.record(SPLIT, value)
             for s in [*lifted, stmt]:
                 assert s.value is not None
-                s.value = self._statement_value(s.value, aliases)
+                s.value = self._statement_value(s.value, aliases, endpoint=endpoint)
                 if (
                     isinstance(s, ast.Assign)
                     and len(s.targets) == 1
@@ -589,7 +597,9 @@ class _Normaliser:
 
     # ---- expressions ------------------------------------------------------------------------
 
-    def _statement_value(self, value: ast.expr, aliases: Mapping[str, frozenset[str]]) -> ast.expr:
+    def _statement_value(
+        self, value: ast.expr, aliases: Mapping[str, frozenset[str]], *, endpoint: bool
+    ) -> ast.expr:
         """Normalise one statement's value; inside a unit call over one input table, the
         input's names read its columns."""
         positions = self._unit(value)
@@ -602,7 +612,12 @@ class _Normaliser:
                 context = aliases.get(first.id, frozenset({first.id}))
         rewrite = _Expr(self, context)
         value.args = [a if i in positions else rewrite.visit(a) for i, a in enumerate(value.args)]
-        rows = self.api and isinstance(value.func, ast.Name) and value.func.id in _ROW_VALUE_OPS
+        rows = (
+            self.api
+            and endpoint
+            and isinstance(value.func, ast.Name)
+            and value.func.id in _ROW_VALUE_OPS
+        )
         for kw in value.keywords:
             if kw.arg in _COLUMN_LISTS and isinstance(kw.value, ast.List | ast.Tuple):
                 kw.value.elts = [self._column_name(e, context) for e in kw.value.elts]

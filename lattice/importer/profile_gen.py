@@ -31,6 +31,7 @@ from lattice.importer.extract import (
     RepoModel,
     TableModel,
 )
+from lattice.profile import TOKEN_ANSWER_STATUSES
 
 if TYPE_CHECKING:
     from lattice.importer.policy import TokenAnswers
@@ -634,6 +635,18 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
             ("invalid", answers.invalid if answers else None),
             ("unknown", answers.unknown if answers else None),
         ):
+            if answer is not None and not _token_answer_ok(answer):
+                # NativeToken carries only a 400/401/403/404 with a detail: keep the
+                # default answer (the verifier declares the difference as a per-route
+                # token policy) rather than refuse the profile, and say why
+                g.note(
+                    "token_answer",
+                    name,
+                    f"the original answers {answer!r}, which NativeToken cannot carry "
+                    f"(a status in {TOKEN_ANSWER_STATUSES} and a non-empty detail); "
+                    "the default 401 is kept and the difference declared per route",
+                )
+                continue
             if answer is not None and answer != (401, unauthorized):
                 lookup += f", {name}={answer!r}"
         api.append(f"auth=NativeToken({decoder.name!r}{lookup})")
@@ -689,6 +702,19 @@ def _render_profile(head: list[str], api: list[str]) -> str:
     out += [f"        {line}," for line in api]
     out += ["    )", "    return Profile(schemas={}, api=api)", ""]
     return "\n".join(out)
+
+
+def _token_answer_ok(answer: object) -> bool:
+    """Whether ``answer`` is a (status, detail) ``NativeToken(invalid=/unknown=)``
+    accepts (see ``NativeToken.__post_init__``)."""
+    return (
+        isinstance(answer, tuple)
+        and len(answer) == 2
+        and type(answer[0]) is int
+        and answer[0] in TOKEN_ANSWER_STATUSES
+        and isinstance(answer[1], str)
+        and bool(answer[1])
+    )
 
 
 def _refused(source: str) -> str | None:
