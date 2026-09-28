@@ -1,0 +1,85 @@
+procedure helper(x: Int) -> Int
+  recursive: False
+  locals: x: Int
+  Return
+    Binary(-) : Int
+      Var x : Int
+      Const 1 : Int
+procedure calls(xs: list[Int], ys: list[Int]) -> Int
+  recursive: False
+  locals: hi: Int, lo: Int, ordered: list[Int], s: Int, seen: set[Int], xs: list[Int], ys: list[Int], zs: list[Int]
+  Assign
+    target: NameT s
+    Charged : Int
+      Call builtin:sum : Int
+        Bulk : list[Int]
+          Var xs : list[Int]
+  Assign
+    target: NameT ordered
+    Charged : list[Int]
+      Call builtin:sorted : list[Int]
+        Bulk : list[Int]
+          Var xs : list[Int]
+        kwargs:
+          key: Lambda : Int
+            params: v
+            body: Unary(-) : Int
+              Var v : Int
+  Assign
+    target: NameT lo
+    Charged : Int
+      Call builtin:min : Int
+        Var s : Int
+        Const 3 : Int
+  Assign
+    target: NameT hi
+    Charged : Int
+      Call builtin:max : Int
+        Bulk : list[Int]
+          Var xs : list[Int]
+  Assign
+    target: NameT zs
+    Charged : list[Int]
+      Call builtin:list : list[Int]
+        Bulk : list[Int]
+          Var ys : list[Int]
+  ExprStmt
+    Charged : None
+      Call method:list.extend : None
+        Var zs : list[Int]
+        Bulk : list[Int]
+          Var xs : list[Int]
+  ExprStmt
+    Charged : None
+      Call method:list.append : None
+        Var zs : list[Int]
+        Call proc:helper : Int
+          Var lo : Int
+  Assign
+    target: NameT seen
+    Charged : set[Int]
+      Call builtin:set : set[Int]
+        Bulk : list[Int]
+          Var zs : list[Int]
+  ExprStmt
+    Charged : None
+      Call method:set.update : None
+        Var seen : set[Int]
+        Bulk : list[Int]
+          Var ys : list[Int]
+  Return
+    Grow(+) : Int
+      Grow(+) : Int
+        Grow(+) : Int
+          Charged : Int
+            Call builtin:abs : Int
+              Var hi : Int
+          Charged : Int
+            Call builtin:len : Int
+              Var ordered : list[Int]
+        Charged : Int
+          Call builtin:len : Int
+            Var seen : set[Int]
+      Call proc:helper : Int
+        kwargs:
+          x: Var s : Int

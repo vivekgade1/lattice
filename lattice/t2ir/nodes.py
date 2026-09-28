@@ -115,7 +115,9 @@ class TupleLit:
 
 @dataclass(frozen=True)
 class DictLit:
-    keys: tuple[Expr, ...]
+    """`{k: v, **d}`: a `None` key marks a `**value` entry (as in Python's `ast.Dict`)."""
+
+    keys: tuple[Expr | None, ...]
     values: tuple[Expr, ...]
     type: T2Type
 
@@ -140,10 +142,13 @@ class Comp:
 
 @dataclass(frozen=True)
 class FPart:
-    """A `{value!conversion:spec}` replacement field inside an `FStr`; not itself typed."""
+    """A `{value!conversion:spec}` replacement field inside an `FStr`; not itself typed.
+    `spec` is the literal spec text ("" when there is none), or an `FStr` when the spec
+    has replacement fields of its own (`f"{s:>{n}}"`). `conversion` is "", "s", "r" or
+    "a". Only a non-empty spec is charged (`lattice.t2.compile`: `<fuel>.fmt`)."""
 
     value: Expr
-    spec: str
+    spec: str | FStr
     conversion: str
 
 
@@ -242,6 +247,16 @@ class IndexT:
 class AttrT:
     obj: Expr
     name: str
+
+
+@dataclass(frozen=True)
+class SliceT:
+    """`xs[lo:hi:step]` as an augmented-assignment target (`xs[a:b] += ys`)."""
+
+    obj: Expr
+    lo: Expr | None
+    hi: Expr | None
+    step: Expr | None
 
 
 # --- Statements ------------------------------------------------------------------------
@@ -373,7 +388,7 @@ Expr = (
     | Each | Bulk | Charged | Grow | Sized | Scan
 )
 
-AssignTarget = NameT | TupleTarget | IndexT | AttrT
+AssignTarget = NameT | TupleTarget | IndexT | AttrT | SliceT
 
 Stmt = (
     Assign | AugAssign | If | For | While | Break | Continue | Return | ExprStmt | Try

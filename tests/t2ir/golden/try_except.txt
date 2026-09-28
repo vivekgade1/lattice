@@ -1,0 +1,40 @@
+procedure parse(xs: list[Str]) -> Int
+  recursive: False
+  locals: err: Error, total: Int, x: Str, xs: list[Str]
+  Assign
+    target: NameT total
+    Const 0 : Int
+  For
+    target: NameT x
+    Var xs : list[Str]
+    body:
+      Tick
+      Try
+        body:
+          AugAssign(+)
+            target: NameT total
+            Charged : Int
+              Call builtin:int : Int
+                Var x : Str
+            grow: True
+        handlers:
+          Handler
+            kinds: ValueError
+            body:
+              AugAssign(-)
+                target: NameT total
+                Const 1 : Int
+                grow: False
+          Handler err
+            kinds: KeyError, IndexError
+            body:
+              Assign
+                target: NameT total
+                Const 0 : Int
+        orelse:
+          AugAssign(+)
+            target: NameT total
+            Const 1 : Int
+            grow: True
+  Return
+    Var total : Int

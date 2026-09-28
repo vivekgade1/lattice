@@ -48,7 +48,13 @@ addopts = "-m 'not live'"
 line-length = 100
 # the importer's committed output (python -m lattice.importer), never edited by hand
 # and verbatim model-written round-3/4 artefacts kept as normalisation / diagnostic fixtures
-extend-exclude = ["bench/imports", "tests/fixtures/normalise", "tests/fixtures/diag_hints"]
+# (tests/t2ir/golden holds Lattice sources, one per lowering golden test)
+extend-exclude = [
+    "bench/imports",
+    "tests/fixtures/normalise",
+    "tests/fixtures/diag_hints",
+    "tests/t2ir/golden",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

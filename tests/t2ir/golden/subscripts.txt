@@ -1,0 +1,68 @@
+procedure subs(xs: list[Int], d: dict[Str, Int], pair: tuple[Int, Str]) -> Int
+  recursive: False
+  locals: d: dict[Str, Int], e: dict[Str, Int], first: Int, last: Int, middle: list[Int], pair: tuple[Int, Str], stepped: list[Int], xs: list[Int]
+  Assign
+    target: NameT e
+    DictLit : dict[Str, Int]
+  ExprStmt
+    Charged : None
+      Call method:dict.update : None
+        Var e : dict[Str, Int]
+        Var d : dict[Str, Int]
+  Assign
+    target: NameT first
+    Index : Int
+      Var xs : list[Int]
+      Const 0 : Int
+  Assign
+    target: NameT last
+    Index : Int
+      Var xs : list[Int]
+      Unary(-) : Int
+        Const 1 : Int
+  Assign
+    target: NameT middle
+    SliceOf : list[Int]
+      Var xs : list[Int]
+      lo: Const 1 : Int
+      hi: Unary(-) : Int
+        Const 1 : Int
+  Assign
+    target: NameT stepped
+    SliceOf : list[Int]
+      Var xs : list[Int]
+      step: Const 2 : Int
+  Assign
+    target: IndexT
+      Var e : dict[Str, Int]
+      Const 'k' : Str
+    Var first : Int
+  Assign
+    target: IndexT
+      Var e : dict[Str, Int]
+      Const 'j' : Str
+    Index : Int
+      Var pair : tuple[Int, Str]
+      Const 0 : Int
+  Return
+    Grow(+) : Int
+      Grow(+) : Int
+        Grow(+) : Int
+          Grow(+) : Int
+            Grow(+) : Int
+              Var first : Int
+              Var last : Int
+            Charged : Int
+              Call builtin:len : Int
+                Var middle : list[Int]
+          Charged : Int
+            Call builtin:len : Int
+              Var stepped : list[Int]
+        Index : Int
+          Var e : dict[Str, Int]
+          Const 'k' : Str
+      Charged : Int
+        Call builtin:len : Int
+          Index : Str
+            Var pair : tuple[Int, Str]
+            Const 1 : Int

@@ -54,6 +54,15 @@ sys.exit(int(spec.get("exit_code", 0)))
 '''
 
 
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--update-golden",
+        action="store_true",
+        default=False,
+        help="rewrite golden files (tests/t2ir/golden/*.txt) from the current output",
+    )
+
+
 @dataclass
 class FakeClaudeCli:
     """Controls a fake `claude` executable placed first on PATH. ``queue`` sets the

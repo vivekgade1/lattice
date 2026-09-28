@@ -11,8 +11,12 @@ from lattice.t2ir import nodes as n
 
 # Field names whose (single- or tuple-valued) node children get a "name: " label instead
 # of being shown as plain, unlabeled children -- disambiguates e.g. an `If`'s `test` from
-# its `body`, or a `Try`'s four child blocks from one another.
-_LABELED = frozenset({"test", "target", "body", "orelse", "final", "handlers"})
+# its `body`, or a `Try`'s four child blocks from one another. Slice bounds are labeled
+# too (an absent bound is not shown, so `xs[::2]` must not read like `xs[2:]`), and an
+# `FPart`'s `spec` (an `FStr` when it has replacement fields of its own).
+_LABELED = frozenset(
+    {"test", "target", "body", "orelse", "final", "handlers", "lo", "hi", "step", "spec"}
+)
 
 
 def _is_scalar_value(field: Field) -> bool:
@@ -80,7 +84,16 @@ def _children(node: object) -> list[tuple[str, object]]:
 
 
 def _is_node_tuple(value: object) -> bool:
-    return isinstance(value, tuple) and bool(value) and all(is_dataclass(e) for e in value)
+    """A tuple of nodes -- possibly with `None` holes, e.g. `DictLit.keys` of `{**d}`."""
+    return (
+        isinstance(value, tuple)
+        and any(is_dataclass(e) for e in value)
+        and all(is_dataclass(e) or e is None for e in value)
+    )
+
+
+def _elt_lines(elt: object, depth: int) -> list[str]:
+    return [f"{'  ' * depth}None"] if elt is None else _lines(elt, depth)
 
 
 def _other_tuple_lines(field_name: str, value: tuple, pad: str, depth: int) -> list[str]:
@@ -112,14 +125,16 @@ def _lines(node: object, depth: int, label: str = "") -> list[str]:
             continue
         if is_dataclass(value):
             out += _lines(value, depth + 1, f"{field_name}: " if field_name in _LABELED else "")
+        elif field_name == "parts" and isinstance(value, tuple):
+            out += _other_tuple_lines(field_name, value, pad, depth)  # always "parts:"
         elif _is_node_tuple(value):
             if field_name in _LABELED:
                 out.append(f"{pad}  {field_name}:")
                 for elt in value:
-                    out += _lines(elt, depth + 2)
+                    out += _elt_lines(elt, depth + 2)
             else:
                 for elt in value:
-                    out += _lines(elt, depth + 1)
+                    out += _elt_lines(elt, depth + 1)
         elif isinstance(value, tuple):
             out += _other_tuple_lines(field_name, value, pad, depth)
         else:
