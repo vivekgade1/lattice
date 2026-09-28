@@ -535,6 +535,25 @@ def p_user_message(ticket: Ticket, files: Mapping[str, str]) -> str:
     return "\n\n".join(parts)
 
 
+# ---- arm Q (round 5: Python plus the guarantee checks) --------------------------------------
+
+
+def q_policy_statement(repo_name: str = "template") -> str:
+    """The policies arm Q's edit is checked for (:mod:`lattice.pycheck`), stated for the app
+    ``repo_name``: derived once from the original app, identical for every ticket."""
+    from bench.edit_slice.qcheck import repo_policy
+    from lattice.pycheck import describe_policy
+
+    return describe_policy(repo_policy(repo_name))
+
+
+def q_system_prompt(ticket: Ticket) -> str:
+    """Arm Q's system prompt: arm P's, plus the statement of the checked policies. The user
+    message is arm P's (:func:`p_user_message`); the repair feedback adds pycheck's
+    findings to the smoke run."""
+    return p_system(ticket.repo).rstrip("\n") + "\n\n" + q_policy_statement(ticket.repo)
+
+
 # ---- arm L ---------------------------------------------------------------------------------
 
 L_EDITING = f"""## Editing an imported app
@@ -708,6 +727,8 @@ __all__ = [
     "l_user_message",
     "p_context_files",
     "p_user_message",
+    "q_policy_statement",
+    "q_system_prompt",
     "parse_files",
     "render_files",
     "router_file",
