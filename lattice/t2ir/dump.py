@@ -128,20 +128,32 @@ def _lines(node: object, depth: int, label: str = "") -> list[str]:
 
 
 def dump(module: n.T2Module) -> str:
+    """Every field of `T2Module`/`Procedure`/`Record` that distinguishes two otherwise
+    identical trees is rendered -- including `Procedure.recursive`, `Procedure.locals`
+    and `Record.defaults` -- so two modules that differ only in one of those fields
+    always dump differently. `imports`, `locals` and `defaults` are `Mapping`s with no
+    guaranteed iteration order, so each is sorted by key for a stable dump."""
     out: list[str] = []
     for native in module.natives:
         out.append(f"native {native}")
-    for alias, target in module.imports.items():
+    for alias, target in sorted(module.imports.items()):
         out.append(f"import {alias} = {target}")
     for r in module.records:
         field_list = ", ".join(f"{k}: {t.render()}" for k, t in r.fields)
         out.append(f"record {r.name}({field_list})")
+        if r.defaults:
+            defaults = ", ".join(f"{k}={v!r}" for k, v in sorted(r.defaults.items()))
+            out.append(f"  defaults: {defaults}")
     for cname, ctype, cexpr in module.constants:
         out.append(f"const {cname} : {ctype.render()}")
         out += _lines(cexpr, 1)
     for p in module.procedures:
         params = ", ".join(f"{k}: {t.render()}" for k, t in p.params)
         out.append(f"procedure {p.name}({params}) -> {p.returns.render()}")
+        out.append(f"  recursive: {p.recursive}")
+        if p.locals:
+            locals_str = ", ".join(f"{k}: {t.render()}" for k, t in sorted(p.locals.items()))
+            out.append(f"  locals: {locals_str}")
         for s in p.body:
             out += _lines(s, 1)
     return "\n".join(out) + "\n"
