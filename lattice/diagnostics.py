@@ -88,8 +88,10 @@ def render_all(diags: Iterable[Diagnostic]) -> str:
     return "\n".join(d.render() for d in sorted(diags, key=sort_key))
 
 
-def render_for_llm(diags: Iterable[Diagnostic]) -> str:
-    """One line per diagnostic, errors before warnings, each group in source order."""
+def render_for_llm(diags: Iterable[Diagnostic], *, fixes: bool = False) -> str:
+    """One line per diagnostic, errors before warnings, each group in source order.
+    ``fixes``: a diagnostic with a machine fix (:class:`Fix`) is followed by an indented
+    ``Exact fix: ...`` line."""
     ordered = sorted(diags, key=lambda d: (d.severity is not Severity.ERROR, *sort_key(d)))
     lines = []
     for d in ordered:
@@ -97,4 +99,6 @@ def render_for_llm(diags: Iterable[Diagnostic]) -> str:
         if d.hint:
             line += f". Fix: {d.hint}"
         lines.append(line)
+        if fixes and d.fix is not None:
+            lines.append(f"  Exact fix: {d.fix.render()}")
     return "\n".join(lines)

@@ -17,8 +17,10 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 
 # LATTICE MOD: sentry initialisation removed; app construction wrapped in
 # create_app() so each test gets a fresh FastAPI instance; the frontend mount
-# (app.frontend("/", directory=FRONTEND_DIR)) is dropped (no frontend vendored).
-def create_app() -> FastAPI:
+# (app.frontend("/", directory=FRONTEND_DIR)) is dropped (no frontend vendored);
+# include_api=False builds the app without the API routes (lattice.emit.thin mounts its
+# merged route list itself), so no caller has to swap the module-global api_router.
+def create_app(*, include_api: bool = True) -> FastAPI:
     app = FastAPI(
         title=settings.PROJECT_NAME,
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
@@ -33,7 +35,8 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(api_router, prefix=settings.API_V1_STR)
+    if include_api:
+        app.include_router(api_router, prefix=settings.API_V1_STR)
     return app
 
 

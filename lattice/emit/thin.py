@@ -523,7 +523,7 @@ def make_emitted_app(out_dir: str | Path, db_path: str | Path) -> FastAPI:
     the changes made are on ``app.state.schema_changes``). The template's engine is on
     ``app.state.engine`` (dispose it when done)."""
     from bench.template_app import make_app
-    from bench.template_app.app import main as template_main
+    from bench.template_app.app.api.main import api_router
 
     out = Path(out_dir)
     manifest = json.loads((out / SCHEMA_FILE).read_text())
@@ -531,16 +531,11 @@ def make_emitted_app(out_dir: str | Path, db_path: str | Path) -> FastAPI:
     if manifest.get("app_factory"):
         return _make_into_app(out, Path(db_path), manifest, replaced)
 
-    # The template's create_app() includes the module-global api_router; for this app it
-    # includes an empty one (the template module is restored), and the merged API routes
-    # are included below, each in a router of its own, in their merged order.
-    original = template_main.api_router
-    template_routes = _leaf_routes(original)
-    template_main.api_router = APIRouter()
-    try:
-        app = make_app(db_path)  # the template's tables (create_all) and everything else
-    finally:
-        template_main.api_router = original
+    # The template app without its API routes (no module state is touched: apps are
+    # built from several threads at once); the merged API routes are included below,
+    # each in a router of its own, in their merged order.
+    template_routes = _leaf_routes(api_router)
+    app = make_app(db_path, include_api=False)  # the template's tables and everything else
     changes = _evolve(Path(db_path), manifest)
 
     package = _load_package(out)

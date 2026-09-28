@@ -69,7 +69,9 @@ inside files are marked `LATTICE MOD`.
 5. **`main.py`:** `sentry_sdk` import/init removed; the app construction is wrapped in
    `create_app()` (module-level `app = create_app()` kept) so each test gets a fresh
    `FastAPI`; the `app.frontend("/", directory=FRONTEND_DIR)` mount is dropped (no
-   frontend is vendored).
+   frontend is vendored). `create_app(include_api=False)` leaves the API router out, for
+   `lattice.emit.thin`, which mounts its own merged route list (it used to swap the
+   module-global `api_router`, which raced under parallel app construction).
 
 No route, CRUD, model or security logic was changed. The `private` router is still only
 included when `FASTAPI_ENV == "development"` (not the default here).

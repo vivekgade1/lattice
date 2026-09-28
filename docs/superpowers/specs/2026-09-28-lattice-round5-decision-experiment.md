@@ -86,3 +86,19 @@ Let S_x be the silent failures, C_x the correct runs, and $_x the cost per corre
 - Q+ vs L+ repeats the §5 comparison with aids on both sides.
 
 **Run size:** 30 tickets × 5 arms × 2 models × 3 reps = **900 runs**, through the CLI with resume.
+
+## 8. Run notes (implementation, 2026-09-28, before any round-5 run)
+
+These record how §3 and §7 are wired in `bench/edit_slice/run.py`. They change no hypothesis, metric or decision rule.
+
+- **Arm Q.** It is arm P's flow: the same start state, answer format and user message, with `q_system_prompt` as the system prompt. After the smoke run, pycheck checks the candidate. Its findings (code, file, line, message, fix hint) are added to the repair feedback in the format of L's checker diagnostics (`- PY801 at app/…, line N: … . Fix: …`). A round that starts and passes the smoke run but has findings is repaired, with problem `check`. Findings on the final round do not change scoring: the oracle decides. `round_findings` records each round's codes, which gives Q's first-round pass rate (§4).
+- **Arm L shows the checker's exact fixes.** When a diagnostic carries a machine fix (`Diagnostic.fix`, from C3), L's and L+'s repair feedback adds an `Exact fix: replace line … with: …` line under it. Arm Q's hints already name their fix, so this keeps the two arms' feedback symmetric. Arm L in rounds 1–4 did not have it.
+- **Aid (a), the worked examples.** Retrieval is TF-IDF cosine over the ticket title and body, from the corpus t1–t12, excluding the current ticket; ties are broken by corpus order. Each example is the ticket and the verified answer that the dry run feeds through the arm (`reference_answer`): Lattice for L+, Python for Q+. Both arms get the same tickets in the same order. Answers of the same edit are shorter in Lattice: over t1–t30, the examples average 10.4k characters for L+ and 16.1k for Q+ (0.65×). They are not trimmed to equal size, because §7 asks for verified examples, with the same retrieval and count.
+- **Aid (b), the mistakes tables.** `python -m bench.edit_slice.build_aids` builds both tables from the round-4 artefacts and writes them to `bench/edit_slice/aids/mistakes_{lattice,python}.json`. Those committed files are the fixed version round 5 uses.
+  - **L+:** from C3 persistence. Codes are ranked by repeated refusals, then by persistence. Each row is today's checker message and hint.
+  - **Q+:** from the 45 round-4 arm-P silent runs. pycheck flags 18 of them. Codes are ranked by the number of runs they flag.
+  - **"The same length":** both tables have the same character budget. The budget is the smaller full table; each table takes its rows in rank order while it fits.
+  - **Result:** L+ has 4 rows in 1084 characters (L404, L302, L401, L411). Q+ has 3 rows in 1119 characters (PY801, PY805, PY806).
+- **Placement.** The table is appended to the system prompt, and the examples come before the first user message. Nothing else of the base arm's prompt changes; a test pins this.
+- **Dry run.** Fed through Q and Q+, P's references score correct on t1–t30 with 0 pycheck findings. Fed through L+, the Lattice references score correct on t1–t12.
+- **Harness fix (`--workers`).** Building an emitted app used to swap the template's module-global `api_router`. Parallel workers could interleave those swaps and leave the router empty. App construction no longer mutates shared state, and `load_variant` is atomic. Round 5 must run on this fixed harness.

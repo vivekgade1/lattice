@@ -26,12 +26,15 @@ def sqlite_engine(db_path: str | Path) -> Engine:
     )
 
 
-def make_app(db_path: str | Path) -> FastAPI:
+def make_app(db_path: str | Path, *, include_api: bool = True) -> FastAPI:
     """Build the template app on the SQLite database at ``db_path``.
 
     Creates any missing tables (``SQLModel.metadata.create_all``) and routes the
     template's ``get_db`` dependency to a session on that database. The engine is
-    kept on ``app.state.engine`` so callers can dispose of it.
+    kept on ``app.state.engine`` so callers can dispose of it. ``include_api=False``
+    leaves the API routes out (settings, CORS, docs and dependency overrides only), for
+    a caller that mounts its own route list (:func:`lattice.emit.thin.make_emitted_app`);
+    no module state is touched either way, so apps can be built from several threads.
     """
     engine = sqlite_engine(db_path)
     SQLModel.metadata.create_all(engine)
@@ -40,7 +43,7 @@ def make_app(db_path: str | Path) -> FastAPI:
         with Session(engine) as session:
             yield session
 
-    app = create_app()
+    app = create_app(include_api=include_api)
     app.dependency_overrides[deps.get_db] = get_db
     app.state.engine = engine
     return app

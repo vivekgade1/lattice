@@ -83,7 +83,14 @@ def _buggy(only: set[str]) -> ImportResult:
 def good() -> dict[str, str]:
     """The correct endpoints (the unpatched lifters' verified output)."""
     result = _lift(only={"read_item", "delete_item"})
-    return {r.key: r.source for r in result.verified}  # type: ignore[misc]
+    out = {r.key: r.source for r in result.verified}
+    # every test using this needs both endpoints verified; if the template app lost its
+    # routes (the old --workers race on its module-global api_router), say so here
+    # rather than as a KeyError in whichever test happens to ask first
+    assert {"read_item", "delete_item"} <= set(out), (
+        f"the template lift verified only {sorted(out)}: are the template's API routes intact?"
+    )
+    return out  # type: ignore[return-value]
 
 
 @pytest.fixture(scope="module")

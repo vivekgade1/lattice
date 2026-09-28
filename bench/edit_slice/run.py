@@ -20,6 +20,24 @@ candidate with the hidden oracle (:func:`bench.edit_slice.oracle.evaluate`):
   the start programs lifted (a lifted route the edit drops is gone), and every other
   template route (``/users/signup``, ``/users/{user_id}``, ...) is kept as it is.
 
+**Round 5 (spec 2026-09-28-lattice-round5-decision-experiment.md).** Three more arms:
+
+* **Q (Python plus the guarantee checks).** Arm P's start state, answer format and user
+  message; the system prompt is :func:`bench.edit_slice.prompts.q_system_prompt` (P's plus
+  the statement of the checked policies). After the smoke run, :mod:`lattice.pycheck`
+  checks the candidate (:func:`check_round`): its findings (code, file, line, message,
+  fix hint; :func:`render_findings`, the format family of arm L's diagnostics) are added
+  to the repair feedback, and a round that passed the smoke run but has findings is
+  repaired (problem ``check``). Findings on the final round do not change scoring: the
+  oracle decides. ``round_findings`` records each built round's codes.
+* **L+ / Q+ (the context aids, §7).** Arm L / Q with (a) two retrieved worked examples
+  before the user message and (b) the "common mistakes -> exact fix" table appended to
+  the system prompt, and nothing else (:func:`arm_prompt`, :mod:`bench.edit_slice.aids`);
+  ``examples`` records the retrieved tickets.
+
+Arm L's (and L+'s) checker feedback also shows each diagnostic's machine fix
+(``Diagnostic.fix``) when the checker offers one, as arm Q's hints carry theirs.
+
 **The ticket's app.** A ticket targets the template or a held-out repo (``Ticket.repo``:
 TaskFlow or JustNotes, round 3's t19-t24; :mod:`bench.edit_slice.apps`). Arm P works the
 same on every app: the variant, smoke run and oracle take the ticket's app, and the
@@ -123,8 +141,10 @@ from bench.metrics import cost_usd
 from lattice.llm.cli_client import CliUsageLimitError
 from lattice.llm.client import Generation, GenerationRefused, Generator, ScriptedGenerator
 
-Arm = Literal["P", "L"]
-ARMS: tuple[Arm, ...] = ("P", "L")
+Arm = Literal["P", "L", "Q", "L+", "Q+"]
+ARMS: tuple[Arm, ...] = ("P", "L")  # rounds 1-4
+# round 5 (spec 2026-09-28): Q = P + pycheck; L+ / Q+ = L / Q + the context aids (§7)
+ROUND5_ARMS: tuple[Arm, ...] = ("P", "L", "Q", "L+", "Q+")
 MAX_REPAIRS = 2
 MAX_TOKENS = 16000  # the default output limit per model call (--max-tokens)
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -302,6 +322,25 @@ def l_start(t: Ticket) -> tuple[dict[str, str], str]:
     return programs, profile
 
 
+def base_arm(arm: str) -> str:
+    """The arm without its aids: L+ -> L, Q+ -> Q."""
+    return arm.removesuffix("+")
+
+
+def language(arm: str) -> str:
+    """What the arm's model edits: ``"P"`` (Python: P, Q, Q+) or ``"L"`` (L, L+)."""
+    return "L" if base_arm(arm) == "L" else "P"
+
+
+def is_aided(arm: str) -> bool:
+    return arm.endswith("+")
+
+
+def with_section(system: str, section: str) -> str:
+    """``system`` with ``section`` appended (one blank line between)."""
+    return system.rstrip("\n") + "\n\n" + section.rstrip("\n") + "\n"
+
+
 def p_prompt(ticket_id: str) -> tuple[str, str]:
     """(system, first user message) of arm P."""
     t = ticket(ticket_id)
@@ -319,6 +358,35 @@ def l_prompt(ticket_id: str, *, hints: bool = False) -> tuple[str, str]:
     others = [n for n in programs if n not in shown]
     user = prompts.l_user_message(t, programs, profile, others=others)
     return prompts.l_system_prompt(hints=hints, repo=t.repo), user
+
+
+def q_prompt(ticket_id: str) -> tuple[str, str]:
+    """(system, first user message) of arm Q: arm P's user message, the Q system prompt
+    (arm P's plus the statement of the checked policies)."""
+    _, user = p_prompt(ticket_id)
+    return prompts.q_system_prompt(ticket(ticket_id)), user
+
+
+def arm_prompt(arm: str, ticket_id: str, *, hints: bool = False) -> tuple[str, str]:
+    """(system, first user message) of any arm. L+ and Q+ are their base arm's prompt
+    with the two aids (:mod:`bench.edit_slice.aids`) and nothing else: the mistakes
+    table appended to the system prompt, the worked examples before the user message."""
+    from bench.edit_slice import aids
+
+    base = base_arm(arm)
+    if base == "P" and arm == "P":
+        system, user = p_prompt(ticket_id)
+    elif base == "L":
+        system, user = l_prompt(ticket_id, hints=hints)
+    elif base == "Q":
+        system, user = q_prompt(ticket_id)
+    else:
+        raise ValueError(f"unknown arm {arm!r}")
+    if is_aided(arm):
+        lang: aids.Lang = "lattice" if base == "L" else "python"
+        system = with_section(system, aids.mistakes_section(lang))
+        user = aids.worked_examples(ticket_id, lang) + "\n\n" + user
+    return system, user
 
 
 # ---- run records ----------------------------------------------------------------------------
@@ -339,6 +407,10 @@ class RunRecord:
     detail: str = ""
     rounds: int = 0
     round_problems: list[str | None] = field(default_factory=list)
+    # arms Q / Q+: each built round's pycheck finding codes (a round never built: none)
+    round_findings: list[list[str]] = field(default_factory=list)
+    # arms L+ / Q+: the retrieved worked examples' tickets
+    examples: list[str] = field(default_factory=list)
     # each round's stop reason (end_turn / max_tokens / refusal / ...)
     stop_reasons: list[str | None] = field(default_factory=list)
     # the oracle's per-case tally (equal / equal_under_rule / deviation / silent / loud)
@@ -506,12 +578,13 @@ class Candidate:
     the feedback a developer would see."""
 
     factory: Callable[[Path], Any] | None = None
-    # no_code | truncated | bad_file | merge | start | static | smoke | refused
+    # no_code | truncated | bad_file | merge | start | static | smoke | check | refused
     problem: str | None = None
     feedback: str = ""
     code: tuple[int, int] = (0, 0)  # (lines, AST nodes) of the code that runs
     cleanup: Callable[[], None] = lambda: None
     partial: bool = False  # the answer used the merge-by-name option on some file
+    findings: list[str] | None = None  # arm Q: pycheck's finding codes (None: not checked)
 
 
 NO_FILES = (
@@ -812,7 +885,7 @@ class _LatticeArm:
                 d for d in check_source(src, profile).diagnostics if d.severity is Severity.ERROR
             ]
             if errors:
-                reports.append(f"{name}:\n{render_for_llm(errors)}")
+                reports.append(f"{name}:\n{render_for_llm(errors, fixes=True)}")
         if reports:
             return Candidate(
                 problem="static",
@@ -833,7 +906,7 @@ class _LatticeArm:
                 problem="static",
                 feedback=(
                     "The Lattice checker refused the joined program:\n"
-                    + render_for_llm(errors or exc.diagnostics)
+                    + render_for_llm(errors or exc.diagnostics, fixes=True)
                 ),
             )
         except Exception as exc:  # noqa: BLE001
@@ -848,6 +921,35 @@ class _LatticeArm:
             cleanup=cleanup,
             partial=partial,
         )
+
+
+CHECK_INTRO = "The guarantee checks found problems in the edited code:"
+
+
+def render_findings(findings: Sequence[Any]) -> str:
+    """pycheck findings as repair feedback, in the format family of arm L's checker
+    diagnostics (:func:`lattice.diagnostics.render_for_llm`): code, place, message, fix."""
+    lines = [
+        f"- {f.code} at {prompts.APP_PREFIX}{f.file}, line {f.line}: {f.message}. Fix: {f.hint}"
+        for f in findings
+    ]
+    return CHECK_INTRO + "\n" + "\n".join(lines)
+
+
+def check_round(repo: str, files: Mapping[str, str], candidate: Candidate) -> None:
+    """Arm Q's step after the smoke run: pycheck on the candidate's files. Findings are
+    added to the round's feedback (after the smoke run's, when it failed); a round whose
+    app started and passed the smoke run but has findings is repaired as ``check``."""
+    from bench.edit_slice.qcheck import check_files
+
+    findings = check_files(repo, files)
+    candidate.findings = [f.code for f in findings]
+    if not findings:
+        return
+    text = render_findings(findings)
+    candidate.feedback = f"{candidate.feedback}\n\n{text}" if candidate.feedback else text
+    if candidate.problem is None:
+        candidate.problem = "check"
 
 
 def repair_message(feedback: str) -> str:
@@ -894,13 +996,15 @@ def run_arm(
         shutil.rmtree(rep_dir, ignore_errors=True)
         rep_dir.mkdir(parents=True)
         record.artefacts = str(rep_dir)
-    state: _PythonArm | _LatticeArm
-    if arm == "P":
-        state, (system, user) = _PythonArm(t), p_prompt(ticket_id)
-    elif arm == "L":
-        state, (system, user) = _LatticeArm(t), l_prompt(ticket_id, hints=hints)
-    else:
+    if arm not in ROUND5_ARMS:
         raise ValueError(f"unknown arm {arm!r}")
+    system, user = arm_prompt(arm, ticket_id, hints=hints)
+    state: _PythonArm | _LatticeArm = _LatticeArm(t) if language(arm) == "L" else _PythonArm(t)
+    checked = base_arm(arm) == "Q"
+    if is_aided(arm):
+        from bench.edit_slice.aids import retrieve
+
+        record.examples = retrieve(ticket_id)
     record.system_chars, record.user_chars = len(system), len(user)
     record.prompt_tokens_est = round((len(system) + len(user)) / CHARS_PER_TOKEN)
 
@@ -938,6 +1042,10 @@ def run_arm(
                 elif result.failed:
                     candidate.problem = "smoke"
                 candidate.feedback = smoke.smoke_feedback(result) if candidate.problem else ""
+                if checked:
+                    check_round(t.repo, state.candidate_files(), candidate)
+            if checked:
+                record.round_findings.append(list(candidate.findings or []))
             record.round_problems.append(candidate.problem)
             applied = (
                 not truncated
@@ -993,11 +1101,13 @@ def _save_round(
     round_dir.mkdir(parents=True, exist_ok=True)
     if text is not None:
         (round_dir / "response.md").write_text(text)
-    meta = {
+    meta: dict[str, Any] = {
         "stop_reason": stop_reason,
         "problem": candidate.problem,
         "feedback": candidate.feedback,
     }
+    if candidate.findings is not None:
+        meta["findings"] = candidate.findings
     (round_dir / "round.json").write_text(json.dumps(meta, indent=2) + "\n")
     for rel, src in (files or {}).items():
         target = (round_dir / "files" / rel).resolve()
@@ -1081,9 +1191,10 @@ def _outcome(record: RunRecord, outcome: Outcome) -> None:
 
 
 def reference_answer(arm: Arm, ticket_id: str) -> str | None:
-    """The hand-written solution as an answer in the arm's format (None: a gap)."""
+    """The hand-written solution as an answer in the arm's format (None: a gap): the
+    Python reference for P, Q and Q+, the Lattice reference for L and L+."""
     t = ticket(ticket_id)
-    if arm == "P":
+    if language(arm) == "P":
         overlay = p_start(t)
         files = {
             prompts.APP_PREFIX + rel: src
@@ -1128,7 +1239,7 @@ def partial_reference_answer(arm: Arm, ticket_id: str) -> str | None:
     same merge-by-name code a live partial answer would (None: a gap, as
     :func:`reference_answer`)."""
     t = ticket(ticket_id)
-    if arm == "P":
+    if language(arm) == "P":
         overlay = p_start(t)
         files = {
             prompts.APP_PREFIX + rel: _partial_or_whole(
@@ -1164,16 +1275,17 @@ def dry_run(arm: Arm, ticket_id: str, *, partial: bool = False) -> RunRecord:
     from the language and lifter work on purpose, with no Lattice reference written for
     it at all (``no_reference`` -- round 3's t13-t18, see :mod:`bench.edit_slice.tickets`)."""
     repo = ticket(ticket_id).repo
-    if arm == "L" and not has_lattice_start(repo):
+    lattice = language(arm) == "L"
+    if lattice and not has_lattice_start(repo):
         return RunRecord(
             ticket_id,
             arm,
             "reference",
             outcome="not_imported",
-            detail=f"arm L on {repo!r} needs the importer's output (start_lattice)",
+            detail=f"arm {arm} on {repo!r} needs the importer's output (start_lattice)",
             dry_run=True,
         )
-    if arm == "L" and not has_lattice_reference(ticket_id) and ticket_id not in GAPS:
+    if lattice and not has_lattice_reference(ticket_id) and ticket_id not in GAPS:
         return RunRecord(
             ticket_id,
             arm,
@@ -1220,8 +1332,11 @@ def token_counter(model: str) -> Callable[[str, str], int]:
     return lambda system, user: round((len(system) + len(user)) / CHARS_PER_TOKEN)
 
 
-def estimate(models: Sequence[str], tickets: Sequence[str], reps: int) -> dict[str, Any]:
-    """Prompt sizes per arm and ticket and the expected cost of the live run."""
+def estimate(
+    models: Sequence[str], tickets: Sequence[str], reps: int, arms: Sequence[str] = ARMS
+) -> dict[str, Any]:
+    """Prompt sizes per arm and ticket and the expected cost of the live run. An arm's
+    expected answer is its language's reference (Q and Q+ answer like P, L+ like L)."""
     from bench.metrics import price_for
 
     rows = []
@@ -1230,12 +1345,13 @@ def estimate(models: Sequence[str], tickets: Sequence[str], reps: int) -> dict[s
         count = token_counter(model)
         price = price_for(model) or (0.0, 0.0)
         for tid in tickets:
-            # arm L only where it has a start state (an import of the ticket's app)
-            arms = [a for a in ARMS if a == "P" or has_lattice_start(ticket(tid).repo)]
-            answers = {a: reference_answer(a, tid) for a in arms}
-            p_answer = answers["P"] or ""
-            for arm in arms:
-                system, user = p_prompt(tid) if arm == "P" else l_prompt(tid)
+            # arms L and L+ only where they have a start state (an import of the app)
+            lattice = has_lattice_start(ticket(tid).repo)
+            here = [a for a in arms if language(a) == "P" or lattice]
+            answers = {a: reference_answer(a, tid) for a in here}
+            p_answer = reference_answer("P", tid) or ""
+            for arm in here:
+                system, user = arm_prompt(arm, tid)
                 prompt = count(system, user)
                 answer = answers[arm]
                 if answer is None:  # no reference (a gap): the touched program, edited
@@ -1302,7 +1418,11 @@ def render_estimate(est: Mapping[str, Any]) -> str:
 def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="python -m bench.edit_slice.run", description=__doc__)
     p.add_argument("--model", default="claude-sonnet-5")
-    p.add_argument("--arm", default="P,L", help="P, L or P,L")
+    p.add_argument(
+        "--arm",
+        default="P,L",
+        help="comma-separated arms: P, L (rounds 1-4), Q, L+, Q+ (round 5)",
+    )
     p.add_argument(
         "--tickets",
         default="all",
@@ -1459,11 +1579,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     tickets = _tickets(args.tickets)
     arms: list[Arm] = [a.strip() for a in args.arm.split(",") if a.strip()]  # type: ignore[misc]
     for arm in arms:
-        if arm not in ARMS:
+        if arm not in ROUND5_ARMS:
             raise SystemExit(f"unknown arm {arm!r}")
     if args.estimate:
         models = [m.strip() for m in args.estimate_models.split(",") if m.strip()]
-        print(render_estimate(estimate(models, tickets, args.reps)))
+        print(render_estimate(estimate(models, tickets, args.reps, arms)))
         return 0
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

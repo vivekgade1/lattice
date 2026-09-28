@@ -35,6 +35,7 @@ import importlib.abc
 import importlib.util
 import linecache
 import sys
+import threading
 import types
 from collections.abc import Generator, Mapping
 from pathlib import Path
@@ -238,6 +239,10 @@ class _Finder(importlib.abc.MetaPathFinder, importlib.abc.Loader):
 
 
 _FINDER = _Finder()
+# load_variant's check-then-insert is atomic: two threads loading one new content must
+# share one Variant, since the finder executes its modules against the registered one's
+# SQLModel registry (a second, unregistered Variant would create no tables)
+_LOAD_LOCK = threading.Lock()
 sys.meta_path.insert(0, _FINDER)
 
 
@@ -259,8 +264,9 @@ def load_variant(
         key = f"{app.name}:{key}"
     digest = hashlib.sha256(key.encode()).hexdigest()[:16]
     package = f"_edit_slice_variant_{digest}"
-    v = _FINDER.variants.get(package)
-    if v is None:
-        v = Variant(package, files, origins or {}, app)
-        _FINDER.variants[package] = v
+    with _LOAD_LOCK:  # one Variant per content, even when threads load it at once
+        v = _FINDER.variants.get(package)
+        if v is None:
+            v = Variant(package, files, origins or {}, app)
+            _FINDER.variants[package] = v
     return v
