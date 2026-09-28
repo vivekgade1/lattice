@@ -300,7 +300,8 @@ def bind_values(
 ) -> dict[str, object]:
     """The named parameters to execute `query` with. An optional parameter that was not
     sent (UNSET) binds null, and its "sent" flag 0; `now` is the request's instant;
-    `caller` is the caller's row (column -> stored value) for `user.<column>`."""
+    `caller` is the caller's row (column -> value; OneOf columns decoded from their
+    stored spellings by the authentication statement) for `user.<column>`."""
     values = params or {}
     out: dict[str, object] = {name: dialect.to_db(v) for name, v in query.binds}
     for p in query.params:
@@ -318,7 +319,7 @@ def bind_values(
     for column in query.caller:
         if caller is None:
             raise LatticeInternalError(f"user.{column} without an authenticated caller")
-        out[caller_bind(column)] = caller[column]  # already the stored spelling
+        out[caller_bind(column)] = caller[column]  # decoded by the auth statement
     return out
 
 
@@ -1093,12 +1094,14 @@ def compile_lookup(
     *,
     native: str | None = None,
     dialect: Dialect = SQLITE,
+    stored: Stored = (),
 ) -> str:
     """SELECT `columns` of `table`'s rows whose `column` equals the one positional
     parameter (the runtime's authentication statement) -- or, with `native`, equals
-    that native applied to the parameter (a bearer token decoded to a key)."""
+    that native applied to the parameter (a bearer token decoded to a key). `stored`
+    columns are decoded to their OneOf values, so the caller's row is never raw."""
     q = dialect.quote
-    cols = ", ".join(q(c) for c in columns)
+    cols = _decoded(q, columns, stored)
     value = dialect.positional_bind()
     if native is not None:
         value = dialect.native(native, [value])

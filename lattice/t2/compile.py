@@ -17,7 +17,12 @@ what the checker resolved it to (`CheckedProcedure.targets`):
   is not a procedure call (`<fuel>.call(f)(args)`: charged, then called), and every
   element a builtin consumes (`sum(xs)` becomes `sum(<fuel>.bulk(xs))`: a sized
   argument is charged its length up front);
-* a procedure call passes the fuel on: `helper(<fuel>, x)`.
+* a procedure call passes the fuel on: `helper(<fuel>, x)`;
+* size is charged too: an operation whose result grows with an operand (`+`, `*`,
+  `**`, `<<` and their augmented forms, `ljust`/`rjust`/`center`/`zfill`, `replace`,
+  `join`, format specs, `re.sub`, `json.dumps`) is compiled into a fuel method that
+  computes the result's size first, refuses a value larger than the cap (R622) and
+  charges it; a regular expression is charged its input's length.
 
 The same source serves the runtime (`lattice.api.runtime`) and the generated app
 (`lattice.api.codegen`), so fuel accounting is identical in both.
@@ -62,6 +67,26 @@ _CONSUMERS: Mapping[str, tuple[int, ...]] = {
 }
 # min(a, b) / max(a, b) compare their arguments; only the one-argument form consumes one
 _ONE_ARG_ONLY = frozenset({"builtin:min", "builtin:max"})
+# Operators whose result can grow with an operand: `a op b` becomes `<fuel>.<name>(a, b)`
+# (charged the result's size before it is computed; see T2Fuel.grow / bits).
+_GROWING_OPS: Mapping[type, str] = {
+    ast.Add: "add",
+    ast.Mult: "mul",
+    ast.Pow: "pow",
+    ast.LShift: "lshift",
+}
+# Methods padding their receiver to a width (the first argument).
+_PADDING = frozenset(
+    {"method:Str.ljust", "method:Str.rjust", "method:Str.center", "method:Str.zfill"}
+)
+# Regular expressions: the input (second argument) is charged its length.
+_REGEX_SCANS = frozenset(
+    {"std:re.fullmatch", "std:re.match", "std:re.search", "std:re.findall", "std:re.split"}
+)
+# Calls replaced by a fuel method taking the receiver (a method) or the function (a
+# std function) first: it computes the result's size before calling.
+_SIZED_METHODS: Mapping[str, str] = {"method:Str.replace": "replace", "method:Str.join": "join"}
+_SIZED_FUNCTIONS: Mapping[str, str] = {"std:re.sub": "sub", "std:json.dumps": "dumps"}
 _HELPERS = ("days", "hours", "minutes", "seconds")
 _FUEL = "_lt_fuel"
 
@@ -145,7 +170,8 @@ def _fresh_fuel_name(t2: T2Program) -> str:
         used |= {n.id for n in ast.walk(proc.node) if isinstance(n, ast.Name)}
         used |= {a.arg for a in ast.walk(proc.node) if isinstance(a, ast.arg)}
     name, n = _FUEL, 2
-    while name in used:
+    # <fuel>_a1, ... are the augmented assignments' temporaries: no name may start so
+    while name in used or any(u.startswith(name + "_") for u in used):
         name, n = f"{_FUEL}{n}", n + 1
     return name
 
@@ -157,6 +183,7 @@ class _Instrument(ast.NodeTransformer):
     def __init__(self, proc: CheckedProcedure, fuel: str) -> None:
         self.proc = proc
         self.fuel = fuel
+        self.temps = 0  # augmented assignments' temporaries: <fuel>_a1, <fuel>_a2, ...
         memo: dict[int, object] = {}
         self.fn: ast.FunctionDef = copy.deepcopy(proc.node, memo)
         # the checker's call targets are keyed by the original nodes: re-key them
@@ -169,6 +196,9 @@ class _Instrument(ast.NodeTransformer):
     def _fuel(self, method: str, *args: ast.expr) -> ast.Call:
         func = ast.Attribute(ast.Name(self.fuel, ast.Load()), method, ast.Load())
         return ast.Call(func, list(args), [])
+
+    def _attr(self, method: str) -> ast.Attribute:
+        return ast.Attribute(ast.Name(self.fuel, ast.Load()), method, ast.Load())
 
     def _stmt(self, method: str) -> ast.stmt:
         return ast.Expr(self._fuel(method))
@@ -215,6 +245,46 @@ class _Instrument(ast.NodeTransformer):
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         raise LatticeInternalError("a nested def in a checked procedure")
 
+    def _temp(self) -> str:
+        self.temps += 1
+        return f"{self.fuel}_a{self.temps}"  # the fuel name is fresh, so are these
+
+    def visit_AugAssign(self, node: ast.AugAssign) -> ast.stmt | list[ast.stmt]:
+        """`t op= v` for a growing op: the operands evaluated once into temporaries,
+        the size checked (`<fuel>.aug(op, t, v)`), then the augmented assignment itself
+        (so `xs += ys` stays in place)."""
+        self.generic_visit(node)
+        name = _GROWING_OPS.get(type(node.op))
+        if name is None:
+            return node
+        stmts: list[ast.stmt] = []
+
+        def bind(value: ast.expr) -> ast.Name:
+            tmp = self._temp()
+            stmts.append(ast.Assign([ast.Name(tmp, ast.Store())], value))
+            return ast.Name(tmp, ast.Load())
+
+        target = node.target
+        if isinstance(target, ast.Subscript):
+            container = bind(target.value)
+            index = target.slice
+            key: ast.expr
+            if isinstance(index, ast.Slice):  # xs[a:b] += ...: each bound once
+                parts = (index.lower, index.upper, index.step)
+                key = ast.Slice(*(None if p is None else bind(p) for p in parts))
+            else:
+                key = bind(index)
+            target = ast.Subscript(container, key, ast.Store())
+        value = bind(node.value)
+        current = copy.copy(target)
+        current.ctx = ast.Load()
+        check = self._fuel("aug", ast.Constant(name), current, value)
+        stmts.append(ast.Expr(check))
+        stmts.append(ast.AugAssign(target, node.op, value))
+        for st in stmts:
+            ast.copy_location(st, node)
+        return stmts
+
     # ---- expressions ----------------------------------------------------------------
 
     def visit_comprehension(self, node: ast.comprehension) -> ast.comprehension:
@@ -222,12 +292,40 @@ class _Instrument(ast.NodeTransformer):
         node.iter = self._fuel("each", node.iter)
         return node
 
+    def visit_BinOp(self, node: ast.BinOp) -> ast.expr:
+        self.generic_visit(node)
+        name = _GROWING_OPS.get(type(node.op))
+        if name is None:
+            return node
+        return ast.copy_location(self._fuel(name, node.left, node.right), node)
+
+    def visit_FormattedValue(self, node: ast.FormattedValue) -> ast.FormattedValue:
+        """`f"{v!c:spec}"` with a spec: `f"{<fuel>.fmt(v, spec, c)}"` (the spec's width
+        and precision charged and capped before formatting)."""
+        self.generic_visit(node)
+        if node.format_spec is None:
+            return node
+        spec = node.format_spec
+        call = self._fuel("fmt", node.value, spec, ast.Constant(node.conversion))
+        return ast.copy_location(ast.FormattedValue(call, -1, None), node)
+
     def visit_Call(self, node: ast.Call) -> ast.expr:
         target = self.targets.get(id(node))
         self.generic_visit(node)
         if target is not None and target.startswith("proc:"):
             node.args.insert(0, ast.Name(self.fuel, ast.Load()))
             return node
+        if target in _SIZED_METHODS and isinstance(node.func, ast.Attribute):
+            method = self._fuel("call", self._attr(_SIZED_METHODS[target]))
+            return ast.copy_location(ast.Call(method, [node.func.value, *node.args], []), node)
+        if target in _SIZED_FUNCTIONS:
+            method = self._fuel("call", self._attr(_SIZED_FUNCTIONS[target]))
+            call = ast.Call(method, [node.func, *node.args], node.keywords)
+            return ast.copy_location(call, node)
+        if target in _PADDING and node.args:
+            node.args[0] = self._fuel("width", node.args[0])
+        if target in _REGEX_SCANS and len(node.args) > 1:
+            node.args[1] = self._fuel("scan", node.args[1])
         positions = _CONSUMERS.get(target or "", ())
         if target in _ONE_ARG_ONLY and len(node.args) != 1:
             positions = ()

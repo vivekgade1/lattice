@@ -103,7 +103,7 @@ from lattice.api.outbox import (
     RETRY_PENDING_SQL,
     RETRY_SQL,
 )
-from lattice.api.runtime import auth_sql
+from lattice.api.runtime import ambiguous_caller, auth_sql
 from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, caller_bind, sent_bind
 from lattice.catalog import EMAIL_MAX_LEN, LIST_KIND, T2_EFFECT_PREFIX, USER_PARAM
 from lattice.check import CheckResult, check_source
@@ -197,6 +197,9 @@ class Endpoint:
     fixed_role: str | None = None  # NoRoles: every caller's role (no column is read)
     form: bool = False  # body parameters are URL-encoded form fields, not a JSON object
     effects: bool = False  # for_each: the steps collect outbox rows, sent after COMMIT
+    # NativeToken(unique="runtime"): the 500 message (R311) when the token matches
+    # several users rows (None: the lookup column is declared unique)
+    ambiguous: str | None = None
 
 
 class Caller(NamedTuple):
@@ -829,11 +832,15 @@ def _token(header: str | None) -> str | None:
 
 
 def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
-    """The caller by bearer token (one statement): 401 if unknown, 403 if the role may
-    not call the endpoint (the admin role may call every endpoint)."""
-    row = conn.execute(ep.auth_sql, (token,)).fetchone()
-    if row is None:
+    """The caller by bearer token (one statement): 401 if unknown, 500 if ambiguous
+    (several rows), 403 if the role may not call the endpoint (the admin role may call
+    every endpoint)."""
+    rows = conn.execute(ep.auth_sql, (token,)).fetchmany(2)
+    if not rows:
         raise ErrorResponse(401, "unauthorized", UNAUTHORIZED_DETAIL)
+    if len(rows) > 1:  # never pick one of them
+        raise Failure(ep.ambiguous or "error R311: ambiguous caller")
+    row = rows[0]
     user_id = row[ep.user_columns.index(ep.user_key)]
     if ACTIVE_COLUMN is not None and not row[ep.user_columns.index(ACTIVE_COLUMN)]:
         raise ErrorResponse(INACTIVE_STATUS, STATUS_CODES[INACTIVE_STATUS], INACTIVE_DETAIL)
@@ -1162,7 +1169,7 @@ def t2_begin(
         )
     is_admin = caller is not None and bool(caller.is_admin)
     request = T2Request(values, UNSET, row, T2_CALLER, ep.user_key, is_admin, role, now)
-    return T2Fuel(T2_FUEL), request
+    return T2Fuel(T2_FUEL, max_size=T2_MAX_SIZE), request
 
 
 def t2_run(where: str, fn: Callable[..., Any], *args: Any) -> Any:
@@ -1192,7 +1199,7 @@ _RESERVED = (
     | _module_names(_T2_SUPPORT)
     | _module_names(_T2_HELPERS)
     | _module_names(_CONTEXT_SUPPORT)
-    | {"T2", "T2_SOURCE", "T2_FUEL", "T2_CALLER", _NATIVE_SETTINGS}
+    | {"T2", "T2_SOURCE", "T2_FUEL", "T2_MAX_SIZE", "T2_CALLER", _NATIVE_SETTINGS}
 )
 
 
@@ -1364,6 +1371,15 @@ def _param(spec: ParamSpec, null_ok: Sequence[str] = ()) -> _Call:
     if spec.email:
         args.append(_Kw("email", "True"))
     return _Call("Param", tuple(args))
+
+
+def _ambiguous(plan: EndpointPlan) -> list[_Kw]:
+    """NativeToken(unique="runtime"): R311's located message, as the runtime renders it."""
+    if not plan.token_runtime_unique:
+        return []
+    where = f"{plan.span.line}:{plan.span.col}"
+    message = f"{where}: error R311: {ambiguous_caller(plan.token_lookup)}"
+    return [_Kw("ambiguous", _py_str(message))]
 
 
 def _auth_sql(plan: EndpointPlan) -> str:
@@ -1658,6 +1674,7 @@ class _EndpointGen:
                 *self.role_source(),
                 *([_Kw("form", "True")] if plan.body == "form" else []),
                 *([_Kw("effects", "True")] if _sends(plan) else []),
+                *_ambiguous(plan),
             ),
         )
         rule = "# " + "-" * 86
@@ -1800,7 +1817,8 @@ def _t2_section(plans: Sequence[EndpointPlan], aliases: dict[str, str]) -> str:
     rule = "# " + "-" * 86
     fuels = {plan.fuel for plan in plans}
     callers = {plan.t2_caller for plan in plans}
-    if len(fuels) > 1 or len(callers) > 1:
+    sizes = {plan.max_value_size for plan in plans}
+    if len(fuels) > 1 or len(callers) > 1 or len(sizes) > 1:
         raise LatticeInternalError("the plans disagree on the T2 settings")
     lines = [f"{_py_str(line + chr(10))}" for line in code.source.rstrip("\n").split("\n")]
     source = "T2_SOURCE = (\n" + "\n".join(f"    {ln}" for ln in lines) + "\n)"
@@ -1815,6 +1833,8 @@ def _t2_section(plans: Sequence[EndpointPlan], aliases: dict[str, str]) -> str:
         source,
         load,
         f"T2_FUEL = {fuels.pop()}  # the fuel budget of one request (ApiProfile.fuel)",
+        f"T2_MAX_SIZE = {sizes.pop()}  # the largest value a procedure builds "
+        "(ApiProfile.max_value_size)",
         caller,
         _T2_HELPERS.rstrip("\n"),
     ]
@@ -1823,7 +1843,9 @@ def _t2_section(plans: Sequence[EndpointPlan], aliases: dict[str, str]) -> str:
         entries = tuple(
             (
                 _py_str(T2_EFFECT_PREFIX + name),
-                _Call("t2_effect", ("T2", "T2_FUEL", _py_str(name), _strs(params))),
+                _Call(
+                    "t2_effect", ("T2", "T2_FUEL", _py_str(name), _strs(params), "T2_MAX_SIZE")
+                ),
             )
             for name, params in effects
         )

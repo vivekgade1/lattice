@@ -32,6 +32,7 @@ import dataclasses as t2_dataclasses
 import datetime as t2_dt
 import importlib as t2_importlib
 import logging as t2_logging
+import re as t2_re
 import types as t2_types
 import uuid as t2_uuid
 
@@ -42,6 +43,16 @@ T2_MAX_DEPTH = 200
 # many when that is larger (R621 otherwise): rows a procedure returns are bounded by its
 # input.
 T2_MIN_ROW_BOUND = 100
+# The default largest value a procedure may build (ApiProfile.max_value_size): a str's
+# characters, a list's / tuple's elements; larger is R622.
+T2_DEFAULT_MAX_SIZE = 10_000_000
+# An operation whose result grows with an operand costs one unit of fuel per this many
+# characters / elements of its result (charged before it runs), so small values cost
+# nothing extra and a large one is paid for before it is built.
+T2_SIZE_UNIT = 16
+# The largest Int a procedure may build, in bits (about 20,000 decimal digits): big-int
+# arithmetic is superlinear, and no value of a web request needs more.
+T2_MAX_INT_BITS = 1 << 16
 
 
 class T2Error(Exception):
@@ -86,17 +97,38 @@ class T2FuelExhausted(T2Error):
         super().__init__("R620", message)
 
 
+class T2TooLarge(T2Error):
+    """A procedure would build a value larger than the cap (ApiProfile.max_value_size),
+    or an Int of more than T2_MAX_INT_BITS bits."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__("R622", message)
+
+
+_T2_SEQ = (str, list, tuple)
+
+
 class T2Fuel:
-    """The fuel of one request (or one outbox dispatch): `left` units, and the current
-    procedure call depth."""
+    """The fuel of one request (or one outbox dispatch): `left` units, the current
+    procedure call depth, and the largest value a procedure may build (`max_size`).
 
-    __slots__ = ("budget", "depth", "left", "max_depth")
+    Besides steps, fuel pays for size: an operation whose result grows with an operand
+    (`s * n`, `s + t`, `s.ljust(n)`, `b ** n`, `b << n`, a format spec's width, ...)
+    is compiled into a call of one of the methods below, which computes the result's
+    size from the operands *before* the operation runs, refuses it when it is larger
+    than `max_size` (R622), charges it (one unit per T2_SIZE_UNIT) and only then
+    computes it."""
 
-    def __init__(self, budget: int, max_depth: int = T2_MAX_DEPTH) -> None:
+    __slots__ = ("budget", "depth", "left", "max_depth", "max_size")
+
+    def __init__(
+        self, budget: int, max_depth: int = T2_MAX_DEPTH, max_size: int = T2_DEFAULT_MAX_SIZE
+    ) -> None:
         self.budget = budget
         self.left = budget
         self.depth = 0
         self.max_depth = max_depth
+        self.max_size = max_size
 
     def _spent(self) -> T2FuelExhausted:
         self.left = -1
@@ -151,6 +183,165 @@ class T2Fuel:
 
     def leave(self) -> None:
         self.depth -= 1
+
+    # ---- size -------------------------------------------------------------------------
+
+    def grow(self, size: int) -> None:
+        """A value of `size` characters / elements is about to be built: refused when
+        larger than the cap (R622), else charged by size."""
+        if size > self.max_size:
+            raise T2TooLarge(
+                f"a procedure would build a value of {size} characters or elements; the "
+                f"largest allowed is {self.max_size} (ApiProfile.max_value_size)"
+            )
+        self.left -= size // T2_SIZE_UNIT
+        if self.left < 0:
+            raise self._spent()
+
+    def bits(self, n: int) -> None:
+        """An Int of about `n` bits is about to be computed."""
+        if n > T2_MAX_INT_BITS:
+            raise T2TooLarge(
+                f"a procedure would build an Int of about {n} bits; the largest allowed "
+                f"has {T2_MAX_INT_BITS}"
+            )
+        self.left -= n // (8 * T2_SIZE_UNIT)
+        if self.left < 0:
+            raise self._spent()
+
+    def add(self, a: object, b: object) -> object:
+        """`a + b` (and `a += b`): a concatenation is charged its length."""
+        if isinstance(a, _T2_SEQ) and isinstance(b, _T2_SEQ):
+            self.grow(len(a) + len(b))
+        return a + b  # type: ignore[operator]
+
+    def _mul_size(self, a: object, b: object) -> None:
+        if isinstance(a, _T2_SEQ) and isinstance(b, int):
+            self.grow(len(a) * max(b, 0))
+        elif isinstance(b, _T2_SEQ) and isinstance(a, int):
+            self.grow(len(b) * max(a, 0))
+        elif isinstance(a, int) and isinstance(b, int):
+            self.bits(a.bit_length() + b.bit_length())
+
+    def mul(self, a: object, b: object) -> object:
+        """`a * b`: a repetition is charged its length, an Int product its bits."""
+        self._mul_size(a, b)
+        return a * b  # type: ignore[operator]
+
+    def _pow_size(self, a: object, b: object) -> None:
+        if isinstance(a, int) and isinstance(b, int) and b > 1 and abs(a) > 1:
+            self.bits(abs(a).bit_length() * b)
+
+    def pow(self, a: object, b: object) -> object:
+        """`a ** b`: an Int power is charged its bits (at most bit_length(a) * b)."""
+        self._pow_size(a, b)
+        return a**b  # type: ignore[operator]
+
+    def _lshift_size(self, a: object, b: object) -> None:
+        if isinstance(a, int) and isinstance(b, int) and a != 0 and b > 0:
+            self.bits(a.bit_length() + b)
+
+    def lshift(self, a: object, b: object) -> object:
+        """`a << b`: charged the result's bits."""
+        self._lshift_size(a, b)
+        return a << b  # type: ignore[operator]
+
+    def aug(self, op: str, a: object, b: object) -> None:
+        """The size check of an augmented assignment `a op= b` (run just before it, so
+        an in-place `xs += ys` keeps its meaning)."""
+        if op == "add":
+            if isinstance(a, _T2_SEQ) and isinstance(b, _T2_SEQ):
+                self.grow(len(a) + len(b))
+        elif op == "mul":
+            self._mul_size(a, b)
+        elif op == "pow":
+            self._pow_size(a, b)
+        elif op == "lshift":
+            self._lshift_size(a, b)
+
+    def width(self, n: object) -> object:
+        """The width of `s.ljust(n)` / `rjust` / `center` / `zfill`: the result has at
+        most max(len(s), n) characters -- `n` is charged and capped."""
+        if isinstance(n, int) and n > 0:
+            self.grow(n)
+        return n
+
+    def fmt(self, value: object, spec: str, conversion: int) -> str:
+        """A format spec `f"{value!c:spec}"`: its numbers (width, precision) bound what
+        it adds to the value's own text, charged and capped before formatting."""
+        if conversion == 115:  # !s
+            value = str(value)
+        elif conversion == 114:  # !r
+            value = repr(value)
+        elif conversion == 97:  # !a
+            value = ascii(value)
+        self.grow(sum(int(d) for d in t2_re.findall(r"\d+", spec)))
+        return format(value, spec)
+
+    def replace(self, s: str, old: str, new: str, count: int = -1) -> str:
+        """`s.replace(old, new[, count])`: charged its scan and the grown size."""
+        self.grow(len(s))
+        if len(new) > len(old):
+            n = len(s) + 1 if old == "" else s.count(old)
+            if count >= 0:
+                n = min(n, count)
+            self.grow(len(s) + n * (len(new) - len(old)))
+        return s.replace(old, new, count)
+
+    def join(self, sep: str, items: object) -> str:
+        """`sep.join(items)`: the items are charged one each (like any consumer), the
+        result its length."""
+        parts = list(self.bulk(items))  # type: ignore[call-overload]
+        size = sum(len(p) for p in parts) + len(sep) * max(len(parts) - 1, 0)
+        self.grow(size)
+        return sep.join(parts)
+
+    def scan(self, s: object) -> object:
+        """A regular expression's input: charged its length (a pattern's work grows
+        with it; catastrophic patterns are refused by the checker, L925)."""
+        if isinstance(s, str):
+            self.grow(len(s))
+        return s
+
+    def sub(self, fn: object, pattern: str, repl: str, s: str, *rest: object) -> str:
+        """`re.sub(pattern, repl, s)`: charged its input, then the most it can grow to --
+        each match replaced by `repl`, whose group references expand to at most the
+        longest match -- before it runs."""
+        self.scan(s)
+        count = 0
+        longest = 0
+        for m in t2_re.finditer(pattern, s):
+            count += 1
+            longest = max(longest, m.end() - m.start())
+        self.grow(len(s) + count * len(repl) * max(longest, 1))
+        return fn(pattern, repl, s, *rest)  # type: ignore[operator]
+
+    def dumps(self, fn: object, value: object, *args: object, **kw: object) -> str:
+        """`json.dumps(value, indent=...)`: the value's nodes are charged one each, the
+        indentation's size (nodes x depth x indent) is capped before it runs, the text
+        after."""
+        nodes, depth, text = 0, 0, 0
+        stack = [(value, 1)]
+        while stack:
+            v, d = stack.pop()
+            nodes += 1
+            depth = max(depth, d)
+            if isinstance(v, dict):
+                stack.extend((x, d + 1) for x in v.values())
+                text += sum(len(str(k)) for k in v)
+            elif isinstance(v, list | tuple):
+                stack.extend((x, d + 1) for x in v)
+            elif isinstance(v, str):
+                text += len(v)
+        self.left -= nodes
+        if self.left < 0:
+            raise self._spent()
+        indent = kw.get("indent")
+        step = len(indent) if isinstance(indent, str) else indent if isinstance(indent, int) else 0
+        self.grow(text + nodes * (max(step, 0) * depth + 4))
+        out = fn(value, *args, **kw)  # type: ignore[operator]
+        self.grow(len(out))
+        return out
 
 
 class T2Row:
@@ -524,12 +715,20 @@ def t2_call(
     ]
 
 
-def t2_effect(ns: dict, budget: int, proc: str, params: tuple[str, ...]) -> object:
+def t2_effect(
+    ns: dict,
+    budget: int,
+    proc: str,
+    params: tuple[str, ...],
+    max_size: int = T2_DEFAULT_MAX_SIZE,
+) -> object:
     """An effectful procedure as the outbox dispatches it: called with the row's
-    arguments (in parameter order) on a fresh budget, after COMMIT."""
+    arguments (in parameter order) on a fresh budget (and the value size cap), after
+    COMMIT."""
 
     def send(*args: object) -> object:
-        return t2_invoke(ns, T2Fuel(budget), proc, dict(zip(params, args, strict=True)))
+        fuel = T2Fuel(budget, max_size=max_size)
+        return t2_invoke(ns, fuel, proc, dict(zip(params, args, strict=True)))
 
     send.__name__ = proc
     return send

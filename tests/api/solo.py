@@ -4,7 +4,9 @@
   concept: every authenticated caller is a Customer, and ``owned()``/``accessible()``
   equal ``mine()``;
 * ``NativeToken("decode_token", lookup="username")`` -- the token's subject is the
-  (unique) username, not the users key;
+  (unique) username, not the users key; the ``*_RUNTIME`` variant declares no unique
+  constraint on it (``unique="runtime"``): its database holds two users named
+  ``dave``, whose token is a loud 500 (R311, an ambiguous caller), never one of them;
 * context natives -- ``decode_token`` and ``greet`` read profile-declared settings (the
   signing secret, a greeting) from their ``NativeContext``, supplied at start-up;
 * ``OneOf`` columns -- ``Task.status`` and ``Task.priority`` hold only listed values;
@@ -18,6 +20,7 @@ Shared by tests/api/test_import_gap_features.py and the codegen differential.
 from __future__ import annotations
 
 import sqlite3
+from dataclasses import replace
 from pathlib import Path
 
 from lattice.profile import ApiProfile, NativeSig, NativeToken, NoRoles, Profile
@@ -83,7 +86,33 @@ TASKS = [
 ]
 
 
-def build_db(path: Path) -> None:
+# the unique="runtime" variant: username is not declared unique (the app enforces it in
+# code only), and the database holds two users named "dave"
+USER_RUNTIME = Schema.from_pairs(USER.columns, keys=[("id",)], private=["password_hash"])
+API_RUNTIME = replace(
+    API,
+    tables={"User": USER_RUNTIME, "Task": TASK},
+    auth=NativeToken("decode_token", lookup="username", unique="runtime"),
+)
+PROFILE_RUNTIME = Profile(schemas={}, api=API_RUNTIME)
+DUPLICATES = [(4, "dave"), (5, "dave")]
+TOKENS["dave"] = mint_token(SETTINGS["secret"], "dave")
+
+
+def build_db_runtime(path: Path) -> None:
+    build_db(path, unique=False)
+    conn = sqlite3.connect(path)
+    try:
+        conn.executemany(
+            "INSERT INTO users VALUES (?, ?, ?, 1)",
+            [(i, n, hash_password(n)) for i, n in DUPLICATES],
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def build_db(path: Path, *, unique: bool = True) -> None:
     conn = sqlite3.connect(path)
     try:
         conn.executescript(
@@ -96,7 +125,7 @@ def build_db(path: Path) -> None:
                 id INTEGER PRIMARY KEY, owner_id INTEGER NOT NULL REFERENCES users(id),
                 title TEXT NOT NULL, status TEXT NOT NULL, priority TEXT
             );
-            """
+            """.replace("UNIQUE,", "UNIQUE," if unique else ",")
         )
         conn.executemany(
             "INSERT INTO users VALUES (?, ?, ?, ?)",

@@ -127,44 +127,127 @@ def imported() -> tuple[dict[str, str], str]:
     return programs, result.profile.source
 
 
-# The held-out repos' imports, once the importer produces them: repo -> a function
-# returning ({program file: source}, profile source), as imported() does for the template.
+IMPORTS = REPO_ROOT / "bench" / "imports"  # the held-out repos' imports (lattice.importer)
+
+
+def import_dir(repo: str) -> Path:
+    """The committed import of the held-out app ``repo`` (``python -m lattice.importer
+    ... --out bench/imports/<repo>``): ``profile.py``, ``natives.py``, ``routes/`` (one
+    ``<router>.lattice.py`` per router with a verified route) and ``report.json``."""
+    return IMPORTS / repo
+
+
+def imported_repo(repo: str) -> tuple[dict[str, str], str]:
+    """The held-out app's import, as :func:`imported` gives the template's: ``{router
+    file: program}`` and the profile source, read from :func:`import_dir` -- the
+    importer's output, unedited."""
+    out = import_dir(repo)
+    programs = {p.name: p.read_text() for p in sorted((out / "routes").glob("*.lattice.py"))}
+    return programs, (out / "profile.py").read_text()
+
+
+# repo -> a function returning ({program file: source}, profile source): the template's
+# lifters' output; a held-out repo's is its committed import (import_dir), when written
 LATTICE_STARTS: dict[str, Callable[[], tuple[dict[str, str], str]]] = {"template": imported}
+HELD_OUT_REPOS = ("taskflow", "justnotes")
+
+
+def _start(repo: str) -> Callable[[], tuple[dict[str, str], str]] | None:
+    if repo in LATTICE_STARTS:
+        return LATTICE_STARTS[repo]
+    if repo in HELD_OUT_REPOS and (import_dir(repo) / "profile.py").exists():
+        return lambda: imported_repo(repo)
+    return None
 
 
 def has_lattice_start(repo: str) -> bool:
     """Whether arm L has a start state (an import) for the app ``repo``."""
-    return repo in LATTICE_STARTS
+    return _start(repo) is not None
 
 
 def start_lattice(repo: str) -> tuple[dict[str, str], str]:
     """Arm L's start state for the app ``repo``: the verified import's programs
     (``{"<router>.lattice.py": source}``) and profile source.
 
-    **The hook for the held-out repos.** Their start state must come from the importer
-    (``lattice/importer``), never from Lattice written by hand: TaskFlow and JustNotes are
-    held out from the language and lifter work. Register the importer's output in
-    :data:`LATTICE_STARTS` (and teach :func:`emit_lattice` to mount it into that app);
-    until then this raises ``NotImplementedError``."""
-    start = LATTICE_STARTS.get(repo)
+    For a held-out repo it is the importer's committed output (:func:`import_dir`),
+    never Lattice written by hand: TaskFlow and JustNotes are held out from the language
+    and lifter work. Its routes that the import left as islands are not in the programs
+    (the emitted app keeps them as the original code)."""
+    start = _start(repo)
     if start is None:
         raise NotImplementedError(
             f"arm L has no start state for {repo!r}: it must be the importer's output "
-            "(lift the held-out repo with lattice.importer and register it in "
-            "bench.edit_slice.run.LATTICE_STARTS); no Lattice is written by hand for it"
+            f"(python -m lattice.importer ... --out {import_dir(repo)}); no Lattice is "
+            "written by hand for it"
         )
     return start()
 
 
+@cache
+def _original(repo: str) -> Any:
+    return load_variant({}, repo=repo)
+
+
+def taskflow_app(db_path: str | Path) -> Any:
+    """The original TaskFlow app (arm P's start: its tables created at once, the test
+    secret) -- the app arm L's programs are emitted into."""
+    return _original("taskflow").make_app(db_path)
+
+
+def justnotes_app(db_path: str | Path) -> Any:
+    """The original JustNotes app (arm P's start) -- the app arm L's programs are
+    emitted into."""
+    return _original("justnotes").make_app(db_path)
+
+
+APP_FACTORIES = {
+    "taskflow": f"{__name__}:taskflow_app",
+    "justnotes": f"{__name__}:justnotes_app",
+}
+
+
 def emit_lattice(repo: str, programs: Mapping[str, str], profile_src: str, out: Path,
                  lifted: Sequence[str]) -> Any:  # fmt: skip
-    """Emit arm L's programs into the app ``repo`` (the second hook: the template's
-    emitter mounts into the template; a held-out repo needs its own)."""
-    if repo != "template":
-        raise NotImplementedError(f"no emitter mounts Lattice into {repo!r} yet")
-    from lattice.emit.thin import emit_into_template
+    """Emit arm L's programs into the app ``repo``: the template's emitter for the
+    template; for a held-out repo, the same route-preserving merge into its original app
+    (:func:`lattice.emit.thin.emit_into_app`): the programs' routes replace the routes
+    the import lifted (``lifted``), every other route -- the import's islands -- is
+    kept as the original code."""
+    if repo == "template":
+        from lattice.emit.thin import emit_into_template
 
-    return emit_into_template(programs, profile_src, out, lifted=lifted)
+        return emit_into_template(programs, profile_src, out, lifted=lifted)
+    if repo not in APP_FACTORIES:
+        raise NotImplementedError(f"no emitter mounts Lattice into {repo!r}")
+    from lattice.emit.thin import emit_into_app
+
+    return emit_into_app(
+        programs, profile_src, out, app_factory=APP_FACTORIES[repo], lifted=lifted
+    )
+
+
+def lift_status(ticket_id: str) -> dict[str, str]:
+    """Per route the ticket touches (``Ticket.routes``): ``lifted`` (a Lattice route of
+    arm L's start state, editable), ``island`` (a route of the app the import did not
+    lift: kept as the original code, not editable in arm L) or ``new`` (no such route
+    yet: arm L may add it)."""
+    from lattice.emit.thin import _normalize, app_routes, program_routes
+
+    t = ticket(ticket_id)
+    programs, profile_src = start_lattice(t.repo)
+    profile = load_profile_source(profile_src)
+    lifted = {_normalize(r) for r in program_routes(programs, profile)} if programs else set()
+    if t.repo == "template":
+        from lattice.emit.thin import _template_routes
+
+        existing = {_normalize(f"{m} {p}") for m, p in _template_routes()}
+    else:
+        existing = {_normalize(r) for r in app_routes(APP_FACTORIES[t.repo])}
+    out = {}
+    for route in t.routes:
+        key = _normalize(route)
+        out[route] = "lifted" if key in lifted else "island" if key in existing else "new"
+    return out
 
 
 def p_start(t: Ticket) -> dict[str, str]:
@@ -209,10 +292,10 @@ def l_prompt(ticket_id: str, *, hints: bool = False) -> tuple[str, str]:
     """(system, first user message) of arm L."""
     t = ticket(ticket_id)
     programs, profile = l_start(t)
-    shown = prompts.l_program_files(t)
+    shown = prompts.l_program_files(t, programs)
     others = [n for n in programs if n not in shown]
     user = prompts.l_user_message(t, programs, profile, others=others)
-    return prompts.l_system_prompt(hints=hints), user
+    return prompts.l_system_prompt(hints=hints, repo=t.repo), user
 
 
 # ---- run records ----------------------------------------------------------------------------
@@ -472,7 +555,7 @@ class _LatticeArm:
 
             start = {n: s for n, s in self.start.items() if n != prompts.PROFILE_FILE}
             profile = load_profile_source(self.start[prompts.PROFILE_FILE])
-            self._lifted = program_routes(start, profile)
+            self._lifted = program_routes(start, profile) if start else ()
         return self._lifted
 
     def edited(self) -> tuple[dict[str, str | None], dict[str, str]]:
@@ -859,7 +942,7 @@ def estimate(models: Sequence[str], tickets: Sequence[str], reps: int) -> dict[s
         count = token_counter(model)
         price = price_for(model) or (0.0, 0.0)
         for tid in tickets:
-            # arm L only where it has a start state (the held-out repos wait for the importer)
+            # arm L only where it has a start state (an import of the ticket's app)
             arms = [a for a in ARMS if a == "P" or has_lattice_start(ticket(tid).repo)]
             answers = {a: reference_answer(a, tid) for a in arms}
             p_answer = answers["P"] or ""
@@ -870,7 +953,7 @@ def estimate(models: Sequence[str], tickets: Sequence[str], reps: int) -> dict[s
                 if answer is None:  # no reference (a gap): the touched program, edited
                     programs, _ = l_start(ticket(tid))
                     answer = prompts.render_files(
-                        {n: programs[n] for n in prompts.l_program_files(ticket(tid))}
+                        {n: programs[n] for n in prompts.l_program_files(ticket(tid), programs)}
                     )
                 out = round(count("", answer) * OUTPUT_OVERHEAD)
                 # repair round k's prompt: the first prompt + every earlier answer and

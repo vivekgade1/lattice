@@ -746,16 +746,80 @@ class _Endpoint:
             self._insert_owner(call)
         for call in self._calls("update"):
             self._update_owner(call)
-        for op in ("insert", "update"):
+        for op in ("insert", "update", "insert_many"):
             for call in self._calls(op):
                 self._admin_write(op, call)
+        for call in self._calls("insert_many"):
+            self._insert_many_owner(call)
         self._bounds()
+
+    def _rows_cols(self, call: ast.Call) -> tuple[str, TableT | None, frozenset[str]]:
+        """insert_many(T, rows=x): the rows' local name, table and columns."""
+        rows = _kw(call, "rows")
+        if not isinstance(rows, ast.Name):
+            return "", None, frozenset()
+        t = self._name_type(rows.id)
+        return rows.id, t, frozenset(t.schema.names()) if t is not None else frozenset()
+
+    def _insert_many_owner(self, call: ast.Call) -> None:
+        """insert_many is insert() once per row: the rows passed an ownership check
+        (L802), an owned table records the caller as the owner (owner=user) and the
+        rows never carry the owner column, nor an owner_via foreign key (L802) --
+        except in an Admin endpoint, which must still set an owner (L404)."""
+        if not call.args or not isinstance(call.args[0], ast.Name):
+            return
+        table = call.args[0].id
+        schema = self.api.tables.get(table)
+        if schema is None:
+            return
+        name, t, cols = self._rows_cols(call)
+        if t is not None:
+            self._ownership(call, t, name)
+        has_owner = _kw(call, "owner") is not None
+        if self.admin:
+            owner = schema.owner
+            if owner is not None and owner in (generated_key(schema), uuid_key(schema)):
+                return
+            if owner is not None and owner not in cols and not has_owner:
+                self.ctx.error(
+                    "L404",
+                    call,
+                    f"insert_many into {table} does not set required column(s) '{owner}'",
+                    f"pass owner=user, or give the rows a column {owner}",
+                )
+            return
+        if self.reported_ownership:
+            return
+        if schema.owner_via is not None:
+            # the rows' foreign keys are computed values, never a parent row the
+            # caller was checked to own
+            self._via_value(call, table, schema.owner_via, None)
+            return
+        if schema.owner is None or schema.owner in (generated_key(schema), uuid_key(schema)):
+            return
+        if schema.owner in cols:
+            self.reported_ownership = True
+            self.ctx.error(
+                "L802",
+                call,
+                f"insert_many() sets the owner column '{schema.owner}' of {table} from "
+                f"the rows of '{name}'",
+                f"drop the field {schema.owner} from the rows and pass owner=user",
+            )
+        elif not has_owner:
+            self.reported_ownership = True
+            self.ctx.error(
+                "L802",
+                call,
+                f"insert_many into {table} does not record the caller as the owner",
+                f"add owner=user: insert_many({table}, rows={name or '...'}, owner=user)",
+            )
 
     def _admin_write(self, op: str, call: ast.Call) -> None:
         """L802: only Admin endpoints write a schema's admin-only columns (a role)."""
         if self.admin or self.reported_ownership or not call.args:
             return
-        if op == "insert":
+        if op in ("insert", "insert_many"):
             table = call.args[0].id if isinstance(call.args[0], ast.Name) else None
         else:
             t = self._type(call)
@@ -765,13 +829,16 @@ class _Endpoint:
             return
         admin_write = set(schema.admin_write)
         given = {kw.arg for kw in call.keywords if kw.arg is not None}
+        if op == "insert_many":  # the rows' columns are what it writes
+            given = set(self._rows_cols(call)[2])
         if table == self.api.users_table and not isinstance(self.api.roles_from, NoRoles):
             # the column callers' roles come from (AdminFlag / RoleColumn) is always
             # admin-only: writing it would let a caller grant themselves Admin. Only a
-            # literal non-admin value (a signup's is_superuser=False) is harmless.
+            # literal non-admin value (a signup's is_superuser=False) is harmless; a
+            # row's value (insert_many) never is.
             role_col = self.api.roles_from.column
             value = next((kw.value for kw in call.keywords if kw.arg == role_col), None)
-            if value is not None and not self._non_admin_role(value):
+            if op == "insert_many" or (value is not None and not self._non_admin_role(value)):
                 admin_write.add(role_col)
         written = sorted(given & admin_write)
         if written:
@@ -970,8 +1037,8 @@ class _Endpoint:
         return False
 
     def _bounds(self) -> None:
-        """L811: parameters written by insert/update, directly or through local
-        constants, must be bounded."""
+        """L811: parameters written by insert/update/insert_many, directly or through
+        local constants or the rows, must be bounded."""
         deps: dict[str, set[str]] = {}
         # table local -> parameters its column values may hold (through derive, group,
         # step arguments, update values, ...), however indirectly
@@ -992,13 +1059,15 @@ class _Endpoint:
                         held |= self._params_read(kw.value, deps)
             carried[name] = held
         reported: set[str] = set()
-        for op in ("insert", "update"):
+        for op in ("insert", "update", "insert_many"):
             for call in self._calls(op):
                 source = call.args[0] if op == "update" and call.args else None
                 for kw in call.keywords:
-                    if kw.arg == "owner" and op == "insert":
+                    if kw.arg == "owner" and op in ("insert", "insert_many"):
                         continue
                     written = self._params_read(kw.value, deps)
+                    if op == "insert_many" and isinstance(kw.value, ast.Name):
+                        written |= carried.get(kw.value.id, set())  # the rows' values
                     if isinstance(source, ast.Name) and _cols_read(kw.value):
                         written |= carried.get(source.id, set())
                     for p in sorted(written):

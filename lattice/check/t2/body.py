@@ -42,6 +42,7 @@ from lattice.catalog import (
 from lattice.check.astutil import literal_value
 from lattice.check.context import CheckContext
 from lattice.check.loop_hints import t1_shape_warning
+from lattice.check.redos import redos_risk
 from lattice.check.t2 import types as T
 from lattice.check.t2.model import ProcSig, RecordDef
 from lattice.check.t2.types import UNK, T2Type
@@ -1869,6 +1870,17 @@ class BodyChecker:
             re.compile(node.value)
         except re.error as e:
             self.err("L916", node, f"invalid regular expression: {e}", "fix the pattern")
+            return
+        risk = redos_risk(node.value)
+        if risk is not None:
+            self.err(
+                "L925",
+                node,
+                f"the pattern of {label}() may backtrack catastrophically on request input: "
+                f"{risk}",
+                "make the repeated pieces disjoint, bound the repeat ({0,50}) or make it "
+                "possessive (a++)",
+            )
 
     # ---- parameter immutability (L145) -------------------------------------------------
 

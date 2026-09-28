@@ -595,3 +595,65 @@ The four gaps above are closed in the language, and the importer uses them gener
 - **JustNotes, 4 needing the LLM:** no lifter for `register`, `login`, `health` and `get_public_notes`.
 
 The template import is unchanged: 23 routes, 10 verified, and byte-identical `profile.py`, `natives.py` and `routes/` compared with HEAD.
+
+## Held-out import (live)
+
+Full importer, LLM loop on: `python -m lattice.importer . --package bench.import_repos.<repo>.app --app-factory bench.import_repos.<repo>:make_app --out bench/imports/<repo> --method M2 --model claude-sonnet-5 --max-cost-usd <cap>` (effort high, strong effort max, 16k output tokens). The outputs in `bench/imports/<repo>/` (profile, natives, `routes/`, `report.md/json`) are the importer's, unedited. The round artefacts (prompts, responses, candidates) are in the gitignored `bench/results/imports/`.
+
+**JustNotes auth decision (language):** `NativeToken(native, lookup="username", unique="runtime")`. The token subject may be a column with no unique constraint. The authentication statement fetches up to two rows: none → 401; more than one → a loud 500, `R311 ambiguous caller`, never one of them picked. It behaves the same in the runtime and the generated app (differential program `solo_runtime`, with two users named `dave`). `unique="runtime"` without `lookup` is refused, since the key is unique anyway. The importer uses it when the claim's column is not declared unique and records an `Unclear` (auth) note saying so. The earlier "token subject is not a unique users column" gap is closed.
+
+| repo | routes | R0 | R1 | R2 | R3-procedure | R3-native | R4 (islands) | tier mix | cost |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---:|
+| TaskFlow | 10 | 1 | 4 | 0 | 0 | 0 | 5 | T0 5, island 5 | $2.94 |
+| JustNotes | 30 | 1 | 1 | 0 | 0 | 0 | 28 | T0 2, island 28 | $2.71 |
+
+Verified (Lattice) routes:
+- **TaskFlow:** `register`, `read_current_user`, `create_task`, `read_tasks`, `read_task`.
+- **JustNotes:** `read_users_me`, `health`.
+
+**Island reasons:**
+- **TaskFlow `login`, `update_task`, `delete_task`:** every R2/R3 attempt was cut off at the 16k output limit (`missing construct` / "cut off"). `update_task` and `delete_task` are also victims of an importer bug found in this run (fix 5 below). Their R1 candidates were checked against the original with a stale 30-minute token. Offline, the R1 candidate for `delete_task` verifies after the fix.
+- **TaskFlow `/`, `/health`:** defined inside `create_app()` (unchanged).
+- **JustNotes `register`, `login`:** cut off at the output limit in R1/R2/R3.
+- **JustNotes, 26 routes:** `budget`. The repo's cap was reached after `register` and `login` ($1.98 of the $2.71). `get_notes` ran out mid-ladder ($0.66), and 25 routes were never attempted. No other gap class was reached.
+
+**Spend.** Total recorded spend was **$8.78**, within the $10 authorisation:
+- final TaskFlow run: $2.94;
+- final JustNotes run: $2.71;
+- aborted runs: $3.13 (TaskFlow ×2: $0.31; JustNotes ×1: $2.82).
+
+Each run was stopped when an importer bug was found that invalidated its verification. The in-flight calls of the three killed runs are not in the artefacts, at most ~$0.2 each.
+
+**Importer fixes the live run needed** (generic, each with a synthetic test):
+1. **Verification normalised the template's `hashed_password` only.** A route storing a salted hash in `password_hash`/`password` could never verify. It now normalises the suite's own password column (`tests/importer/test_import_hash_columns.py`).
+2. **The hasher was not found through a local name.** In `h = hash_password(p); User(password=h)`, JustNotes' seed stored raw passwords and its login answered 500 (`test_the_hasher_is_found_through_a_local_name`).
+3. **Token cases with no single-argument mint.** A claims minter is derived from the token decode: the library, key and algorithm, followed into a decode helper. The suite now requests a valid token for no user, one without the claim, and (with an active column) one for the inactive user. The token policies now read a decode helper's `if payload is None`, a claim guard, and any caller lookup the dependency returns (`or`-ed active checks included). Before this, every authenticated JustNotes route had two unreachable raise sites.
+4. **Suite requests hit the wrong rows:**
+   - Unique-conflict cases now carry the rest of a valid body (TaskFlow `register`'s 409 was answered 422).
+   - The seed's "own row" for a table the profile gives no owner is its one FK to the users table. Seed only; the profile is unchanged. Before this, TaskFlow's task routes were requested on another user's task and only saw 404s.
+5. **Cached login tokens expired.** The Lattice side reused the original's login token for the whole run, so after 30 minutes every case answered 401. Tokens are now fetched again after 5 minutes; minted test tokens last 7 days.
+
+The no-LLM record above changes: JustNotes goes from 30 routes, 0 verified, 26 islands to **30 / 1 verified (`read_users_me`) / 0 islands / 29 needing the LLM**. TaskFlow's is unchanged.
+
+**Arm L on the held-out tickets.** `run.start_lattice(repo)` reads `bench/imports/<repo>`. `run.emit_lattice` mounts the programs into the original app with `lattice.emit.thin.emit_into_app`, the template's route-preserving merge generalised to any app factory:
+- all routes, full paths;
+- included routers re-wrapped one by one;
+- `settings_from_app` for NativeContext natives;
+- schema evolution once the app's tables exist.
+
+The routes the import did not lift stay the original code. A fake-LLM run (the start programs returned unchanged) runs end to end on all six tickets.
+
+| ticket | touched routes in the start state |
+|---|---|
+| t19_task_summary | `GET /api/v1/tasks/summary`: new |
+| t20_bulk_status | `POST /api/v1/tasks/bulk-status`: new |
+| t21_completed_at | POST/GET list/GET one: lifted; `PATCH /api/v1/tasks/{task_id}`: island |
+| t22_copy_note | `POST /notes/{id}/copy`: new |
+| t23_note_filter | `GET /notes`: island (budget) |
+| t24_note_stats | `GET /notes/stats`: new |
+
+**Remaining gaps:**
+- **Output limit.** Many R1–R3 answers were cut off at 16k tokens, with high/max effort. This decided 5 islands; a larger limit or lower effort is the next knob.
+- **JustNotes' cost per route.** About $0.07–1.2 per route; 25 routes were never attempted within the cap.
+- **JustNotes' nested-resource 403s** (6 tag/keyword routes: `/notes/{note_id}/tags/{tag_id}`). The suite never requests another user's note there, so those routes would end as suite-gap islands even with budget.
+- **t21 and t23 touch islands.** Arm L can add routes but not change those.

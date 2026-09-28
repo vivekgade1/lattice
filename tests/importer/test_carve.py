@@ -83,13 +83,15 @@ def test_simple_helpers_become_typed_natives_with_their_effects(tmp_path):
     graph = _graph(tmp_path)
     natives, why = NativeCarveOut().natives(graph, "pkg.routes:make_thing", known=())
     assert why == ""
-    by = {n.name: n for n in natives}
-    assert set(by) == {"carve_slugify", "carve_maybe_id", "carve_notify"}
-    assert by["carve_slugify"] == CarveNative(
-        "carve_slugify", "pkg.helpers:slugify", (("title", "STR"),), "STR"
+    # module-qualified names (see native_name), keyed here by the helper's name
+    by = {n.target.partition(":")[2]: n for n in natives}
+    assert set(by) == {"slugify", "maybe_id", "notify"}
+    assert by["slugify"] == CarveNative(
+        "carve_pkg_helpers_slugify", "pkg.helpers:slugify", (("title", "STR"),), "STR"
     )
-    assert by["carve_maybe_id"].result == "UUID" and by["carve_maybe_id"].nullable
-    notify = by["carve_notify"]
+    assert by["maybe_id"].name.startswith("carve_pkg_helpers_maybe_id_")
+    assert by["maybe_id"].result == "UUID" and by["maybe_id"].nullable
+    notify = by["notify"]
     assert notify.effect and notify.result is None and "smtplib" in notify.effect_reason
 
 
@@ -135,3 +137,156 @@ def test_used_natives_reads_native_calls():
     b = CarveNative("carve_b", "m:b", (), "STR")
     src = "def f():\n    x = derive(t, s=native.carve_b(col('x')))\n"
     assert used_natives(src, (a, b)) == (b,)
+
+
+# ---- name collisions (two helpers of the same name in different modules) --------------------
+
+USERS_HELPERS = """\
+def validate(text: str) -> str:
+    return text.strip()
+"""
+ITEMS_HELPERS = """\
+def validate(text: str) -> str:
+    return text.upper()
+"""
+TWO_ROUTES = """\
+from fastapi import APIRouter
+
+from pkg import items, users
+
+router = APIRouter()
+
+
+@router.post("/users")
+def make_user(name: str):
+    return {"name": users.validate(name)}
+
+
+@router.post("/items")
+def make_item(title: str):
+    return {"title": items.validate(title)}
+
+
+@router.post("/both")
+def make_both(title: str):
+    return {"a": users.validate(title), "b": items.validate(title)}
+"""
+
+
+def _twin_graph(tmp_path: Path):
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text("")
+    (pkg / "users.py").write_text(USERS_HELPERS)
+    (pkg / "items.py").write_text(ITEMS_HELPERS)
+    (pkg / "routes.py").write_text(TWO_ROUTES)
+    return build_graph(tmp_path, "pkg")
+
+
+def test_same_named_helpers_in_different_modules_get_distinct_natives(tmp_path):
+    graph = _twin_graph(tmp_path)
+    (u,), _ = NativeCarveOut().natives(graph, "pkg.routes:make_user", known=())
+    (i,), _ = NativeCarveOut().natives(graph, "pkg.routes:make_item", known=())
+    assert (u.target, i.target) == ("pkg.users:validate", "pkg.items:validate")
+    assert u.name != i.name
+    assert u.name.isidentifier() and i.name.isidentifier()
+    assert "users" in u.name and "items" in i.name  # module-qualified
+    both, _ = NativeCarveOut().natives(graph, "pkg.routes:make_both", known=())
+    assert len({n.name for n in both}) == 2
+
+
+def test_native_names_are_deterministic_and_unique_per_target():
+    from lattice.importer.carve import native_name
+
+    assert native_name("carve_", "pkg.helpers:slugify") == "carve_pkg_helpers_slugify"
+    assert native_name("carve_", "pkg.helpers:slugify") == native_name(
+        "carve_", "pkg.helpers:slugify"
+    )
+    # sanitising alone would map these two to the same identifier
+    a = native_name("carve_", "a.b:c_d")
+    b = native_name("carve_", "a.b.c:d")
+    c = native_name("carve_", "a.b_c:d")
+    assert len({a, b, c}) == 3 and all(n.isidentifier() for n in (a, b, c))
+
+
+def test_same_named_helpers_are_not_carved_as_one_procedure(tmp_path):
+    from lattice.importer.carve import ProcedureCarveOut
+    from lattice.profile import ApiProfile, Profile
+
+    profile = Profile(schemas={}, api=ApiProfile(tables={}, table_names={}, roles=frozenset()))
+    graph = _twin_graph(tmp_path)
+    plans, _ = ProcedureCarveOut().plans(graph, "pkg.routes:make_both", (), profile)
+    procedure = plans[0]
+    assert procedure.kind == "procedure"
+    # two `validate` procedures cannot share one program: neither is carved
+    # mechanically, both are left to the translation (whose names the LLM chooses)
+    assert [p.name for p in procedure.procedures] == []
+    assert {h.origin for h in procedure.translate} == {"pkg.users:validate", "pkg.items:validate"}
+    assert all("validate" in h.why and "same name" in h.why for h in procedure.translate)
+
+
+BASE_PROFILE = (
+    "from lattice.profile import ApiProfile, NativeSig, Profile\n"
+    "from lattice.typesys import Scalar, Schema\n\nNATIVES = {}\n\n\n"
+    "def profile() -> Profile:\n"
+    "    users = Schema.from_pairs(\n"
+    "        [('id', Scalar.INT), ('role', Scalar.STR), ('token', Scalar.STR)],\n"
+    "        keys=[('id',)], private=['token'],\n"
+    "    )\n"
+    "    api = ApiProfile(\n"
+    "        tables={'Users': users}, table_names={'Users': 'users'},\n"
+    "        roles=frozenset({'Public', 'Customer', 'Admin'}),\n"
+    "    )\n"
+    "    return Profile(schemas={}, api=api)\n"
+)
+
+
+def _outcome(key: str, router: str, native: CarveNative, native_arg: str):
+    from types import SimpleNamespace
+
+    from lattice.importer.llm_lift import RouteOutcome
+
+    source = (
+        "# lattice: v1\n\n\n"
+        f'@endpoint("GET", "/{key}", auth=Customer)\n'
+        f"def {key}(user: CurrentUser) -> One:\n"
+        f'    shown = derive(user, s=native.{native.name}({native_arg}))\n'
+        '    out = select(shown, cols=["id", "s"])\n'
+        "    return out\n"
+    )
+    route = SimpleNamespace(
+        module=f"pkg.{router}", response_class=None, status_code=None, params=[]
+    )
+    result = SimpleNamespace(router=router, route=route)
+    return RouteOutcome(key, result, "verified", "R3", source=source, natives=(native,))
+
+
+def test_join_demotes_a_route_whose_native_name_is_taken_by_another_target():
+    """Two routes carving `carve_validate` over different helpers: the first wins the
+    joined profile, the second -- whose verified implementation is not the one the
+    profile would ship -- becomes an island, never runs the other helper."""
+    from lattice.importer.llm_lift import _join
+
+    users = CarveNative("carve_validate", "pkg.users:validate", (("text", "STR"),), "STR")
+    items = CarveNative("carve_validate", "pkg.items:validate", (("text", "STR"),), "STR")
+    first = _outcome("read_a", "users", users, '"x"')
+    second = _outcome("read_b", "items", items, '"x"')
+    programs, profile_source, kept = _join(
+        [first, second], BASE_PROFILE, {"read_a": 0, "read_b": 1}
+    )
+    assert kept == (users,)
+    assert (first.status, second.status) == ("verified", "island")
+    assert "carve_validate" in second.reason and "pkg.items:validate" in second.reason
+    assert set(programs) == {"users"}
+    assert "pkg.users" in profile_source and "pkg.items" not in profile_source
+
+
+def test_join_keeps_one_native_shared_by_two_routes():
+    from lattice.importer.llm_lift import _join
+
+    n = CarveNative("carve_validate", "pkg.users:validate", (("text", "STR"),), "STR")
+    a = _outcome("read_a", "users", n, '"x"')
+    b = _outcome("read_b", "items", n, '"y"')
+    programs, _, kept = _join([a, b], BASE_PROFILE, {"read_a": 0, "read_b": 1})
+    assert kept == (n,) and (a.status, b.status) == ("verified", "verified")
+    assert set(programs) == {"users", "items"}

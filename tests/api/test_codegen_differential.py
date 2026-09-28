@@ -52,7 +52,18 @@ from bench.api_tasks import API_TASKS
 from lattice.api.codegen import compile_source_to_fastapi
 from lattice.diagnostics import Severity
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
-from tests.api import effects, gaps, loops, mine_owner, partb, realapps, round2, solo, t2prog
+from tests.api import (
+    effects,
+    gaps,
+    hardening,
+    loops,
+    mine_owner,
+    partb,
+    realapps,
+    round2,
+    solo,
+    t2prog,
+)
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "api"
 KIT_PATH = Path(__file__).resolve().parents[2] / "bench" / "api_kit" / "platform_kit.py"
@@ -1035,6 +1046,18 @@ SOLO_CASES: tuple[HttpCase, ...] = (
     _socase("finish other", "POST", "/tasks/3/finish", "alice", status=404),
 )
 
+# NativeToken(lookup="username", unique="runtime"): the same program over a users table
+# with no unique username and two "dave"s -- one row authenticates, none is 401, two a
+# loud 500 (R311) that writes nothing
+SOLO_RUNTIME_CASES: tuple[HttpCase, ...] = (
+    _socase("one row", "GET", "/me", "alice"),
+    _socase("one row list", "GET", "/tasks", "bob"),
+    _socase("no row 401", "GET", "/me", "ghost", status=401),
+    _socase("two rows 500", "GET", "/me", "dave", status=500),
+    _socase("two rows write 500", "POST", "/tasks", "dave", json={"title": "x"}, status=500),
+    _socase("after 500 nothing written", "GET", "/tasks", "bob"),
+)
+
 
 PROGRAMS = _programs()
 PROGRAMS["realapps"] = (
@@ -1071,6 +1094,15 @@ PROGRAMS["solo"] = (
     _SO.PROGRAM,
     ApiTask("solo", "control", "held-out import gaps", SOLO_CASES + _probes(SOLO_CASES)),
 )
+PROGRAMS["solo_runtime"] = (
+    _SO.PROGRAM,
+    ApiTask(
+        "solo_runtime",
+        "control",
+        'NativeToken(unique="runtime")',
+        SOLO_RUNTIME_CASES + _probes(SOLO_RUNTIME_CASES),
+    ),
+)
 PROGRAMS["t2"] = (
     _T2.PROGRAM,
     ApiTask("t2", "control", "procedures in endpoints", T2_CASES + _probes(T2_CASES)),
@@ -1089,6 +1121,7 @@ EXTRA_IDS = [
     "round2",
     "t2",
     "solo",
+    "solo_runtime",
 ]
 
 
@@ -1115,11 +1148,51 @@ SETUPS = {
     "round2": Setup(_R2.PROFILE, _R2.build_db, _R2.NATIVES, _R2.NATIVES_FILE),
     "t2": Setup(_T2.PROFILE, _T2.build_db, _T2.NATIVES, _T2.NATIVES_FILE),
     "solo": Setup(_SO.PROFILE, _SO.build_db, _SO.NATIVES, _SO.NATIVES_FILE, _SO.SETTINGS),
+    "solo_runtime": Setup(
+        _SO.PROFILE_RUNTIME, _SO.build_db_runtime, _SO.NATIVES, _SO.NATIVES_FILE, _SO.SETTINGS
+    ),
 }
 
 
 def setup_of(pid: str) -> Setup:
     return SETUPS.get(pid, DEFAULT_SETUP)
+
+
+# ---- review hardening: the caller's stored spellings decoded, insert_many owner=user,
+# size-aware fuel (R620) and the value size cap (R622) (tests/api/hardening.py)
+
+_HD = hardening
+_HNOTES = "SELECT id, owner_id, title FROM notes ORDER BY id"
+
+
+def _hdcase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _HD.TOKENS[who], **kw)
+
+
+HARDENING_CASES: tuple[HttpCase, ...] = (
+    _hdcase("offers pro", "GET", "/offers", "alice"),
+    _hdcase("offers free", "GET", "/offers", "bob"),
+    _hdcase("plan pro", "GET", "/me/plan", "alice"),
+    _hdcase("plan free", "GET", "/me/plan", "bob"),
+    _hdcase("admin by stored role", "GET", "/admin/ping", "admin"),
+    _hdcase("customer not admin", "GET", "/admin/ping", "alice", status=403),
+    _hdcase(
+        "insert_many owner", "POST", "/notes", "bob", json={"title": "t", "n": 2},
+        after_sql=_HNOTES,
+    ),  # fmt: skip
+    _hdcase("pad small", "GET", "/pad", "alice", query={"s": "ab", "n": 5}),
+    _hdcase("pad over cap", "GET", "/pad", "alice", query={"s": "ab", "n": 200_000}, status=500),
+    _hdcase("pad huge", "GET", "/pad", "alice", query={"s": "ab", "n": 10**11}, status=500),
+    _hdcase("grow ok", "GET", "/grow", "alice", query={"n": 90_000, "k": 2}),
+    _hdcase("grow fuel", "GET", "/grow", "alice", query={"n": 90_000, "k": 20}, status=500),
+    _hdcase("shift huge", "GET", "/shift", "alice", query={"n": 10**9}, status=500),
+)
+PROGRAMS["hardening"] = (
+    _HD.PROGRAM,
+    ApiTask("hardening", "control", "review hardening", HARDENING_CASES),
+)
+EXTRA_IDS.append("hardening")
+SETUPS["hardening"] = Setup(_HD.PROFILE, _HD.build_db)
 
 
 def normalize(value: object) -> object:
@@ -1754,3 +1827,36 @@ def test_the_solo_program_passes_its_cases(differential_runs):
         after = {c["name"]: c["after"] for c in captured}
         assert after["finish"][0][3] == "DONE"  # stored by name, answered as "done"
         assert body["finish"]["status"] == "done"
+
+
+def test_the_solo_runtime_unique_program_rejects_an_ambiguous_caller(differential_runs):
+    """unique="runtime": both backends answer 401 for no row and the same loud R311 500
+    for two, never serving one of the rows."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs["solo_runtime"]
+    want = {c.name: c.expect_status for c in SOLO_RUNTIME_CASES}
+    for results in (rt_results, gen_results):
+        assert {c.name: c.status for c in results.cases if c.name in want} == want
+    bodies = []
+    for captured in (rt_captured, gen_captured):
+        body = {c["name"]: c["body"] for c in captured}
+        assert "error R311: ambiguous caller" in json.dumps(body["two rows 500"])
+        bodies.append(body["two rows 500"])
+    assert bodies[0] == bodies[1]
+
+
+def test_the_hardening_program_passes_its_cases(differential_runs):
+    """Both backends decode the caller's stored spellings, record the caller as the owner
+    of insert_many's rows, and answer R620 / R622 with the same located message."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs["hardening"]
+    want = {c.name: c.expect_status for c in HARDENING_CASES}
+    for results in (rt_results, gen_results):
+        assert {c.name: c.status for c in results.cases if c.name in want} == want
+    for captured in (rt_captured, gen_captured):
+        body = {c["name"]: c["body"] for c in captured}
+        assert [o["id"] for o in body["offers pro"]] == [2, 3]
+        plan = {"id": 2, "role": "Customer", "plan": "pro", "p": "pro", "q": "pro"}
+        assert body["plan pro"] == plan
+        assert [r["owner_id"] for r in body["insert_many owner"]] == [3, 3]
+        codes = (("pad over cap", "R622"), ("grow fuel", "R620"), ("shift huge", "R622"))
+        for name, code in codes:
+            assert f"error {code}" in json.dumps(body[name])

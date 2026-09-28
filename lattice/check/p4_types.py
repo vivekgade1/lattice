@@ -2536,6 +2536,18 @@ class _Types:
         if found is None or not isinstance(t, TableT):
             return UNKNOWN
         name, schema = found
+        if t.t2_rows != "value":
+            # only a procedure's value (or a select/rename of it): database rows --
+            # another owner's, or a private column's -- would be re-inserted with a new
+            # lineage (owner=user marks the result the caller's own)
+            self.ctx.error(
+                "L881",
+                rows_node,
+                f"insert_many() writes a procedure's value; '{ast.unparse(rows_node)}' "
+                "holds rows read from the database",
+                "compute the new rows with a procedure: rows = call(proc, ...)",
+            )
+            return UNKNOWN
         if UNIQUE_OR in kws:
             self._unique_or(kws[UNIQUE_OR])
         owner = kws.get("owner")

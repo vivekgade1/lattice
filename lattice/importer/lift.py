@@ -39,12 +39,15 @@ from __future__ import annotations
 import dataclasses
 import importlib
 import sys
+import time
 import uuid
 from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Literal
+
+from fastapi.testclient import TestClient
 
 from lattice.api.ir import EndpointPlan, lower_api
 from lattice.api.runtime import build_app
@@ -121,8 +124,9 @@ class VerifyContext:
     _full: GeneratedSuite | None = field(default=None, repr=False)
     # the NativeContext settings' values (read from the original app), for build_app
     settings: dict[str, Any] = field(default_factory=dict)
-    # tokens the original's login answered, per suite and user handle (see _login_tokens)
-    _tokens: dict[tuple[int, str], str] = field(default_factory=dict, repr=False)
+    # tokens the original's login answered, per suite and user handle, with when (see
+    # _login_tokens)
+    _tokens: dict[tuple[int, str], tuple[str, float]] = field(default_factory=dict, repr=False)
 
     def full_suite(self) -> GeneratedSuite | None:
         if self._full is None and self.inputs.routes:
@@ -237,7 +241,7 @@ def lift_repo(
     natives: dict[str, Callable[..., Any]] = dict(module.NATIVES)
     settings = app_settings(module, app_factory)
     index = _Index(root, app_package)
-    inputs = adapt(model, api, index, natives)
+    inputs = adapt(model, api, index, natives, settings)
     try:
         token_policies = auth_policies(model, index, api)
     except Exception:  # noqa: BLE001 -- an unfamiliar auth shape: no policy (cases then fail)
@@ -310,30 +314,37 @@ def app_settings(module: ModuleType, app_factory: Callable[[Path], Any]) -> dict
     return values
 
 
+# how long a token the original's login answered is reused: well under any sensible
+# token lifetime (the held-out apps' is 30 minutes), which a long import outlives
+LOGIN_TOKEN_REUSE_SECONDS = 300.0
+_clock = time.monotonic
+
+
 def _login_tokens(ctx: VerifyContext, suite: GeneratedSuite) -> Callable[[Any, str], str]:
     """A Lattice-side login: the token the original's own login route answers for the
-    handle, on a scratch copy of the seed database (once per handle)."""
+    handle, on a scratch copy of the seed database (reused for
+    :data:`LOGIN_TOKEN_REUSE_SECONDS`, then fetched again: it may expire)."""
     import tempfile
-
-    from fastapi.testclient import TestClient
 
     login = suite.login
     assert login is not None
 
     def lattice_login(client: Any, handle: str) -> str:
         key = (id(suite), handle)
-        if key not in ctx._tokens:
+        cached = ctx._tokens.get(key)
+        if cached is None or _clock() - cached[1] > LOGIN_TOKEN_REUSE_SECONDS:
             with tempfile.TemporaryDirectory(prefix="lattice-login-") as tmp:
                 db = Path(suite.db_factory("seed", Path(tmp) / "login.db"))
                 app = ctx.app_factory(db)
                 try:
                     with TestClient(app) as original:
-                        ctx._tokens[key] = login(original, handle)
+                        cached = (login(original, handle), _clock())
+                        ctx._tokens[key] = cached
                 finally:
                     engine = getattr(getattr(app, "state", None), "engine", None)
                     if engine is not None:
                         engine.dispose()
-        return ctx._tokens[key]
+        return cached[0]
 
     return lattice_login
 
@@ -420,6 +431,8 @@ def _verify_route(
         r.deviations,
         login=suite.login,
         lattice_login=login_as,
+        # the app's own password-hash column (a new salted hash differs on each side)
+        hash_columns=(inputs.auth.password_column,),
         branches={r.key: _functions(model, r.route)},
     )
     r.verify = result

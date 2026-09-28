@@ -28,6 +28,7 @@ from lattice.catalog import (
     UNSET_NAME,
 )
 from lattice.check.astutil import literal_value
+from lattice.check.redos import redos_risk
 from lattice.diagnostics import Span, span_of
 from lattice.profile import ApiProfile
 from lattice.typesys import SCALAR_NAMES, Scalar, TableT, plain_columns
@@ -375,6 +376,14 @@ def _pattern(name: str, node: ast.expr) -> str | Problem:
         return (
             f"constraint pattern= of '{name}' is not a valid regular expression: {err}",
             "fix the pattern (Python `re` syntax; the whole value must match)",
+        )
+    risk = redos_risk(v)
+    if risk is not None:
+        return (
+            f"constraint pattern= of '{name}' may backtrack catastrophically on request "
+            f"input: {risk}",
+            "make the repeated pieces disjoint, bound the repeat ({0,50}) or make it "
+            "possessive (a++)",
         )
     return v
 

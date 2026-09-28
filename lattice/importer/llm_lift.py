@@ -1101,8 +1101,18 @@ def _join(
     verified R3 routes use). A route whose joined router program is refused, or whose
     top-level names clash with another route's, becomes an island."""
     natives: dict[str, CarveNative] = {}
-    for o in outcomes:
+    for o in sorted(outcomes, key=lambda x: order.get(x.key, 0)):
         if o.status == "verified" and o.rung == "R3":
+            taken = [n for n in o.natives if natives.get(n.name, n) != n]
+            if taken:
+                # the joined profile holds one native per name: this route was verified
+                # against another implementation than the one it would ship with
+                shown = "; ".join(
+                    f"{n.name} is {natives[n.name].target} there, {n.target} here"
+                    for n in taken
+                )
+                _demote(o, f"joined profile: a carve-out native name is taken ({shown})")
+                continue
             for n in o.natives:
                 natives.setdefault(n.name, n)
     profile_source = carve_profile_source(base_profile, tuple(natives.values()))

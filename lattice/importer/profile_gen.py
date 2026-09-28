@@ -443,6 +443,15 @@ def generate_profile(model: RepoModel) -> ProfileResult:
             if refused is not None
             else "no token-decoding step found in a current-user dependency",
         )
+    if decoder is not None and decoder.lookup and decoder.lookup_unique == "runtime":
+        g.note(
+            "auth",
+            users or model.app_package,
+            f"the token's {decoder.claim!r} claim names {users}.{decoder.lookup}, which is "
+            "not declared unique (the app may enforce it in code only): the lookup is "
+            'checked per request (NativeToken unique="runtime"): no row answers 401, '
+            "several a loud 500 (R311, an ambiguous caller)",
+        )
     users_cols = {c.name: c for c in g.tables[users].columns} if users in g.tables else {}
     no_roles = False
     if admin is None:
@@ -561,7 +570,12 @@ def generate_profile(model: RepoModel) -> ProfileResult:
         out += [f"        ({name!r}, Scalar.{attr})," for name, attr in plan.columns]
         out.append("    ],")
         keys = plan.keys
-        if decoder is not None and decoder.lookup and plan.table.name == users:
+        if (
+            decoder is not None
+            and decoder.lookup
+            and decoder.lookup_unique == "declared"
+            and plan.table.name == users
+        ):
             keys = [*keys, (decoder.lookup,)]  # the unique column the token names
         out.append(f"    keys={keys!r},")
         out.append(f"    nullable={plan.nullable!r},")
@@ -603,6 +617,8 @@ def generate_profile(model: RepoModel) -> ProfileResult:
         api.append(f"settings={{{declared}}}")
     if decoder is not None:
         lookup = f", lookup={decoder.lookup!r}" if decoder.lookup else ""
+        if decoder.lookup and decoder.lookup_unique != "declared":
+            lookup += f", unique={decoder.lookup_unique!r}"
         api.append(f"auth=NativeToken({decoder.name!r}{lookup})")
     if admin is not None and admin.admin_column:
         api.append(f"roles_from=AdminFlag({admin.admin_column!r}, {CUSTOMER!r})")

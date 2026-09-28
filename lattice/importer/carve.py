@@ -36,6 +36,8 @@ from __future__ import annotations
 
 import ast
 import copy
+import hashlib
+import re
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal, Protocol
@@ -58,6 +60,7 @@ __all__ = [
     "ProcedureCarveOut",
     "carve_procedure",
     "carve_profile_source",
+    "native_name",
     "procedure_program",
     "program_carve",
     "with_procedures",
@@ -131,6 +134,21 @@ class CarveNative:
         }
 
 
+def native_name(prefix: str, target: str) -> str:
+    """The native wrapping ``target`` (``module:function``): module-qualified and
+    sanitised (``carve_pkg_helpers_slugify``), so two helpers of the same name in
+    different modules never share a native. When sanitising could map two targets to
+    one identifier (an underscore or another character in a part), a short hash of the
+    target is appended."""
+    module, _, func = target.partition(":")
+    parts = [*module.split("."), *func.split(".")]
+    clean = [re.sub(r"\W", "_", p) or "_" for p in parts]
+    name = prefix + "_".join(clean)
+    if any("_" in p or not p.isidentifier() for p in parts):
+        name += "_" + hashlib.sha1(target.encode()).hexdigest()[:6]
+    return name if name.isidentifier() else "n_" + name
+
+
 class CarveOut(Protocol):
     """An R3 strategy: the natives ``route`` (``module:function``) may use, or ``()``
     and why none."""
@@ -190,7 +208,6 @@ class NativeCarveOut:
         return (), f"no simple helper to carve out ({detail}). {SKIP_TODO}"
 
     def native(self, graph: CodeGraph, qual: str) -> tuple[CarveNative | None, str]:
-        sym = graph.symbols[qual]
         fn = _function(graph, qual)
         if fn is None:
             return None, "source not found"
@@ -221,7 +238,7 @@ class NativeCarveOut:
             return None, "no result and no effect"
         return (
             CarveNative(
-                name=self.prefix + sym.name.replace(".", "_"),
+                name=native_name(self.prefix, qual),
                 target=qual,
                 params=tuple(params),
                 result=None if result is None else result[0],
@@ -696,6 +713,7 @@ class ProcedureCarveOut:
                 outside[q] = why
             else:
                 translate[q] = why
+        _same_names(carved, translate)
         self._check(graph, carved, outside, translate, profile)
         plans = [
             CarvePlan(
@@ -757,6 +775,24 @@ class ProcedureCarveOut:
                     translate[q] = "the T2 checker refuses the mechanical carve: " + "; ".join(
                         errors[:3]
                     )
+
+
+def _same_names(carved: dict[str, CarvedProcedure], translate: dict[str, str]) -> None:
+    """Helpers of the same name from different modules cannot share one program as
+    procedures (calls name a procedure, not a module): none of them is carved
+    mechanically; each is left to the translation, whose names the LLM chooses."""
+    by_name: dict[str, list[str]] = {}
+    for q, p in carved.items():
+        by_name.setdefault(p.name, []).append(q)
+    for name, quals in by_name.items():
+        if len(quals) > 1:
+            for q in quals:
+                del carved[q]
+                others = ", ".join(o for o in quals if o != q)
+                translate[q] = (
+                    f"another helper of the same name {name!r} ({others}) is in the slice: "
+                    "translate it under a distinct procedure name"
+                )
 
 
 def program_carve(source: str) -> tuple[int, int]:

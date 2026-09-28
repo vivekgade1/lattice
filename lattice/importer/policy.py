@@ -164,7 +164,10 @@ def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[Tok
     fn = found[1]
     lattice = (401, api.unauthorized_detail)
     out: list[TokenPolicy] = []
-    bad = _handler_raise(fn, dep.module, index)
+    token = next(
+        (a.arg for a in fn.args.args if a.arg == "token" or "token" in a.arg.lower()), None
+    )
+    bad = _handler_raise(fn, dep.module, index) or _decoded_raise(fn, dep.module, index, token)
     if bad is not None and bad != lattice:
         out.append(
             TokenPolicy(
@@ -176,6 +179,19 @@ def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[Tok
             )
         )
     unknown = _missing_user_raise(fn, dep.module, index)
+    # no guard on the claim itself: the missing claim reaches the caller's lookup
+    claimless = _claim_raise(fn, dep.module, index) or unknown
+    if claimless is not None and claimless != lattice:
+        out.append(
+            TokenPolicy(
+                "claimless_token",
+                "claimless-token",
+                f"A valid token without the caller's claim: the original answers "
+                f"{claimless[0]} {claimless[1]!r}; Lattice's token auth answers 401 like any "
+                "token naming no caller.",
+                claimless,
+            )
+        )
     if unknown is not None and unknown != lattice:
         out.append(
             TokenPolicy(
@@ -188,6 +204,80 @@ def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[Tok
             )
         )
     return tuple(out)
+
+
+def _pairs(fn: ast.AST) -> list[tuple[ast.stmt, ast.stmt]]:
+    """Every two consecutive statements of every statement list in ``fn`` (its body,
+    a ``try`` body, an ``if`` branch...)."""
+    out: list[tuple[ast.stmt, ast.stmt]] = []
+    for node in ast.walk(fn):
+        for name in ("body", "orelse", "finalbody"):
+            block = getattr(node, name, None)
+            if isinstance(block, list) and block and isinstance(block[0], ast.stmt):
+                out += list(zip(block, block[1:], strict=False))
+    return out
+
+
+def _assigned(stmt: ast.stmt) -> tuple[str, ast.expr] | None:
+    """``name = value`` or ``name: T = value``."""
+    match stmt:
+        case ast.Assign(targets=[ast.Name(id=name)], value=value):
+            return name, value
+        case ast.AnnAssign(target=ast.Name(id=name), value=value) if value is not None:
+            return name, value
+    return None
+
+
+def _guard(
+    stmt: ast.stmt, var: str, module: str, index: _Index, fn: ast.AST
+) -> tuple[int, str] | None:
+    """``if <var is None / not var> [or ...]: raise ...``: the raise's answer."""
+    from lattice.importer.lifters.base import is_falsy_test
+
+    if not (isinstance(stmt, ast.If) and not stmt.orelse and len(stmt.body) == 1):
+        return None
+    test = stmt.test
+    if isinstance(test, ast.BoolOp) and isinstance(test.op, ast.Or):
+        test = test.values[0]  # `if user is None or not user.is_active`
+    if not is_falsy_test(test, var):
+        return None
+    return _raise_of(stmt.body[0], module, index, fn)
+
+
+def _decoded_raise(
+    fn: ast.AST, module: str, index: _Index, token: str | None
+) -> tuple[int, str] | None:
+    """``payload = <decode helper>(token); if payload is None: raise ...``."""
+    if token is None:
+        return None
+    for stmt, nxt in _pairs(fn):
+        got = _assigned(stmt)
+        if got is None or not isinstance(got[1], ast.Call):
+            continue
+        call = got[1]
+        if any(isinstance(a, ast.Name) and a.id == token for a in call.args):
+            return _guard(nxt, got[0], module, index, fn)
+    return None
+
+
+def _claim_raise(fn: ast.AST, module: str, index: _Index) -> tuple[int, str] | None:
+    """``sub = payload.get("<claim>")`` (or ``payload["<claim>"]``) followed by
+    ``if sub is None / not sub: raise ...``."""
+    for stmt, nxt in _pairs(fn):
+        got = _assigned(stmt)
+        if got is None:
+            continue
+        match got[1]:
+            case ast.Call(func=ast.Attribute(attr="get"), args=[ast.Constant(value=str()), *_]):
+                pass
+            case ast.Subscript(slice=ast.Constant(value=str())):
+                pass
+            case _:
+                continue
+        found = _guard(nxt, got[0], module, index, fn)
+        if found is not None:
+            return found
+    return None
 
 
 def _raise_of(
@@ -230,23 +320,25 @@ def _handler_raise(fn: ast.AST, module: str, index: _Index) -> tuple[int, str] |
 def _missing_user_raise(
     fn: ast.FunctionDef | ast.AsyncFunctionDef, module: str, index: _Index
 ) -> tuple[int, str] | None:
-    from lattice.importer.lifters.base import is_falsy_test
-
-    body = fn.body
-    for i, stmt in enumerate(body[:-1]):
-        match stmt:
-            case ast.Assign(
-                targets=[ast.Name(id=var)],
-                value=ast.Call(func=ast.Attribute(attr="get"), args=[_, _]),
-            ):
-                nxt = body[i + 1]
-                if (
-                    isinstance(nxt, ast.If)
-                    and not nxt.orelse
-                    and len(nxt.body) == 1
-                    and is_falsy_test(nxt.test, var)
-                ):
-                    return _raise_of(nxt.body[0], module, index, fn)
+    """The raise guarding the caller's lookup: ``user = session.get(M, id)`` -- or any
+    call assigned to the name the dependency returns -- followed by ``if user is None /
+    not user [or ...]: raise ...``."""
+    returned = {
+        n.value.id
+        for n in ast.walk(fn)
+        if isinstance(n, ast.Return) and isinstance(n.value, ast.Name)
+    }
+    for stmt, nxt in _pairs(fn):
+        got = _assigned(stmt)
+        if got is None or not isinstance(got[1], ast.Call):
+            continue
+        var, call = got
+        is_get = isinstance(call.func, ast.Attribute) and call.func.attr == "get"
+        if not ((is_get and len(call.args) == 2) or var in returned):
+            continue
+        found = _guard(nxt, var, module, index, fn)
+        if found is not None:
+            return found
     return None
 
 

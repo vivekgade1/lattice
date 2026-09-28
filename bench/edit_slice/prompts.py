@@ -165,14 +165,55 @@ Keep the app's existing behaviour except where the ticket changes it.
 }"""
 
 
-def l_system_prompt(*, hints: bool = False) -> str:
+# a held-out repo's import: the same section, with no template convention stated (the
+# profile settles them: page_shape, error_body, roles_from, ...)
+L_EDITING_IMPORTED = f"""## Editing an imported app
+
+The programs you edit were imported from an existing FastAPI app (one Lattice program \
+per router file, e.g. `notes.lattice.py` for `app/api/notes.py`); they are checked and \
+emitted back into that app as its routes. The routes the import could not express stay \
+the app's original code. The profile module (`{PROFILE_FILE}`) describes the app: its \
+tables (`Schema.from_pairs`: columns, keys, nullable columns, owner column, `one_of` \
+value lists), its response models (`RESPONSES`), its natives, its auth and its \
+conventions (the page shape, the error body, how callers get their role). This app's \
+conventions replace the generic ones above:
+
+- `@endpoint(..., response="TaskPublic")` names a response model: the returned columns \
+must be exactly its fields (`select` them).
+- Errors answer in the profile's `error_body` style with the message given to \
+`NotFound(...)`, `Forbidden(...)`, `Conflict(...)` or `BadRequest(...)`; 401 and 422 are \
+automatic.
+- Parameter types also include `Uuid`, `DateTime` and `OneOf(...)` (a column with a \
+`one_of` list takes only a listed literal or a `OneOf` parameter).
+- `p: Str(...) = UNSET` is an optional body field: not sent, the column keeps its \
+value. It may be used only directly as an `update()` value or an `insert()` value, or \
+in `sent(p)`.
+- `native.<name>(...)` calls a function the profile declares in `natives`.
+- A new column or response model is declared in the profile: return the complete \
+`{PROFILE_FILE}` with it. A new nullable column is added to the existing database \
+automatically.
+
+Keep the app's existing behaviour except where the ticket changes it.
+
+{
+    answer_format(
+        "every program you change or add (the complete file), and the complete profile only "
+        "if you change it",
+        "notes.lattice.py",
+    )
+}"""
+
+
+def l_system_prompt(*, hints: bool = False, repo: str = "template") -> str:
     """The Lattice API guide with its one-program output section replaced by
-    :data:`L_EDITING`. ``hints``: keep the guide's pitfall Advice (off by default: it
-    states another app's conventions, and arm P gets no advice either)."""
+    :data:`L_EDITING` (a held-out repo: :data:`L_EDITING_IMPORTED`). ``hints``: keep the
+    guide's pitfall Advice (off by default: it states another app's conventions, and arm
+    P gets no advice either)."""
     guide = api_lattice_system_prompt(hints=hints)
     if _OUTPUT_FORMAT_SECTION not in guide:
         raise AssertionError("the Lattice guide's output section moved")
-    return guide.replace(_OUTPUT_FORMAT_SECTION, L_EDITING).rstrip("\n") + "\n"
+    section = L_EDITING if repo == "template" else L_EDITING_IMPORTED
+    return guide.replace(_OUTPUT_FORMAT_SECTION, section).rstrip("\n") + "\n"
 
 
 def router_file(rel: str) -> str:
@@ -180,9 +221,17 @@ def router_file(rel: str) -> str:
     return rel.rsplit("/", 1)[-1].removesuffix(".py") + ".lattice.py"
 
 
-def l_program_files(ticket: Ticket) -> tuple[str, ...]:
-    """The Lattice programs of the routers the ticket touches."""
-    return tuple(router_file(f) for f in ticket.files if f.startswith("api/routes/"))
+def l_program_files(
+    ticket: Ticket, programs: Mapping[str, str] | None = None
+) -> tuple[str, ...]:
+    """The Lattice programs of the routers the ticket touches: the template's
+    ``api/routes/*`` files, and for a held-out repo each ticket file whose program the
+    start state has (``programs``; a router the import lifted nothing from has none)."""
+    if ticket.repo == "template":
+        return tuple(router_file(f) for f in ticket.files if f.startswith("api/routes/"))
+    return tuple(
+        name for f in ticket.files if programs is not None and (name := router_file(f)) in programs
+    )
 
 
 def l_user_message(
@@ -195,13 +244,19 @@ def l_user_message(
     """The ticket, the touched routers' programs and the profile source; ``others``
     names the unchanged programs that are not shown."""
     parts = [f"## Ticket: {ticket.title}\n\n{ticket.text.strip()}", "## Current files"]
-    for name in l_program_files(ticket):
+    for name in l_program_files(ticket, programs):
         parts.append(f"### {name}\n```python\n{programs[name].rstrip(chr(10))}\n```")
     parts.append(f"### {PROFILE_FILE}\n```python\n{profile_source.rstrip(chr(10))}\n```")
     if others:
         parts.append(
             "The app's other routers (" + ", ".join(f"`{o}`" for o in others) + ") are "
             "Lattice programs too; they are unchanged and not shown."
+        )
+    if ticket.repo != "template":
+        parts.append(
+            "Routes of the app that are in no program were not imported: they stay the "
+            "app's original Python code, unchanged, and cannot be edited here. A new route "
+            "goes in a program (a new file `<router>.lattice.py` if its router has none)."
         )
     return "\n\n".join(parts)
 

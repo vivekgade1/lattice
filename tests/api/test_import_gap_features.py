@@ -147,6 +147,42 @@ def test_the_lookup_column_must_be_a_unique_users_column() -> None:
         _api(natives=natives)
 
 
+def test_unique_runtime_allows_a_lookup_column_with_no_declared_constraint() -> None:
+    assert F.API_RUNTIME.auth == NativeToken("decode_token", "username", unique="runtime")
+    with pytest.raises(ValueError, match="unique"):
+        NativeToken("decode_token", lookup="username", unique="maybe")
+    with pytest.raises(ValueError, match="lookup"):  # the key is unique by construction
+        _api(auth=NativeToken("decode_token", unique="runtime"))
+
+
+@pytest.fixture
+def runtime_client(tmp_path: Path) -> Iterator[TestClient]:
+    check = check_source(F.PROGRAM, F.PROFILE_RUNTIME)
+    assert check.program is not None, [d.render() for d in check.diagnostics]
+    db = tmp_path / "app.db"
+    F.build_db_runtime(db)
+    app = build_app(lower_api(check.program), db, natives=F.NATIVES, settings=F.SETTINGS)
+    with TestClient(app) as c:
+        yield c
+
+
+def test_unique_runtime_one_row_authenticates_none_is_401(runtime_client: TestClient) -> None:
+    assert runtime_client.get("/me", headers=_h("bob")).json()["id"] == 2
+    assert runtime_client.get("/me", headers=_h("ghost")).status_code == 401
+
+
+def test_unique_runtime_two_rows_is_a_loud_500_never_one_of_them(
+    runtime_client: TestClient,
+) -> None:
+    got = runtime_client.get("/me", headers=_h("dave"))
+    assert got.status_code == 500
+    assert "R311" in got.text and "ambiguous caller" in got.text
+    # a writing endpoint changes nothing either
+    before = runtime_client.get("/tasks", headers=_h("alice")).json()
+    assert runtime_client.post("/tasks", headers=_h("dave"), json={"title": "x"}).status_code == 500
+    assert runtime_client.get("/tasks", headers=_h("alice")).json() == before
+
+
 # ---- 3. natives with a NativeContext -------------------------------------------------------
 
 

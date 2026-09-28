@@ -46,6 +46,8 @@ addopts = "-m 'not live'"
 
 [tool.ruff]
 line-length = 100
+# the importer's committed output (python -m lattice.importer), never edited by hand
+extend-exclude = ["bench/imports"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

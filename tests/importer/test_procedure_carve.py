@@ -210,7 +210,8 @@ def test_the_procedure_plan_comes_first_and_natives_only_for_outside_helpers(gra
     proc, native = plans
     assert {p.name for p in proc.procedures} == {"score", "slug", "initials", "banner", "clamp"}
     assert [t.origin for t in proc.translate] == ["pkg.helpers:untyped"]
-    assert [n.name for n in native.natives] == ["carve_ascii_title"]
+    assert [n.target for n in native.natives] == ["pkg.helpers:ascii_title"]
+    assert native.natives[0].name.startswith("carve_pkg_helpers_ascii_title_")  # qualified
     assert "unidecode" in native.why and "outside the T2 subset" in native.why
     # an effectful helper with a result is outside the subset and not a simple native
     assert "pkg.helpers:remote_title" in why and "not a simple native" in why

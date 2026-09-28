@@ -9,7 +9,7 @@
   ticket-specific cases;
 * trap-violating variants of the references score **silent** (at least three per ticket);
 * arm P's dry run scores each reference correct; arm L's start state is the importer's
-  output, not built here (``run.start_lattice`` raises for the held-out repos).
+  committed output (tests/bench/test_edit_slice_imports.py).
 """
 
 from __future__ import annotations
@@ -510,7 +510,8 @@ def test_the_p_dry_run_scores_each_reference_correct(tid):
 
 
 @pytest.mark.parametrize("name", ["taskflow", "justnotes"])
-def test_arm_l_starts_from_the_importers_output_not_built_here(name):
+def test_arm_l_has_no_start_without_an_import(name, monkeypatch, tmp_path):
+    monkeypatch.setattr(run, "IMPORTS", tmp_path)  # no import written there
     with pytest.raises(NotImplementedError, match="importer"):
         run.start_lattice(name)
     assert not run.has_lattice_start(name) and run.has_lattice_start("template")
@@ -521,12 +522,13 @@ def test_arm_l_starts_from_the_importers_output_not_built_here(name):
     assert r.outcome == "not_imported" and "start_lattice" in r.detail
 
 
-def test_the_estimate_prices_arm_p_only_on_the_held_out_repos(monkeypatch):
+def test_the_estimate_prices_both_arms_on_the_held_out_repos(monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     est = run.estimate(["claude-haiku-4-5"], ["t19_task_summary", "t24_note_stats"], reps=2)
     assert {(r["ticket"], r["arm"]) for r in est["rows"]} == {
-        ("t19_task_summary", "P"), ("t24_note_stats", "P")}  # fmt: skip
-    assert est["runs"] == 4
+        ("t19_task_summary", "P"), ("t24_note_stats", "P"),
+        ("t19_task_summary", "L"), ("t24_note_stats", "L")}  # fmt: skip
+    assert est["runs"] == 8
 
 
 def test_the_cli_ticket_spec_names_the_repo_tickets():

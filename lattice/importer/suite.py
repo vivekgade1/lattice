@@ -93,7 +93,10 @@ class TableSpec:
 class AuthSpec:
     """How callers are users. ``login_path`` is a form login answering
     ``{token_field: ...}``; ``mint_token(user_id)`` makes a bearer token without logging
-    in; ``hash_password`` hashes a seed password as the original stores it."""
+    in; ``hash_password`` hashes a seed password as the original stores it.
+    ``mint_claims(claims)`` (when there is no ``mint_token``) signs arbitrary claims as
+    the original's token decode expects them; ``claim`` is the claim naming the caller
+    and ``subject_column`` the users column it holds (None: the key)."""
 
     users_table: str
     email_column: str = "email"
@@ -106,6 +109,9 @@ class AuthSpec:
     token_field: str = "access_token"
     hash_password: Callable[[str], str] | None = None
     mint_token: Callable[[Any], str] | None = None
+    mint_claims: Callable[[Mapping[str, Any]], str] | None = None
+    claim: str = "sub"
+    subject_column: str | None = None
     bad_token: str = "not-a-jwt"
     key_type: ColumnType = "uuid"  # the users key: "uuid", or "int" (1, 2, ... in the seed)
 
@@ -697,11 +703,37 @@ def _route_cases(b: _Builder, hypothesis_bodies: int, seed: int) -> None:
             b.add("inactive_token", token=auth.mint_token(plan.user(INACTIVE).id),
                   id_value=b.own_id(INACTIVE) if idp is not None else None)  # fmt: skip
             b.add("unknown_user_token", token=auth.mint_token(auth.missing_user))
+        elif auth.mint_claims is not None:
+            _minted_cases(b, auth.mint_claims, idp)
     for e in r.errors:
         _error_case(b, e, happy)
     if hypothesis_bodies and body_params and r.kind != "login":
         for k, body in enumerate(hypothesis_bodies_for(r, hypothesis_bodies, seed)):
             b.add(f"hyp.{k}", body=body)
+
+
+MISSING_SUBJECT = "no-such-user"  # a login name no seeded user has
+
+
+def _minted_cases(b: _Builder, mint: Callable[[Mapping[str, Any]], str], idp: Any) -> None:
+    """The token cases a single-argument mint would give, from signed claims: a valid
+    token naming no user, one without the claim, and (with an active column) one naming
+    the inactive user."""
+    auth, plan = b.auth, b.plan
+
+    def subject(u: SeedUser | None) -> Any:
+        if auth.subject_column is None:
+            return str(u.id if u is not None else auth.missing_user)
+        if auth.subject_column == auth.email_column:
+            return u.email if u is not None else MISSING_SUBJECT
+        return None
+
+    if auth.active_column is not None and (value := subject(plan.user(INACTIVE))) is not None:
+        b.add("inactive_token", token=mint({auth.claim: value}),
+              id_value=b.own_id(INACTIVE) if idp is not None else None)  # fmt: skip
+    if (value := subject(None)) is not None:
+        b.add("unknown_user_token", token=mint({auth.claim: value}))
+    b.add("claimless_token", token=mint({}))
 
 
 def _error_case(b: _Builder, e: ErrorSpec, happy: dict[str, Any] | None) -> None:
@@ -715,10 +747,16 @@ def _error_case(b: _Builder, e: ErrorSpec, happy: dict[str, Any] | None) -> None
         b.add(what, user=ACTOR)
     elif e.cause == "unique":
         p = next(p for p in r.of("body") if (p.column or p.name) == e.column)
+        column = e.column or p.name
         taken = plan.user(OTHER).email if p.type == "email" else None
         if taken is None and r.table is not None:
-            taken = plan.rows[r.table][-1][e.column or p.name]
-        b.add(what, user=ACTOR, body={p.name: taken})
+            taken = plan.rows[r.table][-1][column]
+        if taken is None and column == b.auth.email_column:
+            taken = plan.user(OTHER).email  # the users' login column
+        if taken is None:  # the table that has the column (the route's is not known)
+            rows = next((rs for rs in plan.rows.values() if rs and column in rs[-1]), None)
+            taken = rows[-1][column] if rows else None
+        b.add(what, user=ACTOR, body={**(happy or {}), p.name: taken})
     elif e.cause in ("bad_credentials", "inactive_login"):
         names = [p.name for p in r.of("body")]
         u = plan.user(ACTOR if e.cause == "bad_credentials" else INACTIVE)

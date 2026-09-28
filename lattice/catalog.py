@@ -668,6 +668,9 @@ T2_T0_NAMES = frozenset({T2_CALL, INSERT_MANY, ROW_FN})
 T2_EFFECT_PREFIX = "procedure:"
 # ApiProfile.fuel: the default fuel budget of one request.
 DEFAULT_FUEL = 1_000_000
+# ApiProfile.max_value_size: the default largest str (characters), list/dict/set
+# (elements) or int (bits / 8) a procedure may build; larger is R622.
+DEFAULT_MAX_VALUE_SIZE = 10_000_000
 T2_T0_CODES: Mapping[str, str] = {
     "L880": "a procedure filter before page()/limit() (totals and pages would be computed in "
     "Python)",
@@ -681,6 +684,7 @@ T2_T0_CODES: Mapping[str, str] = {
 RUNTIME_T2_CODES: Mapping[str, str] = {
     "R620": "a procedure ran out of fuel (ApiProfile.fuel), or recursed too deep",
     "R621": "a whole-value call returned more rows than its input bounds",
+    "R622": "a procedure built a value larger than ApiProfile.max_value_size",
 }
 
 # ---- diagnostic codes --------------------------------------------------------------
@@ -719,4 +723,6 @@ T2_CODES: Mapping[str, str] = {
     "L921": "effect native called without declaring its effect",
     "L922": "procedure calls a procedure with effects it does not declare",
     "L923": "dict key or set element of an unhashable type",
+    "L925": "regular expression that may backtrack catastrophically (nested unbounded "
+    "repeats, or a repeated alternation whose branches start alike)",
 }

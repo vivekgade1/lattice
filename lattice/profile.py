@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
-from lattice.catalog import DEFAULT_FUEL
+from lattice.catalog import DEFAULT_FUEL, DEFAULT_MAX_VALUE_SIZE
 from lattice.typesys import Scalar, Schema
 
 # page_shape keys: the JSON fields of a Page response envelope.
@@ -69,16 +69,28 @@ class TokenColumn:
     column: str = "token"
 
 
+TOKEN_UNIQUE = ("declared", "runtime")
+
+
 @dataclass(frozen=True)
 class NativeToken:
     """Auth: the bearer token is decoded by a native (a null result or a missing row
     answers 401) to the caller's users-table key (`Str -> <key scalar>`) -- or, with
     `lookup`, to the value of that users column (`Str -> <its scalar>`), e.g. a JWT
     whose subject is the username. The lookup column must be unique (a declared key of
-    the users table), so the one authentication statement finds at most one row."""
+    the users table), so the one authentication statement finds at most one row --
+    unless `unique="runtime"`: then the column need not be declared unique (an app that
+    enforces uniqueness in code only), and the runtime checks it on every request: no
+    row answers 401, more than one a loud 500 (R311, an ambiguous caller) -- never one
+    of them picked silently."""
 
     native: str
     lookup: str | None = None
+    unique: str = "declared"  # "declared": a key of the users table; "runtime": checked
+
+    def __post_init__(self) -> None:
+        if self.unique not in TOKEN_UNIQUE:
+            raise ValueError(f"NativeToken.unique must be one of {TOKEN_UNIQUE}")
 
 
 AuthScheme = TokenColumn | NativeToken
@@ -167,6 +179,11 @@ class ApiProfile:
     # T2: the fuel budget of one request -- every procedure it runs shares it (loop
     # iterations, calls and comprehension elements cost one each); exhausted: R620.
     fuel: int = DEFAULT_FUEL
+    # T2: the largest value a procedure may build -- a str's characters, a list's /
+    # dict's / set's elements, an int's bytes; a larger one is R622. Operations whose
+    # result grows with an operand (`s * n`, `s.ljust(n)`, `2 ** n`, `a + b`, format
+    # specs, json.dumps) are also charged their result's size in fuel before they run.
+    max_value_size: int = DEFAULT_MAX_VALUE_SIZE
     # App configuration natives may read (setting name -> Str/Int/Float/Bool): a native
     # names the ones it reads (`NativeSig.settings`) and gets them in its NativeContext.
     # The values are the deployment's, supplied when the app starts
@@ -200,6 +217,9 @@ class ApiProfile:
             raise ValueError(f"ApiProfile.null_order must be one of {NULL_ORDERS}")
         if isinstance(self.fuel, bool) or not isinstance(self.fuel, int) or self.fuel < 1:
             raise ValueError("ApiProfile.fuel must be a positive int")
+        size = self.max_value_size
+        if isinstance(size, bool) or not isinstance(size, int) or size < 1:
+            raise ValueError("ApiProfile.max_value_size must be a positive int")
         if not all(isinstance(c, str) and c.isidentifier() for c in self.capabilities):
             raise ValueError("ApiProfile.capabilities must be identifiers, e.g. 'mail'")
 
@@ -280,7 +300,7 @@ class ApiProfile:
                     raise ValueError(
                         f"token column {column!r} is not a column of {self.users_table}"
                     )
-            case NativeToken(native=native, lookup=lookup):
+            case NativeToken(native=native, lookup=lookup, unique=unique):
                 sig = self.natives.get(native)
                 if sig is None:
                     raise ValueError(f"NativeToken names unknown native {native!r}")
@@ -299,12 +319,18 @@ class ApiProfile:
                         raise ValueError(
                             f"NativeToken lookup {lookup!r} is not a column of {self.users_table}"
                         )
-                    if (lookup,) not in users.keys:
+                    if unique == "declared" and (lookup,) not in users.keys:
                         raise ValueError(
                             f"NativeToken lookup {lookup!r} must be a unique column of "
-                            f"{self.users_table} (declare it a key: keys=[..., ({lookup!r},)])"
+                            f"{self.users_table} (declare it a key: keys=[..., ({lookup!r},)]), "
+                            'or checked at runtime (unique="runtime")'
                         )
                     column, what = lookup, f"the unique column {lookup!r}"
+                elif unique == "runtime":
+                    raise ValueError(
+                        'NativeToken unique="runtime" needs a lookup column (the key is '
+                        "unique by construction)"
+                    )
                 want = users.get(column)
                 if sig.params != (Scalar.STR,) or sig.result is not want:
                     shown = want.value if want is not None else "?"

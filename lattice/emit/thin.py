@@ -52,6 +52,14 @@ what orders them).
   new literal route is never shadowed by a kept or lifted parameter route, and a new
   route never shadows a kept one.
 
+**Other apps** (:func:`emit_into_app`, e.g. an import of a held-out repo). The same
+merge over the whole route list of the app a factory (``"module:function"``, recorded in
+``schema.json``) builds: every route with its full path (an included router's prefix
+applied), each kept route re-included alone with its include context (prefix, tags,
+dependencies). The profile module's ``settings_from_app(app)``, when present, supplies
+the NativeContext settings from that app; schema evolution runs once the app's tables
+exist (at once on a seeded database, else after the app's own lifespan created them).
+
 Lattice paths are absolute (``/api/v1/items/``), so the router is included without a
 prefix; each route is tagged with its first path segment after the API prefix, so the
 template's ``custom_generate_unique_id`` (``f"{tag}-{name}"``) gives the template's own
@@ -87,8 +95,9 @@ import json
 import re
 import sqlite3
 import sys
-from collections.abc import Collection, Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from collections.abc import AsyncIterator, Collection, Iterable, Mapping, Sequence
+from contextlib import asynccontextmanager
+from dataclasses import dataclass, replace
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -107,6 +116,8 @@ __all__ = [
     "EmitError",
     "EmitResult",
     "SchemaEvolutionError",
+    "app_routes",
+    "emit_into_app",
     "emit_into_template",
     "evolve_schema",
     "make_emitted_app",
@@ -332,6 +343,41 @@ def emit_into_template(
     the template routes they match are removed from the app even when the edited program
     no longer defines them. Default: none beyond the emitted routes. The result reports
     the template routes replaced and kept (see the module docstring)."""
+    return _emit(
+        lattice_sources, profile_source_or_obj, out_dir, natives_from=natives_from,
+        lifted=lifted, app_factory=None,
+    )  # fmt: skip
+
+
+def emit_into_app(
+    lattice_sources: Mapping[str, str] | Sequence[str] | str,
+    profile_source: str,
+    out_dir: str | Path,
+    *,
+    app_factory: str,
+    lifted: Iterable[str] | None = None,
+) -> EmitResult:
+    """:func:`emit_into_template` for any app: ``app_factory`` (``"module:function"``,
+    ``function(db_path) -> FastAPI``) builds the original app the routes are merged into
+    (:func:`make_emitted_app`, with the same matching and precedence over *all* of that
+    app's routes, full paths). ``profile_source`` is a profile module's source (e.g. an
+    import's ``profile.py``); when it defines ``settings_from_app(app)``, the values of
+    its NativeContext settings are read from the original app when it is mounted."""
+    return _emit(
+        lattice_sources, profile_source, out_dir, natives_from=DEFAULT_NATIVES,
+        lifted=lifted, app_factory=app_factory,
+    )  # fmt: skip
+
+
+def _emit(
+    lattice_sources: Mapping[str, str] | Sequence[str] | str,
+    profile_source_or_obj: Profile | str,
+    out_dir: str | Path,
+    *,
+    natives_from: str,
+    lifted: Iterable[str] | None,
+    app_factory: str | None,
+) -> EmitResult:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     files: list[Path] = []
@@ -346,9 +392,14 @@ def emit_into_template(
     write("kit.py", _KIT)
     if isinstance(profile_source_or_obj, str):
         write("profile.py", profile_source_or_obj)
-        write("natives.py", _natives_module(".profile"))
+        natives = _natives_module(".profile")
+        if app_factory is not None:  # filled from the app by make_emitted_app
+            natives += _SETTINGS
+        write("natives.py", natives)
         profile = _load_profile(_load_package(out))
     else:
+        if app_factory is not None:
+            raise ValueError("emit_into_app takes a profile module's source")
         profile = profile_source_or_obj
         write("natives.py", _natives_module(natives_from))
 
@@ -365,13 +416,85 @@ def emit_into_template(
     manifest = _schema_manifest(profile)
     manifest["routes_emitted"] = list(emitted)
     manifest["routes_lifted"] = list(lifted or ())
+    if app_factory is not None:
+        manifest["app_factory"] = app_factory
     write(SCHEMA_FILE, json.dumps(manifest, indent=2) + "\n")
     lines, nodes = _size(files)
     replaced = _replaced_keys(emitted, lifted or ())
-    template = _template_routes()
-    gone = tuple(f"{m} {p}" for m, p in template if (m, _normalize(p)) in replaced)
-    kept = tuple(f"{m} {p}" for m, p in template if (m, _normalize(p)) not in replaced)
+    if app_factory is None:
+        original = _template_routes()
+    else:
+        original = tuple(tuple(r.split(" ", 1)) for r in app_routes(app_factory))
+    gone = tuple(f"{m} {p}" for m, p in original if (m, _normalize(p)) in replaced)
+    kept = tuple(f"{m} {p}" for m, p in original if (m, _normalize(p)) not in replaced)
     return EmitResult(out, tuple(files), lines, nodes, emitted, gone, kept)
+
+
+_SETTINGS = (
+    "\n# NativeContext settings: read from the original app when it is mounted\n"
+    "SETTINGS: dict[str, object] = {}\n"
+)
+
+
+def resolve_factory(spec: str) -> Any:
+    """The callable ``"module:function"`` names."""
+    module, sep, name = spec.partition(":")
+    if not sep or not module or not name:
+        raise ValueError(f"an app factory is 'module:function', got {spec!r}")
+    obj: Any = importlib.import_module(module)
+    for part in name.split("."):
+        obj = getattr(obj, part)
+    return obj
+
+
+def _app_leaves(router: Any, ctx: Any = None) -> list[tuple[Any, frozenset[str], str]]:
+    """Every route of ``router`` and of the routers it includes, in order, as (the entry
+    that mounts that one route in an app's route list, its methods, its full path). An
+    included router's route is re-wrapped with the include context it had (prefix, tags,
+    dependencies, ...), alone, so it can be placed on its own."""
+    from fastapi.routing import _IncludedRouter
+
+    out: list[tuple[Any, frozenset[str], str]] = []
+    for route in router.routes:
+        if isinstance(route, _IncludedRouter):
+            child = route.include_context if ctx is None else ctx.combine(route.include_context)
+            out.extend(_app_leaves(route.original_router, child))
+            continue
+        methods = frozenset(getattr(route, "methods", None) or ())
+        path = getattr(route, "path", "")
+        if ctx is None:
+            out.append((route, methods, path))
+        else:
+            single = APIRouter()
+            single.routes.append(route)
+            entry = _IncludedRouter(
+                original_router=single, include_context=replace(ctx, included_router=single)
+            )
+            out.append((entry, methods, ctx.prefix + path))
+    return out
+
+
+def _dispose(app: Any) -> None:
+    engine = getattr(getattr(app, "state", None), "engine", None)
+    if engine is not None:
+        engine.dispose()
+
+
+def app_routes(app_factory: str) -> tuple[str, ...]:
+    """"METHOD /path" of every route of the app ``app_factory`` builds (on a scratch
+    database), in order, full paths (HEAD excluded)."""
+    import tempfile
+
+    factory = resolve_factory(app_factory)
+    with tempfile.TemporaryDirectory(prefix="lattice-emit-routes-") as tmp:
+        app = factory(Path(tmp) / "routes.db")
+        try:
+            leaves = _app_leaves(app.router)
+        finally:
+            _dispose(app)
+    return tuple(
+        f"{m} {path}" for _, methods, path in leaves for m in sorted(methods) if m != "HEAD"
+    )
 
 
 # ---- loading and mounting -------------------------------------------------------------------
@@ -405,6 +528,8 @@ def make_emitted_app(out_dir: str | Path, db_path: str | Path) -> FastAPI:
     out = Path(out_dir)
     manifest = json.loads((out / SCHEMA_FILE).read_text())
     replaced = _replaced_keys(manifest["routes_emitted"], manifest.get("routes_lifted", ()))
+    if manifest.get("app_factory"):
+        return _make_into_app(out, Path(db_path), manifest, replaced)
 
     # The template's create_app() includes the module-global api_router; for this app it
     # includes an empty one (the template module is restored), and the merged API routes
@@ -445,6 +570,73 @@ def make_emitted_app(out_dir: str | Path, db_path: str | Path) -> FastAPI:
     app.state.schema_changes = changes
     app.state.emitted = package
     return app
+
+
+def _make_into_app(
+    out: Path, db_path: Path, manifest: Mapping[str, Any], replaced: set[tuple[str, str]]
+) -> FastAPI:
+    """make_emitted_app for an app built by ``manifest["app_factory"]``: its whole route
+    list (full paths) merged with the emitted routes (:func:`_merge_order`)."""
+    app = resolve_factory(manifest["app_factory"])(db_path)
+    package = _load_package(out)
+    try:
+        profile_module = importlib.import_module(f"{package.__name__}.profile")
+        natives = importlib.import_module(f"{package.__name__}.natives")
+        reader = getattr(profile_module, "settings_from_app", None)
+        if callable(reader):  # before routes.py binds its context natives
+            natives.SETTINGS.update(reader(app))
+        kit = importlib.import_module(f"{package.__name__}.kit")
+        kit.DB_PATH = str(db_path)
+        routes = importlib.import_module(f"{package.__name__}.routes")
+    finally:  # the app holds what it needs; keep sys.modules from growing per app
+        for name in [n for n in sys.modules if n.split(".")[0] == package.__name__]:
+            del sys.modules[name]
+    leaves = _app_leaves(app.router)
+    lattice_routes = _leaf_routes(routes.router)
+    order = _merge_order(
+        [(methods, path) for _, methods, path in leaves],
+        [(r.methods, r.path) for r in lattice_routes],
+        replaced,
+    )
+    app.router.routes.clear()
+    for side, i in order:
+        if side == "o":
+            app.router.routes.append(leaves[i][0])
+        else:  # Lattice paths are absolute: no prefix
+            single = APIRouter()
+            single.routes.append(lattice_routes[i])
+            app.include_router(single)
+    mark = getattr(app.router, "_mark_routes_changed", None)
+    if callable(mark):
+        mark()
+    app.state.schema_changes = _evolve_when_ready(app, db_path, manifest)
+    app.state.emitted = package
+    return app
+
+
+def _evolve_when_ready(app: FastAPI, db_path: Path, manifest: Mapping[str, Any]) -> list[str]:
+    """Schema evolution now when the app's tables exist (a seeded database); else when
+    the app starts, after its own lifespan created them (the DDL run then is appended
+    to the returned list)."""
+    names = {t["table"] for t in manifest["tables"]}
+    conn = sqlite3.connect(db_path)
+    try:
+        found = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    finally:
+        conn.close()
+    if names <= found:
+        return _evolve(db_path, manifest)
+    changes: list[str] = []
+    original = app.router.lifespan_context
+
+    @asynccontextmanager
+    async def lifespan(a: Any) -> AsyncIterator[Any]:
+        async with original(a) as state:
+            changes.extend(_evolve(db_path, manifest))
+            yield state
+
+    app.router.lifespan_context = lifespan
+    return changes
 
 
 def _tag(path: str) -> str:

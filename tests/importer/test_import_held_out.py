@@ -30,23 +30,22 @@ COVERAGE = {
         10, 1, 2, 7,
         {"unsupported framework feature: a route defined inside an app factory": 2},
     ),
-    "justnotes": (
-        30, 0, 26, 4,
-        {f"{LANGUAGE_GAP}: token subject is not a unique users column": 26},
-    ),
+    "justnotes": (30, 1, 0, 29, {}),
 }  # fmt: skip
 # the gaps each repo's profile records as unclear decisions
 PROFILE_GAPS: dict[str, set[str]] = {
     "taskflow": set(),
-    "justnotes": {"token subject is not a unique users column"},
+    "justnotes": set(),
 }
 # the language gaps the first run recorded, closed since (single-role auth: NoRoles; a
 # non-key token subject: NativeToken(lookup=); natives reading app configuration:
-# NativeContext settings; enum columns: OneOf) -- none may come back
+# NativeContext settings; enum columns: OneOf; a token subject with no declared unique
+# constraint: NativeToken(unique="runtime")) -- none may come back
 CLOSED_GAPS = (
     "single-role auth",
     "token subject is not the users key",
     "enum constraint",
+    "token subject is not a unique users column",  # NativeToken(unique="runtime")
 )
 
 
@@ -114,6 +113,16 @@ def test_the_language_gaps_are_recorded_as_unclear_decisions(run):
     reasons = " ".join(u["reason"] for u in report["unclear"])
     for gap in PROFILE_GAPS[repo]:
         assert f"{LANGUAGE_GAP} ({gap})" in reasons, gap
+
+
+def test_a_subject_not_declared_unique_is_checked_at_runtime(run):
+    repo, out, report = run
+    if repo != "justnotes":
+        return
+    profile = load_profile_source((out / "profile.py").read_text()).profile()
+    assert (profile.api.auth.lookup, profile.api.auth.unique) == ("username", "runtime")
+    reasons = " ".join(u["reason"] for u in report["unclear"])
+    assert "User.username, which is not declared unique" in reasons
 
 
 def test_the_closed_gaps_stay_closed(run):

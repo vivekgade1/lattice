@@ -35,12 +35,22 @@ from __future__ import annotations
 
 import ast
 import importlib
+import inspect
+import textwrap
+import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from lattice.importer.extract import FieldSpec, RepoModel, Route, TableModel, _Index
+from lattice.importer.extract import (
+    FieldSpec,
+    NativeCandidate,
+    RepoModel,
+    Route,
+    TableModel,
+    _Index,
+)
 from lattice.importer.profile_gen import LANGUAGE_GAP, LIMIT_NAMES, OFFSET_NAMES
 from lattice.importer.suite import (
     AuthSpec,
@@ -119,7 +129,14 @@ def table_spec(t: TableModel, api: ApiProfile) -> TableSpec:
     if sum(c.primary_key for c in cols) == 0:
         raise Unsupported(f"{t.name}: no primary key column")
     schema = api.tables.get(t.name)
-    return TableSpec(t.table_name, tuple(cols), owner=schema.owner if schema else None)
+    owner = schema.owner if schema else None
+    if owner is None:
+        # the seed's ownership only (which rows a request calls its own), never the
+        # profile's: the one foreign key to the users table
+        users = api.table_names.get(api.users_table, api.users_table)
+        fks = [c.name for c in cols if (c.foreign_key or "").split(".")[0] == users]
+        owner = fks[0] if len(fks) == 1 and t.name != api.users_table else None
+    return TableSpec(t.table_name, tuple(cols), owner=owner)
 
 
 def users_model(model: RepoModel, api: ApiProfile) -> TableModel | None:
@@ -226,7 +243,15 @@ def _default(text: str | None, choices: tuple[str | int, ...]) -> Any:
 
 def _params(model: RepoModel, route: Route, table: TableModel | None) -> tuple[ParamSpec, ...]:
     out: list[ParamSpec] = []
-    unique = {c.name for c in table.columns if c.unique} if table is not None else set()
+    if table is not None:
+        unique = {c.name for c in table.columns if c.unique}
+    else:  # the route's table is not known: a column exactly one table declares unique
+        named: dict[str, int] = {}
+        for t in model.tables:
+            for c in t.columns:
+                if c.unique and not c.primary_key:
+                    named[c.name] = named.get(c.name, 0) + 1
+        unique = {n for n, k in named.items() if k == 1}
     for p in route.params:
         if p.source in ("path", "query"):
             kind = COLUMN_TYPES.get(p.type or "")
@@ -347,30 +372,50 @@ def _natives_called(index: _Index, model: RepoModel, fn: ast.AST, module: str) -
 
 def _hash_native(index: _Index, model: RepoModel, column: str) -> str | None:
     """The native whose result the package stores in ``column`` (a dict entry, keyword
-    or attribute assignment of that name)."""
+    or attribute assignment of that name) -- directly, or through a local name assigned
+    once in the same function (``h = hash_password(p); User(password=h)``)."""
     by_origin = {n.origin: n.name for n in model.natives if n.expressible}
     found: list[str] = []
 
-    def note(mod: str, value: ast.expr | None) -> None:
+    def note(mod: str, value: ast.expr | None, local: dict[str, ast.expr | None]) -> None:
+        if isinstance(value, ast.Name):
+            value = local.get(value.id)
         if isinstance(value, ast.Call):
             name = by_origin.get(index.resolve(mod, value.func) or "")
             if name is not None and name not in found:
                 found.append(name)
 
     for mod, m in index.modules.items():
-        for node in ast.walk(m.tree):
-            if isinstance(node, ast.Dict):
-                for k, v in zip(node.keys, node.values, strict=True):
-                    if isinstance(k, ast.Constant) and k.value == column:
-                        note(mod, v)
-            elif isinstance(node, ast.Call):
-                for kw in node.keywords:
-                    if kw.arg == column:
-                        note(mod, kw.value)
-            elif isinstance(node, ast.Assign):
-                if any(isinstance(t, ast.Attribute) and t.attr == column for t in node.targets):
-                    note(mod, node.value)
+        scopes: list[ast.AST] = [m.tree]
+        functions = (ast.FunctionDef, ast.AsyncFunctionDef)
+        scopes += [n for n in ast.walk(m.tree) if isinstance(n, functions)]
+        for scope in scopes:
+            local = _single_assignments(scope) if scope is not m.tree else {}
+            for node in ast.walk(scope):
+                if isinstance(node, ast.Dict):
+                    for k, v in zip(node.keys, node.values, strict=True):
+                        if isinstance(k, ast.Constant) and k.value == column:
+                            note(mod, v, local)
+                elif isinstance(node, ast.Call):
+                    for kw in node.keywords:
+                        if kw.arg == column:
+                            note(mod, kw.value, local)
+                elif isinstance(node, ast.Assign):
+                    if any(isinstance(t, ast.Attribute) and t.attr == column for t in node.targets):
+                        note(mod, node.value, local)
     return found[0] if len(found) == 1 else None
+
+
+def _single_assignments(fn: ast.AST) -> dict[str, ast.expr | None]:
+    """Local name -> its value, for the names ``fn`` assigns exactly once (a name
+    assigned more than once maps to None)."""
+    out: dict[str, ast.expr | None] = {}
+    for node in ast.walk(fn):
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target = node.targets[0]
+            if isinstance(target, ast.Name):
+                out[target.id] = node.value if target.id not in out else None
+    return out
 
 
 def auth_spec(
@@ -379,6 +424,7 @@ def auth_spec(
     index: _Index,
     natives: Mapping[str, Callable[..., Any]],
     specs: Mapping[str, RouteSpec],
+    settings: Mapping[str, Any] | None = None,
 ) -> AuthSpec:
     users = users_model(model, api)
     if users is None:
@@ -420,6 +466,12 @@ def auth_spec(
                 mint = natives.get(name)
                 break
     hasher = _hash_native(index, model, password)
+    decoder = next(
+        (n for n in model.natives if n.kind == "token_decoder" and n.expressible), None
+    )
+    minter = None
+    if mint is None and decoder is not None:
+        minter = claims_minter(decoder, settings or {})
     return AuthSpec(
         users_table=users.table_name,
         email_column=email,
@@ -430,7 +482,84 @@ def auth_spec(
         login_path=login.path if login is not None else None,
         hash_password=natives.get(hasher) if hasher else None,
         mint_token=mint,
+        mint_claims=minter,
+        claim=decoder.claim if decoder is not None and decoder.claim else "sub",
+        subject_column=decoder.lookup if decoder is not None else None,
     )
+
+
+MINTED_TOKEN_SECONDS = 7 * 24 * 3600  # test tokens: outlive any import run
+
+
+def claims_minter(
+    decoder: NativeCandidate, settings: Mapping[str, Any]
+) -> Callable[[Mapping[str, Any]], str] | None:
+    """A function signing claims as ``decoder``'s decode verifies them: the same
+    library's ``encode`` (PyJWT and python-jose share ``encode(claims, key,
+    algorithm=)``), key and first algorithm, evaluated where the decode reads them -- the
+    decode expression (its imports, ``ctx`` = the NativeContext ``settings``) or, when
+    that is a call of a package helper, the ``<lib>.decode(<param>, key, ...)`` inside
+    the helper (its module's globals). None when neither shape is found."""
+    if decoder.decode_expr is None:
+        return None
+    try:
+        call = ast.parse(decoder.decode_expr, mode="eval").body
+        ns: dict[str, Any] = {"ctx": dict(settings)}
+        for line in decoder.imports:
+            exec(line, ns)  # noqa: S102 -- the package's own import lines
+        found = _decode_call(call)
+        if found is None and isinstance(call, ast.Call):
+            helper = eval(compile(ast.Expression(call.func), "<decode>", "eval"), ns)  # noqa: S307
+            helper = inspect.unwrap(helper)
+            tree = ast.parse(textwrap.dedent(inspect.getsource(helper)))
+            fn = tree.body[0]
+            if not isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef) or not fn.args.args:
+                return None
+            param = fn.args.args[0].arg
+            found = next(
+                (
+                    c
+                    for n in ast.walk(fn)
+                    if (c := _decode_call(n)) is not None
+                    and isinstance(c.args[0], ast.Name)
+                    and c.args[0].id == param
+                ),
+                None,
+            )
+            ns = dict(helper.__globals__)
+        if found is None:
+            return None
+
+        def value(node: ast.expr) -> Any:
+            return eval(compile(ast.Expression(node), "<decode>", "eval"), ns)  # noqa: S307
+
+        encode = value(found.func.value).encode  # type: ignore[attr-defined]
+        key = value(found.args[1])
+        algorithms = next((value(k.value) for k in found.keywords if k.arg == "algorithms"), None)
+        if isinstance(algorithms, list | tuple):
+            algorithms = algorithms[0] if algorithms else None
+        algorithm = algorithms if isinstance(algorithms, str) else "HS256"
+    except Exception:  # noqa: BLE001 -- an unfamiliar decode: no minter
+        return None
+
+    def mint(claims: Mapping[str, Any]) -> str:
+        body = {"exp": int(time.time()) + MINTED_TOKEN_SECONDS, **claims}
+        token = encode(body, key, algorithm=algorithm)
+        return token.decode() if isinstance(token, bytes) else str(token)
+
+    return mint
+
+
+def _decode_call(node: ast.AST) -> ast.Call | None:
+    """``<lib>.decode(token, key, ...)``."""
+    if (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "decode"
+        and len(node.args) >= 2
+    ):
+        return node
+    return None
 
 
 def _insert_hook(tables: Sequence[TableModel]) -> Callable[[Path, SeedPlan], None] | None:
@@ -451,9 +580,14 @@ def _insert_hook(tables: Sequence[TableModel]) -> Callable[[Path, SeedPlan], Non
 
 
 def adapt(
-    model: RepoModel, api: ApiProfile, index: _Index, natives: Mapping[str, Callable[..., Any]]
+    model: RepoModel,
+    api: ApiProfile,
+    index: _Index,
+    natives: Mapping[str, Callable[..., Any]],
+    settings: Mapping[str, Any] | None = None,
 ) -> SuiteInputs:
-    """Every route's :class:`RouteSpec` (or why not), the tables and the auth."""
+    """Every route's :class:`RouteSpec` (or why not), the tables and the auth
+    (``settings``: the NativeContext values, for a token minter reading them)."""
     specs: list[TableSpec] = []
     unseedable: dict[str, str] = {}  # table class -> why it has no spec
     for t in model.tables:
@@ -482,7 +616,7 @@ def adapt(
             skipped[key] = str(err)
         except Exception as err:  # noqa: BLE001 -- never crash on unfamiliar code
             skipped[key] = f"the suite generator failed on the route: {type(err).__name__}: {err}"
-    auth = auth_spec(model, api, index, natives, routes)
+    auth = auth_spec(model, api, index, natives, routes, settings)
     seeded = [t for t in model.tables if t.name not in unseedable]
     return SuiteInputs(routes, skipped, tables, auth, keys, _insert_hook(seeded))
 

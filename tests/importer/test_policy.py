@@ -58,6 +58,9 @@ def test_the_templates_token_policies_come_from_get_current_user():
     policies = auth_policies(model, _Index(REPO_ROOT, PACKAGE), api)
     assert [(p.case, p.id, p.original) for p in policies] == [
         ("bad_token", "invalid-token-401", (403, "Could not validate credentials")),
+        # no guard on the claim: a token without it reaches the caller lookup (only
+        # requested when the suite mints its own claims; the template's has a mint)
+        ("claimless_token", "claimless-token", (404, "User not found")),
         ("unknown_user_token", "unknown-user-token", (404, "User not found")),
     ]
     out = deviations_for(

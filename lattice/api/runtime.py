@@ -366,7 +366,8 @@ def _token(header: str | None) -> str | None:
 
 def auth_sql(plan: EndpointPlan, dialect: Dialect) -> str:
     """The authentication statement: the caller's row by token column, or by key (or
-    the NativeToken lookup column) = the auth native applied to the token."""
+    the NativeToken lookup column) = the auth native applied to the token -- its OneOf
+    columns decoded from their stored spellings (the caller's row holds values)."""
     if plan.auth_native is not None:
         return compile_lookup(
             plan.users_table,
@@ -374,8 +375,20 @@ def auth_sql(plan: EndpointPlan, dialect: Dialect) -> str:
             plan.token_lookup or plan.user_key,
             native=plan.auth_native,
             dialect=dialect,
+            stored=plan.user_stored,
         )
-    return compile_lookup(plan.users_table, plan.user_columns, plan.token_column, dialect=dialect)
+    return compile_lookup(
+        plan.users_table,
+        plan.user_columns,
+        plan.token_column,
+        dialect=dialect,
+        stored=plan.user_stored,
+    )
+
+
+def ambiguous_caller(column: str | None) -> str:
+    """R311's message: the decoded token matched more than one users row."""
+    return f"ambiguous caller: the token's {column} matches more than one user; expected one"
 
 
 def caller_role(plan: EndpointPlan, row: Sequence[Any]) -> str:
@@ -393,11 +406,15 @@ def _authenticate(
     plan: EndpointPlan, dialect: Dialect, conn: Any, token: str
 ) -> tuple[object, str, tuple[Any, ...]]:
     """(caller id, role, the caller's row as `plan.user_columns`): one statement.
-    Unknown caller: 401; an inactive one (`plan.active_column` not true): the plan's
-    inactive status; a role that may not call the endpoint: 403 -- in that order."""
-    row = conn.execute(auth_sql(plan, dialect), (token,)).fetchone()
-    if row is None:
+    Unknown caller: 401; several rows (NativeToken unique="runtime"): 500, R311; an
+    inactive one (`plan.active_column` not true): the plan's inactive status; a role
+    that may not call the endpoint: 403 -- in that order."""
+    rows = conn.execute(auth_sql(plan, dialect), (token,)).fetchmany(2)
+    if not rows:
         raise _unauthorized(plan)
+    if len(rows) > 1:  # NativeToken(unique="runtime"): never pick one of them
+        raise ApiRuntimeError("R311", plan.span, ambiguous_caller(plan.token_lookup))
+    row = rows[0]
     user_id = row[plan.user_columns.index(plan.user_key)]
     if plan.active_column is not None and not row[plan.user_columns.index(plan.active_column)]:
         status = plan.inactive_status
@@ -455,7 +472,7 @@ def _run_steps(
     if plan.uses_t2:
         if t2 is None:
             raise LatticeInternalError(f"plan '{plan.name}' runs procedures, none are loaded")
-        fuel = t2s.T2Fuel(plan.fuel)
+        fuel = t2s.T2Fuel(plan.fuel, max_size=plan.max_value_size)
         role = caller_role(plan, caller) if caller is not None else ""
         request = t2s.T2Request(
             values, UNSET, caller_row, plan.t2_caller, plan.user_key, is_admin, role, now
@@ -864,7 +881,9 @@ def build_app(
         for plan in plans:
             for name, params in plan.t2_effects:
                 budget = plan.fuel
-                effects[T2_EFFECT_PREFIX + name] = t2s.t2_effect(t2, budget, name, params)
+                effects[T2_EFFECT_PREFIX + name] = t2s.t2_effect(
+                    t2, budget, name, params, plan.max_value_size
+                )
     routes = [
         Route(
             plan.path,

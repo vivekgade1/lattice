@@ -493,6 +493,69 @@ def get_caller(""",
     assert f"from {package_name(tmp_path)}.deps import read_token" in decoder.imports
 
 
+HELPER_DEPS = DEPS.replace(
+    """    try:
+        payload = jwt.decode(token, settings.secret, algorithms=["HS256"])
+    except JWTError:
+        raise HTTPException(status_code=401, detail="bad token")
+    account_id = payload.get("sub")
+""",
+    """    payload = read_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="bad token")
+    account_id: str | None = payload.get("sub")
+    if account_id is None:
+        raise HTTPException(status_code=401, detail="no subject")
+""",
+).replace(
+    "def get_caller(",
+    """def read_token(raw: str):
+    try:
+        return jwt.decode(raw, settings.secret, algorithms=["HS256"])
+    except JWTError:
+        return None
+
+
+def get_caller(""",
+)
+
+
+@pytest.mark.parametrize("deps", [DEPS, HELPER_DEPS], ids=["inline", "helper"])
+def test_a_claims_minter_is_derived_from_the_decode(tmp_path: Path, deps: str) -> None:
+    """With no single-argument token mint, the suite mints its own tokens with the
+    decode's library, key and algorithm (followed into a helper): a valid token naming
+    no user, and one without the claim -- so the dependency's branches for them are
+    reached."""
+    from jose import jwt
+
+    model = model_of(tmp_path, deps=deps)
+    module = load(generate_profile(model))
+    inputs = adapt(model, module.profile().api, index_of(tmp_path), module.NATIVES)
+    auth = inputs.auth
+    assert auth.mint_token is None and auth.mint_claims is not None
+    assert jwt.decode(auth.mint_claims({"sub": "7"}), "s", algorithms=["HS256"])["sub"] == "7"
+    suite = generate_suite(list(inputs.routes.values()), inputs.tables, auth,
+                           hypothesis_bodies=0)  # fmt: skip
+    names = {c.name for c in suite.cases if c.route == "me"}
+    assert {"me.unknown_user_token", "me.claimless_token"} <= names
+
+
+def test_token_policies_follow_a_decode_helper_and_a_caller_lookup(tmp_path: Path) -> None:
+    """``payload = helper(token); if payload is None: raise`` (an invalid token),
+    ``sub = payload.get("sub"); if sub is None: raise`` (no claim) and ``caller =
+    <lookup>(...); if caller is None: raise`` (no such user): the original's answers."""
+    from lattice.importer.policy import auth_policies
+
+    model = model_of(tmp_path, deps=HELPER_DEPS)
+    api = load(generate_profile(model)).profile().api
+    found = {p.case: p.original for p in auth_policies(model, index_of(tmp_path), api)}
+    assert found == {
+        "bad_token": (401, "bad token"),
+        "claimless_token": (401, "no subject"),
+        "unknown_user_token": (401, "unknown"),
+    }
+
+
 def _request_deps(read: str) -> str:
     deps = DEPS.replace("def get_caller(token", "def get_caller(request: Request, token").replace(
         "settings.secret, algorithms", f"{read}, algorithms"
@@ -539,14 +602,114 @@ def test_a_claim_naming_a_unique_column_is_a_token_lookup(tmp_path: Path) -> Non
     assert api.natives["decode_token"].result is Scalar.STR
 
 
-def test_a_claim_naming_a_non_unique_column_is_a_language_gap(tmp_path: Path) -> None:
+def test_a_claim_naming_a_non_unique_column_is_a_runtime_checked_lookup(
+    tmp_path: Path,
+) -> None:
+    """The column is not declared unique (the app checks it in code only): the lookup is
+    checked at runtime (unique="runtime": two rows are a loud 500), the column is not
+    made a key, and an Unclear note says so."""
     models = MODELS.replace("login: str = Field(unique=True, max_length=50)",
                             "login: str = Field(max_length=50)")  # fmt: skip
     model = model_of(tmp_path, deps=DEPS.replace(*BY_LOGIN), models=models)
     decoder = next(n for n in model.natives if n.kind == "token_decoder")
-    assert not decoder.expressible
-    assert f"{LANGUAGE_GAP} (token subject is not a unique users column)" in decoder.reason
-    assert "Account.login" in decoder.reason
+    assert decoder.expressible, decoder.reason
+    assert (decoder.lookup, decoder.lookup_unique) == ("login", "runtime")
+    result = generate_profile(model)
+    api = load(result).profile().api
+    assert api.auth == NativeToken("decode_token", lookup="login", unique="runtime")
+    assert api.tables["Account"].keys == (("id",),)
+    notes = unclear(result, "auth")
+    assert any("Account.login" in r and "not declared unique" in r for r in notes)
+
+
+SECURITY = """
+def hash_password(password: str) -> str:
+    return "h:" + password
+"""
+
+REGISTER = ROUTES + """
+
+from app.models import Account
+from app.security import hash_password
+
+
+@router.post("/register", response_model=AccountOut)
+def register(login: str, password: str, repo=Depends(get_tickets)):
+    digest = hash_password(password)
+    account = Account(login=login, password_digest=digest)
+    repo.session.add(account)
+    repo.session.commit()
+    return account
+"""
+
+
+def test_the_hasher_is_found_through_a_local_name(tmp_path: Path) -> None:
+    """``digest = hash_password(p); Account(..., password_digest=digest)``: the native
+    stored in the password column is followed through the local name, so the seed
+    stores hashed passwords (the original's login can verify them)."""
+    model = model_of(tmp_path, security=SECURITY, routes=REGISTER)
+    module = load(generate_profile(model))
+    inputs = adapt(model, module.profile().api, index_of(tmp_path), module.NATIVES)
+    assert inputs.auth.password_column == "password_digest"
+    assert inputs.auth.hash_password is not None
+    assert inputs.auth.hash_password("pw") == "h:pw"
+
+
+SIGNUP_MODELS = MODELS + """
+
+class AccountIn(SQLModel):
+    login: str = Field(max_length=50)
+    password: str
+"""
+
+SIGNUP = ROUTES + """
+
+from fastapi import HTTPException
+
+from app.deps import get_accounts
+from app.models import AccountIn
+from app.repo import AccountRepo
+
+
+def login_taken(repo, login):
+    return repo.by_login(login) is not None
+
+
+@router.post("/signup", status_code=201)
+def signup(body: AccountIn, repo: AccountRepo = Depends(get_accounts)):
+    if login_taken(repo, body.login):
+        raise HTTPException(status_code=409, detail="taken")
+    return {"ok": True}
+"""
+
+
+def test_a_conflict_on_a_unique_column_gets_a_case_without_a_known_table(
+    tmp_path: Path,
+) -> None:
+    """The route's table is not known (its writes go through helpers), but its 409 is on
+    a body field only one table declares unique: the suite requests a taken value."""
+    model = model_of(tmp_path, models=SIGNUP_MODELS, routes=SIGNUP)
+    module = load(generate_profile(model))
+    inputs = adapt(model, module.profile().api, index_of(tmp_path), module.NATIVES)
+    spec = inputs.routes["signup"]
+    assert [(e.status, e.cause, e.column) for e in spec.errors] == [(409, "unique", "login")]
+    suite = generate_suite([spec], inputs.tables, inputs.auth, hypothesis_bodies=0)
+    body = {c.name: c for c in suite.cases}["signup.error.409.unique"].json
+    assert body["login"] in {u.email for u in suite.plan.users}
+    assert "password" in body  # the rest of a valid body: only the taken value is wrong
+
+
+def test_the_seed_owns_rows_through_the_one_foreign_key_to_the_users_table(
+    tmp_path: Path,
+) -> None:
+    """The profile does not infer ``Ticket.owner_id`` as the owner (no route compares
+    it), but the suite still spreads and requests rows by it: a route's "own" id is a
+    row of the acting user, not whichever row comes first."""
+    model = model_of(tmp_path)
+    api = load(generate_profile(model)).profile().api
+    assert api.tables["Ticket"].owner is None
+    ticket = next(t for t in model.tables if t.name == "Ticket")
+    assert table_spec(ticket, api).owner == "owner_id"
 
 
 # ---- graceful degradation ------------------------------------------------------------------
@@ -623,15 +786,14 @@ def test_unsupported_columns_and_a_missing_users_table_never_crash(tmp_path: Pat
 def test_the_users_table_is_found_from_the_model_when_the_profile_has_none(
     tmp_path: Path,
 ) -> None:
-    models = MODELS.replace("login: str = Field(unique=True, max_length=50)",
-                            "login: str = Field(max_length=50)")  # fmt: skip
-    model = model_of(tmp_path, deps=DEPS.replace(*BY_LOGIN), models=models)
+    # a decode reading request state a native cannot see: the profile has no auth
+    model = model_of(tmp_path, deps=_request_deps("request.headers['x-key']"))
     module = load(generate_profile(model))
     api = module.profile().api
     assert api.users_table != "Account"  # no auth: left unset
     inputs = adapt(model, api, index_of(tmp_path), module.NATIVES)
     assert inputs.auth.users_table == "accounts"
-    assert "token subject is not a unique users column" in inputs.skipped["me"]
+    assert "request" in inputs.skipped["me"]
 
 
 def test_a_profile_the_language_refuses_falls_back_without_its_auth(tmp_path: Path) -> None:

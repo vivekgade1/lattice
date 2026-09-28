@@ -217,6 +217,9 @@ class NativeCandidate:
     catches: tuple[str, ...] = ()
     # the unique users column the claim names when it is not the key (NativeToken lookup)
     lookup: str | None = None
+    # "declared": the lookup column is declared unique; "runtime": it is not (the app
+    # checks it in code), so the runtime checks it per request (NativeToken unique=)
+    lookup_unique: str = "declared"
     # app configuration the decode reads (``request.app.state.<path>``), as NativeContext
     # settings: (setting name, scalar type, the attribute path from the app object)
     settings: tuple[tuple[str, str, str], ...] = ()
@@ -1831,18 +1834,13 @@ class _Extractor:
                 )
             claim = _claim(fn)
             column = self._claim_column(mod, fn, claim, table)
-            subject, lookup = keys[0], None
+            subject, lookup, lookup_unique = keys[0], None, "declared"
             if column is not None and column != keys[0].name:
                 spec = next((c for c in table.columns if c.name == column), None)
-                if spec is not None and spec.unique:
+                if spec is not None:
                     subject, lookup = spec, column  # NativeToken(lookup=column)
-                else:
-                    problems.append(
-                        f"{LANGUAGE_GAP} (token subject is not a unique users column): the "
-                        f"token's {claim!r} claim names {table.name}.{column}, which is "
-                        "neither the key nor declared unique; NativeToken(lookup=) needs a "
-                        "unique column (one row per token)"
-                    )
+                    if not spec.unique:  # checked per request: two rows are a loud 500
+                        lookup_unique = "runtime"
             return NativeCandidate(
                 name="decode_token",
                 origin=f"{mod}:{fn.name}",
@@ -1859,6 +1857,7 @@ class _Extractor:
                 claim=claim,
                 catches=catches,
                 lookup=lookup,
+                lookup_unique=lookup_unique,
                 settings=settings,
             )
         return None

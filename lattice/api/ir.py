@@ -44,6 +44,7 @@ from lattice.api.sql import (
 from lattice.catalog import (
     API_ERRORS,
     DEFAULT_FUEL,
+    DEFAULT_MAX_VALUE_SIZE,
     ELSE_KW,
     FOR_EACH,
     INSERT_MANY,
@@ -320,6 +321,15 @@ class EndpointPlan:
     # NativeToken(lookup=col): the unique users column the decoded token is matched
     # against (None: the key, `user_key`).
     token_lookup: str | None = None
+    # NativeToken(unique="runtime"): the lookup column is not declared unique, so the
+    # authentication statement may match several rows -- an ambiguous caller (R311, 500).
+    token_runtime_unique: bool = False
+    # The users table's OneOf columns the database spells differently: the
+    # authentication statement decodes them, so the caller's row (bound as user.<col>,
+    # the role check, the Caller of procedures) holds the values, never the spellings.
+    user_stored: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = ()
+    # ApiProfile.max_value_size: the largest value a procedure may build (R622).
+    max_value_size: int = DEFAULT_MAX_VALUE_SIZE
     # NativeContext: every profile native that reads settings -- (native, ((setting,
     # scalar), ...)) -- by name, so the natives of steps and procedures are bound too.
     native_settings: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = ()
@@ -1387,11 +1397,13 @@ class _Endpoint:
             response = _reorder(response, self.api.responses[self.info.response])
         users = self.api.tables.get(self.api.users_table)
         token_column, auth_native, token_lookup = "token", None, None
+        runtime_unique = False
         match self.api.auth:
             case TokenColumn(column=column):
                 token_column = column
-            case NativeToken(native=native, lookup=lookup):
+            case NativeToken(native=native, lookup=lookup, unique=unique):
                 auth_native, token_lookup = native, lookup
+                runtime_unique = unique == "runtime"
         role_column, admin_flag, flag_role, fixed_role = "role", None, "", None
         match self.api.roles_from:
             case RoleColumn(column=column):
@@ -1448,7 +1460,10 @@ class _Endpoint:
             t2_effects=self._t2_effects(),
             fixed_role=fixed_role,
             token_lookup=token_lookup,
+            token_runtime_unique=runtime_unique,
             native_settings=native_settings(self.api),
+            user_stored=users.stored_spellings() if users is not None else (),
+            max_value_size=getattr(self.api, "max_value_size", DEFAULT_MAX_VALUE_SIZE),
         )
 
     def _t2_caller(self) -> tuple[tuple[str, str], ...]:
