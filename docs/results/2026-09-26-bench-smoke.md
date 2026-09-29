@@ -781,9 +781,10 @@ compares:
 - `after_sql` rows;
 - a whole-database digest.
 
-**Result: 49 programs, 2,458 cases, 0 mismatches** (commit `545d1ea`; the first-hop,
-content-type and raw-body checks were added in a fix round, commit `a0a283f`, still 0
-mismatches). Two further checks pass: on the two T2 programs, the 478 cases with SQL
+**Result: 49 programs, 2,478 cases, 0 mismatches** (commit `545d1ea` with 2,458
+cases; the first-hop, content-type and raw-body checks were added in a fix round,
+commit `a0a283f`, still 0 mismatches; the final review's fix round added 20 `pattern=`
+cases, 13 plus their generated probes, to the `edges` program, still 0 mismatches). Two further checks pass: on the two T2 programs, the 478 cases with SQL
 steps run identical statements in identical order on both sides, and fuel parity holds
 on both (three bisected sizes give 500/200/500 on both targets, with matching R620
 bodies).
@@ -792,7 +793,8 @@ The 49 programs cover page totals (including a page past the end), trailing-slas
 redirects (with and without a query, PATCH included), `unique_or=Conflict` (409, DB
 unchanged), owner transfer (success and missing-user 404), UNSET partial updates
 (including an explicit null written to a nullable column), 204 deletes, R310 (500),
-route precedence, and, for the T2 programs, derive/where/require compiled to SQL,
+route precedence, `Str(pattern=...)` constraints (`(?i)` without Unicode case folding,
+so "ſ" and the Kelvin sign are refused; `\Z`; `{m,n}` and `{,n}` bounds), and, for the T2 programs, derive/where/require compiled to SQL,
 `call` bound as a scalar and for `insert_many`, and procedures called from derive over
 the caller.
 
@@ -819,7 +821,8 @@ Date/DateTime f-string spec) that isn't a literal of the directives Go implement
 
 ### v1.1 behaviour changes (every target, not Go-specific)
 
-These are language-version changes (`# lattice: v1.1`), decided during this
+These are language-version changes (`# lattice: v1.1`; the `v1` and `v1.1` headers
+are both accepted and both run under the v1.1 rules), decided during this
 sub-project and implemented identically on Python and Go; see
 `docs/lattice-language-rules.md` §6 (decision log) and §8 (version notes) for the
 full rationale and dates.
@@ -860,6 +863,28 @@ full rationale and dates.
   Python (`re.findall(r"(a)(b)", s)[0].upper()`). Fixed in the checker
   (`lattice/check/t2/body.py::_regex_result`) for both targets: `findall` with ≥2
   groups types as `list[tuple[Str, ...]]`, `split` with groups as `list[Str | None]`.
+
+- **Parameter patterns were still on Go's regexp until the final review.** T2
+  regexes ran on the SRE port, but a `Str(pattern=...)` constraint was matched with
+  `regexp.MustCompile`: `(?i)[a-z]+` accepted "ſ" and the Kelvin sign on Go (Python
+  refuses them under `re.ASCII`), `x\Z` answered 500 on every request, and `a{1001}`,
+  `[[:alpha:]]`, `x{,2}` and `\s` vs `\v` differed. No gated program used such a
+  pattern, so the gate could not see it. Parameter patterns are now compiled when the
+  Go code is generated, as Python compiles them, and matched by the same SRE port with
+  `re.fullmatch` semantics; `tests/api/edges.py` covers them in both differentials.
+
+### Prerequisites (building for Go)
+
+- **Go >= 1.26 on PATH.** Builds run with `GOTOOLCHAIN=local` (go never downloads a
+  newer toolchain); a missing or older `go` fails with a `GoBuildError` naming the
+  minimum.
+- **The runtime's dependencies in the module cache.** Builds are offline
+  (`GOPROXY=off`), so a fresh machine needs, once and with network access,
+  `cd lattice/gogen/rt && go mod download`. Without it the build fails with a
+  `GoBuildError` saying exactly that (go's own message is only "module lookup disabled
+  by GOPROXY=off").
+- Tests that run the Go toolchain carry the `go` pytest marker and are skipped, with
+  that reason, when `go` is not on PATH (`tests/conftest.py`).
 
 ### Known limitations (honest)
 
@@ -913,6 +938,14 @@ full rationale and dates.
   keys by their JSON text on Go where Python compares by tuple equality, so an Int and
   a Float key that are numerically equal (`1` and `1.0`) merge differently
   (`http.go:247`).
+- **The Go runtime reads two private fields of the SQLite driver.** To return stored
+  values as Python's sqlite3 does (the driver turns DATE/DATETIME TEXT into
+  `time.Time`), `rt/rawsql.go` runs statements through SQLite's C API on the handle
+  and TLS in modernc.org/sqlite's unexported `conn.db` / `conn.tls`, behind type
+  guards that panic rather than misuse memory. Upgrading modernc.org/sqlite therefore
+  follows the procedure in `rawsql.go`'s header: pin modernc.org/libc to the exact
+  version sqlite requires, then `go test ./...` (`TestHandleOnRealConnection`,
+  `TestLibcMatchesSqlite`) and the gate.
 - **The HTTP request body is unbounded on both targets.** Neither Python nor Go caps
   it; a production deployment needs a body-size profile setting and a matching 413 on
   both, not yet built.
@@ -922,7 +955,7 @@ full rationale and dates.
 
 ### What is not claimed
 
-This is **tested equivalence, not a proof**: 2,458 request/response comparisons and
+This is **tested equivalence, not a proof**: 2,478 request/response comparisons and
 385 semantics cases, 0 divergences found — not a formal equivalence proof covering
 every Lattice program. It makes **no claim about LLM benefit, cost or runtime
 performance** of the Go target; that is sub-project 5b (the benchmark), not yet run.
