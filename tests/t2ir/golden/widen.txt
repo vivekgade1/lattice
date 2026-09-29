@@ -1,0 +1,180 @@
+record Box(w: Float, h: Float)
+  defaults: h=1.0
+procedure half(x: Float) -> Float
+  recursive: False
+  locals: x: Float
+  Return
+    Binary(/) : Float
+      Var x : Float
+      Const 2 : Int
+procedure sites(n: Int, m: Int | None, flag: Bool, i: Int, xs: list[Int]) -> Float
+  recursive: False
+  locals: _lt_t1: Int, _lt_t2: Int, _lt_t3: Int, _lt_t4: Int, a: Float, b: Int, d: dict[Float, Float], e: dict[Str, Float], flag: Bool, found: Bool, i: Int, m: Int | None, n: Int, o: Float | None, s: Float, t: list[Float], x: Float, xs: list[Int], y: Int, ys: list[Float], z: Float
+  Assign
+    target: NameT x
+    Widen : Float
+      Var n : Int
+  Assign
+    target: NameT o
+    Widen : Float | None
+      Var m : Int | None
+  Assign
+    target: NameT _lt_t1
+    Var n : Int
+  Assign
+    target: NameT x
+    Widen : Float
+      Var _lt_t1 : Int
+  Assign
+    target: NameT y
+    Var _lt_t1 : Int
+  Assign
+    target: NameT a
+    Const 0.5 : Float
+  Assign
+    target: TupleTarget
+      NameT _lt_t2
+      NameT _lt_t3
+    TupleLit : tuple[Int, Int]
+      Var n : Int
+      Var i : Int
+  Assign
+    target: NameT a
+    Widen : Float
+      Var _lt_t2 : Int
+  Assign
+    target: NameT b
+    Var _lt_t3 : Int
+  For
+    target: NameT _lt_t4
+    Var xs : list[Int]
+    body:
+      Tick
+      Assign
+        target: NameT a
+        Widen : Float
+          Var _lt_t4 : Int
+      Pass
+  Assign
+    target: NameT ys
+    ListLit : list[Float]
+      Widen : Float
+        Var n : Int
+      Const 2.5 : Float
+  Assign
+    target: NameT d
+    DictLit : dict[Float, Float]
+      Widen : Float
+        Var n : Int
+      Const 2.5 : Float
+      Widen : Float
+        Var n : Int
+      Const 0.5 : Float
+  Assign
+    target: NameT e
+    DictLit : dict[Str, Float]
+      None
+      Const 'j' : Str
+      Widen : dict[Str, Float]
+        DictLit : dict[Str, Int]
+          Const 'k' : Str
+          Var n : Int
+      Const 2.5 : Float
+  Assign
+    target: IndexT
+      Var ys : list[Float]
+      Const 0 : Int
+    Widen : Float
+      Var n : Int
+  Assign
+    target: IndexT
+      Var d : dict[Float, Float]
+      Widen : Float
+        Var n : Int
+    Widen : Float
+      Var n : Int
+  Assign
+    target: NameT z
+    Grow(+) : Float
+      Grow(+) : Float
+        Grow(+) : Float
+          Grow(+) : Float
+            BoolOp(or) : Float
+              Var x : Float
+              Widen : Float
+                Var n : Int
+            IfExp : Float
+              test: Var flag : Bool
+              body: Const 2.5 : Float
+              orelse: Widen : Float
+                Var n : Int
+          Index : Float
+            TupleLit : tuple[Float, Float, Float]
+              Const 1.0 : Float
+              Const 2.5 : Float
+              Const 3.0 : Float
+            Var i : Int
+        Call proc:half : Float
+          Widen : Float
+            Var n : Int
+      Attr h : Float
+        Charged : Box
+          Call record:Box : Box
+            Widen : Float
+              Var n : Int
+  Assign
+    target: NameT t
+    Comp(list) : list[Float]
+      Var v : Float
+      Gen
+        target: NameT v
+        Each : tuple[Float, Float]
+          TupleLit : tuple[Float, Float]
+            Widen : Float
+              Var n : Int
+            Const 2.5 : Float
+  Assign
+    target: NameT found
+    Compare(in) : Bool
+      Widen : Float
+        Var n : Int
+      Var ys : list[Float]
+  Assign
+    target: NameT s
+    Grow(+) : Float
+      Grow(+) : Float
+        Grow(+) : Float
+          Grow(+) : Float
+            Grow(+) : Float
+              Charged : Float
+                Call builtin:sum : Float
+                  Bulk : list[Float]
+                    Var ys : list[Float]
+                  Const 0.0 : Float
+              Charged : Float
+                Call builtin:sum : Float
+                  Bulk : list[Float]
+                    Var ys : list[Float]
+                  Widen : Float
+                    Var n : Int
+            Charged : Float
+              Call builtin:max : Float
+                Widen : Float
+                  Var n : Int
+                Const 2.5 : Float
+          Charged : Float
+            Call builtin:round : Float
+              Widen : Float
+                Var n : Int
+              Const 1 : Int
+        Grow(**) : Float
+          Widen : Float
+            Var n : Int
+          Widen : Float
+            Var i : Int
+      Charged : Int
+        Call builtin:round : Int
+          Var n : Int
+  Return
+    Widen : Float
+      Var n : Int

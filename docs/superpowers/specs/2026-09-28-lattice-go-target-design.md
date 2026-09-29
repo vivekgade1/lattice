@@ -55,6 +55,8 @@ Lattice's meaning is currently whatever Python does. v1.1 writes it down once, i
 | `Int` | Signed 64-bit. Overflow raises **R623** (new). Today T2 allows up to 65,536 bits (`T2_MAX_INT_BITS`). | Checked arithmetic in both emitters |
 | `Float` | IEEE-754 double; text is the shortest round-trip form in Python's `repr` format | Prelude formatter per target |
 | Division | `/` gives Float; `//` and `%` floor as in Python | Go helpers (Go truncates) |
+| Int in a Float place | Converted to a float where the checker's types put it (R-widen, docs/lattice-language-rules.md): assignments, arguments, returns, elements, branches, `sum`'s start, `Int ** n` typed Float. Comparisons stay exact | `Widen` nodes placed by T2 IR lowering |
+| Float `**` | A negative finite base with a finite non-integral exponent raises ValueError (`math domain error`), never a complex number (R-pow) | `T2Fuel.pow` / `rt.PowF` |
 | `Str` | `len`, indexing and slicing are over code points | Go helpers on `[]rune` |
 | `list` | Negative indexes and Python slice rules (clamped bounds, steps); every slice read is a **new list** (Go copies, never aliases); slice assignment stays rejected (L913) | Go slice helpers |
 | `dict` | Insertion-ordered iteration | Generated Go `OrderedMap[K, V]` |
@@ -79,7 +81,7 @@ The target is a check option (`--target python|go`, default `python`). A program
 
 ### 3.3 Versioning
 
-v1.1 only makes Lattice stricter. A v1 program either behaves the same or is rejected at check time, with one exception: `Int` values beyond 64 bits now fail at runtime with R623. That change is recorded in the version notes. The header `# lattice: v1.1` is accepted; `v1` programs run under v1.1 rules.
+v1.1 only makes Lattice stricter. A v1 program either behaves the same or is rejected at check time, with exceptions that each fix a divergence between targets: `Int` values beyond 64 bits now fail at runtime with R623, an Int in a Float-typed place becomes a float (R-widen), and a negative Float base with a non-integral exponent raises ValueError (R-pow). These changes are listed in the version notes (docs/lattice-language-rules.md §8). The header `# lattice: v1.1` is accepted; `v1` programs run under v1.1 rules.
 
 ## 4. Runtime behaviour on Go
 

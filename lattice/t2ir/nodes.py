@@ -172,6 +172,19 @@ class Walrus:
     type: T2Type
 
 
+@dataclass(frozen=True)
+class Widen:
+    """R-widen: `value` converted to `type`, the same shape with each Int where the
+    context expects a Float made a float (an Int -> Float; `T | None`, tuples and
+    iterators element-wise; a list, set or dict iterated or spread where its elements
+    are used as Floats, into a fresh list or dict). Placed by lowering wherever the
+    checker's types put an Int-typed value in a Float slot, so every target converts at
+    the same points. Charges nothing."""
+
+    value: Expr
+    type: T2Type
+
+
 # --- Fuel-bearing expressions --------------------------------------------------------
 
 
@@ -384,7 +397,7 @@ class T2Module:
 
 Expr = (
     Const | Var | Attr | Index | SliceOf | Unary | Binary | Compare | BoolOp | IfExp | Call
-    | ListLit | SetLit | TupleLit | DictLit | Comp | FStr | Lambda | Walrus
+    | ListLit | SetLit | TupleLit | DictLit | Comp | FStr | Lambda | Walrus | Widen
     | Each | Bulk | Charged | Grow | Sized | Scan
 )
 

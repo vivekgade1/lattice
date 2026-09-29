@@ -147,8 +147,9 @@ func TestCoreAnswers(t *testing.T) {
 			}
 		}
 		if a.Fn == "pow_f" && len(want) > 0 && want[0] == '(' {
-			// Python returns a complex number: Go refuses (see PowF).
-			want = "!ValueError: a negative number raised to a fractional power has no Float value"
+			// Python's ** returns a complex number; R-pow makes it a ValueError on
+			// every target, with math.pow's message (see PowF)
+			want = "!ValueError: math domain error"
 		}
 		if got := outcome(f); got != want {
 			t.Errorf("%s%v: got %q, want %q", a.Fn, a.Args, got, want)
@@ -345,5 +346,34 @@ func TestExplicitConversionPreventsFusedMultiplyAdd(t *testing.T) {
 	}
 	if got := mulThenSub(0.1, 10.0, 1.0); got != 0 {
 		t.Fatalf("a := float64(x*y); a - z = %v, want 0 (Python)", got)
+	}
+}
+
+// FloatAsInt is how `x in ints` stays exact for a Float x: only an integral Float in
+// the Int range equals an Int.
+func TestFloatAsIntIsExact(t *testing.T) {
+	for _, c := range []struct {
+		f  float64
+		i  int64
+		ok bool
+	}{
+		{2, 2, true}, {math.Copysign(0, -1), 0, true}, {-9223372036854775808.0, math.MinInt64, true},
+		{2.5, 0, false}, {9223372036854775808.0, 0, false}, {math.Inf(1), 0, false},
+		{math.Inf(-1), 0, false}, {math.NaN(), 0, false},
+	} {
+		if i, ok := FloatAsInt(c.f); ok != c.ok || (ok && i != c.i) {
+			t.Errorf("FloatAsInt(%v) = %v, %v; want %v, %v", c.f, i, ok, c.i, c.ok)
+		}
+	}
+}
+
+// R-pow: a negative finite base with a finite non-integral exponent has no Float value.
+func TestPowNegativeBaseFractionalExponent(t *testing.T) {
+	for _, c := range [][2]float64{{-4, 0.5}, {-8, 1.0 / 3}, {-2, 1.5}} {
+		mustFail(t, "ValueError", func() { PowF(c[0], c[1]) })
+	}
+	if PowF(-2, 3) != -8 || PowF(math.Inf(-1), 0.5) != math.Inf(1) ||
+		PowF(-2, math.Inf(1)) != math.Inf(1) {
+		t.Fatal("integral exponents and infinities keep their Float value")
 	}
 }

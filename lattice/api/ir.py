@@ -63,10 +63,12 @@ from lattice.check.api_info import EndpointInfo, ParamSpec, user_table
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
 from lattice.check.p4_types import is_owner_is, mentions_caller
 from lattice.check.t2 import CheckedProcedure
+from lattice.check.t2.types import FLOAT as T2_FLOAT
 from lattice.check.t2.types import ListT as T2ListT
 from lattice.check.t2.types import RecordT as T2RecordT
 from lattice.check.t2.types import RowT as T2RowT
 from lattice.check.t2.types import T2Type
+from lattice.check.t2.types import strip_opt as t2_strip_opt
 from lattice.check.t2_calls import column_type
 from lattice.diagnostics import Span, span_of
 from lattice.ir import traverse_params, window_params
@@ -907,7 +909,11 @@ class _Endpoint:
     def _t2_value(
         self, node: ast.expr, want: T2Type, schema: Schema | None, subst: Mapping[str, ast.expr]
     ) -> tuple[Any, ...]:
-        """The descriptor of one procedure argument (`schema`: the current row's)."""
+        """The descriptor of one procedure argument (`schema`: the current row's). An
+        Int handed to a Float parameter arrives as a float (R-widen): a constant is
+        converted here, a parameter or column value when it is read (the descriptor
+        names the Float scalar)."""
+        widen = t2_strip_opt(want) == T2_FLOAT
         if isinstance(node, ast.Name) and node.id == USER_PARAM:
             return ("caller",)
         if _is_named_call(node, ROW_FN):
@@ -917,25 +923,25 @@ class _Endpoint:
         value = self._expr(node, subst)
         match value:
             case ast.Constant(value=v):
-                return ("const", v)
+                return ("const", float(v) if widen and type(v) is int else v)
             case ast.UnaryOp(op=ast.USub(), operand=ast.Constant(value=v)):
-                return ("const", -v)  # type: ignore[operator]
+                return ("const", float(-v) if widen and type(v) is int else -v)  # type: ignore[operator]
             case ParamRef(name=name):
-                return ("param", name)
+                return ("param", name, "Float") if widen else ("param", name)
             case CallerRef(admin=True):
                 return ("is_admin",)
             case CallerRef(column=str(column)):
                 users = self.api.tables[self.api.users_table]
                 scalar = users.get(column)
                 assert scalar is not None
-                return ("caller_col", column, scalar.value)
+                return ("caller_col", column, "Float" if widen else scalar.value)
             case ast.Call(func=ast.Attribute(value=ast.Name(id="fn"), attr="now")):
                 return ("now",)
             case ast.Call(func=ast.Name(id="col"), args=[ast.Constant(value=str(name))]):
                 scalar = schema.get(name) if schema is not None else None
                 if scalar is None:
                     raise LatticeInternalError(f"procedure argument col('{name}') is no column")
-                return ("col", name, scalar.value)
+                return ("col", name, "Float" if widen else scalar.value)
         raise LatticeInternalError(f"unsupported procedure argument {ast.dump(value)}")
 
     def _row_shape(self, want: T2Type, schema: Schema) -> tuple[str, str, tuple[Any, ...]]:

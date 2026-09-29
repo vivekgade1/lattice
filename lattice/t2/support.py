@@ -33,6 +33,7 @@ import dataclasses as t2_dataclasses
 import datetime as t2_dt
 import importlib as t2_importlib
 import logging as t2_logging
+import math as t2_math
 import re as t2_re
 import types as t2_types
 import uuid as t2_uuid
@@ -423,9 +424,12 @@ class T2Fuel:
     def _pow_size(self, a: object, b: object) -> None:
         if isinstance(a, int) and isinstance(b, int) and b > 1 and abs(a) > 1:
             self.bits(abs(a).bit_length() * b)
+        t2_pow_domain(a, b)
 
     def pow(self, a: object, b: object) -> object:
-        """`a ** b`: an Int power is charged its bits (at most bit_length(a) * b)."""
+        """`a ** b`: an Int power is charged its bits (at most bit_length(a) * b); a
+        Float power of a negative base to a non-integral exponent is a ValueError
+        (`t2_pow_domain`)."""
         self._pow_size(a, b)
         return a**b  # type: ignore[operator]
 
@@ -534,6 +538,53 @@ class T2Fuel:
         out = fn(value, *args, **kw)  # type: ignore[operator]
         self.grow(len(out))
         return out
+
+
+def t2_pow_domain(a: object, b: object) -> None:
+    """R-pow (docs/lattice-language-rules.md): a Float power whose base is a negative
+    finite number and whose exponent is finite and not integral has no Float value --
+    Python's `**` would return a complex number -- so it raises ValueError with
+    `math.pow`'s message, as on every target. Int powers (both operands int) are
+    never in this domain; an infinite base or exponent keeps Python's float result."""
+    if isinstance(a, bool) or isinstance(b, bool):
+        return
+    if not (isinstance(a, float) or isinstance(b, float)):
+        return
+    if not (isinstance(a, int | float) and isinstance(b, int | float)):
+        return
+    if a < 0 and t2_math.isfinite(a) and t2_math.isfinite(b) and b != t2_math.floor(b):
+        raise ValueError("math domain error")
+
+
+def t2_widen(value: object, how: object) -> object:
+    """R-widen (docs/lattice-language-rules.md): a value holding Ints where the
+    procedure's types say Float, converted (`lattice.t2.emit_py` emits a plain
+    `float(x)` for a single Int). `how`: "f" an Int to a float; ("?", h) an optional
+    value; ("t", (h | None, ...)) a tuple element-wise (None: unchanged); ("i", h) an
+    iterator, lazily; ("l", h) a list, set or dict (its keys) into a fresh list; ("d",
+    hk | None, hv | None) a dict into a fresh dict (keys, values)."""
+    if how == "f":
+        return float(value)  # type: ignore[arg-type]
+    tag = how[0]  # type: ignore[index]
+    if tag == "?":
+        return None if value is None else t2_widen(value, how[1])  # type: ignore[index]
+    if tag == "t":
+        parts = how[1]  # type: ignore[index]
+        return tuple(
+            x if h is None else t2_widen(x, h)
+            for x, h in zip(value, parts, strict=True)  # type: ignore[call-overload]
+        )
+    if tag == "i":
+        return (t2_widen(x, how[1]) for x in value)  # type: ignore[attr-defined,index]
+    if tag == "l":
+        return [t2_widen(x, how[1]) for x in value]  # type: ignore[attr-defined,index]
+    if tag == "d":
+        hk, hv = how[1], how[2]  # type: ignore[index]
+        return {
+            (k if hk is None else t2_widen(k, hk)): (v if hv is None else t2_widen(v, hv))
+            for k, v in value.items()  # type: ignore[attr-defined]
+        }
+    raise ValueError(f"unknown widening {how!r}")
 
 
 class T2Row:
@@ -690,10 +741,12 @@ def t2_load(source: str, natives: dict[str, object] | None = None) -> dict[str, 
         "t2_helper": _t2_helper,
         "t2_record": _t2_record,
         "t2_int": t2_int,
+        "t2_widen": t2_widen,
         "native": t2_types.SimpleNamespace(**(natives or {})),
     }
     exec(compile(source, "<lattice-procedures>", "exec"), namespace)  # noqa: S102
-    for loader in ("t2_builtin", "t2_std_module", "t2_std", "t2_helper", "t2_record", "t2_int"):
+    loaders = ("t2_builtin", "t2_std_module", "t2_std", "t2_helper", "t2_record", "t2_int")
+    for loader in (*loaders, "t2_widen"):
         del namespace[loader]
     return namespace
 
@@ -801,8 +854,9 @@ def t2_arg(arg: tuple, cells: dict[str, object] | None, req: T2Request, ns: dict
     kind = arg[0]
     if kind == "col":
         return t2_decode((cells or {})[arg[1]], arg[2])
-    if kind == "param":
-        return req.param(arg[1])
+    if kind == "param":  # ("param", name[, scalar]): an Int for a Float is widened
+        value = req.param(arg[1])
+        return value if len(arg) < 3 else t2_decode(value, arg[2])
     if kind == "const":
         return arg[1]
     if kind == "now":

@@ -638,6 +638,8 @@ class _Proc:
                 return self.comp(e)
             case n.FStr():
                 return self.fstr(e)
+            case n.Widen(value=v, type=t):
+                return self.conv(self.expr(v), v.type, t)  # R-widen
             case n.Each() | n.Bulk():
                 raise LatticeInternalError("gogen: Each/Bulk outside an iteration")
         raise LatticeInternalError(f"gogen: unsupported expression {type(e).__name__}")
@@ -887,9 +889,16 @@ class _Proc:
         if ct == T.STR:
             return f"func(x, s string) bool {{ return rt.ContainsStr(s, x) }}({x}, {c})"
         elem = self.elem(ct)
+        cs = self.spell(ct)
+        if xt == T.FLOAT and elem == T.INT:
+            # exactly, as Python: only an integral Float in the Int range equals an Int
+            inner = self.contains("i", T.INT, "c", ct)
+            return (
+                f"func(x float64, c {cs}) bool {{ i, ok := rt.FloatAsInt(x); "
+                f"return ok && {inner} }}({x}, {c})"
+            )
         xs = self.spell(elem)
         xg = self.conv(x, xt, elem)
-        cs = self.spell(ct)
         eq = self.types.eq(elem)
         match ct:
             case T.ListT():
@@ -992,6 +1001,19 @@ class _Proc:
             )
         if self.spell(src) == self.spell(dst):
             return go  # e.g. a Counter as a dict[K, Int]
+        if isinstance(dst, T.ListT) and isinstance(src, T.ListT | T.SetT | T.DictT | T.CounterT):
+            # R-widen: a container iterated where its elements are used as dst's
+            el = self.elem(src)
+            return f"rt.Collect({self.map_cursor(self.cursor(go, src), el, dst.elem)})"
+        if isinstance(dst, T.DictT) and isinstance(src, T.DictT):
+            # R-widen: a dict spread into a dict literal of wider keys / values
+            k = self.conv("p.Key", src.key, dst.key)
+            v = self.conv("p.Value", src.val, dst.val)
+            pair = f"rt.Pair[{self.spell(src.key)}, {self.spell(src.val)}]"
+            return (
+                f"rt.CollectDict(rt.IterSlice({go}.Items()), func(p {pair}) "
+                f"({self.spell(dst.key)}, {self.spell(dst.val)}) {{ return {k}, {v} }})"
+            )
         raise LatticeInternalError(f"gogen: cannot convert {src.render()} to {dst.render()}")
 
     # ---- literals and comprehensions -------------------------------------------------------
@@ -1394,7 +1416,9 @@ class _Proc:
                         f"rt.RoundHalfEven({self.expr(x)})" if x.type == T.FLOAT else self.expr(x)
                     )
                 if x.type != T.FLOAT:
-                    raise LatticeInternalError("gogen: round(Int, n) (p8_target: L892)")
+                    raise LatticeInternalError(
+                        "gogen: round(Int, n) (lowering widens the Int: R-widen)"
+                    )
                 return f"rt.RoundF({self.expr(x)}, {self.expr(args[1])})"
             case "min" | "max":
                 return self.min_max(name, c)

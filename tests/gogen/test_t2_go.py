@@ -413,6 +413,54 @@ PROGRAMS = [
         None,
     ),
     Case(
+        # R-widen: every kind of place an Int value takes a Float type (Task 8b)
+        "widening_sites",
+        P("""
+            @record
+            class Box:
+                w: Float
+                h: Float = 1
+
+            @procedure
+            def half(x: Float) -> Float:
+                return x / 2
+
+            @procedure
+            def back(n: Int) -> Float:
+                return n
+
+            @procedure
+            def f(n: Int, m: Int | None, flag: Bool, i: Int, xs: list[Int]) -> list[Str]:
+                x: Float = n
+                o: Float | None = m
+                x2 = 0.5
+                x2 = y = n
+                a = 0.5
+                a, b = n, i
+                c = 0.5
+                for c in xs:
+                    pass
+                ys = [n, 2.5]
+                d = {n: n, 2.5: 0.5}
+                e = {**{"k": n}, "j": 2.5}
+                ys[0] = n
+                d[n] = n + 1
+                t = [v for v in (n, 2.5)]
+                bx = Box(n)
+                return [
+                    str(x), str(o), str(x2), str(y), str(a), str(b), str(c), str(ys[0]),
+                    str(d[n]), f"{e['k']}", str(x or n), str(0.0 or n), str(n and 2.5),
+                    str(2.5 if flag else n), str((1, 2.5, 3)[i]), str(t[0]), str(half(n)),
+                    str(back(n)), str(bx.w), str(bx.h), str(sum(ys[:0])), str(sum(ys[:0], n)),
+                    str(max(n, 2.5)), str(min((n, 2.5))), str(round(n, 1)), str(n ** i),
+                    str(round(n)), str(n in ys), str(float(n) in xs), str(len([k for k in d])),
+                ]
+        """),
+        "f",
+        (3, 4, False, 0, [1, 2]),
+        None,
+    ),
+    Case(
         "index_error_inside_comprehension",
         P("""
             @procedure

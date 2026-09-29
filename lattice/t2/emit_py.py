@@ -31,7 +31,9 @@ range -- `-` (unary and binary), `//`, the growing operators, and Int-typed `abs
 `int`, `round`, `sum`, `math.floor/ceil/trunc/gcd` -- goes through `<fuel>_int`
 (R623); a `sum` is checked on its result only, as Python's intermediate sums are exact.
 Set literals, set comprehensions and `set(...)` build `<fuel>_set` (the
-insertion-ordered `T2Set`).
+insertion-ordered `T2Set`). `Widen` (R-widen) is `<fuel>_float(x)` for an Int, and
+`<fuel>_widen(x, how)` (`t2_widen`) for an optional value, a tuple, an iterator or a
+container.
 """
 
 from __future__ import annotations
@@ -400,6 +402,8 @@ class _Emit:
                 return self._fuel("scan", self.expr(v))
             case n.Sized():
                 return self.sized(e)
+            case n.Widen(value=v, type=t):
+                return _widen(self.fuel, self.expr(v), v.type, t)
         raise LatticeInternalError(f"emit_py: unsupported expression {type(e).__name__}")
 
     def comp(self, e: n.Comp) -> ast.expr:
@@ -495,6 +499,35 @@ class _Emit:
         return ast.Call(method, args, kwargs)
 
 
+def _widen_how(src: T2Type, dst: T2Type) -> object:
+    """`t2_widen`'s description of converting a value of `src` to `dst` (R-widen)."""
+    if src == T.INT and dst == T.FLOAT:
+        return "f"
+    match src, dst:
+        case T.Opt(inner=a), T.Opt(inner=b):
+            return ("?", _widen_how(a, b))
+        case T.TupleT(elems=xs), T.TupleT(elems=ys) if len(xs) == len(ys):
+            pairs = zip(xs, ys, strict=True)
+            return ("t", tuple(None if a == b else _widen_how(a, b) for a, b in pairs))
+        case T.IterT(elem=a), T.IterT(elem=b):
+            return ("i", _widen_how(a, b))
+        case T.DictT(key=k1, val=v1), T.DictT(key=k2, val=v2):
+            hk = None if k1 == k2 else _widen_how(k1, k2)
+            return ("d", hk, None if v1 == v2 else _widen_how(v1, v2))
+        case T.ListT() | T.SetT() | T.DictT() | T.CounterT(), T.ListT(elem=b):
+            a = T.elem_of(src)
+            if a is not None:
+                return ("l", _widen_how(a, b))
+    raise LatticeInternalError(f"emit_py: cannot widen {src.render()} to {dst.render()}")
+
+
+def _widen(fuel: str, value: ast.expr, src: T2Type, dst: T2Type) -> ast.expr:
+    if src == T.INT and dst == T.FLOAT:
+        return ast.Call(ast.Name(f"{fuel}_float", ast.Load()), [value], [])
+    how = ast.Constant(_widen_how(src, dst))
+    return ast.Call(ast.Name(f"{fuel}_widen", ast.Load()), [value, how], [])
+
+
 def _load(target: ast.expr) -> ast.expr:
     """A store target (a name or a subscript of temporaries) read back."""
     match target:
@@ -525,9 +558,11 @@ def emit_python(module: n.T2Module) -> T2Code:
             lines.append(f"{local} = t2_std_module({qual!r}, {names!r})")
     lines.append(f"{fuel}_int = t2_int")
     lines.append(f"{fuel}_set = t2_builtin('set')")
+    lines.append(f"{fuel}_float = t2_builtin('float')")
+    lines.append(f"{fuel}_widen = t2_widen")
     for name, _, value in module.constants:
         # copied as written: a constant is evaluated once, uncharged, when loaded
-        lines.append(f"{name} = {ast.unparse(_plain(value))}")
+        lines.append(f"{name} = {ast.unparse(_plain(value, fuel))}")
     for rec in module.records:
         fields = tuple(f for f, _ in rec.fields)
         lines.append(f"{rec.name} = t2_record({rec.name!r}, {fields!r}, {dict(rec.defaults)!r})")
@@ -541,25 +576,28 @@ def emit_python(module: n.T2Module) -> T2Code:
     return T2Code(source, tuple(procs), module.natives)
 
 
-def _plain(e: n.Expr) -> ast.expr:
+def _plain(e: n.Expr, fuel: str) -> ast.expr:
     """A module constant's value (a constant expression or a list of literals) as
-    Python, without fuel or range checks (the preamble copies it as written)."""
+    Python, without fuel or range checks (the preamble copies it as written; a widened
+    Int is converted, R-widen)."""
     match e:
         case n.Const(value=value):
             return ast.Constant(value)
         case n.Var(name=name):
             return ast.Name(name, ast.Load())
         case n.ListLit(elts=elts):
-            return ast.List([_plain(x) for x in elts], ast.Load())
+            return ast.List([_plain(x, fuel) for x in elts], ast.Load())
         case n.Unary(op=op, operand=operand):
-            return ast.UnaryOp(_UNARY[op](), _plain(operand))
+            return ast.UnaryOp(_UNARY[op](), _plain(operand, fuel))
         case n.Binary(op=op, left=left, right=right):
-            return ast.BinOp(_plain(left), _BINOPS[op](), _plain(right))
+            return ast.BinOp(_plain(left, fuel), _BINOPS[op](), _plain(right, fuel))
         case n.Compare(ops=ops, operands=operands):
-            first, *rest = (_plain(x) for x in operands)
+            first, *rest = (_plain(x, fuel) for x in operands)
             return ast.Compare(first, [_CMP[o]() for o in ops], rest)
         case n.BoolOp(op=op, values=values):
-            return ast.BoolOp(_BOOL[op](), [_plain(v) for v in values])
+            return ast.BoolOp(_BOOL[op](), [_plain(v, fuel) for v in values])
         case n.IfExp(test=test, body=body, orelse=orelse):
-            return ast.IfExp(_plain(test), _plain(body), _plain(orelse))
+            return ast.IfExp(_plain(test, fuel), _plain(body, fuel), _plain(orelse, fuel))
+        case n.Widen(value=v, type=t):
+            return _widen(fuel, _plain(v, fuel), v.type, t)
     raise LatticeInternalError(f"emit_py: unsupported constant {type(e).__name__}")

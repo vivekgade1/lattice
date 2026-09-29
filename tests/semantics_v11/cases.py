@@ -1157,8 +1157,325 @@ CORE = [
     ),
 ]
 
+# R-widen (docs/lattice-language-rules.md, 2026-09-28): an Int value used where the
+# checker's types say Float is converted to a float at that point, on every target;
+# and R-pow: a negative Float base with a non-integral exponent raises ValueError.
+_G_FLOAT_STR = "@procedure\ndef g(x: Float) -> Str:\n    return str(x)\n\n\n"
+_G_TWO = '@procedure\ndef g(a: Float, b: Int) -> Str:\n    return f"{a}|{b}"\n\n\n'
+_G_RET = "@procedure\ndef g(n: Int) -> Float:\n    return n\n\n\n"
+_REC = "@record\nclass R:\n    x: Float\n    y: Float = 0\n\n\n"
+
+WIDEN = [
+    Case(
+        "widen_annotated_assign",
+        P("f(n: Int) -> Str", "x: Float = n\n    return str(x)"),
+        "f",
+        (1,),
+        "1.0",
+    ),
+    Case(
+        "widen_reassign",
+        P("f(n: Int) -> Str", "x = 0.5\n    x = n\n    return str(x)"),
+        "f",
+        (3,),
+        "3.0",
+    ),
+    Case(
+        "widen_optional_assign",
+        P("f(n: Int) -> Str", "x: Float | None = n\n    return str(x)"),
+        "f",
+        (1,),
+        "1.0",
+    ),
+    Case(
+        "widen_optional_to_optional",
+        P(
+            "f(m: Int | None) -> list[Str]",
+            "x: Float | None = m\n    y: Float | None = None\n    return [str(x), str(y)]",
+        ),
+        "f",
+        (4,),
+        ["4.0", "None"],
+    ),
+    Case(
+        "widen_chained_assign",
+        P("f(n: Int) -> Str", 'x = 0.5\n    x = y = n\n    return f"{x}|{y}"'),
+        "f",
+        (3,),
+        "3.0|3",
+    ),
+    Case(
+        "widen_tuple_unpack",
+        P("f(n: Int) -> Str", 'a = 0.5\n    a, b = n, n + 1\n    return f"{a}|{b}"'),
+        "f",
+        (3,),
+        "3.0|4",
+    ),
+    Case(
+        "widen_for_target",
+        P("f(xs: list[Int]) -> Str", "x = 0.5\n    for x in xs:\n        pass\n    return str(x)"),
+        "f",
+        ([1, 2],),
+        "2.0",
+    ),
+    Case("widen_call_arg", _G_FLOAT_STR + P("f(n: Int) -> Str", "return g(n)"), "f", (2,), "2.0"),
+    Case(
+        "widen_keyword_args",
+        _G_TWO + P("f(n: Int) -> Str", "return g(b=n, a=n)"),
+        "f",
+        (4,),
+        "4.0|4",
+    ),
+    Case("widen_return", P("f(n: Int) -> Float", "return n"), "f", (5,), 5.0),
+    Case("widen_return_used", _G_RET + P("f(n: Int) -> Str", "return str(g(n))"), "f", (5,), "5.0"),
+    Case(
+        "widen_int_times_int_as_float",
+        # the product is Float arithmetic (rounded), not an exact Int product
+        P("f(n: Int) -> Int", "x: Float = n\n    return int(x * x)"),
+        "f",
+        (3037000499,),
+        9223372030926248960,
+    ),
+    Case(
+        "widen_list_elements",
+        P(
+            "f(n: Int) -> Str",
+            "xs = [n, 2.5]\n    ys: list[Float] = [n, n + 1]\n"
+            '    return f"{xs[0]}|{ys[0]}|{ys[1]}"',
+        ),
+        "f",
+        (1,),
+        "1.0|1.0|2.0",
+    ),
+    Case(
+        "widen_set_elements",
+        P("f(n: Int) -> list[Float]", "s = {n, 2.5}\n    return [x for x in s]"),
+        "f",
+        (1,),
+        [1.0, 2.5],
+    ),
+    Case(
+        "widen_dict_keys_and_values",
+        P(
+            "f(n: Int) -> list[Float]",
+            "d = {n: n, 2.5: 0.5}\n    return [k + d[k] * 0 for k in d] + [d[n]]",
+        ),
+        "f",
+        (1,),
+        [1.0, 2.5, 1.0],
+    ),
+    Case(
+        "widen_dict_spread",
+        P("f(n: Int) -> Str", 'd = {"a": n}\n    e = {**d, "b": 2.5}\n    return f"{e[\'a\']}"'),
+        "f",
+        (1,),
+        "1.0",
+    ),
+    Case(
+        "widen_item_stores",
+        P(
+            "f(n: Int) -> Str",
+            "xs = [0.5, 1.5]\n    xs[0] = n\n    d: dict[Str, Float] = {}\n"
+            '    d["a"] = n\n    e: dict[Float, Str] = {}\n    e[n] = "x"\n'
+            "    return f\"{xs[0]}|{d['a']}|{[k for k in e][0]}\"",
+        ),
+        "f",
+        (7,),
+        "7.0|7.0|7.0",
+    ),
+    Case(
+        "widen_tuples_in_a_list",
+        P("f(n: Int) -> Str", 'ps = [(n, 2.5), (1.5, 0.5)]\n    return f"{ps[0][0]}|{ps[1][1]}"'),
+        "f",
+        (3,),
+        "3.0|0.5",
+    ),
+    Case(
+        "widen_or",
+        P("f(x: Float, n: Int) -> Str", "y = x or n\n    return str(y)"),
+        "f",
+        (0.0, 2),
+        "2.0",
+    ),
+    Case(
+        "widen_or_optional",
+        P("f(x: Float | None, n: Int) -> Str", "return str(x or n)"),
+        "f",
+        (None, 2),
+        "2.0",
+    ),
+    Case("widen_and", P("f(n: Int, x: Float) -> Str", "return str(n and x)"), "f", (0, 2.5), "0.0"),
+    Case(
+        "widen_if_expression",
+        P("f(b: Bool, n: Int) -> Str", "return str(2.5 if b else n)"),
+        "f",
+        (False, 3),
+        "3.0",
+    ),
+    Case(
+        "widen_if_expression_in_comprehension",
+        P("f(xs: list[Float]) -> list[Float]", "return [x if x > 1 else 0 for x in xs]"),
+        "f",
+        ([0.5, 2.5],),
+        [0.0, 2.5],
+    ),
+    Case(
+        "widen_tuple_index", P("f(i: Int) -> Str", "return str((1, 2.5, 3)[i])"), "f", (0,), "1.0"
+    ),
+    Case(
+        "widen_tuple_iteration",
+        P(
+            "f(n: Int) -> list[Str]",
+            "out = [str(x) for x in (n, 2.5)]\n    for y in (2.5, n):\n"
+            "        out = out + [str(y)]\n    return out",
+        ),
+        "f",
+        (1,),
+        ["1.0", "2.5", "2.5", "1.0"],
+    ),
+    Case(
+        "widen_tuple_membership",
+        # an Int probe of Floats is widened; a Float probe of Ints stays exact
+        P(
+            "f(n: Int, x: Float) -> list[Bool]",
+            "return [n in (1.5, 2.0), n in [1.5, 2.0], x in (1, 2), x in [1, 2], x in {1, 2},"
+            " x + 0.5 in [1, 2], x * 1e30 in {1, 2}]",
+        ),
+        "f",
+        (2, 2.0),
+        [True, True, True, True, True, False, False],
+    ),
+    Case(
+        "widen_sum_empty", P("f(xs: list[Float]) -> Str", "return str(sum(xs))"), "f", ([],), "0.0"
+    ),
+    Case(
+        "widen_sum_int_start",
+        P(
+            "f(xs: list[Float], n: Int) -> list[Str]",
+            "return [str(sum(xs, n)), str(sum(xs + [0.25], n))]",
+        ),
+        "f",
+        ([], 2),
+        ["2.0", "2.25"],
+    ),
+    Case(
+        "widen_sum_ints_with_a_float_start",
+        P("f(xs: list[Int]) -> list[Float]", "return [sum(xs, 0.5), sum(xs, 0.0)]"),
+        "f",
+        ([1, 2],),
+        [3.5, 3.0],
+    ),
+    Case(
+        "widen_min_max_mixed",
+        P(
+            "f(n: Int, x: Float) -> list[Str]",
+            "return [str(min(n, x)), str(max(n, x)), str(max(n, x, 0))]",
+        ),
+        "f",
+        (1, 2.5),
+        ["1.0", "2.5", "2.5"],
+    ),
+    Case(
+        "widen_min_of_a_tuple",
+        P("f(n: Int) -> list[Str]", "return [str(min((n, 2.5, 3))), str(sorted((n, 0.5))[1])]"),
+        "f",
+        (1,),
+        ["1.0", "1.0"],
+    ),
+    Case(
+        "widen_int_pow_non_literal",
+        P(
+            "f(a: Int, n: Int) -> list[Str]",
+            "return [str(a ** n), str(a ** -n), str(a ** (n - n))]",
+        ),
+        "f",
+        (2, 3),
+        ["8.0", "0.125", "1.0"],
+    ),
+    Case(
+        "widen_int_pow_is_float_math",
+        P("f(a: Int, n: Int) -> Float", "return a ** n"),
+        "f",
+        (3, 40),
+        1.2157665459056929e19,
+    ),
+    Case(
+        "widen_round_int_digits",
+        P("f(n: Int) -> list[Str]", "return [str(round(n, -2)), str(round(n, 1)), str(round(n))]"),
+        "f",
+        (1250,),
+        ["1200.0", "1250.0", "1250"],
+    ),
+    Case(
+        "widen_record_fields",
+        _REC + P("f(n: Int) -> Str", 'r = R(x=n)\n    return f"{r.x}|{r.y}"'),
+        "f",
+        (1,),
+        "1.0|0.0",
+    ),
+    Case(
+        "widen_list_append",
+        P(
+            "f(n: Int) -> Str",
+            'xs = [0.5]\n    xs.append(n)\n    xs.extend([n, n])\n    return f"{xs[1]}|{xs[3]}"',
+        ),
+        "f",
+        (1,),
+        "1.0|1.0",
+    ),
+    Case(
+        "widen_dict_get_default",
+        P("f(n: Int) -> Str", 'd: dict[Str, Float] = {}\n    return str(d.get("a", n))'),
+        "f",
+        (1,),
+        "1.0",
+    ),
+    # R-pow: a negative base with a non-integral exponent has no Float value
+    Case(
+        "float_pow_negative_fractional",
+        P("f(a: Float, b: Float) -> Float", "return a ** b"),
+        "f",
+        (-4.0, 0.5),
+        Exc("ValueError"),
+    ),
+    Case(
+        "float_pow_negative_fractional_message",
+        P(
+            "f(a: Float, b: Float) -> Str",
+            "try:\n        return str(a ** b)\n    except ValueError as e:\n        return str(e)",
+        ),
+        "f",
+        (-8.0, 1.0 / 3.0),
+        "math domain error",
+    ),
+    Case(
+        "float_pow_negative_fractional_augmented",
+        P("f(a: Float, b: Float) -> Float", "x = a\n    x **= b\n    return x"),
+        "f",
+        (-2.0, 1.5),
+        Exc("ValueError"),
+    ),
+    Case(
+        "float_pow_int_base_fractional",
+        P("f(n: Int, b: Float) -> Float", "return n ** b"),
+        "f",
+        (-8, 0.5),
+        Exc("ValueError"),
+    ),
+    Case(
+        "float_pow_negative_integral_and_infinite",
+        P(
+            "f(a: Float, b: Float) -> list[Float]",
+            "return [a ** 3.0, a ** -1.0, (a * 1e308 * 10) ** b]",
+        ),
+        "f",
+        (-2.0, 0.5),
+        [-8.0, -0.5, float("inf")],
+    ),
+]
+
 CASES: tuple[Case, ...] = tuple(
-    INT + FLOAT_TEXT + STR + LIST + DICT_SET + TIME + REGEX + JSON + FUEL + CORE
+    INT + FLOAT_TEXT + STR + LIST + DICT_SET + TIME + REGEX + JSON + FUEL + CORE + WIDEN
 )
 
 _NAMES = [c.name for c in CASES]

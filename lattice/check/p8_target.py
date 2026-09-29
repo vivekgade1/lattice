@@ -6,9 +6,9 @@ code target cannot run with v1.1 semantics.
 * L891 — a program of the tabular profile on a target without it.
 * L892 — a T2 construct the target does not implement yet: a call (builtin, method or
   stdlib function) outside the target's `t2_calls`, a value of a kind outside its
-  `t2_types` (Date, Json, ...), `str()` / an f-string field of a container, and the two
-  forms whose Python result is an exact int in a Float-typed place (`Int ** n` with a
-  non-literal `n`, `round(Int, n)`), which a float64 would print differently.
+  `t2_types` (Date, Json, ...), and `str()` / an f-string field of a container.
+  (`Int ** n`, `round(Int, n)` and `min`/`max` of Int and Float arguments were gated
+  until R-widen gave an Int in a Float place one meaning on every target.)
 
 The Python target supports everything, so none of these fire for it."""
 
@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import ast
 
-from lattice.check.astutil import literal_value
 from lattice.check.context import CheckContext
 from lattice.check.t2 import CheckedProcedure, T2Program
 from lattice.check.t2 import types as T
@@ -120,40 +119,6 @@ def _constructs(proc: CheckedProcedure, t2: T2Program, ctx: CheckContext, target
                 _container_text(ctx, target, arg, types.get(id(arg)), records, "str()")
             case ast.FormattedValue(value=value):
                 _container_text(ctx, target, value, types.get(id(value)), records, "an f-string")
-            case ast.BinOp(op=ast.Pow(), left=left, right=right) if (
-                types.get(id(left)) == T.INT
-                and types.get(id(right)) == T.INT
-                and literal_value(right) is None
-            ):
-                ctx.error(
-                    "L892",
-                    node,
-                    f"'Int ** n' with a non-literal exponent is not available on target "
-                    f"'{target.name}' yet (Python's result is an exact int typed Float)",
-                    "write float(a) ** n, or use a literal exponent",
-                )
-            case ast.Call(args=[first, _]) if (
-                proc.targets.get(id(node)) == "builtin:round" and types.get(id(first)) == T.INT
-            ):
-                ctx.error(
-                    "L892",
-                    node,
-                    f"round() of an Int with digits is not available on target "
-                    f"'{target.name}' yet (Python's result is an exact int typed Float)",
-                    "write round(float(x), n)",
-                )
-            case ast.Call(args=[_, _, *_] as args) if (
-                proc.targets.get(id(node)) in ("builtin:min", "builtin:max")
-                and types.get(id(node)) == T.FLOAT
-                and any(T.strip_opt(types.get(id(a), T.UNK)) == T.INT for a in args)
-            ):
-                ctx.error(
-                    "L892",
-                    node,
-                    f"min()/max() of Int and Float arguments is not available on target "
-                    f"'{target.name}' yet (Python returns the int argument itself, typed Float)",
-                    "convert the Int arguments with float(...)",
-                )
 
 
 def _container_text(

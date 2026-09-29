@@ -100,29 +100,27 @@ def test_str_of_a_scalar_passes_on_go(body):
     assert check_source(_t2(body), T2_PROFILE, target="go").ok
 
 
-def test_l892_int_power_with_a_non_literal_exponent_on_go():
-    # Python's int ** int is an exact int (typed Float: n may be negative); a Go
-    # float64 would print it differently ("8" versus "8.0")
-    src = _t2("return str(2 ** n)")
+@pytest.mark.parametrize(
+    "body",
+    [
+        # R-widen (2026-09-28): each was L892 on Go while Python kept an exact int in
+        # its Float-typed result; the Int is now converted on every target
+        "return str(2 ** n)",
+        "return str(max(1.5, n))",
+        "return str(round(n, 1))",
+        "return str(2 ** 3)",
+        "return str(2 ** -1)",
+        "return str(2.0 ** n)",
+        "return str(max(1.5, float(n)))",
+        "return str(min(n, 2))",
+        "return str(max(xs))",
+        "return str(round(n / 3, 1))",
+    ],
+)
+def test_int_in_float_forms_pass_on_go(body):
+    src = _t2(body)
     assert check_source(src, T2_PROFILE).ok
-    assert codes(check_source(src, T2_PROFILE, target="go")) == ["L892"]
-    for ok in ("return str(2 ** 3)", "return str(2 ** -1)", "return str(2.0 ** n)"):
-        assert check_source(_t2(ok), T2_PROFILE, target="go").ok, ok
-
-
-def test_l892_min_max_of_int_and_float_on_go():
-    src = _t2("return str(max(1.5, n))")
-    assert check_source(src, T2_PROFILE).ok
-    assert codes(check_source(src, T2_PROFILE, target="go")) == ["L892"]
-    for ok in ("return str(max(1.5, float(n)))", "return str(min(n, 2))", "return str(max(xs))"):
-        assert check_source(_t2(ok), T2_PROFILE, target="go").ok, ok
-
-
-def test_l892_round_of_an_int_with_digits_on_go():
-    src = _t2("return str(round(n, 1))")
-    assert check_source(src, T2_PROFILE).ok
-    assert codes(check_source(src, T2_PROFILE, target="go")) == ["L892"]
-    assert check_source(_t2("return str(round(n / 3, 1))"), T2_PROFILE, target="go").ok
+    assert check_source(src, T2_PROFILE, target="go").ok
 
 
 @pytest.mark.parametrize(

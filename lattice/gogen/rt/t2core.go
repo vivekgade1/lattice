@@ -139,7 +139,8 @@ func PowF(a, b float64) float64 {
 		return 0
 	}
 	if a < 0 && b != math.Floor(b) {
-		Raise("ValueError", "a negative number raised to a fractional power has no Float value")
+		// R-pow: no Float value (Python's ** gives a complex); math.pow's error
+		Raise("ValueError", "math domain error")
 	}
 	if a == 1 || (a == -1 && b == math.Floor(b)) {
 		if a == -1 && math.Mod(math.Abs(b), 2) == 1 {
@@ -554,6 +555,15 @@ func SumFloatV(c Cursor[float64], start float64, startIsInt bool) float64 {
 	return r
 }
 
+// FloatAsInt is f as an Int when f is integral and in the Int range (the only Floats
+// equal to an Int): an exact `f in ints`.
+func FloatAsInt(f float64) (int64, bool) {
+	if f != math.Trunc(f) || f < -9223372036854775808.0 || f >= 9223372036854775808.0 {
+		return 0, false
+	}
+	return int64(f), true
+}
+
 // CmpIFOp is `a op b` for an Int a and a Float b (op: == < <= > >=), exactly.
 func CmpIFOp(a int64, b float64, op string) bool { return cmpHolds(CmpIF(a, b), op) }
 
@@ -630,9 +640,9 @@ func GrowShlInt(f *Fuel, a, b int64) int64 {
 	return Shl(a, b)
 }
 
-// PowIntF is `a ** b` for Ints typed Float: a negative literal exponent (the checker
-// types `Int ** n` as Int for a literal n >= 0; p8_target refuses a non-literal n on
-// Go). Python computes it as a float power.
+// PowIntF is `a ** b` for Ints typed Float (the checker types `Int ** n` as Int only
+// for a literal n >= 0): a float power. T2 IR lowering widens both operands of such a
+// power (R-widen), so the emitter calls PowF for it; this stays as the same meaning.
 func PowIntF(a, b int64) float64 {
 	if a == 0 && b < 0 {
 		Raise("ZeroDivisionError", "zero to a negative power")

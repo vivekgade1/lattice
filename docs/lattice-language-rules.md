@@ -67,7 +67,9 @@ A construct missing any of these is not part of the language.
 | 2026-09-28 | Language rule (R3) | `xs[a:b] += ys` rejected (L913) | Slice assignment is already rejected; the augmented form had no portable meaning | `xs = xs[:a] + (xs[a:b] + ys) + xs[b:]` | never |
 | 2026-09-28 | Target gate (R4) | Natives on Go (L890) | No Go native interface yet | compile for Python | a Go native interface exists |
 | 2026-09-28 | Target gate (R4) | Tabular profile on Go (L891) | Tabular plan holds Python AST; no polars in Go | compile for Python | tabular plan lowered via SQL/DuckDB |
-| 2026-09-28 | Target gate (R4) | T2 constructs not yet on Go (L892): calls outside `GO_T2_CALLS`, values of kinds outside `GO_T2_TYPES` (Date, DateTime, Duration, Json, Row, Caller, Match, Counter), `str()` / f-string fields of containers, non-literal `re.sub` replacements, non-literal `strftime` formats, and the forms whose Python result is an exact int typed Float (`Int ** n` with a non-literal `n`, `round(Int, n)`, `min`/`max` of Int and Float arguments) | Go runtime work outstanding; a Go float64 prints an int-valued Float as `8.0` where Python prints `8` | compile for Python; for the exact-int forms, convert with `float(...)` | Go implements the call or kind (tracked in `GO_T2_CALLS`, `GO_T2_TYPES`); the exact-int forms when Int-in-Float values get one meaning on every target (plan 5a Task 8 report) |
+| 2026-09-28 | Target gate (R4) | T2 constructs not yet on Go (L892): calls outside `GO_T2_CALLS`, values of kinds outside `GO_T2_TYPES` (Date, DateTime, Duration, Json, Row, Caller, Match, Counter), `str()` / f-string fields of containers, non-literal `re.sub` replacements, non-literal `strftime` formats | Go runtime work outstanding | compile for Python | Go implements the call or kind (tracked in `GO_T2_CALLS`, `GO_T2_TYPES`). The forms whose Python result was an exact int typed Float (`Int ** n` with a non-literal `n`, `round(Int, n)`, `min`/`max` of Int and Float arguments) were gated here too; lifted 2026-09-28 by R-widen (plan 5a Task 8b) |
+| 2026-09-28 | Language rule (R3) | R-widen: an Int value in a place the checker types Float is converted to a float there, on every target. The places: an assignment (declared type), an unpacking or `for` target, an item or key store, `return`, a procedure's, record's, builtin's, method's or stdlib function's argument, a record default, a list / set / dict literal element (`**d` included), an if-expression branch, an `and` / `or` operand, a tuple element read with a non-literal index or iterated, an `in` probe and a dict key lookup. `sum` of Floats starts at `0.0`, and `Int ** n` typed Float (a non-literal `n`) is Float arithmetic. Not a site: a comparison (an Int and a Float compare exactly) and `round(Int)` (an Int) | Python kept the exact int: `x: Float = n; str(x)` was `1` on Python and `1.0` on Go, `int(x * x)` exact on Python and rounded on Go, an empty `sum` of Floats `0`, `2 ** n` `8` | none needed; `float(n)` makes the conversion visible | never |
+| 2026-09-28 | Language rule (R3) | R-pow: a Float `**` whose base is negative and finite and whose exponent is finite and not integral raises `ValueError` (`math domain error`, as `math.pow`), a catchable error, on every target | Python's `**` returns a complex number from Float-typed code (`(-4.0) ** 0.5`); Go has no such value | test the base first, or take `abs(x) ** y` when the sign is not meant | never |
 | 2026-09-28 | Known limitation | Unicode 15 (Go, x/text) vs 16 (Python 3.14) | Library versions | — | Go's x/text reaches Unicode 16 |
 
 ## 7. Recommendations (not yet in place)
@@ -77,3 +79,27 @@ A construct missing any of these is not part of the language.
 3. **Treat `lattice/targets.py` as the single source of truth** for both the semantics table and the gates. Generate the decision-log rows for gates from it, so the log can't drift from the code.
 4. **Review gates at the end of each sub-project** (R12). Each review either lifts a gate or turns it into a language rule, and writes down which.
 5. **Choose the next target by what it adds, not by its reach.** Before adding a third target, check its gaps against this log. A target that would need many new language-wide rules is a sign it should be gated or deferred, not accommodated.
+
+## 8. Version notes (R13)
+
+### v1.1 changes (2026-09-28)
+
+A v1 program under v1.1 either behaves the same or is rejected at check time, except
+for these changes, each fixing a divergence between targets (R3, §6):
+
+- **64-bit `Int`**: a value outside the signed 64-bit range fails at runtime with R623 (it
+  was unbounded up to 65,536 bits).
+- **Insertion-ordered sets**: sets iterate in insertion order, and set algebra keeps the
+  left operand's order first; `Counter.most_common` ties keep insertion order.
+- **ASCII regex classes**: `\d \w \s \b` match ASCII only.
+- **RE2 subset**: lookaround, backreferences, conditionals, possessive repeats and atomic
+  groups are rejected at check time (L926).
+- **L913 for augmented slice assignment**: `xs[a:b] += ys` is rejected, as slice
+  assignment already was.
+- **Explicit widening (R-widen)**: an Int value in a Float-typed place becomes a float
+  there. `x: Float = n; str(x)` is `'1.0'` (was `'1'`), an empty `sum` of Floats is `0.0`
+  (was `0`), `Int ** n` with a non-literal `n` is Float arithmetic (`str(2 ** n)` is
+  `'8.0'`, was `'8'`; a huge power overflows with OverflowError instead of R622), and
+  `min`/`max` of an Int and a Float return a float.
+- **Float power domain (R-pow)**: a negative base raised to a non-integral Float exponent
+  raises ValueError (`math domain error`) instead of returning a complex number.

@@ -126,17 +126,22 @@ SRC_BIG_INTS_ARE_BOUNDED_SQ = """
 
 SRC_BIG_INTS_ARE_BOUNDED_PW = "@procedure\ndef f(b: Int, n: Int) -> Float:\n    return b ** n\n"
 SRC_BIG_INTS_ARE_BOUNDED_SH = "@procedure\ndef f(b: Int, n: Int) -> Int:\n    return b << n\n"
+# an Int power is an Int only with a literal exponent >= 0; `b ** n` above is typed Float
+SRC_BIG_INTS_ARE_BOUNDED_LIT = "@procedure\ndef f(b: Int) -> Int:\n    return b ** 1000000\n"
 
 
 def test_big_ints_are_bounded():
     pw = SRC_BIG_INTS_ARE_BOUNDED_PW
     sh = SRC_BIG_INTS_ARE_BOUNDED_SH
     sq = SRC_BIG_INTS_ARE_BOUNDED_SQ
-    assert call(pw, "f", 2, 10) == 1024 and call(pw, "f", 1, 10**12) == 1
+    assert call(pw, "f", 2, 10) == 1024.0 and call(pw, "f", 1, 10**12) == 1.0
     assert call(sh, "f", 3, 4) == 48
     assert call(sq, "f", 3, 2) == 81
-    for src in (pw, sh):
-        assert code_of(src, "f", 2, 10**6) == "R622"  # a million-bit Int
+    assert code_of(sh, "f", 2, 10**6) == "R622"  # a million-bit Int
+    assert code_of(SRC_BIG_INTS_ARE_BOUNDED_LIT, "f", 2) == "R622"
+    # R-widen: `Int ** n` typed Float is Float arithmetic, which overflows instead
+    with pytest.raises(OverflowError):
+        call(pw, "f", 2, 10**6)
     # v1.1: repeated squaring leaves the 64-bit range (R623) long before the bit cap
     assert code_of(sq, "f", 3, 40) == "R623"
 
@@ -214,13 +219,16 @@ def test_the_repro_inputs_fail_fast(name):
 
 
 SRC_HUGE_POWER = "@procedure\ndef f(n: Int) -> Float:\n    return 2 ** n\n"
+SRC_HUGE_INT_POWER = "@procedure\ndef f(b: Int) -> Int:\n    return b ** 1000000000\n"
 SRC_HUGE_SHIFT = "@procedure\ndef f(n: Int) -> Int:\n    return 1 << n\n"
 
 
 def test_huge_powers_and_shifts_fail_fast():
     started = time.perf_counter()
-    assert code_of(SRC_HUGE_POWER, "f", 10**9) == "R622"
+    assert code_of(SRC_HUGE_INT_POWER, "f", 2) == "R622"
     assert code_of(SRC_HUGE_SHIFT, "f", 10**9) == "R622"
+    with pytest.raises(OverflowError):  # R-widen: a Float power (2.0 ** 1e9)
+        call(SRC_HUGE_POWER, "f", 10**9)
     assert time.perf_counter() - started < 1.0
 
 
