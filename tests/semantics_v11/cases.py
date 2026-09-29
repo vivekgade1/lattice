@@ -899,14 +899,263 @@ FUEL = [
     ),
 ]
 
+# The core language (statements, operators, core builtins) beyond the groups above:
+# evaluation order, iteration while mutating, truthiness values, exact mixed
+# comparisons, and the lazy charging of generator arguments (plan 5a Task 8).
+CORE = [
+    Case(
+        # CPython's dict iterator refuses a change of size (the checker allows it)
+        "dict_changed_size_during_iteration",
+        P(
+            "f(n: Int) -> Int",
+            'd = {"a": 1, "b": 2}\n    for k in d:\n        d[k + "x"] = n\n    return len(d)',
+        ),
+        "f",
+        (1,),
+        Exc("RuntimeError"),
+    ),
+    Case(
+        "dict_value_update_during_iteration",
+        P(
+            "f(n: Int) -> list[Int]",
+            'd = {"a": 1, "b": 2}\n    for k in d:\n        d[k] = d[k] * n\n'
+            '    return [d["a"], d["b"]]',
+        ),
+        "f",
+        (10,),
+        [10, 20],
+    ),
+    Case(
+        # a list iterator is live: elements appended in place (`+=`) are visited
+        "list_grows_while_iterating",
+        P(
+            "f(n: Int) -> list[Int]",
+            "ys = [1, 2]\n    for x in ys:\n        if len(ys) < n:\n"
+            "            ys += [x * 10]\n    return ys",
+        ),
+        "f",
+        (5,),
+        [1, 2, 10, 20, 100],
+    ),
+    Case(
+        "try_except_value_error",
+        P(
+            "f(s: Str) -> Int",
+            "try:\n        return int(s)\n    except ValueError:\n        return -1",
+        ),
+        "f",
+        ("x1",),
+        -1,
+    ),
+    Case(
+        "try_in_loop_break_continue",
+        P(
+            "f(xs: list[Str]) -> Int",
+            "total = 0\n"
+            "    for s in xs:\n"
+            "        try:\n"
+            '            if s == "stop":\n'
+            "                break\n"
+            "            total += int(s)\n"
+            "        except ValueError:\n"
+            "            continue\n"
+            "        else:\n"
+            "            total += 100\n"
+            "    return total",
+        ),
+        "f",
+        (["1", "x", "2", "stop", "5"],),
+        203,
+    ),
+    Case(
+        "except_message",
+        P(
+            "f(k: Str) -> Str",
+            'd = {"a": 1}\n    try:\n        return str(d[k])\n    except KeyError as e:\n'
+            '        return "missing " + str(e)',
+        ),
+        "f",
+        ("zz",),
+        "missing 'zz'",
+    ),
+    Case(
+        "or_returns_the_value",
+        P("f(x: Int | None, y: Int) -> Int", "z = x or y\n    return z if z is not None else -1"),
+        "f",
+        (0, 7),
+        7,
+    ),
+    Case(
+        "enumerate_zip",
+        P(
+            "f(xs: list[Int], ys: list[Str]) -> list[Str]",
+            "return [s * i for i, (x, s) in enumerate(zip(xs, ys), 1) if x > 0]",
+        ),
+        "f",
+        ([1, 0, 3], ["a", "b", "c", "d"]),
+        ["a", "ccc"],
+    ),
+    Case(
+        "min_max_key",
+        P(
+            "f(xs: list[Str]) -> list[Str]",
+            "return [min(xs, key=lambda s: len(s)), max(xs, key=lambda s: len(s))]",
+        ),
+        "f",
+        (["bb", "a", "ccc", "d", "eee"],),
+        ["a", "ccc"],
+    ),
+    Case(
+        "range_iterates_again",
+        P(
+            "f(n: Int) -> Int",
+            "r = range(n)\n    a = list(r)\n    b = list(r)\n    return len(a) + len(b)",
+        ),
+        "f",
+        (3,),
+        6,
+    ),
+    Case(
+        "enumerate_is_one_shot",
+        P(
+            "f(xs: list[Int]) -> Int",
+            "e = enumerate(xs)\n    a = list(e)\n    b = list(e)\n    return len(a) * 10 + len(b)",
+        ),
+        "f",
+        ([4, 5],),
+        20,
+    ),
+    Case(
+        "float_div_by_zero",
+        P("f(a: Float, b: Float) -> Float", "return a / b"),
+        "f",
+        (1.0, 0.0),
+        Exc("ZeroDivisionError"),
+    ),
+    Case(
+        # Python compares an int with a float exactly (2**53 + 1 is not 2.0**53)
+        "int_float_compare_exact",
+        P("f(n: Int, x: Float) -> list[Bool]", "return [n == x, n > x, n - 1 == x]"),
+        "f",
+        (2**53 + 1, 2.0**53),
+        [False, True, True],
+    ),
+    Case(
+        # sum() of floats is compensated (Neumaier) since Python 3.12
+        "sum_floats_compensated",
+        P("f(xs: list[Float]) -> Str", "return str(sum(xs))"),
+        "f",
+        ([0.1] * 10,),
+        "1.0",
+    ),
+    Case(
+        "int_true_div_exact",
+        P("f(a: Int, b: Int) -> Float", "return a / b"),
+        "f",
+        (2**63 - 1, 3),
+        3.0744573456182584e18,
+    ),
+    Case(
+        # a generator argument is charged as any() consumes it, and any() stops early
+        "any_generator_charged_lazily",
+        P("f(n: Int) -> Bool", "return any(x > 2 for x in range(n))"),
+        "f",
+        (1_000_000,),
+        True,
+        budget=20,
+    ),
+    Case(
+        "set_operators_order",
+        P(
+            "f(a: list[Int], b: list[Int]) -> list[list[Int]]",
+            "s = set(a)\n    t = set(b)\n"
+            "    return [list(s | t), list(s & t), list(s - t), list(s ^ t)]",
+        ),
+        "f",
+        ([3, 1, 2], [2, 4, 3]),
+        [[3, 1, 2, 4], [3, 2], [1], [1, 4]],
+    ),
+    Case(
+        "unpack_too_many",
+        P("f(xs: list[Int]) -> Int", "a, b = xs\n    return a + b"),
+        "f",
+        ([1, 2, 3],),
+        Exc("ValueError"),
+    ),
+    Case(
+        "chained_compare",
+        P("f(a: Int, b: Int, c: Int) -> list[Bool]", "return [a < b < c, a < b > c, a == b == c]"),
+        "f",
+        (1, 2, 3),
+        [True, False, False],
+    ),
+    Case(
+        "fstr_scalars",
+        P(
+            "f(n: Int, s: Str, x: Int | None) -> Str",
+            'return f"{n:>4}|{n:#x}|{n:,}|{True}|{x}|{s!r}|{s:^7}|{-n:+05d}|{n / 8:.1%}"',
+        ),
+        "f",
+        (1234, "héllo", None),
+        "1234|0x4d2|1,234|True|None|'héllo'| héllo |-1234|15425.0%",
+    ),
+    Case(
+        "round_float_digits",
+        P("f(x: Float) -> list[Float]", "return [round(x, 2), round(x, -1), round(-x, 0)]"),
+        "f",
+        (2.675,),
+        [2.67, 0.0, -3.0],
+    ),
+    Case(
+        "sorted_tuples_reverse",
+        P(
+            "f(xs: list[Int]) -> list[Int]",
+            "ps = sorted([(x % 3, x) for x in xs], reverse=True)\n    return [p[1] for p in ps]",
+        ),
+        "f",
+        ([5, 3, 9, 4, 1],),
+        [5, 4, 1, 9, 3],
+    ),
+    Case(
+        "dict_comprehension_last_wins",
+        P(
+            "f(xs: list[Str]) -> list[Int]",
+            "d = {s: i for i, s in enumerate(xs)}\n    return [d[s] for s in d]",
+        ),
+        "f",
+        (["a", "b", "a", "c"],),
+        [2, 1, 3],
+    ),
+    Case(
+        "str_iteration_code_points",
+        P("f(s: Str) -> list[Str]", "return [c for c in s if c != 'l']"),
+        "f",
+        ("héllo👋",),
+        ["h", "é", "o", "👋"],
+    ),
+    Case(
+        "tuple_concat_and_in",
+        P("f(n: Int) -> list[Bool]", "t = (1, 2) + (n,)\n    return [n in t, 5 in t, len(t) == 3]"),
+        "f",
+        (7,),
+        [True, False, True],
+    ),
+]
+
 CASES: tuple[Case, ...] = tuple(
-    INT + FLOAT_TEXT + STR + LIST + DICT_SET + TIME + REGEX + JSON + FUEL
+    INT + FLOAT_TEXT + STR + LIST + DICT_SET + TIME + REGEX + JSON + FUEL + CORE
 )
 
 _NAMES = [c.name for c in CASES]
 assert len(_NAMES) == len(set(_NAMES)), "duplicate case name in CASES"
 
-_EXC_TYPES: tuple[type[Exception], ...] = (KeyError, IndexError, ValueError, ZeroDivisionError)
+_EXC_TYPES: tuple[type[Exception], ...] = (
+    KeyError,
+    IndexError,
+    ValueError,
+    ZeroDivisionError,
+    RuntimeError,  # a dict changed size while iterated: not catchable in T2, escapes
+)
 
 
 def run_python(case: Case) -> object:
@@ -927,8 +1176,15 @@ def run_python(case: Case) -> object:
 
 
 def semantics_cases_missing_on(target: str) -> list[str]:
-    """Case names `CASES` has not yet been confirmed to run on `target` (Task 8 calls
-    this with "go"). Empty for "python": this suite runs every case against it."""
+    """Case names `CASES` does not run on `target`. Empty for "python": test_python.py
+    runs every case. For "go": the cases the checker refuses for Go (p8_target's L892
+    gates -- constructs the Go target does not implement yet); test_go.py runs every
+    other case, and test_go.py checks nothing is missing for another reason."""
     if target == "python":
         return []
-    return [c.name for c in CASES]
+    from lattice.check import check_source  # noqa: PLC0415 - the checker is only needed here
+    from tests.check.t2_support import PROFILE  # noqa: PLC0415
+
+    return [
+        c.name for c in CASES if not check_source(c.source_with_header, PROFILE, target=target).ok
+    ]

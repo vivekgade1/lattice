@@ -1,0 +1,389 @@
+"""Run semantics cases on the Go target (plan 5a Task 8).
+
+`run_go(cases)` compiles every case with `lattice.gogen.t2.emit_go_t2` into one Go
+program -- each case in its own package (`cases/c<i>`), a `main.go` that runs them all,
+each under recover -- builds it once (offline, against lattice/gogen/rt through a
+`replace` directive) and runs it. The program prints one JSON object: case name -> the
+result, tagged so Python can rebuild it exactly (`{"t": "float", "v": repr}`, ...), or
+`{"err": code}` for a Lattice runtime diagnostic, `{"exc": kind}` for a Python
+exception, `{"panic": text}` for anything else (a compiler bug). Results come back as
+the suite's values: `Err(code)`, `Exc(kind)`, ints, floats, lists, ...
+
+The build is cached by the content hash of the generated sources and the runtime under
+`.cache/gorun/<hash>/` at the repository root.
+"""
+
+from __future__ import annotations
+
+import ast
+import hashlib
+import json
+import os
+import shutil
+import struct
+import subprocess
+from collections.abc import Mapping, Sequence
+from pathlib import Path
+
+from lattice.check import check_source
+from lattice.check.t2 import types as T
+from lattice.check.t2.types import T2Type
+from lattice.gogen.t2 import emit_go_t2, go_string
+from lattice.gogen.types import GoTypes
+from lattice.runtime import LatticeInternalError
+from lattice.t2ir.lower import lower_t2
+from tests.check.t2_support import PROFILE
+from tests.semantics_v11.cases import Case, Err, Exc
+
+ROOT = Path(__file__).resolve().parents[2]
+RT = ROOT / "lattice" / "gogen" / "rt"
+CACHE = ROOT / ".cache" / "gorun"
+GO_ENV = {"GOFLAGS": "-mod=mod", "GOPROXY": "off", "GOWORK": "off", "GOTOOLCHAIN": "local"}
+
+
+# ---- Go values of the cases' arguments ----------------------------------------------------
+
+
+def go_literal(value: object, t: T2Type, types: GoTypes) -> str:  # noqa: PLR0911
+    """A Go expression with exactly the Python value `value` of T2 type t."""
+    match t:
+        case T.Opt(inner=inner):
+            if value is None:
+                return f"rt.None[{types.spell(inner)}]()"
+            return f"rt.Some[{types.spell(inner)}]({go_literal(value, inner, types)})"
+        case T.ListT(elem=e):
+            items = ", ".join(go_literal(x, e, types) for x in value)  # type: ignore[attr-defined]
+            return f"rt.NewList[{types.spell(e)}]({items})"
+        case T.SetT(elem=e):
+            items = ", ".join(go_literal(x, e, types) for x in value)  # type: ignore[attr-defined]
+            return f"rt.NewSet[{types.spell(e)}]({items})"
+        case T.DictT(key=k, val=v):
+            sets = "".join(
+                f"d.Set({go_literal(a, k, types)}, {go_literal(b, v, types)}); "
+                for a, b in value.items()  # type: ignore[attr-defined]
+            )
+            new = f"rt.NewDict[{types.spell(k)}, {types.spell(v)}]()"
+            return f"func() {types.spell(t)} {{ d := {new}; {sets}return d }}()"
+        case T.TupleT(elems=es):
+            pairs = zip(value, es, strict=True)  # type: ignore[call-overload]
+            items = ", ".join(go_literal(x, e, types) for x, e in pairs)
+            return f"{types.spell(t)}{{{items}}}"
+    if t == T.BOOL:
+        return "true" if value else "false"
+    if t == T.INT:
+        return f"int64({int(value)})"  # type: ignore[call-overload]
+    if t == T.FLOAT:
+        bits = struct.unpack("<Q", struct.pack("<d", float(value)))[0]  # type: ignore[arg-type]
+        return f"math.Float64frombits(0x{bits:016x})"
+    if t in (T.STR, T.UUID):
+        return go_string(str(value))
+    raise LatticeInternalError(f"gorun: no Go literal for {t.render()}")
+
+
+def go_encoder(t: T2Type, types: GoTypes) -> str:  # noqa: PLR0911
+    """A Go func value encoding a value of type t as tagged JSON (a map / slice tree)."""
+    go = types.spell(t)
+    match t:
+        case T.Opt(inner=inner):
+            return (
+                f'func(v {go}) any {{ if !v.Ok {{ return map[string]any{{"t": "none"}} }}; '
+                f"return ({go_encoder(inner, types)})(v.V) }}"
+            )
+        case T.ListT(elem=e):
+            return _seq_encoder(go, "v.Items", "list", go_encoder(e, types))
+        case T.SetT(elem=e):
+            return _seq_encoder(go, "v.Items()", "set", go_encoder(e, types))
+        case T.DictT(key=k, val=val):
+            pair = f"[]any{{({go_encoder(k, types)})(p.Key), ({go_encoder(val, types)})(p.Value)}}"
+            return (
+                f"func(v {go}) any {{ out := []any{{}}; for _, p := range v.Items() {{ "
+                f"out = append(out, {pair}) }}; "
+                f'return map[string]any{{"t": "dict", "v": out}} }}'
+            )
+        case T.TupleT(elems=es):
+            items = ", ".join(f"({go_encoder(e, types)})(v.F{i})" for i, e in enumerate(es))
+            tagged = f'map[string]any{{"t": "tuple", "v": []any{{{items}}}}}'
+            return f"func(v {go}) any {{ return {tagged} }}"
+        case T.RecordT(name=name):
+            fields = types.records[name]
+            items = ", ".join(f"({go_encoder(ft, types)})(v.F_{f})" for f, ft in fields)
+            return (
+                f'func(v {go}) any {{ return map[string]any{{"t": "record", '
+                f'"name": {json.dumps(name)}, "v": []any{{{items}}}}} }}'
+            )
+    if t == T.INT:
+        return (
+            'func(v int64) any { return map[string]any{"t": "int", "v": strconv.FormatInt(v, 10)} }'
+        )
+    if t == T.FLOAT:
+        return 'func(v float64) any { return map[string]any{"t": "float", "v": rt.ReprFloat(v)} }'
+    if t == T.BOOL:
+        return 'func(v bool) any { return map[string]any{"t": "bool", "v": v} }'
+    if t in (T.STR, T.UUID):
+        return 'func(v string) any { return map[string]any{"t": "str", "v": v} }'
+    if t == T.NONE:
+        return 'func(v struct{}) any { return map[string]any{"t": "none"} }'
+    raise LatticeInternalError(f"gorun: no encoder for {t.render()}")
+
+
+def _seq_encoder(go: str, items: str, tag: str, elem: str) -> str:
+    return (
+        f"func(v {go}) any {{ out := []any{{}}; for _, x := range {items} {{ "
+        f'out = append(out, ({elem})(x)) }}; return map[string]any{{"t": "{tag}", "v": out}} }}'
+    )
+
+
+def decode(v: object) -> object:  # noqa: PLR0911
+    """A tagged JSON result -> the suite's Python value."""
+    if not isinstance(v, dict):
+        raise ValueError(f"untagged result {v!r}")
+    if "err" in v:
+        return Err(v["err"])
+    if "exc" in v:
+        return Exc(v["exc"])
+    if "panic" in v:
+        return ("GO PANIC", v["panic"])
+    tag = v["t"]
+    if tag == "none":
+        return None
+    if tag == "int":
+        return int(v["v"])
+    if tag == "float":
+        return float(v["v"])
+    if tag in ("str", "bool"):
+        return v["v"]
+    if tag == "list":
+        return [decode(x) for x in v["v"]]
+    if tag == "tuple":
+        return tuple(decode(x) for x in v["v"])
+    if tag == "set":
+        return {decode(x) for x in v["v"]}  # type: ignore[misc]
+    if tag == "dict":
+        return {decode(k): decode(x) for k, x in v["v"]}  # type: ignore[misc]
+    if tag == "record":
+        return ("record", v["name"], tuple(decode(x) for x in v["v"]))
+    raise ValueError(f"unknown tag {tag!r}")
+
+
+# ---- the program ------------------------------------------------------------------------
+
+
+def case_package(case: Case, pkg: str) -> tuple[str, str]:
+    """The Go sources of one case's package: its procedures (t2.go), and Run() (run.go).
+    A case checks with the T2 test profile unless it carries its own (`case.profile`)."""
+    source = case.source_with_header
+    result = check_source(source, getattr(case, "profile", PROFILE), target="go")
+    if not result.ok or result.program is None or result.program.t2 is None:
+        raise LatticeInternalError(f"gorun: {case.name} does not check for Go")
+    module = lower_t2(result.program.t2, ast.parse(result.program.source))
+    code = emit_go_t2(module, package=pkg)
+    proc = next(p for p in module.procedures if p.name == case.proc)
+    types = GoTypes((r.name, r.fields) for r in module.records)
+    args = ", ".join(
+        go_literal(v, t, types) for v, (_, t) in zip(case.args, proc.params, strict=True)
+    )
+    call = f"P_{case.proc}({', '.join(['fuel', *([args] if args else [])])})"
+    if proc.returns == T.NONE:
+        body = f'{call}\n\treturn map[string]any{{"t": "none"}}'
+    else:
+        body = f"return ({go_encoder(proc.returns, types)})({call})"
+    # the tuple and record types Run spells are declared by t2.go: the procedure's
+    # signature uses them, and their names are derived from the types
+    run = (
+        f'package {pkg}\n\nimport (\n\t"math"\n\t"strconv"\n\n\t"lattice.dev/rt"\n)\n\n'
+        f"var _ = math.Inf\nvar _ = strconv.Itoa\n\n"
+        "// Fuel is the fuel of the last Run (what is left of it is reported).\n"
+        "var Fuel *rt.Fuel\n\n"
+        f"// Run runs the case {case.name} on a budget.\nfunc Run(budget int64) any {{\n"
+        f"\tfuel := rt.NewFuel(budget)\n\tFuel = fuel\n\t{body}\n}}\n"
+    )
+    return code, run
+
+
+_MAIN_HEAD = """package main
+
+import (
+\t"encoding/json"
+\t"fmt"
+\t"os"
+
+\t"lattice.dev/rt"
+{imports}
+)
+
+func run(f func() any) (out any) {{
+\tdefer func() {{
+\t\tif r := recover(); r != nil {{
+\t\t\tif e, ok := r.(*rt.Error); ok {{
+\t\t\t\tif e.Code != "" {{
+\t\t\t\t\tout = map[string]any{{"err": e.Code}}
+\t\t\t\t\treturn
+\t\t\t\t}}
+\t\t\t\tout = map[string]any{{"exc": e.Kind}}
+\t\t\t\treturn
+\t\t\t}}
+\t\t\tout = map[string]any{{"panic": fmt.Sprint(r)}}
+\t\t}}
+\t}}()
+\treturn f()
+}}
+
+type entry struct {{
+\trun  func(int64) any
+\tfuel func() *rt.Fuel
+}}
+
+var cases = map[string]entry{{
+{calls}
+}}
+
+// main reads {{case name: [budget, ...]}} and prints the result and the fuel left of
+// each run, keyed "<name>@<budget>".
+func main() {{
+\tvar req map[string][]int64
+\tif err := json.NewDecoder(os.Stdin).Decode(&req); err != nil {{
+\t\tpanic(err)
+\t}}
+\tres := map[string]any{{}}
+\tleft := map[string]int64{{}}
+\tfor name, budgets := range req {{
+\t\tc := cases[name]
+\t\tfor _, b := range budgets {{
+\t\t\tkey := fmt.Sprintf("%s@%d", name, b)
+\t\t\tres[key] = run(func() any {{ return c.run(b) }})
+\t\t\tleft[key] = c.fuel().Left
+\t\t}}
+\t}}
+\tout := map[string]any{{"results": res, "left": left}}
+\tif err := json.NewEncoder(os.Stdout).Encode(out); err != nil {{
+\t\tpanic(err)
+\t}}
+}}
+"""
+
+
+def write_program(cases: Sequence[Case]) -> dict[str, str]:
+    """The program's files (relative path -> text)."""
+    files: dict[str, str] = {}
+    imports, calls = [], []
+    for i, case in enumerate(cases):
+        pkg = f"c{i}"
+        code, run = case_package(case, pkg)
+        files[f"cases/{pkg}/t2.go"] = code
+        files[f"cases/{pkg}/run.go"] = run
+        imports.append(f'\t{pkg} "latticegen/cases/{pkg}"')
+        calls.append(
+            f"\t{json.dumps(case.name)}: {{{pkg}.Run, func() *rt.Fuel {{ return {pkg}.Fuel }}}},"
+        )
+    files["main.go"] = _MAIN_HEAD.format(imports="\n".join(imports), calls="\n".join(calls))
+    files["go.mod"] = (
+        "module latticegen\n\ngo 1.26.0\n\nrequire lattice.dev/rt v0.0.0\n\n"
+        f"replace lattice.dev/rt => {RT}\n"
+    )
+    files["go.sum"] = (RT / "go.sum").read_text()
+    return files
+
+
+def _rt_digest() -> str:
+    h = hashlib.sha256()
+    for p in sorted(RT.glob("*.go")):
+        h.update(p.name.encode() + p.read_bytes())
+    h.update((RT / "go.mod").read_bytes())
+    return h.hexdigest()
+
+
+def build(cases: Sequence[Case]) -> Path:
+    """The built program (cached by content)."""
+    files = write_program(cases)
+    h = hashlib.sha256(_rt_digest().encode())
+    for name in sorted(files):
+        h.update(name.encode() + b"\0" + files[name].encode())
+    out = CACHE / h.hexdigest()[:20]
+    binary = out / "prog"
+    if binary.exists():
+        return binary
+    tmp = out.with_name(f"{out.name}.tmp{os.getpid()}")
+    shutil.rmtree(tmp, ignore_errors=True)
+    for name, text in files.items():
+        path = tmp / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+    env = {**os.environ, **GO_ENV}
+    proc = subprocess.run(  # noqa: S603
+        ["go", "build", "-o", "prog", "."],  # noqa: S607
+        cwd=tmp,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"go build failed in {tmp}:\n{proc.stderr}")
+    try:
+        tmp.rename(out)
+    except OSError:  # another process built the same program first: keep theirs
+        shutil.rmtree(tmp, ignore_errors=True)
+    return binary
+
+
+def run_go(cases: Sequence[Case]) -> dict[str, object]:
+    """Run the cases on Go: case name -> result (a value, Err(code) or Exc(kind))."""
+    return run_go_detailed(cases)[0]
+
+
+def run_go_detailed(cases: Sequence[Case]) -> tuple[dict[str, object], dict[str, int]]:
+    """run_go, and the fuel each case had left when it ended (Fuel.Left)."""
+    runs = run_go_budgets(cases, {c.name: [c.budget] for c in cases})
+    results = {name: r for (name, _), (r, _) in runs.items()}
+    left = {name: fl for (name, _), (_, fl) in runs.items()}
+    return results, left
+
+
+def run_go_budgets(
+    cases: Sequence[Case], budgets: Mapping[str, Sequence[int]]
+) -> dict[tuple[str, int], tuple[object, int]]:
+    """Run each case on Go once per budget: (name, budget) -> (result, fuel left)."""
+    binary = build(cases)
+    proc = subprocess.run(  # noqa: S603
+        [str(binary)],
+        input=json.dumps({k: list(v) for k, v in budgets.items()}),
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=600,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"the Go program failed:\n{proc.stderr[-4000:]}")
+    raw = json.loads(proc.stdout)
+    out: dict[tuple[str, int], tuple[object, int]] = {}
+    for key, v in raw["results"].items():
+        name, _, b = key.rpartition("@")
+        out[(name, int(b))] = (decode(v), raw["left"][key])
+    return out
+
+
+def run_python_budget(case: Case, budget: int) -> tuple[object, int]:
+    """The case's result on Python with a budget (as run_python), and the fuel left."""
+    from lattice.t2 import T2Fuel  # noqa: PLC0415
+    from lattice.t2.support import T2Error  # noqa: PLC0415
+    from tests.semantics_v11.cases import _EXC_TYPES  # noqa: PLC0415
+    from tests.t2.util import load  # noqa: PLC0415
+
+    load_fn = getattr(case, "load", None)
+    fn = (load_fn() if load_fn is not None else load(case.source))[case.proc]
+    fuel = T2Fuel(budget)
+    try:
+        result: object = fn(fuel, *case.args)
+    except T2Error as e:
+        result = Err(e.code)
+    except Exception as e:  # noqa: BLE001 - mapped like run_python, else re-raised
+        kinds = [k.__name__ for k in _EXC_TYPES if isinstance(e, k)]
+        if not kinds:
+            raise
+        result = Exc(kinds[0])
+    return result, fuel.left
+
+
+def python_fuel_left(case: Case) -> int:
+    """The fuel a case has left after running on Python (as run_python runs it)."""
+    return run_python_budget(case, case.budget)[1]

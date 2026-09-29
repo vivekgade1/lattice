@@ -188,13 +188,19 @@ type formatSpec struct {
 	width, precision    int // -1: not given
 	group, fracGroup    byte
 	fillGiven, hasAlign bool
+	group4              bool // '_' with b/o/x/X: groups of four digits
 }
 
 func isAlign(r rune) bool { return r == '<' || r == '>' || r == '=' || r == '^' }
 
 // parseFormatSpec is CPython's parse_internal_render_format_spec for a float.
-func parseFormatSpec(spec string) formatSpec {
-	f := formatSpec{fill: ' ', align: '>', width: -1, precision: -1}
+func parseFormatSpec(spec string) formatSpec { return parseFormatSpecFor(spec, "float", 0, '>') }
+
+// parseFormatSpecFor is CPython's parse_internal_render_format_spec for a value of
+// Python type tname, with that type's default presentation type and alignment (int:
+// 'd', '>'; str: 's', '<'; float: none, '>').
+func parseFormatSpecFor(spec, tname string, defaultType, defaultAlign byte) formatSpec {
+	f := formatSpec{fill: ' ', align: defaultAlign, width: -1, precision: -1, typ: defaultType}
 	rs := []rune(spec)
 	pos, end := 0, len(rs)
 	if end-pos >= 2 && isAlign(rs[pos+1]) {
@@ -218,7 +224,7 @@ func parseFormatSpec(spec string) formatSpec {
 	}
 	if !f.fillGiven && end-pos >= 1 && rs[pos] == '0' {
 		f.fill = '0'
-		if !f.hasAlign {
+		if !f.hasAlign && defaultAlign == '>' {
 			f.align = '='
 		}
 		pos++
@@ -284,13 +290,13 @@ func parseFormatSpec(spec string) formatSpec {
 		}
 	}
 	if end-pos > 1 {
-		Raise("ValueError", "Invalid format specifier '"+spec+"' for object of type 'float'")
+		Raise("ValueError", "Invalid format specifier '"+spec+"' for object of type '"+tname+"'")
 	}
 	if end-pos == 1 {
 		if rs[pos] >= utf8.RuneSelf {
 			// CPython stores the type in a char: a non-ASCII type cannot be a known code.
 			Raise("ValueError", "Unknown format code '\\x"+strconv.FormatInt(int64(rs[pos]), 16)+
-				"' for object of type 'float'")
+				"' for object of type '"+tname+"'")
 		}
 		f.typ = byte(rs[pos])
 	}
@@ -302,7 +308,12 @@ func parseFormatSpec(spec string) formatSpec {
 		Raise("ValueError", "Cannot specify '"+string(rune(sep))+"' with '"+t+"'.")
 	}
 	if f.group != 0 && !strings.ContainsRune("defgEG%F\x00", rune(f.typ)) {
-		cannot(f.group)
+		// underscores group bin/oct/hex digits in fours (PEP 515)
+		if f.group == '_' && strings.ContainsRune("boxX", rune(f.typ)) {
+			f.group4 = true
+		} else {
+			cannot(f.group)
+		}
 	}
 	if f.fracGroup != 0 && !strings.ContainsRune("efgEG%F\x00", rune(f.typ)) {
 		cannot(f.fracGroup)
@@ -314,6 +325,11 @@ func parseFormatSpec(spec string) formatSpec {
 // != "") or no grouping (sep == ""): digits padded with zeros to at least minWidth
 // characters, separators counted in the width.
 func groupDigits(digits string, minWidth int, sep string) string {
+	return groupDigitsN(digits, minWidth, sep, 3)
+}
+
+// groupDigitsN is groupDigits with groups of n digits.
+func groupDigitsN(digits string, minWidth int, sep string, n int) string {
 	var chunks []string // right to left
 	remaining, pos := len(digits), len(digits)
 	useSep, broken := false, false
@@ -329,7 +345,7 @@ func groupDigits(digits string, minWidth int, sep string) string {
 	}
 	if sep != "" {
 		for {
-			l := min(3, max(remaining, minWidth, 1))
+			l := min(n, max(remaining, minWidth, 1))
 			take(l)
 			useSep = true
 			minWidth -= l
