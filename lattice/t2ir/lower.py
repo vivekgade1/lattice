@@ -509,8 +509,8 @@ class _Proc:
                 return n.NameT(name)
             case ast.Tuple(elts=elts) | ast.List(elts=elts):
                 return n.TupleTarget(tuple(self.target(e) for e in elts))
-            case ast.Subscript(value=obj, slice=ast.Slice(lower=lo, upper=hi, step=st)):
-                return n.SliceT(self.expr(obj), self._opt(lo), self._opt(hi), self._opt(st))
+            case ast.Subscript(slice=ast.Slice()):  # slice (augmented) assignment: L913
+                raise _unsupported(t)
             case ast.Subscript(value=obj, slice=index):
                 o, i = self.expr(obj), self.expr(index)
                 if lookup and _exact_probe(i.type, _key_type(o.type)):

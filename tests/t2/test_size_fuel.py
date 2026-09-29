@@ -134,7 +134,10 @@ def test_big_ints_are_bounded():
     pw = SRC_BIG_INTS_ARE_BOUNDED_PW
     sh = SRC_BIG_INTS_ARE_BOUNDED_SH
     sq = SRC_BIG_INTS_ARE_BOUNDED_SQ
-    assert call(pw, "f", 2, 10) == 1024.0 and call(pw, "f", 1, 10**12) == 1.0
+    x = call(pw, "f", 2, 10)
+    assert type(x) is float and x == 1024.0  # R-widen: a float, not the int 1024
+    y = call(pw, "f", 1, 10**12)
+    assert type(y) is float and y == 1.0
     assert call(sh, "f", 3, 4) == 48
     assert call(sq, "f", 3, 2) == 81
     assert code_of(sh, "f", 2, 10**6) == "R622"  # a million-bit Int

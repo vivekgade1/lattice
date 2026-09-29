@@ -340,9 +340,6 @@ class _Emit:
                 return ast.Subscript(self.expr(obj), self.expr(index), ast.Store())
             case n.AttrT(obj=obj, name=name):
                 return ast.Attribute(self.expr(obj), name, ast.Store())
-            case n.SliceT(obj=obj, lo=lo, hi=hi, step=step):
-                sl = ast.Slice(self._opt(lo), self._opt(hi), self._opt(step))
-                return ast.Subscript(self.expr(obj), sl, ast.Store())
         raise LatticeInternalError(f"emit_py: unsupported target {type(t).__name__}")
 
     # ---- expressions ----

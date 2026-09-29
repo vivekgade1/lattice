@@ -874,8 +874,8 @@ class _Proc:
                 case "*":
                     return f"rt.GrowMulInt(fuel, {a}, {b})" if grow else f"rt.Mul({a}, {b})"
                 case "**":
-                    if t == T.FLOAT:
-                        return f"rt.PowIntF({a}, {b})"
+                    if t == T.FLOAT:  # lowering widens both operands (_pow_operands)
+                        raise LatticeInternalError("gogen: Int ** Int typed Float (R-widen)")
                     return f"rt.GrowPowInt(fuel, {a}, {b})" if grow else f"rt.Pow({a}, {b})"
                 case "<<":
                     return f"rt.GrowShlInt(fuel, {a}, {b})" if grow else f"rt.Shl({a}, {b})"

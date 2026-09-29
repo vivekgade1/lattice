@@ -640,16 +640,6 @@ func GrowShlInt(f *Fuel, a, b int64) int64 {
 	return Shl(a, b)
 }
 
-// PowIntF is `a ** b` for Ints typed Float (the checker types `Int ** n` as Int only
-// for a literal n >= 0): a float power. T2 IR lowering widens both operands of such a
-// power (R-widen), so the emitter calls PowF for it; this stays as the same meaning.
-func PowIntF(a, b int64) float64 {
-	if a == 0 && b < 0 {
-		Raise("ZeroDivisionError", "zero to a negative power")
-	}
-	return PowF(float64(a), float64(b))
-}
-
 // ---- values ----------------------------------------------------------------------------
 
 // StrInt is str(i).

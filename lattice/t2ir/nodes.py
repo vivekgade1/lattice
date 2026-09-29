@@ -262,16 +262,6 @@ class AttrT:
     name: str
 
 
-@dataclass(frozen=True)
-class SliceT:
-    """`xs[lo:hi:step]` as an augmented-assignment target (`xs[a:b] += ys`)."""
-
-    obj: Expr
-    lo: Expr | None
-    hi: Expr | None
-    step: Expr | None
-
-
 # --- Statements ------------------------------------------------------------------------
 
 
@@ -401,7 +391,7 @@ Expr = (
     | Each | Bulk | Charged | Grow | Sized | Scan
 )
 
-AssignTarget = NameT | TupleTarget | IndexT | AttrT | SliceT
+AssignTarget = NameT | TupleTarget | IndexT | AttrT  # no slice target: L913
 
 Stmt = (
     Assign | AugAssign | If | For | While | Break | Continue | Return | ExprStmt | Try
