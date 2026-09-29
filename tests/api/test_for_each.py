@@ -362,7 +362,11 @@ def test_the_retry_command_fails_when_a_row_still_fails(client: TestClient, db: 
 
 # ---- claims, lost marks and the grace period ----------------------------------------------
 
-LATER = dt.datetime.now(dt.UTC) + dt.timedelta(seconds=outbox.GRACE_SECONDS + 60)
+
+def later() -> dt.datetime:
+    """A moment past the grace period of a claim made now, computed at use (a constant
+    set at collection time expires when the suite runs long before reaching it)."""
+    return dt.datetime.now(dt.UTC) + dt.timedelta(seconds=outbox.GRACE_SECONDS + 60)
 
 
 def _statuses(db: Path) -> list[tuple[str, int, int]]:
@@ -399,7 +403,7 @@ def test_a_lost_mark_is_retried_after_the_grace_period(
     assert (report.done, report.failed) == (0, 0)
     assert len(effects_natives.SENT) == 1
     # after the grace period the row is re-sent (at-least-once) and marked done
-    report = outbox.retry(db, NATIVES, now=LATER)
+    report = outbox.retry(db, NATIVES, now=later())
     assert (report.done, report.failed) == (1, 0)
     assert len(effects_natives.SENT) == 2
     assert _statuses(db) == [("done", 2, 1)]
@@ -426,7 +430,7 @@ def test_a_mark_that_fails_once_is_retried(client: TestClient, db: Path, monkeyp
 
     conn = sqlite3.connect(db, isolation_level=None)
     try:
-        rows = conn.execute(outbox.RETRY_SQL, (LATER.isoformat(),)).fetchall()
+        rows = conn.execute(outbox.RETRY_SQL, (later().isoformat(),)).fetchall()
         flaky = Flaky(conn)
         assert outbox.dispatch(flaky, rows, NATIVES) == (1, 0)
         assert flaky.failed
@@ -463,7 +467,7 @@ def test_retry_leaves_fresh_pending_and_in_flight_rows_alone(client: TestClient,
     assert (report.done, report.failed) == (1, 0)
     assert effects_natives.SENT == [("item_done", 1, dt.date(2000, 1, 5))]
     # both are stale later on
-    report = outbox.retry(db, NATIVES, now=LATER)
+    report = outbox.retry(db, NATIVES, now=later())
     assert (report.done, report.failed) == (1, 0)
     assert effects_natives.SENT[-1] == ("item_done", 2, None)
 
@@ -475,7 +479,7 @@ def test_claiming_prevents_a_double_dispatch(client: TestClient, db: Path):
     first = sqlite3.connect(db, isolation_level=None)
     second = sqlite3.connect(db, isolation_level=None)
     try:
-        rows = first.execute(outbox.RETRY_SQL, (LATER.isoformat(),)).fetchall()
+        rows = first.execute(outbox.RETRY_SQL, (later().isoformat(),)).fetchall()
         assert len(rows) == 1
         raced: list[tuple[int, int]] = []
 
@@ -612,7 +616,7 @@ def test_the_generated_app_recovers_a_lost_mark(apps):
         assert gen.patch("/items/1/done", headers=_h("alice")).status_code == 200
     assert _statuses(gen_db) == [("dispatching", 1, 1)]
     assert module.retry_outbox() == (0, 0)  # in flight
-    assert module.retry_outbox(now=LATER) == (1, 0)
+    assert module.retry_outbox(now=later()) == (1, 0)
     assert _statuses(gen_db) == [("done", 2, 1)]
     gen_natives = sys.modules["natives"]
     assert gen_natives.SENT.count(("item_done", 1, dt.date(2000, 1, 5))) == 2
@@ -628,7 +632,7 @@ def test_the_generated_app_claims_before_sending(apps):
     first = module.connect()
     second = module.connect()
     try:
-        rows = first.execute(module.OUTBOX_RETRY, (LATER.isoformat(),)).fetchall()
+        rows = first.execute(module.OUTBOX_RETRY, (later().isoformat(),)).fetchall()
         raced: list[tuple[int, int]] = []
         real = module.EFFECTS["item_done"]
 

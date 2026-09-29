@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"modernc.org/sqlite"
 )
@@ -133,13 +134,14 @@ func SetSQLTrace(w io.Writer) {
 	sqlTrace.Lock()
 	defer sqlTrace.Unlock()
 	sqlTrace.w = w
+	sqlTraceEnabled.Store(w != nil)
 }
 
-func sqlTraceOn() bool {
-	sqlTrace.Lock()
-	defer sqlTrace.Unlock()
-	return sqlTrace.w != nil
-}
+// sqlTraceOn is the per-statement check: one atomic load, no lock (SetSQLTrace, called
+// once by NewApp, sets it).
+func sqlTraceOn() bool { return sqlTraceEnabled.Load() }
+
+var sqlTraceEnabled atomic.Bool
 
 func traceStatement(text string) {
 	line, _ := json.Marshal(text)

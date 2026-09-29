@@ -103,4 +103,9 @@ func TestSQLTraceLogsExpandedCountedStatements(t *testing.T) {
 	if c.queries != 2 {
 		t.Errorf("queries = %d, want 2", c.queries)
 	}
+	SetSQLTrace(nil) // off again: nothing more is written
+	c.query("SELECT 1")
+	if buf.String() != want || sqlTraceOn() {
+		t.Errorf("trace after SetSQLTrace(nil) = %q (on: %v)", buf.String(), sqlTraceOn())
+	}
 }

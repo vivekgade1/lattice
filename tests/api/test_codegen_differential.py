@@ -1393,13 +1393,58 @@ def db_digest(path: str) -> str:
         conn.close()
 
 
+def wire_record(
+    first_status: int, first_headers: Any, status: int, headers: Any, content: bytes
+) -> dict:
+    """What a case's response looked like on the wire beyond its parsed JSON body
+    (stdlib only: also copied into the sandbox driver): the first hop's status and
+    Location (so a 307 that the client followed never equals a direct answer), the final
+    response's content type, and its raw bytes when they are not JSON (else None: the
+    parsed body is compared). Headers are (name, value) text pairs."""
+    import json as _json
+
+    def header(pairs: Any, name: str) -> str | None:
+        for k, v in pairs:
+            if k.lower() == name:
+                return v
+        return None
+
+    raw = None
+    if content:
+        try:
+            _json.loads(content)
+        except ValueError:
+            raw = content.decode("latin-1")
+    return {
+        "first": [first_status, header(first_headers, "location")],
+        "content_type": header(headers, "content-type"),
+        "raw": raw,
+    }
+
+
+def _wire_of_response(response: Any) -> dict | None:
+    """`wire_record` of an httpx response (the sandbox driver's; None without one)."""
+    if response is None:
+        return None
+    first = response.history[0] if response.history else response
+    return wire_record(
+        first.status_code,
+        list(first.headers.items()),
+        response.status_code,
+        list(response.headers.items()),
+        response.content,
+    )
+
+
 _ANCHOR = "    passed, reason = evaluate_case(case, status, body, queries, after_rows, crash)\n"
 _CAPTURE = (
+    "    _wire = _wire_of_response(locals().get('response'))\n"
     "    with open(" + repr(CAPTURE_FILE) + ', "a") as _cf:\n'
     "        _cf.write(json.dumps({\n"
     '            "name": case["name"], "status": status, "body": body, "crash": crash,\n'
     '            "queries": queries, "after": after_rows,\n'
     '            "digest": _digest_or_none("app.db"),\n'
+    '            **(_wire or {"first": None, "content_type": None, "raw": None}),\n'
     '        }) + "\\n")\n'
 )
 
@@ -1416,7 +1461,9 @@ def _digest_or_none(path: str) -> str | None:
 def _capturing_driver_source(task: ApiTask) -> str:
     source = _original_driver_source(task)
     assert _ANCHOR in source, "the sandbox driver changed: update the capture anchor"
-    helper = inspect.getsource(db_digest) + "\n\n" + inspect.getsource(_digest_or_none)
+    helper = "\n\n".join(
+        inspect.getsource(f) for f in (db_digest, _digest_or_none, wire_record, _wire_of_response)
+    )
     source = source.replace(
         "\ndef _run_case(case, app):", f"\n{helper}\n\ndef _run_case(case, app):"
     )
@@ -1451,22 +1498,27 @@ def _run_generated(
 
 
 class _Shim:
-    """ASGI wrapper recording one case's response body and the DB state after it."""
+    """ASGI wrapper recording one case's response body, its wire record (`wire_record`:
+    the first hop, content type, non-JSON bytes) and the DB state after it."""
 
     def __init__(self, app: Any, db_path: Path, case: HttpCase, sink: list[dict]) -> None:
         self.app, self.db_path, self.case, self.sink = app, db_path, case, sink
         self.recorded: int | None = None
+        self.first: tuple[int, list[tuple[str, str]]] | None = None  # the first hop
 
     async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
         status, chunks = 0, []
+        headers: list[tuple[str, str]] = []
 
         async def record(message: Mapping[str, Any]) -> None:
             nonlocal status
             if message["type"] == "http.response.start":
                 status = message["status"]
+                for k, v in message.get("headers", []):
+                    headers.append((k.decode("latin-1"), v.decode("latin-1")))
             elif message["type"] == "http.response.body":
                 chunks.append(message.get("body", b""))
             await send(message)
@@ -1492,7 +1544,11 @@ class _Shim:
             "after": after,
             "digest": db_digest(str(self.db_path)),
         }
-        # a followed redirect is two requests: keep the final response's record
+        if self.first is None:
+            self.first = (status, headers)
+        record |= wire_record(*self.first, status, headers, content)
+        # a followed redirect is two requests: keep the final response's record (and
+        # the first hop's status and Location)
         if self.recorded is None:
             self.recorded = len(self.sink)
             self.sink.append(record)
@@ -1613,6 +1669,9 @@ def _mismatches(pid: str, runs: tuple, task: ApiTask | None = None) -> list[str]
             "reason": (rt.reason, gen.reason),
             "after_sql rows": (normalize(rc["after"]), normalize(gc["after"])),
             "db digest": (rc["digest"], gc["digest"]),
+            "first hop (status, Location)": (normalize(rc["first"]), normalize(gc["first"])),
+            "content type": (rc["content_type"], gc["content_type"]),
+            "raw (non-JSON) body": (normalize(rc["raw"]), normalize(gc["raw"])),
         }
         for what, (x, y) in pairs.items():
             if x != y:
@@ -1671,6 +1730,50 @@ def test_db_digest_sees_writes(tmp_path: Path):
     conn.commit()
     conn.close()
     assert db_digest(str(path)) != before
+
+
+def test_wire_record_keeps_the_first_hop_and_non_json_bytes():
+    json_ct = [("content-type", "application/json")]
+    assert wire_record(200, json_ct, 200, json_ct, b'{"a": 1}') == {
+        "first": [200, None],
+        "content_type": "application/json",
+        "raw": None,  # JSON: compared as the parsed body
+    }
+    redirected = wire_record(307, [("Location", "http://testserver/x/")], 200, json_ct, b"[]")
+    assert redirected["first"] == [307, "http://testserver/x/"]
+    text = wire_record(500, [("Content-Type", "text/plain")], 500, [("Content-Type", "text/plain")],
+                       b"Internal Server Error")  # fmt: skip
+    assert text["raw"] == "Internal Server Error" and text["content_type"] == "text/plain"
+    assert wire_record(204, [], 204, [], b"") == {"first": [204, None], "content_type": None,
+                                                  "raw": None}  # fmt: skip
+
+
+def _record(**changes: Any) -> dict:
+    base = {"name": "c", "status": 200, "body": {"a": 1}, "crash": "", "after": None,
+            "digest": "d", "first": [200, None], "content_type": "application/json",
+            "raw": None}  # fmt: skip
+    return base | changes
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"first": [307, "http://testserver/c/"]},  # a redirect followed vs a direct 200
+        {"raw": "oops", "body": None},  # non-JSON bytes vs JSON
+        {"content_type": "text/plain"},
+    ],
+)
+def test_mismatches_see_the_first_hop_and_the_raw_body(changes):
+    case = _case("c", "GET", "/c", None)
+    task = ApiTask("t", "control", "t", (case,))
+    result = CaseResults(
+        cases=(api_runner.CaseResult("c", "happy", "control", True, 200, 1, 0.0, ""),),
+        started=True,
+    )
+    same = _mismatches("t", (result, [_record()], result, [_record()]), task)
+    assert same == []
+    problems = _mismatches("t", (result, [_record()], result, [_record(**changes)]), task)
+    assert problems, changes
 
 
 def test_the_probes_reach_the_new_input_rules_and_non_finite_results(differential_runs):
