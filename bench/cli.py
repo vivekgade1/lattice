@@ -51,12 +51,16 @@ from bench.runners import (
 )
 from bench.tasks import Task, suite
 from lattice.llm import cli_client
-from lattice.llm.cli_client import CliUsageLimitError
+from lattice.llm.cli_client import CliError, CliUsageLimitError
 from lattice.llm.client import ClaudeGenerator, Generator, ScriptedGenerator
 from lattice.runtime import is_panic
 
 _SEPARATOR_RE = re.compile(r"(?m)^=====$")
 _KNOWN_ARMS = ("A", "P", "B", "C")
+# This many CliError records in a row stop the run (exit 4): a logged-out or broken CLI
+# must not burn the rest of the job list into harness_error records one at a time.
+# Mirrors bench.edit_slice.run.MAX_CONSECUTIVE_CLI_ERRORS.
+MAX_CONSECUTIVE_CLI_ERRORS = 3
 # FastAPI scaffolding copied into every arm A/P workdir of the api suite.
 API_KIT_PATH = Path(__file__).resolve().parent / "api_kit" / "platform_kit.py"
 API_DB_NAME = "app.db"
@@ -95,7 +99,15 @@ def _build_parser() -> argparse.ArgumentParser:
         "--suite", default="seed", choices=("seed", "deep", "all", "bench2", "api")
     )
     run_parser.add_argument("--tasks", default=None, help="comma-separated task ids to restrict to")
-    run_parser.add_argument("--model", default="claude-opus-5")
+    run_parser.add_argument(
+        "--model", default="claude-opus-5", help="a single model; alias for --models with one value"
+    )
+    run_parser.add_argument(
+        "--models",
+        default=None,
+        help="comma-separated models, run in one invocation with one writer (overrides "
+        "--model), e.g. claude-sonnet-5,claude-haiku-4-5",
+    )
     run_parser.add_argument(
         "--out", default=None, help="output directory (default results/<UTC timestamp>)"
     )
@@ -115,8 +127,9 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument(
         "--resume",
         action="store_true",
-        help="skip (model, arm, task, rep) tuples already scored in --out's outcomes.jsonl, "
-        "so a run interrupted (e.g. by a CLI usage limit) can continue without redoing work",
+        help="continue a non-empty --out outcomes.jsonl, skipping (model, arm, task, rep) "
+        "tuples already scored in it -- required whenever that file already has runs in "
+        "it (never overwritten automatically), not just after an interruption",
     )
     run_parser.add_argument(
         "--lattice-backend",
@@ -226,14 +239,25 @@ class _ApiContext:
         shutil.copyfile(self.db_path, path)
 
 
+_UNSAFE_PATH_CHARS_RE = re.compile(r"[^A-Za-z0-9._-]")
+
+
+def _safe_path_part(text: str) -> str:
+    """``text`` (a model name) as a single safe path component: no ``/`` or other
+    characters that could escape the intended directory."""
+    return _UNSAFE_PATH_CHARS_RE.sub("_", text) or "_"
+
+
 def _prepare_api_workdir(root: Path, task_id: str, rep: int = 0) -> Path:
-    # rep 0 (the default --reps 1) keeps the original, un-nested path, so existing
-    # callers that assert on it (e.g. tests/api/test_codegen_cli.py, which reads a
-    # generated app's file straight out of the workdir) are unaffected. rep >= 1 gets
-    # its own subdirectory, so every rep still has a distinct path -- concurrent reps of
-    # the same (arm, task) (--workers > 1 with --reps > 1) never share, and race on, one
-    # directory.
-    workdir = root / task_id if rep == 0 else root / task_id / f"rep{rep}"
+    # Every rep -- including rep 0 -- gets its own SIBLING directory under task_id, never
+    # one nested inside another rep's. Nesting rep >= 1 inside rep 0's directory (an
+    # earlier version of this function) meant preparing rep 0 (shutil.rmtree(root/
+    # task_id) below) could delete an in-flight rep 1/2 directory out from under a
+    # concurrent worker -- a real, reproduced race under --workers > 1 with --reps > 1
+    # (FileExistsError harness errors, or worse, a vanished workdir silently scored as a
+    # model failure). Sibling paths mean no two reps -- or, since `root` already carries
+    # the model (see _run_one_api), no two (model, rep) pairs -- ever share one directory.
+    workdir = root / task_id / f"rep{rep}"
     if workdir.exists():
         shutil.rmtree(workdir)
     workdir.mkdir(parents=True)
@@ -254,7 +278,11 @@ def _run_one_api(
     implicit: bool = False,
     rep: int = 0,
 ) -> TaskOutcome:
-    workdir = _prepare_api_workdir(work_root / arm, task.id, rep)
+    # model is part of the workdir root: --models running several models in one
+    # invocation must not let two models' runs of the same (arm, task, rep) share --
+    # and race on -- one directory (bench.cli._safe_path_part sanitizes it for the
+    # filesystem, though every current model name is already a safe path component).
+    workdir = _prepare_api_workdir(work_root / _safe_path_part(model) / arm, task.id, rep)
     generator = _api_generator(model, offline_dir, arm, task.id)
     if arm in ("A", "P"):
         return run_api_baseline(
@@ -359,18 +387,34 @@ def main(argv: Sequence[str] | None = None) -> int:
         if arm not in _KNOWN_ARMS:
             parser.error(f"unknown arm: {arm!r}")
 
+    models: tuple[str, ...] = (
+        tuple(m.strip() for m in args.models.split(",") if m.strip())
+        if args.models
+        else (args.model,)
+    )
+
     outcomes_path = out_dir / "outcomes.jsonl"
-    if args.resume and outcomes_path.exists():
+    has_runs = outcomes_path.exists() and outcomes_path.stat().st_size > 0
+    if has_runs and not args.resume:
+        parser.error(
+            f"{outcomes_path} already has recorded runs; pass --resume to continue it "
+            "(an outcomes file is never overwritten automatically, so paid runs are "
+            "never silently lost)"
+        )
+    if args.resume and has_runs:
         done = _completed(outcomes_path)
     else:
-        outcomes_path.write_text("")  # start fresh; each outcome is appended as it completes
+        outcomes_path.write_text("")  # fresh: no file yet, or an empty one
         done = set()
 
-    def run_task(arm: Arm, task: Task, rep: int) -> TaskOutcome:
+    def run_task(model: str, arm: Arm, task: Task, rep: int) -> tuple[TaskOutcome, bool]:
         # Per-task isolation: a crash inside the harness for one task must
         # not lose the others. (CliUsageLimitError and other BaseExceptions such as
         # KeyboardInterrupt still abort the whole run, but every completed outcome is
-        # already on disk.)
+        # already on disk.) was_cli_error (2nd return value, never persisted) is this
+        # task's contribution to the consecutive-CliError count below -- true only for a
+        # CliError that isn't a usage limit (that always aborts the run itself, above).
+        was_cli_error = False
         try:
             if api_context is not None:
                 outcome = _run_one_api(
@@ -379,7 +423,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     work_root=work_root,
                     context=api_context,
                     offline_dir=offline_dir,
-                    model=args.model,
+                    model=model,
                     max_repairs=args.max_repairs,
                     hints=not args.no_hints,
                     lattice_backend=args.lattice_backend,
@@ -394,7 +438,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     fixtures_dir=fixtures_dir,
                     fixtures_frames=fixtures_frames,
                     offline_dir=offline_dir,
-                    model=args.model,
+                    model=model,
                     max_repairs=args.max_repairs,
                     hints=not args.no_hints,
                 )
@@ -405,50 +449,81 @@ def main(argv: Sequence[str] | None = None) -> int:
         except BaseException as exc:
             if not isinstance(exc, Exception) and not is_panic(exc):
                 raise
+            was_cli_error = isinstance(exc, CliError)  # CliUsageLimitError never reaches here
             outcome = harness_error_outcome(task, arm, exc)
             if api_context is not None:
                 outcome = dataclasses.replace(outcome, condition=api_condition(args.implicit))
-        return dataclasses.replace(
-            outcome, requested_model=args.model, model=outcome.model or args.model, rep=rep
+        outcome = dataclasses.replace(
+            outcome, requested_model=model, model=outcome.model or model, rep=rep
         )
+        return outcome, was_cli_error
 
     jobs = [
-        (arm, task, rep)
+        (model, arm, task, rep)
+        for model in models
         for arm in arms
         for task in tasks
         for rep in range(args.reps)
-        if (args.model, arm, task.id, rep) not in done
+        if (model, arm, task.id, rep) not in done
     ]
 
     # A single writer -- called only from this (the main) thread, on each job's result in
     # submission order -- so the JSONL is appended in the same deterministic order a
-    # --workers 1 run would produce, regardless of --workers or completion order.
+    # --workers 1 run would produce, regardless of --workers, --models or completion
+    # order.
     def write(outcome: TaskOutcome) -> None:
         append_outcome(outcomes_path, outcome)
 
+    def usage_limit_message(exc: CliUsageLimitError) -> None:
+        print(f"usage limit reached, stopping cleanly: {exc}", file=sys.stderr)
+
+    def consecutive_errors_message(n: int, detail: str) -> None:
+        print(
+            f"{n} consecutive CLI errors (last: {detail[:300]}); stopping the run: check "
+            "the `claude` CLI (login, plan, network), then rerun with --resume (error "
+            "records are redone)",
+            file=sys.stderr,
+        )
+
     stopped_early = False
     status = 0
+    cli_errors = 0  # consecutive CliError (not usage-limit) records, in submission order
     if args.workers <= 1:
-        for arm, task, rep in jobs:
+        for model, arm, task, rep in jobs:
             try:
-                write(run_task(arm, task, rep))
+                outcome, was_cli_error = run_task(model, arm, task, rep)
             except CliUsageLimitError as exc:
-                print(f"usage limit reached, stopping cleanly: {exc}", file=sys.stderr)
+                usage_limit_message(exc)
                 stopped_early, status = True, 3
+                break
+            write(outcome)
+            cli_errors = cli_errors + 1 if was_cli_error else 0
+            if cli_errors >= MAX_CONSECUTIVE_CLI_ERRORS:
+                consecutive_errors_message(cli_errors, outcome.detail)
+                stopped_early, status = True, 4
                 break
     else:
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
             # submit every job up front, then collect results in submission order:
             # workers run concurrently, but the JSONL stays in the same deterministic
             # order a --workers 1 run would produce.
-            futures = [pool.submit(run_task, arm, task, rep) for arm, task, rep in jobs]
+            futures = [
+                pool.submit(run_task, model, arm, task, rep) for model, arm, task, rep in jobs
+            ]
             for fut in futures:
                 try:
-                    write(fut.result())
+                    outcome, was_cli_error = fut.result()
                 except CliUsageLimitError as exc:
-                    print(f"usage limit reached, stopping cleanly: {exc}", file=sys.stderr)
+                    usage_limit_message(exc)
                     pool.shutdown(wait=False, cancel_futures=True)
                     stopped_early, status = True, 3
+                    break
+                write(outcome)
+                cli_errors = cli_errors + 1 if was_cli_error else 0
+                if cli_errors >= MAX_CONSECUTIVE_CLI_ERRORS:
+                    consecutive_errors_message(cli_errors, outcome.detail)
+                    pool.shutdown(wait=False, cancel_futures=True)
+                    stopped_early, status = True, 4
                     break
 
     # Re-read from disk rather than use the in-memory results: with --resume, that's
