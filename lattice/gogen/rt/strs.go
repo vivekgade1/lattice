@@ -542,3 +542,270 @@ func Repr(v any) string {
 	}
 	panic("rt.Repr: no Python repr for this Go value")
 }
+
+// ---- the Str methods of T2 procedures (plan 5a Task 9) -------------------------------------
+
+// PStr is a pointer to s (an optional argument that is present).
+func PStr(s string) *string { return &s }
+
+// StrSplit is s.split(sep, maxsplit) as a list.
+func StrSplit(s string, sep *string, max int64) *List[string] {
+	return &List[string]{Items: Split(s, sep, max)}
+}
+
+// StrRSplit is s.rsplit(sep, maxsplit) as a list.
+func StrRSplit(s string, sep *string, max int64) *List[string] {
+	return &List[string]{Items: RSplit(s, sep, max)}
+}
+
+// RSplit is s.rsplit(sep, maxsplit): sep nil splits on runs of whitespace; max < 0
+// means no limit (CPython's rsplit / rsplit_whitespace).
+func RSplit(s string, sep *string, max int64) []string {
+	if max < 0 {
+		max = maxSsize
+	}
+	var out []string
+	if sep == nil {
+		rs := []rune(s)
+		i := len(rs) - 1
+		for ; max > 0; max-- {
+			for i >= 0 && pyIsSpace(rs[i]) {
+				i--
+			}
+			if i < 0 {
+				break
+			}
+			j := i
+			i--
+			for i >= 0 && !pyIsSpace(rs[i]) {
+				i--
+			}
+			out = append(out, string(rs[i+1:j+1]))
+		}
+		if i >= 0 {
+			for i >= 0 && pyIsSpace(rs[i]) {
+				i--
+			}
+			if i >= 0 {
+				out = append(out, string(rs[:i+1]))
+			}
+		}
+	} else {
+		if *sep == "" {
+			Raise("ValueError", "empty separator")
+		}
+		j := len(s)
+		for ; max > 0; max-- {
+			pos := strings.LastIndex(s[:j], *sep)
+			if pos < 0 {
+				break
+			}
+			out = append(out, s[pos+len(*sep):j])
+			j = pos
+		}
+		out = append(out, s[:j])
+	}
+	for a, b := 0, len(out)-1; a < b; a, b = a+1, b-1 {
+		out[a], out[b] = out[b], out[a]
+	}
+	if out == nil {
+		out = []string{}
+	}
+	return out
+}
+
+func isLineBreak(r rune) bool {
+	switch r {
+	case '\n', '\r', '\v', '\f', 0x1C, 0x1D, 0x1E, 0x85, 0x2028, 0x2029:
+		return true
+	}
+	return false
+}
+
+// SplitLines is s.splitlines(): Python's line boundaries, "\r\n" one of them.
+func SplitLines(s string) []string {
+	rs := []rune(s)
+	out := []string{}
+	for i, j := 0, 0; i < len(rs); j = i {
+		for i < len(rs) && !isLineBreak(rs[i]) {
+			i++
+		}
+		eol := i
+		if i < len(rs) {
+			if rs[i] == '\r' && i+1 < len(rs) && rs[i+1] == '\n' {
+				i += 2
+			} else {
+				i++
+			}
+		}
+		out = append(out, string(rs[j:eol]))
+	}
+	return out
+}
+
+// StrSplitLines is s.splitlines() as a list.
+func StrSplitLines(s string) *List[string] { return &List[string]{Items: SplitLines(s)} }
+
+// StartsWith is s.startswith(prefix).
+func StartsWith(s, prefix string) bool { return strings.HasPrefix(s, prefix) }
+
+// EndsWith is s.endswith(suffix).
+func EndsWith(s, suffix string) bool { return strings.HasSuffix(s, suffix) }
+
+// Find is s.find(sub): a code-point index, or -1.
+func Find(s, sub string) int64 {
+	i := strings.Index(s, sub)
+	if i < 0 {
+		return -1
+	}
+	return Len(s[:i])
+}
+
+// RFind is s.rfind(sub).
+func RFind(s, sub string) int64 {
+	i := strings.LastIndex(s, sub)
+	if i < 0 {
+		return -1
+	}
+	return Len(s[:i])
+}
+
+// CountStr is s.count(sub) (non-overlapping; len(s) + 1 for "").
+func CountStr(s, sub string) int64 { return int64(strings.Count(s, sub)) }
+
+// Partition is s.partition(sep).
+func Partition(s, sep string) (string, string, string) {
+	if sep == "" {
+		Raise("ValueError", "empty separator")
+	}
+	i := strings.Index(s, sep)
+	if i < 0 {
+		return s, "", ""
+	}
+	return s[:i], sep, s[i+len(sep):]
+}
+
+// RPartition is s.rpartition(sep).
+func RPartition(s, sep string) (string, string, string) {
+	if sep == "" {
+		Raise("ValueError", "empty separator")
+	}
+	i := strings.LastIndex(s, sep)
+	if i < 0 {
+		return "", "", s
+	}
+	return s[:i], sep, s[i+len(sep):]
+}
+
+// Replace is s.replace(old, new, count) (count < 0: every occurrence).
+func Replace(s, old, new string, count int64) string {
+	if count < 0 || count > int64(len(s))+1 {
+		return strings.ReplaceAll(s, old, new)
+	}
+	return strings.Replace(s, old, new, int(count))
+}
+
+// SizedReplace is s.replace(old, new, count) charged as T2Fuel.replace: its scan, then,
+// when the result grows, its size.
+func SizedReplace(f *Fuel, s, old, new string, count int64) string {
+	n := Len(s)
+	f.Grow(n)
+	if dn := Len(new) - Len(old); dn > 0 {
+		k := n + 1
+		if old != "" {
+			k = CountStr(s, old)
+		}
+		if count >= 0 && count < k {
+			k = count
+		}
+		f.Grow(n + k*dn)
+	}
+	return Replace(s, old, new, count)
+}
+
+// JoinStr is sep.join(items) charged as T2Fuel.join: the items are charged by the
+// cursor (a sized argument up front, an iterator per element), the result its size.
+func JoinStr(f *Fuel, sep string, items Cursor[string]) string {
+	var parts []string
+	size := int64(0)
+	for {
+		p, ok := items()
+		if !ok {
+			break
+		}
+		parts = append(parts, p)
+		size += Len(p)
+	}
+	if len(parts) > 1 {
+		size += Len(sep) * int64(len(parts)-1)
+	}
+	f.Grow(size)
+	return strings.Join(parts, sep)
+}
+
+// Width is the width of s.ljust(n) / rjust / center / zfill, charged and capped
+// (T2Fuel.width).
+func Width(f *Fuel, n int64) int64 {
+	if n > 0 {
+		f.Grow(n)
+	}
+	return n
+}
+
+func fillChar(fill *string) string {
+	if fill == nil {
+		return " "
+	}
+	if utf8.RuneCountInString(*fill) != 1 {
+		Raise("TypeError", "The fill character must be exactly one character long")
+	}
+	return *fill
+}
+
+func pad(s string, left, right int64, fill string) string {
+	return strings.Repeat(fill, int(left)) + s + strings.Repeat(fill, int(right))
+}
+
+// LJust is s.ljust(width, fill).
+func LJust(s string, width int64, fill *string) string {
+	c := fillChar(fill)
+	if n := Len(s); n < width {
+		return pad(s, 0, width-n, c)
+	}
+	return s
+}
+
+// RJust is s.rjust(width, fill).
+func RJust(s string, width int64, fill *string) string {
+	c := fillChar(fill)
+	if n := Len(s); n < width {
+		return pad(s, width-n, 0, c)
+	}
+	return s
+}
+
+// Center is s.center(width, fill): CPython puts the odd character on the left when the
+// width is odd ("ab".center(5) == "  ab ").
+func Center(s string, width int64, fill *string) string {
+	c := fillChar(fill)
+	n := Len(s)
+	if n >= width {
+		return s
+	}
+	marg := width - n
+	left := marg/2 + (marg & width & 1)
+	return pad(s, left, marg-left, c)
+}
+
+// ZFill is s.zfill(width): zeros on the left, after a leading sign.
+func ZFill(s string, width int64) string {
+	n := Len(s)
+	if n >= width {
+		return s
+	}
+	fill := width - n
+	if s != "" && (s[0] == '+' || s[0] == '-') {
+		return s[:1] + strings.Repeat("0", int(fill)) + s[1:]
+	}
+	return strings.Repeat("0", int(fill)) + s
+}

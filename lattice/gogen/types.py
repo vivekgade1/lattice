@@ -11,8 +11,9 @@ needs per type: equality, Python's ordering and repr.
 | Iter[T] | *rt.Iter[T] |
 | a record R | a generated `rec_R` struct (fields F_<name>) |
 | Error (the value `except E as e` binds) | *rt.Error |
+| Match (re.search, ...) | *rt.Match |
 
-Date, DateTime, Duration, Json, Row, Caller, Match and Counter are not implemented yet
+Date, DateTime, Duration, Json, Row, Caller and Counter are not implemented yet
 (`lattice.targets.GO_T2_TYPES`): `p8_target` rejects them on Go with L892.
 """
 
@@ -134,6 +135,8 @@ class GoTypes:
                 return f"rec_{name}"
             case T.Named(name="Error"):
                 return "*rt.Error"
+            case T.Named(name="Match"):
+                return "*rt.Match"
         raise LatticeInternalError(f"gogen: no Go type for {t.render()}")
 
     def tuple_name(self, t: T.TupleT) -> str:
@@ -183,7 +186,7 @@ class GoTypes:
 
     def eq(self, t: T2Type) -> str:
         """A Go func value `func(a, b T) bool`: Python's ==."""
-        if t in _SCALARS:
+        if t in _SCALARS or t == T.MATCH:  # a Match compares by identity, as in Python
             return f"rt.Eq[{self.spell(t)}]"
         go = self.spell(t)
         name = f"eq_{_digest(t)}"
@@ -215,8 +218,8 @@ class GoTypes:
                 if not fields:
                     return "true"
                 return " && ".join(f"{self.eq(ft)}({a}.F_{f}, {b}.F_{f})" for f, ft in fields)
-            case T.IterT():
-                return f"{a} == {b}"  # identity: iterators compare by identity
+            case T.IterT() | T.Named(name="Match"):
+                return f"{a} == {b}"  # identity: iterators and matches compare by identity
         raise LatticeInternalError(f"gogen: no equality for {t.render()}")
 
     def order(self, t: T2Type, op: str) -> str:

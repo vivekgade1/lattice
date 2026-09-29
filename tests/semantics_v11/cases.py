@@ -738,6 +738,203 @@ REGEX = [
     ),
 ]
 
+# Task 9 (strings and regular expressions on Go): the Str methods' edge cases, and the
+# places Python's `re` differs from Go's RE2 (every expected value is Python 3.14's).
+STR_MORE = [
+    Case("str_split_sep_maxsplit", P("f(s: Str) -> list[Str]", 'return s.split(",", 2)'), "f", ("a,b,c,d",), ["a", "b", "c,d"]),
+    Case("str_split_sep_keeps_empty", P("f(s: Str) -> list[Str]", 'return s.split(",")'), "f", (",a,,b,",), ["", "a", "", "b", ""]),
+    Case("str_split_negative_maxsplit", P("f(s: Str) -> list[Str]", 'return s.split(",", -1)'), "f", ("a,b,c",), ["a", "b", "c"]),
+    Case("str_split_empty_separator", P("f(s: Str) -> list[Str]", 'return s.split("")'), "f", ("abc",), Exc("ValueError")),
+    Case("str_rsplit_maxsplit", P("f(s: Str) -> list[Str]", 'return s.rsplit(",", 1)'), "f", ("a,b,c",), ["a,b", "c"]),
+    Case("str_rsplit_whitespace", P("f(s: Str) -> list[Str]", "return s.rsplit()"), "f", ("  a b\u3000 c ",), ["a", "b", "c"]),
+    Case(
+        "str_splitlines_all_boundaries",
+        P("f(s: Str) -> list[Str]", "return s.splitlines()"),
+        "f",
+        ("a\x0bb\x0cc\x1cd\x1de\x1ef\x85g\u2028h\u2029i\rj\r\n\nk\n",),
+        ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "", "k"],
+    ),
+    Case("str_splitlines_empty", P("f(s: Str) -> list[Str]", "return s.splitlines()"), "f", ("",), []),
+    Case(
+        "str_rpartition",
+        P("f(s: Str) -> list[Str]", 'a, b, c = s.rpartition("=")\n    return [a, b, c]'),
+        "f",
+        ("a=b=c",),
+        ["a=b", "=", "c"],
+    ),
+    Case(
+        "str_rpartition_not_found",
+        P("f(s: Str) -> list[Str]", 'a, b, c = s.rpartition("=")\n    return [a, b, c]'),
+        "f",
+        ("abc",),
+        ["", "", "abc"],
+    ),
+    Case("str_rfind_codepoints", P("f(s: Str) -> Int", 'return s.rfind("l")'), "f", ("héllo héllo",), 9),
+    Case("str_find_after_emoji", P("f(s: Str) -> Int", 'return s.find("b")'), "f", ("👋ab",), 2),
+    Case("str_count_empty", P("f(s: Str) -> Int", 'return s.count("")'), "f", ("héllo",), 6),
+    Case("str_replace_empty_old", P("f(s: Str) -> Str", 'return s.replace("", "-")'), "f", ("abc",), "-a-b-c-"),
+    Case("str_replace_zero_count", P("f(s: Str) -> Str", 'return s.replace("a", "b", 0)'), "f", ("aaa",), "aaa"),
+    Case("str_zfill_plus", P("f(s: Str) -> Str", "return s.zfill(4)"), "f", ("+7",), "+007"),
+    Case("str_zfill_wider_input", P("f(s: Str) -> Str", "return s.zfill(3)"), "f", ("12345",), "12345"),
+    Case("str_center_bias", P("f(s: Str) -> Str", "return s.center(5)"), "f", ("ab",), "  ab "),
+    Case("str_center_odd_length", P("f(s: Str) -> Str", 'return s.center(6, "*")'), "f", ("abc",), "*abc**"),
+    Case("str_rjust_codepoints", P("f(s: Str) -> Str", 'return s.rjust(3, "👋")'), "f", ("é",), "👋👋é"),
+    Case("str_ljust_bad_fill", P("f(s: Str) -> Str", 'return s.ljust(5, "ab")'), "f", ("x",), Exc("TypeError")),
+    Case("str_center_width_r622", P("f(n: Int) -> Str", 'return "a".center(n)'), "f", (10**8,), Err("R622")),
+    Case("str_strip_unicode_space", P("f(s: Str) -> Str", "return s.strip()"), "f", ("\u3000a b\xa0",), "a b"),
+    Case("str_lstrip_rstrip_chars", P("f(s: Str) -> Str", 'return s.lstrip("xy") + "|" + s.rstrip("yx")'), "f", ("xyaxy",), "axy|xya"),
+    Case(
+        "str_predicates",
+        P(
+            "f(s: Str) -> list[Bool]",
+            "return [s.isalpha(), s.isalnum(), s.isdigit(), s.isspace(), s.islower(), s.isupper()]",
+        ),
+        "f",
+        ("héllo2",),
+        [False, True, False, False, True, False],
+    ),
+    Case("str_isspace_empty", P("f(s: Str) -> Bool", "return s.isspace()"), "f", ("",), False),
+    Case("str_title_digits", P("f(s: Str) -> Str", "return s.title()"), "f", ("hello2world ǆx",), "Hello2World ǅx"),
+    Case("str_lower_final_sigma", P("f(s: Str) -> Str", "return s.lower()"), "f", ("ΟΔΟΣ ΣΑ",), "οδος σα"),
+    Case("str_startswith_empty", P("f(s: Str) -> Bool", 'return s.startswith("") and s.endswith("")'), "f", ("",), True),
+    Case(
+        "str_join_generator",
+        P("f(xs: list[Str]) -> Str", 'return "-".join(x.upper() for x in xs)'),
+        "f",
+        (["a", "b", "c"],),
+        "A-B-C",
+    ),
+    Case("str_join_chars", P("f(s: Str) -> Str", 'return ".".join(s)'), "f", ("hé👋",), "h.é.👋"),
+    Case(
+        "str_constants",
+        P(
+            "f(n: Int) -> Str",
+            "return string.digits + string.ascii_lowercase[:n] + string.punctuation[:n]",
+        ).replace("@procedure", "import string\n\n@procedure", 1),
+        "f",
+        (3,),
+        "0123456789abc!\"#",
+    ),
+]
+
+REGEX_MORE = [
+    Case(
+        "re_dollar_before_trailing_newline",
+        P("f(s: Str) -> Bool", 'return re.search(r"a$", s) is not None'),
+        "f",
+        ("a\n",),
+        True,
+    ),
+    Case("re_findall_empty_matches", P("f(s: Str) -> list[Str]", 'return re.findall(r"a*", s)'), "f", ("baac",), ["", "aa", "", ""]),
+    Case("re_findall_alternative_after_empty", P("f(s: Str) -> list[Str]", 'return re.findall(r"|a", s)'), "f", ("a",), ["", "a", ""]),
+    Case("re_sub_empty_matches", P("f(s: Str) -> Str", 'return re.sub(r"x*", "-", s)'), "f", ("abc",), "-a-b-c-"),
+    Case("re_split_empty_matches", P("f(s: Str) -> list[Str]", 'return re.split(r"x*", s)'), "f", ("ab",), ["", "a", "b", ""]),
+    Case("re_space_class_has_vt", P("f(s: Str) -> list[Str]", r'return re.findall(r"\s", s)'), "f", ("a\x0bb",), ["\x0b"]),
+    Case("re_ignorecase_is_ascii", P("f(s: Str) -> Bool", 'return re.fullmatch(r"(?i)é", s) is None'), "f", ("É",), True),
+    Case("re_ignorecase_letters", P("f(s: Str) -> Bool", 'return re.fullmatch(r"(?i)abc", s) is not None'), "f", ("AbC",), True),
+    Case(
+        "re_unmatched_group_is_none",
+        P(
+            "f(s: Str) -> Bool",
+            'm = re.search(r"(a)(b)?", s)\n    if m is None:\n        return False\n    return m.group(2) is None',
+        ),
+        "f",
+        ("xa",),
+        True,
+    ),
+    Case(
+        "re_group_no_such_group",
+        P(
+            "f(s: Str) -> Str",
+            'm = re.search(r"(a)", s)\n    if m is None:\n        return ""\n    return m.group(3) or ""',
+        ),
+        "f",
+        ("a",),
+        Exc("IndexError"),
+    ),
+    Case(
+        "re_group_no_such_name_caught",
+        P(
+            "f(s: Str) -> Str",
+            'm = re.search(r"(?P<x>a)", s)\n    if m is None:\n        return ""\n'
+            '    try:\n        return m.group("y") or ""\n    except IndexError as e:\n        return str(e)',
+        ),
+        "f",
+        ("a",),
+        "no such group",
+    ),
+    Case(
+        "re_start_end_after_emoji",
+        P(
+            "f(s: Str) -> list[Int]",
+            'm = re.search(r"b+", s)\n    if m is None:\n        return []\n    return [m.start(), m.end()]',
+        ),
+        "f",
+        ("👋abb",),
+        [2, 4],
+    ),
+    Case("re_sub_unmatched_group_empty", P("f(s: Str) -> Str", r'return re.sub(r"(a)|b", r"[\1]", s)'), "f", ("ab",), "[a][]"),
+    Case("re_sub_escapes", P("f(s: Str) -> Str", r'return re.sub(r"a", r"\\\n\g<0>", s)'), "f", ("xa",), "x\\\na"),
+    Case(
+        "re_sub_bad_group_reference",
+        P("f(s: Str) -> Str", r'return re.sub(r"(a)", r"\2", s)'),
+        "f",
+        ("a",),
+        Exc("PatternError"),
+    ),
+    Case(
+        "re_fullmatch_backtracks",
+        P(
+            "f(s: Str) -> Str",
+            'm = re.fullmatch(r"a|ab", s)\n    if m is None:\n        return ""\n    return m.group()',
+        ),
+        "f",
+        ("ab",),
+        "ab",
+    ),
+    Case("re_word_boundary", P("f(s: Str) -> list[Str]", r'return re.findall(r"\bfoo\b", s)'), "f", ("foo foobar foo_ foo",), ["foo", "foo"]),
+    Case(
+        "re_match_repr",
+        P("f(s: Str) -> Str", 'm = re.search(r"b", s)\n    return str(m) + f"|{m}"'),
+        "f",
+        ("éb",),
+        "<re.Match object; span=(1, 2), match='b'>|<re.Match object; span=(1, 2), match='b'>",
+    ),
+    Case("re_multiline_flag", P("f(s: Str) -> list[Str]", r'return re.findall(r"(?m)^\w", s)'), "f", ("ab\ncd",), ["a", "c"]),
+    Case(
+        "re_lazy_repeat",
+        P(
+            "f(s: Str) -> Str",
+            'm = re.search(r"<.+?>", s)\n    if m is None:\n        return ""\n    return m.group()',
+        ),
+        "f",
+        ("<a><b>",),
+        "<a>",
+    ),
+    Case(
+        "re_unicode_flag_value_error",
+        P(
+            "f(s: Str) -> Str",
+            'try:\n        m = re.search(r"(?u)a", s)\n        return "found"\n'
+            "    except ValueError as e:\n        return str(e)",
+        ),
+        "f",
+        ("a",),
+        "ASCII and UNICODE flags are incompatible",
+    ),
+    Case(
+        "re_repeated_group_keeps_last",
+        P(
+            "f(s: Str) -> list[Str]",
+            'm = re.fullmatch(r"(?:(a)|b)*", s)\n    if m is None:\n        return []\n'
+            '    return [m.group(1) or "-", m.group()]',
+        ),
+        "f",
+        ("ab",),
+        ["a", "ab"],
+    ),
+]
+
 JSON = [
     Case(
         "dumps_ensure_ascii",
@@ -1476,6 +1673,8 @@ WIDEN = [
 
 CASES: tuple[Case, ...] = tuple(
     INT + FLOAT_TEXT + STR + LIST + DICT_SET + TIME + REGEX + JSON + FUEL + CORE + WIDEN
+    + STR_MORE
+    + REGEX_MORE
 )
 
 _NAMES = [c.name for c in CASES]
@@ -1487,6 +1686,8 @@ _EXC_TYPES: tuple[type[Exception], ...] = (
     ValueError,
     ZeroDivisionError,
     RuntimeError,  # a dict changed size while iterated: not catchable in T2, escapes
+    TypeError,  # e.g. a fill character of two characters: not catchable in T2
+    _re.PatternError,  # an invalid re.sub replacement: not catchable in T2
 )
 
 

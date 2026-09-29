@@ -38,8 +38,9 @@ def test_go_charges_the_same_fuel(case, go_run):
 
 
 def test_coverage_floor():
-    """Each Go task raises this floor; Task 10 ends at 100%."""
-    assert len(GO_CASES) >= 60
+    """Each Go task raises this floor; Task 10 ends at 100%. Task 9 (strings and
+    regular expressions): 212 of 276 cases."""
+    assert len(GO_CASES) >= 212
 
 
 def test_only_l892_gated_cases_are_missing_on_go():

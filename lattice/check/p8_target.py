@@ -6,7 +6,9 @@ code target cannot run with v1.1 semantics.
 * L891 — a program of the tabular profile on a target without it.
 * L892 — a T2 construct the target does not implement yet: a call (builtin, method or
   stdlib function) outside the target's `t2_calls`, a value of a kind outside its
-  `t2_types` (Date, Json, ...), and `str()` / an f-string field of a container.
+  `t2_types` (Date, Json, ...), `str()` / an f-string field of a container, and the
+  regular expressions Go does not run (`_regex`: a non-literal `re.sub` replacement,
+  `re.findall` with several groups, `re.split` with groups).
   (`Int ** n`, `round(Int, n)` and `min`/`max` of Int and Float arguments were gated
   until R-widen gave an Int in a Float place one meaning on every target.)
 
@@ -20,6 +22,7 @@ from lattice.check.context import CheckContext
 from lattice.check.t2 import CheckedProcedure, T2Program
 from lattice.check.t2 import types as T
 from lattice.diagnostics import Span
+from lattice.gogen.regex import compile_regex, regex_problem
 from lattice.gogen.types import is_container, kinds
 from lattice.profile import NativeToken
 from lattice.targets import Target, supports_call, supports_type
@@ -119,6 +122,42 @@ def _constructs(proc: CheckedProcedure, t2: T2Program, ctx: CheckContext, target
                 _container_text(ctx, target, arg, types.get(id(arg)), records, "str()")
             case ast.FormattedValue(value=value):
                 _container_text(ctx, target, value, types.get(id(value)), records, "an f-string")
+            case ast.Call(args=[ast.Constant(value=str() as pattern), *rest]) if proc.targets.get(
+                id(node), ""
+            ).startswith("std:re."):
+                _regex(ctx, target, node, proc.targets[id(node)][7:], pattern, rest)
+
+
+def _regex(
+    ctx: CheckContext, target: Target, node: ast.Call, fn: str, pattern: str, rest: list[ast.expr]
+) -> None:
+    """L892 for the regular expressions the Go engine does not run (lattice.gogen.regex):
+    a non-literal `re.sub` replacement (compiled when the code is generated),
+    `re.findall` of a pattern with several groups (Python returns tuples, not the Str
+    items the checker types it with) and `re.split` by a pattern with groups (Python
+    inserts the groups, None for one that did not participate)."""
+    where = f"'re.{fn}' on target '{target.name}'"
+    problem = regex_problem(pattern)
+    if problem is None:
+        groups = compile_regex(pattern).groups
+        if (
+            fn == "sub"
+            and rest
+            and not (isinstance(rest[0], ast.Constant) and isinstance(rest[0].value, str))
+        ):
+            problem = "the replacement must be a string literal"
+        elif fn == "findall" and groups > 1:
+            problem = f"a pattern with {groups} groups (findall would return tuples)"
+        elif fn == "split" and groups > 0:
+            problem = "a pattern with groups (split would insert them, None when unmatched)"
+    if problem is not None:
+        ctx.error(
+            "L892",
+            node,
+            f"{where}: {problem} is not available yet",
+            "use a literal replacement / a pattern without (capturing) groups ((?:...)), "
+            "or compile for target 'python'",
+        )
 
 
 def _container_text(

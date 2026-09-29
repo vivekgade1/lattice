@@ -11,6 +11,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 
+from lattice.catalog import T2_METHODS, T2_STDLIB
 from lattice.runtime import LatticeInternalError
 
 SEMANTICS_VERSION = "1.1"
@@ -30,13 +31,20 @@ GO_T2_CALLS: set[str] = {
         "reversed", "any", "all", "int", "float", "str", "list", "set", "dict",
     )
 }  # fmt: skip
+# Task 9: the Str methods, `re` and Match. The `string` constants are values, not call
+# targets (listed for the record; the emitter copies every stdlib constant exactly).
+GO_T2_CALLS |= {f"method:Str.{name}" for name in T2_METHODS["Str"]}
+GO_T2_CALLS |= {f"std:re.{name}" for name in T2_STDLIB["re"]}
+GO_T2_CALLS |= {f"method:Match.{name}" for name in T2_METHODS["Match"]}
+GO_T2_CALLS |= {f"std:string.{name}" for name in T2_STDLIB["string"]}
 
 # The kinds of T2 value the Go emitter implements (`lattice.gogen.types.kind_of`): a
 # procedure that holds a value of any other kind (Date, DateTime, Duration, Json, Row,
-# Caller, Match, Counter) is L892 on Go. Grows with GO_T2_CALLS (Task 10: the rest).
+# Caller, Counter) is L892 on Go. Grows with GO_T2_CALLS (Task 10: the rest).
 GO_T2_TYPES: set[str] = {
     "Int", "Float", "Str", "Bool", "Uuid", "None", "Error",
     "list", "set", "dict", "tuple", "Iter", "record",
+    "Match", "module",  # Task 9 (a module: `re.search`, `string.digits`, `math.pi`)
 }  # fmt: skip
 
 

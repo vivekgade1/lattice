@@ -45,7 +45,7 @@ def test_go_literals():
 
 def test_a_charged_method_call_evaluates_its_receiver_first(monkeypatch):
     """emit_py's `<fuel>.call(recv.m)(args)`: receiver, then the step, then the
-    arguments. No method is on Go yet (Tasks 9-10), so `method` is stubbed here."""
+    arguments (`method` is stubbed, so only the order is looked at)."""
     from lattice.gogen import t2 as gen
 
     monkeypatch.setattr(gen._Proc, "method", lambda self, c, recv: f"strings.ToUpper({recv})")
@@ -471,6 +471,64 @@ PROGRAMS = [
         ([1, 2, 3],),
         None,
     ),
+    # Task 9: strings and regular expressions in loops (the fuel sweep charges them)
+    Case(
+        "text_report",
+        P("""
+            import re
+            import string
+            import math
+            from re import findall
+            from string import digits
+
+            @procedure
+            def f(text: Str, width: Int) -> list[Str]:
+                out: list[Str] = []
+                re_1 = 0
+                for line in text.splitlines():
+                    key, sep, value = line.partition(":")
+                    if not sep:
+                        out += [line.strip().center(width, ".")]
+                        continue
+                    words = value.lower().split()
+                    re_1 += len(findall(r"\\d+", value))
+                    tag = "/".join(w.capitalize() for w in words if w.isalpha())
+                    out += [f"{key.rstrip():>6}|{tag}|{value.count('a')}|{value.rfind('é')}"]
+                    m = re.search(r"(?P<n>\\d+)(?:-(\\d+))?", value)
+                    if m is not None:
+                        out += [str(m) + (m.group(2) or "-") + str(m.group("n"))]
+                        out += [re.sub(r"(\\d+)", r"<\\1>", value, )]
+                out += [str(re_1) + digits[:2] + string.ascii_uppercase[-2:] + str(math.pi)]
+                out += [",".join(re.split(r"\\s*;\\s*", "a ; b;c;;"))]
+                out += ["|".join(text.rsplit("\\n", 1)).zfill(width).replace("a", "ä", 2)]
+                return out
+        """),
+        "f",
+        ("  intro  \nfirst: alpha 12 beta\nsecond: Été 3-4 à\nno colon a\n", 12),
+        None,
+    ),
+    Case(
+        "regex_scan_in_loop",
+        P("""
+            import re
+
+            @procedure
+            def f(xs: list[Str]) -> list[Str]:
+                out: list[Str] = []
+                for x in xs:
+                    for w in re.findall(r"\\w+|$", x):
+                        if re.fullmatch(r"(?i)[a-f]+", w) is not None:
+                            out += [w.upper()]
+                        elif w == "":
+                            out += ["<end>"]
+                    m = re.match(r"(a)?b", x)
+                    out += ["none" if m is None else f"{m.start()}:{m.end()}:{m.group(1)}"]
+                return out
+        """),
+        "f",
+        (["bad cafe\n", "ab éb", "Bee FACE b", ""],),
+        None,
+    ),
 ]
 
 
@@ -585,3 +643,69 @@ def test_corpus_calls_run_like_python():
             if go[(case.name, b)] != (result, left):
                 diffs.append((case.name, b, (result, left), go[(case.name, b)]))
     assert not diffs, diffs[:5]
+
+
+# ---- Task 9: regular expressions ----------------------------------------------------------
+
+
+def test_each_pattern_is_compiled_once_as_python_compiles_it():
+    import re  # noqa: PLC0415
+
+    from lattice.gogen.regex import compile_regex  # noqa: PLC0415
+
+    program = checked(r"""
+        import re
+
+        @procedure
+        def f(s: Str) -> Int:
+            n = len(re.findall(r"\d+", s))
+            if re.search(r"\d+", s) is None:
+                return n
+            return n + len(re.split(r"\s", s))
+    """).program
+    src = emit_go_t2(lower_t2(program.t2, None))
+    assert src.count("rt.NewRegex(") == 2
+    assert "rt.ReFindall(re_1, rt.Scan(fuel, s))" in src
+    assert "rt.ReSearch(re_1, rt.Scan(fuel, s))" in src
+    code = compile_regex(r"\d+").code
+    assert f"[]uint32{{{', '.join(map(str, code))}}}" in src
+    assert compile_regex(r"\d+").groups == re.compile(r"\d+").groups
+
+
+@pytest.mark.parametrize(
+    ("pattern", "repl"),
+    [
+        (r"(\w+)@(\w+)", r"\2@\1"),
+        (r"(?P<a>[a-z]+)-(?P<b>[a-z]+)", r"\g<b>-\g<a>\g<0>"),
+        (r"(a)(b)?", r"[\2|\g<1>|\\|\n|\t|\x41|\101|$1|\$]"),
+        (r"x", "$1 ${1} $$"),
+        (r"(a)", "\\"),
+        (r"(a)", r"\3"),
+        (r"(a)", r"\q"),
+        (r"(a)", r"\g<nope>"),
+    ],
+)
+def test_replacements_compile_as_python_expands_them(pattern, repl):
+    """compile_template's chunks, expanded over each match, give re.sub's result (or its
+    exception)."""
+    import re  # noqa: PLC0415
+
+    from lattice.gogen.regex import compile_template  # noqa: PLC0415
+
+    t = compile_template(pattern, repl)
+    s = "alice@example ab a foo-bar x"
+    try:
+        want = re.sub(pattern, repl, s, flags=re.ASCII)
+    except (re.error, IndexError) as e:  # \g<nope> is an IndexError (catchable in T2)
+        kind = "PatternError" if isinstance(e, re.error) else type(e).__name__
+        assert t.error == (kind, str(e))
+        return
+    assert t.error is None
+
+    def expand(m: re.Match[str]) -> str:
+        out = t.lits[0]
+        for g, lit in zip(t.groups, t.lits[1:], strict=True):
+            out += (m.group(g) or "") + lit
+        return out
+
+    assert re.sub(pattern, expand, s, flags=re.ASCII) == want

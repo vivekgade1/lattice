@@ -1,4 +1,5 @@
-"""T2 IR -> Go (plan 5a Task 8): the core statements, expressions and builtins.
+"""T2 IR -> Go (plan 5a Tasks 8-9): the core statements, expressions and builtins,
+the Str methods, the `string` (and every stdlib) constant, and regular expressions.
 
 `emit_go_t2(module, package)` writes one Go file from the IR of a checked program's
 procedures (`lattice.t2ir.lower.lower_t2`). It calls the Go runtime `lattice.dev/rt`
@@ -24,7 +25,14 @@ node by node:
   container and index; a growing augmented assignment evaluates the container, the
   index, the value, then reads the current value;
 * `try`/`except`/`else` becomes `rt.Try` with closures: a `break`, `continue` or
-  `return` inside them sets a control code the code after `rt.Try` acts on.
+  `return` inside them sets a control code the code after `rt.Try` acts on;
+* a Str method is an `rt` function over code points (`rt.Find`, `rt.Center`, ...);
+  `Str.replace`/`Str.join`/`re.sub` are `Sized` (`rt.After(fuel.Step(), rt.Sized*)`:
+  the step before the arguments, the sizes after, as `T2Fuel.replace/join/sub`), a
+  padding width is `rt.Width`, a regex input `rt.Scan`;
+* a regular expression (always a literal) is compiled once per program into a
+  package-level `re_<n>` -- Python's own SRE code (`lattice.gogen.regex`), run by the
+  port of CPython's engine in rt/regex.go -- and a `re.sub` replacement into `tm_<n>`.
 
 Values: see `lattice.gogen.types`. Constructs Go lacks are rejected before this runs
 (`lattice.check.p8_target`, L892); reaching one here is an internal error.
@@ -32,14 +40,17 @@ Values: see `lattice.gogen.types`. Constructs Go lacks are rejected before this 
 
 from __future__ import annotations
 
+import importlib
 import math
 import struct
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 
+from lattice.catalog import T2_STDLIB
 from lattice.check.t2 import types as T
 from lattice.check.t2.types import T2Type
+from lattice.gogen.regex import compile_regex, compile_template
 from lattice.gogen.types import GoTypes
 from lattice.runtime import LatticeInternalError
 from lattice.t2ir import nodes as n
@@ -58,7 +69,7 @@ _GO_RESERVED = frozenset(
 )
 # Prefixes of package-level generated names (procedures, constants, records, tuples,
 # helpers): a local starting with one is renamed, so it cannot shadow them.
-_PACKAGE_PREFIXES = ("P_", "C_", "rec_", "tup_", "eq_", "lt_", "le_", "gt_", "ge_")
+_PACKAGE_PREFIXES = ("P_", "C_", "rec_", "tup_", "eq_", "lt_", "le_", "gt_", "ge_", "re_", "tm_")
 _INT_OPS: Mapping[str, str] = {"-": "rt.Sub", "//": "rt.FloorDiv", "%": "rt.Mod", ">>": "rt.Shr"}
 _BIT_OPS = frozenset({"&", "|", "^"})
 _ORDER = frozenset({"<", "<=", ">", ">="})
@@ -157,6 +168,54 @@ class _Module:
             prefix, k = f"t{k}_", k + 1
         self.temp_prefix = prefix
         self.names = names
+        self.regexes: dict[str, str] = {}  # pattern -> its package-level var
+        self.templates: dict[tuple[str, str], str] = {}  # (pattern, repl) -> its var
+        self.decls: list[str] = []
+
+    def regex(self, pattern: str) -> str:
+        """The package-level var holding `pattern` compiled (once per program), as
+        Python compiles it (re.ASCII; lattice.gogen.regex)."""
+        name = self.regexes.get(pattern)
+        if name is None:
+            name = self.regexes[pattern] = f"re_{len(self.regexes) + 1}"
+            rx = compile_regex(pattern)
+            if rx.error is not None:
+                kind, msg = rx.error
+                value = f"rt.BadRegex({go_string(pattern)}, {go_string(kind)}, {go_string(msg)})"
+            else:
+                code = ", ".join(str(x) for x in rx.code)
+                names = ", ".join(f"{go_string(k)}: {v}" for k, v in rx.names)
+                value = (
+                    f"rt.NewRegex({go_string(pattern)}, []uint32{{{code}}}, {rx.groups}, "
+                    f"map[string]int{{{names}}})"
+                )
+            self.decls.append(
+                f"// {name}: re.compile({go_string(pattern)}, re.ASCII)\nvar {name} = {value}\n"
+            )
+        return name
+
+    def template(self, pattern: str, repl: str) -> str:
+        """The package-level var holding a re.sub replacement compiled as Python does."""
+        key = (pattern, repl)
+        name = self.templates.get(key)
+        if name is None:
+            name = self.templates[key] = f"tm_{len(self.templates) + 1}"
+            t = compile_template(pattern, repl)
+            if t.error is not None:
+                kind, msg = t.error
+                value = (
+                    f"&rt.Template{{Repl: {go_string(repl)}, ErrKind: {go_string(kind)}, "
+                    f"ErrMsg: {go_string(msg)}}}"
+                )
+            else:
+                lits = ", ".join(go_string(x) for x in t.lits)
+                groups = ", ".join(str(g) for g in t.groups)
+                value = (
+                    f"&rt.Template{{Repl: {go_string(repl)}, Lits: []string{{{lits}}}, "
+                    f"Groups: []int{{{groups}}}}}"
+                )
+            self.decls.append(f"var {name} = {value}\n")
+        return name
 
     def local_names(self, proc: n.Procedure) -> dict[str, str]:
         names: set[str] = {x for x, _ in proc.params} | set(proc.locals)
@@ -231,7 +290,19 @@ class _Proc:
             return self.goname(name), self.proc.locals[name]
         if name in self.m.constants:
             return f"C_{name}", self.m.constants[name]
+        qual = self.m.module.imports.get(name)
+        if qual is not None and "." in qual:
+            return self.std_constant(*qual.split(".", 1))
         raise LatticeInternalError(f"gogen: unknown name {name!r}")
+
+    def std_constant(self, module: str, name: str) -> tuple[str, T2Type]:
+        """A stdlib constant (`string.digits`, `math.pi`): its exact value, copied."""
+        entry = T2_STDLIB.get(module, {}).get(name)
+        if not isinstance(entry, str):
+            raise LatticeInternalError(f"gogen: {module}.{name} is not a constant")
+        value = getattr(importlib.import_module(module), name)
+        t = T.STR if isinstance(value, str) else T.FLOAT
+        return self.const(value, t), t
 
     # ---- the function ----------------------------------------------------------------------
 
@@ -640,6 +711,10 @@ class _Proc:
                 return self.fstr(e)
             case n.Widen(value=v, type=t):
                 return self.conv(self.expr(v), v.type, t)  # R-widen
+            case n.Sized():
+                return self.sized(e)
+            case n.Scan(value=v):
+                return f"rt.Scan(fuel, {self.expr(v)})"
             case n.Each() | n.Bulk():
                 raise LatticeInternalError("gogen: Each/Bulk outside an iteration")
         raise LatticeInternalError(f"gogen: unsupported expression {type(e).__name__}")
@@ -675,6 +750,8 @@ class _Proc:
                 return self.narrow(f"{self.expr(obj)}.F_{name}", declared, t)
             case _ if ot == T.FLOAT and name == "real":
                 return self.expr(obj)
+        if isinstance(obj, n.Var) and self.m.module.imports.get(obj.name) in T2_STDLIB:
+            return self.std_constant(self.m.module.imports[obj.name], name)[0]
         raise LatticeInternalError(f"gogen: attribute {name} of {ot.render()}")
 
     def index(self, e: n.Index) -> str:
@@ -1229,6 +1306,8 @@ class _Proc:
                 )
             case T.RecordT(name=name):
                 tname = go_string(name)
+            case T.Named(name="Match"):
+                tname = '"re.Match"'
             case T.Named(name="Error"):
                 body = "rt.FmtObj(fuel, sp, e.Kind)"
                 return f"func(e *rt.Error, sp string) string {{ return {body} }}({v}, {spec})"
@@ -1267,7 +1346,7 @@ class _Proc:
                 )
             case T.Named(name="Error"):
                 return f"{go}.Msg"
-            case T.RecordT():
+            case T.RecordT() | T.Named(name="Match"):
                 return f"{go}.PyRepr()"
         raise LatticeInternalError(f"gogen: str() of {t.render()}")
 
@@ -1308,8 +1387,89 @@ class _Proc:
 
     def method(self, c: n.Call, recv: str) -> str:
         """A method call on the (evaluated) receiver `recv`, its other arguments
-        evaluated here. No method is available on Go yet (plan 5a Tasks 9-10)."""
+        evaluated here, in order (Go evaluates call arguments left to right)."""
+        kind, _, name = c.target.removeprefix("method:").partition(".")
+        args = [self.expr(a) for a in c.args[1:]]
+        if kind == "Str":
+            return self.str_method(name, recv, args, c)
+        if kind == "Match":
+            match name, c.args[1:]:
+                case "group", []:
+                    return f"{recv}.Group0()"
+                case "group", [a] if a.type == T.STR:
+                    return f"{recv}.GroupName({args[0]})"
+                case "group", [_]:
+                    return f"{recv}.Group({args[0]})"
+                case "start" | "end", []:
+                    return f"{recv}.{name.capitalize()}()"
         raise LatticeInternalError(f"gogen: call target {c.target!r} is not available on Go")
+
+    def str_method(self, name: str, r: str, args: list[str], c: n.Call) -> str:  # noqa: PLR0911
+        """A Str method (Str.replace and Str.join are Sized: `sized`)."""
+        simple = {
+            "lower": "Lower", "upper": "Upper", "casefold": "Casefold", "title": "Title",
+            "capitalize": "Capitalize", "splitlines": "StrSplitLines", "isdigit": "IsDigit",
+            "isalpha": "IsAlpha", "isalnum": "IsAlnum", "isspace": "IsSpace",
+            "islower": "IsLower", "isupper": "IsUpper",
+        }  # fmt: skip
+        if name in simple:
+            return f"rt.{simple[name]}({r})"
+        opt = [f"rt.PStr({a})" for a in args]
+        match name:
+            case "strip" | "lstrip" | "rstrip":
+                fn = {"strip": "Strip", "lstrip": "LStrip", "rstrip": "RStrip"}[name]
+                return f"rt.{fn}({r}, {opt[0] if args else 'nil'})"
+            case "split" | "rsplit":
+                fn = "StrSplit" if name == "split" else "StrRSplit"
+                sep = opt[0] if args else "nil"
+                limit = args[1] if len(args) > 1 else "-1"
+                return f"rt.{fn}({r}, {sep}, {limit})"
+            case "startswith" | "endswith":
+                return f"rt.{'StartsWith' if name == 'startswith' else 'EndsWith'}({r}, {args[0]})"
+            case "find" | "rfind" | "count":
+                fn = {"find": "Find", "rfind": "RFind", "count": "CountStr"}[name]
+                return f"rt.{fn}({r}, {args[0]})"
+            case "partition" | "rpartition":
+                tup = self.spell(c.type)
+                fn = "Partition" if name == "partition" else "RPartition"
+                return (
+                    f"func(a, b, c string) {tup} {{ return {tup}{{a, b, c}} }}"
+                    f"(rt.{fn}({r}, {args[0]}))"
+                )
+            case "zfill":
+                return f"rt.ZFill({r}, {args[0]})"
+            case "ljust" | "rjust" | "center":
+                fn = {"ljust": "LJust", "rjust": "RJust", "center": "Center"}[name]
+                return f"rt.{fn}({r}, {args[0]}, {opt[1] if len(args) > 1 else 'nil'})"
+        raise LatticeInternalError(f"gogen: Str.{name} is not available on Go")
+
+    def sized(self, e: n.Sized) -> str:
+        """A size-checked call (emit_py's `<fuel>.call(<fuel>.<kind>)(...)`): its step
+        is charged before the receiver and arguments are evaluated, its sizes after."""
+        if e.kind == "pad":
+            (width,) = e.args
+            return f"rt.Width(fuel, {self.expr(width)})"
+        (call,) = e.args
+        if not isinstance(call, n.Call):
+            raise LatticeInternalError("gogen: a Sized operation of a non-call")
+        match e.kind, call.args:
+            case "replace", (s, old, new, *count):
+                k = self.expr(count[0]) if count else "-1"
+                body = (
+                    f"rt.SizedReplace(fuel, {self.expr(s)}, {self.expr(old)}, "
+                    f"{self.expr(new)}, {k})"
+                )
+            case "join", (sep, items):
+                if self.elem(items.type) != T.STR:
+                    raise LatticeInternalError(f"gogen: join of {items.type.render()}")
+                sep_go = self.expr(sep)
+                body = f"rt.JoinStr(fuel, {sep_go}, {self.cursor_of(n.Bulk(items, items.type))})"
+            case "sub", (n.Const(value=str() as pattern), n.Const(value=str() as repl), s):
+                rx, tm = self.m.regex(pattern), self.m.template(pattern, repl)
+                body = f"rt.ReSub(fuel, {rx}, {tm}, {self.expr(s)})"
+            case _:
+                raise LatticeInternalError(f"gogen: {e.kind} is not available on Go")
+        return f"rt.After(fuel.Step(), {body})"
 
     def call(self, c: n.Call) -> str:
         kind, _, name = c.target.partition(":")
@@ -1319,7 +1479,21 @@ class _Proc:
             return self.record(name, c)
         if kind == "builtin":
             return self.builtin(name, c)
+        if kind == "std" and name.startswith("re."):
+            return self.regex_call(name[3:], c)
         raise LatticeInternalError(f"gogen: call target {c.target!r} is not available on Go")
+
+    def regex_call(self, fn: str, c: n.Call) -> str:
+        """re.fullmatch / match / search / findall / split (re.sub is Sized): the
+        pattern is a literal, compiled once into a package-level var."""
+        funcs = {
+            "fullmatch": "ReFullmatch", "match": "ReMatch", "search": "ReSearch",
+            "findall": "ReFindall", "split": "ReSplit",
+        }  # fmt: skip
+        match c.args:
+            case (n.Const(value=str() as pattern), s) if fn in funcs:
+                return f"rt.{funcs[fn]}({self.m.regex(pattern)}, {self.expr(s)})"
+        raise LatticeInternalError(f"gogen: re.{fn} is not available on Go")
 
     def ordered_args(
         self, names: list[str], types: list[T2Type], c: n.Call, defaults: Mapping[str, str]
@@ -1596,7 +1770,7 @@ def emit_go_t2(module: n.T2Module, package: str = "main") -> str:
         consts.append(f"var C_{name} {mod.types.spell(t)} = {e.conv(e.expr(value), value.type, t)}")
     for rec in module.records:
         mod.types.record_struct(rec.name)
-    body = "\n".join([mod.types.decls(), *consts, "", *procs])
+    body = "\n".join([mod.types.decls(), *mod.decls, *consts, "", *procs])
     if "math." in body:
         mod.imports.add("math")
     imports = "\n".join(f'\t"{i}"' for i in sorted(mod.imports))

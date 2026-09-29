@@ -54,11 +54,12 @@ def test_semantics_cases_missing_on_python_is_empty():
 
 
 def test_semantics_cases_missing_on_go_is_not_a_placeholder():
-    # Task 8 runs the core cases on Go; the rest are missing there until Tasks 9-10.
+    # Tasks 8-9 run the core, string and regex cases on Go; the rest are missing there
+    # until Task 10.
     # The hook must reflect CASES (a subset of them, some run and some not), not a stub;
     # tests/semantics_v11/test_go.py checks each missing case is an L892 gate.
     missing = semantics_cases_missing_on("go")
     names = {c.name for c in CASES}
     assert missing != []
     assert set(missing) < names
-    assert len(names - set(missing)) >= 60
+    assert len(names - set(missing)) >= 212
