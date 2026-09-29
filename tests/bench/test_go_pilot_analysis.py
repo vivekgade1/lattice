@@ -582,6 +582,72 @@ def test_verdict_still_go_when_harness_rate_is_under_5_percent():
     assert v["stage1"] == "GO"
 
 
+# ---------------------------------------------------------------------------
+# A gogen build failure (bench.runners' _GogenBuildFailure path, task-5 fix round:
+# it must count against arm B as "loud", never be dropped like a harness_error) --
+# see bench.safety.outcome_class and its use in _cost_and_correct's harness
+# exclusion.
+# ---------------------------------------------------------------------------
+
+
+def test_gogen_build_failure_counts_as_loud_not_excluded_like_harness():
+    """bench.runners records a gogen build failure with ``failure="loud"``
+    (correct=False). Unlike ``failure="harness_error"``, ``outcome_class``
+    classifies it "loud", so it is counted toward cost and n (not excluded) --
+    excluding a real B failure from cost/n, as a harness error would be, would
+    bias the pilot's cost comparison toward B."""
+    from bench.analysis.go_pilot import Record, _cost_and_correct
+    from bench.safety import outcome_class
+
+    def rec(task_id: str, correct: bool, failure: str | None) -> Record:
+        return Record(
+            task_id=task_id,
+            arm="B",
+            requested_model=SONNET,
+            model=SONNET,
+            rep=0,
+            correct=correct,
+            cost_usd=0.05,
+            cost_basis="cli_list_estimate",
+            family="control",
+            failure=failure,
+            rounds=1,
+            output_tokens=100,
+            program_lines=10,
+            program_ast_nodes=50,
+        )
+
+    correct_run = rec("t1", True, None)
+    gogen_failure = rec("t2", False, "loud")
+    harness_failure = rec("t3", False, "harness_error")
+
+    assert outcome_class(gogen_failure) == "loud"
+    assert outcome_class(harness_failure) == "harness"
+
+    group = (correct_run, gogen_failure, harness_failure)
+    counted = [r for r in group if outcome_class(r) != "harness"]
+    assert {r.task_id for r in counted} == {"t1", "t2"}  # t3 (harness) excluded
+
+    cost, correct, n = _cost_and_correct(counted, "B", SONNET)
+    assert n == 2  # t1 and t2 both counted; t3 is not
+    assert correct == 1  # the gogen failure is not correct, but it is counted
+    assert cost == pytest.approx(0.10)  # t1 + t2's cost only
+
+
+def test_verdict_not_invalid_when_loud_gogen_failures_exceed_harness_threshold():
+    """Loud gogen-build failures never trip the harness-rate INVALID gate, even
+    well above the 5% threshold that would invalidate a run with that many
+    ``harness_error`` records -- the gate is specifically about harness_error."""
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)  # 100%-correct baseline
+    b_rows = [r for r in rows if r["arm"] == "B"]
+    for r in b_rows[:20]:  # 20/120 = 16.7%, far over the 5% harness threshold
+        r["correct"] = False
+        r["failure"] = "loud"
+    records = load(_dump(rows))
+    v = verdict(records)
+    assert v["stage1"] != "INVALID"
+
+
 def test_verdict_raises_on_wrong_cost_basis():
     rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
     rows[0]["cost_basis"] = "cli_key_transport"  # a counted (non-harness) run

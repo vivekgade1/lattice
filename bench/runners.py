@@ -907,6 +907,19 @@ def _run_generated_cases(
     return run_cases_fastapi(app_source, workdir, task, db_builder=db_builder, kit_path=kit_path)
 
 
+class _GogenBuildFailure(Exception):
+    """A checked program (it passed ``check_source(..., target="go")``) failed
+    somewhere later in the Lattice -> Go pipeline: ``go build`` itself on the
+    generated module, or an exception while lowering/emitting it. A gogen bug, not
+    the model's program -- but per the pilot spec's "Tests and decision" (third
+    pre-freeze revision), it still counts against arm B as a loud, final failure,
+    not a harness error: excluding it from cost/n (as a harness error would) would
+    silently drop a real B failure and bias the pilot's cost comparison toward B.
+    Raised only once the Go toolchain itself is known good (``check_toolchain()``
+    ran first, unwrapped) so a missing/too-old toolchain -- a genuine harness
+    infrastructure failure -- is never mistaken for this."""
+
+
 def _run_go_cases(
     code: str,
     workdir: Path,
@@ -924,29 +937,38 @@ def _run_go_cases(
     own ``workdir`` for case-execution scratch), with the semantics of
     ``run_cases_fastapi``/``run_cases_lattice``.
 
+    ``check_toolchain()`` runs first, unwrapped: a missing or too-old Go toolchain is
+    a genuine harness infrastructure failure (the run environment isn't set up, not
+    a defect in gogen or the model's program), so it propagates out of this function
+    uncaught -- the caller (``bench.cli``) records it as a loud ``harness_error``.
+
     A checker rejection for Go (a native L890, the tabular profile L891, a T2
     construct Go lacks L892, or any other static error) is a ``GoBuildError`` whose
     ``check`` is set: it yields the same result shape as ``run_cases_lattice`` (not
     started, with the checker's diagnostics), so it repairs exactly like the other
-    backends. A ``GoBuildError`` with no ``check`` -- ``go build`` itself failed on a
-    program that passed the checker, or the toolchain is missing/too old -- is a bug
-    in gogen, not the model's program: it is left to propagate, so the caller
-    (``bench.cli``) records it loudly as a ``harness_error`` carrying the build's
-    stderr, instead of being silently treated as a repairable checker failure."""
+    backends. Once the toolchain is known good, any other failure -- ``go build``
+    itself failing on a program that passed the checker (``GoBuildError`` with no
+    ``check``), or any exception while lowering/emitting it (``lattice.api.ir.
+    lower_api``, ``lattice.gogen.endpoints``/``t2``) -- is raised as
+    ``_GogenBuildFailure`` for ``_run_api_lattice`` to record as arm B's loud, final,
+    unrepairable failure (see ``_GogenBuildFailure``'s docstring)."""
     from bench.api_runner import CaseResults, run_cases_go
-    from lattice.gogen.build import GoBuildError, build_go_app
+    from lattice.gogen.build import GoBuildError, build_go_app, check_toolchain
 
+    check_toolchain()
     try:
         build = build_go_app(code, profile, out_dir)
     except GoBuildError as exc:
-        if exc.check is None:
-            raise
-        return CaseResults(
-            cases=(),
-            started=False,
-            start_error=render_for_llm(exc.check.diagnostics),
-            diagnostics=tuple(exc.check.diagnostics),
-        )
+        if exc.check is not None:
+            return CaseResults(
+                cases=(),
+                started=False,
+                start_error=render_for_llm(exc.check.diagnostics),
+                diagnostics=tuple(exc.check.diagnostics),
+            )
+        raise _GogenBuildFailure(str(exc)) from exc
+    except Exception as exc:
+        raise _GogenBuildFailure(f"{type(exc).__name__}: {exc}") from exc
     return run_cases_go(build.binary, task, db_builder=db_builder, workdir=workdir)
 
 
@@ -980,7 +1002,13 @@ def _run_api_lattice(
     outcome's detail then starts with ``backend=generated``. ``backend="go"``
     checks the program for the Go target and builds it with
     ``lattice.gogen.build.build_go_app``, then runs the cases on the binary
-    (``_run_go_cases``); the outcome's detail then starts with ``backend=go``."""
+    (``_run_go_cases``); the outcome's detail then starts with ``backend=go``. A
+    ``_GogenBuildFailure`` from ``_run_go_cases`` (go build itself failing, or any
+    other exception, on a program that already passed the checker -- a gogen bug)
+    is never fed back for repair: it ends the task immediately as a loud, final,
+    scored failure (``failure="loud"``), counted against arm B, not a harness
+    error. A missing/too-old Go toolchain is a genuine harness failure and is left
+    to propagate uncaught (see ``_run_go_cases``)."""
     from bench.api_runner import run_cases_lattice
 
     if arm == "C":
@@ -1023,14 +1051,33 @@ def _run_api_lattice(
                     kit_path=kit_path,
                 )
             elif backend == "go":
-                results = _run_go_cases(
-                    code,
-                    workdir / f"go_round{index}",
-                    task,
-                    db_builder=db_builder,
-                    profile=profile,
-                    out_dir=workdir,
-                )
+                try:
+                    results = _run_go_cases(
+                        code,
+                        workdir / f"go_round{index}",
+                        task,
+                        db_builder=db_builder,
+                        profile=profile,
+                        out_dir=workdir,
+                    )
+                except _GogenBuildFailure as exc:
+                    # A gogen bug on a program that already passed the checker: the
+                    # model cannot fix this by rewriting its Lattice source, so
+                    # (unlike a checker rejection or a runtime start error) it is
+                    # never fed back for repair -- it ends the task here as arm B's
+                    # loud, final, scored failure (never a harness error: excluding
+                    # it from cost/n would silently drop a real B failure). Spec
+                    # 2026-09-29 pilot doc, "Tests and decision", third pre-freeze
+                    # revision.
+                    ledger.diagnostics.append(("loud",))
+                    return _api_outcome(
+                        ledger,
+                        None,
+                        correct=False,
+                        check_passed=True,
+                        failure="loud",
+                        detail=_backend_detail(backend, f"gogen_build: {exc}"[:_DETAIL_LIMIT]),
+                    )
             else:
                 results = run_cases_lattice(
                     code,
