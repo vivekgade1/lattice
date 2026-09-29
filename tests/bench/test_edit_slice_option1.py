@@ -332,6 +332,44 @@ def test_restoring_stock_with_or_without_a_version_bump_is_correct():
     assert outcome.kind == "correct", outcome.render()
 
 
+@pytest.mark.parametrize(
+    ("tid", "path", "old", "new"),
+    [
+        ("t32_monthly_report", OR, 'month: str = Query(pattern=r"^\\d{4}-(0[1-9]|1[0-2])$"),',
+         "month: str = Query(),"),
+        ("t36_cancel_order", OS,
+         'f"Cannot transition order from {order.status.value} to {OrderStatus.CANCELLED.value}"',
+         'f"Cannot cancel order with status {order.status.value}"'),
+    ],
+)  # fmt: skip
+def test_an_unstated_error_body_is_not_compared(tid, path, old, new):
+    """The pilot's correction: t32 states only the 422, t36 no message at all."""
+    files = _patched(tid, (path, old, new))
+    if tid == "t32_monthly_report":  # validate by hand, with the candidates' own message
+        files = _patched_files(
+            files,
+            OS,
+            '    year, number = (int(part) for part in month.split("-"))\n',
+            "    import re\n    from fastapi import HTTPException\n"
+            '    if not re.fullmatch(r"\\d{4}-(0[1-9]|1[0-2])", month):\n'
+            "        raise HTTPException(\n"
+            '            status_code=422, detail="Invalid month format, expected YYYY-MM")\n'
+            '    year, number = (int(part) for part in month.split("-"))\n',
+        )
+    outcome = oracle.evaluate(tid, load_variant(files, repo="multivendor").make_app)
+    assert outcome.kind == "correct", outcome.render()
+
+
+def test_the_ambiguous_admin_case_is_excluded():
+    names = {c.name for c in oracle.ticket_oracle("t36_cancel_order").cases}
+    assert "t36.admin_any_order" in names and "t36.admin_shipped" not in names
+
+
+def _patched_files(files: dict[str, str], path: str, old: str, new: str) -> dict[str, str]:
+    assert files[path].count(old) == 1, (path, old)
+    return {**files, path: files[path].replace(old, new)}
+
+
 # ---- the smoke run and arm P --------------------------------------------------------------------
 
 

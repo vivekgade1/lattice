@@ -159,11 +159,28 @@ def db_factory(variant: str, path: Path) -> Path:
 # ---- canonical comparison ---------------------------------------------------------------------
 
 
+# Corrected after the pilot (2026-09-29, results log "Option 1 pilot"), as t14/t17 were
+# after round 3: cases whose error *body* the ticket never states are compared on status
+# and database effects only (t32 says only "an invalid month is a 422"; t36 never gives
+# the message for an order that can no longer be cancelled) ...
+STATUS_ONLY: frozenset[str] = frozenset({
+    "t32.month_13", "t32.month_zero", "t32.one_digit_month", "t32.not_a_month",
+    "t32.month_missing",
+    "t36.own_shipped", "t36.own_delivered", "t36.own_already_cancelled",
+})  # fmt: skip
+# ... and a case the ticket text does not determine is dropped: "admins can cancel any
+# order" also reads as "whatever its status".
+EXCLUDED: frozenset[str] = frozenset({"t36.admin_shipped"})
+
+
 def canon(record: CaseRecord) -> CaseRecord:
     """Fresh timestamps are "a new timestamp" (as for TaskFlow), and a product's optimistic
     lock ``version`` is not part of any ticket's contract (whether restoring stock bumps
-    it is the implementer's call)."""
+    it is the implementer's call); a :data:`STATUS_ONLY` case's error body is not
+    compared."""
     record = fresh_timestamps(record)
+    if record.name in STATUS_ONLY and record.status >= 400:
+        record = replace(record, body="<error body not stated by the ticket>")
     db = {
         table: [{k: v for k, v in row.items() if not (table == "products" and k == "version")}
                 for row in rows]
@@ -475,7 +492,7 @@ def multivendor_ticket_oracle(ticket_id: str) -> TicketOracle:
     from bench.edit_slice.apps import repo
 
     spec, _ = ROUTES[ticket_id]
-    cases = tuple(SPECIFIC[ticket_id]())
+    cases = tuple(c for c in SPECIFIC[ticket_id]() if c.name not in EXCLUDED)
     suite = GeneratedSuite(cases=[], plan=_EMPTY_PLAN, credentials={},
                            db_factory=db_factory, login=login)  # fmt: skip
     return TicketOracle(
@@ -490,12 +507,14 @@ def multivendor_ticket_oracle(ticket_id: str) -> TicketOracle:
         login=login,
         hash_columns=repo("multivendor").hash_columns,
         canon=canon,
-        canon_name="FRESH_TIMESTAMPS_NO_VERSION",
+        canon_name="FRESH_TIMESTAMPS_NO_VERSION_STATUS_ONLY",
     )
 
 
 __all__ = [
     "CONTROL_TICKETS",
+    "EXCLUDED",
+    "STATUS_ONLY",
     "MECHANISMS",
     "SPECIFIC",
     "WRITERS",

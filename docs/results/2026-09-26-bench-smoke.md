@@ -912,3 +912,42 @@ The parts of the project that stand on their own evidence are the engineering ar
 - the SQL compilation of the plan IR, whose output code is shorter and fewer-query.
 
 Their value as an *LLM editing interface* is not demonstrated.
+
+## Option 1 pilot (pre-registered gates, 2026-09-29)
+
+Spec: `docs/superpowers/specs/2026-09-29-option1-pilot.md` (committed in `a1cc717` before any run). Arm P only, claude-sonnet-5, CLI, 3 reps × 8 tickets (t31–t38) on the new held-out multi-vendor app (`bench/import_repos/multivendor`). Family A = aggregations with traps (t31–t34); family O = ownership through parent tables (t35 control, t36–t38).
+
+### Results as scored by the pre-registered oracle
+
+| family | correct | silent [95% CI] | loud | silent-rate gate | mechanism gate |
+|---|---|---|---|---|---|
+| A | 10/12 | 2/12 [5%, 45%] | 0 | PASS | PASS (2/2 covered, `typed-params`) |
+| O | 6/12 | 6/12 [25%, 75%] | 0 | PASS | PASS (3/6 covered) |
+
+Mechanical decision: **GO: A + O**.
+
+### Oracle defects found on inspection (the same treatment as t14/t17 after round 3)
+
+Every silent run was re-scored from its saved final candidate and its diff read:
+
+- **t32 (2 runs):** the model answered an invalid month with **422**, as the ticket says, but with its own error text (`"Invalid month format, expected YYYY-MM"`). The ticket states only the status, so the oracle's comparison of the body over-specified.
+- **t36 (3 runs):** a shipped, delivered or already-cancelled order got **400**, as the reference does, with different wording (`"Cannot cancel order with status shipped"`). The ticket never gives the message, so this is the same over-specification.
+- **t36 rep 1:** the model also let an **admin cancel a shipped order**. "Admins can cancel any order" supports that reading, so the ticket is ambiguous here; the case (`t36.admin_shipped`) is dropped.
+- **t38 (3 runs): a real data-integrity bug.** On a reorder that runs out of stock, all three reps answered 409 but **left a new pending order with total 0 and the candle's stock decremented**. They reused upstream's `place_order`, which commits line by line. This is the trap flagged when the tickets were approved: it is inherited from upstream, and the ticket says "answer 409 as `POST /orders` does", and `POST /orders` itself has the same partial write.
+
+The oracle now compares status and database effects, not bodies, on the 8 cases whose error body the ticket never states (`STATUS_ONLY` in `bench/edit_slice/repos/multivendor.py`), and excludes `t36.admin_shipped`. Rescored with `bench/edit_slice/rescore.py`, with no new model calls (5 outcomes changed, silent → correct):
+
+| family | correct | silent [95% CI] | loud | silent-rate gate | mechanism gate |
+|---|---|---|---|---|---|
+| A | **12/12** | **0/12** [0%, 24%] | 0 | FAIL | FAIL |
+| O | 9/12 | 3/12 [9%, 53%] (all t38) | 0 | PASS | PASS (3/3 covered, `one-statement/atomic`) |
+
+Corrected decision: **GO: O**, resting entirely on one ticket (t38) and one trap.
+
+**Efficiency (24 runs):** $2.07 list-price equivalent (CLI, plan-billed); 233k input and 113k output tokens; 1.08 rounds per run; 41.7 s per run; 58.7 lines changed per run.
+
+### What it says
+
+1. **Aggregation traps don't bite Sonnet in an ORM edit either.** Fan-out, null sums, zero-row groups, month and day boundaries, inactive rows and route order were all handled in 12/12 runs. This matches tabular step 2, where frontier models were at parity.
+2. **Ownership through parent tables was also handled.** No run leaked another buyer's or vendor's rows, and all ownership-before-status orderings were right.
+3. **The one real slip is transactional:** reusing an existing helper that commits partway through, so a refused request leaves partial writes. That is family 3 of the handoff (effect ordering and atomicity), not the ownership family this ticket was filed under. Lattice's one-transaction-per-write guarantee targets exactly that, but the evidence is 1 ticket × 3 reps.
