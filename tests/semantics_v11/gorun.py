@@ -11,7 +11,8 @@ Results come back in a strict tagged form (`strict`), which Python's results are
 too, so the targets are compared type- and order-exactly, messages included.
 
 The build is cached by the content hash of the generated sources and the runtime under
-`.cache/gorun/<hash>/` at the repository root.
+`.cache/gorun/<hash>/` at the repository root; the cache keeps the KEEP most recently
+used builds (`prune`), so it cannot grow without bound.
 """
 
 from __future__ import annotations
@@ -31,7 +32,7 @@ from lattice.check import check_source
 from lattice.check.t2 import types as T
 from lattice.check.t2.types import T2Type
 from lattice.gogen.t2 import emit_go_t2, go_float, go_string
-from lattice.gogen.types import GoTypes
+from lattice.gogen.types import GoTypes, api_types
 from lattice.runtime import LatticeInternalError
 from lattice.t2ir.lower import lower_t2
 from tests.check.t2_support import PROFILE
@@ -41,6 +42,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RT = ROOT / "lattice" / "gogen" / "rt"
 CACHE = ROOT / ".cache" / "gorun"
 GO_ENV = {"GOFLAGS": "-mod=mod", "GOPROXY": "off", "GOWORK": "off", "GOTOOLCHAIN": "local"}
+KEEP = 10  # cached builds kept (least recently used pruned first)
 
 
 # ---- Go values of the cases' arguments ----------------------------------------------------
@@ -70,6 +72,15 @@ def go_literal(value: object, t: T2Type, types: GoTypes) -> str:  # noqa: PLR091
             pairs = zip(value, es, strict=True)  # type: ignore[call-overload]
             items = ", ".join(go_literal(x, e, types) for x, e in pairs)
             return f"{types.spell(t)}{{{items}}}"
+        case T.RowT() | T.Named(name="Caller") | T.RecordT():
+            # a T2Row / record's fields; a corpus row may leave out columns its procedure
+            # never reads (Go's zero value stands in for them)
+            fields = ", ".join(
+                f"F_{f}: {go_literal(getattr(value, f), ft, types)}"
+                for f, ft in types.fields(t)
+                if hasattr(value, f)
+            )
+            return f"{types.spell(t)}{{{fields}}}"
     if t == T.BOOL:
         return "true" if value else "false"
     if t == T.INT:
@@ -272,9 +283,11 @@ def case_package(case: Case, pkg: str) -> tuple[str, str]:
     if not result.ok or result.program is None or result.program.t2 is None:
         raise LatticeInternalError(f"gorun: {case.name} does not check for Go")
     module = lower_t2(result.program.t2, ast.parse(result.program.source))
-    code = emit_go_t2(module, package=pkg)
+    api = result.program.profile.api  # Row / Caller values: structs of its tables
+    tables, caller = api_types(api) if api is not None else ({}, None)
+    code = emit_go_t2(module, package=pkg, types=GoTypes((), tables, caller))
     proc = next(p for p in module.procedures if p.name == case.proc)
-    types = GoTypes((r.name, r.fields) for r in module.records)
+    types = GoTypes(((r.name, r.fields) for r in module.records), tables, caller)
     args = ", ".join(
         go_literal(v, t, types) for v, (_, t) in zip(case.args, proc.params, strict=True)
     )
@@ -394,6 +407,7 @@ def build(cases: Sequence[Case]) -> Path:
     out = CACHE / h.hexdigest()[:20]
     binary = out / "prog"
     if binary.exists():
+        os.utime(out)  # most recently used: kept by prune
         return binary
     tmp = out.with_name(f"{out.name}.tmp{os.getpid()}")
     shutil.rmtree(tmp, ignore_errors=True)
@@ -417,7 +431,25 @@ def build(cases: Sequence[Case]) -> Path:
         tmp.rename(out)
     except OSError:  # another process built the same program first: keep theirs
         shutil.rmtree(tmp, ignore_errors=True)
+    prune(CACHE, KEEP)
     return binary
+
+
+def prune(cache: Path, keep: int = KEEP, min_age: float = 600.0) -> None:
+    """Keep the `keep` most recently used builds under `cache` (by mtime); remove the
+    older ones not used for `min_age` seconds (a concurrent run may still need a build
+    it just made)."""
+    import time  # noqa: PLC0415
+
+    if not cache.is_dir():
+        return
+    entries = sorted(
+        (p for p in cache.iterdir() if p.is_dir()), key=lambda p: p.stat().st_mtime, reverse=True
+    )
+    now = time.time()
+    for old in entries[keep:]:
+        if now - old.stat().st_mtime >= min_age:
+            shutil.rmtree(old, ignore_errors=True)
 
 
 def run_go(cases: Sequence[Case]) -> dict[str, object]:

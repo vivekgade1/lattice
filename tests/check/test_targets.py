@@ -126,16 +126,15 @@ def test_int_in_float_forms_pass_on_go(body):
 @pytest.mark.parametrize(
     ("sig", "body"),
     [
-        # the endpoint layer's values (plan 5a Task 12)
+        # the endpoint layer's values: L892 on Go until plan 5a Task 12 (generated structs)
         ("f(c: Caller) -> Str", "return c.role"),
         ("f(r: Row[Items]) -> Int", "return 1"),
     ],
 )
-def test_l892_values_of_types_go_lacks(sig, body):
+def test_row_and_caller_values_pass_on_go(sig, body):
     src = _t2(body, sig)
     assert check_source(src, T2_PROFILE).ok
-    go = check_source(src, T2_PROFILE, target="go")
-    assert "L892" in codes(go) and set(codes(go)) == {"L892"}
+    assert check_source(src, T2_PROFILE, target="go").ok
 
 
 _TIME_SIG = "f(d: Date, t: DateTime, s: Str) -> Str"

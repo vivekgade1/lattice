@@ -55,15 +55,16 @@ GO_T2_CALLS |= {
     for name in T2_METHODS[kind]
 }
 
-# The kinds of T2 value the Go emitter implements (`lattice.gogen.types.kind_of`): a
-# procedure that holds a value of any other kind (Date, DateTime, Duration, Json, Row,
-# Caller, Counter) is L892 on Go. Grows with GO_T2_CALLS (Task 10: the rest).
+# The kinds of T2 value the Go emitter implements (`lattice.gogen.types.kinds`): a
+# procedure that holds a value of any other kind is L892 on Go. Since Task 12 (the
+# endpoint layer's Row and Caller) that is every kind.
 GO_T2_TYPES: set[str] = {
     "Int", "Float", "Str", "Bool", "Uuid", "None", "Error",
     "list", "set", "dict", "tuple", "Iter", "record",
     "Match", "module",  # Task 9 (a module: `re.search`, `string.digits`, `math.pi`)
     "Counter", "factory",  # Task 10 (a factory: `defaultdict(list)`'s argument)
     "Date", "DateTime", "Duration", "Json",  # Task 10
+    "Row", "Caller",  # Task 12 (structs from the API profile's tables)
 }  # fmt: skip
 
 

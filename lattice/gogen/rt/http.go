@@ -43,11 +43,18 @@ type Endpoint struct {
 	Ambiguous          string
 }
 
-// Response is a handler's answer: a status and a JSON body (see WriteJSON).
+// Response is a handler's answer: a status and a JSON body (see WriteJSON), or
+// NoContent.
 type Response struct {
 	Status int
 	Body   any
 }
+
+type noContentT struct{}
+
+// NoContent is the body of a 204 answer: Starlette's Response(status_code=204) has no
+// body and no Content-Type or Content-Length header.
+var NoContent any = noContentT{}
 
 // Route is an endpoint with its handler (the generated steps function). The handler
 // runs inside the request's transaction; it answers an error by panicking with an
@@ -494,6 +501,8 @@ type answer struct {
 	body    []byte
 	headers map[string]string
 	queries int
+	// noLength: no Content-Length header (a 204)
+	noLength bool
 }
 
 func (a *App) style() string { return orDefault(a.Settings.ErrorBody, "lattice") }
@@ -524,7 +533,9 @@ func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	for k, v := range ans.headers {
 		h.Set(k, v)
 	}
-	h.Set("Content-Length", strconv.Itoa(len(ans.body)))
+	if !ans.noLength {
+		h.Set("Content-Length", strconv.Itoa(len(ans.body)))
+	}
 	if a.Trace {
 		h.Set("X-Lattice-Sql-Count", strconv.Itoa(ans.queries))
 	}
@@ -675,9 +686,13 @@ func (a *App) serve(rt *Route, r *http.Request, path map[string]string) (ans ans
 		}
 	}
 	resp := rt.Handle(c, values)
-	out, err := WriteJSON(resp.Body)
-	if err != nil {
-		panic(&Failure{Msg: "ValueError: " + err.Error()})
+	var out []byte
+	_, empty := resp.Body.(noContentT)
+	if !empty {
+		var err error
+		if out, err = WriteJSON(resp.Body); err != nil {
+			panic(&Failure{Msg: "ValueError: " + err.Error()})
+		}
 	}
 	db.exec("COMMIT")
 	inTxn = false
@@ -686,6 +701,9 @@ func (a *App) serve(rt *Route, r *http.Request, path map[string]string) (ans ans
 			defer func() { _ = recover() }()
 			a.DispatchOutbox(db, c.Pending, nil, OutboxGrace)
 		}()
+	}
+	if empty {
+		return answer{status: resp.Status, headers: map[string]string{}, noLength: true}
 	}
 	return answer{status: resp.Status, body: out, headers: map[string]string{"Content-Type": "application/json"}}
 }

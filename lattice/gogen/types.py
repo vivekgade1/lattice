@@ -15,21 +15,65 @@ needs per type: equality, Python's ordering and repr.
 | Date / DateTime / Duration | rt.Date / rt.DateTime (UTC) / rt.Duration (Task 10) |
 | Json | any: the Python-shaped value itself, shared (rt/jsonv.go) |
 | Counter[T] (a defaultdict is a dict) | *rt.Dict[T, int64] of the Counter kind |
+| Row[Table] / Row(Table, private=True) | a generated `row_Table` / `rowp_Table` struct |
+| Caller | the generated `caller_T` struct |
 
-Row and Caller (the endpoint layer's values, plan 5a Task 12) are not implemented yet
-(`lattice.targets.GO_T2_TYPES`): `p8_target` rejects them on Go with L892.
+Row and Caller are the endpoint layer's values (plan 5a Task 12): a T2Row
+(lattice/t2/support.py) with a fixed set of columns, known from the API profile
+(`api_types`). A Row's fields are the table's columns (the public ones unless
+private=True), each its column's scalar (optional when the column is nullable); the
+Caller's are the users table's public columns, then `id` (the users key), `is_admin` and
+`role` where the table has no such column (`T2Request.caller`'s dict, in its order).
+The endpoint emitter (lattice/gogen/endpoints.py) builds them from stored cells.
 """
 
 from __future__ import annotations
 
 import hashlib
 from collections.abc import Callable, Iterable, Mapping
+from typing import TYPE_CHECKING
 
+from lattice.catalog import CALLER_TYPE
 from lattice.check.t2 import types as T
 from lattice.check.t2.types import T2Type
 from lattice.runtime import LatticeInternalError
 
-__all__ = ["GoTypes", "kinds"]
+if TYPE_CHECKING:
+    from lattice.profile import ApiProfile
+
+__all__ = ["GoTypes", "api_types", "kinds"]
+
+Fields = tuple[tuple[str, T2Type], ...]
+TableFields = tuple[tuple[str, T2Type, bool], ...]  # (column, type, private)
+
+
+def api_types(api: ApiProfile, user_key: str = "id") -> tuple[dict[str, TableFields], Fields]:
+    """(each table's columns as Row fields, the Caller's fields) of an API profile."""
+    tables: dict[str, TableFields] = {}
+    for name, schema in api.tables.items():
+        tables[name] = tuple(
+            (c, _column_type(s.value, c in schema.nullable), c in schema.private)
+            for c, s in schema.columns
+        )
+    users = api.tables.get(api.users_table)
+    caller: dict[str, T2Type] = {}
+    if users is not None:
+        for c, s in users.columns:
+            if c not in users.private:
+                caller[c] = _column_type(s.value, c in users.nullable)
+        key = users.get(user_key)
+        caller["id"] = T.PRIMS[key.value] if key is not None else T.INT
+    else:
+        caller["id"] = T.INT
+    caller["is_admin"] = T.BOOL
+    caller["role"] = T.STR
+    return tables, tuple(caller.items())
+
+
+def _column_type(scalar: str, nullable: bool) -> T2Type:
+    t = T.PRIMS[scalar]
+    return T.opt(t) if nullable else t
+
 
 _SCALARS: Mapping[T2Type, str] = {
     T.INT: "int64",
@@ -116,9 +160,38 @@ class GoTypes:
     """Spells T2 types in Go and collects the declarations they need (tuple structs,
     record structs, helper functions), each once, in `decls()`."""
 
-    def __init__(self, records: Iterable[tuple[str, tuple[tuple[str, T2Type], ...]]] = ()) -> None:
+    def __init__(
+        self,
+        records: Iterable[tuple[str, tuple[tuple[str, T2Type], ...]]] = (),
+        tables: Mapping[str, TableFields] | None = None,
+        caller: Fields | None = None,
+    ) -> None:
         self.records: dict[str, tuple[tuple[str, T2Type], ...]] = dict(records)
+        # the endpoint layer's values (plan 5a Task 12): each table's columns (a
+        # Row[Table]) and the Caller's fields, from the API profile (`api_types`)
+        self.tables: dict[str, TableFields] = dict(tables or {})
+        self.caller: Fields | None = caller
         self._decls: dict[str, str] = {}  # name -> Go source, in first-use order
+
+    def row_fields(self, t: T.RowT) -> Fields:
+        """The fields of a Row[Table] (its public columns; every column with private=)."""
+        columns = self.tables.get(t.table)
+        if columns is None:
+            raise LatticeInternalError(f"gogen: no columns for table {t.table}")
+        return tuple((c, ct) for c, ct, private in columns if t.private or not private)
+
+    def fields(self, t: T2Type) -> Fields:
+        """The fields of a record, a Row or the Caller (Go struct fields F_<name>)."""
+        match t:
+            case T.RecordT(name=name):
+                return self.records[name]
+            case T.RowT():
+                return self.row_fields(t)
+            case T.Named(name=name) if name == CALLER_TYPE:
+                if self.caller is None:
+                    raise LatticeInternalError("gogen: the Caller's fields are unknown")
+                return self.caller
+        raise LatticeInternalError(f"gogen: {t.render()} has no fields")
 
     # ---- spelling ----------------------------------------------------------------------
 
@@ -148,7 +221,36 @@ class GoTypes:
                 return "*rt.Error"
             case T.Named(name="Match"):
                 return "*rt.Match"
+            case T.RowT(table=table, private=private):
+                name = f"{'rowp' if private else 'row'}_{table}"
+                self._row_struct(name, table, self.row_fields(t))
+                return name
+            case T.Named(name=name) if name == CALLER_TYPE:
+                self._row_struct("caller_T", CALLER_TYPE, self.fields(t))
+                return "caller_T"
         raise LatticeInternalError(f"gogen: no Go type for {t.render()}")
+
+    def _row_struct(self, key: str, label: str, fields: Fields) -> None:
+        """A Row[Table] or the Caller: a T2Row (lattice/t2/support.py) as a struct,
+        whose repr is `Label(column=value, ...)` with each value's repr."""
+        if key in self._decls:
+            return
+        self._decls[key] = ""
+        body = "".join(f"\tF_{f} {self.spell(ft)}\n" for f, ft in fields)
+        reprs = [f'"{f}=" + {self.field_repr(f"r.F_{f}", ft)}' for f, ft in fields]
+        text = f'"{label}(" + ' + ' + ", " + '.join(reprs) + ' + ")"' if reprs else f'"{label}()"'
+        self._decls[key] = (
+            f"// {key} is a {label} row (a T2Row).\ntype {key} struct {{\n{body}}}\n\n"
+            f"func (r {key}) PyRepr() string {{ return {text} }}\n"
+        )
+
+    def field_repr(self, go: str, t: T2Type) -> str:
+        """repr() of a row's value (a Uuid is a uuid.UUID in Python: UUID('...'))."""
+        if t == T.UUID:
+            return f'("UUID(\'" + {go} + "\')")'
+        if isinstance(t, T.Opt) and t.inner == T.UUID:
+            return f'rt.ReprOpt({go}, func(v string) string {{ return "UUID(\'" + v + "\')" }})'
+        return f"rt.Repr(any({go}))"
 
     def tuple_name(self, t: T.TupleT) -> str:
         name = f"tup_{_digest(t)}"
@@ -233,8 +335,8 @@ class GoTypes:
                 if not es:
                     return "true"
                 return " && ".join(f"{self.eq(e)}({a}.F{i}, {b}.F{i})" for i, e in enumerate(es))
-            case T.RecordT(name=name):
-                fields = self.records[name]
+            case T.RecordT() | T.RowT() | T.Named(name="Caller"):
+                fields = self.fields(t)
                 if not fields:
                     return "true"
                 return " && ".join(f"{self.eq(ft)}({a}.F_{f}, {b}.F_{f})" for f, ft in fields)

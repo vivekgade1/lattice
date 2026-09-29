@@ -79,7 +79,10 @@ _GO_RESERVED = frozenset(
 )
 # Prefixes of package-level generated names (procedures, constants, records, tuples,
 # helpers): a local starting with one is renamed, so it cannot shadow them.
-_PACKAGE_PREFIXES = ("P_", "C_", "rec_", "tup_", "eq_", "lt_", "le_", "gt_", "ge_", "re_", "tm_")
+_PACKAGE_PREFIXES = (
+    "P_", "C_", "rec_", "tup_", "eq_", "lt_", "le_", "gt_", "ge_", "re_", "tm_", "xc_",
+    "row_", "rowp_", "caller_",  # Row and Caller structs (plan 5a Task 12)
+)  # fmt: skip
 _INT_OPS: Mapping[str, str] = {"-": "rt.Sub", "//": "rt.FloorDiv", "%": "rt.Mod", ">>": "rt.Shr"}
 _BIT_OPS = frozenset({"&", "|", "^"})
 _TIME = frozenset({T.DATE, T.DATETIME, T.DURATION})
@@ -169,9 +172,14 @@ class _Frame:
 class _Module:
     """What every procedure's emitter shares: the types and the generated names."""
 
-    def __init__(self, module: n.T2Module) -> None:
+    def __init__(self, module: n.T2Module, types: GoTypes | None = None) -> None:
         self.module = module
-        self.types = GoTypes((r.name, r.fields) for r in module.records)
+        records = tuple((r.name, r.fields) for r in module.records)
+        if types is None:
+            types = GoTypes(records)
+        else:
+            types.records.update(records)
+        self.types = types
         self.procs = {p.name: p for p in module.procedures}
         self.records = {r.name: r for r in module.records}
         self.constants = {name: t for name, t, _ in module.constants}
@@ -785,6 +793,9 @@ class _Proc:
         match ot:
             case T.RecordT(name=rec):
                 declared = dict(self.m.records[rec].fields)[name]
+                return self.narrow(f"{self.expr(obj)}.F_{name}", declared, t)
+            case T.RowT() | T.Named(name="Caller"):  # a T2Row: its fields (plan 5a Task 12)
+                declared = dict(self.types.fields(ot))[name]
                 return self.narrow(f"{self.expr(obj)}.F_{name}", declared, t)
             case _ if ot == T.FLOAT and name == "real":
                 return self.expr(obj)
@@ -1494,6 +1505,8 @@ class _Proc:
                 tname = go_string(name)
             case T.Named(name="Match"):
                 tname = '"re.Match"'
+            case T.RowT() | T.Named(name="Caller"):
+                tname = '"T2Row"'
             case T.Named(name="Error"):
                 body = "rt.FmtObj(fuel, sp, e.Kind)"
                 return f"func(e *rt.Error, sp string) string {{ return {body} }}({v}, {spec})"
@@ -1540,7 +1553,7 @@ class _Proc:
                 )
             case T.Named(name="Error"):
                 return f"{go}.Msg"
-            case T.RecordT() | T.Named(name="Match"):
+            case T.RecordT() | T.RowT() | T.Named(name="Match") | T.Named(name="Caller"):
                 return f"{go}.PyRepr()"
         raise LatticeInternalError(f"gogen: str() of {t.render()}")
 
@@ -2307,10 +2320,13 @@ def _literal_type(value: object) -> T2Type:
 # ---- the module -------------------------------------------------------------------------------
 
 
-def emit_go_t2(module: n.T2Module, package: str = "main") -> str:
+def emit_go_t2(module: n.T2Module, package: str = "main", types: GoTypes | None = None) -> str:
     """The Go source of every procedure, record and module constant of `module`, as
-    one file of package `package`."""
-    mod = _Module(module)
+    one file of package `package`. `types` (with the API profile's tables and Caller,
+    `lattice.gogen.types.api_types`) spells Row and Caller values; the declarations it
+    collects -- also the ones spelled for the endpoint handlers before -- are in the
+    file."""
+    mod = _Module(module, types)
     procs = [_Proc(mod, p).function() for p in module.procedures]
     consts: list[str] = []
     for name, t, value in module.constants:
