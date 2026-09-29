@@ -5,8 +5,10 @@
 added to the report later can be recomputed for past runs.
 
 Live model runs cost money: don't invoke this without ``--offline`` unless a
-human has approved a live run against the real API (see the plan's global
-constraints).
+human has approved a live run (see the plan's global constraints). The ``api``
+suite's live transport is the Claude CLI (``lattice.llm.cli_client.ClaudeCliClient``,
+project policy: the Anthropic API-key transport is disabled); ``--reps``, ``--resume``
+and ``--workers`` mirror ``bench.edit_slice.run``'s flags of the same name.
 """
 
 from __future__ import annotations
@@ -15,9 +17,10 @@ import argparse
 import dataclasses
 import datetime
 import importlib
+import json
 import re
 import shutil
-import threading
+import sys
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -47,6 +50,8 @@ from bench.runners import (
     run_lattice,
 )
 from bench.tasks import Task, suite
+from lattice.llm import cli_client
+from lattice.llm.cli_client import CliUsageLimitError
 from lattice.llm.client import ClaudeGenerator, Generator, ScriptedGenerator
 from lattice.runtime import is_panic
 
@@ -62,6 +67,17 @@ def _offline_generator(offline_dir: Path, arm: str, task_id: str) -> Generator:
     text = path.read_text()
     texts = [chunk.strip("\n") for chunk in _SEPARATOR_RE.split(text)]
     return ScriptedGenerator(texts)
+
+
+def _api_generator(model: str, offline_dir: Path | None, arm: str, task_id: str) -> Generator:
+    """The api suite's generator: the scripted offline replay when ``offline_dir`` is
+    given, else the Claude CLI transport (project policy: the API-key transport,
+    ``ClaudeGenerator``, is disabled -- see ``lattice.llm.client.ApiKeyTransportDisabled``).
+    Looked up as ``cli_client.ClaudeCliClient`` (module attribute, not a bound import) so
+    tests can monkeypatch it."""
+    if offline_dir is not None:
+        return _offline_generator(offline_dir, arm, task_id)
+    return cli_client.ClaudeCliClient(model=model)
 
 
 def _default_out_dir() -> Path:
@@ -92,6 +108,15 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     run_parser.add_argument(
         "--workers", type=int, default=1, help="tasks to run concurrently (default 1)"
+    )
+    run_parser.add_argument(
+        "--reps", type=int, default=1, help="repetitions of each (arm, task) (default 1)"
+    )
+    run_parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="skip (model, arm, task, rep) tuples already scored in --out's outcomes.jsonl, "
+        "so a run interrupted (e.g. by a CLI usage limit) can continue without redoing work",
     )
     run_parser.add_argument(
         "--lattice-backend",
@@ -201,8 +226,14 @@ class _ApiContext:
         shutil.copyfile(self.db_path, path)
 
 
-def _prepare_api_workdir(root: Path, task_id: str) -> Path:
-    workdir = root / task_id
+def _prepare_api_workdir(root: Path, task_id: str, rep: int = 0) -> Path:
+    # rep 0 (the default --reps 1) keeps the original, un-nested path, so existing
+    # callers that assert on it (e.g. tests/api/test_codegen_cli.py, which reads a
+    # generated app's file straight out of the workdir) are unaffected. rep >= 1 gets
+    # its own subdirectory, so every rep still has a distinct path -- concurrent reps of
+    # the same (arm, task) (--workers > 1 with --reps > 1) never share, and race on, one
+    # directory.
+    workdir = root / task_id if rep == 0 else root / task_id / f"rep{rep}"
     if workdir.exists():
         shutil.rmtree(workdir)
     workdir.mkdir(parents=True)
@@ -221,12 +252,10 @@ def _run_one_api(
     hints: bool = True,
     lattice_backend: str = "runtime",
     implicit: bool = False,
+    rep: int = 0,
 ) -> TaskOutcome:
-    workdir = _prepare_api_workdir(work_root / arm, task.id)
-    if offline_dir is not None:
-        generator: Generator = _offline_generator(offline_dir, arm, task.id)
-    else:
-        generator = ClaudeGenerator(model=model)
+    workdir = _prepare_api_workdir(work_root / arm, task.id, rep)
+    generator = _api_generator(model, offline_dir, arm, task.id)
     if arm in ("A", "P"):
         return run_api_baseline(
             task,
@@ -254,6 +283,38 @@ def _run_one_api(
             implicit=implicit,
         )
     raise ValueError(f"unknown arm: {arm!r}")
+
+
+def _completed(out: Path) -> set[tuple[str, str, str, int]]:
+    """(requested_model, arm, task_id, rep) tuples already scored in ``out`` -- what
+    ``--resume`` skips, so a run interrupted (e.g. by a CLI usage limit) can continue
+    without redoing work already on disk. Keyed on the CLI's ``--model`` argument
+    (``requested_model``), never the served model (``model``, which can differ across a
+    repair loop's calls) -- the same key ``bench.analysis.go_pilot.load`` dedups on.
+    Mirrors ``bench.edit_slice.run._completed``: a line that fails to parse is ignored
+    (not counted as done -- likely a partially-written line from an interrupted run),
+    and a ``harness_error`` outcome is not done either (the harness itself failed, not a
+    scored model run) -- it is redone."""
+    done: set[tuple[str, str, str, int]] = set()
+    if not out.exists():
+        return done
+    with out.open() as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if d.get("failure") == "harness_error":
+                continue
+            model = d.get("requested_model") or ""
+            arm = d.get("arm") or ""
+            task_id = d.get("task_id") or ""
+            rep = d.get("rep") or 0
+            done.add((model, arm, task_id, rep))
+    return done
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -299,14 +360,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             parser.error(f"unknown arm: {arm!r}")
 
     outcomes_path = out_dir / "outcomes.jsonl"
-    outcomes_path.write_text("")  # start fresh; each outcome is appended as it completes
+    if args.resume and outcomes_path.exists():
+        done = _completed(outcomes_path)
+    else:
+        outcomes_path.write_text("")  # start fresh; each outcome is appended as it completes
+        done = set()
 
-    append_lock = threading.Lock()
-
-    def run_task(arm: Arm, task: Task) -> TaskOutcome:
+    def run_task(arm: Arm, task: Task, rep: int) -> TaskOutcome:
         # Per-task isolation: a crash inside the harness for one task must
-        # not lose the others. (BaseExceptions such as KeyboardInterrupt
-        # still abort, but every completed outcome is already on disk.)
+        # not lose the others. (CliUsageLimitError and other BaseExceptions such as
+        # KeyboardInterrupt still abort the whole run, but every completed outcome is
+        # already on disk.)
         try:
             if api_context is not None:
                 outcome = _run_one_api(
@@ -320,6 +384,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     hints=not args.no_hints,
                     lattice_backend=args.lattice_backend,
                     implicit=args.implicit,
+                    rep=rep,
                 )
             else:
                 outcome = _run_one(
@@ -333,30 +398,69 @@ def main(argv: Sequence[str] | None = None) -> int:
                     max_repairs=args.max_repairs,
                     hints=not args.no_hints,
                 )
+        except CliUsageLimitError:
+            # Not one run's failure: the whole run must stop cleanly (see below), never
+            # be recorded or retried as a harness error.
+            raise
         except BaseException as exc:
             if not isinstance(exc, Exception) and not is_panic(exc):
                 raise
             outcome = harness_error_outcome(task, arm, exc)
             if api_context is not None:
                 outcome = dataclasses.replace(outcome, condition=api_condition(args.implicit))
-        with append_lock:
-            append_outcome(outcomes_path, outcome)
-        return outcome
+        return dataclasses.replace(
+            outcome, requested_model=args.model, model=outcome.model or args.model, rep=rep
+        )
 
-    jobs = [(arm, task) for arm in arms for task in tasks]
+    jobs = [
+        (arm, task, rep)
+        for arm in arms
+        for task in tasks
+        for rep in range(args.reps)
+        if (args.model, arm, task.id, rep) not in done
+    ]
+
+    # A single writer -- called only from this (the main) thread, on each job's result in
+    # submission order -- so the JSONL is appended in the same deterministic order a
+    # --workers 1 run would produce, regardless of --workers or completion order.
+    def write(outcome: TaskOutcome) -> None:
+        append_outcome(outcomes_path, outcome)
+
+    stopped_early = False
+    status = 0
     if args.workers <= 1:
-        outcomes = [run_task(arm, task) for arm, task in jobs]
+        for arm, task, rep in jobs:
+            try:
+                write(run_task(arm, task, rep))
+            except CliUsageLimitError as exc:
+                print(f"usage limit reached, stopping cleanly: {exc}", file=sys.stderr)
+                stopped_early, status = True, 3
+                break
     else:
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
-            outcomes = list(pool.map(lambda job: run_task(*job), jobs))
+            # submit every job up front, then collect results in submission order:
+            # workers run concurrently, but the JSONL stays in the same deterministic
+            # order a --workers 1 run would produce.
+            futures = [pool.submit(run_task, arm, task, rep) for arm, task, rep in jobs]
+            for fut in futures:
+                try:
+                    write(fut.result())
+                except CliUsageLimitError as exc:
+                    print(f"usage limit reached, stopping cleanly: {exc}", file=sys.stderr)
+                    pool.shutdown(wait=False, cancel_futures=True)
+                    stopped_early, status = True, 3
+                    break
 
+    # Re-read from disk rather than use the in-memory results: with --resume, that's
+    # this run's newly-written records plus the ones already on disk it skipped.
+    all_outcomes = read_outcomes(outcomes_path) if outcomes_path.exists() else []
     report_path = out_dir / "report.md"
     report_path.write_text(
-        _render_report(outcomes, bench2=args.suite == "bench2", api=args.suite == "api")
+        _render_report(all_outcomes, bench2=args.suite == "bench2", api=args.suite == "api")
     )
 
     print(str(report_path))
-    return 0
+    return status if stopped_early else 0
 
 
 if __name__ == "__main__":

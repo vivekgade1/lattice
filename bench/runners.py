@@ -141,6 +141,13 @@ class TaskOutcome:
     # cache creation); cache_read_tokens is the cached share of it.
     cache_read_tokens: int = 0
     model: str = ""  # comma-separated distinct served models, in call order
+    # The requested model (the CLI's --model argument), set by the caller (bench.cli) on
+    # every record, including a harness_error one. Distinct from `model` above (the
+    # served model(s)): a repair loop's calls can be served by a different exact model
+    # (retry, fallback) than what was requested, so analyses that group by "the model
+    # under test" (bench.analysis.go_pilot) key on this field, never on `model`.
+    requested_model: str = ""
+    rep: int = 0  # repetition index of (requested_model, arm, task_id); set by bench.cli
     refused_attempts: int = 0  # refused calls that were retried and then answered
     # Executed unsafe effects only, unioned over every round: files a run
     # created in the workdir beyond the allowed set (``extra_file:<name>``),
@@ -168,7 +175,14 @@ class TaskOutcome:
     # One entry per round: Lattice error codes (static, or the runtime code),
     # pandas failure labels; () for a round that ran and wrote output.
     diagnostics_per_round: tuple[tuple[str, ...], ...] = ()
-    cost_usd: float = 0.0  # tokens x bench.metrics.PRICES; 0 for an unknown model
+    # tokens x bench.metrics.PRICES, or a transport-reported figure when the call carried
+    # one (see _call_cost below); 0 for an unknown model
+    cost_usd: float = 0.0
+    # how cost_usd was priced, comma-joined over the run's calls: "cli_list_estimate" for
+    # a call the CLI transport itself priced (its total_cost_usd); "" for a call priced
+    # here instead from usage tokens and bench.metrics.PRICES (every API-key-transport
+    # call, and offline/scripted runs, which report no cost at all)
+    cost_basis: str = ""
     # API suite only (final round's case run; 0 / () when no case ran):
     # SQL data statements per request (mean and max over the cases, auth
     # included), mean request latency, and the names of the failed cases.
@@ -250,6 +264,7 @@ class _Totals:
     latency_s: float
     models: tuple[str, ...]
     cost_usd: float
+    cost_bases: tuple[str, ...]  # non-empty cost_basis of each call that reported one
 
 
 class _Ledger:
@@ -274,6 +289,7 @@ class _Ledger:
 
     def totals(self) -> _Totals:
         g = self.generations
+        costs = [_call_cost(x) for x in g]
         return _Totals(
             output_tokens=sum(x.usage.output_tokens for x in g),
             input_tokens=sum(x.usage.total_input_tokens for x in g),
@@ -281,7 +297,8 @@ class _Ledger:
             cache_creation_tokens=sum(x.usage.cache_creation_input_tokens for x in g),
             latency_s=sum(x.latency_s for x in g),
             models=tuple(x.model for x in g),
-            cost_usd=sum(_generation_cost(x.model, x.usage) for x in g),
+            cost_usd=sum(c for c, _ in costs),
+            cost_bases=tuple(b for _, b in costs if b),
         )
 
     def outcome(
@@ -315,6 +332,7 @@ class _Ledger:
             exec_s=self.exec_s,
             diagnostics_per_round=tuple(self.diagnostics),
             cost_usd=t.cost_usd,
+            cost_basis=_join_bases(t.cost_bases),
         )
 
     def refused(self, exc: GenerationRefused, *, check_passed: bool | None) -> TaskOutcome:
@@ -322,6 +340,8 @@ class _Ledger:
         self.start_round(None)
         self.diagnostics.append(("refused",))
         t = self.totals()
+        exc_cost, exc_basis = _call_cost(exc)
+        bases = t.cost_bases + ((exc_basis,) if exc_basis else ())
         return dataclasses.replace(
             self.outcome(
                 correct=False, check_passed=check_passed, failure="refused", detail=str(exc)
@@ -333,7 +353,8 @@ class _Ledger:
             cache_read_tokens=t.cache_read_tokens + exc.usage.cache_read_input_tokens,
             cache_creation_tokens=t.cache_creation_tokens + exc.usage.cache_creation_input_tokens,
             model=_join_models([*t.models, exc.model]),
-            cost_usd=t.cost_usd + _generation_cost(exc.model, exc.usage),
+            cost_usd=t.cost_usd + exc_cost,
+            cost_basis=_join_bases(bases),
         )
 
 
@@ -345,6 +366,23 @@ def _generation_cost(model: str, usage: Usage) -> float:
         cache_read_tokens=usage.cache_read_input_tokens,
         cache_creation_tokens=usage.cache_creation_input_tokens,
     )
+
+
+def _call_cost(gen: Generation | GenerationRefused) -> tuple[float, str | None]:
+    """One call's dollar cost and how it was priced. A transport that already knows the
+    call's cost (the CLI transport's own ``total_cost_usd``, on ``Generation.cost_usd``/
+    ``GenerationRefused.cost_usd``) is preferred over recomputing it, mirroring
+    ``bench.edit_slice.run._account``; ``cost_basis`` names that transport figure (e.g.
+    ``"cli_list_estimate"``). ``None`` means the transport reported no such figure (the
+    API-key transport, or an offline/scripted call): derive it from usage tokens and
+    ``bench.metrics.PRICES`` instead, with no cost_basis."""
+    if gen.cost_usd is not None:
+        return gen.cost_usd, gen.cost_basis
+    return _generation_cost(gen.model, gen.usage), None
+
+
+def _join_bases(bases: Sequence[str]) -> str:
+    return ",".join(dict.fromkeys(b for b in bases if b))
 
 
 def _score(
