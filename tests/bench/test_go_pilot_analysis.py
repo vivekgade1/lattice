@@ -11,10 +11,12 @@ import json
 import pytest
 
 from bench.analysis.go_pilot import (
+    EXPECTED_RUNS_PER_CELL,
     HAIKU,
     P2_MARGIN,
     P2_Z,
     SONNET,
+    _classify_p1,
     cost_per_correct,
     load,
     newcombe_wilson_diff,
@@ -42,6 +44,7 @@ def _records(rows):
             {
                 "task_id": task_id,
                 "arm": arm,
+                "requested_model": model,
                 "model": model,
                 "rep": rep,
                 "correct": correct,
@@ -114,6 +117,7 @@ def test_load_reads_jsonl_records(tmp_path):
     assert len(records) == len(rows)
     assert records[0].task_id == "t00"
     assert records[0].arm == "B"
+    assert records[0].requested_model == SONNET
     assert records[0].model == SONNET
     assert isinstance(records[0].correct, bool)
     assert records[0].cost_basis == "cli_list_estimate"
@@ -136,6 +140,7 @@ def test_load_skips_blank_lines(tmp_path):
     [
         "task_id",
         "arm",
+        "requested_model",
         "model",
         "rep",
         "correct",
@@ -421,6 +426,7 @@ def _family_dataset():
             {
                 "task_id": task_id,
                 "arm": arm,
+                "requested_model": SONNET,
                 "model": SONNET,
                 "rep": 0,
                 "correct": correct,
@@ -465,6 +471,7 @@ def test_render_s2_table_reports_means_over_the_arm():
         {
             "task_id": "t1",
             "arm": "B",
+            "requested_model": SONNET,
             "model": SONNET,
             "rep": 0,
             "correct": True,
@@ -480,6 +487,7 @@ def test_render_s2_table_reports_means_over_the_arm():
         {
             "task_id": "t2",
             "arm": "B",
+            "requested_model": SONNET,
             "model": SONNET,
             "rep": 0,
             "correct": True,
@@ -498,3 +506,255 @@ def test_render_s2_table_reports_means_over_the_arm():
     # mean over the 2 B rows: lines (10+30)/2=20.0, AST (50+150)/2=100,
     # rounds (1+3)/2=2.00, output tokens (100+300)/2=200.
     assert "| claude-sonnet-5 | B | 2 | 20.0 | 100 | 2.00 | 200 |" in md
+
+
+# ---------------------------------------------------------------------------
+# Model identity: the cell key is requested_model, not the served model.
+# ---------------------------------------------------------------------------
+
+
+def test_grouping_uses_requested_model_not_served_model():
+    # A repair loop's calls can be served by a different model id than the
+    # one requested (retry, fallback); the cell key must stay the requested
+    # model regardless of what's recorded as served.
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    for r in rows:
+        r["model"] = "claude-sonnet-5-20250929,claude-sonnet-5-20251015"
+    records = load(_dump(rows))
+    assert cost_per_correct(records, "B", SONNET) == pytest.approx(0.05)
+    v = verdict(records)
+    assert v["stage1"] == "GO"
+
+
+# ---------------------------------------------------------------------------
+# I1-I3: harness dedup/exclusion, the 5%-cell INVALID check, completeness,
+# cost_basis -- controller ruling ("Revisions before freeze" #2).
+# ---------------------------------------------------------------------------
+
+
+def test_load_dedup_keeps_last_record_a_duplicated_harness_error_then_success_counts_once():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)  # complete, all correct
+    target = next(r for r in rows if r["task_id"] == "t00" and r["arm"] == "B" and r["rep"] == 0)
+    idx = rows.index(target)
+    harness_dup = dict(target)
+    harness_dup["correct"] = False
+    harness_dup["failure"] = "harness_error"
+    # The harness attempt is written BEFORE the (already-present) successful
+    # retry at the same (requested_model, arm, task, rep) key -- exactly the
+    # shape a --resume run produces.
+    rows.insert(idx, harness_dup)
+
+    records = load(_dump(rows))
+    # load() dedups: the harness duplicate collapses into the real record,
+    # so the total count is unchanged from the un-duplicated baseline.
+    assert len(records) == 2 * EXPECTED_RUNS_PER_CELL
+    kept = next(r for r in records if r.task_id == "t00" and r.arm == "B" and r.rep == 0)
+    assert kept.correct is True
+    assert kept.failure is None
+    # And it's scored once, not twice: the verdict matches the un-duplicated
+    # 100%-correct baseline (GO).
+    v = verdict(records)
+    assert v["stage1"] == "GO"
+
+
+def test_verdict_invalid_when_harness_rate_exceeds_5_percent_of_a_sonnet_cell():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)  # complete, all correct
+    b_rows = [r for r in rows if r["arm"] == "B"]
+    # 8/120 = 6.67% > 5%, spread over 8 distinct tasks' first rep.
+    for r in b_rows[:8]:
+        r["correct"] = False
+        r["failure"] = "harness_error"
+    records = load(_dump(rows))
+    v = verdict(records)
+    assert v["stage1"] == "INVALID"
+
+
+def test_verdict_still_go_when_harness_rate_is_under_5_percent():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    b_rows = [r for r in rows if r["arm"] == "B"]
+    # 5/120 = 4.17% < 5%: excluded from P1/P2 but does not invalidate.
+    for r in b_rows[:5]:
+        r["correct"] = False
+        r["failure"] = "harness_error"
+    records = load(_dump(rows))
+    v = verdict(records)
+    assert v["stage1"] != "INVALID"
+    assert v["stage1"] == "GO"
+
+
+def test_verdict_raises_on_wrong_cost_basis():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    rows[0]["cost_basis"] = "cli_key_transport"  # a counted (non-harness) run
+    records = load(_dump(rows))
+    with pytest.raises(ValueError, match="cost_basis"):
+        verdict(records)
+
+
+def test_verdict_raises_on_missing_run():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    victim = next(r for r in rows if r["task_id"] == "t00" and r["arm"] == "B" and r["rep"] == 0)
+    rows.remove(victim)
+    records = load(_dump(rows))
+    with pytest.raises(ValueError, match="expected"):
+        verdict(records)
+
+
+# ---------------------------------------------------------------------------
+# M1: P1 boundary conditions, and task pairing.
+# ---------------------------------------------------------------------------
+
+
+def _wide_interval_dataset():
+    """6 tasks: 5 "good" (B always correct, $0.05/run), 1 "bad" (B $0.05/run
+    but 0/3 reps correct); G is $0.10/run and always correct throughout. The
+    full-dataset point estimate R is exactly 0.6 (0.05*6*3 / (5*3) / 0.10),
+    but because a single bad task dominates a 6-task resample, the
+    bootstrap's 97.5th percentile reaches 1.0: R<=0.6 with an interval too
+    wide to trust -- "not confirmed", not "confirmed"."""
+    rows = []
+    for i in range(5):
+        tid = f"g{i}"
+        for rep in range(3):
+            rows.append((tid, "B", SONNET, rep, True, 0.05))
+            rows.append((tid, "G", SONNET, rep, True, 0.10))
+    for rep in range(3):
+        rows.append(("bad", "B", SONNET, rep, False, 0.05))
+        rows.append(("bad", "G", SONNET, rep, True, 0.10))
+    return _records(rows)
+
+
+def test_p1_not_confirmed_when_r_le_0_6_but_hi_ge_1_0():
+    records = load(_dump(_wide_interval_dataset()))
+    R, lo, hi = ratio_bootstrap(records, SONNET, n=10_000, seed=0)
+    assert R == pytest.approx(0.6)
+    assert hi >= 1.0
+    assert _classify_p1(R, hi) == "not confirmed"
+
+
+def test_p1_confirmed_when_r_exactly_0_6_and_hi_below_1():
+    # Zero-variance dataset: R = lo = hi = 0.6 exactly.
+    rows = _uniform_dataset(cost_b=0.06, cost_g=0.10)
+    records = load(_dump(rows))
+    R, lo, hi = ratio_bootstrap(records, SONNET, n=200, seed=0)
+    assert R == pytest.approx(0.6)
+    assert hi < 1.0
+    assert _classify_p1(R, hi) == "confirmed"
+    assert verdict(records)["P1"] == "confirmed"
+
+
+def test_p1_refuted_when_r_exactly_1_0():
+    rows = _uniform_dataset(cost_b=0.10, cost_g=0.10)
+    records = load(_dump(rows))
+    R, lo, hi = ratio_bootstrap(records, SONNET, n=200, seed=0)
+    assert R == pytest.approx(1.0)
+    assert _classify_p1(R, hi) == "refuted"
+    assert verdict(records)["P1"] == "refuted"
+
+
+def _correlated_pairing_dataset():
+    """5 "easy" + 5 "hard" tasks. Within a task, arm B and arm G share the
+    EXACT same per-rep correctness pattern (perfectly correlated difficulty:
+    a hard task is hard for both arms at once). Costs are fixed ($0.05/$0.10
+    per run) regardless of difficulty, so every task's own cost/correct
+    ratio is exactly 0.5 no matter how many of its reps are correct. Task-
+    paired resampling should therefore collapse to a point interval; a
+    resampling implementation that decorrelates B's and G's task draws
+    should not."""
+    rows = []
+    for i in range(5):
+        tid = f"e{i}"
+        for rep in range(3):
+            rows.append((tid, "B", SONNET, rep, True, 0.05))
+            rows.append((tid, "G", SONNET, rep, True, 0.10))
+    for i in range(5):
+        tid = f"h{i}"
+        for rep in range(3):
+            correct = rep == 0  # 1/3 reps correct -- same reps, both arms
+            rows.append((tid, "B", SONNET, rep, correct, 0.05))
+            rows.append((tid, "G", SONNET, rep, correct, 0.10))
+    return _records(rows)
+
+
+def _independent_bootstrap(records, model, *, n=10_000, seed=0):
+    """A deliberately WRONG bootstrap that resamples arm B's and arm G's
+    tasks INDEPENDENTLY -- breaking the task pairing the real
+    ``ratio_bootstrap`` relies on. Reimplemented here (not imported from
+    go_pilot) to show what an incorrect implementation would produce on the
+    exact same data."""
+    import math as _math
+    import random as _random
+    from collections import defaultdict as _defaultdict
+
+    group = [r for r in records if r.requested_model == model]
+    by_task = _defaultdict(list)
+    for r in group:
+        by_task[r.task_id].append(r)
+    task_ids = sorted(by_task)
+    rng = _random.Random(seed)
+    boots = []
+    for _ in range(n):
+        sampled_b = rng.choices(task_ids, k=len(task_ids))
+        sampled_g = rng.choices(task_ids, k=len(task_ids))
+        b_recs = [r for t in sampled_b for r in by_task[t] if r.arm == "B"]
+        g_recs = [r for t in sampled_g for r in by_task[t] if r.arm == "G"]
+        cb, corb = sum(r.cost_usd for r in b_recs), sum(1 for r in b_recs if r.correct)
+        cg, corg = sum(r.cost_usd for r in g_recs), sum(1 for r in g_recs if r.correct)
+        if corb == 0 or corg == 0:
+            continue
+        boots.append((cb / corb) / (cg / corg))
+    boots.sort()
+
+    def pct(q):
+        idx = q * (len(boots) - 1)
+        lo_i, hi_i = _math.floor(idx), _math.ceil(idx)
+        if lo_i == hi_i:
+            return boots[int(idx)]
+        frac = idx - lo_i
+        return boots[lo_i] + frac * (boots[hi_i] - boots[lo_i])
+
+    return pct(0.025), pct(0.975)
+
+
+def test_task_pairing_matters_an_independent_implementation_gives_a_different_interval():
+    records = load(_dump(_correlated_pairing_dataset()))
+    R, lo, hi = ratio_bootstrap(records, SONNET, n=10_000, seed=0)
+    # Paired (the real algorithm): every task's own B/G ratio is exactly 0.5
+    # regardless of that task's difficulty, since difficulty is perfectly
+    # correlated between arms -- the interval collapses to a point.
+    assert R == pytest.approx(0.5)
+    assert lo == pytest.approx(0.5)
+    assert hi == pytest.approx(0.5)
+    # Resampling each arm's tasks independently decorrelates that shared
+    # difficulty and gets a materially different -- much wider -- interval
+    # on the exact same data.
+    ind_lo, ind_hi = _independent_bootstrap(records, SONNET, n=10_000, seed=0)
+    assert ind_lo < lo - 0.05 or ind_hi > hi + 0.05
+    assert (ind_hi - ind_lo) > (hi - lo) + 0.1
+
+
+# ---------------------------------------------------------------------------
+# M3: Wilson interval for the loud rate; dropped-resample reporting; the P2
+# margin printed as "10 points".
+# ---------------------------------------------------------------------------
+
+
+def test_render_loud_column_has_a_wilson_interval():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    records = load(_dump(rows))
+    md = render(records)
+    assert "loud [95% CI]" in md
+
+
+def test_render_reports_dropped_bootstrap_resamples():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    records = load(_dump(rows))
+    md = render(records)
+    assert "dropped for an undefined ratio" in md
+
+
+def test_render_prints_p2_margin_as_points_not_percent():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    records = load(_dump(rows))
+    md = render(records)
+    assert "margin 10 points" in md
+    assert "margin 10%" not in md

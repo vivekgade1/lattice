@@ -1,6 +1,6 @@
 # Sub-project 5b, stage 1: Go cost pilot (pre-registered)
 
-> Status: DRAFT for the user's approval; it becomes PRE-REGISTERED when committed, before any live run. It follows the Go target equivalence gate (5a: Lattice→Go equals the Python runtime on 49 programs and 2,478 cases; `docs/results/2026-09-26-bench-smoke.md`, "Go target — equivalence gate") and the confirmation run ("Confirmation run", 2026-09-29), which refuted "Lattice reduces silent bugs" for edits on a strong model. Design context: `docs/superpowers/specs/2026-09-28-lattice-go-target-design.md` §5.
+> Status: DRAFT for the user's approval. It becomes PRE-REGISTERED at the Task 8 freeze commit (the commit that fixes this document immediately before any live run begins) -- not merely when this document is first committed. Any revision made before that freeze (see "Revisions before freeze") is part of the pre-registration; the user is shown the revisions at the freeze. It follows the Go target equivalence gate (5a: Lattice→Go equals the Python runtime on 49 programs and 2,478 cases; `docs/results/2026-09-26-bench-smoke.md`, "Go target — equivalence gate") and the confirmation run ("Confirmation run", 2026-09-29), which refuted "Lattice reduces silent bugs" for edits on a strong model. Design context: `docs/superpowers/specs/2026-09-28-lattice-go-target-design.md` §5.
 
 ## Why a pilot, and what it can still show
 
@@ -9,7 +9,7 @@ The confirmation run tested **edits to an existing Python app** and found no saf
 ## Questions
 
 - **P1 (primary):** on claude-sonnet-5, is the cost per correct task of arm B (Lattice→Go) at most **0.6×** that of arm G (Go written directly)?
-- **P2 (co-primary, non-inferiority):** on claude-sonnet-5, is arm B's correct rate no more than **10 points** below arm G's, at a one-sided 95% bound? (Revised from 5 points before any run; see "Revision before freeze" below.)
+- **P2 (co-primary, non-inferiority):** on claude-sonnet-5, over runs counted after harness exclusion, is arm B's correct rate no more than **10 points** below arm G's, at a one-sided 95% bound? (Margin and confidence both revised before any run; see "Revisions before freeze" below.)
 - **S1 (secondary):** the same two measurements on claude-haiku-4-5.
 - **S2 (secondary, descriptive):** silent failures per arm; program size (lines, AST nodes); repair rounds; output tokens.
 
@@ -29,29 +29,52 @@ The confirmation run tested **edits to an existing Python app** and found no saf
 ## Tests and decision (fixed now)
 
 - **Unit:** a run, scored correct/silent/loud by the hidden cases, as in every API round.
-- **Cost per correct task (per arm and model):** total CLI cost of the arm's runs ÷ number of correct runs.
-- **P1:** the ratio R = cost/correct(B) ÷ cost/correct(G) on Sonnet, with a 95% percentile bootstrap interval (10,000 resamples of tasks, keeping each task's runs together).
+- **Model identity:** every outcome record's "cell" (arm × model, for grouping and for P1/P2) is keyed by the REQUESTED model -- the CLI's `--model` argument -- never by the served model, which a repair loop's retries or a fallback can change mid-run. The served model is recorded separately (`model`, comma-joined over the run's calls) for reporting only.
+- **Harness dedup and exclusion:** `--resume` retries a harness-error run; the analysis keeps the LAST record per (requested model, arm, task, rep) -- a later attempt supersedes an earlier one. Any harness errors still present after this dedup are EXCLUDED from both cost and n for P1 and P2 (but their count and rate are reported). If harness errors exceed 5% of either Sonnet cell (of the expected 40 × 3 = 120 runs), the stage-1 verdict is **INVALID** (neither GO nor STOP) and must be investigated before any conclusion is drawn.
+- **Completeness:** after dedup and harness exclusion, each Sonnet cell (arm B, arm G) must correspond to exactly 40 tasks × 3 reps of raw (deduped) runs; a missing run, or an unexpected duplicate that survives dedup, fails the analysis loudly rather than silently scoring a partial cell.
+- **cost_basis:** every counted (non-harness) Sonnet run must have `cost_basis == "cli_list_estimate"`; any other value fails the analysis loudly.
+- **Cost per correct task (per arm and model):** total CLI cost of the arm's counted runs ÷ number of correct runs.
+- **P1:** the ratio R = cost/correct(B) ÷ cost/correct(G) on Sonnet, with a 95% percentile bootstrap interval (10,000 resamples of tasks, keeping each task's runs together). The number of resamples dropped for an undefined ratio (an arm with zero correct runs in that resample) is reported.
   - **Confirmed** if R ≤ 0.6 AND the interval's upper bound < 1.0.
   - **Refuted** if R ≥ 1.0.
-  - Otherwise, **not confirmed**.
+  - Otherwise, **not confirmed** (this includes R ≤ 0.6 with an upper bound ≥ 1.0: a good point estimate on too wide an interval to trust).
 - **P2:** a one-sided non-inferiority test on the correct rates (Sonnet), margin 10 points at a one-sided 95% bound: the lower limit of the **two-sided 90%** Newcombe-Wilson interval for correct(B) − correct(G) must be > −0.10.
 - **Stage-1 verdict:**
-  - **GO:** P1 confirmed AND P2 holds. Proceed to stage 2 (the rest of spec §5: the implicit-requirements condition, the Go-specific trap tasks, the T2 script control, and binary latency/throughput under load), with its own pre-registration.
+  - **INVALID:** the harness-error-rate check above fires for either Sonnet cell. Investigate before drawing any conclusion; do not treat as GO or STOP.
+  - **GO:** (not INVALID and) P1 confirmed AND P2 holds. Proceed to stage 2 (the rest of spec §5: the implicit-requirements condition, the Go-specific trap tasks, the T2 script control, and binary latency/throughput under load), with its own pre-registration.
   - **STOP:** anything else. Write up the result and do not run stage 2.
-- **Also reported:** correct, silent and loud rates with Wilson 95% intervals; S1/S2 measurements; per-family breakdown (control, ownership, validation, errors, efficiency).
+- **Also reported:** correct, silent and loud rates with Wilson 95% intervals (loud includes a harness-error note); S1/S2 measurements; per-family breakdown (control, ownership, validation, errors, efficiency).
 
-## Revision before freeze
+## Revisions before freeze
 
-Controller ruling, 2026-09-29, made before this pre-registration froze and before any live run: the originally stated P2 margin of 5 points (two-sided 95% Newcombe-Wilson) is unattainable at this pilot's sample size (n = 120 runs/arm/model) even when arm B and arm G have **identical** correct rates. The Newcombe-Wilson lower bound for a true tie's difference, two-sided 95%, n = 120/arm:
+### Revision 1: P2's margin and confidence (2026-09-29)
 
-| tied correct rate | lower bound |
-|---|---:|
-| 0.95 | −0.061 |
-| 0.90 | −0.079 |
-| 0.85 | −0.092 |
-| 0.80 | −0.101 |
+Controller ruling, made before this pre-registration froze (the Task 8 freeze commit) and before any live run: P2 as originally stated combined two conservative choices that, together, made the test very hard to pass at this pilot's sample size (n = 120 runs/arm/model) even for arms with **identical** correct rates:
 
-At every plausible correct rate, a true tie would already fail a 5-point margin — P2 could never hold even with no real difference. P2 is revised to the standard non-inferiority form before any run: **margin 10 points, tested at a one-sided 95% bound**, obtained as the lower limit of the **two-sided 90%** Newcombe-Wilson interval for correct(B) − correct(G). This is reflected above (Questions, Tests and decision) and in `bench/analysis/go_pilot.py`.
+- a margin of 5 points, and
+- a **two-sided 95%** Newcombe-Wilson interval (equivalently, a one-sided **97.5%** bound).
+
+The Newcombe-Wilson lower bound for a true tie's difference at n = 120/arm, by confidence level:
+
+| tied correct rate | two-sided 95% (one-sided 97.5%) | two-sided 90% (one-sided 95%) |
+|---|---:|---:|
+| 0.95 | −0.061 | −0.050 |
+| 0.90 | −0.079 | −0.065 |
+| 0.85 | −0.092 | −0.077 |
+| 0.80 | −0.101 | −0.085 |
+
+Under the original rule (margin 5, one-sided 97.5%), a true tie fails at every plausible correct rate shown above -- but this does not mean P2 could *never* hold: it means P2 could hold only if arm B's observed correct rate exceeded arm G's by enough to overcome that asymmetry, i.e. B needed to look measurably *better* than G, not merely equal, for the test to pass. That is a materially harder bar than a standard non-inferiority test is meant to set, so both choices are revised together, before any run: **margin 10 points, at a one-sided 95% bound** (the lower limit of the two-sided 90% Newcombe-Wilson interval). Under the revised rule, a true tie passes at every correct rate shown above. This is reflected in Questions and Tests and decision, above, and in `bench/analysis/go_pilot.py` (`P2_MARGIN`, `P2_Z`).
+
+### Revision 2: model identity, harness handling, completeness, cost_basis (2026-09-29)
+
+Controller ruling, made before the freeze and before any live run, in response to review findings on the analysis script:
+
+- **Model identity.** An outcome record's served model (which call actually answered) can differ from the model the run requested, e.g. across a repair loop's retries. The cell key for every grouping (and so for P1/P2) is the REQUESTED model; the served model is recorded separately, for reporting only. The API bench's CLI-transport work must write a `requested_model` field distinct from `model` on every outcome record; the analysis fails loudly if it's absent.
+- **Harness errors.** `--resume` retries a harness-error run; the analysis keeps the LAST record per (requested model, arm, task, rep), so a retried run's final attempt supersedes the harness-error attempt it replaced. Any harness errors still present after this dedup are excluded from cost and n for P1/P2 (but reported); if they exceed 5% of either Sonnet cell, the stage-1 verdict is INVALID rather than GO/STOP, and must be investigated before any conclusion.
+- **Completeness.** After dedup, each Sonnet cell must correspond to exactly 40 tasks × 3 reps of runs; a missing run, or a duplicate that survives dedup, fails the analysis loudly.
+- **cost_basis.** Every counted Sonnet run must have `cost_basis == "cli_list_estimate"`, matching the spec's Scope ("cost from the CLI's list-price estimate"); anything else fails the analysis loudly, since a differently-priced call would not be comparable.
+
+This is reflected in Tests and decision, above, and in `bench/analysis/go_pilot.py` (`load`'s dedup, `_validate_sonnet_cell`, `EXPECTED_TASKS`/`EXPECTED_REPS`/`HARNESS_INVALID_RATE`).
 
 ## What each outcome means
 
@@ -67,4 +90,5 @@ At every plausible correct rate, a true tie would already fail a 5-point margin 
 - The Go platform kit's design affects G's size and cost. It provides exactly what the Python kit provides (auth only), no more.
 - Prompt size: B's system prompt (the Lattice guide) is much larger than G's. That cost is real and is counted, not excluded.
 - One CLI version and one machine (arm64 macOS).
-- The P2 margin was widened from 5 to 10 points before any run (see "Revision before freeze"), because the original margin was unattainable at this sample size for a true tie. The wider margin makes GO easier for B: a GO's correctness claim is weaker evidence than a 5-point-margin GO would have been, and a real 6-9-point deficit for B could still pass P2.
+- The P2 margin was widened from 5 to 10 points, and the confidence relaxed from one-sided 97.5% to one-sided 95%, before any run (see "Revisions before freeze" #1), because the original combination made a true tie fail at every plausible correct rate. Both changes make GO easier for B: a GO's correctness claim is weaker evidence than the original rule's GO would have been, and a real several-point deficit for B could still pass the revised P2.
+- The harness-error exclusion and the 5%-cell INVALID check (see "Revisions before freeze" #2) are themselves judgment calls: excluding harness errors from cost/n assumes a `--resume` retry's final attempt is representative, and the 5% threshold is not derived from a power calculation.
