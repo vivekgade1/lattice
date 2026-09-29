@@ -817,7 +817,55 @@ STR_MORE = [
     ),
 ]
 
+_RE_REPR = P("f(s: Str) -> Str", 'return str(re.fullmatch(r"(?s).+", s))')
+
 REGEX_MORE = [
+    # fix round 1: findall/split follow the groups (R3/R9); Match repr is %.50R; a repeat
+    # of millions of iterations (Go's first engine overflowed its stack at ~1M)
+    Case(
+        "re_findall_two_groups_tuples",
+        P(
+            "f(s: Str) -> list[Str]",
+            'return [a + "|" + b for a, b in re.findall(r"(\\w)(\\d)?", s)]',
+        ),
+        "f",
+        ("a1 b c2",),
+        ["a|1", "b|", "c|2"],
+    ),
+    Case(
+        "re_split_groups_none",
+        P("f(s: Str) -> list[Str]", 'return [x or "<None>" for x in re.split(r"(,)|;", s)]'),
+        "f",
+        ("a,b;c",),
+        ["a", ",", "b", "<None>", "c"],
+    ),
+    Case("re_match_repr_cut_60", _RE_REPR, "f", ("x" * 60,),
+         "<re.Match object; span=(0, 60), match='" + "x" * 49 + ">"),
+    Case("re_match_repr_exactly_50", _RE_REPR, "f", ("x" * 48,),
+         "<re.Match object; span=(0, 48), match='" + "x" * 48 + "'>"),
+    Case("re_match_repr_49", _RE_REPR, "f", ("x" * 49,),
+         "<re.Match object; span=(0, 49), match='" + "x" * 49 + ">"),
+    Case("re_match_repr_quotes_escapes", _RE_REPR, "f", ("it's\n" + "y" * 50,),
+         "<re.Match object; span=(0, 55), match=\"it's\\n" + "y" * 43 + ">"),
+    Case("re_match_repr_non_ascii", _RE_REPR, "f", ("é" * 55,),
+         "<re.Match object; span=(0, 55), match='" + "é" * 49 + ">"),
+    Case(
+        "re_deep_repeat_end_to_end",
+        P(
+            "f(n: Int) -> list[Str]",
+            's = "ab" * n\n    m = re.fullmatch(r"(?:ab)*", s)\n'
+            '    g = re.fullmatch(r"(a|b)*", s)\n'
+            "    if m is None or g is None:\n        return []\n"
+            '    return [str(m.end()), g.group(1) or "", str(len(re.findall(r"(?:ab)+c?", s)))]',
+        ),
+        "f",
+        (1_500_000,),
+        ["3000000", "b", "1"],
+        budget=2_000_000,
+    ),
+]
+
+REGEX_MORE += [
     Case(
         "re_dollar_before_trailing_newline",
         P("f(s: Str) -> Bool", 'return re.search(r"a$", s) is not None'),

@@ -10,7 +10,7 @@ regex_test.go assert against it. Run from the repository root:
   (with re.ASCII, as the Python target does), its group count and names;
 * "regex": for each (pattern, input): search / match / fullmatch as the spans of every
   group (null when a group did not participate; null for no match), finditer's spans,
-  findall (patterns with at most one group), split (patterns without groups) and sub
+  findall (tuples for 2+ groups), split (with the groups, null when unmatched) and sub
   with a few replacements (the result, and the number of matches and longest match
   `T2Fuel.sub` charges from);
 * "str": {"fn": method, "args": [...], "out": ...} for the Str methods, the result as
@@ -151,6 +151,15 @@ FIXED_INPUTS = [
     "👋a👋",
 ]
 
+_ODD = "".join(chr(0x100 + 2 * k) for k in range(14))  # 14 scattered code points
+BIG_CLASSES = [
+    f"[{_ODD}]",
+    f"[^{_ODD}]+",
+    f"(?i)[{_ODD}A-C]+",
+    f"[Ѐ-ӿ{_ODD}]+",
+]
+DEEP_REPEATS = [r"(?:ab)*", r"(a|b)*", r"(?:(?:a|b)c)*", r"((?:ab)+c)*", r"(?:ab)*?$"]
+
 REPLS = ["", "-", r"<\g<0>>", r"\1", "$1", r"[\\]", r"\n"]
 
 
@@ -218,6 +227,14 @@ def regex_answers() -> tuple[dict[str, object], list[dict[str, object]]]:
     for p in (r"$", r"\s*$", r"a$", r"(?m)^\w+$", r"x*", r"a*", r"|a", r"\b", r"\B", r"(a|)*"):
         for s in ("", "a", "a\n", "a\nb\n", "x\n\n", "baac", "foo bar_foo", "\n"):
             pairs.append((p, s))
+    # BIGCHARSET classes (characters beyond Latin-1), plain, negated and (?i)
+    for p in BIG_CLASSES:
+        for s in ("", "ĀāĂăÀa", "zĂĄ Ѐӿ Ԁ", "abcABCĚě", "Ā" * 3 + "￿\U0001f44b"):
+            pairs.append((p, s))
+    # the deep repeats (regex_test.go runs them over millions of characters too)
+    for p in DEEP_REPEATS:
+        for s in ("", "ab", "abab", "abac", "acbcac", "ababcabc", "abcababc", "aba"):
+            pairs.append((p, s))
     seen: set[str] = set(FIXED_PATTERNS)
     while len(seen) < len(FIXED_PATTERNS) + 500:
         p = random_pattern(rng)
@@ -232,6 +249,8 @@ def regex_answers() -> tuple[dict[str, object], list[dict[str, object]]]:
         seen.add(p)
         for _ in range(3):
             pairs.append((p, random_input(rng)))
+    for p in BIG_CLASSES:
+        assert _k.BIGCHARSET in compile_regex(p).code, p
     patterns: dict[str, object] = {}
     answers: list[dict[str, object]] = []
     for p, s in pairs:
@@ -248,10 +267,8 @@ def regex_answers() -> tuple[dict[str, object], list[dict[str, object]]]:
             "fullmatch": spans(rx.fullmatch(s)),
             "finditer": [spans(m) for m in rx.finditer(s)],
         }
-        if rx.groups <= 1:
-            a["findall"] = rx.findall(s)
-        if rx.groups == 0:
-            a["split"] = rx.split(s)
+        a["findall"] = rx.findall(s)  # tuples (as lists) for 2+ groups
+        a["split"] = rx.split(s)  # the groups too, None (null) when unmatched
         subs = []
         for repl in REPLS if p in FIXED_PATTERNS else REPLS[2:4]:
             t = compile_template(p, repl)

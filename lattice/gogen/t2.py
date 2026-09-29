@@ -1492,7 +1492,20 @@ class _Proc:
         }  # fmt: skip
         match c.args:
             case (n.Const(value=str() as pattern), s) if fn in funcs:
-                return f"rt.{funcs[fn]}({self.m.regex(pattern)}, {self.expr(s)})"
+                rx, text = self.m.regex(pattern), self.expr(s)
+                elem = self.elem(c.type) if fn in ("findall", "split") else None
+                if fn == "findall" and isinstance(elem, T.TupleT):
+                    # a pattern of several groups: a tuple of them per match
+                    tup = self.spell(elem)
+                    items = ", ".join(f"g[{i}]" for i in range(len(elem.elems)))
+                    return (
+                        f"func(gs [][]string) *rt.List[{tup}] {{ out := rt.NewList[{tup}](); "
+                        f"for _, g := range gs {{ out.Append({tup}{{{items}}}) }}; return out }}"
+                        f"(rt.ReFindallGroups({rx}, {text}))"
+                    )
+                if fn == "split" and isinstance(elem, T.Opt):
+                    return f"rt.ReSplitGroups({rx}, {text})"  # the groups too, None unmatched
+                return f"rt.{funcs[fn]}({rx}, {text})"
         raise LatticeInternalError(f"gogen: re.{fn} is not available on Go")
 
     def ordered_args(

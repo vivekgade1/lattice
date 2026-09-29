@@ -62,4 +62,4 @@ def test_semantics_cases_missing_on_go_is_not_a_placeholder():
     names = {c.name for c in CASES}
     assert missing != []
     assert set(missing) < names
-    assert len(names - set(missing)) >= 212
+    assert len(names - set(missing)) >= 220

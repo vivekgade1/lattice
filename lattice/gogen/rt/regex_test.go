@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 )
@@ -24,17 +25,17 @@ type textAnswers struct {
 		Names  map[string]int `json:"names"`
 	} `json:"patterns"`
 	Regex []struct {
-		Pattern   string    `json:"pattern"`
-		S         string    `json:"s"`
-		Search    [][]int   `json:"search"`
-		Match     [][]int   `json:"match"`
-		Fullmatch [][]int   `json:"fullmatch"`
-		Finditer  [][][]int `json:"finditer"`
-		Findall   *[]string `json:"findall"`
-		Split     *[]string `json:"split"`
-		Sub       []subCase `json:"sub"`
-		SubCount  int       `json:"sub_count"`
-		SubLong   int       `json:"sub_longest"`
+		Pattern   string          `json:"pattern"`
+		S         string          `json:"s"`
+		Search    [][]int         `json:"search"`
+		Match     [][]int         `json:"match"`
+		Fullmatch [][]int         `json:"fullmatch"`
+		Finditer  [][][]int       `json:"finditer"`
+		Findall   json.RawMessage `json:"findall"`
+		Split     json.RawMessage `json:"split"`
+		Sub       []subCase       `json:"sub"`
+		SubCount  int             `json:"sub_count"`
+		SubLong   int             `json:"sub_longest"`
 	} `json:"regex"`
 	Str []struct {
 		Fn   string            `json:"fn"`
@@ -268,15 +269,23 @@ func TestRegexAnswers(t *testing.T) {
 		if len(got) != c.SubCount || longest != c.SubLong {
 			t.Errorf("sub's count/longest %s: Go %d %d, Python %d %d", where, len(got), longest, c.SubCount, c.SubLong)
 		}
-		if c.Findall != nil {
-			if got := ReFindall(re, c.S).Items; !reflect.DeepEqual(got, *c.Findall) {
-				t.Errorf("findall %s: Go %q, Python %q", where, got, *c.Findall)
-			}
+		var findall any
+		if re.Groups > 1 {
+			findall = ReFindallGroups(re, c.S)
+		} else {
+			findall = ReFindall(re, c.S).Items
 		}
-		if c.Split != nil {
-			if got := ReSplit(re, c.S).Items; !reflect.DeepEqual(got, *c.Split) {
-				t.Errorf("split %s: Go %q, Python %q", where, got, *c.Split)
-			}
+		if got, want := asJSON(findall), asJSON(c.Findall); !reflect.DeepEqual(got, want) {
+			t.Errorf("findall %s: Go %v, Python %v", where, got, want)
+		}
+		var split any
+		if re.Groups > 0 {
+			split = optItems(ReSplitGroups(re, c.S).Items)
+		} else {
+			split = ReSplit(re, c.S).Items
+		}
+		if got, want := asJSON(split), asJSON(c.Split); !reflect.DeepEqual(got, want) {
+			t.Errorf("split %s: Go %v, Python %v", where, got, want)
 		}
 	}
 }
@@ -346,5 +355,85 @@ func TestRegexSubChargesPython(t *testing.T) {
 	// 40 // 16 = 2, then (40 + 40 * 4 * 1) // 16 = 12
 	if fuel.Left != 100-2-12 {
 		t.Fatalf("fuel left %d", fuel.Left)
+	}
+}
+
+// asJSON is v as encoding/json decodes it (a Go value, or raw JSON), for comparisons.
+func asJSON(v any) any {
+	raw, ok := v.(json.RawMessage)
+	if !ok {
+		raw, _ = json.Marshal(v)
+	}
+	var out any
+	if err := json.Unmarshal(raw, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func optItems(xs []Opt[string]) []*string {
+	out := make([]*string, len(xs))
+	for i, x := range xs {
+		if x.Ok {
+			v := x.V
+			out[i] = &v
+		}
+	}
+	return out
+}
+
+// A repeat nests one engine context per iteration; the contexts live on the heap, as
+// CPython's do, so millions of iterations match (the first version recursed on the Go
+// stack and died with "stack overflow" at about a million).
+func TestRegexDeepRepeats(t *testing.T) {
+	const n = 10_000_000
+	cases := []struct {
+		pattern, unit string
+		group1        Opt[string] // of the fullmatch
+	}{
+		{`(?:ab)*`, "ab", None[string]()},
+		{`(a|b)*`, "ab", Some("b")},
+		{`(?:(?:a|b)c)*`, "ac", None[string]()},
+		{`((?:ab)+c)*`, "ababc", Some("ababc")}, // a repeat nested in a repeat
+	}
+	for _, c := range cases {
+		s := strings.Repeat(c.unit, n/len(c.unit))
+		re := compiled(t, c.pattern)
+		m := ReFullmatch(re, s)
+		if !m.Ok || m.V.Start() != 0 || m.V.End() != n {
+			t.Fatalf("%s over %d characters: %v", c.pattern, n, spansOf(m))
+		}
+		if re.Groups > 0 && m.V.Group(1) != c.group1 {
+			t.Fatalf("%s: group 1 differs", c.pattern)
+		}
+		// a failing end backtracks through every level
+		if ReFullmatch(re, s+"!").Ok {
+			t.Fatalf("%s matched a trailing '!'", c.pattern)
+		}
+		if got := ReSearch(re, s); !got.Ok || got.V.End() != n {
+			t.Fatalf("%s search: %v", c.pattern, spansOf(got))
+		}
+	}
+	lazy := compiled(t, `(?:ab)*?$`)
+	if m := ReMatch(lazy, strings.Repeat("ab", n/2)); !m.Ok || m.V.End() != n {
+		t.Fatalf("lazy repeat: %v", spansOf(m))
+	}
+}
+
+// CPython's Match repr formats the match with %.50R: its repr cut to 50 code points.
+func TestRegexMatchReprIsCutAt50(t *testing.T) {
+	re := compiled(t, `(?s).+`)
+	cases := map[string]string{
+		strings.Repeat("x", 60): "<re.Match object; span=(0, 60), match='" + strings.Repeat("x", 49) + ">",
+		strings.Repeat("x", 48): "<re.Match object; span=(0, 48), match='" + strings.Repeat("x", 48) + "'>",
+		strings.Repeat("x", 49): "<re.Match object; span=(0, 49), match='" + strings.Repeat("x", 49) + ">",
+		strings.Repeat("é", 55): "<re.Match object; span=(0, 55), match='" + strings.Repeat("é", 49) + ">",
+		"it's\n" + strings.Repeat("y", 50): "<re.Match object; span=(0, 55), match=\"it's\\n" +
+			strings.Repeat("y", 43) + ">",
+	}
+	for s, want := range cases {
+		if got := ReSearch(re, s).V.PyRepr(); got != want {
+			t.Errorf("repr of a %d-character match:\n  Go %s\nwant %s", Len(s), got, want)
+		}
 	}
 }

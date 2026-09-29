@@ -518,3 +518,42 @@ def test_augmented_slice_assignment_is_l913(stmt):
     src = proc(f"ys = [x]\ns = 'ab'\n{stmt}\nreturn len(ys)")
     assert errors(src) == ["L913"]
     assert "slice assignment" in first(src, "L913").message
+
+
+# ---- re.findall / re.split follow the pattern's groups (R3/R9, 2026-09-29) ---------------
+
+
+def _re_proc(body: str, sig: str = "(s: Str) -> Int") -> str:
+    return "import re\n\n" + proc(body, sig=sig)
+
+
+@pytest.mark.parametrize(
+    ("call", "local"),
+    [
+        ('re.findall(r"\\d+", s)', "list[Str]"),
+        ('re.findall(r"(\\d+)x", s)', "list[Str]"),
+        ('re.findall(r"(?:a)(?:b)", s)', "list[Str]"),
+        ('re.findall(r"(a)(b)", s)', "tuple[Str, Str]"),
+        ('re.findall(r"(a)(?P<n>b)(c)?", s)', "tuple[Str, Str, Str]"),
+        ('re.split(r",", s)', "list[Str]"),
+        ('re.split(r"(?:,)", s)', "list[Str]"),
+        ('re.split(r"(,)|;", s)', "list[Str | None]"),
+    ],
+)
+def test_findall_and_split_types_follow_the_groups(call, local):
+    types = _local_types(_re_proc(f"xs = {call}\nreturn len(xs)"))
+    want = local if local.startswith("list") else f"list[{local}]"
+    assert types["xs"].render() == want
+
+
+def test_findall_of_two_groups_is_not_a_list_of_str():
+    """The hole: this used to check, then raise an uncatchable AttributeError."""
+    src = _re_proc('xs = re.findall(r"(a)(b)", s)\nreturn len(xs[0].upper())')
+    assert errors(src)
+    ok(_re_proc('xs = re.findall(r"(a)(b)", s)\nx, y = xs[0]\nreturn len(x.upper() + y)'))
+
+
+def test_split_with_groups_may_hold_none():
+    src = _re_proc('xs = re.split(r"(,)|;", s)\nreturn len(xs[0].upper())')
+    assert errors(src)
+    ok(_re_proc('xs = re.split(r"(,)|;", s)\nreturn len((xs[0] or "").upper())'))

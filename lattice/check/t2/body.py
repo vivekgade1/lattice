@@ -1809,6 +1809,9 @@ class BodyChecker:
 
         for i in chosen.literal:
             self._regex_literal(node.args[i] if i < len(node.args) else node, label)
+        grouped = _regex_result(target, node)
+        if grouped is not None:
+            return grouped
 
         if target in _ORDERING and "key" not in kw_types:
             el = bindings.get("T")
@@ -1906,8 +1909,7 @@ class BodyChecker:
             self.err(
                 "L925",
                 node,
-                f"the pattern of {label}() may backtrack catastrophically on request input: "
-                f"{risk}",
+                f"the pattern of {label}() may backtrack catastrophically on request input: {risk}",
                 "make the repeated pieces disjoint, bound the repeat ({0,50}) or make it "
                 "possessive (a++)",
             )
@@ -2048,6 +2050,28 @@ def _root_name(e: ast.AST) -> str | None:
                 e = v
             case _:
                 return None
+
+
+def _regex_result(target: str, node: ast.Call) -> T2Type | None:
+    """The result of `re.findall` / `re.split` follows the literal pattern's capturing
+    groups (R3/R9, docs/lattice-language-rules.md §6): findall of k >= 2 groups gives
+    tuples of k Strs; split by a pattern with groups gives the groups too, None for
+    one that did not participate. None: the catalog's `list[Str]` holds."""
+    if target not in ("std:re.findall", "std:re.split") or not node.args:
+        return None
+    match node.args[0]:
+        case ast.Constant(value=str() as pattern):
+            try:
+                groups = re.compile(pattern).groups
+            except re.error:
+                return None  # L916 reported
+        case _:
+            return None
+    if target == "std:re.findall" and groups >= 2:
+        return T.ListT(T.TupleT((T.STR,) * groups))
+    if target == "std:re.split" and groups >= 1:
+        return T.ListT(T.opt(T.STR))
+    return None
 
 
 def _is_concrete(t: T2Type) -> bool:

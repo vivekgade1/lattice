@@ -149,10 +149,6 @@ def _re(body: str, sig: str = "f(s: Str, n: Int) -> Str") -> str:
     [
         # the replacement is compiled when the Go code is generated
         'return re.sub(r"a", s, s)',
-        # Python returns tuples, which the checker types as Str
-        'return ", ".join(re.findall(r"(a)(b)", s))',
-        # Python inserts the groups (None when unmatched)
-        'return ", ".join(re.split(r"(a)|b", s))',
     ],
 )
 def test_l892_regular_expressions_go_does_not_run(body):
@@ -169,6 +165,9 @@ def test_l892_regular_expressions_go_does_not_run(body):
         'return ", ".join(re.findall(r"(a)b", s))',
         'return ", ".join(re.findall(r"(?:a)(?:b)", s))',
         'return ", ".join(re.split(r"(?:a)|b", s))',
+        # findall of several groups gives tuples, split by groups Str | None (2026-09-29)
+        'return ", ".join(a + b for a, b in re.findall(r"(a)(b)", s))',
+        'return ", ".join(x or "-" for x in re.split(r"(a)|b", s))',
         'm = re.search(r"(?P<x>a)", s)\nif m is None:\n    return ""\n'
         'return m.group("x") or str(m)',
         'return string.digits + string.ascii_letters + s.upper().center(n, "*")',
