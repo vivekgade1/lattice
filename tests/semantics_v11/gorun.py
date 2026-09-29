@@ -24,12 +24,13 @@ import shutil
 import struct
 import subprocess
 from collections.abc import Mapping, Sequence
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 from lattice.check import check_source
 from lattice.check.t2 import types as T
 from lattice.check.t2.types import T2Type
-from lattice.gogen.t2 import emit_go_t2, go_string
+from lattice.gogen.t2 import emit_go_t2, go_float, go_string
 from lattice.gogen.types import GoTypes
 from lattice.runtime import LatticeInternalError
 from lattice.t2ir.lower import lower_t2
@@ -78,7 +79,42 @@ def go_literal(value: object, t: T2Type, types: GoTypes) -> str:  # noqa: PLR091
         return f"math.Float64frombits(0x{bits:016x})"
     if t in (T.STR, T.UUID):
         return go_string(str(value))
+    if t == T.DATETIME:
+        assert isinstance(value, datetime) and value.utcoffset() == timedelta(0), value
+        return f"rt.DateTime({(value - _EPOCH) // timedelta(microseconds=1)})"
+    if t == T.DATE:
+        assert isinstance(value, date) and not isinstance(value, datetime), value
+        return f"rt.Date({value.toordinal()})"
+    if t == T.DURATION:
+        assert isinstance(value, timedelta)
+        return f"rt.Duration{{D: {value.days}, S: {value.seconds}, Us: {value.microseconds}}}"
+    if t == T.JSON:
+        return _json_literal(value)
     raise LatticeInternalError(f"gorun: no Go literal for {t.render()}")
+
+
+_EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
+
+
+def _json_literal(value: object) -> str:  # noqa: PLR0911
+    """A Go Json value (`any`) holding exactly the Python value."""
+    if value is None:
+        return "any(nil)"
+    if isinstance(value, bool):
+        return f"any({'true' if value else 'false'})"
+    if isinstance(value, int):
+        return f"any(int64({value}))"
+    if isinstance(value, float):
+        return f"any({go_float(value)})"
+    if isinstance(value, str):
+        return f"any({go_string(value)})"
+    if isinstance(value, list):
+        return f"any(rt.NewList[any]({', '.join(_json_literal(x) for x in value)}))"
+    if isinstance(value, dict):
+        sets = "".join(f"d.Set({go_string(k)}, {_json_literal(v)}); " for k, v in value.items())
+        new = "rt.NewDict[string, any]()"
+        return f"any(func() *rt.Dict[string, any] {{ d := {new}; {sets}return d }}())"
+    raise LatticeInternalError(f"gorun: no Json literal for {value!r}")
 
 
 def go_encoder(t: T2Type, types: GoTypes) -> str:  # noqa: PLR0911
@@ -124,6 +160,19 @@ def go_encoder(t: T2Type, types: GoTypes) -> str:  # noqa: PLR0911
         return 'func(v string) any { return map[string]any{"t": "str", "v": v} }'
     if t == T.NONE:
         return 'func(v struct{}) any { return map[string]any{"t": "none"} }'
+    if t == T.DATE:
+        return 'func(v rt.Date) any { return map[string]any{"t": "date", "v": v.ISO()} }'
+    if t == T.DATETIME:
+        return (
+            'func(v rt.DateTime) any { return map[string]any{"t": "datetime", "v": v.Isoformat()} }'
+        )
+    if t == T.DURATION:
+        return (
+            'func(v rt.Duration) any { return map[string]any{"t": "duration", '
+            '"v": []any{v.D, v.S, v.Us}} }'
+        )
+    if t == T.JSON:
+        return "rt.JsonTagged"
     raise LatticeInternalError(f"gorun: no encoder for {t.render()}")
 
 
@@ -153,6 +202,12 @@ def strict(v: object) -> object:  # noqa: PLR0911
         return ("str", v)
     if v is None:
         return ("none",)
+    if isinstance(v, datetime):
+        return ("datetime", v.isoformat())
+    if isinstance(v, date):
+        return ("date", v.isoformat())
+    if isinstance(v, timedelta):
+        return ("duration", v.days, v.seconds, v.microseconds)
     if isinstance(v, list):
         return ("list", tuple(strict(x) for x in v))
     if isinstance(v, tuple):
@@ -182,8 +237,10 @@ def decode(v: object) -> object:  # noqa: PLR0911
         return ("none",)
     if tag == "int":
         return ("int", int(v["v"]))
-    if tag in ("float", "str", "bool"):
+    if tag in ("float", "str", "bool", "date", "datetime"):
         return (tag, v["v"])
+    if tag == "duration":
+        return ("duration", *(int(x) for x in v["v"]))
     if tag in ("list", "tuple", "set"):
         return (tag, tuple(decode(x) for x in v["v"]))
     if tag == "dict":

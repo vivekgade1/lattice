@@ -136,8 +136,7 @@ procedure sites(n: Int, m: Int | None, flag: Bool, i: Int, xs: list[Int]) -> Flo
   Assign
     target: NameT found
     Compare(in) : Bool
-      Widen : Float
-        Var n : Int
+      Var n : Int
       Var ys : list[Float]
   Assign
     target: NameT s

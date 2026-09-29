@@ -1719,10 +1719,17 @@ WIDEN = [
     ),
 ]
 
+from tests.semantics_v11.cases_task10 import COLL, GATED, JSON_MORE, MATH, TIME_MORE  # noqa: E402
+
 CASES: tuple[Case, ...] = tuple(
     INT + FLOAT_TEXT + STR + LIST + DICT_SET + TIME + REGEX + JSON + FUEL + CORE + WIDEN
     + STR_MORE
     + REGEX_MORE
+    + COLL
+    + MATH
+    + TIME_MORE
+    + JSON_MORE
+    + GATED
 )
 
 _NAMES = [c.name for c in CASES]
@@ -1735,6 +1742,7 @@ _EXC_TYPES: tuple[type[Exception], ...] = (
     ZeroDivisionError,
     RuntimeError,  # a dict changed size while iterated: not catchable in T2, escapes
     TypeError,  # e.g. a fill character of two characters: not catchable in T2
+    OverflowError,  # math.exp(1000.0), a date out of range: not catchable in T2
     _re.PatternError,  # an invalid re.sub replacement: not catchable in T2
 )
 

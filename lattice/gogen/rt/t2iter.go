@@ -15,10 +15,12 @@ type Cursor[T any] func() (T, bool)
 // Iter is a Lattice Iter[T]: range(...) (re-iterable and sized: each iteration starts
 // again) or a one-shot iterator (enumerate, zip, reversed, a generator expression).
 type Iter[T any] struct {
-	cur   Cursor[T]
-	fresh func() Cursor[T]
-	size  int64
-	rng   *rangeT
+	cur    Cursor[T]
+	fresh  func() Cursor[T]
+	size   int64
+	sizeFn func() int64 // a dict view's live length
+	has    func(T) bool // a keys view's lookup
+	rng    *rangeT
 }
 
 type rangeT struct{ start, stop, step, n int64 }
@@ -35,7 +37,12 @@ func (it *Iter[T]) Cursor() Cursor[T] {
 }
 
 // Sized is len(it) for a range; ok is false for a one-shot iterator.
-func (it *Iter[T]) Sized() (int64, bool) { return it.size, it.fresh != nil }
+func (it *Iter[T]) Sized() (int64, bool) {
+	if it.sizeFn != nil {
+		return it.sizeFn(), true
+	}
+	return it.size, it.fresh != nil
+}
 
 // Contains is x in it: arithmetic for a range, else the iterator is consumed up to the
 // first equal element.
@@ -51,6 +58,9 @@ func (it *Iter[T]) Contains(x T, eq func(a, b T) bool) bool {
 		}
 		d := new(big.Int).Sub(bigOf(v), bigOf(r.start))
 		return d.Rem(d, bigOf(r.step)).Sign() == 0
+	}
+	if it.has != nil {
+		return it.has(x)
 	}
 	c := it.Cursor()
 	for {

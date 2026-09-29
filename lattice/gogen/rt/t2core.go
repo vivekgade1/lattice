@@ -777,23 +777,6 @@ func ListEq[T any](a, b *List[T], eq func(x, y T) bool) bool {
 	return true
 }
 
-// DictEq is a == b for dicts (order does not matter), with the values' equality.
-func DictEq[K comparable, V any](a, b *Dict[K, V], eq func(x, y V) bool) bool {
-	if a.Len() != b.Len() {
-		return false
-	}
-	for _, e := range a.entries {
-		if !e.live {
-			continue
-		}
-		v, ok := b.Lookup(e.key)
-		if !ok || !eq(e.val, v) {
-			return false
-		}
-	}
-	return true
-}
-
 // OptEq is a == b for optional values.
 func OptEq[T any](a, b Opt[T], eq func(x, y T) bool) bool {
 	if a.Ok != b.Ok {
@@ -828,19 +811,8 @@ func SliceContains[T any](xs []T, x T, eq func(a, b T) bool) bool {
 // ContainsStr is sub in s.
 func ContainsStr(s, sub string) bool { return strings.Contains(s, sub) }
 
-// DictUnion is a | b: a new dict.
-func DictUnion[K comparable, V any](a, b *Dict[K, V]) *Dict[K, V] {
-	out := a.Copy()
-	DictUpdate(out, b)
-	return out
-}
-
-// DictUpdate is a |= b (and `{**b}` entries): b's items set into a, in b's order.
-func DictUpdate[K comparable, V any](a, b *Dict[K, V]) {
-	for _, p := range b.Items() {
-		a.Set(p.Key, p.Value)
-	}
-}
+// DictUpdate is `{**b}` inside a dict literal: dict_merge (DICT_UPDATE).
+func DictUpdate[K comparable, V any](a, b *Dict[K, V]) { a.Merge(b) }
 
 // B2I is int(b): Python orders False < True.
 func B2I(b bool) int {

@@ -297,6 +297,16 @@ class T2Counter(t2_collections.Counter):
         ranked = sorted(self.items(), key=lambda kv: -kv[1])  # stable: ties keep order
         return ranked if n is None else ranked[: max(n, 0)]
 
+    def update(self, iterable: object = None, /) -> None:  # type: ignore[override]
+        """Counter.update, with each count an Int (R623 outside the 64-bit range, as
+        every target): a non-empty Counter adds a mapping's counts to its own."""
+        if self and isinstance(iterable, dict):
+            get = self.get
+            for elem, count in iterable.items():
+                self[elem] = t2_int(count + get(elem, 0))
+            return
+        super().update(iterable)  # type: ignore[arg-type]
+
 
 _T2_SEQ = (str, list, tuple)
 
@@ -521,6 +531,12 @@ class T2Fuel:
         while stack:
             v, d = stack.pop()
             nodes += 1
+            # each node is charged as it is counted: the same total as charging them all
+            # after, and a value that contains itself runs out of fuel instead of
+            # walking forever
+            self.left -= 1
+            if self.left < 0:
+                raise self._spent()
             depth = max(depth, d)
             if isinstance(v, dict):
                 stack.extend((x, d + 1) for x in v.values())
@@ -529,9 +545,6 @@ class T2Fuel:
                 stack.extend((x, d + 1) for x in v)
             elif isinstance(v, str):
                 text += len(v)
-        self.left -= nodes
-        if self.left < 0:
-            raise self._spent()
         indent = kw.get("indent")
         step = len(indent) if isinstance(indent, str) else indent if isinstance(indent, int) else 0
         self.grow(text + nodes * (max(step, 0) * depth + 4))
@@ -585,6 +598,15 @@ def t2_widen(value: object, how: object) -> object:
             for k, v in value.items()  # type: ignore[attr-defined]
         }
     raise ValueError(f"unknown widening {how!r}")
+
+
+def t2_fget(d: dict, n: int) -> object:
+    """`d[n]` for an Int `n` and a dict of Float keys (docs/lattice-language-rules.md
+    R-widen): the lookup is exact, as `==` is; a defaultdict that stores a missing key
+    stores it widened (a store, like `d[n] = v`)."""
+    if isinstance(d, t2_collections.defaultdict) and n not in d:
+        return d[float(n)]
+    return d[n]
 
 
 class T2Row:
@@ -742,11 +764,12 @@ def t2_load(source: str, natives: dict[str, object] | None = None) -> dict[str, 
         "t2_record": _t2_record,
         "t2_int": t2_int,
         "t2_widen": t2_widen,
+        "t2_fget": t2_fget,
         "native": t2_types.SimpleNamespace(**(natives or {})),
     }
     exec(compile(source, "<lattice-procedures>", "exec"), namespace)  # noqa: S102
     loaders = ("t2_builtin", "t2_std_module", "t2_std", "t2_helper", "t2_record", "t2_int")
-    for loader in (*loaders, "t2_widen"):
+    for loader in (*loaders, "t2_widen", "t2_fget"):
         del namespace[loader]
     return namespace
 

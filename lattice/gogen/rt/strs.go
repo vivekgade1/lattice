@@ -476,7 +476,11 @@ func RStrip(s string, chars *string) string {
 // ---- repr -------------------------------------------------------------------------------
 
 // ReprStr is Python's repr(s).
-func ReprStr(s string) string {
+func ReprStr(s string) string { return reprRunes(pyRunes(s)) }
+
+// reprRunes is repr() of a str of code points (a lone surrogate prints as \udXXX).
+func reprRunes(rs []rune) string {
+	s := string(rs)
 	quote := byte('\'')
 	if strings.IndexByte(s, '\'') >= 0 && strings.IndexByte(s, '"') < 0 {
 		quote = '"'
@@ -487,7 +491,7 @@ func ReprStr(s string) string {
 		h := strconv.FormatInt(int64(r), 16)
 		b.WriteString(prefix + strings.Repeat("0", width-len(h)) + h)
 	}
-	for _, r := range s {
+	for _, r := range rs {
 		switch {
 		case r == rune(quote) || r == '\\':
 			b.WriteByte('\\')
@@ -540,7 +544,7 @@ func Repr(v any) string {
 	case Reprer:
 		return x.PyRepr()
 	}
-	panic("rt.Repr: no Python repr for this Go value")
+	return JsonRepr(v) // a container (inside a Json or a tuple)
 }
 
 // ---- the Str methods of T2 procedures (plan 5a Task 9) -------------------------------------

@@ -6,8 +6,10 @@ code target cannot run with v1.1 semantics.
 * L891 — a program of the tabular profile on a target without it.
 * L892 — a T2 construct the target does not implement yet: a call (builtin, method or
   stdlib function) outside the target's `t2_calls`, a value of a kind outside its
-  `t2_types` (Date, Json, ...), `str()` / an f-string field of a container, and the
-  regular expressions Go does not run (`_regex`: a non-literal `re.sub` replacement).
+  `t2_types`, `str()` / an f-string field of a container, the regular expressions Go
+  does not run (`_regex`: a non-literal `re.sub` replacement), and a `strftime` format
+  (or a Date/DateTime f-string spec) that is not a literal of the directives Go
+  implements (`_strftime`).
   (`Int ** n`, `round(Int, n)` and `min`/`max` of Int and Float arguments were gated
   until R-widen gave an Int in a Float place one meaning on every target.)
 
@@ -119,8 +121,23 @@ def _constructs(proc: CheckedProcedure, t2: T2Program, ctx: CheckContext, target
         match node:
             case ast.Call(args=[arg]) if proc.targets.get(id(node)) == "builtin:str":
                 _container_text(ctx, target, arg, types.get(id(arg)), records, "str()")
-            case ast.FormattedValue(value=value):
+            case ast.FormattedValue(value=value, format_spec=spec):
                 _container_text(ctx, target, value, types.get(id(value)), records, "an f-string")
+                if spec is not None and T.strip_opt(types.get(id(value)) or T.UNK) in (
+                    T.DATE,
+                    T.DATETIME,
+                ):
+                    literal = "".join(
+                        str(p.value) for p in spec.values if isinstance(p, ast.Constant)
+                    )
+                    dynamic = any(not isinstance(p, ast.Constant) for p in spec.values)
+                    _strftime(ctx, target, value, None if dynamic else literal)
+            case ast.Call(args=[fmt]) if proc.targets.get(id(node)) in (
+                "method:Date.strftime",
+                "method:DateTime.strftime",
+            ):
+                literal = fmt.value if isinstance(fmt, ast.Constant) else None
+                _strftime(ctx, target, node, literal if isinstance(literal, str) else None)
             case ast.Call(args=[ast.Constant(value=str() as pattern), *rest]) if proc.targets.get(
                 id(node), ""
             ).startswith("std:re."):
@@ -148,6 +165,40 @@ def _regex(
             node,
             f"'re.{fn}' on target '{target.name}': {problem} is not available yet",
             "write the replacement as a string literal, or compile for target 'python'",
+        )
+
+
+# The strftime directives the Go runtime implements (C locale; rt/times.go).
+STRFTIME_DIRECTIVES = frozenset("YmdHMSfyaAbBjp%")
+
+
+def strftime_problem(fmt: str | None) -> str | None:
+    """Why Go cannot run strftime with this format (None: it can): a format that is not
+    a string literal, or a directive outside STRFTIME_DIRECTIVES."""
+    if fmt is None:
+        return "a format that is not a string literal"
+    i = 0
+    while i < len(fmt):
+        if fmt[i] == "%":
+            if i + 1 == len(fmt) or fmt[i + 1] not in STRFTIME_DIRECTIVES:
+                return f"the directive {fmt[i : i + 2]!r}"
+            i += 2
+        else:
+            i += 1
+    return None
+
+
+def _strftime(ctx: CheckContext, target: Target, node: ast.AST, fmt: str | None) -> None:
+    """L892 for a strftime format Go does not run (a Date/DateTime `strftime` call, or
+    an f-string spec, which is one)."""
+    problem = strftime_problem(fmt)
+    if problem is not None:
+        ctx.error(
+            "L892",
+            node,
+            f"strftime with {problem} is not available on target '{target.name}' yet",
+            "use a literal format of %Y %m %d %H %M %S %f %y %a %A %b %B %j %p %%, "
+            "or compile for target 'python'",
         )
 
 

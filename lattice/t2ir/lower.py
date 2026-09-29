@@ -156,6 +156,40 @@ _SCANS = frozenset(
     {"std:re.fullmatch", "std:re.match", "std:re.search", "std:re.findall", "std:re.split"}
 )
 _TEMP = "_lt_t"
+# Methods whose first argument is only compared with the receiver's elements or keys
+# (a lookup): an Int there is compared exactly with Float elements, never widened.
+_PROBES = frozenset(
+    {
+        "method:list.index",
+        "method:list.count",
+        "method:list.remove",
+        "method:dict.get",
+        "method:dict.pop",
+        "method:set.discard",
+        "method:set.remove",
+    }
+)
+
+
+def _exact_probe(probe: T2Type, slot: T2Type | None) -> bool:
+    """An Int looked up among Floats: compared exactly (as `==`), not widened."""
+    return probe == T.INT and slot == T.FLOAT
+
+
+def _key_type(t: T2Type) -> T2Type | None:
+    match t:
+        case T.DictT(key=k) | T.CounterT(key=k):
+            return k
+    return None
+
+
+def _has_float_elems(t: T2Type) -> bool:
+    return isinstance(t, T.TupleT) and T.FLOAT in t.elems
+
+
+def _param(pattern: str, b: T.Bindings) -> T2Type:
+    p = sig_type(pattern)
+    return p if isinstance(p, T.Pseudo) else T.substitute(p, b, lambda _: T.UNK)
 
 
 def _widened(src: T2Type, dst: T2Type) -> T2Type:
@@ -566,6 +600,8 @@ class _Proc:
         k = literal_value(index)
         if isinstance(o.type, T.TupleT) and not (isinstance(k, int) and not isinstance(k, bool)):
             o = _coerce(o, T.TupleT(tuple(t for _ in o.type.elems)))
+        if _exact_probe(i.type, _key_type(o.type)):
+            return n.Index(o, i, t)  # a lookup is exact (a store widens the key)
         return n.Index(o, self._key(o, i), t)
 
     @staticmethod
@@ -594,6 +630,10 @@ class _Proc:
         el = T.elem_of(c.type)
         if el is None:
             return x, c
+        if (x.type == T.INT and el == T.FLOAT) or (
+            x.type in T.NUMERIC and _has_float_elems(c.type)
+        ):
+            return x, c  # Ints and Floats compare exactly, as `==` (nothing is widened)
         return _coerce(x, el), _Proc.iterable(c)
 
     def gens(self, gens: list[ast.comprehension]) -> tuple[n.Gen, ...]:
@@ -700,7 +740,12 @@ class _Proc:
             return _coerce(a, T.substitute(p, b, lambda _: T.UNK))
 
         params = [*sig.params, *sig.optional]
-        own = [widen(a, p) for a, p in zip(own, params, strict=False)]
+        own = [
+            a
+            if i == 0 and target in _PROBES and _exact_probe(a.type, _param(p, b))
+            else widen(a, p)
+            for i, (a, p) in enumerate(zip(own, params, strict=False))
+        ]
         kwargs = tuple((k, widen(v, sig.kwargs[k])) for k, v in kwargs)
         return receiver, own, kwargs
 

@@ -1,5 +1,7 @@
-"""T2 IR -> Go (plan 5a Tasks 8-9): the core statements, expressions and builtins,
-the Str methods, the `string` (and every stdlib) constant, and regular expressions.
+"""T2 IR -> Go (plan 5a Tasks 8-10): the core statements, expressions and builtins,
+the Str methods, the `string` (and every stdlib) constant, regular expressions, and
+(Task 10) the list / dict / set / Counter methods, collections.Counter/defaultdict,
+math, Date / DateTime / Duration and json -- every T2 call.
 
 `emit_go_t2(module, package)` writes one Go file from the IR of a checked program's
 procedures (`lattice.t2ir.lower.lower_t2`). It calls the Go runtime `lattice.dev/rt`
@@ -32,7 +34,15 @@ node by node:
   padding width is `rt.Width`, a regex input `rt.Scan`;
 * a regular expression (always a literal) is compiled once per program into a
   package-level `re_<n>` -- Python's own SRE code (`lattice.gogen.regex`), run by the
-  port of CPython's engine in rt/regex.go -- and a `re.sub` replacement into `tm_<n>`.
+  port of CPython's engine in rt/regex.go -- and a `re.sub` replacement into `tm_<n>`;
+* a dict or set follows CPython's entry layout (rt/omap.go), so one changed while it is
+  iterated stops or raises where CPython's does; a dict literal is built as CPython's
+  compiler builds it (presized chunks, merged); an Int looked up among Floats is
+  compared exactly (never widened);
+* `json.dumps` is `Sized` (`rt.SizedDumps`: the step, the value and keywords in the
+  written order, then the node charges and sizes); a Json is the value itself (`any`);
+  `timedelta(...)` evaluates its keywords as written and accumulates them in CPython's
+  order (`rt.Timedelta`).
 
 Values: see `lattice.gogen.types`. Constructs Go lacks are rejected before this runs
 (`lattice.check.p8_target`, L892); reaching one here is an internal error.
@@ -72,6 +82,13 @@ _GO_RESERVED = frozenset(
 _PACKAGE_PREFIXES = ("P_", "C_", "rec_", "tup_", "eq_", "lt_", "le_", "gt_", "ge_", "re_", "tm_")
 _INT_OPS: Mapping[str, str] = {"-": "rt.Sub", "//": "rt.FloorDiv", "%": "rt.Mod", ">>": "rt.Shr"}
 _BIT_OPS = frozenset({"&", "|", "^"})
+_TIME = frozenset({T.DATE, T.DATETIME, T.DURATION})
+# The attributes of Date, DateTime and Duration (catalog T2_ATTRS) as Go methods.
+_TIME_ATTRS: Mapping[str, str] = {
+    "year": "Year()", "month": "Month()", "day": "Day()", "hour": "Hour()",
+    "minute": "Minute()", "second": "Second()", "microsecond": "Microsecond()",
+    "days": "Days()", "seconds": "Seconds()",
+}  # fmt: skip
 _ORDER = frozenset({"<", "<=", ">", ">="})
 
 
@@ -549,6 +566,10 @@ class _Proc:
                         self.emit(
                             f"{o}.Set({self.conv(k, index.type, kt)}, {self.conv(go, t, vt)})"
                         )
+                    case T.CounterT(key=kt):
+                        self.emit(
+                            f"{o}.Set({self.conv(k, index.type, kt)}, {self.conv(go, t, T.INT)})"
+                        )
                     case _:
                         raise LatticeInternalError(f"gogen: item assignment on {ot.render()}")
             case _:
@@ -595,6 +616,8 @@ class _Proc:
                         kt = T.INT
                     case T.DictT(key=kt, val=et):
                         pass
+                    case T.CounterT(key=kt):
+                        et = T.INT
                     case _:
                         raise LatticeInternalError(f"gogen: item assignment on {ot.render()}")
                 o, k, cur = self.temp(), self.temp(), self.temp()
@@ -639,7 +662,7 @@ class _Proc:
             self.emit(store(cur))
             return
         if isinstance(t, T.DictT) and op == "|":
-            self.emit(f"rt.DictUpdate({cur}, {v})")
+            self.emit(f"rt.DictIOr({cur}, {v})")
             self.emit(store(cur))
             return
         # immutable values: cur op v, then stored
@@ -695,6 +718,9 @@ class _Proc:
             case n.ListLit(elts=elts, type=T.ListT(elem=el)):
                 items = ", ".join(self.conv(self.expr(x), x.type, el) for x in elts)
                 return f"rt.NewList[{self.spell(el)}]({items})"
+            case n.ListLit(elts=elts, type=T.JSON):  # mixed elements where a Json is expected
+                items = ", ".join(self.conv(self.expr(x), x.type, T.JSON) for x in elts)
+                return f"any(rt.NewList[any]({items}))"
             case n.SetLit(elts=elts, type=T.SetT(elem=el)):
                 items = ", ".join(self.conv(self.expr(x), x.type, el) for x in elts)
                 return f"rt.NewSet[{self.spell(el)}]({items})"
@@ -750,6 +776,8 @@ class _Proc:
                 return self.narrow(f"{self.expr(obj)}.F_{name}", declared, t)
             case _ if ot == T.FLOAT and name == "real":
                 return self.expr(obj)
+            case _ if ot in _TIME and name in _TIME_ATTRS:
+                return f"{self.expr(obj)}.{_TIME_ATTRS[name]}"
         if isinstance(obj, n.Var) and self.m.module.imports.get(obj.name) in T2_STDLIB:
             return self.std_constant(self.m.module.imports[obj.name], name)[0]
         raise LatticeInternalError(f"gogen: attribute {name} of {ot.render()}")
@@ -760,7 +788,9 @@ class _Proc:
         match ot:
             case T.ListT():
                 return f"{self.expr(obj)}.Get({self.expr(index)})"
-            case T.DictT(key=kt):
+            case T.DictT(key=kt) | T.CounterT(key=kt):
+                if kt == T.FLOAT and index.type == T.INT:
+                    return f"rt.DictGetIF({self.expr(obj)}, {self.expr(index)})"  # exact
                 return f"{self.expr(obj)}.Get({self.conv(self.expr(index), index.type, kt)})"
             case T.TupleT(elems=es):
                 i = _int_literal(index)
@@ -777,6 +807,8 @@ class _Proc:
                 )
         if ot == T.STR:
             return f"rt.IndexStr({self.expr(obj)}, {self.expr(index)})"
+        if ot == T.JSON:
+            return f"rt.JsonIndex({self.expr(obj)}, any({self.expr(index)}))"
         raise LatticeInternalError(f"gogen: index of {ot.render()}")
 
     def unary(self, e: n.Unary) -> str:
@@ -786,6 +818,8 @@ class _Proc:
         if operand.type == T.BOOL and e.op in ("-", "+", "~"):
             go = f"int64(rt.B2I({self.expr(operand)}))"
             return {"-": f"(-{go})", "+": go, "~": f"(^{go})"}[e.op]
+        if t == T.DURATION and e.op in ("-", "+"):
+            return f"{self.expr(operand)}.Neg()" if e.op == "-" else self.expr(operand)
         if e.op == "-":
             if isinstance(operand, n.Const) and type(operand.value) is int and t == T.INT:
                 return f"int64({-operand.value})"  # a literal (-9223372036854775808 too)
@@ -836,6 +870,8 @@ class _Proc:
                     return f"rt.ModF({fa}, {fb})"
                 case "**":
                     return f"rt.PowF({fa}, {fb})"
+        if _TIME & {at, bt}:
+            return self.time_op(op, a, at, b, bt, t)
         if at == T.BOOL and bt == T.BOOL and op in _BIT_OPS:
             return f"rt.{ {'&': 'AndB', '|': 'OrB', '^': 'XorB'}[op] }({a}, {b})"
         if at == T.STR:
@@ -879,6 +915,40 @@ class _Proc:
             return f"rt.DictUnion({a}, {b})"
         raise LatticeInternalError(f"gogen: {at.render()} {op} {bt.render()}")
 
+    def time_op(self, op: str, a: str, at: T2Type, b: str, bt: T2Type, t: T2Type) -> str:  # noqa: PLR0911
+        """Date / DateTime / Duration arithmetic (datetime's operators), each operand
+        evaluated once, left first."""
+        D = T.DURATION  # noqa: N806
+
+        def fn(body: str) -> str:
+            return (
+                f"func(x {self.spell(at)}, y {self.spell(bt)}) {self.spell(t)} "
+                f"{{ return {body} }}({a}, {b})"
+            )
+
+        match op, at, bt:
+            case "+", _, _ if at == D and bt == D:
+                return fn("x.Add(y)")
+            case "+", _, _ if bt == D:
+                return fn("x.AddDur(y)")
+            case "+", _, _ if at == D:
+                return fn("y.AddDur(x)")
+            case "-", _, _ if bt == D and at != D:
+                return fn("x.SubDur(y)")
+            case "-", _, _ if at == bt:
+                return fn("x.Sub(y)")
+            case "*", _, _ if at == D:
+                return fn("x.MulInt(y)" if bt == T.INT else "x.MulFloat(y)")
+            case "*", _, _ if bt == D:
+                return fn("y.MulInt(x)" if at == T.INT else "y.MulFloat(x)")
+            case "/", _, _ if at == D:
+                return fn({T.INT: "x.DivInt(y)", T.FLOAT: "x.DivFloat(y)"}.get(bt, "x.Div(y)"))
+            case "//", _, _ if at == D:
+                return fn("x.FloorDivInt(y)" if bt == T.INT else "x.FloorDiv(y)")
+            case "%", _, _ if at == D and bt == D:
+                return fn("x.Mod(y)")
+        raise LatticeInternalError(f"gogen: {at.render()} {op} {bt.render()}")
+
     # ---- comparisons and truth ---------------------------------------------------------
 
     def compare(self, e: n.Compare) -> str:
@@ -913,8 +983,10 @@ class _Proc:
                 return f"rt.CmpIFOp({a}, {b}, {go_string(op)})"
             if at == T.FLOAT and bt == T.INT:
                 return f"rt.CmpFIOp({a}, {b}, {go_string(op)})"
-            if at == bt and at in (T.INT, T.FLOAT, T.STR):
+            if at == bt and at in (T.INT, T.FLOAT, T.STR, T.DATE, T.DATETIME):
                 return f"({a} {op} {b})"
+            if at == bt == T.DURATION:
+                return f"({a}.Cmp({b}) {op} 0)"
             common = T.join(at, bt)
             if common is None:
                 raise LatticeInternalError(f"gogen: {at.render()} {op} {bt.render()}")
@@ -927,6 +999,8 @@ class _Proc:
             a, at, b, bt = b, bt, a, at  # None is x
         if bt != T.NONE:
             raise LatticeInternalError("gogen: 'is' compares only with None")
+        if T.strip_opt(at) == T.JSON:
+            return f"rt.JsonIsNone({a})"  # a Json may hold None
         if isinstance(at, T.Opt):
             return (
                 f"!{a}.Ok"
@@ -957,7 +1031,7 @@ class _Proc:
         if common is None:
             raise LatticeInternalError(f"gogen: {at.render()} == {bt.render()}")
         ca, cb = self.conv(a, at, common), self.conv(b, bt, common)
-        if common in (T.INT, T.FLOAT, T.STR, T.BOOL, T.UUID):
+        if common in (T.INT, T.FLOAT, T.STR, T.BOOL, T.UUID, *_TIME):
             return f"({ca} == {cb})"
         return f"{self.types.eq(common)}({ca}, {cb})"
 
@@ -967,6 +1041,29 @@ class _Proc:
             return f"func(x, s string) bool {{ return rt.ContainsStr(s, x) }}({x}, {c})"
         elem = self.elem(ct)
         cs = self.spell(ct)
+        if isinstance(ct, T.TupleT):
+            # element by element, each compared with its own type (Ints and Floats exactly)
+            tests = " || ".join(self.equal("x", xt, f"t.F{i}", e) for i, e in enumerate(ct.elems))
+            xs_ = self.spell(xt)
+            return f"func(x {xs_}, t {cs}) bool {{ return {tests or 'false'} }}({x}, {c})"
+        if xt == T.INT and elem == T.FLOAT:
+            # exactly, as ==: only a Float equal to the Int (never the Int widened)
+            match ct:
+                case T.ListT():
+                    return (
+                        f"func(x int64, c {cs}) bool {{ return c.CountBy(func(y float64) bool "
+                        f"{{ return rt.EqIF(x, y) }}) > 0 }}({x}, {c})"
+                    )
+                case T.SetT():
+                    return f"func(x int64, c {cs}) bool {{ return rt.SetHasIF(c, x) }}({x}, {c})"
+                case T.DictT() | T.CounterT():
+                    return f"func(x int64, c {cs}) bool {{ return rt.DictHasIF(c, x) }}({x}, {c})"
+                case T.IterT():
+                    return (
+                        f"func(x int64, c {cs}) bool {{ return rt.IterContainsBy(c, "
+                        f"func(y float64) "
+                        f"bool {{ return rt.EqIF(x, y) }}) }}({x}, {c})"
+                    )
         if xt == T.FLOAT and elem == T.INT:
             # exactly, as Python: only an integral Float in the Int range equals an Int
             inner = self.contains("i", T.INT, "c", ct)
@@ -985,12 +1082,6 @@ class _Proc:
                 return f"func(x {xs}, c {cs}) bool {{ return c.Has(x) }}({xg}, {c})"
             case T.IterT():
                 return f"func(x {xs}, c {cs}) bool {{ return c.Contains(x, {eq}) }}({xg}, {c})"
-            case T.TupleT(elems=es):
-                items = ", ".join(self.conv(f"t.F{i}", e, elem) for i, e in enumerate(es))
-                return (
-                    f"func(x {xs}, t {cs}) bool {{ return rt.SliceContains([]{xs}{{{items}}}, x, "
-                    f"{self.types.eq(elem)}) }}({xg}, {c})"
-                )
         raise LatticeInternalError(f"gogen: 'in' {ct.render()}")
 
     def truth(self, go: str, t: T2Type) -> str:  # noqa: PLR0911
@@ -1001,6 +1092,10 @@ class _Proc:
             return f"({go} != 0)"
         if t in (T.STR, T.UUID):
             return f'({go} != "")'
+        if t == T.DURATION:
+            return f"{go}.Truth()"
+        if t == T.JSON:
+            return f"rt.JsonTruth({go})"
         match t:
             case T.ListT() | T.SetT() | T.DictT() | T.CounterT():
                 return f"({go}.Len() != 0)"
@@ -1043,6 +1138,8 @@ class _Proc:
         """A value of type src where dst is expected (Int -> Float, T -> T | None, ...)."""
         if src == dst or src is T.UNK or dst is T.UNK:
             return go
+        if dst == T.JSON:
+            return f"any({go})"  # the value itself, shared (rt.jnorm reads optionals)
         if isinstance(dst, T.Opt):
             inner = dst.inner
             none = f"rt.None[{self.spell(inner)}]()"
@@ -1097,17 +1194,64 @@ class _Proc:
 
     def dict_lit(self, e: n.DictLit) -> str:
         t = e.type
+        if t == T.JSON:  # mixed values where a Json is expected: a dict[Str, Json]
+            inner = n.DictLit(e.keys, e.values, T.DictT(T.STR, T.JSON))
+            return f"any({self.dict_lit(inner)})"
         if not isinstance(t, T.DictT):
             raise LatticeInternalError("gogen: dict literal type")
         go = self.spell(t)
+        kv = f"{self.spell(t.key)}, {self.spell(t.val)}"
         d = self.temp()
-        parts = [f"func() {go} {{ {d} := rt.NewDict[{self.spell(t.key)}, {self.spell(t.val)}]()"]
-        for k, v in zip(e.keys, e.values, strict=True):
-            if k is None:
-                parts.append(f"rt.DictUpdate({d}, {self.conv(self.expr(v), v.type, t)})")
+        parts = [f"func() {go} {{ var {d} {go}"]
+        have = False
+
+        def subdict(idx: list[int]) -> None:
+            """CPython's codegen_subdict: BUILD_MAP n (presized, every key and value
+            evaluated first) or, for more than 15 entries, BUILD_MAP 0 + MAP_ADD each;
+            the first one is the dict, a later one is merged into it (DICT_UPDATE)."""
+            nonlocal have
+            sub = self.temp()
+            pairs = [
+                (
+                    self.conv(self.expr(e.keys[i]), e.keys[i].type, t.key),  # type: ignore[union-attr]
+                    self.conv(self.expr(e.values[i]), e.values[i].type, t.val),
+                )
+                for i in idx
+            ]
+            if len(idx) * 2 > 30:
+                parts.append(f"{sub} := rt.NewDict[{kv}]()")
+                parts.extend(f"{sub}.Set({k}, {v})" for k, v in pairs)
             else:
-                key = self.conv(self.expr(k), k.type, t.key)
-                parts.append(f"{d}.Set({key}, {self.conv(self.expr(v), v.type, t.val)})")
+                temps = []
+                for k, v in pairs:
+                    tk, tv = self.temp(), self.temp()
+                    parts.append(f"{tk}, {tv} := {k}, {v}")
+                    temps.append((tk, tv))
+                parts.append(f"{sub} := rt.NewDictSized[{kv}]({len(idx)})")
+                parts.extend(f"{sub}.Set({k}, {v})" for k, v in temps)
+            parts.append(f"{d}.Merge({sub})" if have else f"{d} = {sub}")
+            have = True
+
+        elements: list[int] = []
+        for i, k in enumerate(e.keys):
+            if k is None:  # **v
+                if elements:
+                    subdict(elements)
+                    elements = []
+                if not have:
+                    parts.append(f"{d} = rt.NewDict[{kv}]()")
+                    have = True
+                v = e.values[i]
+                parts.append(f"{d}.Merge({self.conv(self.expr(v), v.type, t)})")
+            elif len(elements) * 2 > 30:
+                subdict([*elements, i])
+                elements = []
+            else:
+                elements.append(i)
+        if elements:
+            subdict(elements)
+        if not have:
+            parts.append(f"{d} = rt.NewDict[{kv}]()")
         parts.append(f"return {d} }}()")
         return "; ".join(parts)
 
@@ -1294,6 +1438,7 @@ class _Proc:
             T.BOOL: "rt.FmtBool",
             T.STR: "rt.FmtStr",
         }
+        simple |= {T.DATE: "rt.FmtDate", T.DATETIME: "rt.FmtDateTime", T.JSON: "rt.FmtJson"}
         if t in simple:
             return f"{simple[t]}(fuel, {v}, {spec})"
         go = self.spell(t)
@@ -1316,6 +1461,8 @@ class _Proc:
                 return f"func(_ struct{{}}, sp string) string {{ return {body} }}({v}, {spec})"
             case _ if t == T.UUID:
                 tname = '"UUID"'
+            case _ if t == T.DURATION:
+                tname = '"datetime.timedelta"'
             case _:
                 raise LatticeInternalError(f"gogen: format of {t.render()}")
         return (
@@ -1332,6 +1479,12 @@ class _Proc:
             return f"rt.StrBool({go})"
         if t in (T.STR, T.UUID):
             return go
+        if t == T.DATE:
+            return f"{go}.ISO()"
+        if t in (T.DATETIME, T.DURATION):
+            return f"{go}.Str()"
+        if t == T.JSON:
+            return f"rt.JsonStr({go})"
         if t == T.NONE:
             return (
                 '"None"'
@@ -1355,6 +1508,10 @@ class _Proc:
             return f"rt.ReprStr({go})"
         if t == T.UUID:
             return f'("UUID(\'" + {go} + "\')")'
+        if t in _TIME:
+            return f"{go}.PyRepr()"
+        if t == T.JSON:
+            return f"rt.JsonRepr({go})"
         match t:
             case T.Opt(inner=inner):
                 return (
@@ -1389,7 +1546,17 @@ class _Proc:
         """A method call on the (evaluated) receiver `recv`, its other arguments
         evaluated here, in order (Go evaluates call arguments left to right)."""
         kind, _, name = c.target.removeprefix("method:").partition(".")
+        if kind in ("list", "dict", "set", "Counter"):
+            return self.coll_method(kind, name, c, recv)
         args = [self.expr(a) for a in c.args[1:]]
+        if kind in ("Date", "DateTime", "Duration"):
+            calls = {
+                "isoformat": "ISO()" if kind == "Date" else "Isoformat()",
+                "weekday": "Weekday()", "isoweekday": "IsoWeekday()",
+                "date": "Date()", "timestamp": "Timestamp()", "total_seconds": "TotalSeconds()",
+                "strftime": f"Strftime({args[0] if args else ''})",
+            }  # fmt: skip
+            return f"{recv}.{calls[name]}"
         if kind == "Str":
             return self.str_method(name, recv, args, c)
         if kind == "Match":
@@ -1403,6 +1570,157 @@ class _Proc:
                 case "start" | "end", []:
                     return f"{recv}.{name.capitalize()}()"
         raise LatticeInternalError(f"gogen: call target {c.target!r} is not available on Go")
+
+    def coll_method(self, kind: str, name: str, c: n.Call, r: str) -> str:  # noqa: C901, PLR0911, PLR0912
+        """A list / dict / set / Counter method on the receiver r (its arguments
+        evaluated here, in order; an argument consumed whole is `Bulk`)."""
+        rt_ = T.strip_opt(c.args[0].type)
+        args = c.args[1:]
+        kw = dict(c.kwargs)
+        res = self.spell(c.type)
+
+        def val(i: int, t: T2Type) -> str:
+            return self.conv(self.expr(args[i]), args[i].type, t)
+
+        def probe(el: T2Type) -> bool:  # an Int looked up among Floats (exact)
+            return bool(args) and args[0].type == T.INT and el == T.FLOAT
+
+        if isinstance(rt_, T.ListT):
+            el = rt_.elem
+            eq = self.types.eq(el)
+            match name:
+                case "append":
+                    return f"{r}.Append({val(0, el)})"
+                case "extend":
+                    return self.extend(r, args[0])
+                case "insert":
+                    return f"{r}.Insert({self.expr(args[0])}, {val(1, el)})"
+                case "pop":
+                    return f"{r}.Pop({f'rt.P({self.expr(args[0])})' if args else 'nil'})"
+                case "remove" | "index" | "count":
+                    fn = {"remove": "RemoveBy", "index": "IndexBy", "count": "CountBy"}[name]
+                    if probe(el):
+                        match = "func(y float64) bool { return rt.EqIF(x, y) }"
+                        xt = "int64"
+                    else:
+                        match = f"func(y {self.spell(el)}) bool {{ return {eq}(y, x) }}"
+                        xt = self.spell(el)
+                    x = self.expr(args[0]) if probe(el) else val(0, el)
+                    return f"func(x {xt}) {res} {{ return {r}.{fn}({match}) }}({x})"
+                case "clear" | "reverse" | "copy":
+                    return f"{r}.{name.capitalize()}()"
+                case "sort":
+                    rev = "false"
+                    if "reverse" in kw:
+                        rev = self.truth(self.expr(kw["reverse"]), kw["reverse"].type)
+                    if "key" in kw:
+                        fn, kt = self.lambda_fn(kw["key"], el)
+                        return f"rt.SortKey({r}, {fn}, {self.types.order(kt, '<')}, {rev})"
+                    return f"{r}.Sort({self.types.order(el, '<')}, {rev})"
+        elif isinstance(rt_, T.SetT):
+            el = rt_.elem
+            match name:
+                case "add":
+                    return f"{r}.Add({val(0, el)})"
+                case "discard" | "remove":
+                    if probe(el):
+                        fn = "SetDiscardIF" if name == "discard" else "SetRemoveIF"
+                        return f"rt.{fn}({r}, {self.expr(args[0])})"
+                    return f"{r}.{name.capitalize()}({val(0, el)})"
+                case "clear" | "copy":
+                    return f"{r}.{name.capitalize()}()"
+                case "update" | "union" | "intersection" | "difference" | "issubset" | "issuperset":
+                    fn = {
+                        "update": "UpdateCur", "union": "UnionCur",
+                        "intersection": "IntersectionCur", "difference": "DifferenceCur",
+                        "issubset": "IsSubsetCur", "issuperset": "IsSupersetCur",
+                    }[name]  # fmt: skip
+                    return f"{r}.{fn}({self.elem_cursor(args[0], el)})"
+        elif isinstance(rt_, T.DictT | T.CounterT):
+            kt = rt_.key
+            vt = rt_.val if isinstance(rt_, T.DictT) else T.INT
+            match name:
+                case "get" if len(args) == 1:
+                    if probe(kt):
+                        return self.flat_opt(f"rt.DictGetOptIF({r}, {self.expr(args[0])})", vt)
+                    return self.flat_opt(f"{r}.GetOpt({val(0, kt)})", vt)
+                case "get":
+                    if probe(kt):
+                        return f"rt.DictGetOrIF({r}, {self.expr(args[0])}, {val(1, vt)})"
+                    return f"{r}.GetOr({val(0, kt)}, {val(1, vt)})"
+                case "pop" if len(args) == 1:
+                    if probe(kt):
+                        return f"rt.DictPopIF({r}, {self.expr(args[0])})"
+                    return (
+                        f"func(k {self.spell(kt)}) {res} {{ return {r}.Pop(k, k) }}({val(0, kt)})"
+                    )
+                case "pop":
+                    if probe(kt):
+                        return f"rt.DictPopOrIF({r}, {self.expr(args[0])}, {val(1, vt)})"
+                    return f"{r}.PopOr({val(0, kt)}, {val(1, vt)})"
+                case "setdefault":
+                    return f"{r}.SetDefault({val(0, kt)}, {val(1, vt)})"
+                case "update":
+                    return f"{r}.Update({val(0, T.DictT(kt, vt))})"
+                case "clear" | "copy":
+                    return f"{r}.{name.capitalize()}()"
+                case "keys":
+                    return f"rt.KeysView({r})"
+                case "values":
+                    return f"rt.ValuesView({r})"
+                case "items":
+                    return f"rt.ItemsView({r}, {self.pair_fn(kt, vt, c.type)})"
+                case "most_common":
+                    n_ = f"rt.P({self.expr(args[0])})" if args else "nil"
+                    assert isinstance(c.type, T.ListT)
+                    return f"rt.MostCommon({r}, {n_}, {self.pair_fn(kt, T.INT, c.type)})"
+        raise LatticeInternalError(f"gogen: call target {c.target!r} is not available on Go")
+
+    def pair_fn(self, kt: T2Type, vt: T2Type, container: T2Type) -> str:
+        """A Go func building the (key, value) tuple an items view / most_common yields."""
+        tup = self.elem(container)
+        assert isinstance(tup, T.TupleT)
+        k = self.conv("k", kt, tup.elems[0])
+        v = self.conv("v", vt, tup.elems[1])
+        go = self.spell(tup)
+        return f"func(k {self.spell(kt)}, v {self.spell(vt)}) {go} {{ return {go}{{{k}, {v}}} }}"
+
+    def flat_opt(self, go: str, vt: T2Type) -> str:
+        """d.get(k) of a dict whose values are already optional: V | None is V."""
+        if not isinstance(vt, T.Opt):
+            return go
+        inner = self.spell(vt.inner)
+        return (
+            f"func(o rt.Opt[{self.spell(vt)}]) {self.spell(vt)} {{ if !o.Ok {{ return "
+            f"rt.None[{inner}]() }}; return o.V }}({go})"
+        )
+
+    def elem_cursor(self, arg: n.Expr, el: T2Type) -> str:
+        """A cursor of el elements over an iterable argument (charged as the IR says)."""
+        src = self.elem(_strip_charge(arg).type)
+        cur = self.cursor_of(arg)
+        return cur if src == el else self.map_cursor(cur, src, el)
+
+    def extend(self, r: str, arg: n.Expr) -> str:
+        """l.extend(xs): a list, tuple, set or dict is copied first (CPython), anything
+        else is appended element by element as it is produced."""
+        inner = _strip_charge(arg)
+        t = inner.type
+        items = {
+            T.ListT: "x.Items",
+            T.SetT: "x.Items()",
+            T.DictT: "x.Keys()",
+            T.CounterT: "x.Keys()",
+        }
+        kind = type(t)
+        if isinstance(arg, n.Bulk) and kind in items:
+            charge = f"fuel.Bulk(int({self.length('x', t)}))"
+            return (
+                f"func(x {self.spell(t)}) struct{{}} {{ {charge}; "
+                f"return {r}.Extend({items[kind]}) }}"
+                f"({self.expr(inner)})"
+            )
+        return f"{r}.ExtendCur({self.cursor_of(arg)})"
 
     def str_method(self, name: str, r: str, args: list[str], c: n.Call) -> str:  # noqa: PLR0911
         """A Str method (Str.replace and Str.join are Sized: `sized`)."""
@@ -1467,6 +1785,23 @@ class _Proc:
             case "sub", (n.Const(value=str() as pattern), n.Const(value=str() as repl), s):
                 rx, tm = self.m.regex(pattern), self.m.template(pattern, repl)
                 body = f"rt.ReSub(fuel, {rx}, {tm}, {self.expr(s)})"
+            case "dumps", (value,):
+                # the value, then the keywords in the written order, then the sizes
+                val = self.temp()
+                pre = [f"{val} := {self.conv(self.expr(value), value.type, T.JSON)}"]
+                sort_keys, indent = "false", "nil"
+                for k, v in call.kwargs:
+                    tmp = self.temp()
+                    if k == "sort_keys":
+                        pre.append(f"{tmp} := {self.truth(self.expr(v), v.type)}")
+                        sort_keys = tmp
+                    else:
+                        pre.append(f"{tmp} := {self.expr(v)}")
+                        indent = f"&{tmp}"
+                body = (
+                    f"func() string {{ {'; '.join(pre)}; "
+                    f"return rt.SizedDumps(fuel, {val}, {sort_keys}, {indent}) }}()"
+                )
             case _:
                 raise LatticeInternalError(f"gogen: {e.kind} is not available on Go")
         return f"rt.After(fuel.Step(), {body})"
@@ -1481,7 +1816,103 @@ class _Proc:
             return self.builtin(name, c)
         if kind == "std" and name.startswith("re."):
             return self.regex_call(name[3:], c)
+        if kind == "std" and name.startswith("collections."):
+            return self.collections_call(name.removeprefix("collections."), c)
+        if kind == "std" and name.startswith("math."):
+            return self.math_call(name.removeprefix("math."), c)
+        if kind == "std" and name == "datetime.date":
+            y, m, d = (self.expr(a) for a in c.args)
+            return f"rt.NewDate({y}, {m}, {d})"
+        if kind == "std" and name == "datetime.timedelta":
+            return self.timedelta(dict(c.kwargs), [k for k, _ in c.kwargs])
+        if kind == "helper":  # days(n), hours(n), minutes(n), seconds(n)
+            return self.timedelta({name: c.args[0]}, [name])
+        if kind == "std" and name == "json.loads":
+            return f"rt.JsonLoads({self.expr(c.args[0])})"
         raise LatticeInternalError(f"gogen: call target {c.target!r} is not available on Go")
+
+    def timedelta(self, parts: Mapping[str, n.Expr], written: list[str]) -> str:
+        """timedelta(**parts): the arguments evaluated in the written order, then
+        accumulated in CPython's (delta_new: seconds, minutes, hours, days, weeks)."""
+        temps: dict[str, str] = {}
+        pre: list[str] = []
+        for unit in written:
+            e = parts[unit]
+            tmp = self.temp()
+            ctor = "rt.DI" if e.type == T.INT else "rt.DF"
+            pre.append(f"{tmp} := {ctor}({self.expr(e)})")
+            temps[unit] = f"&{tmp}"
+        order = ("seconds", "minutes", "hours", "days", "weeks")
+        args = ", ".join(temps.get(u, "nil") for u in order)
+        return f"func() rt.Duration {{ {'; '.join(pre)}; return rt.Timedelta({args}) }}()"
+
+    def math_call(self, fn: str, c: n.Call) -> str:  # noqa: PLR0911
+        """A `math` function (mathmodule.c's special cases, errors and rounding)."""
+        args = c.args
+
+        def f(i: int) -> str:
+            return self.conv(self.expr(args[i]), args[i].type, T.FLOAT)
+
+        match fn:
+            case "floor" | "ceil" | "trunc":
+                if args[0].type == T.INT:
+                    return self.expr(args[0])  # int.__floor__: the Int itself
+                return f"rt.Math{fn.capitalize()}({self.expr(args[0])})"
+            case "sqrt" | "exp" | "fabs":
+                return f"rt.Math{fn.capitalize()}({f(0)})"
+            case "log" | "log10":
+                logs = []
+                for a in args:
+                    suffix = "I" if a.type == T.INT else ""
+                    name = "Log" if fn == "log" or logs else "Log10"
+                    logs.append(f"rt.Math{name}{suffix}({self.expr(a)})")
+                if len(logs) == 1:
+                    return logs[0]
+                return f"rt.MathLogBase({logs[0]}, {logs[1]})"
+            case "pow":
+                return f"rt.MathPow({f(0)}, {f(1)})"
+            case "isclose":
+                return f"rt.MathIsClose({f(0)}, {f(1)})"
+            case "gcd":
+                return f"rt.MathGcd({self.expr(args[0])}, {self.expr(args[1])})"
+        raise LatticeInternalError(f"gogen: math.{fn} is not available on Go")
+
+    def collections_call(self, fn: str, c: n.Call) -> str:
+        """collections.Counter(...) and collections.defaultdict(factory)."""
+        t = c.type
+        if fn == "Counter":
+            assert isinstance(t, T.CounterT)
+            k = self.spell(t.key)
+            if not c.args:
+                return f"rt.NewCounter[{k}]()"
+            (arg,) = c.args
+            src = _strip_charge(arg)
+            if isinstance(src.type, T.DictT | T.CounterT):  # a mapping of counts
+                charge = "fuel.Bulk(int(m.Len()))" if isinstance(arg, n.Bulk) else ""
+                return (
+                    f"func(m {self.spell(src.type)}) {self.spell(t)} {{ {charge}; "
+                    f"return rt.CounterOfDict(m) }}({self.expr(src)})"
+                )
+            return f"rt.CounterOf({self.elem_cursor(arg, t.key)})"
+        if fn == "defaultdict":
+            assert isinstance(t, T.DictT)
+            (factory,) = c.args
+            if not isinstance(factory, n.Var):
+                raise LatticeInternalError("gogen: defaultdict of a non-factory")
+            v = self.spell(t.val)
+            make = {
+                "list": lambda: f"rt.NewList[{self.spell(self.elem(t.val))}]()",
+                "set": lambda: f"rt.NewSet[{self.spell(self.elem(t.val))}]()",
+                "int": lambda: "int64(0)",
+                "float": lambda: "float64(0)",
+                "str": lambda: '""',
+            }[factory.name]()
+            k = self.spell(t.key)
+            return (
+                f"rt.NewDefaultDict[{k}, {v}](func() {v} {{ return {make} }}, "
+                f"{go_string(factory.name)})"
+            )
+        raise LatticeInternalError(f"gogen: collections.{fn} is not available on Go")
 
     def regex_call(self, fn: str, c: n.Call) -> str:
         """re.fullmatch / match / search / findall / split (re.sub is Sized): the
@@ -1684,6 +2115,14 @@ class _Proc:
                 if not args:
                     return f"rt.New{name.capitalize()}[{self.spell(el)}]()"
                 fn = "Collect" if name == "list" else "CollectSet"
+                src = _strip_charge(args[0])
+                if name == "set" and isinstance(src.type, T.DictT) and self.elem(src.type) == el:
+                    # T2Set(d) is dict.fromkeys(d): presized for an exact dict
+                    charge = "fuel.Bulk(int(d.Len())); " if isinstance(args[0], n.Bulk) else ""
+                    return (
+                        f"func(d {self.spell(src.type)}) {self.spell(t)} {{ {charge}"
+                        f"return rt.SetOfDict(d) }}({self.expr(src)})"
+                    )
                 src_el = self.elem(_strip_charge(args[0]).type)
                 cur = self.cursor_of(args[0])
                 if src_el != el:

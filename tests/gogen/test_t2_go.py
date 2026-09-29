@@ -6,6 +6,7 @@ control flow through try/except in loops, records, module constants, keyword
 arguments, optional values and comprehension scoping, each run on both targets."""
 
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from textwrap import dedent
 
 import pytest
@@ -34,6 +35,19 @@ def test_emits_compilable_go(tmp_path):
     src = emit_go_t2(lower_t2(program.t2, None))
     assert "func P_total(fuel *rt.Fuel, xs *rt.List[int64]) int64" in src
     assert "fuel.Tick()" in src
+
+
+def test_go_implements_every_t2_call():
+    """Plan 5a Task 10: every T2 call target (builtin, method, stdlib function) is
+    implemented on Go; what Go still refuses is a construct (L892 gates), not a call."""
+    from lattice.catalog import T2_METHODS, T2_STDLIB
+    from lattice.t2.support import T2_BUILTIN_NAMES
+    from lattice.targets import GO_T2_CALLS
+
+    wanted = {f"builtin:{b}" for b in T2_BUILTIN_NAMES if b[0].islower()}
+    wanted |= {f"method:{k}.{m}" for k, ms in T2_METHODS.items() for m in ms}
+    wanted |= {f"std:{mod}.{name}" for mod, names in T2_STDLIB.items() for name in names}
+    assert wanted - GO_T2_CALLS == set()
 
 
 def test_go_literals():
@@ -527,6 +541,48 @@ PROGRAMS = [
         """),
         "f",
         (["bad cafe\n", "ab éb", "Bee FACE b", ""],),
+        None,
+    ),
+    Case(
+        # Task 10: records and tuples holding dates, durations and Json; sorting, sums of
+        # durations, json.dumps of what the procedure built, str() of a record
+        "events_with_time_and_json",
+        P("""
+            import json
+            from collections import Counter
+
+            @record
+            class Event:
+                at: DateTime
+                took: Duration
+                meta: Json
+
+            @procedure
+            def f(start: DateTime, spec: Str) -> list[Str]:
+                data = json.loads(spec)
+                events: list[Event] = []
+                total = seconds(0)
+                kinds: list[Str] = []
+                for i, name in enumerate(["b", "a", "c"]):
+                    took = minutes(i * 7.5) + seconds(0.25)
+                    total = total + took
+                    events.append(Event(at=start - hours(i * 5), took=took, meta=data[name]))
+                    kinds.append(str(data[name]["kind"]))
+                events.sort(key=lambda e: e.at)
+                firsts = [(e.at.date(), e.took) for e in events]
+                c: dict[Str, Int] = Counter(kinds)
+                out = [str(events[0]), str(total), str(total / 3),
+                       str(firsts[0][0]) + str(firsts[-1][1]),
+                       json.dumps([e.meta for e in events], sort_keys=True),
+                       json.dumps(c, indent=1), f"{events[-1].at:%a %j %p}"]
+                return out
+        """),
+        "f",
+        (
+            datetime(2024, 3, 1, 2, 30, tzinfo=UTC),
+            '{"a": {"kind": "x", "n": [1, 2.5]}, "b": {"kind": "y"}, '
+            '"c": {"kind": "x", "z": null}}',
+        ),
         None,
     ),
 ]

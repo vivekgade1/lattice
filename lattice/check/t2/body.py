@@ -1551,7 +1551,19 @@ class BodyChecker:
         if qual == "collections.defaultdict":
             return self._defaultdict(node, env, expected)
         label = qual.rsplit(".", 1)[-1] if qual.startswith("collections.") else qual
-        return self.apply(node, overloads, {}, env, expected, label, f"std:{qual}")
+        result = self.apply(node, overloads, {}, env, expected, label, f"std:{qual}")
+        if qual == "collections.Counter" and len(node.args) == 1:
+            # Counter(mapping) takes the mapping's values as the counts (R9: a Counter's
+            # counts are Ints, so the values must be)
+            at = self.types.get(id(node.args[0]))
+            if isinstance(at, T.DictT) and at.val not in (T.INT, UNK):
+                return self.err(
+                    "L904",
+                    node.args[0],
+                    f"Counter of a {at} counts its values, which must be Int",
+                    "count the keys: Counter(d.keys())",
+                )
+        return result
 
     def _defaultdict(self, node: ast.Call, env: Env, expected: T2Type | None) -> T2Type:
         self.targets[id(node)] = "std:collections.defaultdict"

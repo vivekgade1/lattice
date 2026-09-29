@@ -12,8 +12,11 @@ needs per type: equality, Python's ordering and repr.
 | a record R | a generated `rec_R` struct (fields F_<name>) |
 | Error (the value `except E as e` binds) | *rt.Error |
 | Match (re.search, ...) | *rt.Match |
+| Date / DateTime / Duration | rt.Date / rt.DateTime (UTC) / rt.Duration (Task 10) |
+| Json | any: the Python-shaped value itself, shared (rt/jsonv.go) |
+| Counter[T] (a defaultdict is a dict) | *rt.Dict[T, int64] of the Counter kind |
 
-Date, DateTime, Duration, Json, Row, Caller and Counter are not implemented yet
+Row and Caller (the endpoint layer's values, plan 5a Task 12) are not implemented yet
 (`lattice.targets.GO_T2_TYPES`): `p8_target` rejects them on Go with L892.
 """
 
@@ -35,7 +38,13 @@ _SCALARS: Mapping[T2Type, str] = {
     T.BOOL: "bool",
     T.UUID: "string",
     T.NONE: "struct{}",
+    T.DATE: "rt.Date",
+    T.DATETIME: "rt.DateTime",
+    T.DURATION: "rt.Duration",
+    T.JSON: "any",
 }
+# Values compared with Go's == (a Json is compared as Python compares, rt.JsonEq).
+_COMPARABLE = frozenset(t for t in _SCALARS if t != T.JSON)
 
 
 def kinds(t: T2Type) -> set[str]:
@@ -126,6 +135,8 @@ class GoTypes:
                 return f"*rt.Set[{self.spell(e)}]"
             case T.DictT(key=k, val=v):
                 return f"*rt.Dict[{self.spell(k)}, {self.spell(v)}]"
+            case T.CounterT(key=k):
+                return f"*rt.Dict[{self.spell(k)}, int64]"  # a Counter kind of dict
             case T.IterT(elem=e):
                 return f"*rt.Iter[{self.spell(e)}]"
             case T.TupleT():
@@ -151,9 +162,12 @@ class GoTypes:
                 join = f'"(" + {reprs[0]} + ",)"'
             else:
                 join = '"(" + ' + ' + ", " + '.join(reprs) + ' + ")"'
+            items = ", ".join(f"t.F{i}" for i in range(len(t.elems)))
             self._decls[name] = (
                 f"// {name} is {t.render()}.\ntype {name} struct {{\n{fields}}}\n\n"
-                f"func (t {name}) PyRepr() string {{ return {join} }}\n"
+                f"func (t {name}) PyRepr() string {{ return {join} }}\n\n"
+                f"// PyTuple is the tuple's items (a Json value's view of it).\n"
+                f"func (t {name}) PyTuple() []any {{ return []any{{{items}}} }}\n"
             )
         return name
 
@@ -186,7 +200,9 @@ class GoTypes:
 
     def eq(self, t: T2Type) -> str:
         """A Go func value `func(a, b T) bool`: Python's ==."""
-        if t in _SCALARS or t == T.MATCH:  # a Match compares by identity, as in Python
+        if t == T.JSON:
+            return "rt.JsonEq"
+        if t in _COMPARABLE or t == T.MATCH:  # a Match compares by identity, as in Python
             return f"rt.Eq[{self.spell(t)}]"
         go = self.spell(t)
         name = f"eq_{_digest(t)}"
@@ -198,7 +214,9 @@ class GoTypes:
 
     def eq_expr(self, a: str, b: str, t: T2Type) -> str:  # noqa: PLR0911
         """Go bool expression: a == b (a and b are evaluated once each: plain names)."""
-        if t in _SCALARS:
+        if t == T.JSON:
+            return f"rt.JsonEq({a}, {b})"
+        if t in _COMPARABLE:
             return f"{a} == {b}"
         match t:
             case T.Opt(inner=inner):
@@ -209,6 +227,8 @@ class GoTypes:
                 return f"{a}.Equal({b})"
             case T.DictT(val=v):
                 return f"rt.DictEq({a}, {b}, {self.eq(v)})"
+            case T.CounterT():
+                return f"rt.DictEq({a}, {b}, rt.Eq[int64])"
             case T.TupleT(elems=es):
                 if not es:
                     return "true"
@@ -225,8 +245,10 @@ class GoTypes:
     def order(self, t: T2Type, op: str) -> str:
         """A Go func value `func(a, b T) bool`: Python's `a op b` for op in < <= > >=."""
         go = self.spell(t)
-        if t in (T.INT, T.FLOAT, T.STR):
+        if t in (T.INT, T.FLOAT, T.STR, T.DATE, T.DATETIME):
             return f"func(a, b {go}) bool {{ return a {op} b }}"
+        if t == T.DURATION:
+            return f"func(a, b {go}) bool {{ return a.Cmp(b) {op} 0 }}"
         if t == T.BOOL:
             return f"func(a, b bool) bool {{ return rt.B2I(a) {op} rt.B2I(b) }}"
         if isinstance(t, T.TupleT):

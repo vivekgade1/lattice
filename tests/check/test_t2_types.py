@@ -279,6 +279,21 @@ def test_counter_and_defaultdict():
     ok(src)
 
 
+def test_counter_of_a_dict_needs_int_counts():
+    """Counter(d) takes d's values as the counts: they must be Ints (Task 10)."""
+    src = """
+    from collections import Counter
+
+    @procedure
+    def f(d: dict[Str, Str], e: dict[Str, Int]) -> Int:
+        a = Counter(d)
+        b = Counter(e)
+        c = Counter(d.keys())
+        return len(a) + len(b) + len(c)
+    """
+    assert errors(src) == ["L904"]
+
+
 def test_comprehensions_and_scopes():
     src = proc(
         """

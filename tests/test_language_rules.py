@@ -9,6 +9,7 @@ from pathlib import Path
 
 import lattice.check.p8_target as p8_target
 from tests.semantics_v11.cases import CASES, semantics_cases_missing_on
+from tests.semantics_v11.cases_task10 import GO_GATED_PREFIXES
 
 ROOT = Path(__file__).resolve().parents[1]
 RULES_DOC = ROOT / "docs" / "lattice-language-rules.md"
@@ -54,12 +55,13 @@ def test_semantics_cases_missing_on_python_is_empty():
 
 
 def test_semantics_cases_missing_on_go_is_not_a_placeholder():
-    # Tasks 8-9 run the core, string and regex cases on Go; the rest are missing there
-    # until Task 10.
-    # The hook must reflect CASES (a subset of them, some run and some not), not a stub;
-    # tests/semantics_v11/test_go.py checks each missing case is an L892 gate.
+    # Since plan 5a Task 10 every case runs on Go except the cases of the constructs the
+    # documented L892 row still gates (container str(), a strftime format Go does not
+    # implement, a non-literal re.sub replacement), named by GO_GATED_PREFIXES.
+    # The hook must reflect CASES, not a stub; tests/semantics_v11/test_go.py checks each
+    # missing case is an L892 gate.
     missing = semantics_cases_missing_on("go")
     names = {c.name for c in CASES}
-    assert missing != []
-    assert set(missing) < names
-    assert len(names - set(missing)) >= 220
+    assert set(missing) == {n for n in names if n.startswith(GO_GATED_PREFIXES)}
+    assert len(missing) >= 3
+    assert len(names - set(missing)) >= 380

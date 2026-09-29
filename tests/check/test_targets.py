@@ -126,9 +126,9 @@ def test_int_in_float_forms_pass_on_go(body):
 @pytest.mark.parametrize(
     ("sig", "body"),
     [
-        ("f(d: Date) -> Int", "return d.year"),
-        ("f(a: Date, b: Date) -> Int", "return (a - b).days"),
-        ("f(n: Int) -> Int", "d = days(n)\nreturn n"),
+        # the endpoint layer's values (plan 5a Task 12)
+        ("f(c: Caller) -> Str", "return c.role"),
+        ("f(r: Row[Items]) -> Int", "return 1"),
     ],
 )
 def test_l892_values_of_types_go_lacks(sig, body):
@@ -136,6 +136,61 @@ def test_l892_values_of_types_go_lacks(sig, body):
     assert check_source(src, T2_PROFILE).ok
     go = check_source(src, T2_PROFILE, target="go")
     assert "L892" in codes(go) and set(codes(go)) == {"L892"}
+
+
+_TIME_SIG = "f(d: Date, t: DateTime, s: Str) -> Str"
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        # a directive Go does not implement, or a format that is not a literal (Task 10)
+        'return t.strftime("%c")',
+        'return d.strftime("%U %Y")',
+        'return d.strftime("100%")',
+        "return t.strftime(s)",
+        'return f"{d:%x}"',
+        'return f"{t:{s}}"',
+    ],
+)
+def test_l892_strftime_formats_go_does_not_run(body):
+    src = _t2(body, _TIME_SIG)
+    assert check_source(src, T2_PROFILE).ok
+    go = check_source(src, T2_PROFILE, target="go")
+    assert codes(go) == ["L892"], go.diagnostics
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        'return t.strftime("%Y-%m-%d %H:%M:%S.%f %y %a %A %b %B %j %p %%") + d.strftime("")',
+        'return f"{d:%Y}{t:%H}{d}{t!r}" + str(t - t) + d.isoformat()',
+        "return str((d + days(1.5)).weekday()) + str(t.timestamp())",
+    ],
+)
+def test_time_values_pass_on_go(body):
+    src = _t2(body, _TIME_SIG)
+    assert check_source(src, T2_PROFILE).ok
+    go = check_source(src, T2_PROFILE, target="go")
+    assert go.ok, go.diagnostics
+
+
+def test_json_math_and_collections_pass_on_go():
+    src = dedent("""\
+        # lattice: v1
+        import json
+        import math
+        from collections import Counter, defaultdict
+
+        @procedure
+        def f(s: Str, xs: list[Str]) -> Str:
+            j = json.loads(s)
+            c = Counter(xs)
+            d: dict[Str, list[Int]] = defaultdict(list)
+            d["a"].append(math.floor(2.5))
+            return json.dumps([j, c.most_common(1), d], indent=2) + str(math.sqrt(2.0))
+    """)
+    assert check_source(src, T2_PROFILE, target="go").ok
 
 
 def _re(body: str, sig: str = "f(s: Str, n: Int) -> Str") -> str:

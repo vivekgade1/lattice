@@ -37,6 +37,23 @@ GO_T2_CALLS |= {f"method:Str.{name}" for name in T2_METHODS["Str"]}
 GO_T2_CALLS |= {f"std:re.{name}" for name in T2_STDLIB["re"]}
 GO_T2_CALLS |= {f"method:Match.{name}" for name in T2_METHODS["Match"]}
 GO_T2_CALLS |= {f"std:string.{name}" for name in T2_STDLIB["string"]}
+# Task 10: the list, dict, set and Counter methods and collections.Counter/defaultdict.
+GO_T2_CALLS |= {
+    f"method:{kind}.{name}"
+    for kind in ("list", "dict", "set", "Counter")
+    for name in T2_METHODS[kind]
+}
+GO_T2_CALLS |= {f"std:collections.{name}" for name in T2_STDLIB["collections"]}
+# Task 10: math, datetime (and the Date / DateTime / Duration methods) and json. The math
+# constants are values, listed for the record (copied exactly, as the string ones).
+GO_T2_CALLS |= {
+    f"std:{mod}.{name}" for mod in ("math", "datetime", "json") for name in T2_STDLIB[mod]
+}
+GO_T2_CALLS |= {
+    f"method:{kind}.{name}"
+    for kind in ("Date", "DateTime", "Duration")
+    for name in T2_METHODS[kind]
+}
 
 # The kinds of T2 value the Go emitter implements (`lattice.gogen.types.kind_of`): a
 # procedure that holds a value of any other kind (Date, DateTime, Duration, Json, Row,
@@ -45,6 +62,8 @@ GO_T2_TYPES: set[str] = {
     "Int", "Float", "Str", "Bool", "Uuid", "None", "Error",
     "list", "set", "dict", "tuple", "Iter", "record",
     "Match", "module",  # Task 9 (a module: `re.search`, `string.digits`, `math.pi`)
+    "Counter", "factory",  # Task 10 (a factory: `defaultdict(list)`'s argument)
+    "Date", "DateTime", "Duration", "Json",  # Task 10
 }  # fmt: skip
 
 

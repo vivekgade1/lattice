@@ -123,6 +123,11 @@ def _is_int(t: T2Type) -> bool:
     return T.strip_opt(t) == T.INT
 
 
+def _float_keyed(t: T2Type) -> bool:
+    """A dict whose keys are Floats (a Counter's reads never store: no helper)."""
+    return isinstance(t, T.DictT) and t.key == T.FLOAT
+
+
 # ---- names ----------------------------------------------------------------------------------
 
 
@@ -342,6 +347,10 @@ class _Emit:
             case n.Attr(obj=obj, name=name):
                 return ast.Attribute(self.expr(obj), name, ast.Load())
             case n.Index(obj=obj, index=index):
+                if _float_keyed(obj.type) and index.type == T.INT:
+                    # an exact lookup; a defaultdict stores the key widened (R-widen)
+                    fget = self._name(f"{self.fuel}_fget")
+                    return ast.Call(fget, [self.expr(obj), self.expr(index)], [])
                 return ast.Subscript(self.expr(obj), self.expr(index), ast.Load())
             case n.SliceOf(obj=obj, lo=lo, hi=hi, step=step):
                 sl = ast.Slice(self._opt(lo), self._opt(hi), self._opt(step))
@@ -560,6 +569,7 @@ def emit_python(module: n.T2Module) -> T2Code:
     lines.append(f"{fuel}_set = t2_builtin('set')")
     lines.append(f"{fuel}_float = t2_builtin('float')")
     lines.append(f"{fuel}_widen = t2_widen")
+    lines.append(f"{fuel}_fget = t2_fget")
     for name, _, value in module.constants:
         # copied as written: a constant is evaluated once, uncharged, when loaded
         lines.append(f"{name} = {ast.unparse(_plain(value, fuel))}")

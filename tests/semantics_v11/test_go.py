@@ -6,6 +6,7 @@ import pytest
 from lattice.check import check_source
 from tests.check.t2_support import PROFILE
 from tests.semantics_v11.cases import CASES, semantics_cases_missing_on
+from tests.semantics_v11.cases_task10 import GO_GATED_PREFIXES
 from tests.semantics_v11.gorun import (
     expect_holds,
     python_fuel_left,
@@ -38,9 +39,16 @@ def test_go_charges_the_same_fuel(case, go_run):
 
 
 def test_coverage_floor():
-    """Each Go task raises this floor; Task 10 ends at 100%. Task 9 (strings and
-    regular expressions, fix round 1): 220 of 284 cases."""
-    assert len(GO_CASES) >= 220
+    """Every semantics case runs on Go (plan 5a Task 10), except the cases of the
+    constructs Go still refuses by design of the documented L892 row
+    (docs/lattice-language-rules.md §6): `str()` / an f-string of a container
+    (`repr_container_*`), a strftime format that is not a literal of the directives Go
+    implements (`strftime_gated_*`) and a non-literal `re.sub` replacement
+    (`re_sub_gated_*`)."""
+    gated = [c for c in CASES if c.name.startswith(GO_GATED_PREFIXES)]
+    assert len(gated) >= 3
+    assert len(GO_CASES) == len(CASES) - len(gated)
+    assert set(semantics_cases_missing_on("go")) == {c.name for c in gated}
 
 
 def test_only_l892_gated_cases_are_missing_on_go():
