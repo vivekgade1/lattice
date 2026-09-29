@@ -39,7 +39,7 @@ The kit gives you:
   roles (Admin may call every endpoint). Public endpoints do not call it.
 
 ```go
-c, ok := k.Authenticate(w, r, "Seller")
+c, ok := k.Authenticate(w, r, "Customer")
 if !ok {
 	return
 }
