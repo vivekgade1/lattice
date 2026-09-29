@@ -109,3 +109,58 @@ func TestSQLTraceLogsExpandedCountedStatements(t *testing.T) {
 		t.Errorf("trace after SetSQLTrace(nil) = %q (on: %v)", buf.String(), sqlTraceOn())
 	}
 }
+
+// TestAConnectionLeftInATransactionIsDiscarded: after a failed ROLLBACK the request's
+// connection is checked (sqlite3_get_autocommit); one still inside a transaction is
+// dropped from the pool, one in autocommit mode is kept.
+func TestAConnectionLeftInATransactionIsDiscarded(t *testing.T) {
+	RegisterFunctions()
+	db, err := sql.Open("sqlite", "file::memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	ctx := context.Background()
+	idle, err := db.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if discardIfInTransaction(idle) {
+		t.Fatal("a connection in autocommit mode was discarded")
+	}
+	if err := idle.PingContext(ctx); err != nil {
+		t.Fatalf("the kept connection is unusable: %v", err)
+	}
+	_ = idle.Close()
+
+	inTxn, err := db.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := inTxn.ExecContext(ctx, "BEGIN"); err != nil {
+		t.Fatal(err)
+	}
+	before := db.Stats().OpenConnections
+	if !discardIfInTransaction(inTxn) {
+		t.Fatal("a connection inside a transaction was kept")
+	}
+	if err := inTxn.PingContext(ctx); err != sql.ErrConnDone {
+		t.Errorf("the discarded sql.Conn still answers: %v", err)
+	}
+	if after := db.Stats().OpenConnections; after != before-1 {
+		t.Errorf("open connections %d -> %d: the driver connection was not closed", before, after)
+	}
+	// rollback of a healthy transaction keeps the connection
+	kept, err := db.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer kept.Close()
+	if _, err := kept.ExecContext(ctx, "BEGIN"); err != nil {
+		t.Fatal(err)
+	}
+	rollback(kept)
+	if err := kept.PingContext(ctx); err != nil {
+		t.Errorf("a connection rolled back cleanly was discarded: %v", err)
+	}
+}

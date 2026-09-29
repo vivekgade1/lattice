@@ -641,7 +641,7 @@ func (a *App) serve(rt *Route, r *http.Request, path map[string]string) (ans ans
 	defer func() {
 		if db != nil {
 			if inTxn {
-				_, _ = db.conn.ExecContext(context.Background(), "ROLLBACK")
+				rollback(db.conn) // a failed ROLLBACK leaving the transaction open: discarded
 			}
 			ans.queries = db.queries
 			_ = db.conn.Close()

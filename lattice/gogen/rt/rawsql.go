@@ -1,6 +1,34 @@
+// rawsql.go runs statements through SQLite's C API on the driver connection's handle.
+//
+// Why private fields: modernc.org/sqlite's driver turns TEXT in a column declared DATE /
+// DATETIME / TIMESTAMP into a time.Time (losing the stored spelling) and has no switch
+// to turn that off, while Python's sqlite3 returns the stored value as it is. So the
+// statements are prepared, bound and stepped with the transpiled C API
+// (modernc.org/sqlite/lib), on the sqlite3* and *libc.TLS that the driver keeps in the
+// unexported `db` and `tls` fields of its *sqlite.conn, read by reflection.
+//
+// Type guards: handle() checks that the connection is a *sqlite.conn of package
+// modernc.org/sqlite, that `db` is a uintptr and that `tls` is a *libc.TLS, and panics
+// ("connection layout changed; update rawsql.go") otherwise instead of misusing memory.
+// The *libc.TLS type must be the one sqlite itself was built against, which is why
+// go.mod pins modernc.org/libc to the exact version modernc.org/sqlite requires.
+//
+// Upgrading (the only safe procedure):
+//  1. bump modernc.org/sqlite (`go get modernc.org/sqlite@vX.Y.Z`);
+//  2. set modernc.org/libc to the exact version that sqlite's go.mod requires
+//     (`go mod graph | grep '^modernc.org/sqlite@vX.Y.Z modernc.org/libc@'`), not newer;
+//  3. `go mod tidy`, then `go vet ./... && go test ./...` in lattice/gogen/rt, which runs
+//     TestHandleOnRealConnection (the fields are still there, with the guarded types,
+//     on a real connection) and TestLibcMatchesSqlite (go.mod's libc equals sqlite's
+//     requirement); then the Go gate (tests/gogen/test_go_differential.py).
+//
+// If a guard fails after an upgrade, read the new driver's conn struct and update
+// handle(); do not loosen the guards.
 package rt
 
 import (
+	"context"
+	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"reflect"
@@ -41,6 +69,36 @@ func handle(dc any) (uintptr, *libc.TLS) {
 
 func layoutChanged(what string) string {
 	return "modernc.org/sqlite connection layout changed; update rawsql.go (" + what + ")"
+}
+
+// rollback ends a request's transaction. When ROLLBACK fails and SQLite still has the
+// transaction open, the connection is discarded rather than returned to the pool with
+// a transaction the next request would run inside.
+func rollback(conn *sql.Conn) {
+	if _, err := conn.ExecContext(context.Background(), "ROLLBACK"); err != nil {
+		discardIfInTransaction(conn)
+	}
+}
+
+// discardIfInTransaction closes `conn` for good (driver.ErrBadConn from Raw: database/sql
+// then drops the driver connection instead of pooling it) when SQLite reports an open
+// transaction on it (sqlite3_get_autocommit is 0), or when its handle cannot be read;
+// it reports whether it did.
+func discardIfInTransaction(conn *sql.Conn) (discarded bool) {
+	_ = conn.Raw(func(dc any) (err error) {
+		defer func() {
+			if recover() != nil { // handle's layout guard: do not pool what cannot be checked
+				discarded, err = true, driver.ErrBadConn
+			}
+		}()
+		db, tls := handle(dc)
+		if sqlite3.Xsqlite3_get_autocommit(tls, db) == 0 {
+			discarded = true
+			return driver.ErrBadConn
+		}
+		return nil
+	})
+	return discarded
 }
 
 // rawError is the Python sqlite3 exception for the connection's last error.
