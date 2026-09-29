@@ -15,6 +15,10 @@ generator change is a new key too) and `go version` (a toolchain upgrade rebuild
 hit returns without running go. The cache keeps the CACHE_KEEP most recently used
 builds; a `.tmp-*` build directory younger than TMP_GRACE_S is another process's build
 in progress and is left alone.
+
+Prerequisites: Go >= 1.26 on PATH, and the runtime's dependencies in the Go module cache
+(builds never touch the network): run `cd lattice/gogen/rt && go mod download` once,
+with network access. Without them the build raises GoBuildError saying so.
 """
 
 from __future__ import annotations
@@ -23,6 +27,7 @@ import ast
 import functools
 import hashlib
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -44,7 +49,9 @@ __all__ = [
     "GoBuild",
     "GoBuildError",
     "build_go_app",
+    "build_failure",
     "cache_key",
+    "check_toolchain",
     "go_version",
     "prune_cache",
 ]
@@ -54,6 +61,13 @@ GO_ENV = {"GOFLAGS": "-mod=mod", "GOPROXY": "off", "GOWORK": "off", "GOTOOLCHAIN
 CACHE_KEEP = 20  # builds kept in out_dir/.cache (least recently used pruned first)
 TMP_GRACE_S = 600  # a younger .tmp-* build directory is a build in progress
 GO_VERSION = "1.26.0"
+GO_MIN = (1, 26)  # the oldest toolchain that builds the runtime (go.mod: go 1.26.0)
+SETUP_HINT = (
+    f"run `cd {RT} && go mod download` once, with network access (builds are offline: "
+    f"GOPROXY=off); requires Go >= {GO_MIN[0]}.{GO_MIN[1]}"
+)
+# go build's messages when a module the runtime needs is not in the module cache
+_COLD_CACHE = ("module lookup disabled by GOPROXY=off", "GOPROXY=off")
 
 
 @dataclass(frozen=True)
@@ -146,10 +160,46 @@ def generate(source: str, profile: Profile) -> tuple[CheckResult, dict[str, str]
     return check, files
 
 
+def _toolchain_version(version: str) -> tuple[int, int] | None:
+    """(major, minor) of `go version`'s output ("go version go1.26.2 darwin/arm64"), or
+    None when it cannot be read."""
+    m = re.search(r"\bgo(\d+)\.(\d+)", version)
+    return (int(m.group(1)), int(m.group(2))) if m else None
+
+
+def check_toolchain(version: str | None = None) -> None:
+    """GoBuildError with what to do when `go` is missing or older than GO_MIN."""
+    version = go_version() if version is None else version
+    if version == "no go":
+        raise GoBuildError(
+            f"the go toolchain is not installed (go not on PATH): install Go >= "
+            f"{GO_MIN[0]}.{GO_MIN[1]}, then {SETUP_HINT}"
+        )
+    found = _toolchain_version(version)
+    if found is not None and found < GO_MIN:
+        raise GoBuildError(
+            f"the go toolchain is too old ({version}): Lattice's Go runtime requires Go >= "
+            f"{GO_MIN[0]}.{GO_MIN[1]} (builds use GOTOOLCHAIN=local, so go does not fetch "
+            "a newer one)"
+        )
+
+
+def build_failure(stderr: str) -> GoBuildError:
+    """The GoBuildError for go build's `stderr`: an actionable one when the module cache
+    lacks the runtime's dependencies (a fresh machine: builds are offline)."""
+    if any(m in stderr for m in _COLD_CACHE):
+        return GoBuildError(
+            "go build failed: the runtime's Go dependencies are not in the module cache "
+            f"(a fresh machine?): {SETUP_HINT}.\n{stderr}"
+        )
+    return GoBuildError(f"go build failed:\n{stderr}")
+
+
 def _go_build(module_dir: Path) -> None:
     """gofmt the generated sources (for readers; a syntax error is left to go build),
     then go build -trimpath -o app in the module, offline; GoBuildError with its
-    stderr."""
+    stderr (with what to do when go is missing or too old, or its module cache cold)."""
+    check_toolchain()
     env = {**os.environ, **GO_ENV}
     try:
         subprocess.run(  # noqa: S603
@@ -173,9 +223,11 @@ def _go_build(module_dir: Path) -> None:
             timeout=900,
         )
     except FileNotFoundError as err:
-        raise GoBuildError("the go toolchain is not installed (go not on PATH)") from err
+        raise GoBuildError(
+            f"the go toolchain is not installed (go not on PATH): {SETUP_HINT}"
+        ) from err
     if proc.returncode != 0:
-        raise GoBuildError(f"go build failed:\n{proc.stderr}")
+        raise build_failure(proc.stderr)
 
 
 def prune_cache(cache: Path, keep: int = CACHE_KEEP) -> None:

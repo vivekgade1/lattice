@@ -42,6 +42,8 @@ from tests.api.test_codegen_differential import (
     setup_of,
 )
 
+pytestmark = pytest.mark.go  # builds and runs Go (skipped without `go`, tests/conftest.py)
+
 # the programs whose only go-target errors are L890 (natives): not Go programs
 EXPECTED_EXCLUSIONS = {
     "realapps",

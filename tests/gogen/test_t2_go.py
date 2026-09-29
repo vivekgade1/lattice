@@ -593,6 +593,7 @@ def go_programs():
     return run_go(PROGRAMS)  # a Case's `expect` is unused here: Python gives it below
 
 
+@pytest.mark.go
 @pytest.mark.parametrize("case", PROGRAMS, ids=lambda c: c.name)
 def test_program_runs_like_python(case, go_programs):
     assert check_source(case.source_with_header, PROFILE, target="go").ok
@@ -626,6 +627,7 @@ def go_sweep():
     return run_go_budgets(SWEPT, {c.name: _budgets(c) for c in SWEPT})
 
 
+@pytest.mark.go
 @pytest.mark.parametrize("case", SWEPT, ids=lambda c: c.name)
 def test_fuel_exhausts_at_the_same_point(case, go_sweep):
     diffs = []
@@ -677,6 +679,7 @@ def _corpus_cases() -> tuple[list[_CorpusCase], dict[str, list[int]]]:
     return list(cases.values()), budgets
 
 
+@pytest.mark.go
 def test_corpus_calls_run_like_python():
     """Every corpus call Go accepts gives the same (result, fuel left) on both targets.
     Importing the corpus's loop fixtures registers their SQLModel tables in the global

@@ -30,6 +30,8 @@ from tests.api import hardening, t2prog
 from tests.api.test_codegen_differential import PROGRAMS, Setup, setup_of
 from tests.gogen.test_go_differential import compare
 
+pytestmark = pytest.mark.go  # builds and runs Go (skipped without `go`, tests/conftest.py)
+
 R620 = "error R620: procedure ran out of fuel"
 
 

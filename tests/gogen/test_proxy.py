@@ -14,6 +14,8 @@ from lattice.gogen.build import build_go_app
 from lattice.gogen.proxy import GoServer, go_app_factory
 from tests.api import edges
 
+pytestmark = pytest.mark.go  # builds and runs Go (skipped without `go`, tests/conftest.py)
+
 SRC = (Path(__file__).resolve().parents[1] / "fixtures" / "api" / "c01" / "lattice.py").read_text()
 
 

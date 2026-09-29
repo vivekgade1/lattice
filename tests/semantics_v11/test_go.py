@@ -14,6 +14,8 @@ from tests.semantics_v11.gorun import (
     run_python_budget,
 )
 
+pytestmark = pytest.mark.go  # builds and runs Go (skipped without `go`, tests/conftest.py)
+
 GO_CASES = [c for c in CASES if check_source(c.source_with_header, PROFILE, target="go").ok]
 
 

@@ -107,6 +107,7 @@ def go_out(tmp_path_factory: pytest.TempPathFactory) -> Path:
 # ---- the brief's tests ------------------------------------------------------------------------
 
 
+@pytest.mark.go
 def test_builds_and_serves(tmp_path):
     built = build_go_app(SRC, api_profile(), tmp_path)
     db = tmp_path / "app.db"
@@ -147,6 +148,7 @@ def test_rejected_program_raises(tmp_path, realapps_source, realapps_profile):
 # ---- the build: module, cache, pruning ------------------------------------------------------
 
 
+@pytest.mark.go
 def test_module_files(go_out):
     built = build_go_app(SRC, api_profile(), go_out)
     mod = (built.module_dir / "go.mod").read_text()
@@ -159,6 +161,7 @@ def test_module_files(go_out):
     assert built.module_dir.parent == go_out / ".cache"
 
 
+@pytest.mark.go
 def test_cache_hit_does_not_rebuild(go_out, monkeypatch):
     first = build_go_app(SRC, api_profile(), go_out)
 
@@ -224,9 +227,55 @@ def test_go_build_does_not_stamp_vcs(monkeypatch, tmp_path):
         return subprocess.CompletedProcess(cmd, 0, "", "")
 
     monkeypatch.setattr(gobuild.subprocess, "run", run)
+    monkeypatch.setattr(gobuild, "check_toolchain", lambda: None)
     gobuild._go_build(tmp_path)
     build = next(c for c in seen if c[:2] == ["go", "build"])
     assert "-buildvcs=false" in build
+
+
+# ---- prerequisites: a missing or old toolchain, a cold module cache ---------------------------
+
+
+def test_a_missing_toolchain_says_what_to_install():
+    with pytest.raises(GoBuildError, match=r"not installed.*Go >= 1\.26.*go mod download"):
+        gobuild.check_toolchain("no go")
+
+
+def test_an_old_toolchain_is_refused_with_the_minimum():
+    with pytest.raises(GoBuildError, match=r"too old.*go1\.25\.3.*Go >= 1\.26"):
+        gobuild.check_toolchain("go version go1.25.3 linux/amd64")
+    gobuild.check_toolchain("go version go1.26.0 linux/amd64")
+    gobuild.check_toolchain("go version go1.27rc1 darwin/arm64")
+    gobuild.check_toolchain("go version devel +abc darwin/arm64")  # unreadable: go decides
+
+
+def test_a_cold_module_cache_says_to_download_once():
+    stderr = "rt/strs.go:10:2: module lookup disabled by GOPROXY=off\n"
+    err = gobuild.build_failure(stderr)
+    assert "go mod download" in str(err) and "network access" in str(err)
+    assert "Go >= 1.26" in str(err) and stderr in str(err)
+    plain = gobuild.build_failure("x.go:1: syntax error")
+    assert str(plain) == "go build failed:\nx.go:1: syntax error"
+
+
+def test_a_build_without_go_on_path_is_actionable(monkeypatch, tmp_path):
+    monkeypatch.setattr(gobuild, "go_version", lambda: "no go")
+    with pytest.raises(GoBuildError, match="go mod download"):
+        gobuild._go_build(tmp_path)
+
+
+@pytest.mark.go
+def test_a_real_build_with_an_empty_module_cache_is_actionable(monkeypatch, tmp_path):
+    """With `go` present but nothing in the module cache (a fresh machine), the offline
+    build fails with what to do, not only go's "module lookup disabled by GOPROXY=off"."""
+    empty = tmp_path / "modcache"
+    empty.mkdir()
+    monkeypatch.setenv("GOMODCACHE", str(empty))
+    try:
+        with pytest.raises(GoBuildError, match=r"not in the module cache.*go mod download"):
+            build_go_app(SRC, api_profile(), tmp_path / "out")
+    finally:  # go writes the module cache read-only
+        subprocess.run(["chmod", "-R", "u+w", str(empty)], check=False)  # noqa: S603, S607
 
 
 def test_gorun_cache_is_pruned(tmp_path, monkeypatch):
@@ -240,6 +289,7 @@ def test_gorun_cache_is_pruned(tmp_path, monkeypatch):
     assert sorted(p.name for p in tmp_path.iterdir()) == [f"{i:02d}" for i in range(3, 13)]
 
 
+@pytest.mark.go
 def test_cli_prints_the_binary(tmp_path):
     fixture = ROOT / "tests" / "fixtures" / "api" / "c01" / "lattice.py"
     proc = subprocess.run(  # noqa: S603
@@ -291,6 +341,7 @@ def _happy(cases: tuple[HttpCase, ...]) -> HttpCase:
     return next(c for c in cases if c.kind == "happy" and c.expect_status < 400)
 
 
+@pytest.mark.go
 @pytest.mark.parametrize("pid", GO_PROGRAMS)
 def test_smoke(pid, go_out, tmp_path):
     source, task = PROGRAMS[pid]
@@ -301,6 +352,7 @@ def test_smoke(pid, go_out, tmp_path):
 # ---- T2 values at the boundary: Row, Caller, records, scalar calls ---------------------------
 
 
+@pytest.mark.go
 def test_hardening_program(go_out, tmp_path):
     """Caller (with stored spellings decoded), a list of records inserted, fuel and the
     value size cap."""
@@ -342,6 +394,7 @@ T2_GO_CASES = [
 ]
 
 
+@pytest.mark.go
 def test_t2_program(go_out, tmp_path):
     assert check_source(T2_GO_PROGRAM, T2_GO_PROFILE, target="go").ok
     answers = _compare(T2_GO_PROGRAM, T2_GO_PROFILE, t2prog.build_db, T2_GO_CASES, go_out, tmp_path)
@@ -350,6 +403,7 @@ def test_t2_program(go_out, tmp_path):
     assert {k: v for k, v in statuses.items()} == {c.name: c.expect_status for c in T2_GO_CASES}
 
 
+@pytest.mark.go
 def test_build_time_is_cached(go_out):
     build_go_app(SRC, api_profile(), go_out)
     t0 = time.monotonic()
