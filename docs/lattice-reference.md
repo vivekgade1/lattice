@@ -240,6 +240,7 @@ Full tables are in `docs/results/2026-09-26-bench-smoke.md`. The unit is a run; 
 ## 9. Other threads
 
 - **Go target (sub-project 5):** a spec and a 5a plan were committed from a separate session (`81e7f68`, `1acc30e`). Not built.
+- **Language-rules doc:** a saved note from another session refers to `docs/lattice-language-rules.md` ("multi-target, no drift"), but that file is not in this branch. Treat the note as pending until the file exists.
 - **Self-improvement loop (vision §5):** only corpus logging exists (`corpus/imports.jsonl`, gitignored).
 - **Housekeeping PR:** pushing to GitHub was blocked by credentials (account `aetheris-qao` stored). The PR description draft was in a past session's scratchpad. Compare URL: `https://github.com/vivekgade1/lattice/compare/main...lattice-design?expand=1`.
 - **Standing process preferences:**
