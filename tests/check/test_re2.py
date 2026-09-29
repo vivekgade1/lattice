@@ -114,3 +114,25 @@ def test_pattern_problem_is_ascii():
     spec = ParamType(Scalar.STR, pattern=r"\d+")
     assert pattern_problem(spec, "123") is None
     assert pattern_problem(spec, "١٢٣") is not None
+
+
+def test_a_pattern_that_cannot_be_ascii_is_l601_not_a_crash():
+    """A pattern= is matched with re.ASCII, so it is compiled with it at check time:
+    `(?u)` (ASCII and UNICODE flags are incompatible) is L601, and the checker no longer
+    crashes on its default."""
+    src = dedent(
+        """\
+        # lattice: v1
+        @endpoint("GET", "/users", auth=Admin)
+        def find(user: CurrentUser, q: Str(pattern="(?u)[a-z]+") = "a") -> One | NotFound:
+            users = fetch(Users)
+            found = where(users, col("email") == q)
+            row = one(found, else_=NotFound("no such user"))
+            shown = select(row, cols=["id", "email"])
+            return shown
+        """
+    )
+    for target in ("python", "go"):
+        result = check_source(src, PROFILE, target=target)
+        l601 = [d for d in result.diagnostics if d.code == "L601"]
+        assert l601 and "not a valid regular expression" in l601[0].message, target

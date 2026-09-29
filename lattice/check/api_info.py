@@ -371,8 +371,8 @@ def _pattern(name: str, node: ast.expr) -> str | Problem:
             'e.g. pattern="[A-Z]{2}[0-9]{4}"',
         )
     try:
-        re.compile(v)
-    except re.error as err:
+        re.compile(v, re.ASCII)  # as it is matched (pattern_problem): `(?u)` is refused
+    except (re.error, ValueError) as err:
         return (
             f"constraint pattern= of '{name}' is not a valid regular expression: {err}",
             "fix the pattern (Python `re` syntax; the whole value must match)",
