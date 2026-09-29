@@ -107,11 +107,9 @@ class T2TooLarge(T2Error):
         super().__init__("R622", message)
 
 
-# Semantics v1.1 (spec 2026-09-28 go-target §3.1): Int is 64-bit (R623 outside), sets
-# iterate in insertion order, Counter.most_common keeps ties in insertion order. Only
-# the Python emitter's differential test switches it off, to compare with the legacy
-# instrumented compiler.
-V11 = True
+# Semantics v1.1 (spec 2026-09-28 go-target §3.1), always on: Int is 64-bit (R623
+# outside), sets iterate in insertion order, Counter.most_common keeps ties in insertion
+# order.
 
 
 class T2IntOverflow(T2Error):
@@ -126,11 +124,7 @@ _T2_INT_MIN, _T2_INT_MAX = -(1 << 63), (1 << 63) - 1
 
 def t2_int(v: object) -> object:
     """An Int-typed result, range-checked (R623); anything else passes unchanged."""
-    if (
-        V11
-        and type(v) is int  # noqa: E721 - a bool is not an Int result
-        and not (_T2_INT_MIN <= v <= _T2_INT_MAX)
-    ):
+    if type(v) is int and not (_T2_INT_MIN <= v <= _T2_INT_MAX):  # noqa: E721 - not a bool
         raise T2IntOverflow(v)
     return v
 
@@ -688,19 +682,19 @@ _T2_UNITS = ("days", "hours", "minutes", "seconds")
 
 
 def _t2_builtins() -> dict[str, object]:
-    """The builtins by name; under v1.1 `set` is the insertion-ordered T2Set."""
+    """The builtins by name; `set` is the insertion-ordered T2Set (v1.1)."""
     import builtins
 
     names = {name: getattr(builtins, name) for name in T2_BUILTIN_NAMES}
-    if V11:
-        names["set"] = T2Set
+    names["set"] = T2Set
     return names
 
 
 def _t2_re_ascii(name: str) -> object:
     """`re.fullmatch`/`match`/`search`/`sub`/`findall`/`split`, bound with `re.ASCII`:
-    `\\d \\w \\s \\b` match only ASCII on every target (spec 2026-09-28 go-target §3.1),
-    so Python and Go's RE2 agree."""
+    `\\d \\w \\s \\b` match only ASCII on every target (spec 2026-09-28 go-target §3.1;
+    for portability to future targets, docs/lattice-language-rules.md §6). Go compiles
+    the same pattern with the same flag and runs Python's SRE engine (lattice.gogen.regex)."""
     fn = getattr(t2_re, name)
 
     def wrapped(*args: object, **kwargs: object) -> object:
@@ -717,11 +711,11 @@ def _t2_std_module(module: str, names: tuple[str, ...]) -> object:
 
 
 def _t2_std(module: str, name: str) -> object:
-    """An allowlisted stdlib name: `re` functions bound with `re.ASCII`, and under v1.1
-    `collections.Counter` is T2Counter (most_common ties in insertion order)."""
+    """An allowlisted stdlib name: `re` functions bound with `re.ASCII`, and
+    `collections.Counter` is T2Counter (v1.1: most_common ties in insertion order)."""
     if module == "re":
         return _t2_re_ascii(name)
-    if V11 and module == "collections" and name == "Counter":
+    if module == "collections" and name == "Counter":
         return T2Counter
     return getattr(t2_importlib.import_module(module), name)
 

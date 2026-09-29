@@ -26,7 +26,7 @@ with a spec `<fuel>.fmt(v, spec, conversion)`, and a growing augmented assignmen
 its container, index and value to temporaries, runs `<fuel>.aug(op, current, value)`,
 then assigns.
 
-Semantics v1.1 (`lattice.t2.support.V11`): every Int result that can leave the 64-bit
+Semantics v1.1 (spec 2026-09-28 go-target §3.1): every Int result that can leave the 64-bit
 range -- `-` (unary and binary), `//`, the growing operators, and Int-typed `abs`,
 `int`, `round`, `sum`, `math.floor/ceil/trunc/gcd` -- goes through `<fuel>_int`
 (R623); a `sum` is checked on its result only, as Python's intermediate sums are exact.
