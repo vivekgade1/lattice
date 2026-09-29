@@ -983,7 +983,7 @@ Rescored with `rescore.py`, with no new model calls: 5 runs changed from silent 
 - **Admin bypass:** in t40 rep 2 an admin could edit another buyer's order, against "only the buyer who placed the order".
 - **Count:** t39, 3/3 reps: a repeated product id counted twice in `updated` (the text asks for the number of products changed). No guarantee applies (tag `none`), which is why the three t39 runs are not covered.
 
-**Efficiency (18 runs):** $2.20 list-price equivalent (plan-billed through the CLI); 213k input and 139k output tokens; 1.17 rounds per run; 64.1 s per run; 80.2 lines changed per run.
+**Efficiency (18 runs):** $2.19 list-price equivalent (plan-billed through the CLI); 212k input and 134k output tokens; 1.22 rounds per run; 67.7 s per run; 80.4 lines changed per run.
 
 ### What it says
 
