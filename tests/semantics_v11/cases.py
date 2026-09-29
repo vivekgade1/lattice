@@ -132,6 +132,31 @@ INT = [
     Case("int_pow_zero", P("f(x: Int) -> Int", "return x ** 0"), "f", (0,), 1),
     Case("int_floordiv_pos", P("f(a: Int, b: Int) -> Int", "return a // b"), "f", (7, 2), 3),
     Case("int_rshift", P("f(x: Int) -> Int", "return x >> 2"), "f", (20,), 5),
+    Case(
+        "int_floordiv_min_by_neg_one",
+        P("f(a: Int, b: Int) -> Int", "return a // b"),
+        "f",
+        (INT_MIN, -1),
+        Err("R623"),
+    ),
+    Case(
+        "sum_final_overflow",
+        P("f(xs: list[Int]) -> Int", "return sum(xs)"),
+        "f",
+        ([INT_MAX, 1],),
+        Err("R623"),
+    ),
+    Case(
+        # Python's intermediate sums are exact (unbounded ints): only the final
+        # value is range-checked, so a partial sum that would itself overflow
+        # Int64 (INT_MAX + 1, after the first two elements) does not fail here,
+        # as long as the final result (INT_MAX again) fits.
+        "sum_intermediate_overflow_final_fits",
+        P("f(xs: list[Int]) -> Int", "return sum(xs)"),
+        "f",
+        ([INT_MAX, 1, -1],),
+        INT_MAX,
+    ),
 ]
 FLOAT_TEXT = [  # str() and f"{x}" of floats: Python repr
     Case(f"float_str_{i}", P("f(x: Float) -> Str", "return str(x)"), "f", (v,), s)
