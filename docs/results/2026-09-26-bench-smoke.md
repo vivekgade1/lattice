@@ -879,10 +879,40 @@ full rationale and dates.
   fixed 100,000-level limit.
 - **Unicode 15 (Go's `x/text`) vs Unicode 16 (Python 3.14)** for case mapping and
   character classes. No semantics case uses a code point new in Unicode 16.
-- **NaN in sort keys and identity shortcuts.** Python's container `==`/sort take an
-  identity shortcut for a value compared with itself (so a NaN found this way compares
-  equal); Go's lists and dicts get the same shortcut, but a tuple compared with itself
-  holding a NaN does not (Go compares values, not identity) — an unusual program.
+- **NaN in sort keys.** Go's `sort.SliceStable` and Python's timsort give the same
+  result under a consistent ordering, but NaN compares false to everything, including
+  itself, so once NaN breaks the ordering the two algorithms may order the sequence
+  differently; `min`/`max` inherit the same risk. Not reachable by the semantics suite
+  (`task-8-report.md` concern 3).
+- **Identity shortcuts in container `==`, tuples only.** Python's container `==` and
+  `in` treat `x is y` as equal, so `[nan] == [nan]` is True when both hold the same
+  float object. Go's lists and dicts get the same shortcut (matching Python), but a
+  tuple compared with itself holding a NaN does not — Go compares values there, not
+  identity — an unusual program (`task-10-report.md` concern 4).
+- **A `Json` string holding a lone surrogate is WTF-8 on Go, not UTF-8.** `"\ud800"`
+  decoded from JSON and turned into a T2 `Str` (`str(j)`) is held as WTF-8 text on Go
+  so its code point survives `dumps`/`repr`/indexing; further `Str` operations on that
+  value would count its bytes as invalid UTF-8, which a Python `str` never has
+  (`task-10-report.md` §1 and concern 4; the ledger's Task 7 carry-forward: "no parity
+  attempted for ... lone surrogates").
+- **A record with a list field used as a dict key or set element.** Python raises
+  `TypeError` (unhashable); Go compares it by pointer instead of raising
+  (`task-8-report.md` concern 3).
+- **A module constant that would overflow the 64-bit `Int` range fails only on Go, at
+  process start.** Go evaluates module constants at package init and applies R623
+  there; Python loads the same constant unbounded and only raises once it is used in
+  Int arithmetic. A program with a module constant like `BIG = 2 ** 70` starts on
+  Python and fails to start on Go (`task-8-report.md` concern 3).
+- **The R622 error message's bit count is clamped on Go.** When an intermediate Int's
+  bit count exceeds Go's `int64` range, the message shows the clamped `MaxInt64`
+  instead of the exact (larger) bit count Python prints; only the message text
+  differs, not the error code or behaviour (ledger, Task 7 minor).
+- **Two small HTTP-layer divergences from Task 11 remain deferred and are not
+  exercised by the gate:** header values are decoded as raw UTF-8 on Go where
+  Starlette decodes latin-1 (`auth.go:29`); and `MergeUpdate` compares partial-update
+  keys by their JSON text on Go where Python compares by tuple equality, so an Int and
+  a Float key that are numerically equal (`1` and `1.0`) merge differently
+  (`http.go:247`).
 - **The HTTP request body is unbounded on both targets.** Neither Python nor Go caps
   it; a production deployment needs a body-size profile setting and a matching 413 on
   both, not yet built.
