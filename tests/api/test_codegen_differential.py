@@ -26,6 +26,11 @@ auth with an Admin flag column, and trailing-slash routes. Its natives module is
 next to the generated app as `natives.py`. Values generated per request (a new uuid4,
 the request's instant) differ between the two runs by nature, so bodies, after_sql rows
 and the DB digest compare them through placeholders (`normalize`).
+
+The registry (PROGRAMS, SETUPS) is also the Go equivalence gate's
+(tests/gogen/test_go_differential.py): every program that checks for Go runs there
+against the runtime the same way. "edges" (tests/api/edges.py) and "t2go" (the t2
+program without natives) are Go-eligible programs added for it.
 """
 
 from __future__ import annotations
@@ -53,6 +58,7 @@ from lattice.api.codegen import compile_source_to_fastapi
 from lattice.diagnostics import Severity
 from lattice.llm.api_prompt import LATTICE_EXAMPLES
 from tests.api import (
+    edges,
     effects,
     gaps,
     hardening,
@@ -984,9 +990,17 @@ T2_CASES: tuple[HttpCase, ...] = (
     # the l12 state machine
     _t2case("replay", "GET", "/logins/replay", "admin"),
     _t2case("replay customer", "GET", "/logins/replay", "alice", status=403),
+    # an Int handed to a Float procedure parameter (R-widen, api/ir.py): a parameter, a
+    # column, constants and a caller column all arrive as floats
+    _t2case("floats", "GET", "/items/1/floats", "alice", query={"n": 7}),
+    _t2case("floats negative", "GET", "/items/4/floats", "alice", query={"n": -5}),
+    _t2case("floats default", "GET", "/items/3/floats", "bob"),
+    _t2case("floats other", "GET", "/items/3/floats", "alice", status=404),
     # R620: fuel and recursion depth
     _t2case("spin", "GET", "/spin", "alice", status=500),
     _t2case("spin nothing to run", "GET", "/spin", "carol", status=404),
+    _t2case("burn", "GET", "/burn", "alice", query={"n": 100, "w": 3}),
+    _t2case("burn out", "GET", "/burn", "alice", query={"n": 100000}, status=500),
     _t2case("depth", "GET", "/depth/10", "alice"),
     _t2case("depth too deep", "GET", "/depth/5000", "alice", status=500),
     _t2case("depth none", "GET", "/depth/3", "carol", status=404),
@@ -1157,6 +1171,68 @@ PROGRAMS["n1b"] = (
     _N1B.PROGRAM,
     ApiTask("n1b", "control", "N1b spellings", N1B_CASES + _probes(N1B_CASES)),
 )
+
+# ---- t2 without natives (tests/api/t2prog.py GO_PROGRAM): the procedures program on
+# targets without natives, with every T2 case but the effect native's (notify)
+T2GO_CASES = tuple(c for c in T2_CASES if "/notify" not in c.path)
+PROGRAMS["t2go"] = (
+    _T2.GO_PROGRAM,
+    ApiTask("t2go", "control", "procedures, no natives", T2GO_CASES + _probes(T2GO_CASES)),
+)
+
+# ---- endpoint edges (tests/api/edges.py): page totals, unique_or 409, owner transfer to
+# a missing user, trailing-slash 307s, UNSET partial updates with explicit null, 204, R310
+_ED = edges
+EDGES_CASES: tuple[HttpCase, ...] = (
+    _case("page total", "GET", "/reviews/", ADMIN, query={"limit": 3, "skip": 2}),
+    _case("page past the end", "GET", "/reviews/", ADMIN, query={"skip": 100000}),
+    _case("page forbidden", "GET", "/reviews/", A, status=403),
+    _case("slash redirect", "GET", "/reviews", ADMIN),  # 307, followed by the client
+    _case("slash redirect query", "GET", "/reviews", ADMIN, query={"limit": 2}),
+    _case("notes page", "GET", "/notes/", A, after_sql=_ED.NOTES_AFTER),
+    _case("notes page 2", "GET", "/notes", A, query={"limit": 1, "offset": 1}),
+    _case("notes none", "GET", "/notes/", D),
+    _case("slash other method", "PATCH", "/notes/1/", A, json={"memo": "x"}),
+    _case("conflict", "PATCH", "/users/me", A, json={"email": "bob@example.com"}, status=409,
+          after_sql=_ED.USERS_AFTER),  # fmt: skip
+    _case("own email again", "PATCH", "/users/me", A, json={"email": "alice@example.com"}),
+    _case("me name only", "PATCH", "/users/me", A, json={"name": "Al"},
+          after_sql=_ED.USERS_AFTER),  # fmt: skip
+    _case("me nothing", "PATCH", "/users/me", B, json={}, after_sql=_ED.USERS_AFTER),
+    _case("me null name", "PATCH", "/users/me", A, json={"name": None}, status=422),
+    _case("review rating", "PATCH", "/reviews/111", A, json={"rating": 2},
+          after_sql=_ED.REVIEWS_AFTER),  # fmt: skip
+    _case("review both", "PATCH", "/reviews/111", A, json={"rating": 5, "body": "ok"},
+          after_sql=_ED.REVIEWS_AFTER),  # fmt: skip
+    _case("review none", "PATCH", "/reviews/111", A, json={}),
+    _case("review not mine", "PATCH", "/reviews/8", A, json={"rating": 2}, status=404),
+    _case("owner moved", "PUT", "/reviews/111/owner", ADMIN, json={"owner_id": 2},
+          after_sql=_ED.REVIEWS_AFTER),  # fmt: skip
+    _case("owner missing", "PUT", "/reviews/111/owner", ADMIN, json={"owner_id": 999},
+          status=404, after_sql=_ED.REVIEWS_AFTER),  # fmt: skip
+    _case("owner no review", "PUT", "/reviews/99999/owner", ADMIN, json={"owner_id": 2},
+          status=404),  # fmt: skip
+    _case("R310", "GET", "/any/23", ADMIN, status=500),
+    _case("any none", "GET", "/any/999999", ADMIN, status=404),
+    _case("one", "GET", "/reviews/111", A),
+    _case("mine route", "GET", "/reviews/mine", A),
+    _case("delete", "DELETE", "/reviews/111", A, status=204, after_sql=_ED.REVIEWS_AFTER),
+    _case("delete other", "DELETE", "/reviews/8", A, status=404),
+    _case("memo null", "PATCH", "/notes/1", A, json={"memo": None},
+          after_sql=_ED.NOTES_AFTER),  # fmt: skip
+    _case("memo set", "PATCH", "/notes/2", A, json={"memo": "hi"}, after_sql=_ED.NOTES_AFTER),
+    _case("title and null memo", "PATCH", "/notes/1", A, json={"title": "t", "memo": None},
+          after_sql=_ED.NOTES_AFTER),  # fmt: skip
+    _case("title null", "PATCH", "/notes/1", A, json={"title": None}, status=422),
+    _case("note unchanged", "PATCH", "/notes/2", A, json={}, after_sql=_ED.NOTES_AFTER),
+    _case("note other", "PATCH", "/notes/3", A, json={"memo": None}, status=404),
+    _case("note bob", "PATCH", "/notes/3", B, json={"memo": None}, after_sql=_ED.NOTES_AFTER),
+)
+PROGRAMS["edges"] = (
+    _ED.PROGRAM,
+    ApiTask("edges", "control", "endpoint edges", EDGES_CASES + _probes(EDGES_CASES)),
+)
+
 TASK_IDS = [t.id for t in API_TASKS]
 EXAMPLE_IDS = [f"example{i}" for i in range(1, len(LATTICE_EXAMPLES) + 1)]
 EXTRA_IDS = [
@@ -1174,6 +1250,8 @@ EXTRA_IDS = [
     "solo_runtime",
     "solo_answers",
     "n1b",
+    "t2go",
+    "edges",
 ]
 
 
@@ -1207,6 +1285,8 @@ SETUPS = {
         _SO.PROFILE_ANSWERS, _SO.build_db, _SO.NATIVES, _SO.NATIVES_FILE, _SO.SETTINGS
     ),
     "n1b": Setup(n1b.PROFILE, n1b.build_db, n1b.NATIVES, n1b.NATIVES_FILE),
+    "t2go": Setup(_T2.GO_PROFILE, _T2.build_db),
+    "edges": Setup(_ED.PROFILE, _ED.build_db),
 }
 
 
@@ -1245,7 +1325,9 @@ HARDENING_CASES: tuple[HttpCase, ...] = (
 )
 PROGRAMS["hardening"] = (
     _HD.PROGRAM,
-    ApiTask("hardening", "control", "review hardening", HARDENING_CASES),
+    ApiTask(
+        "hardening", "control", "review hardening", HARDENING_CASES + _probes(HARDENING_CASES)
+    ),
 )
 EXTRA_IDS.append("hardening")
 SETUPS["hardening"] = Setup(_HD.PROFILE, _HD.build_db)
@@ -1501,9 +1583,12 @@ def strict_equal(a: object, b: object) -> bool:
     return a == b
 
 
-def _mismatches(pid: str, runs: tuple) -> list[str]:
+def _mismatches(pid: str, runs: tuple, task: ApiTask | None = None) -> list[str]:
+    """Every difference between the runtime's run and the other side's (the generated
+    FastAPI app here; the Go binary in tests/gogen/test_go_differential.py) of `task`
+    (default: the registry's)."""
     rt_results, rt_captured, gen_results, gen_captured = runs
-    task = PROGRAMS[pid][1]
+    task = PROGRAMS[pid][1] if task is None else task
     problems: list[str] = []
     assert rt_results.started, rt_results.start_error
     assert gen_results.started, gen_results.start_error
@@ -1855,6 +1940,60 @@ def test_the_t2_program_passes_its_cases(differential_runs):
         assert "error R620" in body["depth too deep"]["detail"]
         assert "deeper than" in body["depth too deep"]["detail"]
         assert body["depth"] == {"id": 1, "depth": 10}
+        # an Int handed to a Float procedure parameter arrives as a float (R-widen)
+        assert body["floats"] == {
+            "id": 1,
+            "by_param": "7.0 0.875",
+            "by_col": "2.0 0.25",
+            "by_const": "2.0 0.25",
+            "by_neg": "-3.0 -0.375",
+            "by_caller": "2.0 0.25",
+        }
+        assert body["floats negative"]["by_param"] == "-5.0 -0.625"
+        assert body["burn"] == {"id": 2, "total": 400}
+        assert "error R620" in body["burn out"]["detail"]
+
+
+def test_the_edges_program_passes_its_cases(differential_runs):
+    """The endpoint edges (tests/api/edges.py) answer as expected on both backends: page
+    totals, the 307 of a trailing slash (followed), unique_or's 409, an owner transfer
+    to a missing user, UNSET partial updates with explicit nulls, a 204 delete, R310."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs["edges"]
+    want = {c.name: c.expect_status for c in EDGES_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want
+    for captured in (rt_captured, gen_captured):
+        body = {c["name"]: c["body"] for c in captured}
+        after = {c["name"]: c["after"] for c in captured}
+        page = body["page total"]
+        assert (page["limit"], page["offset"], page["total"]) == (3, 2, 120)
+        assert [i["id"] for i in page["items"]] == [3, 4, 5]
+        past = body["page past the end"]
+        assert past["items"] == [] and past["total"] == 120
+        assert len(body["slash redirect query"]["items"]) == 2
+        assert body["notes page 2"] == {
+            "items": [{"id": 2, "customer_id": 1, "title": "call mom", "memo": None}],
+            "limit": 1,
+            "offset": 1,
+            "total": 2,
+        }
+        assert body["slash other method"]["memo"] == "x"
+        assert body["conflict"] == {"error": "conflict", "detail": "email taken"}
+        assert [1, "alice@example.com", "Alice Nguyen"] in after["conflict"]
+        assert after["me name only"][0] == [1, "alice@example.com", "Al"]
+        assert body["owner moved"] == {"id": 111, "customer_id": 2}
+        assert [r[:2] for r in after["owner moved"]][-1] == [111, 2]
+        assert body["owner missing"] == {"error": "not_found", "detail": "User not found"}
+        assert [r[:2] for r in after["owner missing"]][-1] == [111, 1]  # unchanged
+        assert "error R310" in body["R310"]["detail"]
+        assert body["delete"] is None and [r[0] for r in after["delete"]] == [8]
+        assert after["memo null"][0] == [1, 1, "groceries", None]
+        assert after["memo set"][1] == [2, 1, "call mom", "hi"]
+        assert after["title and null memo"][0] == [1, 1, "t", None]
+        assert body["title null"]["error"] == "validation"
+        assert after["note unchanged"] == [list(r) for r in edges.NOTE_ROWS]
+        assert after["note bob"][2] == [3, 2, "bob's", None]
 
 
 def test_a_procedure_filter_before_page_is_rejected_by_both_backends(tmp_path: Path):

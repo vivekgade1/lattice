@@ -12,6 +12,7 @@ Shared by the runtime tests (tests/api/test_t2_runtime.py) and the codegen diffe
 
 from __future__ import annotations
 
+import dataclasses
 import sqlite3
 from pathlib import Path
 
@@ -231,6 +232,22 @@ def notify(to: Str, title: Str) -> None:
 
 
 @procedure
+def float_text(x: Float) -> Str:
+    """An Int handed to a Float parameter arrives as a float (R-widen): "7.0", not "7"."""
+    return str(x) + " " + str(x / 8)
+
+
+@procedure
+def burn(n: Int, w: Int) -> Int:
+    """n loop iterations, each building a text of w characters: the fuel spent grows by
+    one per iteration (w = 0), or the first iteration alone can exceed the budget."""
+    total = 0
+    for _ in range(n):
+        total += len("x" * w) + 1
+    return total
+
+
+@procedure
 def spin(n: Int) -> Int:
     total = 0
     while True:
@@ -402,6 +419,35 @@ def replay(user: CurrentUser) -> List:
     return results
 
 
+@endpoint("GET", "/items/{item_id}/floats", auth=Customer)
+def float_args(
+    item_id: Int(ge=1), user: CurrentUser, n: Int(ge=-1000, le=1000) = 7
+) -> One | NotFound:
+    items = fetch(Items)
+    mine = accessible(items, by=user)
+    found = where(mine, col("id") == item_id)
+    item = one(found, else_=NotFound("item"))
+    shown = derive(
+        item,
+        by_param=float_text(n),
+        by_col=float_text(col("owner_id")),
+        by_const=float_text(2),
+        by_neg=float_text(-3),
+        by_caller=float_text(user.id),
+    )
+    out = select(shown, cols=["id", "by_param", "by_col", "by_const", "by_neg", "by_caller"])
+    return out
+
+
+@endpoint("GET", "/burn", auth=Customer)
+def burn_fuel(
+    user: CurrentUser, n: Int(ge=0, le=1000000), w: Int(ge=0, le=1000000) = 0
+) -> One:
+    shown = derive(user, total=burn(n, w))
+    out = select(shown, cols=["id", "total"])
+    return out
+
+
 @endpoint("GET", "/spin", auth=Customer)
 def spin_forever(user: CurrentUser) -> One | NotFound:
     items = fetch(Items)
@@ -427,6 +473,35 @@ def deep(n: Int(ge=0, le=100000), user: CurrentUser) -> One | NotFound:
 """
 
 PROGRAM = PROCEDURES + ENDPOINTS
+
+# The program without its natives, for targets without natives (Go: L890): digest's
+# slug is computed in the procedure, and the effectful notify (an effect native) is
+# dropped with its endpoint.
+GO_PROGRAM = (
+    PROGRAM.replace("slug=native.slugify(r.title)", 'slug=r.title.lower().replace(" ", "-")')
+    .replace(
+        """@procedure(effects=["mail"])
+def notify(to: Str, title: Str) -> None:
+    native.send_digest(to, title.upper())
+""",
+        "",
+    )
+    .replace(
+        """@endpoint("POST", "/items/{item_id}/notify", auth=Customer)
+def notify_item(item_id: Int(ge=1), user: CurrentUser) -> One | NotFound:
+    items = fetch(Items)
+    mine = accessible(items, by=user)
+    found = where(mine, col("id") == item_id)
+    item = one(found, else_=NotFound("item"))
+    for_each(item, notify, user.email, col("title"))
+    shown = select(item, cols=["id", "title"])
+    return shown
+""",
+        "",
+    )
+)
+GO_API = dataclasses.replace(API, natives={})
+GO_PROFILE = dataclasses.replace(PROFILE, api=GO_API)
 
 # L880: the same list with the procedure filter before page() (rejected).
 L880_PROGRAM = PROGRAM.replace(

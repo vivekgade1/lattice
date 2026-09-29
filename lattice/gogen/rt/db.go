@@ -3,9 +3,12 @@ package rt
 import (
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
+	"io"
 	"regexp"
 	"strings"
+	"sync"
 
 	"modernc.org/sqlite"
 )
@@ -113,6 +116,38 @@ func sqlError(err error) *SQLError {
 func IsUniqueViolation(err any) bool {
 	e, ok := err.(*SQLError)
 	return ok && e.Kind == "IntegrityError" && strings.HasPrefix(e.Msg, "UNIQUE constraint failed")
+}
+
+// sqlTrace receives the statement trace (SetSQLTrace); nil: no trace.
+var sqlTrace struct {
+	sync.Mutex
+	w io.Writer
+}
+
+// SetSQLTrace makes every counted data statement be written to w (nil: none) as
+// SQLite expands it with its bound values (sqlite3_expanded_sql, the text Python's
+// sqlite3 trace callback is given), one JSON string per line, before it first steps.
+// A test tool (the app's LATTICE_TRACE_SQL_LOG): the equivalence gate compares it with
+// the Python runtime's trace, statement by statement.
+func SetSQLTrace(w io.Writer) {
+	sqlTrace.Lock()
+	defer sqlTrace.Unlock()
+	sqlTrace.w = w
+}
+
+func sqlTraceOn() bool {
+	sqlTrace.Lock()
+	defer sqlTrace.Unlock()
+	return sqlTrace.w != nil
+}
+
+func traceStatement(text string) {
+	line, _ := json.Marshal(text)
+	sqlTrace.Lock()
+	defer sqlTrace.Unlock()
+	if sqlTrace.w != nil {
+		_, _ = sqlTrace.w.Write(append(line, '\n'))
+	}
 }
 
 // CountedStatement is bench.api_runner._is_counted_statement: a data statement;

@@ -101,6 +101,8 @@ def _constructs(proc: CheckedProcedure, t2: T2Program, ctx: CheckContext, target
 
     def kind_gate(node: ast.AST, t: T.T2Type) -> None:
         for kind in sorted(kinds(t)):
+            if kind == "native" and not target.natives:
+                continue  # the `native` namespace itself: its use is L890 (`run`)
             if not supports_type(target, kind) and kind not in reported:
                 reported.add(kind)
                 ctx.error(

@@ -87,7 +87,9 @@ type App struct {
 	DB       *sql.DB
 	Settings Settings
 	Routes   []Route
-	// Trace: every response carries X-Lattice-Sql-Count (LATTICE_TRACE_SQL=1).
+	// Trace: every response carries X-Lattice-Sql-Count (LATTICE_TRACE_SQL=1). The
+	// statements' expanded text goes to a file with LATTICE_TRACE_SQL_LOG=<path>
+	// (SetSQLTrace; a test tool).
 	Trace bool
 }
 
@@ -460,6 +462,13 @@ func NewApp(dbPath string, routes []Route, s Settings) (*App, error) {
 		return nil, err
 	}
 	db.SetMaxIdleConns(16)
+	if path := os.Getenv("LATTICE_TRACE_SQL_LOG"); path != "" {
+		f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+		if err != nil {
+			return nil, err
+		}
+		SetSQLTrace(f)
+	}
 	return &App{DB: db, Settings: s, Routes: routes, Trace: os.Getenv("LATTICE_TRACE_SQL") == "1"}, nil
 }
 
@@ -622,6 +631,10 @@ func quoteURL(s string) string {
 func (a *App) serve(rt *Route, r *http.Request, path map[string]string) (ans answer) {
 	ep := &rt.EP
 	now := Now()
+	// The request body is read whole, with no size limit, on both targets (parity: the
+	// generated FastAPI app and the Python runtime `await request.body()` unbounded).
+	// Production follow-up: a body cap as a profile setting, on both targets together
+	// (e.g. the same 413 answer on each).
 	body, _ := io.ReadAll(r.Body)
 	var db *dbConn
 	inTxn := false

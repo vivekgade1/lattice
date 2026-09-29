@@ -70,3 +70,37 @@ func TestLibcMatchesSqlite(t *testing.T) {
 		t.Errorf("modernc.org/libc is %s; modernc.org/sqlite requires %s", got, m[1])
 	}
 }
+
+// TestSQLTraceLogsExpandedCountedStatements: with a trace writer set (the app's
+// LATTICE_TRACE_SQL_LOG), every counted data statement is written once, as SQLite
+// expands it with its bound values (what Python's sqlite3 trace callback sees), one
+// JSON string per line; transaction control and DDL are not written.
+func TestSQLTraceLogsExpandedCountedStatements(t *testing.T) {
+	RegisterFunctions()
+	db, err := sql.Open("sqlite", "file::memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	conn, err := db.Conn(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	var buf strings.Builder
+	SetSQLTrace(&buf)
+	defer SetSQLTrace(nil)
+	c := &dbConn{conn: conn}
+	c.exec("CREATE TABLE t (x, y)")
+	c.exec("BEGIN")
+	c.exec("INSERT INTO t VALUES (?, ?)", int64(5), "it's")
+	c.query("SELECT x FROM t WHERE y = ?", "it's")
+	c.exec("COMMIT")
+	want := "\"INSERT INTO t VALUES (5, 'it''s')\"\n\"SELECT x FROM t WHERE y = 'it''s'\"\n"
+	if buf.String() != want {
+		t.Errorf("trace = %q, want %q", buf.String(), want)
+	}
+	if c.queries != 2 {
+		t.Errorf("queries = %d, want 2", c.queries)
+	}
+}

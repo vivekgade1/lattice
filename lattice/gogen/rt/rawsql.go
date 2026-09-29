@@ -109,6 +109,11 @@ func rawStatement(dc any, sqlText string, args []driver.NamedValue) (Result, int
 	if e := rawBind(tls, db, pstmt, args, cstr); e != nil {
 		return res, 0, e
 	}
+	if sqlTraceOn() && CountedStatement(sqlText) {
+		p := sqlite3.Xsqlite3_expanded_sql(tls, pstmt)
+		traceStatement(libc.GoString(p))
+		sqlite3.Xsqlite3_free(tls, p)
+	}
 	n := int(sqlite3.Xsqlite3_column_count(tls, pstmt))
 	for i := 0; i < n; i++ {
 		res.Cols = append(res.Cols, libc.GoString(sqlite3.Xsqlite3_column_name(tls, pstmt, int32(i))))

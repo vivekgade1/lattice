@@ -6,21 +6,26 @@ T2 constructs Go lacks L892), lowers it, emits the Go module -- `handlers.go` an
 `main.go` (lattice.gogen.endpoints), `t2.go` (the procedures, lattice.gogen.t2),
 `go.mod` (`module latticeapp`, the runtime `lattice.dev/rt` through a `replace` to
 lattice/gogen/rt) and the runtime's `go.sum` -- and runs `go build -trimpath -o app`
-offline (GOFLAGS=-mod=mod, GOPROXY=off).
+offline (GOFLAGS=-mod=mod, GOPROXY=off; -buildvcs=false: no git, and nothing of the
+checkout's state in the binary).
 
 Builds are cached under `out_dir/.cache/<hash>/` (the module and its `app`), keyed by
-the sha256 of the source, repr(profile), the runtime tree and the generated files (so a
-generator change is a new key too); a hit returns without running go. The cache keeps
-the CACHE_KEEP most recently used builds.
+the sha256 of the source, repr(profile), the runtime tree, the generated files (so a
+generator change is a new key too) and `go version` (a toolchain upgrade rebuilds); a
+hit returns without running go. The cache keeps the CACHE_KEEP most recently used
+builds; a `.tmp-*` build directory younger than TMP_GRACE_S is another process's build
+in progress and is left alone.
 """
 
 from __future__ import annotations
 
 import ast
+import functools
 import hashlib
 import os
 import shutil
 import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -34,11 +39,20 @@ from lattice.profile import Profile
 from lattice.runtime import LatticeInternalError
 from lattice.t2ir.lower import lower_t2
 
-__all__ = ["CACHE_KEEP", "GoBuild", "GoBuildError", "build_go_app", "cache_key", "prune_cache"]
+__all__ = [
+    "CACHE_KEEP",
+    "GoBuild",
+    "GoBuildError",
+    "build_go_app",
+    "cache_key",
+    "go_version",
+    "prune_cache",
+]
 
 RT = Path(__file__).resolve().parent / "rt"
 GO_ENV = {"GOFLAGS": "-mod=mod", "GOPROXY": "off", "GOWORK": "off", "GOTOOLCHAIN": "local"}
 CACHE_KEEP = 20  # builds kept in out_dir/.cache (least recently used pruned first)
+TMP_GRACE_S = 600  # a younger .tmp-* build directory is a build in progress
 GO_VERSION = "1.26.0"
 
 
@@ -69,10 +83,32 @@ def rt_digest() -> str:
     return h.hexdigest()
 
 
+@functools.cache
+def _go_version() -> str:
+    try:
+        proc = subprocess.run(  # noqa: S603
+            ["go", "version"],  # noqa: S607
+            env={**os.environ, **GO_ENV},
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=60,
+        )
+    except FileNotFoundError:
+        return "no go"
+    return proc.stdout.strip()
+
+
+def go_version() -> str:
+    """`go version`'s output (the toolchain, its version and GOOS/GOARCH)."""
+    return _go_version()
+
+
 def cache_key(source: str, profile: Profile, files: dict[str, str]) -> str:
-    """sha256 of (the source, repr(profile), the runtime tree, the generated files)."""
+    """sha256 of (the source, repr(profile), the runtime tree, `go version`, the
+    generated files)."""
     h = hashlib.sha256()
-    for part in (source, repr(profile), rt_digest()):
+    for part in (source, repr(profile), rt_digest(), go_version()):
         h.update(part.encode() + b"\0")
     for name in sorted(files):
         h.update(name.encode() + b"\0" + files[name].encode() + b"\0")
@@ -128,7 +164,7 @@ def _go_build(module_dir: Path) -> None:
         pass  # formatting is cosmetic
     try:
         proc = subprocess.run(  # noqa: S603
-            ["go", "build", "-trimpath", "-o", "app", "."],  # noqa: S607
+            ["go", "build", "-trimpath", "-buildvcs=false", "-o", "app", "."],  # noqa: S607
             cwd=module_dir,
             env=env,
             capture_output=True,
@@ -144,10 +180,24 @@ def _go_build(module_dir: Path) -> None:
 
 def prune_cache(cache: Path, keep: int = CACHE_KEEP) -> None:
     """Keep the `keep` most recently used builds under `cache` (by mtime; a hit touches
-    its build); remove the others, and stale temporary build directories."""
+    its build); remove the others, and stale temporary build directories (`.tmp-*`
+    older than TMP_GRACE_S; a younger one is a build in progress)."""
     if not cache.is_dir():
         return
-    entries = [p for p in cache.iterdir() if p.is_dir()]
+    now = time.time()
+    entries = []
+    for p in cache.iterdir():
+        if not p.is_dir():
+            continue
+        if p.name.startswith(".tmp-"):
+            try:
+                stale = now - p.stat().st_mtime >= TMP_GRACE_S
+            except FileNotFoundError:
+                continue  # its build finished meanwhile
+            if stale:
+                shutil.rmtree(p, ignore_errors=True)
+            continue
+        entries.append(p)
     entries.sort(key=lambda p: p.stat().st_mtime, reverse=True)
     for old in entries[keep:]:
         shutil.rmtree(old, ignore_errors=True)

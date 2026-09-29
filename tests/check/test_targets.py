@@ -53,6 +53,18 @@ def test_l890_native_call_rejected_on_go(realapps_source, realapps_profile):
     assert "L890" in codes(go)
 
 
+def test_a_native_inside_a_procedure_is_only_l890_on_go():
+    """The `native` namespace a procedure reads is the native itself (L890), not a
+    second L892 for a value kind: a program with natives is rejected for Go with
+    L890 only (plan 5a Task 13: the gate's exclusions are the L890-only programs)."""
+    from tests.api import t2prog
+
+    go = check_source(t2prog.PROGRAM, t2prog.PROFILE, target="go")
+    assert not go.ok
+    errors = {d.code for d in go.diagnostics if d.severity.name == "ERROR"}
+    assert errors == {"L890"}, [d.render() for d in go.diagnostics]
+
+
 def test_l892_unsupported_t2_call_on_go(monkeypatch):
     monkeypatch.setattr("lattice.targets.GO_T2_CALLS", set())
     src = dedent("""\

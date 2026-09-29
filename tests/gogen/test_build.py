@@ -191,6 +191,44 @@ def test_cache_is_pruned(tmp_path):
     assert left == [f"{i:02d}" for i in range(5, 25)]
 
 
+def test_prune_keeps_young_temporary_builds(tmp_path):
+    """A `.tmp-*` directory is another process's build in progress while it is young
+    (under 10 minutes): never counted among the kept builds, never removed; an old one
+    is stale and removed."""
+    cache = tmp_path / ".cache"
+    for i in range(3):
+        d = cache / f"{i:02d}"
+        d.mkdir(parents=True)
+        os.utime(d, (1000 + i, 1000 + i))
+    young, old = cache / ".tmp-young-1", cache / ".tmp-old-2"
+    young.mkdir()
+    old.mkdir()
+    os.utime(old, (1000, 1000))  # long ago
+    gobuild.prune_cache(cache, keep=2)
+    assert sorted(p.name for p in cache.iterdir()) == [".tmp-young-1", "01", "02"]
+
+
+def test_cache_key_includes_the_go_version(monkeypatch):
+    k1 = gobuild.cache_key(SRC, api_profile(), {"a.go": "x"})
+    monkeypatch.setattr(gobuild, "go_version", lambda: "go version go9.99 test/arch")
+    assert gobuild.cache_key(SRC, api_profile(), {"a.go": "x"}) != k1
+
+
+def test_go_build_does_not_stamp_vcs(monkeypatch, tmp_path):
+    """-buildvcs=false: a build inside a git checkout needs no git, and the binary does
+    not depend on the checkout's state."""
+    seen: list[list[str]] = []
+
+    def run(cmd: list[str], **_kw: Any) -> subprocess.CompletedProcess[str]:
+        seen.append(cmd)
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr(gobuild.subprocess, "run", run)
+    gobuild._go_build(tmp_path)
+    build = next(c for c in seen if c[:2] == ["go", "build"])
+    assert "-buildvcs=false" in build
+
+
 def test_gorun_cache_is_pruned(tmp_path, monkeypatch):
     from tests.semantics_v11 import gorun
 
@@ -274,32 +312,9 @@ def test_hardening_program(go_out, tmp_path):
     assert plan == (200, {"id": 2, "role": "Customer", "plan": "pro", "p": "pro", "q": "pro"})
 
 
-# tests/api/t2prog.py without its natives (L890 on Go): digest's slug is computed in the
-# procedure, and the effectful notify (an effect native) is dropped with its endpoint.
-T2_GO_PROGRAM = (
-    t2prog.PROGRAM.replace("slug=native.slugify(r.title)", 'slug=r.title.lower().replace(" ", "-")')
-    .replace(
-        """@procedure(effects=["mail"])
-def notify(to: Str, title: Str) -> None:
-    native.send_digest(to, title.upper())
-""",
-        "",
-    )
-    .replace(
-        """@endpoint("POST", "/items/{item_id}/notify", auth=Customer)
-def notify_item(item_id: Int(ge=1), user: CurrentUser) -> One | NotFound:
-    items = fetch(Items)
-    mine = accessible(items, by=user)
-    found = where(mine, col("id") == item_id)
-    item = one(found, else_=NotFound("item"))
-    for_each(item, notify, user.email, col("title"))
-    shown = select(item, cols=["id", "title"])
-    return shown
-""",
-        "",
-    )
-)
-T2_GO_PROFILE = dataclasses.replace(t2prog.PROFILE, api=dataclasses.replace(t2prog.API, natives={}))
+# tests/api/t2prog.py without its natives (L890 on Go): t2prog.GO_PROGRAM.
+T2_GO_PROGRAM = t2prog.GO_PROGRAM
+T2_GO_PROFILE = t2prog.GO_PROFILE
 
 
 def _t2case(name: str, method: str, path: str, who: str, **kw: Any) -> HttpCase:
