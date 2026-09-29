@@ -187,6 +187,28 @@ SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
     "t36_cancel_order": (SmokeRequest("carol", "POST", "/orders/8/cancel"),),
     "t37_product_buyers": (SmokeRequest("vicky", "GET", "/products/1/buyers"),),
     "t38_reorder": (SmokeRequest("carol", "POST", "/orders/1/reorder", expect=201),),
+    # option 1b (order 8 is carol's pending order: lines 12 and 13)
+    "t39_bulk_price": (
+        SmokeRequest("vicky", "POST", "/products/bulk-price",
+                     json={"changes": [{"product_id": 1, "price": 13.0}]}),
+    ),
+    "t40_edit_order_items": (
+        SmokeRequest("carol", "PATCH", "/orders/8/items",
+                     json={"items": [{"product_id": 2, "quantity": 2}]}),
+    ),
+    "t41_close_shop": (SmokeRequest("vera", "POST", "/vendors/me/close"),),
+    "t42_split_order": (
+        SmokeRequest("carol", "POST", "/orders/8/split", expect=201, json={"item_ids": [13]}),
+    ),
+    "t43_vendor_onboarding": (
+        SmokeRequest("frank", "POST", "/vendors/onboard", expect=201,
+                     json={"business_name": "Frank's Fixtures",
+                           "products": [{"name": "Desk lamp", "category": "home",
+                                         "price": 30.0, "stock_quantity": 5}]}),
+    ),
+    "t44_merge_orders": (
+        SmokeRequest("carol", "POST", "/orders/merge", expect=400, json={"order_ids": [8, 1]}),
+    ),
 }  # fmt: skip
 
 

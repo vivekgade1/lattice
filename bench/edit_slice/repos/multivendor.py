@@ -140,6 +140,15 @@ WRITERS: dict[str, Callable[[Engine], None]] = {
     "hammer_low": _sql(f"UPDATE products SET stock_quantity = 1 WHERE id = {HAMMER}"),
     # vera keeps the vendor role but has no vendor profile any more
     "vendorless": _sql("DELETE FROM vendors WHERE id = 3"),
+    # option 1b: nothing is being fulfilled any more (orders 3 and 5 delivered)
+    "fulfilled": _sql("UPDATE orders SET status = 'DELIVERED' WHERE id IN (3, 5)"),
+    # option 1b: two more pending orders of carol's; order 10 bought the mug at 10.00
+    "multi_pending": _sql(_order(10, CAROL, "2026-03-25 10:00:00", "PENDING", 43.0),
+                          _line(20, 10, MUG, 2, 10.0),
+                          _line(21, 10, NOTEBOOK, 1, 5.0),
+                          _line(22, 10, GLOVES, 3, 6.0),
+                          _order(11, CAROL, "2026-03-26 11:00:00", "PENDING", 6.0),
+                          _line(23, 11, GLOVES, 1, 6.0)),
 }  # fmt: skip
 
 
@@ -364,6 +373,146 @@ def t38_cases() -> list[Case]:
     ]
 
 
+# ---- option 1b: atomicity (t39-t44) ------------------------------------------------------------
+# seed order lines: order 5 has lines 7-9, order 7 line 11, order 8 lines 12 (candle x1)
+# and 13 (hammer x2); "multi_pending" adds order 10 (lines 20-22) and order 11 (line 23)
+
+
+def t39_cases() -> list[Case]:
+    tid, route, path = "t39", "bulk_update_prices", "/products/bulk-price"
+
+    def c(what: str, user: str, changes: list[tuple[int, float]], db: str = "seed") -> Case:
+        body = {"changes": [{"product_id": pid, "price": price} for pid, price in changes]}
+        return _case(tid, route, "POST", path, what, user, db, json=body, tables=("products",))
+
+    return [
+        c("two_own", "vicky", [(MUG, 15.0), (CANDLE, 9.0)]),
+        c("victor_own", "victor", [(HAMMER, 30.0), (GLOVES, 7.0)]),
+        c("repeated_id", "vicky", [(MUG, 15.0), (MUG, 15.0)]),
+        c("inactive_product", "vicky", [(POSTER, 25.0)]),
+        c("own_then_foreign", "vicky", [(MUG, 15.0), (HAMMER, 1.0)]),
+        c("own_then_missing", "vicky", [(MUG, 15.0), (MISSING, 1.0)]),
+        c("foreign_first", "vicky", [(HAMMER, 1.0), (MUG, 15.0)]),
+        c("zero_price_anywhere", "vicky", [(MUG, 15.0), (CANDLE, 0.0)]),
+        c("vendor_without_products", "vera", [(MUG, 1.0)]),
+        c("vendor_role_without_profile", "vera", [(MUG, 1.0)], "vendorless"),
+        c("admin_forbidden", "admin", [(MUG, 1.0)]),
+        c("buyer_forbidden", "carol", [(MUG, 1.0)]),
+        *auth_cases(tid, "POST", path, route),
+    ]
+
+
+def _items(*lines: tuple[int, int]) -> dict[str, Any]:
+    return {"items": [{"product_id": pid, "quantity": qty} for pid, qty in lines]}
+
+
+def t40_cases() -> list[Case]:
+    tid, route = "t40", "edit_order_items"
+
+    def c(what: str, user: str, order: int, body: dict[str, Any], db: str = "seed") -> Case:
+        return _case(tid, route, "PATCH", f"/orders/{order}/items", what, user, db,
+                     json=body, tables=WRITES)  # fmt: skip
+
+    return [
+        c("replace_lines", "carol", 8, _items((CANDLE, 3))),
+        c("new_product_at_current_price", "carol", 8, _items((MUG, 1), (HAMMER, 2))),
+        c("held_stock_counts", "carol", 8, _items((CANDLE, 1), (HAMMER, 3)), "hammer_low"),
+        c("not_enough_writes_nothing", "carol", 8, _items((MUG, 5), (HAMMER, 4)), "hammer_low"),
+        c("repriced_line", "carol", 10, _items((MUG, 2), (NOTEBOOK, 1)), "multi_pending"),
+        c("another_buyers_pending", "carol", 7, _items((MUG, 1))),
+        c("another_buyers_shipped", "carol", 3, _items((MUG, 1))),
+        c("own_confirmed", "carol", 5, _items((MUG, 1))),
+        c("dave_own_shipped", "dave", 3, _items((MUG, 1))),
+        c("unknown_order", "carol", MISSING, _items((MUG, 1))),
+        c("admin_is_not_the_buyer", "admin", 8, _items((MUG, 1))),
+        *auth_cases(tid, "PATCH", "/orders/8/items", route),
+    ]
+
+
+def t41_cases() -> list[Case]:
+    tid, route, path = "t41", "close_own_shop", "/vendors/me/close"
+
+    def c(what: str, user: str, db: str = "seed") -> Case:
+        return _case(tid, route, "POST", path, what, user, db, tables=WRITES)
+
+    return [
+        c("vicky_busy_writes_nothing", "vicky"),
+        c("victor_busy_writes_nothing", "victor"),
+        c("vicky_closes", "vicky", "fulfilled"),
+        c("victor_closes_multi_vendor_order", "victor", "fulfilled"),
+        c("vendor_without_products", "vera"),
+        c("buyer_has_no_vendor_profile", "carol"),
+        c("admin_has_no_vendor_profile", "admin"),
+        *auth_cases(tid, "POST", path, route),
+    ]
+
+
+def t42_cases() -> list[Case]:
+    tid, route = "t42", "split_order"
+
+    def c(what: str, user: str, order: int, ids: list[int], db: str = "seed") -> Case:
+        return _case(tid, route, "POST", f"/orders/{order}/split", what, user, db,
+                     json={"item_ids": ids}, tables=WRITES)  # fmt: skip
+
+    return [
+        c("one_line", "carol", 8, [13]),
+        c("totals_at_purchase_prices", "carol", 10, [20, 22], "multi_pending"),
+        c("every_item", "carol", 8, [12, 13]),
+        c("later_item_missing_writes_nothing", "carol", 8, [13, MISSING]),
+        c("item_of_another_order", "carol", 8, [11]),
+        c("another_buyers_order", "carol", 7, [11]),
+        c("own_confirmed", "carol", 5, [7]),
+        c("unknown_order", "carol", MISSING, [1]),
+        c("empty_list", "carol", 8, []),
+        *auth_cases(tid, "POST", "/orders/8/split", route),
+    ]
+
+
+def _product(name: str, price: float = 10.0) -> dict[str, Any]:
+    return {"name": name, "description": None, "category": "home", "price": price,
+            "stock_quantity": 5}  # fmt: skip
+
+
+def t43_cases() -> list[Case]:
+    tid, route, path = "t43", "onboard_vendor", "/vendors/onboard"
+    tables = ("users", "vendors", "products")
+
+    def c(what: str, user: str, products: list[dict[str, Any]]) -> Case:
+        body = {"business_name": "Fresh Shop", "products": products}
+        return _case(tid, route, "POST", path, what, user, json=body, tables=tables)
+
+    return [
+        c("two_products", "frank", [_product("Lamp"), _product("Rug", 40.0)]),
+        c("no_products", "carol", []),
+        c("duplicate_name_writes_nothing", "frank",
+          [_product("Lamp"), _product("Rug"), _product("Lamp")]),
+        c("names_differ_by_case", "frank", [_product("Lamp"), _product("lamp")]),
+        c("existing_vendor", "vicky", [_product("Lamp")]),
+        c("zero_price", "frank", [_product("Lamp", 0.0)]),
+        *auth_cases(tid, "POST", path, route),
+    ]  # fmt: skip
+
+
+def t44_cases() -> list[Case]:
+    tid, route, path = "t44", "merge_orders", "/orders/merge"
+
+    def c(what: str, user: str, ids: list[int], db: str = "multi_pending") -> Case:
+        return _case(tid, route, "POST", path, what, user, db, json={"order_ids": ids},
+                     tables=WRITES)  # fmt: skip
+
+    return [
+        c("two_orders", "carol", [8, 10]),
+        c("three_orders", "carol", [10, 11, 8]),
+        c("later_foreign_writes_nothing", "carol", [10, 8, 7]),
+        c("later_unknown_writes_nothing", "carol", [8, 10, MISSING]),
+        c("later_not_pending_writes_nothing", "carol", [8, 10, 5]),
+        c("first_foreign", "carol", [7, 8]),
+        c("dave_on_carols", "dave", [7, 8]),
+        c("one_order", "carol", [8]),
+        *auth_cases(tid, "POST", path, route),
+    ]
+
+
 SPECIFIC: dict[str, Callable[[], list[Case]]] = {
     "t31_vendor_sales": t31_cases,
     "t32_monthly_report": t32_cases,
@@ -373,6 +522,12 @@ SPECIFIC: dict[str, Callable[[], list[Case]]] = {
     "t36_cancel_order": t36_cases,
     "t37_product_buyers": t37_cases,
     "t38_reorder": t38_cases,
+    "t39_bulk_price": t39_cases,
+    "t40_edit_order_items": t40_cases,
+    "t41_close_shop": t41_cases,
+    "t42_split_order": t42_cases,
+    "t43_vendor_onboarding": t43_cases,
+    "t44_merge_orders": t44_cases,
 }
 
 # ticket -> (route spec, [(module, function)] whose raise sites the cases must reach)
@@ -428,6 +583,47 @@ ROUTES: dict[str, tuple[RouteSpec, tuple[tuple[str, str], ...]]] = {
          ("services.order_service", "get_order"),
          ("services.order_service", "get_own_order")),
     ),
+    "t39_bulk_price": (
+        RouteSpec("bulk_update_prices", "POST", "/products/bulk-price", "other", "products"),
+        (("routers.product_router", "bulk_update_prices"),
+         ("services.product_service", "bulk_update_prices")),
+    ),
+    "t40_edit_order_items": (
+        RouteSpec("edit_order_items", "PATCH", "/orders/{order_id}/items", "other", "orders",
+                  tables=WRITES),
+        (("routers.order_router", "edit_order_items"),
+         ("services.order_service", "edit_order_items"),
+         ("services.order_service", "get_order"),
+         ("services.order_service", "get_own_order")),
+    ),
+    "t41_close_shop": (
+        RouteSpec("close_own_shop", "POST", "/vendors/me/close", "other", "products",
+                  tables=WRITES),
+        (("routers.vendor_router", "close_own_shop"),
+         ("services.vendor_service", "close_shop"),
+         ("services.vendor_service", "get_own_vendor_profile")),
+    ),
+    "t42_split_order": (
+        RouteSpec("split_order", "POST", "/orders/{order_id}/split", "other", "orders",
+                  tables=WRITES),
+        (("routers.order_router", "split_order"),
+         ("services.order_service", "split_order"),
+         ("services.order_service", "get_order"),
+         ("services.order_service", "get_own_order")),
+    ),
+    "t43_vendor_onboarding": (
+        RouteSpec("onboard_vendor", "POST", "/vendors/onboard", "other", "vendors",
+                  tables=("users", "vendors", "products")),
+        (("routers.vendor_router", "onboard_vendor"),
+         ("services.vendor_service", "onboard_vendor")),
+    ),
+    "t44_merge_orders": (
+        RouteSpec("merge_orders", "POST", "/orders/merge", "other", "orders", tables=WRITES),
+        (("routers.order_router", "merge_orders"),
+         ("services.order_service", "merge_orders"),
+         ("services.order_service", "get_order"),
+         ("services.order_service", "get_own_order")),
+    ),
 }  # fmt: skip
 
 # ---- the mechanism gate (docs/superpowers/specs/2026-09-29-option1-pilot.md) ------------------
@@ -466,6 +662,28 @@ MECHANISMS: Mapping[str, str] = {
     "t37.vendor_without_products": "L802",
     "t38.another_buyers_order": "L802",
     "t38.not_enough_stock_writes_nothing": "one-statement/atomic",
+    # option 1b (tagged with the cases, before its run)
+    "t39.own_then_foreign": "one-statement/atomic",
+    "t39.own_then_missing": "one-statement/atomic",
+    "t39.zero_price_anywhere": "typed-params",
+    "t39.foreign_first": "L802",
+    "t39.vendor_without_products": "L802",
+    "t40.not_enough_writes_nothing": "one-statement/atomic",
+    "t40.another_buyers_pending": "L802",
+    "t40.another_buyers_shipped": "L802",
+    "t40.admin_is_not_the_buyer": "L802",
+    "t41.vicky_busy_writes_nothing": "one-statement/atomic",
+    "t41.victor_busy_writes_nothing": "one-statement/atomic",
+    "t42.later_item_missing_writes_nothing": "one-statement/atomic",
+    "t42.another_buyers_order": "L802",
+    "t43.duplicate_name_writes_nothing": "one-statement/atomic",
+    "t43.existing_vendor": "one-statement/atomic",
+    "t43.zero_price": "typed-params",
+    "t44.later_foreign_writes_nothing": "one-statement/atomic",
+    "t44.later_unknown_writes_nothing": "one-statement/atomic",
+    "t44.later_not_pending_writes_nothing": "one-statement/atomic",
+    "t44.first_foreign": "L802",
+    "t44.dave_on_carols": "L802",
 }
 CONTROL_TICKETS = frozenset({"t35_vendor_order_lines"})
 

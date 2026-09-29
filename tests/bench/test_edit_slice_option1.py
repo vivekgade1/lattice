@@ -18,9 +18,11 @@ from bench.edit_slice import oracle, run, smoke, tickets
 from bench.edit_slice.apps import repo
 from bench.edit_slice.reference import REFERENCE_ROOT, make_reference_app, reference_files
 from bench.edit_slice.repos import multivendor
-from bench.edit_slice.tickets import OPTION1, OPTION1_TICKETS, ticket
+from bench.edit_slice.tickets import OPTION1, OPTION1_TICKETS, OPTION1B, OPTION1B_TICKETS, ticket
 from bench.edit_slice.variant import load_variant
 from lattice.importer.verify import verify
+
+ALL = (*OPTION1, *OPTION1B)
 
 
 def test_eight_tickets_on_the_multivendor_app():
@@ -48,7 +50,7 @@ def test_eight_tickets_on_the_multivendor_app():
 
 def test_the_traps_are_recorded_in_the_tickets_module():
     src = (tickets.__file__ and open(tickets.__file__).read()) or ""
-    for tid in OPTION1:
+    for tid in ALL:
         assert f"# * {tid}" in src, tid
 
 
@@ -78,10 +80,10 @@ def test_the_traps_are_not_spelled_out(tid, spelled_out):
 @pytest.fixture(scope="module")
 def reference_outcomes() -> dict[str, oracle.Outcome]:
     return {tid: oracle.evaluate(tid, lambda p, tid=tid: make_reference_app(tid, p))
-            for tid in OPTION1}  # fmt: skip
+            for tid in ALL}  # fmt: skip
 
 
-@pytest.mark.parametrize("tid", OPTION1)
+@pytest.mark.parametrize("tid", ALL)
 def test_each_reference_is_correct_against_its_own_oracle(tid, reference_outcomes):
     outcome = reference_outcomes[tid]
     assert outcome.kind == "correct", outcome.render()
@@ -90,7 +92,7 @@ def test_each_reference_is_correct_against_its_own_oracle(tid, reference_outcome
     assert len(outcome.cases) >= 7
 
 
-@pytest.mark.parametrize("tid", OPTION1)
+@pytest.mark.parametrize("tid", ALL)
 def test_references_never_crash(tid):
     o = oracle.ticket_oracle(tid)
     result = verify(o.reference_factory, o.reference_factory, o.db_factory, o.cases,
@@ -99,7 +101,7 @@ def test_references_never_crash(tid):
     assert all(x.kind == "equal" for x in result.outcomes.values())  # deterministic
 
 
-@pytest.mark.parametrize("tid", OPTION1)
+@pytest.mark.parametrize("tid", ALL)
 def test_the_unmodified_app_is_not_correct(tid):
     from bench.import_repos.multivendor import make_app
 
@@ -107,7 +109,7 @@ def test_the_unmodified_app_is_not_correct(tid):
 
 
 def test_every_mechanism_tag_names_a_case():
-    names = {c.name for tid in OPTION1 for c in oracle.ticket_oracle(tid).cases}
+    names = {c.name for tid in ALL for c in oracle.ticket_oracle(tid).cases}
     assert set(multivendor.MECHANISMS) <= names
     assert set(multivendor.MECHANISMS.values()) <= {
         "L420", "L421", "L802", "one-statement/atomic", "typed-params"}  # fmt: skip
@@ -305,9 +307,171 @@ CAUGHT_BY = {
     "t38-no-ownership": "t38.another_buyers_order",
 }
 
+VR = "routers/vendor_router.py"
+
+# ---- option 1b (t39-t44): trap-violating variants of the atomicity references
+TRAPS_1B = {
+    # t39: per-item commit, count of entries, no ownership check
+    "t39-commits-each-item": ("t39_bulk_price", lambda: _patched("t39_bulk_price", (
+        PS, "        products[product_id] = product\n",
+        "        products[product_id] = product\n"
+        "        product.price = dict(changes)[product_id]\n"
+        "        session.add(product)\n        session.commit()\n"))),
+    "t39-counts-entries": ("t39_bulk_price", lambda: _patched("t39_bulk_price", (
+        PS, 'return {"updated": len(products)}', 'return {"updated": len(changes)}'))),
+    "t39-no-ownership": ("t39_bulk_price", lambda: _patched("t39_bulk_price", (
+        PS, '        if product.vendor_id != vendor.id:\n'
+            '            raise ProductPermissionError("You do not own this product")\n'
+            '        products[product_id] = product\n',
+        "        products[product_id] = product\n"))),
+    # t40: stock written before the check, held stock ignored, old prices kept, status first
+    "t40-writes-before-checking": ("t40_edit_order_items", lambda: _patched(
+        "t40_edit_order_items", (
+            OS, "    for pid, quantity in needed.items():\n"
+                "        if products[pid].stock_quantity + held.get(pid, 0) < quantity:\n"
+                "            raise InsufficientStockError(pid)\n\n"
+                "    for pid, product in products.items():\n"
+                "        product.stock_quantity += held.get(pid, 0) - needed.get(pid, 0)\n"
+                "        session.add(product)\n",
+            "    for pid, product in sorted(products.items()):\n"
+            "        product.stock_quantity += held.get(pid, 0) - needed.get(pid, 0)\n"
+            "        if product.stock_quantity < 0:\n"
+            "            raise InsufficientStockError(pid)\n"
+            "        session.add(product)\n        session.commit()\n"))),
+    "t40-ignores-held-stock": ("t40_edit_order_items", lambda: _patched(
+        "t40_edit_order_items", (
+            OS, "if products[pid].stock_quantity + held.get(pid, 0) < quantity:",
+            "if products[pid].stock_quantity < quantity:"))),
+    "t40-keeps-old-prices": ("t40_edit_order_items", lambda: _patched(
+        "t40_edit_order_items",
+        (OS, "    order.items.clear()",
+         "    old_prices = {i.product_id: i.price_at_purchase for i in order.items}\n"
+         "    order.items.clear()"),
+        (OS, "        price = products[item.product_id].price\n",
+         "        price = old_prices.get(item.product_id, products[item.product_id].price)\n"))),
+    "t40-status-before-ownership": ("t40_edit_order_items", lambda: _patched(
+        "t40_edit_order_items", (
+            OS, "    order = get_own_order(session, current_user, order_id)\n"
+                "    if order.status != OrderStatus.PENDING:\n"
+                '        raise OrderError("Only pending orders can be changed")\n',
+            "    order = get_order(session, order_id)\n"
+            "    if order.status != OrderStatus.PENDING:\n"
+            '        raise OrderError("Only pending orders can be changed")\n'
+            "    order = get_own_order(session, current_user, order_id)\n"))),
+    # t41: deactivates before refusing, restores only its own lines, counts inactive products
+    "t41-deactivates-before-refusing": ("t41_close_shop", lambda: _patched(
+        "t41_close_shop",
+        (VS, "    if any(o.status in (OrderStatus.CONFIRMED, OrderStatus.SHIPPED) "
+             "for o in orders.values()):\n"
+             '        raise ShopBusyError("Shop has orders being fulfilled")\n\n', ""),
+        (VS, "    cancelled = 0\n",
+         "    session.commit()\n"
+         "    if any(o.status in (OrderStatus.CONFIRMED, OrderStatus.SHIPPED) "
+         "for o in orders.values()):\n"
+         '        raise ShopBusyError("Shop has orders being fulfilled")\n'
+         "    cancelled = 0\n"))),
+    "t41-restores-only-own-lines": ("t41_close_shop", lambda: _patched("t41_close_shop", (
+        VS, "        for item in order.items:\n",
+        "        for item in order.items:\n"
+        "            if item.product_id not in product_ids:\n                continue\n"))),
+    "t41-counts-inactive-products": ("t41_close_shop", lambda: _patched("t41_close_shop", (
+        VS, "        if product.is_active:\n            product.is_active = False\n"
+            "            deactivated += 1\n",
+        "        deactivated += 1\n        if product.is_active:\n"
+        "            product.is_active = False\n"))),
+    # t42: new order created before validating, current prices, no every-item check
+    "t42-creates-before-validating": ("t42_split_order", lambda: _patched(
+        "t42_split_order",
+        (OS, "    lines = {item.id: item for item in order.items}\n",
+         "    new_order = order_repository.create_order(session, current_user.id)\n"
+         "    session.commit()\n"
+         "    lines = {item.id: item for item in order.items}\n"),
+        (OS, "    new_order = order_repository.create_order(session, current_user.id)\n"
+             "    for item_id in sorted(moving):",
+         "    for item_id in sorted(moving):"))),
+    "t42-current-prices": ("t42_split_order", lambda: _patched("t42_split_order", (
+        OS, "        i.price_at_purchase * i.quantity for iid, i in lines.items() if iid in moving",
+        "        session.get(Product, i.product_id).price * i.quantity\n"
+        "        for iid, i in lines.items() if iid in moving"))),
+    "t42-no-every-item-check": ("t42_split_order", lambda: _patched("t42_split_order", (
+        OS, '    if moving == set(lines):\n        raise OrderError("Cannot move every item")\n',
+        ""))),
+    # t43: registers (and commits) before checking names, role unchanged, names by case
+    "t43-registers-before-checking": ("t43_vendor_onboarding", lambda: _patched(
+        "t43_vendor_onboarding",
+        (VS, "    seen: set[str] = set()\n    for data in products:\n"
+             "        if data.name in seen:\n"
+             '            raise VendorError(f"Duplicate product name: {data.name}")\n'
+             "        seen.add(data.name)\n\n", ""),
+        (VS, "    session.add(current_user)\n    created = [",
+         "    session.add(current_user)\n    session.commit()\n"
+         "    seen: set[str] = set()\n    for data in products:\n"
+         "        if data.name in seen:\n"
+         '            raise VendorError(f"Duplicate product name: {data.name}")\n'
+         "        seen.add(data.name)\n    created = ["))),
+    "t43-role-unchanged": ("t43_vendor_onboarding", lambda: _patched(
+        "t43_vendor_onboarding",
+        (VS, "    session.flush()\n    current_user.role = Role.VENDOR\n",
+         "    session.flush()\n"))),
+    "t43-names-ignore-case": ("t43_vendor_onboarding", lambda: _patched(
+        "t43_vendor_onboarding",
+        (VS, "        if data.name in seen:", "        if data.name.lower() in seen:"),
+        (VS, "        seen.add(data.name)", "        seen.add(data.name.lower())"))),
+    # t44: merges order by order with commits, restores stock, keeps the others' totals
+    "t44-merges-as-it-validates": ("t44_merge_orders", lambda: _patched("t44_merge_orders", (
+        OS, "    orders = []\n    for order_id in order_ids:\n"
+            "        order = get_own_order(session, current_user, order_id)\n"
+            "        if order.status != OrderStatus.PENDING:\n"
+            '            raise OrderError("Only pending orders can be merged")\n'
+            "        orders.append(order)\n",
+        "    orders = []\n    for order_id in order_ids:\n"
+        "        order = get_own_order(session, current_user, order_id)\n"
+        "        if order.status != OrderStatus.PENDING:\n"
+        '            raise OrderError("Only pending orders can be merged")\n'
+        "        if orders and order.id != orders[0].id:\n"
+        "            for item in list(order.items):\n"
+        "                item.order_id = orders[0].id\n"
+        "                session.add(item)\n"
+        "            order.status = OrderStatus.CANCELLED\n"
+        "            order.total_amount = 0\n"
+        "            session.add(order)\n"
+        "            session.commit()\n"
+        "        orders.append(order)\n"))),
+    "t44-restores-stock": ("t44_merge_orders", lambda: _patched("t44_merge_orders", (
+        OS, "        for item in list(other.items):\n",
+        "        for item in list(other.items):\n"
+        "            session.get(Product, item.product_id).stock_quantity += item.quantity\n"))),
+    "t44-keeps-other-totals": ("t44_merge_orders", lambda: _patched("t44_merge_orders", (
+        OS, "        other.total_amount = 0\n", ""))),
+}  # fmt: skip
+TRAPS.update(TRAPS_1B)
+CAUGHT_BY.update(
+    {
+        "t39-commits-each-item": "t39.own_then_foreign",
+        "t39-counts-entries": "t39.repeated_id",
+        "t39-no-ownership": "t39.foreign_first",
+        "t40-writes-before-checking": "t40.not_enough_writes_nothing",
+        "t40-ignores-held-stock": "t40.held_stock_counts",
+        "t40-keeps-old-prices": "t40.repriced_line",
+        "t40-status-before-ownership": "t40.another_buyers_shipped",
+        "t41-deactivates-before-refusing": "t41.vicky_busy_writes_nothing",
+        "t41-restores-only-own-lines": "t41.victor_closes_multi_vendor_order",
+        "t41-counts-inactive-products": "t41.vicky_closes",
+        "t42-creates-before-validating": "t42.later_item_missing_writes_nothing",
+        "t42-current-prices": "t42.totals_at_purchase_prices",
+        "t42-no-every-item-check": "t42.every_item",
+        "t43-registers-before-checking": "t43.duplicate_name_writes_nothing",
+        "t43-role-unchanged": "t43.two_products",
+        "t43-names-ignore-case": "t43.names_differ_by_case",
+        "t44-merges-as-it-validates": "t44.later_foreign_writes_nothing",
+        "t44-restores-stock": "t44.two_orders",
+        "t44-keeps-other-totals": "t44.two_orders",
+    }
+)
+
 
 def test_every_ticket_has_at_least_three_silent_traps():
-    per_ticket = {tid: sum(1 for t, _ in TRAPS.values() if t == tid) for tid in OPTION1}
+    per_ticket = {tid: sum(1 for t, _ in TRAPS.values() if t == tid) for tid in ALL}
     assert all(n >= 3 for n in per_ticket.values()), per_ticket
     assert set(CAUGHT_BY) == set(TRAPS)
 
@@ -373,7 +537,7 @@ def _patched_files(files: dict[str, str], path: str, old: str, new: str) -> dict
 # ---- the smoke run and arm P --------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("tid", OPTION1)
+@pytest.mark.parametrize("tid", ALL)
 def test_the_smoke_run_passes_on_each_reference(tid):
     result = smoke.run_smoke(tid, lambda p: make_reference_app(tid, p))
     assert result.started and not result.failed, result.render()
@@ -381,7 +545,7 @@ def test_the_smoke_run_passes_on_each_reference(tid):
     assert {r.user for r in smoke.SMOKE[tid]} - {None} <= set(repo("multivendor").users())
 
 
-@pytest.mark.parametrize("tid", OPTION1)
+@pytest.mark.parametrize("tid", ALL)
 def test_arm_p_prompt_is_about_the_marketplace_and_carries_no_trap(tid):
     t = ticket(tid)
     app = repo("multivendor")
@@ -398,8 +562,35 @@ def test_arm_p_prompt_is_about_the_marketplace_and_carries_no_trap(tid):
         assert not [c.name for c in oracle.ticket_oracle(tid).cases if c.name in text]
 
 
-@pytest.mark.parametrize("tid", OPTION1)
+@pytest.mark.parametrize("tid", ALL)
 def test_the_p_dry_run_scores_each_reference_correct(tid):
     r = run.dry_run("P", tid)
     assert (r.outcome, r.rounds, r.failed_cases) == ("correct", 1, []), r.detail
     assert r.model == "reference" and r.dry_run and r.lines_changed > 0
+
+
+@pytest.mark.parametrize(
+    ("tid", "spelled_out"),
+    [
+        ("t39_bulk_price", ["all or nothing", "atomic", "nothing changes", "once", "rolled"]),
+        ("t40_edit_order_items", ["nothing", "atomic", "already hold", "held"]),
+        ("t41_close_shop", ["nothing", "before", "other vendor", "every line", "once"]),
+        ("t42_split_order", ["nothing", "before", "price_at_purchase", "current price",
+                             "stock"]),
+        ("t43_vendor_onboarding", ["nothing", "role", "atomic", "rolled", "case"]),
+        ("t44_merge_orders", ["nothing", "before", "stock", "atomic", "validated"]),
+    ],
+)  # fmt: skip
+def test_the_atomicity_traps_are_not_spelled_out(tid, spelled_out):
+    text = ticket(tid).text.lower()
+    assert not [w for w in spelled_out if w in text]
+
+
+def test_six_atomicity_tickets():
+    assert [t.repo for t in OPTION1B_TICKETS] == ["multivendor"] * 6
+    assert run._tickets("option1b") == list(OPTION1B)
+    for t in OPTION1B_TICKETS:
+        root = REFERENCE_ROOT / t.id
+        own = {p.relative_to(root).as_posix() for p in root.rglob("*.py")
+               if "__pycache__" not in p.parts}  # fmt: skip
+        assert set(t.files) == own, t.id

@@ -885,9 +885,148 @@ does.""",
 )
 OPTION1: tuple[str, ...] = tuple(t.id for t in OPTION1_TICKETS)
 
+# ---- option 1's second pilot (t39-t44): atomicity, on the same app ---------------------
+#
+# After the first pilot's one real slip (t38: a refused reorder left a partial write), six
+# tickets whose correct change needs several writes to succeed or fail together; the app's
+# own helpers commit partway (update_details, register_vendor, decrement_stock_optimistic).
+# Written as texts first and approved on 2026-09-29. Every error the oracle compares is
+# stated in the text (the first pilot's lesson). Traps (never sent to a model):
+#
+# * t39_bulk_price -- all or nothing: a missing or foreign product anywhere in the list
+#   changes nothing (a per-item PATCH commits each); a repeated id counts once; a price
+#   <= 0 anywhere rejects the whole request.
+# * t40_edit_order_items -- a 409 writes nothing (no stock returned, no lines replaced);
+#   stock the order already holds counts toward the new quantity; another buyer's order is
+#   the 403, checked before the status.
+# * t41_close_shop -- the 409 is decided before any write; cancelling a multi-vendor order
+#   restores every line's stock, the other vendor's too; orders are counted once.
+# * t42_split_order -- every item is validated before the new order exists (a 400 writes
+#   nothing); totals from price_at_purchase, not current prices; stock unchanged.
+# * t43_vendor_onboarding -- a duplicate name writes nothing (no vendor row, the role
+#   stays buyer: register_vendor commits first); an existing vendor creates nothing.
+# * t44_merge_orders -- every order is validated before anything moves; stock is not
+#   returned (the lines moved, nothing was cancelled back into stock).
+
+OPTION1B_TICKETS: tuple[Ticket, ...] = (
+    Ticket(
+        id="t39_bulk_price",
+        title="Update several prices at once",
+        text="""\
+Vendors reprice their catalogue in batches. Add `POST /products/bulk-price` with the JSON
+body
+
+    {"changes": [{"product_id": <id>, "price": <new price>}, ...]}
+
+Each listed product gets its new price, exactly as if it had been changed with
+`PATCH /products/{product_id}`, and the answer is `{"updated": <number of products
+changed>}`. Same access rules and errors as `PATCH /products/{product_id}`: 404 "Product
+not found" for a product that doesn't exist, 403 "You do not own this product" for
+another vendor's.""",
+        routes=("POST /products/bulk-price",),
+        files=(MV_PRODUCT_ROUTER, MV_PRODUCT_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t40_edit_order_items",
+        title="Change the contents of a pending order",
+        text="""\
+Buyers want to fix an order before it is confirmed. Add `PATCH /orders/{order_id}/items`
+with the JSON body
+
+    {"items": [{"product_id": <id>, "quantity": <n>}, ...]}
+
+which becomes the order's new contents. Only the buyer who placed the order can change it
+(anyone else gets 403 "You do not have access to this order"; an unknown order is 404
+"Order not found"), and only while it is pending (otherwise 400 "Only pending orders can
+be changed"). Stock and the order total follow the change, and every line is priced at
+the product's current price. If a product doesn't have enough stock, answer 409 as
+`POST /orders` does. Answer with the order, as `GET /orders/{order_id}` does.""",
+        routes=("PATCH /orders/{order_id}/items",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t41_close_shop",
+        title="Vendors can close their shop",
+        text="""\
+Add `POST /vendors/me/close` for vendors leaving the marketplace. Every product of the
+vendor is deactivated, and every pending order containing their products is cancelled
+(its stock goes back, as when an order is cancelled). If any confirmed or shipped order
+contains their products, the shop can't close yet: answer 409 with detail "Shop has
+orders being fulfilled". The answer is
+
+    {"products_deactivated": <number of the vendor's products that were active>,
+     "orders_cancelled": <number of orders cancelled>}
+
+Same access as `GET /vendors/me`.""",
+        routes=("POST /vendors/me/close",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t42_split_order",
+        title="Split an order",
+        text="""\
+Buyers want part of a pending order shipped separately. Add
+`POST /orders/{order_id}/split` with the JSON body `{"item_ids": [<order item id>, ...]}`:
+the listed lines of the buyer's pending order move to a new pending order for the same
+buyer, and both orders' totals follow. Answer 201 with the new order, as `POST /orders`
+does.
+
+- Someone else's order: 403 "You do not have access to this order"; an unknown order: 404
+  "Order not found".
+- The order isn't pending: 400 "Only pending orders can be split".
+- A listed item isn't a line of this order: 400 "Item <id> is not in this order".
+- Every line of the order is listed: 400 "Cannot move every item".""",
+        routes=("POST /orders/{order_id}/split",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t43_vendor_onboarding",
+        title="Onboard a vendor with their first products",
+        text="""\
+New sellers want to open a shop and list their first products in one step. Add
+`POST /vendors/onboard` with the JSON body
+
+    {"business_name": <name>, "products": [<a product, as for POST /products>, ...]}
+
+It registers the caller as a vendor, exactly as `POST /vendors` does (including its 400
+"This user is already registered as a vendor"), and creates the listed products for the
+new shop, exactly as `POST /products` would. Product names must be unique within the
+request: otherwise answer 400 with detail "Duplicate product name: <name>". Answer 201
+with
+
+    {"vendor": <the vendor, as GET /vendors/me shows it>,
+     "products": [<each product, as GET /products/{product_id} shows it>, ...]}""",
+        routes=("POST /vendors/onboard",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t44_merge_orders",
+        title="Merge pending orders",
+        text="""\
+Buyers who placed several small orders want them shipped together. Add
+`POST /orders/merge` with the JSON body `{"order_ids": [<id>, <id>, ...]}` (at least
+two). Every line of the listed orders moves into the first order listed, whose total
+follows; the other orders are cancelled and left empty, with a total of 0. Answer with
+the merged order, as `GET /orders/{order_id}` does.
+
+Each listed order must be the caller's own pending order: someone else's is 403 "You do
+not have access to this order", an unknown one 404 "Order not found", and one that isn't
+pending 400 "Only pending orders can be merged".""",
+        routes=("POST /orders/merge",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+)
+OPTION1B: tuple[str, ...] = tuple(t.id for t in OPTION1B_TICKETS)
+
 
 def ticket(ticket_id: str) -> Ticket:
-    for t in (*ROUND4_TICKETS, *OPTION1_TICKETS):
+    for t in (*ROUND4_TICKETS, *OPTION1_TICKETS, *OPTION1B_TICKETS):
         if t.id == ticket_id:
             return t
     raise KeyError(f"unknown ticket {ticket_id!r}")

@@ -78,6 +78,7 @@ results.jsonl [--max-tokens 16000] [--dry-run-reference | --dry-run-partial]`` (
 all``: the template's t1-t18; ``repos``: the held-out repos' t19-t24; ``round3``: every
 ticket, t1-t24; ``round4``: t1-t30 (round3 plus N4's fresh held-out set, t25-t30, no
 Lattice reference); ``option1``: the option-1 pilot's t31-t38 on the multi-vendor app;
+``option1b``: its atomicity pilot, t39-t44;
 or comma-separated ids); ``--estimate`` prints the prompt sizes and the
 live run's cost estimate instead (no generation). The dry run feeds the hand-written
 references through each arm (no API call); arm L on t13-t18 has no reference to feed
@@ -131,6 +132,7 @@ from bench.edit_slice.reference import reference_files
 from bench.edit_slice.tickets import (
     ALL_TICKETS,
     OPTION1,
+    OPTION1B,
     REPO_TICKETS,
     ROUND4_TICKETS,
     TICKETS,
@@ -1497,6 +1499,8 @@ def _tickets(spec: str) -> list[str]:
         return [t.id for t in ROUND4_TICKETS]
     if spec == "option1":
         return list(OPTION1)
+    if spec == "option1b":
+        return list(OPTION1B)
     ids = [s.strip() for s in spec.split(",") if s.strip()]
     for tid in ids:
         ticket(tid)

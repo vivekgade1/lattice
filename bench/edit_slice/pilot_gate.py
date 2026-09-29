@@ -8,7 +8,11 @@ tags are :data:`bench.edit_slice.repos.multivendor.MECHANISMS`. Per family:
    a tag other than ``none``; the gate passes when at least half the family's silent runs
    outside the control ticket (t35) are covered, and fails when there are none.
 
-``python -m bench.edit_slice.pilot_gate RESULTS.jsonl`` prints the report.
+The second, atomicity pilot (``docs/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md``)
+applies the same two gates to one family, T (t39-t44, 18 runs): at least 3 silent (the
+same >= 15%, :func:`min_silent`), and at least half of them covered.
+
+``python -m bench.edit_slice.pilot_gate RESULTS.jsonl [--pilot 1|2]`` prints the report.
 """
 
 from __future__ import annotations
@@ -27,7 +31,11 @@ FAMILIES: dict[str, tuple[str, ...]] = {
     "A": ("t31_vendor_sales", "t32_monthly_report", "t33_top_sellers", "t34_customer_spend"),
     "O": ("t35_vendor_order_lines", "t36_cancel_order", "t37_product_buyers", "t38_reorder"),
 }
-MIN_SILENT = 2  # of 12 runs: >= 15%
+PILOT2_FAMILIES: dict[str, tuple[str, ...]] = {
+    "T": ("t39_bulk_price", "t40_edit_order_items", "t41_close_shop", "t42_split_order",
+          "t43_vendor_onboarding", "t44_merge_orders"),
+}  # fmt: skip
+SILENT_RATE = 0.15
 ARM, MODEL = "P", "claude-sonnet-5"
 
 
@@ -40,6 +48,11 @@ def wilson(k: int, n: int, z: float = 1.959964) -> tuple[float, float]:
     centre = (p + z * z / (2 * n)) / denom
     half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denom
     return max(0.0, centre - half), min(1.0, centre + half)
+
+
+def min_silent(runs: int) -> int:
+    """The silent runs the silent-rate gate needs: >= 15% (2 of 12, 3 of 18)."""
+    return max(1, math.ceil(SILENT_RATE * runs - 1e-9))
 
 
 def covered(run: Mapping[str, Any]) -> bool:
@@ -60,7 +73,7 @@ class FamilyReport:
 
     @property
     def silent_gate(self) -> bool:
-        return self.silent >= MIN_SILENT
+        return self.silent >= min_silent(self.runs)
 
     @property
     def mechanism_gate(self) -> bool:
@@ -74,7 +87,8 @@ class FamilyReport:
         lines = [
             f"family {self.name}: correct {rate(self.correct)} · silent {rate(self.silent)}"
             f" · loud {rate(self.loud)}",
-            f"  silent-rate gate (>= {MIN_SILENT}): {'PASS' if self.silent_gate else 'FAIL'}",
+            f"  silent-rate gate (>= {min_silent(self.runs)}): "
+            f"{'PASS' if self.silent_gate else 'FAIL'}",
             f"  mechanism gate: {self.covered}/{self.silent_outside_control} silent runs "
             f"outside the control covered: {'PASS' if self.mechanism_gate else 'FAIL'}",
         ]
@@ -103,9 +117,11 @@ class GateReport:
         return "\n\n".join([*parts, f"decision: {self.decision}"])
 
 
-def evaluate_gates(records: Iterable[Mapping[str, Any]]) -> GateReport:
-    families = {name: FamilyReport(name) for name in FAMILIES}
-    family_of = {t: name for name, ts in FAMILIES.items() for t in ts}
+def evaluate_gates(
+    records: Iterable[Mapping[str, Any]], families_spec: Mapping[str, tuple[str, ...]] = FAMILIES
+) -> GateReport:
+    families = {name: FamilyReport(name) for name in families_spec}
+    family_of = {t: name for name, ts in families_spec.items() for t in ts}
     seen: set[tuple[str, int]] = set()
     for r in records:
         if r.get("arm") != ARM or r.get("model") != MODEL or r["ticket"] not in family_of:
@@ -133,9 +149,11 @@ def evaluate_gates(records: Iterable[Mapping[str, Any]]) -> GateReport:
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("results", type=Path)
+    p.add_argument("--pilot", type=int, choices=(1, 2), default=1)
     args = p.parse_args(argv)
     lines = args.results.read_text().splitlines()
-    print(evaluate_gates(json.loads(line) for line in lines if line.strip()).render())
+    spec = FAMILIES if args.pilot == 1 else PILOT2_FAMILIES
+    print(evaluate_gates((json.loads(line) for line in lines if line.strip()), spec).render())
 
 
 if __name__ == "__main__":

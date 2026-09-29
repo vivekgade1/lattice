@@ -95,3 +95,33 @@ def test_other_tickets_and_arms_are_ignored_and_duplicates_refused():
     assert evaluate_gates(runs + extra).families["A"].silent == 0
     with pytest.raises(ValueError, match="duplicate"):
         evaluate_gates(runs + [_run("t31_vendor_sales", "correct", rep=0)])
+
+
+# ---- the atomicity pilot (option 1b) -----------------------------------------------------------
+
+
+def test_the_silent_threshold_is_fifteen_percent():
+    from bench.edit_slice.pilot_gate import min_silent
+
+    assert (min_silent(12), min_silent(18)) == (2, 3)
+
+
+def test_the_atomicity_pilot_needs_three_covered_silent_runs_of_eighteen():
+    from bench.edit_slice.pilot_gate import PILOT2_FAMILIES
+
+    tickets = PILOT2_FAMILIES["T"]
+    assert len(tickets) == 6
+    silent = [
+        _run("t39_bulk_price", "silent", ("t39.own_then_foreign",), 0),
+        _run("t41_close_shop", "silent", ("t41.vicky_busy_writes_nothing",), 0),
+    ]
+    rest = [_run(t, "correct", rep=r) for t in tickets for r in range(3)
+            if (t, r) not in {("t39_bulk_price", 0), ("t41_close_shop", 0)}]  # fmt: skip
+    t = evaluate_gates(silent + rest, PILOT2_FAMILIES).families["T"]
+    assert (t.runs, t.silent, t.silent_gate) == (18, 2, False)
+    third = _run("t44_merge_orders", "silent", ("t44.later_foreign_writes_nothing",), 0)
+    rest = [r for r in rest if (r["ticket"], r["rep"]) != ("t44_merge_orders", 0)]
+    report = evaluate_gates([*silent, third, *rest], PILOT2_FAMILIES)
+    t = report.families["T"]
+    assert (t.silent, t.covered, t.silent_gate, t.mechanism_gate) == (3, 3, True, True)
+    assert report.decision == "GO: T"
