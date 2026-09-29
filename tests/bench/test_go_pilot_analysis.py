@@ -11,6 +11,9 @@ import json
 import pytest
 
 from bench.analysis.go_pilot import (
+    HAIKU,
+    P2_MARGIN,
+    P2_Z,
     SONNET,
     cost_per_correct,
     load,
@@ -26,7 +29,13 @@ from bench.analysis.go_pilot import (
 
 
 def _records(rows):
-    """rows: iterable of (task_id, arm, model, rep, correct, cost_usd) tuples."""
+    """rows: iterable of (task_id, arm, model, rep, correct, cost_usd) tuples.
+
+    S2/family fields get fixed placeholder values (family="control", 1 round,
+    100 output tokens, 10 lines, 50 AST nodes) -- irrelevant to the P1/P2/
+    verdict tests that use this builder; tests that exercise S1/S2/the
+    per-family breakdown build their own rows directly.
+    """
     out = []
     for task_id, arm, model, rep, correct, cost_usd in rows:
         out.append(
@@ -38,6 +47,12 @@ def _records(rows):
                 "correct": correct,
                 "cost_usd": cost_usd,
                 "cost_basis": "cli_list_estimate",
+                "family": "control",
+                "failure": None if correct else "wrong_result",
+                "rounds": 1,
+                "output_tokens": 100,
+                "program_lines": 10,
+                "program_ast_nodes": 50,
             }
         )
     return out
@@ -117,7 +132,22 @@ def test_load_skips_blank_lines(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "missing", ["task_id", "arm", "model", "rep", "correct", "cost_usd", "cost_basis"]
+    "missing",
+    [
+        "task_id",
+        "arm",
+        "model",
+        "rep",
+        "correct",
+        "cost_usd",
+        "cost_basis",
+        "family",
+        "failure",
+        "rounds",
+        "output_tokens",
+        "program_lines",
+        "program_ast_nodes",
+    ],
 )
 def test_load_raises_clearly_on_missing_field(tmp_path, missing):
     rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)[:1]
@@ -176,6 +206,65 @@ def test_newcombe_wilson_diff_published_worked_example():
 def test_newcombe_wilson_diff_zero_when_identical():
     lo, hi = newcombe_wilson_diff(30, 60, 30, 60)
     assert lo < 0 < hi
+
+
+def test_newcombe_wilson_diff_default_z_is_two_sided_95():
+    # Sanity: the default z (used by the published-example test above) is the
+    # standard two-sided-95% critical value, distinct from P2_Z.
+    lo_95, _ = newcombe_wilson_diff(56, 70, 48, 80)
+    lo_90, _ = newcombe_wilson_diff(56, 70, 48, 80, z=P2_Z)
+    # The narrower (two-sided 90%) interval has a higher (less negative) lower bound.
+    assert lo_90 > lo_95
+
+
+# ---------------------------------------------------------------------------
+# P2 revision before freeze: margin 10 points, one-sided 95% bound == the
+# lower limit of the two-sided 90% Newcombe-Wilson interval (P2_Z, P2_MARGIN).
+# The original 5-point/95%-two-sided margin was unattainable at n=120/arm
+# even for a true tie (controller ruling, see the spec's "Revision before
+# freeze" note); these two cases are its worked examples.
+# ---------------------------------------------------------------------------
+
+
+def test_newcombe_wilson_diff_true_tie_at_p85_n120_passes_revised_p2_margin():
+    # 102/120 = 85% correct in both arms -- a true tie.
+    lo, hi = newcombe_wilson_diff(102, 120, 102, 120, z=P2_Z)
+    assert lo == pytest.approx(-0.0766, abs=1e-3)
+    assert lo > -P2_MARGIN  # revised 10-point margin holds
+
+
+def test_newcombe_wilson_diff_true_tie_at_p85_n120_would_fail_old_5pt_margin():
+    # The same true tie fails the original 5-point margin -- this is exactly
+    # the unattainability the controller ruling identified.
+    lo, hi = newcombe_wilson_diff(102, 120, 102, 120, z=P2_Z)
+    assert lo < -0.05
+
+
+def test_newcombe_wilson_diff_b_12_points_lower_fails_revised_p2_margin():
+    # G at 85% (102/120), B at 73% (73/100) -- exactly a 12-point gap.
+    lo, hi = newcombe_wilson_diff(73, 100, 102, 120, z=P2_Z)
+    assert lo == pytest.approx(-0.2108, abs=1e-3)
+    assert lo < -P2_MARGIN  # fails even the revised, wider margin
+
+
+def test_verdict_p2_true_tie_at_p85_n120_via_full_pipeline():
+    # Integration check: the same true tie, run through verdict()'s P2 (which
+    # uses P2_Z/P2_MARGIN internally), on a cost ratio that alone would confirm P1.
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10, b_correct_tasks=34, g_correct_tasks=34)
+    records = load(_dump(rows))
+    v = verdict(records)
+    assert v["P2"] is True
+    assert v["stage1"] == "GO"
+
+
+def test_verdict_p2_b_well_over_10_points_lower_fails_via_full_pipeline():
+    # B ~12.5 points lower than G (29/40 = 72.5% vs 34/40 = 85%): still fails
+    # even the revised, wider 10-point margin.
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10, b_correct_tasks=29, g_correct_tasks=34)
+    records = load(_dump(rows))
+    v = verdict(records)
+    assert v["P2"] is False
+    assert v["stage1"] == "STOP"
 
 
 # ---------------------------------------------------------------------------
@@ -281,3 +370,131 @@ def test_render_reports_both_models_when_present():
     md = render(records)
     assert SONNET in md
     assert "claude-haiku-4-5" in md
+
+
+# ---------------------------------------------------------------------------
+# render(): S1 (Haiku, reported not decisive), S2 (descriptive), per-family
+# breakdown (spec's "Also reported" line).
+# ---------------------------------------------------------------------------
+
+
+def test_render_includes_s1_section_for_haiku():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    rows += _uniform_dataset(cost_b=0.02, cost_g=0.05, model=HAIKU)
+    records = load(_dump(rows))
+    md = render(records)
+    assert "S1 (secondary" in md
+    assert "not applied to the stage-1 verdict" in md
+
+
+def test_render_includes_s2_and_family_sections():
+    rows = _uniform_dataset(cost_b=0.05, cost_g=0.10)
+    records = load(_dump(rows))
+    md = render(records)
+    assert "S2 (secondary" in md
+    assert "Per-family breakdown" in md
+    assert "control" in md  # the only family in _uniform_dataset's rows
+
+
+def _family_dataset():
+    """One row per (family, arm) on Sonnet, exercising every outcome_class
+    branch: correct, silent (wrong_result), loud (any other failure label),
+    harness (harness_error). Distinct S2 fields per row so the means in the
+    S2 table are independently checkable."""
+    specs = [
+        # task_id, family, arm, correct, failure -- every family present in
+        # both arms, so ordering can be checked within a single arm's block.
+        ("o01", "ownership", "B", True, None),
+        ("o02", "ownership", "G", False, "wrong_result"),  # silent
+        ("v01", "validation", "B", False, "assertion_failed"),  # loud
+        ("v02", "validation", "G", False, "harness_error"),  # harness
+        ("e01", "errors", "B", True, None),
+        ("e02", "errors", "G", True, None),
+        ("f01", "efficiency", "B", True, None),
+        ("f02", "efficiency", "G", True, None),
+        ("c01", "control", "B", True, None),
+        ("c02", "control", "G", True, None),
+    ]
+    rows = []
+    for task_id, family, arm, correct, failure in specs:
+        rows.append(
+            {
+                "task_id": task_id,
+                "arm": arm,
+                "model": SONNET,
+                "rep": 0,
+                "correct": correct,
+                "cost_usd": 0.05,
+                "cost_basis": "cli_list_estimate",
+                "family": family,
+                "failure": failure,
+                "rounds": 1,
+                "output_tokens": 100,
+                "program_lines": 10,
+                "program_ast_nodes": 50,
+            }
+        )
+    return rows
+
+
+def test_render_per_family_breakdown_classifies_every_outcome_class():
+    records = load(_dump(_family_dataset()))
+    md = render(records)
+    for family in ("ownership", "validation", "errors", "efficiency", "control"):
+        assert family in md
+    # v02 (arm G, validation) is a harness failure: 0 loud, 1 harness.
+    assert "(+1 harness)" in md
+
+
+def test_render_per_family_breakdown_orders_families_as_in_spec():
+    records = load(_dump(_family_dataset()))
+    md = render(records)
+    section = md.split("### Per-family breakdown")[1]
+    # spec order: control, ownership, validation, errors, efficiency.
+    assert (
+        section.index("| control |")
+        < section.index("| ownership |")
+        < section.index("| validation |")
+        < section.index("| errors |")
+        < section.index("| efficiency |")
+    )
+
+
+def test_render_s2_table_reports_means_over_the_arm():
+    rows = [
+        {
+            "task_id": "t1",
+            "arm": "B",
+            "model": SONNET,
+            "rep": 0,
+            "correct": True,
+            "cost_usd": 0.05,
+            "cost_basis": "cli_list_estimate",
+            "family": "control",
+            "failure": None,
+            "rounds": 1,
+            "output_tokens": 100,
+            "program_lines": 10,
+            "program_ast_nodes": 50,
+        },
+        {
+            "task_id": "t2",
+            "arm": "B",
+            "model": SONNET,
+            "rep": 0,
+            "correct": True,
+            "cost_usd": 0.05,
+            "cost_basis": "cli_list_estimate",
+            "family": "control",
+            "failure": None,
+            "rounds": 3,
+            "output_tokens": 300,
+            "program_lines": 30,
+            "program_ast_nodes": 150,
+        },
+    ]
+    records = load(_dump(rows))
+    md = render(records)
+    # mean over the 2 B rows: lines (10+30)/2=20.0, AST (50+150)/2=100,
+    # rounds (1+3)/2=2.00, output tokens (100+300)/2=200.
+    assert "| claude-sonnet-5 | B | 2 | 20.0 | 100 | 2.00 | 200 |" in md

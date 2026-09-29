@@ -9,7 +9,7 @@ The confirmation run tested **edits to an existing Python app** and found no saf
 ## Questions
 
 - **P1 (primary):** on claude-sonnet-5, is the cost per correct task of arm B (Lattice→Go) at most **0.6×** that of arm G (Go written directly)?
-- **P2 (co-primary, non-inferiority):** on claude-sonnet-5, is arm B's correct rate no more than **5 points** below arm G's?
+- **P2 (co-primary, non-inferiority):** on claude-sonnet-5, is arm B's correct rate no more than **10 points** below arm G's, at a one-sided 95% bound? (Revised from 5 points before any run; see "Revision before freeze" below.)
 - **S1 (secondary):** the same two measurements on claude-haiku-4-5.
 - **S2 (secondary, descriptive):** silent failures per arm; program size (lines, AST nodes); repair rounds; output tokens.
 
@@ -34,11 +34,24 @@ The confirmation run tested **edits to an existing Python app** and found no saf
   - **Confirmed** if R ≤ 0.6 AND the interval's upper bound < 1.0.
   - **Refuted** if R ≥ 1.0.
   - Otherwise, **not confirmed**.
-- **P2:** a one-sided non-inferiority test on the correct rates (Sonnet): the Newcombe-Wilson interval for correct(B) − correct(G) must have a lower bound > −0.05.
+- **P2:** a one-sided non-inferiority test on the correct rates (Sonnet), margin 10 points at a one-sided 95% bound: the lower limit of the **two-sided 90%** Newcombe-Wilson interval for correct(B) − correct(G) must be > −0.10.
 - **Stage-1 verdict:**
   - **GO:** P1 confirmed AND P2 holds. Proceed to stage 2 (the rest of spec §5: the implicit-requirements condition, the Go-specific trap tasks, the T2 script control, and binary latency/throughput under load), with its own pre-registration.
   - **STOP:** anything else. Write up the result and do not run stage 2.
 - **Also reported:** correct, silent and loud rates with Wilson 95% intervals; S1/S2 measurements; per-family breakdown (control, ownership, validation, errors, efficiency).
+
+## Revision before freeze
+
+Controller ruling, 2026-09-29, made before this pre-registration froze and before any live run: the originally stated P2 margin of 5 points (two-sided 95% Newcombe-Wilson) is unattainable at this pilot's sample size (n = 120 runs/arm/model) even when arm B and arm G have **identical** correct rates. The Newcombe-Wilson lower bound for a true tie's difference, two-sided 95%, n = 120/arm:
+
+| tied correct rate | lower bound |
+|---|---:|
+| 0.95 | −0.061 |
+| 0.90 | −0.079 |
+| 0.85 | −0.092 |
+| 0.80 | −0.101 |
+
+At every plausible correct rate, a true tie would already fail a 5-point margin — P2 could never hold even with no real difference. P2 is revised to the standard non-inferiority form before any run: **margin 10 points, tested at a one-sided 95% bound**, obtained as the lower limit of the **two-sided 90%** Newcombe-Wilson interval for correct(B) − correct(G). This is reflected above (Questions, Tests and decision) and in `bench/analysis/go_pilot.py`.
 
 ## What each outcome means
 
@@ -54,3 +67,4 @@ The confirmation run tested **edits to an existing Python app** and found no saf
 - The Go platform kit's design affects G's size and cost. It provides exactly what the Python kit provides (auth only), no more.
 - Prompt size: B's system prompt (the Lattice guide) is much larger than G's. That cost is real and is counted, not excluded.
 - One CLI version and one machine (arm64 macOS).
+- The P2 margin was widened from 5 to 10 points before any run (see "Revision before freeze"), because the original margin was unattainable at this sample size for a true tie. The wider margin makes GO easier for B: a GO's correctness claim is weaker evidence than a 5-point-margin GO would have been, and a real 6-9-point deficit for B could still pass P2.
