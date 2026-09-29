@@ -1049,6 +1049,21 @@ CORE = [
         "1.0",
     ),
     Case(
+        # each Float operation rounds: never one fused multiply-add (Go on arm64 may)
+        "float_mul_add_not_fused",
+        P("f(x: Float, y: Float, z: Float) -> Float", "return x * y + z"),
+        "f",
+        (0.1, 10.0, -1.0),
+        0.0,
+    ),
+    Case(
+        "float_mul_then_sub_not_fused",
+        P("f(x: Float, y: Float, z: Float) -> Float", "a = x * y\n    return a - z"),
+        "f",
+        (0.1, 10.0, 1.0),
+        0.0,
+    ),
+    Case(
         "int_true_div_exact",
         P("f(a: Int, b: Int) -> Float", "return a / b"),
         "f",

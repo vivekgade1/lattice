@@ -153,7 +153,7 @@ func PowF(a, b float64) float64 {
 	case 1:
 		r = math.Abs(a)
 	case 2:
-		r = a * a
+		r = float64(a * a)
 	case -1:
 		r = 1 / math.Abs(a)
 	case 0.5:

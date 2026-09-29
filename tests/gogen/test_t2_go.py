@@ -5,7 +5,6 @@ tests here pin the emitter's shape and the programs the suite does not cover:
 control flow through try/except in loops, records, module constants, keyword
 arguments, optional values and comprehension scoping, each run on both targets."""
 
-import dataclasses
 from dataclasses import dataclass, field
 from textwrap import dedent
 
@@ -14,10 +13,9 @@ import pytest
 from lattice.check import check_source
 from lattice.gogen.t2 import emit_go_t2, go_float, go_string
 from lattice.t2 import compile_program, t2_load
-from lattice.t2.support import T2Set
 from lattice.t2ir.lower import lower_t2
 from tests.check.t2_support import PROFILE
-from tests.semantics_v11.cases import CASES, Case, Err, Exc, run_python
+from tests.semantics_v11.cases import CASES, Case
 from tests.semantics_v11.gorun import run_go, run_go_budgets, run_python_budget
 from tests.t2.util import checked
 from tests.t2ir.corpus import all_t2_calls
@@ -43,6 +41,52 @@ def test_go_literals():
     assert go_float(float("inf")) == "math.Inf(1)"
     assert go_float(-0.0) == "math.Copysign(0, -1)"
     assert go_float(0.1) == "math.Float64frombits(0x3fb999999999999a)"
+
+
+def test_a_charged_method_call_evaluates_its_receiver_first(monkeypatch):
+    """emit_py's `<fuel>.call(recv.m)(args)`: receiver, then the step, then the
+    arguments. No method is on Go yet (Tasks 9-10), so `method` is stubbed here."""
+    from lattice.gogen import t2 as gen
+
+    monkeypatch.setattr(gen._Proc, "method", lambda self, c, recv: f"strings.ToUpper({recv})")
+    program = checked("""
+        @procedure
+        def f(xs: list[Str]) -> Str:
+            return xs[0].upper()
+    """).program
+    src = emit_go_t2(lower_t2(program.t2, None))
+    receiver = src.index("xs.Get(int64(0))")
+    assert receiver < src.index("fuel.Tick()") < src.index("strings.ToUpper(")
+    assert "rt.After(fuel.Step(), strings" not in src
+
+
+def test_none_procedures_return_a_value():
+    program = checked("""
+        @procedure
+        def g(n: Int) -> None:
+            return
+
+        @procedure
+        def f(n: Int) -> Str:
+            return str(g(n))
+    """).program
+    src = emit_go_t2(lower_t2(program.t2, None))
+    assert "func P_g(fuel *rt.Fuel, n int64) struct{}" in src
+    assert "return struct{}{}" in src
+
+
+def test_float_arithmetic_is_rounded_per_operation():
+    """Go may fuse x * y + z into one multiply-add; every Float + - * is converted
+    explicitly (float64(...)), which rounds and prevents fusion."""
+    program = checked("""
+        @procedure
+        def f(x: Float, y: Float, z: Float) -> Float:
+            a = x * y
+            return x * y + z - a
+    """).program
+    src = emit_go_t2(lower_t2(program.t2, None))
+    assert "a = float64(x * y)" in src
+    assert "float64(float64(float64(x * y) + z) - a)" in src
 
 
 def test_go_names_never_clash():
@@ -345,6 +389,30 @@ PROGRAMS = [
         None,
     ),
     Case(
+        # the value of a procedure declared `-> None` is used: str(), return, a local, `is`
+        "none_procedure_values",
+        P("""
+            @procedure
+            def g(n: Int) -> None:
+                if n > 0:
+                    return
+                return None
+
+            @procedure
+            def h(n: Int) -> None:
+                return g(n)
+
+            @procedure
+            def f(n: Int) -> list[Str]:
+                x = g(n)
+                g(n)
+                return [str(g(n)), str(h(n)), str(x), str(g(n) is None), f"{h(-n)}"]
+        """),
+        "f",
+        (1,),
+        None,
+    ),
+    Case(
         "index_error_inside_comprehension",
         P("""
             @procedure
@@ -366,8 +434,8 @@ def go_programs():
 @pytest.mark.parametrize("case", PROGRAMS, ids=lambda c: c.name)
 def test_program_runs_like_python(case, go_programs):
     assert check_source(case.source_with_header, PROFILE, target="go").ok
-    expected = run_python(case)
-    assert not isinstance(expected, Err | Exc) or case.name in (
+    expected, _ = run_python_budget(case, case.budget)  # strict form, as Go's
+    assert expected[0] not in ("err", "exc") or case.name in (
         "fuel_exhaustion_point",
         "index_error_inside_comprehension",
         "keyword_arguments_in_written_order",
@@ -447,22 +515,6 @@ def _corpus_cases() -> tuple[list[_CorpusCase], dict[str, list[int]]]:
     return list(cases.values()), budgets
 
 
-def _norm(v: object) -> object:
-    """A Python result in the form gorun decodes Go's to (records as tuples)."""
-    if dataclasses.is_dataclass(v) and not isinstance(v, type | Err | Exc):
-        fields = tuple(_norm(getattr(v, f.name)) for f in dataclasses.fields(v))
-        return ("record", type(v).__name__, fields)
-    if isinstance(v, list):
-        return [_norm(x) for x in v]
-    if isinstance(v, tuple):
-        return tuple(_norm(x) for x in v)
-    if isinstance(v, dict):
-        return {_norm(k): _norm(x) for k, x in v.items()}
-    if isinstance(v, T2Set):
-        return set(v)
-    return v
-
-
 def test_corpus_calls_run_like_python():
     """Every corpus call Go accepts gives the same (result, fuel left) on both targets.
     Importing the corpus's loop fixtures registers their SQLModel tables in the global
@@ -482,6 +534,6 @@ def test_corpus_calls_run_like_python():
     for case in corpus:
         for b in budgets[case.name]:
             result, left = run_python_budget(case, b)
-            if go[(case.name, b)] != (_norm(result), left):
-                diffs.append((case.name, b, (_norm(result), left), go[(case.name, b)]))
+            if go[(case.name, b)] != (result, left):
+                diffs.append((case.name, b, (result, left), go[(case.name, b)]))
     assert not diffs, diffs[:5]

@@ -412,7 +412,7 @@ func FormatFloat(f float64, spec string) string {
 	pct := false
 	if typ == '%' {
 		typ = 'f'
-		f *= 100
+		f = float64(f * 100) // rounded: never fused with a later add
 		pct = true
 	}
 	if precision < 0 {

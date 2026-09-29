@@ -241,7 +241,7 @@ class _Proc:
         params = ", ".join(
             ["fuel *rt.Fuel", *(f"{self.goname(p)} {self.spell(t)}" for p, t in proc.params)]
         )
-        result = "" if proc.returns == T.NONE else " " + self.spell(proc.returns)
+        result = " " + self.spell(proc.returns)  # a None procedure returns struct{}
         with self.capture() as body:
             self.block(proc.body)
         head = [
@@ -261,7 +261,9 @@ class _Proc:
         tail: list[str] = []
         if isinstance(proc.returns, T.Opt):
             tail.append(f"\treturn rt.None[{self.spell(proc.returns.inner)}]()")
-        elif proc.returns != T.NONE:
+        elif proc.returns == T.NONE:
+            tail.append("\treturn struct{}{}")
+        else:
             tail.append('\tpanic("lattice: a procedure ended without returning")')
         return "\n".join([*head, *body, *tail, "}"]) + "\n"
 
@@ -307,11 +309,7 @@ class _Proc:
             case n.Return(value=v):
                 self.ret(v)
             case n.ExprStmt(value=v):
-                go = self.expr(v)
-                if v.type == T.NONE and isinstance(v, n.Call):
-                    self.emit(go)
-                else:
-                    self.emit(f"_ = {go}")
+                self.emit(f"_ = {self.expr(v)}")
             case n.Try():
                 self.try_stmt(s)
             case n.Raise(kind=kind, message=m):
@@ -355,22 +353,14 @@ class _Proc:
         proc = self.proc
         assert proc is not None
         frame = self.frames[-1]
-        value = None
-        if v is not None and proc.returns != T.NONE:
-            value = self.conv(self.expr(v), v.type, proc.returns)
-        elif v is not None and not (isinstance(v, n.Const) and v.value is None):
-            self.emit(f"_ = {self.expr(v)}")
+        if v is None:
+            v = n.Const(None, T.NONE)  # a bare return is `return None`
+        value = self.conv(self.expr(v), v.type, proc.returns)
         if not frame.closure:
-            if value is None and isinstance(proc.returns, T.Opt):
-                value = f"rt.None[{self.spell(proc.returns.inner)}]()"
-            self.emit("return" if value is None else f"return {value}")
+            self.emit(f"return {value}")
             return
-        if value is not None:
-            self.ret_used = True
-            self.emit(f"{self.m.temp_prefix}ret = {value}")
-        elif isinstance(proc.returns, T.Opt):
-            self.ret_used = True
-            self.emit(f"{self.m.temp_prefix}ret = rt.None[{self.spell(proc.returns.inner)}]()")
+        self.ret_used = True
+        self.emit(f"{self.m.temp_prefix}ret = {value}")
         frame.used.add(3)
         self.emit(f"{frame.ctl} = 3")
         self.emit("return")
@@ -392,7 +382,7 @@ class _Proc:
         assert proc is not None
         frame = self.frames[-1]
         if not frame.closure:
-            self.emit("return" if proc.returns == T.NONE else f"return {self.m.temp_prefix}ret")
+            self.emit(f"return {self.m.temp_prefix}ret")
             return
         frame.used.add(3)
         self.emit(f"{frame.ctl} = 3")
@@ -630,7 +620,7 @@ class _Proc:
             case n.Call():
                 return self.call(e)
             case n.Charged(call=call):
-                return f"rt.After(fuel.Step(), {self.call(call)})"
+                return self.charged(call)
             case n.ListLit(elts=elts, type=T.ListT(elem=el)):
                 items = ", ".join(self.conv(self.expr(x), x.type, el) for x in elts)
                 return f"rt.NewList[{self.spell(el)}]({items})"
@@ -756,7 +746,9 @@ class _Proc:
             fa, fb = self.conv(a, at, T.FLOAT), self.conv(b, bt, T.FLOAT)
             match op:
                 case "+" | "-" | "*":
-                    return f"({fa} {op} {fb})"
+                    # the explicit conversion rounds: Go may otherwise fuse x * y + z
+                    # into one multiply-add (arm64), which Python never does
+                    return f"float64({fa} {op} {fb})"
                 case "/":
                     return f"rt.DivF({fa}, {fb})"
                 case "//":
@@ -1277,6 +1269,26 @@ class _Proc:
 
     # ---- calls ------------------------------------------------------------------------------
 
+    def charged(self, c: n.Call) -> str:
+        """`Charged(call)`: one step charged before the call. A method call evaluates
+        its receiver first, then charges, then evaluates its arguments (emit_py's
+        `<fuel>.call(recv.m)(args)`); any other call charges before its arguments
+        (`rt.After(fuel.Step(), ...)`: Go evaluates call arguments left to right)."""
+        if not c.target.startswith("method:"):
+            return f"rt.After(fuel.Step(), {self.call(c)})"
+        recv = c.args[0]
+        r = self.temp()
+        body = self.method(c, r)
+        return (
+            f"func() {self.spell(c.type)} {{ {r} := {self.expr(recv)}; fuel.Tick(); "
+            f"return {body} }}()"
+        )
+
+    def method(self, c: n.Call, recv: str) -> str:
+        """A method call on the (evaluated) receiver `recv`, its other arguments
+        evaluated here. No method is available on Go yet (plan 5a Tasks 9-10)."""
+        raise LatticeInternalError(f"gogen: call target {c.target!r} is not available on Go")
+
     def call(self, c: n.Call) -> str:
         kind, _, name = c.target.partition(":")
         if kind == "proc":
@@ -1331,10 +1343,6 @@ class _Proc:
         types = [t for _, t in callee.params]
         pre, args = self.ordered_args(names, types, c, {})
         call = f"P_{name}({', '.join(['fuel', *args])})"
-        if callee.returns == T.NONE:
-            if pre:
-                return f"func() {{ {'; '.join(pre)}; {call} }}()"
-            return call
         return self._wrap(pre, self.spell(callee.returns), call)
 
     def record(self, name: str, c: n.Call) -> str:

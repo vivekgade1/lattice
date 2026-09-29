@@ -325,3 +325,25 @@ func TestFormatValueSpecCharge(t *testing.T) {
 	}
 	mustFail(t, "R622", func() { FmtStr(NewFuel(100), "ab", ">20000000") })
 }
+
+//go:noinline
+func mulAdd(x, y, z float64) float64 { return float64(x*y) + z }
+
+//go:noinline
+func mulThenSub(x, y, z float64) float64 {
+	a := float64(x * y)
+	return a - z
+}
+
+// Go may fuse x*y + z into one multiply-add (it does on arm64); Python never does. The
+// emitter (lattice/gogen/t2.py) wraps every Float + - * in an explicit float64(...),
+// which the Go spec says rounds and prevents fusion: these are the semantics suite's
+// float_mul_add_not_fused and float_mul_then_sub_not_fused, in the emitted form.
+func TestExplicitConversionPreventsFusedMultiplyAdd(t *testing.T) {
+	if got := mulAdd(0.1, 10.0, -1.0); got != 0 {
+		t.Fatalf("float64(x*y) + z = %v, want 0 (Python)", got)
+	}
+	if got := mulThenSub(0.1, 10.0, 1.0); got != 0 {
+		t.Fatalf("a := float64(x*y); a - z = %v, want 0 (Python)", got)
+	}
+}

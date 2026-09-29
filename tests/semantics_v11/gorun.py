@@ -5,9 +5,10 @@ program -- each case in its own package (`cases/c<i>`), a `main.go` that runs th
 each under recover -- builds it once (offline, against lattice/gogen/rt through a
 `replace` directive) and runs it. The program prints one JSON object: case name -> the
 result, tagged so Python can rebuild it exactly (`{"t": "float", "v": repr}`, ...), or
-`{"err": code}` for a Lattice runtime diagnostic, `{"exc": kind}` for a Python
-exception, `{"panic": text}` for anything else (a compiler bug). Results come back as
-the suite's values: `Err(code)`, `Exc(kind)`, ints, floats, lists, ...
+`{"err": code, "msg": ...}` for a Lattice runtime diagnostic, `{"exc": kind, "msg":
+...}` for a Python exception, `{"panic": text}` for anything else (a compiler bug).
+Results come back in a strict tagged form (`strict`), which Python's results are put in
+too, so the targets are compared type- and order-exactly, messages included.
 
 The build is cached by the content hash of the generated sources and the runtime under
 `.cache/gorun/<hash>/` at the repository root.
@@ -133,36 +134,74 @@ def _seq_encoder(go: str, items: str, tag: str, elem: str) -> str:
     )
 
 
+def strict(v: object) -> object:  # noqa: PLR0911
+    """A Python result in the strict tagged form both targets' results are compared in:
+    (tag, value) trees where bool, int and float differ, a float is its repr (-0.0 is not
+    0.0), lists and tuples differ, dicts and sets are their items in order, a record is
+    its name and fields, and an error is its code or kind and its message."""
+    import dataclasses  # noqa: PLC0415
+
+    from lattice.t2.support import T2Set  # noqa: PLC0415
+
+    if isinstance(v, bool):
+        return ("bool", v)
+    if isinstance(v, int):
+        return ("int", v)
+    if isinstance(v, float):
+        return ("float", repr(v))
+    if isinstance(v, str):
+        return ("str", v)
+    if v is None:
+        return ("none",)
+    if isinstance(v, list):
+        return ("list", tuple(strict(x) for x in v))
+    if isinstance(v, tuple):
+        return ("tuple", tuple(strict(x) for x in v))
+    if isinstance(v, dict):
+        return ("dict", tuple((strict(k), strict(x)) for k, x in v.items()))
+    if isinstance(v, T2Set | set | frozenset):
+        return ("set", tuple(strict(x) for x in v))
+    if dataclasses.is_dataclass(v) and not isinstance(v, type):
+        fields = tuple(strict(getattr(v, f.name)) for f in dataclasses.fields(v))
+        return ("record", type(v).__name__, fields)
+    raise ValueError(f"no strict form for {v!r}")
+
+
 def decode(v: object) -> object:  # noqa: PLR0911
-    """A tagged JSON result -> the suite's Python value."""
+    """A tagged JSON result from Go -> the strict form (`strict`)."""
     if not isinstance(v, dict):
         raise ValueError(f"untagged result {v!r}")
     if "err" in v:
-        return Err(v["err"])
+        return ("err", v["err"], v["msg"])
     if "exc" in v:
-        return Exc(v["exc"])
+        return ("exc", v["exc"], v["msg"])
     if "panic" in v:
-        return ("GO PANIC", v["panic"])
+        return ("panic", v["panic"])
     tag = v["t"]
     if tag == "none":
-        return None
+        return ("none",)
     if tag == "int":
-        return int(v["v"])
-    if tag == "float":
-        return float(v["v"])
-    if tag in ("str", "bool"):
-        return v["v"]
-    if tag == "list":
-        return [decode(x) for x in v["v"]]
-    if tag == "tuple":
-        return tuple(decode(x) for x in v["v"])
-    if tag == "set":
-        return {decode(x) for x in v["v"]}  # type: ignore[misc]
+        return ("int", int(v["v"]))
+    if tag in ("float", "str", "bool"):
+        return (tag, v["v"])
+    if tag in ("list", "tuple", "set"):
+        return (tag, tuple(decode(x) for x in v["v"]))
     if tag == "dict":
-        return {decode(k): decode(x) for k, x in v["v"]}  # type: ignore[misc]
+        return ("dict", tuple((decode(k), decode(x)) for k, x in v["v"]))
     if tag == "record":
         return ("record", v["name"], tuple(decode(x) for x in v["v"]))
     raise ValueError(f"unknown tag {tag!r}")
+
+
+def expect_holds(result: object, expect: object) -> bool:
+    """A case's expected value holds for a strict result: Err(code) / Exc(kind) match
+    the code / kind (the message is compared between the targets), a value matches
+    exactly in strict form."""
+    if isinstance(expect, Err):
+        return isinstance(result, tuple) and result[:2] == ("err", expect.code)
+    if isinstance(expect, Exc):
+        return isinstance(result, tuple) and result[:2] == ("exc", expect.kind)
+    return result == strict(expect)
 
 
 # ---- the program ------------------------------------------------------------------------
@@ -183,10 +222,7 @@ def case_package(case: Case, pkg: str) -> tuple[str, str]:
         go_literal(v, t, types) for v, (_, t) in zip(case.args, proc.params, strict=True)
     )
     call = f"P_{case.proc}({', '.join(['fuel', *([args] if args else [])])})"
-    if proc.returns == T.NONE:
-        body = f'{call}\n\treturn map[string]any{{"t": "none"}}'
-    else:
-        body = f"return ({go_encoder(proc.returns, types)})({call})"
+    body = f"return ({go_encoder(proc.returns, types)})({call})"
     # the tuple and record types Run spells are declared by t2.go: the procedure's
     # signature uses them, and their names are derived from the types
     run = (
@@ -216,10 +252,10 @@ func run(f func() any) (out any) {{
 \t\tif r := recover(); r != nil {{
 \t\t\tif e, ok := r.(*rt.Error); ok {{
 \t\t\t\tif e.Code != "" {{
-\t\t\t\t\tout = map[string]any{{"err": e.Code}}
+\t\t\t\t\tout = map[string]any{{"err": e.Code, "msg": e.Msg}}
 \t\t\t\t\treturn
 \t\t\t\t}}
-\t\t\t\tout = map[string]any{{"exc": e.Kind}}
+\t\t\t\tout = map[string]any{{"exc": e.Kind, "msg": e.Msg}}
 \t\t\t\treturn
 \t\t\t}}
 \t\t\tout = map[string]any{{"panic": fmt.Sprint(r)}}
@@ -318,7 +354,8 @@ def build(cases: Sequence[Case]) -> Path:
         check=False,
     )
     if proc.returncode != 0:
-        raise RuntimeError(f"go build failed in {tmp}:\n{proc.stderr}")
+        shutil.rmtree(tmp, ignore_errors=True)
+        raise RuntimeError(f"go build failed:\n{proc.stderr}")
     try:
         tmp.rename(out)
     except OSError:  # another process built the same program first: keep theirs
@@ -327,7 +364,7 @@ def build(cases: Sequence[Case]) -> Path:
 
 
 def run_go(cases: Sequence[Case]) -> dict[str, object]:
-    """Run the cases on Go: case name -> result (a value, Err(code) or Exc(kind))."""
+    """Run the cases on Go: case name -> result, in strict form (`strict`)."""
     return run_go_detailed(cases)[0]
 
 
@@ -342,7 +379,8 @@ def run_go_detailed(cases: Sequence[Case]) -> tuple[dict[str, object], dict[str,
 def run_go_budgets(
     cases: Sequence[Case], budgets: Mapping[str, Sequence[int]]
 ) -> dict[tuple[str, int], tuple[object, int]]:
-    """Run each case on Go once per budget: (name, budget) -> (result, fuel left)."""
+    """Run each case on Go once per budget: (name, budget) -> (strict result, fuel
+    left)."""
     binary = build(cases)
     proc = subprocess.run(  # noqa: S603
         [str(binary)],
@@ -363,7 +401,8 @@ def run_go_budgets(
 
 
 def run_python_budget(case: Case, budget: int) -> tuple[object, int]:
-    """The case's result on Python with a budget (as run_python), and the fuel left."""
+    """The case's result on Python with a budget, in strict form (an escaping error as
+    ("err", code, message) or ("exc", kind, message)), and the fuel left."""
     from lattice.t2 import T2Fuel  # noqa: PLC0415
     from lattice.t2.support import T2Error  # noqa: PLC0415
     from tests.semantics_v11.cases import _EXC_TYPES  # noqa: PLC0415
@@ -373,14 +412,12 @@ def run_python_budget(case: Case, budget: int) -> tuple[object, int]:
     fn = (load_fn() if load_fn is not None else load(case.source))[case.proc]
     fuel = T2Fuel(budget)
     try:
-        result: object = fn(fuel, *case.args)
+        result: object = strict(fn(fuel, *case.args))
     except T2Error as e:
-        result = Err(e.code)
-    except Exception as e:  # noqa: BLE001 - mapped like run_python, else re-raised
-        kinds = [k.__name__ for k in _EXC_TYPES if isinstance(e, k)]
-        if not kinds:
-            raise
-        result = Exc(kinds[0])
+        result = ("err", e.code, e.message)
+    except Exception as e:  # noqa: BLE001 - every escaping exception is a result
+        kinds = [k.__name__ for k in _EXC_TYPES if isinstance(e, k)] or [type(e).__name__]
+        result = ("exc", kinds[0], str(e))
     return result, fuel.left
 
 

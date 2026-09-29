@@ -6,7 +6,12 @@ import pytest
 from lattice.check import check_source
 from tests.check.t2_support import PROFILE
 from tests.semantics_v11.cases import CASES, semantics_cases_missing_on
-from tests.semantics_v11.gorun import python_fuel_left, run_go_detailed
+from tests.semantics_v11.gorun import (
+    expect_holds,
+    python_fuel_left,
+    run_go_detailed,
+    run_python_budget,
+)
 
 GO_CASES = [c for c in CASES if check_source(c.source_with_header, PROFILE, target="go").ok]
 
@@ -18,7 +23,11 @@ def go_run():
 
 @pytest.mark.parametrize("case", GO_CASES, ids=lambda c: c.name)
 def test_go_matches_expectation(case, go_run):
-    assert go_run[0][case.name] == case.expect
+    """Strictly (`gorun.strict`): the same types, float bits, orders and error
+    messages as Python, and the case's expected value."""
+    got = go_run[0][case.name]
+    assert got == run_python_budget(case, case.budget)[0]
+    assert expect_holds(got, case.expect), (got, case.expect)
 
 
 @pytest.mark.parametrize("case", GO_CASES, ids=lambda c: c.name)
