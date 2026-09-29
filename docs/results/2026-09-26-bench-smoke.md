@@ -860,3 +860,55 @@ Caveats:
 - The JustNotes confound affects the held-out-app half of the scope.
 
 A confirmatory round with more reps on the template tickets alone would settle the Sonnet silent-failure question cheaply.
+
+## Confirmation run (pre-registered, 2026-09-29)
+
+Spec: `docs/superpowers/specs/2026-09-28-lattice-confirmation-run.md`.
+
+**Setup.**
+- The 15 unconfounded template tickets (t7–t18, t25–t27).
+- 6 reps per cell, through the Claude CLI.
+- 607 of 630 runs completed. Sonnet-L has 67/90: every Sonnet-L run on t25 timed out after 600 s, recorded as 7 error records, and the remaining reps were not reached.
+
+| model | arm | correct [95% CI] | silent [95% CI] | loud | $/correct |
+|---|---|---|---|---:|---:|
+| sonnet-5 | **P** | **89/90** [0.94, 1.00] | **1/90** [0.00, 0.06] | 0 | 0.060 |
+| sonnet-5 | L | 52/67 [0.66, 0.86] | 7/67 [0.05, 0.20] | 1 (+7 timeouts) | 0.074 |
+| sonnet-5 | Q | 69/90 [0.67, 0.84] | 21/90 [0.16, 0.33] | 0 | 0.075 |
+| sonnet-5 | Q+ | 79/90 [0.79, 0.93] | 11/90 [0.07, 0.21] | 0 | 0.089 |
+| haiku-4-5 | P | 80/90 [0.81, 0.94] | 10/90 [0.06, 0.19] | 0 | 0.037 |
+| haiku-4-5 | L | 54/90 [0.50, 0.70] | 15/90 [0.10, 0.26] | 21 | 0.114 |
+| haiku-4-5 | Q+ | 82/90 [0.83, 0.95] | 8/90 [0.05, 0.17] | 0 | 0.055 |
+
+### Pre-registered verdicts
+
+- **Q1: does Lattice reduce silent bugs with a strong model? REFUTED.**
+  - Sonnet-L has 7/67 silent against Sonnet-P's 1/90 (one-sided Fisher p = 0.999, per-ticket sign test 0 wins, 2 losses).
+  - The missing Sonnet-L runs cannot change this: even with all 23 non-silent, L is 7/90 against 1/90.
+- **Q2: do checks plus aids beat plain Python on a weaker model? NOT CONFIRMED.**
+  - Haiku-Q+ has 82 correct and 8 silent, against Haiku-P's 80 correct and 10 silent (p = 0.40 for both).
+  - Round 5's large Q+ advantage did not replicate.
+- **Outcome per the spec:** "neither confirmed". At this scale, the measured value of both the Lattice language and the Lattice checks on Python is small, or negative.
+
+### Additional observations (not pre-registered)
+
+1. **Plain Python on a frontier model was nearly perfect on these tickets:** 89/90 correct and 1 silent.
+2. **The checks made Sonnet worse.** Sonnet-Q (checks, no aids) had 21 silent against P's 1. Acting on check findings seems to push a strong model into wrong edits. The likely cause is over-applying the ownership and admin rules where a ticket wants the opposite, e.g. t15, where an admin's duplicate must keep the original owner. The aids reduced this (Q+: 11), but not below P.
+3. **Lattice's failures concentrate on specific tickets:**
+   - t15 (copying another row's values) and t11 (trimming an optional field) account for most of the silent failures in both models;
+   - t25 (bulk delete) makes Sonnet reason past the 600 s timeout.
+4. **Earlier rounds overstated effects.** Rounds 4–5 used 3 reps, and their single-digit differences are within this run's confidence intervals.
+
+### Conclusion
+
+The core hypothesis is not supported by the pre-registered evidence: LLMs editing through Lattice, or with Lattice's guarantees checked, do not produce fewer silent bugs than LLMs editing ordinary Python.
+- With a frontier model, plain Python edits are already highly reliable on this class of task.
+- With a weaker model, the checks add nothing measurable.
+
+The parts of the project that stand on their own evidence are the engineering artefacts:
+- the verified import/emit pipeline;
+- differential verification;
+- trap-based oracles;
+- the SQL compilation of the plan IR, whose output code is shorter and fewer-query.
+
+Their value as an *LLM editing interface* is not demonstrated.
