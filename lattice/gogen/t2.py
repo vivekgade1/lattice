@@ -65,7 +65,7 @@ from lattice.gogen.types import GoTypes
 from lattice.runtime import LatticeInternalError
 from lattice.t2ir import nodes as n
 
-__all__ = ["emit_go_t2", "go_float", "go_string"]
+__all__ = ["emit_go_t2", "go_float", "go_regex", "go_string"]
 
 # Go keywords, predeclared identifiers and the names generated code uses unqualified:
 # a Lattice name equal to one of these is renamed.
@@ -93,6 +93,21 @@ _TIME_ATTRS: Mapping[str, str] = {
     "days": "Days()", "seconds": "Seconds()",
 }  # fmt: skip
 _ORDER = frozenset({"<", "<=", ">", ">="})
+
+
+def go_regex(pattern: str) -> str:
+    """A Go expression for `pattern` compiled as Python compiles it (`re.compile(pattern,
+    re.ASCII)`, lattice.gogen.regex): an `*rt.Regex` run by Python's SRE engine."""
+    rx = compile_regex(pattern)
+    if rx.error is not None:
+        kind, msg = rx.error
+        return f"rt.BadRegex({go_string(pattern)}, {go_string(kind)}, {go_string(msg)})"
+    code = ", ".join(str(x) for x in rx.code)
+    names = ", ".join(f"{go_string(k)}: {v}" for k, v in rx.names)
+    return (
+        f"rt.NewRegex({go_string(pattern)}, []uint32{{{code}}}, {rx.groups}, "
+        f"map[string]int{{{names}}})"
+    )
 
 
 def go_string(s: str) -> str:
@@ -203,17 +218,7 @@ class _Module:
         name = self.regexes.get(pattern)
         if name is None:
             name = self.regexes[pattern] = f"re_{len(self.regexes) + 1}"
-            rx = compile_regex(pattern)
-            if rx.error is not None:
-                kind, msg = rx.error
-                value = f"rt.BadRegex({go_string(pattern)}, {go_string(kind)}, {go_string(msg)})"
-            else:
-                code = ", ".join(str(x) for x in rx.code)
-                names = ", ".join(f"{go_string(k)}: {v}" for k, v in rx.names)
-                value = (
-                    f"rt.NewRegex({go_string(pattern)}, []uint32{{{code}}}, {rx.groups}, "
-                    f"map[string]int{{{names}}})"
-                )
+            value = go_regex(pattern)
             self.decls.append(
                 f"// {name}: re.compile({go_string(pattern)}, re.ASCII)\nvar {name} = {value}\n"
             )

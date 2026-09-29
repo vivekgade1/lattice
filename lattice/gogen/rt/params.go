@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 // ---- parameter specs (the prelude's Param) ------------------------------------------------
@@ -27,7 +26,8 @@ var Null any = nullT{}
 // Optional), Null for a None default, else the value (int64, float64, string, bool,
 // Date, DateTime; a Uuid default as its canonical string or a UUID). Nullable (with
 // Optional): an explicit JSON null is accepted and sets NULL. Pattern (nil: none) is a
-// regular expression the whole Str value must match; Email: it is Email's pattern
+// regular expression the whole Str value must match (compiled at generation time as
+// Python compiles it, run by regex.go's port of Python's engine); Email: it is Email's pattern
 // (only the message differs).
 type ParamSpec struct {
 	Name, Source, Scalar string
@@ -36,7 +36,7 @@ type ParamSpec struct {
 	OneOf                []string // nil: no OneOf
 	Default              any
 	Optional, Nullable   bool
-	Pattern              *string
+	Pattern              *Regex
 	Email                bool
 }
 
@@ -212,16 +212,12 @@ func cmpNum(value any, bound float64) int {
 	return 0
 }
 
-var patternCache sync.Map // pattern -> *regexp.Regexp
-
-// FullMatch is re.fullmatch(pattern, s) (the checker admits only the RE2 subset, L926).
-func FullMatch(pattern, s string) bool {
-	v, ok := patternCache.Load(pattern)
-	if !ok {
-		v = regexp.MustCompile(`\A(?:` + pattern + `)\z`)
-		patternCache.Store(pattern, v)
-	}
-	return v.(*regexp.Regexp).MatchString(s)
+// FullMatch is the prelude's `re.fullmatch(pattern, s, flags=re.ASCII)`: the pattern is
+// compiled when the Go code is generated, as Python compiles it
+// (lattice.gogen.regex.compile_regex), and run by Python's SRE engine (regex.go), so a
+// parameter accepts exactly the values the Python target accepts.
+func FullMatch(re *Regex, s string) bool {
+	return ReFullmatch(re, s).Ok
 }
 
 // constrain is the prelude's _constrain.
@@ -262,11 +258,11 @@ func constrain(spec *ParamSpec, value any) paramError {
 		if spec.Email && n > EmailMaxLen {
 			return paramError("must have at most " + strconv.Itoa(EmailMaxLen) + " characters")
 		}
-		if spec.Pattern != nil && !FullMatch(*spec.Pattern, s) {
+		if spec.Pattern != nil && !FullMatch(spec.Pattern, s) {
 			if spec.Email {
 				return "must be an email address"
 			}
-			return paramError("must match the pattern " + ReprStr(*spec.Pattern))
+			return paramError("must match the pattern " + ReprStr(spec.Pattern.Pattern))
 		}
 	}
 	return ""

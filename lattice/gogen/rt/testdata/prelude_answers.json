@@ -1902,7 +1902,40 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "[a-z]+\\d?"
+     "pattern": "[a-z]+\\d?",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       1,
+       4294967295,
+       24,
+       10,
+       1,
+       4294967295,
+       13,
+       5,
+       22,
+       97,
+       122,
+       0,
+       1,
+       24,
+       9,
+       0,
+       1,
+       13,
+       4,
+       8,
+       0,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
     }
    ],
    "path": {},
@@ -1927,7 +1960,40 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "[a-z]+\\d?"
+     "pattern": "[a-z]+\\d?",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       1,
+       4294967295,
+       24,
+       10,
+       1,
+       4294967295,
+       13,
+       5,
+       22,
+       97,
+       122,
+       0,
+       1,
+       24,
+       9,
+       0,
+       1,
+       13,
+       4,
+       8,
+       0,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
     }
    ],
    "path": {},
@@ -1946,7 +2012,45 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "it's\\\\d"
+     "pattern": "it's\\\\d",
+     "pattern_code": {
+      "code": [
+       14,
+       18,
+       3,
+       6,
+       6,
+       6,
+       6,
+       105,
+       116,
+       39,
+       115,
+       92,
+       100,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       16,
+       105,
+       16,
+       116,
+       16,
+       39,
+       16,
+       115,
+       16,
+       92,
+       16,
+       100,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
     }
    ],
    "path": {},
@@ -1959,6 +2063,621 @@
    "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern \\\"it's\\\\\\\\\\\\\\\\d\\\"\"}]}"
   },
   {
+   "name": "pattern sre (?i)[a-z]+ s=%C5%BF",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?i)[a-z]+",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       1,
+       4294967295,
+       24,
+       10,
+       1,
+       4294967295,
+       31,
+       5,
+       22,
+       97,
+       122,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%C5%BF",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '(?i)[a-z]+'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '(?i)[a-z]+'\"}]}"
+  },
+  {
+   "name": "pattern sre (?i)[a-z]+ s=%E2%84%AA",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?i)[a-z]+",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       1,
+       4294967295,
+       24,
+       10,
+       1,
+       4294967295,
+       31,
+       5,
+       22,
+       97,
+       122,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%E2%84%AA",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '(?i)[a-z]+'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '(?i)[a-z]+'\"}]}"
+  },
+  {
+   "name": "pattern sre (?i)[a-z]+ s=AbC",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?i)[a-z]+",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       1,
+       4294967295,
+       24,
+       10,
+       1,
+       4294967295,
+       31,
+       5,
+       22,
+       97,
+       122,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=AbC",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "AbC"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern sre x\\Z s=x",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "x\\Z",
+     "pattern_code": {
+      "code": [
+       14,
+       8,
+       1,
+       1,
+       1,
+       1,
+       1,
+       120,
+       0,
+       16,
+       120,
+       6,
+       7,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=x",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "x"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern sre x\\Z s=x%0A",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "x\\Z",
+     "pattern_code": {
+      "code": [
+       14,
+       8,
+       1,
+       1,
+       1,
+       1,
+       1,
+       120,
+       0,
+       16,
+       120,
+       6,
+       7,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=x%0A",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'x\\\\\\\\Z'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'x\\\\\\\\Z'\"}]}"
+  },
+  {
+   "name": "pattern sre a{1001} s=aaaaaaaaaaaaaaaaaa",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "a{1001}",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       1001,
+       1001,
+       24,
+       6,
+       1001,
+       1001,
+       16,
+       97,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern sre a{1001} s=aaaaaaaaaaaaaaaaaa",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "a{1001}",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       1001,
+       1001,
+       24,
+       6,
+       1001,
+       1001,
+       16,
+       97,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'a{1001}'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'a{1001}'\"}]}"
+  },
+  {
+   "name": "pattern sre x{,2} s=xx",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "x{,2}",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       0,
+       2,
+       24,
+       6,
+       0,
+       2,
+       16,
+       120,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=xx",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "xx"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern sre x{,2} s=x{,2}",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "x{,2}",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       0,
+       2,
+       24,
+       6,
+       0,
+       2,
+       16,
+       120,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=x{,2}",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'x{,2}'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'x{,2}'\"}]}"
+  },
+  {
+   "name": "pattern sre [[:alpha:]] s=a",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "[[:alpha:]]",
+     "pattern_code": {
+      "code": [
+       14,
+       14,
+       4,
+       2,
+       2,
+       9,
+       0,
+       67108864,
+       134217728,
+       69890,
+       0,
+       0,
+       0,
+       0,
+       0,
+       13,
+       11,
+       9,
+       0,
+       67108864,
+       134217728,
+       69890,
+       0,
+       0,
+       0,
+       0,
+       0,
+       16,
+       93,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=a",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '[[:alpha:]]'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '[[:alpha:]]'\"}]}"
+  },
+  {
+   "name": "pattern sre [[:alpha:]] s=:",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "[[:alpha:]]",
+     "pattern_code": {
+      "code": [
+       14,
+       14,
+       4,
+       2,
+       2,
+       9,
+       0,
+       67108864,
+       134217728,
+       69890,
+       0,
+       0,
+       0,
+       0,
+       0,
+       13,
+       11,
+       9,
+       0,
+       67108864,
+       134217728,
+       69890,
+       0,
+       0,
+       0,
+       0,
+       0,
+       16,
+       93,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=:",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '[[:alpha:]]'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '[[:alpha:]]'\"}]}"
+  },
+  {
+   "name": "pattern sre \\s s=%0B",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\s",
+     "pattern_code": {
+      "code": [
+       14,
+       7,
+       4,
+       1,
+       1,
+       8,
+       2,
+       0,
+       13,
+       4,
+       8,
+       2,
+       0,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%0B",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "\u000b"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern sre a$ s=a%0A",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "a$",
+     "pattern_code": {
+      "code": [
+       14,
+       8,
+       1,
+       1,
+       1,
+       1,
+       1,
+       97,
+       0,
+       16,
+       97,
+       6,
+       5,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=a%0A",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'a$'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'a$'\"}]}"
+  },
+  {
+   "name": "pattern sre \\d+ s=%D9%A3",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\d+",
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       1,
+       4294967295,
+       24,
+       9,
+       1,
+       4294967295,
+       13,
+       4,
+       8,
+       0,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%D9%A3",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\d+'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\d+'\"}]}"
+  },
+  {
    "name": "email bad",
    "specs": [
     {
@@ -1966,7 +2685,62 @@
      "source": "query",
      "scalar": "Str",
      "pattern": "[^@\\s]+@[^@\\s]+\\.[^@\\s]+",
-     "email": true
+     "email": true,
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       5,
+       4294967295,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       16,
+       64,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       16,
+       46,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
     }
    ],
    "path": {},
@@ -1986,7 +2760,62 @@
      "source": "query",
      "scalar": "Str",
      "pattern": "[^@\\s]+@[^@\\s]+\\.[^@\\s]+",
-     "email": true
+     "email": true,
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       5,
+       4294967295,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       16,
+       64,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       16,
+       46,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
     }
    ],
    "path": {},
@@ -2013,7 +2842,62 @@
      "scalar": "Str",
      "pattern": "[^@\\s]+@[^@\\s]+\\.[^@\\s]+",
      "email": true,
-     "max_len": 1000
+     "max_len": 1000,
+     "pattern_code": {
+      "code": [
+       14,
+       4,
+       0,
+       5,
+       4294967295,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       16,
+       64,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       16,
+       46,
+       24,
+       12,
+       1,
+       4294967295,
+       13,
+       7,
+       21,
+       16,
+       64,
+       8,
+       2,
+       0,
+       1,
+       1
+      ],
+      "groups": 0,
+      "names": {}
+     }
     }
    ],
    "path": {},

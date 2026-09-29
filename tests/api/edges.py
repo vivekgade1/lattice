@@ -11,7 +11,10 @@ runtime):
   the client, like any redirect), and a 307 to a route of another method;
 * UNSET partial updates (``merge_update``): no field, one field, every field, and an
   explicit null written to a nullable column (and refused for a NOT NULL one);
-* a 204 delete, and R310 (``one()`` of several rows) as a 500.
+* a 204 delete, and R310 (``one()`` of several rows) as a 500;
+* ``Str(pattern=...)`` parameters matched as Python matches them (``re.fullmatch`` with
+  ``re.ASCII``, run on Go by the port of Python's SRE engine): ``(?i)`` without Unicode
+  case folding ("ſ", the Kelvin sign), ``\\Z``, ``{m,n}`` bounds and ``{,n}``.
 
 It runs on the benchmark dataset (bench.api_datasets) with a UNIQUE index on users'
 email, and one more table, Notes, whose ``memo`` column is nullable.
@@ -184,4 +187,23 @@ def patch_note(
     note = one(found, else_=NotFound("note"))
     done = update(note, title=title, memo=memo)
     return done
+
+
+@endpoint("GET", "/notes/find", auth=Customer)
+def find_notes(
+    user: CurrentUser,
+    ci: Str(pattern="(?i)[a-z ]+") = "a",
+    end: Str(pattern="call mom\\\\Z") = "call mom",
+    rep: Str(pattern="[a-z]{2,4} [a-z]{1,3}") = "ab c",
+    upto: Str(pattern="x{,2}") = "",
+) -> List:
+    notes = fetch(Notes)
+    mine = owned(notes, by=user)
+    found = where(
+        mine,
+        (col("title") == ci) | (col("title") == end) | (col("title") == rep)
+        | (col("title") == upto),
+    )
+    few = limit(found, n=10)
+    return few
 """

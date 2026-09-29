@@ -31,6 +31,7 @@ sys.path.insert(0, str(ROOT))
 from starlette.datastructures import QueryParams  # noqa: E402
 
 from lattice.api.codegen import _PRELUDE  # noqa: E402
+from lattice.gogen.regex import compile_regex  # noqa: E402
 
 NS: dict[str, object] = {}
 exec(compile(_PRELUDE, "prelude", "exec"), NS)  # noqa: S102 - the reference itself
@@ -122,11 +123,16 @@ out["error_bodies"] = bodies
 # ---- parameters -----------------------------------------------------------------------------
 def spec(name: str, source: str, scalar: str, **kw: object) -> dict[str, object]:
     d: dict[str, object] = {"name": name, "source": source, "scalar": scalar, **kw}
+    if isinstance(kw.get("pattern"), str):  # the SRE code the Go program embeds
+        c = compile_regex(kw["pattern"])  # type: ignore[arg-type]
+        assert c.error is None, kw["pattern"]
+        d["pattern_code"] = {"code": list(c.code), "groups": c.groups, "names": dict(c.names)}
     return d
 
 
 def to_param(d: dict[str, object]) -> object:
-    kw = {k: v for k, v in d.items() if k not in ("name", "source", "scalar", "default")}
+    skip = ("name", "source", "scalar", "default", "pattern_code")
+    kw = {k: v for k, v in d.items() if k not in skip}
     if "one_of" in kw:
         kw["one_of"] = tuple(kw["one_of"])  # type: ignore[arg-type]
     if "default" in d:
@@ -256,6 +262,24 @@ case("one_of bad", [spec("s", "query", "Str", one_of=["a", "b'c", 'd"e', "é\n"]
 case("pattern ok", [spec("s", "query", "Str", pattern=r"[a-z]+\d?")], query="s=abc1")
 case("pattern bad", [spec("s", "query", "Str", pattern=r"[a-z]+\d?")], query="s=abc12")
 case("pattern quote", [spec("s", "query", "Str", pattern=r"it's\\d")], query="s=x")
+# the parameter pattern runs on Python's SRE engine (re.ASCII), not Go's regexp
+for pat, q in [
+    ("(?i)[a-z]+", "s=%C5%BF"),  # U+017F: IGNORECASE is ASCII under re.ASCII
+    ("(?i)[a-z]+", "s=%E2%84%AA"),  # the Kelvin sign
+    ("(?i)[a-z]+", "s=AbC"),
+    (r"x\Z", "s=x"),
+    (r"x\Z", "s=x%0A"),
+    ("a{1001}", "s=" + "a" * 1001),
+    ("a{1001}", "s=" + "a" * 1000),
+    ("x{,2}", "s=xx"),
+    ("x{,2}", "s=x{,2}"),
+    ("[[:alpha:]]", "s=a"),
+    ("[[:alpha:]]", "s=:"),
+    (r"\s", "s=%0B"),
+    (r"a$", "s=a%0A"),
+    (r"\d+", "s=%D9%A3"),
+]:
+    case(f"pattern sre {pat} {q[:20]}", [spec("s", "query", "Str", pattern=pat)], query=q)
 EMAIL = r"[^@\s]+@[^@\s]+\.[^@\s]+"
 case("email bad", [spec("e", "query", "Str", pattern=EMAIL, email=True)], query="e=nope")
 case("email ok", [spec("e", "query", "Str", pattern=EMAIL, email=True)], query="e=a%40b.co")

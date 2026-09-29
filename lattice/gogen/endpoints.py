@@ -53,7 +53,7 @@ from lattice.catalog import LIST_KIND, USER_PARAM
 from lattice.check.api_info import MISSING, UNSET, ParamSpec
 from lattice.check.t2 import types as T
 from lattice.check.t2.types import T2Type
-from lattice.gogen.t2 import go_float, go_string
+from lattice.gogen.t2 import go_float, go_regex, go_string
 from lattice.gogen.types import GoTypes
 from lattice.runtime import LatticeInternalError
 from lattice.t2ir import nodes as n
@@ -136,7 +136,9 @@ def _param(spec: ParamSpec, null_ok: Sequence[str]) -> str:
             raise LatticeInternalError(f"gogen: OneOf values of '{spec.name}' are not text")
         parts.append(f"OneOf: {_strs(spec.one_of)}")
     if spec.pattern is not None:
-        parts.append(f"Pattern: rt.S({go_string(spec.pattern)})")
+        # compiled here as Python compiles it (re.ASCII), matched by Python's SRE engine
+        # (rt/regex.go) with the prelude's re.fullmatch semantics
+        parts.append(f"Pattern: {go_regex(spec.pattern)}")
     if spec.default is UNSET:
         parts.append("Default: rt.Unset")
     elif spec.default is None:

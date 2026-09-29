@@ -251,7 +251,16 @@ func specOf(t *testing.T, m map[string]any) ParamSpec {
 		}
 	}
 	if v, ok := m["pattern"].(string); ok {
-		s.Pattern = S(v)
+		pc := m["pattern_code"].(map[string]any)
+		var code []uint32
+		for _, x := range pc["code"].([]any) {
+			code = append(code, uint32(x.(float64)))
+		}
+		names := map[string]int{}
+		for k, x := range pc["names"].(map[string]any) {
+			names[k] = int(x.(float64))
+		}
+		s.Pattern = NewRegex(v, code, int(pc["groups"].(float64)), names)
 	}
 	s.Email, _ = m["email"].(bool)
 	s.Optional, _ = m["optional"].(bool)

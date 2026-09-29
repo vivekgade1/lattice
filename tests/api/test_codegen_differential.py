@@ -1227,6 +1227,20 @@ EDGES_CASES: tuple[HttpCase, ...] = (
     _case("note unchanged", "PATCH", "/notes/2", A, json={}, after_sql=_ED.NOTES_AFTER),
     _case("note other", "PATCH", "/notes/3", A, json={"memo": None}, status=404),
     _case("note bob", "PATCH", "/notes/3", B, json={"memo": None}, after_sql=_ED.NOTES_AFTER),
+    # Str(pattern=...): re.fullmatch(pattern, value, flags=re.ASCII) on every target
+    _case("find defaults", "GET", "/notes/find", A),
+    _case("find ci", "GET", "/notes/find", A, query={"ci": "call mom"}),
+    _case("find ci upper", "GET", "/notes/find", A, query={"ci": "CALL MOM"}),
+    _case("find ci long s", "GET", "/notes/find", A, query={"ci": "\u017f"}, status=422),
+    _case("find ci kelvin", "GET", "/notes/find", A, query={"ci": "\u212a"}, status=422),
+    _case("find ci digit", "GET", "/notes/find", A, query={"ci": "abc1"}, status=422),
+    _case("find end", "GET", "/notes/find", A, query={"end": "call mom"}),
+    _case("find end newline", "GET", "/notes/find", A, query={"end": "call mom\n"}, status=422),
+    _case("find rep", "GET", "/notes/find", A, query={"rep": "abcd efg"}),
+    _case("find rep over", "GET", "/notes/find", A, query={"rep": "abcde f"}, status=422),
+    _case("find upto", "GET", "/notes/find", A, query={"upto": "xx"}),
+    _case("find upto over", "GET", "/notes/find", A, query={"upto": "xxx"}, status=422),
+    _case("find upto literal", "GET", "/notes/find", A, query={"upto": "x{,2}"}, status=422),
 )
 PROGRAMS["edges"] = (
     _ED.PROGRAM,
@@ -2097,6 +2111,10 @@ def test_the_edges_program_passes_its_cases(differential_runs):
         assert body["title null"]["error"] == "validation"
         assert after["note unchanged"] == [list(r) for r in edges.NOTE_ROWS]
         assert after["note bob"][2] == [3, 2, "bob's", None]
+        assert [n["id"] for n in body["find ci"]] == [2]
+        assert [n["id"] for n in body["find end"]] == [2]
+        assert body["find ci upper"] == body["find defaults"]  # the defaults' "call mom"
+        assert "must match the pattern '(?i)[a-z ]+'" in str(body["find ci kelvin"])
 
 
 def test_a_procedure_filter_before_page_is_rejected_by_both_backends(tmp_path: Path):
