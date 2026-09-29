@@ -5,7 +5,9 @@ Everything the harness needs to know about one app lives here, as data:
 * ``template`` -- the official FastAPI template (``bench/template_app``), the app the
   importer's lifters are developed against (tickets t1-t18);
 * ``taskflow`` and ``justnotes`` -- the importer's held-out repos
-  (``bench/import_repos/``, see their ``PROVENANCE.md``), round 3's tickets t19-t24.
+  (``bench/import_repos/``, see their ``PROVENANCE.md``), round 3's tickets t19-t24;
+* ``multivendor`` -- the option-1 held-out marketplace (``bench/import_repos/multivendor``),
+  tickets t31-t38.
 
 Per app: the package a variant replaces and its directory (:mod:`bench.edit_slice.variant`),
 whether its tables already live in their own SQLAlchemy registry (the held-out repos'
@@ -57,6 +59,10 @@ class Repo:
             from bench.import_repos.taskflow.seed import build_seed_db
 
             return build_seed_db
+        if self.name == "multivendor":
+            from bench.import_repos.multivendor.seed import build_seed_db as build_market_db
+
+            return build_market_db
         from bench.import_repos.justnotes.seed import build_seed_db as build_notes_db
 
         return build_notes_db
@@ -78,6 +84,12 @@ def _justnotes_users() -> dict[str, tuple[str, str]]:
     from bench.import_repos.justnotes.seed import SEED_USERS
 
     return {name: (name, password) for name, password in SEED_USERS}
+
+
+def _multivendor_users() -> dict[str, tuple[str, str]]:
+    from bench.import_repos.multivendor.seed import SEED_USERS
+
+    return {email.split("@")[0]: (email, pw) for email, _, pw, _, _ in SEED_USERS}
 
 
 TEMPLATE = Repo(
@@ -133,7 +145,34 @@ JUSTNOTES = Repo(
     ),
 )
 
-REPOS: dict[str, Repo] = {r.name: r for r in (TEMPLATE, TASKFLOW, JUSTNOTES)}
+MULTIVENDOR = Repo(
+    name="multivendor",
+    package="bench.import_repos.multivendor.app",
+    root=BENCH / "import_repos" / "multivendor" / "app",
+    isolated_registry=True,
+    login_path="/auth/login",
+    seed_users=_multivendor_users,
+    seed_tables=("users", "vendors", "products", "orders", "order_items"),
+    hash_columns=("hashed_password",),
+    about=(
+        "a multi-vendor marketplace API where vendors sell products and buyers place "
+        "orders (FastAPI, SQLModel and SQLAlchemy on SQLite, JWT bearer authentication, "
+        "buyer/vendor/admin roles)"
+    ),
+    context=(
+        "models/user.py",
+        "models/vendor.py",
+        "models/product.py",
+        "models/order.py",
+        "models/order_item.py",
+        "core/dependencies.py",
+        "core/permissions.py",
+        "repositories/order_repository.py",
+        "repositories/product_repository.py",
+    ),
+)
+
+REPOS: dict[str, Repo] = {r.name: r for r in (TEMPLATE, TASKFLOW, JUSTNOTES, MULTIVENDOR)}
 
 
 def repo(name: str) -> Repo:
@@ -143,4 +182,4 @@ def repo(name: str) -> Repo:
         raise KeyError(f"unknown repo {name!r} (one of {sorted(REPOS)})") from None
 
 
-__all__ = ["JUSTNOTES", "REPOS", "TASKFLOW", "TEMPLATE", "Repo", "repo"]
+__all__ = ["JUSTNOTES", "MULTIVENDOR", "REPOS", "TASKFLOW", "TEMPLATE", "Repo", "repo"]

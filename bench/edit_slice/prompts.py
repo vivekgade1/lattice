@@ -195,9 +195,7 @@ class MergedFile:
     partial: bool  # whether merging actually happened (a name was left out, or deleted)
 
 
-def merge_top_level(
-    base: str | None, fragment: str, *, allow_constants: bool = True
-) -> MergedFile:
+def merge_top_level(base: str | None, fragment: str, *, allow_constants: bool = True) -> MergedFile:
     """Merge ``fragment``'s named top-level statements into ``base`` by name: a name sent
     again replaces it (in place), a new name is added (see :func:`_place`: after what it
     uses, before what uses it), and a line ``# delete: <name>`` removes one. ``base``
@@ -324,9 +322,7 @@ def _names_defined(name: str | None, text: str) -> frozenset[str]:
     return frozenset(found)
 
 
-def _place(
-    kept: list[tuple[str | None, str, bool]], name: str, text: str, is_def: bool
-) -> None:
+def _place(kept: list[tuple[str | None, str, bool]], name: str, text: str, is_def: bool) -> None:
     """Insert the new top-level ``name`` into ``kept`` (in place). By default right after
     the leading imports/constants, before the first def/class kept from base: a new
     constant or step this way precedes any statement that might use it (L202/L604), and
@@ -476,6 +472,7 @@ def _partial_note(units: str, delete_example: str) -> str:
 
 # ---- arm P ---------------------------------------------------------------------------------
 
+
 def _p_system(about: str, package: str, imports: str, example: str) -> str:
     return f"""You are an expert backend engineer working on an existing FastAPI app: \
 {about}. The app's package is imported as `{package}` (files are shown relative to it as \
@@ -502,8 +499,13 @@ P_SYSTEM = _p_system(
 _P_IMPORTS = {
     "taskflow": "imports inside the app use that package name",
     "justnotes": "modules inside the app import each other relatively",
+    "multivendor": "imports inside the app use that package name",
 }
-_P_EXAMPLE = {"taskflow": "app/routes.py", "justnotes": "app/api/notes.py"}
+_P_EXAMPLE = {
+    "taskflow": "app/routes.py",
+    "justnotes": "app/api/notes.py",
+    "multivendor": "app/routers/order_router.py",
+}
 
 
 def p_system(repo_name: str = "template") -> str:
@@ -666,9 +668,7 @@ def router_file(rel: str) -> str:
     return rel.rsplit("/", 1)[-1].removesuffix(".py") + ".lattice.py"
 
 
-def l_program_files(
-    ticket: Ticket, programs: Mapping[str, str] | None = None
-) -> tuple[str, ...]:
+def l_program_files(ticket: Ticket, programs: Mapping[str, str] | None = None) -> tuple[str, ...]:
     """The Lattice programs of the routers the ticket touches: the template's
     ``api/routes/*`` files, and for a held-out repo each ticket file whose program the
     start state has (``programs``; a router the import lifted nothing from has none)."""

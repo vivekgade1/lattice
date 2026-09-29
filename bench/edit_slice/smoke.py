@@ -175,6 +175,22 @@ SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
     "t30_bulk_delete_notes": (
         SmokeRequest("alice", "POST", "/notes/bulk-delete", json={"note_ids": []}),
     ),
+    # option 1, the multi-vendor app: vicky is a vendor with products, carol a buyer (her
+    # orders 1 and 8 in the app's seed), admin the admin
+    "t31_vendor_sales": (
+        SmokeRequest("vicky", "GET", "/vendors/me/sales"),
+        SmokeRequest("vicky", "GET", "/vendors/me/sales",
+                     params={"start": "2026-01-01", "end": "2026-01-31"}),
+    ),
+    "t32_monthly_report": (
+        SmokeRequest("admin", "GET", "/orders/report", params={"month": "2026-02"}),
+    ),
+    "t33_top_sellers": (SmokeRequest(None, "GET", "/products/top-sellers"),),
+    "t34_customer_spend": (SmokeRequest("admin", "GET", "/orders/customers"),),
+    "t35_vendor_order_lines": (SmokeRequest("vicky", "GET", "/vendors/me/order-lines"),),
+    "t36_cancel_order": (SmokeRequest("carol", "POST", "/orders/8/cancel"),),
+    "t37_product_buyers": (SmokeRequest("vicky", "GET", "/products/1/buyers"),),
+    "t38_reorder": (SmokeRequest("carol", "POST", "/orders/1/reorder", expect=201),),
 }  # fmt: skip
 
 

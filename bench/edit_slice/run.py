@@ -77,7 +77,8 @@ run's ``rep<N>`` directory.
 results.jsonl [--max-tokens 16000] [--dry-run-reference | --dry-run-partial]`` (``--tickets
 all``: the template's t1-t18; ``repos``: the held-out repos' t19-t24; ``round3``: every
 ticket, t1-t24; ``round4``: t1-t30 (round3 plus N4's fresh held-out set, t25-t30, no
-Lattice reference); or comma-separated ids); ``--estimate`` prints the prompt sizes and the
+Lattice reference); ``option1``: the option-1 pilot's t31-t38 on the multi-vendor app;
+or comma-separated ids); ``--estimate`` prints the prompt sizes and the
 live run's cost estimate instead (no generation). The dry run feeds the hand-written
 references through each arm (no API call); arm L on t13-t18 has no reference to feed
 (they are held out from the language work, see :mod:`bench.edit_slice.tickets`) and is
@@ -130,6 +131,7 @@ from bench.edit_slice.oracle import Outcome, evaluate
 from bench.edit_slice.reference import reference_files
 from bench.edit_slice.tickets import (
     ALL_TICKETS,
+    OPTION1,
     REPO_TICKETS,
     ROUND4_TICKETS,
     TICKETS,
@@ -244,9 +246,15 @@ def justnotes_app(db_path: str | Path) -> Any:
     return _original("justnotes").make_app(db_path)
 
 
+def multivendor_app(db_path: str | Path) -> Any:
+    """The original multi-vendor marketplace (arm P's start; option 1)."""
+    return _original("multivendor").make_app(db_path)
+
+
 APP_FACTORIES = {
     "taskflow": f"{__name__}:taskflow_app",
     "justnotes": f"{__name__}:justnotes_app",
+    "multivendor": f"{__name__}:multivendor_app",
 }
 
 
@@ -265,9 +273,7 @@ def emit_lattice(repo: str, programs: Mapping[str, str], profile_src: str, out: 
         raise NotImplementedError(f"no emitter mounts Lattice into {repo!r}")
     from lattice.emit.thin import emit_into_app
 
-    return emit_into_app(
-        programs, profile_src, out, app_factory=APP_FACTORIES[repo], lifted=lifted
-    )
+    return emit_into_app(programs, profile_src, out, app_factory=APP_FACTORIES[repo], lifted=lifted)
 
 
 def lift_status(ticket_id: str) -> dict[str, str]:
@@ -420,6 +426,8 @@ class RunRecord:
     cases_generated: int = 0
     cases_specific: int = 0
     failed_cases: list[str] = field(default_factory=list)
+    # the failed cases whose verdict was silent (the option-1 pilot's mechanism gate)
+    silent_cases: list[str] = field(default_factory=list)
     # tokens and cost over every call of the run (refused calls included)
     input_tokens: int = 0
     output_tokens: int = 0
@@ -734,9 +742,7 @@ def apply_profile_delta(profile_src: str, delta: prompts.ProfileDelta) -> str:
             (
                 v.id
                 for k, v in zip(tables.keys, tables.values, strict=True)
-                if isinstance(k, ast.Constant)
-                and k.value == col.table
-                and isinstance(v, ast.Name)
+                if isinstance(k, ast.Constant) and k.value == col.table and isinstance(v, ast.Name)
             ),
             None,
         )
@@ -1192,6 +1198,7 @@ def _outcome(record: RunRecord, outcome: Outcome) -> None:
     record.failed_cases = sorted(
         n for n, v in outcome.cases.items() if v.verdict in ("silent", "loud")
     )
+    record.silent_cases = sorted(n for n, v in outcome.cases.items() if v.verdict == "silent")
     if outcome.error:
         record.detail = (record.detail + "\n" if record.detail else "") + outcome.error
 
@@ -1268,8 +1275,10 @@ def partial_reference_answer(arm: Arm, ticket_id: str) -> str | None:
             continue
         # profile.py itself is whole-file only (a partial profile change goes through
         # profile.delta instead, see prompts.PROFILE_DELTA_FILE); every program is merged
-        files[n] = s if n == prompts.PROFILE_FILE else _partial_or_whole(
-            start.get(n), s, allow_constants=True
+        files[n] = (
+            s
+            if n == prompts.PROFILE_FILE
+            else _partial_or_whole(start.get(n), s, allow_constants=True)
         )
     return prompts.render_files(files)
 
@@ -1499,6 +1508,8 @@ def _tickets(spec: str) -> list[str]:
         return [t.id for t in ALL_TICKETS]
     if spec == "round4":
         return [t.id for t in ROUND4_TICKETS]
+    if spec == "option1":
+        return list(OPTION1)
     ids = [s.strip() for s in spec.split(",") if s.strip()]
     for tid in ids:
         ticket(tid)

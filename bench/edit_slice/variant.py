@@ -152,7 +152,8 @@ class Variant:
         ``make_app`` builds it, with the missing tables created from the variant's models
         and the engine on ``app.state.engine``."""
         build = {"template": self._template_app, "taskflow": self._taskflow_app,
-                 "justnotes": self._justnotes_app}[self.app.name]  # fmt: skip
+                 "justnotes": self._justnotes_app,
+                 "multivendor": self._multivendor_app}[self.app.name]  # fmt: skip
         return build(Path(db_path))
 
     def _template_app(self, db_path: Path) -> FastAPI:
@@ -204,6 +205,26 @@ class Variant:
 
         app = self.module("main").create_app()
         app.dependency_overrides[connection.get_db_session] = get_db_session
+        app.state.engine = engine
+        return app
+
+    def _multivendor_app(self, db_path: Path) -> FastAPI:
+        """As ``bench.import_repos.multivendor.make_app``: the upstream env placeholders set
+        (importing that package does it), the tables created, ``core.database.get_session``
+        routed to the file."""
+        import bench.import_repos.multivendor  # noqa: F401  (DATABASE_URL / SECRET_KEY)
+
+        self.module("models")
+        database = self.module("core.database")
+        engine = sqlite_engine(db_path)
+        self.metadata.create_all(engine)
+
+        def get_session() -> Generator[Session]:
+            with Session(engine) as session:
+                yield session
+
+        app = self.module("main").create_app()
+        app.dependency_overrides[database.get_session] = get_session
         app.state.engine = engine
         return app
 
