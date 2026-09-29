@@ -427,7 +427,7 @@ def test_no_artefacts_without_a_root():
 
 
 def test_the_cli_writes_artefacts_next_to_the_jsonl(tmp_path, monkeypatch):
-    import lattice.llm.client as client
+    import lattice.llm.cli_client as client
 
     seen: dict[str, object] = {}
 
@@ -439,7 +439,7 @@ def test_the_cli_writes_artefacts_next_to_the_jsonl(tmp_path, monkeypatch):
         def generate(self, system, messages):
             return self.inner.generate(system, messages)
 
-    monkeypatch.setattr(client, "ClaudeGenerator", _Fake)
+    monkeypatch.setattr(client, "ClaudeCliClient", _Fake)
     out = tmp_path / "res.jsonl"
     args = ["--model", "fake", "--arm", "L", "--tickets", "t6_stats", "--out", str(out)]
     assert run.main([*args, "--max-tokens", "777"]) == 0
@@ -595,10 +595,7 @@ def test_a_new_l_endpoint_is_placed_after_the_step_it_calls():
 
 
 def test_a_new_l_step_or_constant_used_by_a_kept_definition_comes_before_it():
-    base = (
-        "# lattice: v1\n"
-        '@endpoint("GET", "/a")\ndef a():\n    return 1\n'
-    )
+    base = '# lattice: v1\n@endpoint("GET", "/a")\ndef a():\n    return 1\n'
     fragment = (
         '@endpoint("GET", "/a")\ndef a():\n    x = s2(fetch(Item))\n    return N\n\n\n'
         "@step\ndef s2(t: Table[Item]) -> Table:\n    return t\n\n\n"
@@ -842,8 +839,19 @@ def test_backend_cli_is_wired_instead_of_the_api_client(tmp_path, monkeypatch):
     assert seen == {"model": "fake-cli-model", "max_tokens": run.MAX_TOKENS, "effort": "high"}
 
 
-def test_backend_defaults_to_api(tmp_path):
-    assert run._parser().parse_args([]).backend == "api"
+def test_backend_is_the_cli_only(tmp_path):
+    assert run._parser().parse_args([]).backend == "cli"
+    with pytest.raises(SystemExit):
+        run._parser().parse_args(["--backend", "api"])
+
+
+def test_the_estimate_never_calls_the_api(monkeypatch):
+    import anthropic
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-must-not-be-used")
+    monkeypatch.setattr(anthropic, "Anthropic", lambda *a, **k: pytest.fail("API client built"))
+    count = run.token_counter("claude-sonnet-5")
+    assert count("abc" * 7, "") == 6
 
 
 def test_backend_cli_usage_limit_stops_cleanly_without_recording_a_failure(tmp_path, monkeypatch):
@@ -960,3 +968,80 @@ def test_workers_run_concurrently_and_write_safely(tmp_path, monkeypatch):
         json.loads(line)  # every line parses whole: no interleaved/corrupted writes
     assert len(starts) == 4
     assert max(starts) - min(starts) < 0.2  # all 4 dispatched within one sleep-window
+
+
+# ---- harness errors (review I2) ------------------------------------------------------------------
+
+
+def test_completed_does_not_count_error_records(tmp_path):
+    out = tmp_path / "res.jsonl"
+    ok = {"model": "m", "arm": "P", "ticket": "t1", "rep": 0, "outcome": "correct"}
+    err = {"model": "m", "arm": "P", "ticket": "t2", "rep": 0, "outcome": "error"}
+    out.write_text(json.dumps(ok) + "\n" + json.dumps(err) + "\n")
+    assert run._completed(out) == {("m", "P", "t1", 0)}
+
+
+def _cli_failing(monkeypatch, fail_on: set[int]):
+    import lattice.llm.cli_client as cli_client
+
+    calls = {"n": 0}
+
+    class _FakeCli:
+        def __init__(self, model, max_tokens, effort):
+            pass
+
+        def generate(self, system, messages):
+            calls["n"] += 1
+            if calls["n"] in fail_on:
+                raise cli_client.CliError("claude -p exited 1: model not found")
+            return Generation(
+                text="no files", usage=Usage(1, 1), latency_s=0.0, stop_reason="end_turn",
+                model="m", cost_usd=0.0, cost_basis="cli_list_estimate",
+            )  # fmt: skip
+
+    monkeypatch.setattr(cli_client, "ClaudeCliClient", _FakeCli)
+    return calls
+
+
+FIVE = "t1_search,t2_since,t5_title_window,t6_stats,t7_deactivate"
+
+
+def test_three_consecutive_cli_errors_stop_the_run(tmp_path, monkeypatch, capsys):
+    _cli_failing(monkeypatch, fail_on=set(range(1, 100)))
+    out = tmp_path / "res.jsonl"
+    args = ["--model", "m", "--arm", "P", "--tickets", FIVE, "--out", str(out),
+            "--backend", "cli", "--max-repairs", "0"]  # fmt: skip
+    assert run.main(args) == 4
+    records = [json.loads(line) for line in out.read_text().splitlines()]
+    assert len(records) == 3
+    assert all(r["outcome"] == "error" and r["failure"] == "cli_error" for r in records)
+    err = capsys.readouterr().err
+    assert "3 consecutive CLI errors" in err and "stopping" in err
+    # --resume redoes them: error records are not completed
+    assert run._completed(out) == set()
+
+
+def test_cli_errors_that_are_not_consecutive_do_not_stop_the_run(tmp_path, monkeypatch):
+    _cli_failing(monkeypatch, fail_on={1, 2, 4, 5})
+    out = tmp_path / "res.jsonl"
+    args = ["--model", "m", "--arm", "P", "--tickets", FIVE, "--out", str(out),
+            "--backend", "cli", "--max-repairs", "0"]  # fmt: skip
+    assert run.main(args) == 0
+    outcomes = [json.loads(line)["outcome"] for line in out.read_text().splitlines()]
+    assert outcomes.count("error") == 4 and len(outcomes) == 5
+
+
+def test_the_report_prints_an_error_rate_column():
+    rows = [
+        {"model": "m", "arm": "P", "ticket": f"t{i}", "outcome": o, "cost_usd": 0.0,
+         "rounds": 1, "lines_changed": 0, "code_lines": 0, "prompt_tokens_est": 0,
+         "input_tokens": 0, "output_tokens": 0, "wall_s": 0.0}
+        for i, o in enumerate(["correct", "error", "error", "silent"])
+    ]  # fmt: skip
+    text = render(rows)
+    header = text.splitlines()[0]
+    assert "| err% |" in header
+    row = text.splitlines()[2]
+    cells = [c.strip() for c in row.strip("|").split("|")]
+    assert cells[header.strip("|").split("|").index(" err% ")] == "50"
+    assert summary(rows)[0]["error_rate"] == pytest.approx(0.5)

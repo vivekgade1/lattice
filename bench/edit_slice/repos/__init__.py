@@ -205,6 +205,10 @@ def repo_ticket_oracle(ticket_id: str) -> TicketOracle:
         from bench.edit_slice.repos import taskflow as module
     elif name == "justnotes":
         from bench.edit_slice.repos import justnotes as module
+    elif name == "multivendor":
+        from bench.edit_slice.repos.multivendor import multivendor_ticket_oracle
+
+        return multivendor_ticket_oracle(ticket_id)
     else:
         raise KeyError(f"{ticket_id!r} is not a held-out repo's ticket")
     return build_oracle(ticket_id, module.oracle_spec(ticket_id))

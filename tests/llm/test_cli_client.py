@@ -272,6 +272,152 @@ class TestErrorMapping:
         assert calls["n"] == 2
 
 
+# ---- the environment: never the API account (review I3) --------------------------------------
+
+API_VARS = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL")
+PROVIDER_VARS = ("CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CODE_USE_FOUNDRY")
+
+
+class TestEnvironment:
+    def test_api_credentials_and_provider_switches_are_removed(self, fake_claude, monkeypatch):
+        for name in (*API_VARS, *PROVIDER_VARS):
+            monkeypatch.setenv(name, "set-by-test")
+        fake_claude.queue([_ok()])
+        ClaudeCliClient(sleep=lambda s: None).generate("s", [{"role": "user", "content": "u"}])
+        env = fake_claude.calls[0]["env"]
+        assert not set(env) & {*API_VARS, *PROVIDER_VARS}, env
+
+    def test_an_explicit_env_is_scrubbed_too(self, fake_claude):
+        import os
+
+        fake_claude.queue([_ok()])
+        env = {**os.environ, "ANTHROPIC_API_KEY": "k", "CLAUDE_CODE_USE_BEDROCK": "1"}
+        client = ClaudeCliClient(env=env, sleep=lambda s: None)
+        client.generate("s", [{"role": "user", "content": "u"}])
+        seen = fake_claude.calls[0]["env"]
+        assert "ANTHROPIC_API_KEY" not in seen and "CLAUDE_CODE_USE_BEDROCK" not in seen
+
+    def test_the_output_cap_is_the_clients_max_tokens(self, fake_claude, monkeypatch):
+        monkeypatch.setenv("CLAUDE_CODE_MAX_OUTPUT_TOKENS", "99999")
+        fake_claude.queue([_ok()])
+        client = ClaudeCliClient(max_tokens=1234, sleep=lambda s: None)
+        client.generate("s", [{"role": "user", "content": "u"}])
+        assert fake_claude.calls[0]["env"]["CLAUDE_CODE_MAX_OUTPUT_TOKENS"] == "1234"
+
+
+# ---- stop reasons and the output cap -----------------------------------------------------------
+
+CAP_ERROR = (
+    "API Error: Claude's response exceeded the 50 output token maximum. To configure this "
+    "behavior, set the CLAUDE_CODE_MAX_OUTPUT_TOKENS environment variable."
+)
+
+
+class TestStopReason:
+    def test_the_clis_output_cap_error_is_a_max_tokens_stop(self, fake_claude):
+        """Verified on the real CLI (2.1.283): past the cap it answers ``is_error`` with
+        this text and exit 1. It is the API arm's ``max_tokens`` stop, not a retryable
+        failure."""
+        cut = _ok(CAP_ERROR, stop_reason="stop_sequence", is_error=True, cost=0.003)
+        cut["exit_code"] = 1
+        fake_claude.queue([cut, _ok("never reached")])
+        result = ClaudeCliClient(sleep=lambda s: None).generate(
+            "s", [{"role": "user", "content": "u"}]
+        )
+        assert result.stop_reason == "max_tokens"
+        assert result.text == ""
+        assert result.cost_usd == pytest.approx(0.003)
+        assert result.usage.output_tokens == 20
+        assert len(fake_claude.calls) == 1  # not retried
+
+    def test_a_missing_stop_reason_is_unknown_and_logged(self, fake_claude, caplog):
+        response = _ok("hi")
+        del response["stdout"]["stop_reason"]
+        fake_claude.queue([response])
+        with caplog.at_level("WARNING", logger="lattice.llm.cli_client"):
+            result = ClaudeCliClient(sleep=lambda s: None).generate(
+                "s", [{"role": "user", "content": "u"}]
+            )
+        assert result.stop_reason == "unknown"
+        assert "stop_reason" in caplog.text
+
+
+# ---- usage limits vs transient rate limits (review I2) -----------------------------------------
+
+
+PLAN_LIMITS = [
+    "You've hit your limit · resets 3pm (America/Chicago)",
+    "Claude AI usage limit reached|1759999999",
+    "5-hour limit reached ∙ resets 2am",
+    "Credit balance is too low",
+    "Your weekly limit resets Monday",
+]
+TRANSIENT = [
+    "API Error: 429 Too Many Requests",
+    "API Error: 529 Overloaded",
+    "Rate limit reached for requests per minute, please retry",
+]
+
+
+class TestLimits:
+    @pytest.mark.parametrize("text", PLAN_LIMITS)
+    def test_a_plan_limit_in_the_result_stops(self, fake_claude, text):
+        fake_claude.queue([_error(text)])
+        with pytest.raises(CliUsageLimitError):
+            ClaudeCliClient(sleep=lambda s: None).generate("s", [{"role": "user", "content": "u"}])
+        assert len(fake_claude.calls) == 1
+
+    @pytest.mark.parametrize("text", PLAN_LIMITS)
+    def test_a_plan_limit_on_stderr_stops(self, fake_claude, text):
+        fake_claude.queue([{"stdout": "", "stderr": text, "exit_code": 1}])
+        with pytest.raises(CliUsageLimitError):
+            ClaudeCliClient(sleep=lambda s: None).generate("s", [{"role": "user", "content": "u"}])
+        assert len(fake_claude.calls) == 1
+
+    def test_a_plan_limit_on_stderr_beside_json_stops(self, fake_claude):
+        response = _error("request failed")
+        response["stderr"] = "You've hit your limit · resets 3pm"
+        fake_claude.queue([response])
+        with pytest.raises(CliUsageLimitError):
+            ClaudeCliClient(sleep=lambda s: None).generate("s", [{"role": "user", "content": "u"}])
+
+    @pytest.mark.parametrize("text", TRANSIENT)
+    def test_a_transient_rate_limit_is_retried(self, fake_claude, text):
+        fake_claude.queue([_error(text), _ok("fine")])
+        result = ClaudeCliClient(sleep=lambda s: None).generate(
+            "s", [{"role": "user", "content": "u"}]
+        )
+        assert result.text == "fine" and len(fake_claude.calls) == 2
+
+    @pytest.mark.parametrize("text", TRANSIENT)
+    def test_a_transient_rate_limit_on_stderr_is_retried(self, fake_claude, text):
+        fake_claude.queue([{"stdout": "", "stderr": text, "exit_code": 1}, _ok("fine")])
+        result = ClaudeCliClient(sleep=lambda s: None).generate(
+            "s", [{"role": "user", "content": "u"}]
+        )
+        assert result.text == "fine"
+
+
+# ---- cost over refused attempts ----------------------------------------------------------------
+
+
+class TestRefusalCost:
+    def test_the_cost_of_refused_attempts_is_added(self, fake_claude):
+        fake_claude.queue([_ok("no", stop_reason="refusal", cost=0.01), _ok("yes", cost=0.02)])
+        result = ClaudeCliClient(sleep=lambda s: None).generate(
+            "s", [{"role": "user", "content": "u"}]
+        )
+        assert result.refusals == 1
+        assert result.cost_usd == pytest.approx(0.03)
+
+    def test_a_final_refusal_carries_every_attempts_cost(self, fake_claude):
+        fake_claude.queue([_ok("no", stop_reason="refusal", cost=0.01)] * 3)
+        with pytest.raises(GenerationRefused) as info:
+            ClaudeCliClient(sleep=lambda s: None).generate("s", [{"role": "user", "content": "u"}])
+        assert info.value.cost_usd == pytest.approx(0.03)
+        assert info.value.cost_basis == "cli_list_estimate"
+
+
 # ---- live smoke (deselected by default: `uv run pytest -m live`) ------------------------------
 
 
@@ -305,3 +451,43 @@ class TestLiveSmoke:
                 "model": result.model,
             },
         )
+
+
+@pytest.mark.live
+class TestLiveCanaries:
+    """The round-5 review's real-CLI canaries (``uv run pytest -m live``)."""
+
+    @pytest.fixture(autouse=True)
+    def _needs_cli(self):
+        import shutil
+
+        if shutil.which("claude") is None:
+            pytest.skip("no `claude` binary on PATH")
+
+    def test_it_authenticates_without_the_api_key(self, monkeypatch):
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-invalid-canary")
+        result = ClaudeCliClient(model="claude-haiku-4-5").generate(
+            "You are terse.", [{"role": "user", "content": "Say PONG and nothing else."}]
+        )
+        assert "PONG" in result.text
+        assert result.stop_reason == "end_turn"  # reported by the CLI, not defaulted
+
+    def test_the_output_cap_is_enforced(self):
+        result = ClaudeCliClient(model="claude-haiku-4-5", max_tokens=50).generate(
+            "You are a writer.",
+            [{"role": "user", "content": "Write a 400-word essay about rivers."}],
+        )
+        assert result.stop_reason == "max_tokens"
+
+    def test_the_users_claude_md_is_not_in_context(self):
+        from pathlib import Path
+
+        claude_md = Path.home() / ".claude" / "CLAUDE.md"
+        if not claude_md.is_file() or "CodeGraph" not in claude_md.read_text():
+            pytest.skip("no ~/.claude/CLAUDE.md naming CodeGraph")
+        result = ClaudeCliClient(model="claude-haiku-4-5").generate(
+            "You are terse.",
+            [{"role": "user", "content": 'Does anything in your context besides this message '
+              'mention "CodeGraph"? Answer YES or NO only.'}],
+        )  # fmt: skip
+        assert result.text.strip().upper().startswith("NO")

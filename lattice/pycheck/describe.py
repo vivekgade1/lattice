@@ -15,6 +15,10 @@ def _answer(status: int, detail: str | None) -> str:
     return f'{status} "{detail}"' if detail else str(status)
 
 
+def _names(tables: list[str], conj: str = "or") -> str:
+    return tables[0] if len(tables) == 1 else ", ".join(tables[:-1]) + f" {conj} " + tables[-1]
+
+
 def describe_policy(policy: Policy) -> str:
     c = policy.caller
     admin = policy.admin
@@ -31,29 +35,40 @@ def describe_policy(policy: Policy) -> str:
         f"`{t}` rows belong to the owner of their `{parent}` (`{t}.{fk}`)"
         for t, (fk, parent) in policy.owner_via.items()
     ]
+    parts = []
     if owned:
-        example = next(iter(policy.owners.items()))
         bypass = f"; superusers (`{c}.{admin.column}`) may access every row" if admin else ""
+        example = next(iter(policy.owners.items()), None)
+        how = f" (e.g. `{example[0]}.{example[1]} == {c}.id`)" if example else ""
         line = (
-            f"- Ownership: {'; '.join(owned)}. A route reads, changes or deletes only the "
-            f"signed-in caller's own rows -- filter or check them by the caller (e.g. "
-            f"`{example[0]}.{example[1]} == {c}.id`){bypass}. A new row belongs to the caller."
+            f"{'; '.join(owned)}. A route reads, changes or deletes only the signed-in "
+            f"caller's own rows -- filter or check them by the caller{how}{bypass}. A new "
+            "row belongs to the caller."
         )
         grouped: dict[tuple[int, str | None], list[str]] = {}
         for t, a in policy.not_owned.items():
             grouped.setdefault((a.status, a.detail), []).append(f"`{t}`")
         for (status, detail), tables in grouped.items():
-            names = tables[0] if len(tables) == 1 else ", ".join(tables[:-1]) + " or " + tables[-1]
-            line += f" Another user's {names} row answers {_answer(status, detail)}" + (
+            line += f" Another user's {_names(tables)} row answers {_answer(status, detail)}" + (
                 " (lookups are scoped to the caller)." if status == 404 else "."
             )
+        parts.append(line)
+    if policy.shared:
+        tables = [f"`{t}`" for t in policy.shared]
+        parts.append(
+            f"{_names(tables, 'and')} rows declare no "
+            "owner: they are shared by every signed-in user, and no route has to scope "
+            "them to the caller."
+        )
+    if parts or policy.users_table:
+        line = "- Ownership: " + " ".join(parts)
         if policy.users_table:
             line += (
                 f" Only admins change another user's `{policy.users_table}` row."
                 if admin
                 else f" A route changes only the caller's own `{policy.users_table}` row."
             )
-        out.append(line)
+        out.append(line.replace(":  ", ": "))
 
     private = [f"`{t}.{col}`" for t, cols in policy.private.items() for col in cols]
     if private:

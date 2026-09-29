@@ -197,26 +197,20 @@ class TestClaudeGeneratorLazyClient:
 
         gen.generate("sys", [])  # must not raise
 
-    def test_anthropic_client_constructed_lazily_when_absent(self, monkeypatch):
-        calls = []
-        fake_client = _fake_client(_response([_text_block("x")]))
-
-        def fake_anthropic(*args, **kwargs):
-            calls.append((args, kwargs))
-            return fake_client
-
+    def test_no_api_key_client_is_ever_constructed(self, monkeypatch):
+        """Project policy: no API-key transport; a generator without an injected client
+        refuses instead of building ``anthropic.Anthropic()`` from the environment."""
         import anthropic
 
-        monkeypatch.setattr(anthropic, "Anthropic", fake_anthropic)
+        from lattice.llm.client import ApiKeyTransportDisabled
 
+        calls = []
+        monkeypatch.setattr(anthropic, "Anthropic", lambda *a, **k: calls.append(1))
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-must-not-be-used")
         gen = ClaudeGenerator()
-        assert calls == []  # not constructed at __init__ time
-
-        gen.generate("sys", [])
-        assert len(calls) == 1
-
-        gen.generate("sys", [])
-        assert len(calls) == 1  # constructed once, reused thereafter
+        with pytest.raises(ApiKeyTransportDisabled):
+            gen.generate("sys", [])
+        assert calls == []
 
 
 class TestScriptedGenerator:
@@ -308,14 +302,17 @@ class TestServedModelAndRefusalAccounting:
 
     def test_usage_total_input_includes_cache_tokens(self):
         usage = Usage(
-            input_tokens=10, output_tokens=5, cache_read_input_tokens=100,
+            input_tokens=10,
+            output_tokens=5,
+            cache_read_input_tokens=100,
             cache_creation_input_tokens=1000,
         )
         assert usage.total_input_tokens == 1110
 
     def test_refusal_carries_usage_latency_and_model(self):
         response = _response(
-            [], stop_reason="refusal",
+            [],
+            stop_reason="refusal",
             usage=_usage(input_tokens=7, output_tokens=3, cache_read=11, cache_creation=0),
         )
         response.model = "claude-opus-5"
@@ -348,9 +345,7 @@ def test_refusal_is_retried_and_usage_accumulates():
     refusal = _response([], stop_reason="refusal", usage=_usage(input_tokens=5, output_tokens=0))
     ok = _response([_text_block("done")], usage=_usage(input_tokens=7, output_tokens=3))
     replies = iter([refusal, ok])
-    client = types.SimpleNamespace(
-        messages=types.SimpleNamespace(create=lambda **_: next(replies))
-    )
+    client = types.SimpleNamespace(messages=types.SimpleNamespace(create=lambda **_: next(replies)))
     gen = ClaudeGenerator(client=client, refusal_retries=2)
 
     result = gen.generate("s", [{"role": "user", "content": "u"}])
@@ -369,7 +364,8 @@ def test_refusal_raises_after_retries_are_exhausted():
 
 def test_haiku_requests_omit_effort():
     calls = []
-    gen = ClaudeGenerator(model="claude-haiku-4-5", client=_fake_client(
-        _response([_text_block("x")]), capture=calls))
+    gen = ClaudeGenerator(
+        model="claude-haiku-4-5", client=_fake_client(_response([_text_block("x")]), capture=calls)
+    )
     gen.generate("s", [{"role": "user", "content": "u"}])
     assert "output_config" not in calls[0]

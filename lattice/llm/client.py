@@ -63,15 +63,32 @@ class GenerationRefused(Exception):
         usage: Usage | None = None,
         latency_s: float = 0.0,
         model: str = "",
+        cost_usd: float | None = None,
+        cost_basis: str | None = None,
     ) -> None:
         super().__init__(message)
         self.usage = usage if usage is not None else Usage(0, 0)
         self.latency_s = latency_s
         self.model = model
+        # as Generation's: a transport-reported cost of the refused call(s), or None
+        self.cost_usd = cost_usd
+        self.cost_basis = cost_basis
 
 
 class Generator(Protocol):
     def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation: ...
+
+
+class ApiKeyTransportDisabled(RuntimeError):
+    """Project policy (2026-09-29): no experiment or tool calls the Anthropic API with an
+    API key. Model calls go through the Claude CLI (:class:`lattice.llm.cli_client.
+    ClaudeCliClient`, which scrubs the key and bills the user's plan)."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            "the Anthropic API-key transport is disabled in this project; use the Claude "
+            "CLI transport (--backend cli, lattice.llm.cli_client.ClaudeCliClient)"
+        )
 
 
 class ClaudeGenerator:
@@ -98,11 +115,10 @@ class ClaudeGenerator:
 
     @property
     def client(self) -> Any:
-        """The underlying SDK client, constructed lazily if none was injected."""
+        """The injected SDK client. None is never constructed from an API key: that
+        transport is disabled (:class:`ApiKeyTransportDisabled`)."""
         if self._client is None:
-            import anthropic
-
-            self._client = anthropic.Anthropic()
+            raise ApiKeyTransportDisabled()
         return self._client
 
     def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:

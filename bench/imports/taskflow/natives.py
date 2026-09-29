@@ -37,11 +37,10 @@ ISLANDS: dict[str, dict[str, Any]] = {'health_check': {'function': 'bench.import
                             'the original cannot be referenced for branch '
                             'coverage'},
  'login': {'function': 'bench.import_repos.taskflow.app.auth_routes:login',
-           'gap': 'budget',
+           'gap': 'missing construct',
            'method': 'POST',
            'path': '/api/v1/auth/token',
-           'reason': "budget: the route's share of the repo budget ($0.29) is "
-                     'reached'},
+           'reason': 'the checker refuses the lifted program'},
  'service_info': {'function': 'bench.import_repos.taskflow.app.main:service_info',
                   'gap': 'unsupported framework feature: a route defined '
                          'inside an app factory',
@@ -51,10 +50,15 @@ ISLANDS: dict[str, dict[str, Any]] = {'health_check': {'function': 'bench.import
                             'the original cannot be referenced for branch '
                             'coverage'},
  'update_task': {'function': 'bench.import_repos.taskflow.app.routes:update_task',
-                 'gap': 'missing construct',
+                 'gap': 'behaviour not reproduced',
                  'method': 'PATCH',
                  'path': '/api/v1/tasks/{task_id}',
-                 'reason': 'cut off'}}
+                 'reason': 'verification failed: '
+                           'update_task.partial.title_null: body differs; '
+                           'update_task.partial.status_null: body differs; '
+                           'update_task.partial.priority_null: body differs; '
+                           'update_task.hyp.1: body differs; '
+                           'update_task.hyp.2: body differs'}}
 
 NEEDS_LLM: dict[str, dict[str, Any]] = {}
 

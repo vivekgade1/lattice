@@ -4,7 +4,7 @@
 @endpoint("GET", "/health", auth=Public)
 def health() -> One:
     users = fetch(User)
-    grouped = group(users, by=[], n=agg.count())
-    info = derive(grouped, status="healthy", app_name="JustNotes", version="0.0.1")
-    result = select(info, cols=["status", "app_name", "version"])
-    return result
+    base = group(users, by=[], n=agg.count())
+    info = derive(base, status="healthy", app_name="JustNotes", version="0.0.1")
+    slim = select(info, cols=["status", "app_name", "version"])
+    return slim

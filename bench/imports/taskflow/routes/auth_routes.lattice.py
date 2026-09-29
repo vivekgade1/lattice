@@ -7,18 +7,20 @@ def register(
     full_name: Str(min_len=2, max_len=120),
     password: Str(min_len=8, max_len=128),
 ) -> Created | Conflict:
-    hashed = native.hash_password(password)
+    users = fetch(User)
+    same = where(users, col("email") == fn.lower(fn.strip(email)))
+    existing = group(same, by=[], n=agg.count())
+    fresh = require(existing, col("n") == 0, else_=Conflict("An account with this email already exists"))
     created = insert(
         User,
         email=fn.lower(fn.strip(email)),
         full_name=fn.strip(full_name),
-        password_hash=hashed,
+        password_hash=native.hash_password(password),
         is_active=True,
-        created_at=fn.now(),
-        unique_or=Conflict("An account with this email already exists"),
+        created_at=native.utc_now(),
     )
-    result = select(created, cols=["id", "email", "full_name", "is_active", "created_at"])
-    return result
+    public = select(created, cols=["id", "email", "full_name", "is_active", "created_at"])
+    return public
 
 
 @endpoint("GET", "/api/v1/auth/me", auth=Customer, response="UserPublic")

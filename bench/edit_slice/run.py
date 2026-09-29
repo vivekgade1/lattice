@@ -29,7 +29,7 @@ candidate with the hidden oracle (:func:`bench.edit_slice.oracle.evaluate`):
   fix hint; :func:`render_findings`, the format family of arm L's diagnostics) are added
   to the repair feedback, and a round that passed the smoke run but has findings is
   repaired (problem ``check``). Findings on the final round do not change scoring: the
-  oracle decides. ``round_findings`` records each built round's codes.
+  oracle decides. ``round_findings`` records each round's codes (None: never built).
 * **L+ / Q+ (the context aids, §7).** Arm L / Q with (a) two retrieved worked examples
   before the user message and (b) the "common mistakes -> exact fix" table appended to
   the system prompt, and nothing else (:func:`arm_prompt`, :mod:`bench.edit_slice.aids`);
@@ -77,7 +77,9 @@ run's ``rep<N>`` directory.
 results.jsonl [--max-tokens 16000] [--dry-run-reference | --dry-run-partial]`` (``--tickets
 all``: the template's t1-t18; ``repos``: the held-out repos' t19-t24; ``round3``: every
 ticket, t1-t24; ``round4``: t1-t30 (round3 plus N4's fresh held-out set, t25-t30, no
-Lattice reference); or comma-separated ids); ``--estimate`` prints the prompt sizes and the
+Lattice reference); ``option1``: the option-1 pilot's t31-t38 on the multi-vendor app;
+``option1b``: its atomicity pilot, t39-t44;
+or comma-separated ids); ``--estimate`` prints the prompt sizes and the
 live run's cost estimate instead (no generation). The dry run feeds the hand-written
 references through each arm (no API call); arm L on t13-t18 has no reference to feed
 (they are held out from the language work, see :mod:`bench.edit_slice.tickets`) and is
@@ -85,9 +87,9 @@ reported as ``no_reference``. ``--dry-run-partial`` feeds each reference as a pa
 answer (endpoint-scoped edits, diffed against the start down to the top-level names
 that changed -- :func:`partial_reference_answer`) instead of the whole file.
 
-``--backend api|cli`` (default ``api``) picks the live transport: the Anthropic SDK, or
-the local ``claude -p`` (:class:`lattice.llm.cli_client.ClaudeCliClient`) -- identical
-prompts either way; the record's ``backend`` says which one ran. ``--resume`` skips
+``--backend cli`` (the only choice, and the default) is the live transport: the local
+``claude -p`` (:class:`lattice.llm.cli_client.ClaudeCliClient`); the API-key transport is
+disabled in this project. The record's ``backend`` says which one ran. ``--resume`` skips
 (model, arm, ticket, rep) tuples already in ``--out``, so a round a CLI usage limit cut
 short can continue without redoing finished work (a usage limit stops the whole run --
 exit code 3 -- rather than being recorded as a failure). ``--workers N`` (default 1)
@@ -104,7 +106,6 @@ import dataclasses
 import difflib
 import json
 import logging
-import os
 import shutil
 import statistics
 import sys
@@ -130,6 +131,8 @@ from bench.edit_slice.oracle import Outcome, evaluate
 from bench.edit_slice.reference import reference_files
 from bench.edit_slice.tickets import (
     ALL_TICKETS,
+    OPTION1,
+    OPTION1B,
     REPO_TICKETS,
     ROUND4_TICKETS,
     TICKETS,
@@ -138,7 +141,7 @@ from bench.edit_slice.tickets import (
 )
 from bench.edit_slice.variant import app_source, load_variant
 from bench.metrics import cost_usd
-from lattice.llm.cli_client import CliUsageLimitError
+from lattice.llm.cli_client import CliError, CliUsageLimitError
 from lattice.llm.client import Generation, GenerationRefused, Generator, ScriptedGenerator
 
 Arm = Literal["P", "L", "Q", "L+", "Q+"]
@@ -147,6 +150,7 @@ ARMS: tuple[Arm, ...] = ("P", "L")  # rounds 1-4
 ROUND5_ARMS: tuple[Arm, ...] = ("P", "L", "Q", "L+", "Q+")
 MAX_REPAIRS = 2
 MAX_TOKENS = 16000  # the default output limit per model call (--max-tokens)
+MAX_CONSECUTIVE_CLI_ERRORS = 3  # this many CliError records in a row stop the run (exit 4)
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_PACKAGE = "bench.template_app.app"
 CHARS_PER_TOKEN = 3.5  # the prompt-size estimate when no token count is available
@@ -243,9 +247,15 @@ def justnotes_app(db_path: str | Path) -> Any:
     return _original("justnotes").make_app(db_path)
 
 
+def multivendor_app(db_path: str | Path) -> Any:
+    """The original multi-vendor marketplace (arm P's start; option 1)."""
+    return _original("multivendor").make_app(db_path)
+
+
 APP_FACTORIES = {
     "taskflow": f"{__name__}:taskflow_app",
     "justnotes": f"{__name__}:justnotes_app",
+    "multivendor": f"{__name__}:multivendor_app",
 }
 
 
@@ -264,9 +274,7 @@ def emit_lattice(repo: str, programs: Mapping[str, str], profile_src: str, out: 
         raise NotImplementedError(f"no emitter mounts Lattice into {repo!r}")
     from lattice.emit.thin import emit_into_app
 
-    return emit_into_app(
-        programs, profile_src, out, app_factory=APP_FACTORIES[repo], lifted=lifted
-    )
+    return emit_into_app(programs, profile_src, out, app_factory=APP_FACTORIES[repo], lifted=lifted)
 
 
 def lift_status(ticket_id: str) -> dict[str, str]:
@@ -407,8 +415,9 @@ class RunRecord:
     detail: str = ""
     rounds: int = 0
     round_problems: list[str | None] = field(default_factory=list)
-    # arms Q / Q+: each built round's pycheck finding codes (a round never built: none)
-    round_findings: list[list[str]] = field(default_factory=list)
+    # arms Q / Q+: each round's pycheck finding codes, aligned with round_problems (None:
+    # a round never built -- no files, truncated, refused -- so never checked)
+    round_findings: list[list[str] | None] = field(default_factory=list)
     # arms L+ / Q+: the retrieved worked examples' tickets
     examples: list[str] = field(default_factory=list)
     # each round's stop reason (end_turn / max_tokens / refusal / ...)
@@ -418,6 +427,8 @@ class RunRecord:
     cases_generated: int = 0
     cases_specific: int = 0
     failed_cases: list[str] = field(default_factory=list)
+    # the failed cases whose verdict was silent (the option-1 pilot's mechanism gate)
+    silent_cases: list[str] = field(default_factory=list)
     # tokens and cost over every call of the run (refused calls included)
     input_tokens: int = 0
     output_tokens: int = 0
@@ -732,9 +743,7 @@ def apply_profile_delta(profile_src: str, delta: prompts.ProfileDelta) -> str:
             (
                 v.id
                 for k, v in zip(tables.keys, tables.values, strict=True)
-                if isinstance(k, ast.Constant)
-                and k.value == col.table
-                and isinstance(v, ast.Name)
+                if isinstance(k, ast.Constant) and k.value == col.table and isinstance(v, ast.Name)
             ),
             None,
         )
@@ -904,9 +913,11 @@ class _LatticeArm:
             errors = [d for d in exc.diagnostics if d.severity is Severity.ERROR]
             return Candidate(
                 problem="static",
+                # no Exact fix: a joined-program diagnostic's line/col are the joined
+                # program's, not a line of the model's own file
                 feedback=(
                     "The Lattice checker refused the joined program:\n"
-                    + render_for_llm(errors or exc.diagnostics, fixes=True)
+                    + render_for_llm(errors or exc.diagnostics)
                 ),
             )
         except Exception as exc:  # noqa: BLE001
@@ -1022,6 +1033,8 @@ def run_arm(
                 record.rounds = len(generations) + 1
                 record.round_problems.append("refused")
                 record.stop_reasons.append("refusal")
+                if checked:
+                    record.round_findings.append(None)
                 candidate.cleanup()
                 candidate = Candidate(problem="refused", feedback=str(exc))
                 _save_round(rep_dir, attempt + 1, None, "refusal", candidate, None)
@@ -1045,7 +1058,8 @@ def run_arm(
                 if checked:
                     check_round(t.repo, state.candidate_files(), candidate)
             if checked:
-                record.round_findings.append(list(candidate.findings or []))
+                found = candidate.findings
+                record.round_findings.append(None if found is None else list(found))
             record.round_problems.append(candidate.problem)
             applied = (
                 not truncated
@@ -1123,9 +1137,11 @@ def _account(
     # (served model, usage, latency, transport-reported cost or None, its cost_basis)
     usages = [(g.model, g.usage, g.latency_s, g.cost_usd, g.cost_basis) for g in generations]
     if refused is not None:
-        # GenerationRefused carries no cost figure (the CLI's total_cost_usd is not
-        # captured on a refusal); this call's cost is always derived from usage below.
-        usages.append((refused.model, refused.usage, refused.latency_s, None, None))
+        # a transport-reported cost of the refused call(s) (the CLI's total_cost_usd),
+        # else derived from usage below
+        usages.append(
+            (refused.model, refused.usage, refused.latency_s, refused.cost_usd, refused.cost_basis)
+        )
     bases = []
     for served, usage, latency, call_cost, basis in usages:
         record.input_tokens += usage.total_input_tokens
@@ -1183,6 +1199,7 @@ def _outcome(record: RunRecord, outcome: Outcome) -> None:
     record.failed_cases = sorted(
         n for n, v in outcome.cases.items() if v.verdict in ("silent", "loud")
     )
+    record.silent_cases = sorted(n for n, v in outcome.cases.items() if v.verdict == "silent")
     if outcome.error:
         record.detail = (record.detail + "\n" if record.detail else "") + outcome.error
 
@@ -1259,8 +1276,10 @@ def partial_reference_answer(arm: Arm, ticket_id: str) -> str | None:
             continue
         # profile.py itself is whole-file only (a partial profile change goes through
         # profile.delta instead, see prompts.PROFILE_DELTA_FILE); every program is merged
-        files[n] = s if n == prompts.PROFILE_FILE else _partial_or_whole(
-            start.get(n), s, allow_constants=True
+        files[n] = (
+            s
+            if n == prompts.PROFILE_FILE
+            else _partial_or_whole(start.get(n), s, allow_constants=True)
         )
     return prompts.render_files(files)
 
@@ -1315,20 +1334,8 @@ OUTPUT_OVERHEAD = 1.25  # answer tokens over the solution's own (headings, prose
 
 
 def token_counter(model: str) -> Callable[[str, str], int]:
-    """Prompt tokens of (system, user): the count_tokens API when a key is set, else
-    chars / 3.5."""
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        import anthropic
-
-        client = anthropic.Anthropic()
-
-        def count(system: str, user: str) -> int:
-            r = client.messages.count_tokens(
-                model=model, system=system or "-", messages=[{"role": "user", "content": user}]
-            )
-            return r.input_tokens
-
-        return count
+    """Prompt tokens of (system, user), estimated as chars / 3.5. (The count_tokens API
+    would need an API key, which no tool in this project uses.)"""
     return lambda system, user: round((len(system) + len(user)) / CHARS_PER_TOKEN)
 
 
@@ -1388,7 +1395,7 @@ def estimate(
         "rows": rows,
         "total_usd": total,
         "runs": len(rows) * reps,
-        "counted": bool(os.environ.get("ANTHROPIC_API_KEY")),
+        "counted": False,
     }
 
 
@@ -1461,10 +1468,10 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--estimate-models", default="claude-sonnet-5,claude-haiku-4-5")
     p.add_argument(
         "--backend",
-        choices=("api", "cli"),
-        default="api",
-        help="transport for a live model call: api (Anthropic SDK, default) or cli "
-        "(the local `claude -p`, identical prompts)",
+        choices=("cli",),
+        default="cli",
+        help="transport for a live model call: the local `claude -p` (the API-key "
+        "transport is disabled in this project)",
     )
     p.add_argument(
         "--resume",
@@ -1490,6 +1497,10 @@ def _tickets(spec: str) -> list[str]:
         return [t.id for t in ALL_TICKETS]
     if spec == "round4":
         return [t.id for t in ROUND4_TICKETS]
+    if spec == "option1":
+        return list(OPTION1)
+    if spec == "option1b":
+        return list(OPTION1B)
     ids = [s.strip() for s in spec.split(",") if s.strip()]
     for tid in ids:
         ticket(tid)
@@ -1497,22 +1508,20 @@ def _tickets(spec: str) -> list[str]:
 
 
 def _make_generator(args: argparse.Namespace) -> Generator:
-    """The generator for a live (non-dry-run) call, per ``--backend``: the Anthropic API
-    (default) or the local ``claude -p`` CLI, identical prompts either way."""
-    if args.backend == "cli":
-        from lattice.llm.cli_client import ClaudeCliClient
+    """The generator for a live (non-dry-run) call: the local ``claude -p`` CLI. The
+    API-key transport is disabled in this project (:class:`lattice.llm.client.
+    ApiKeyTransportDisabled`)."""
+    from lattice.llm.cli_client import ClaudeCliClient
 
-        return ClaudeCliClient(model=args.model, max_tokens=args.max_tokens, effort=args.effort)
-    from lattice.llm.client import ClaudeGenerator
-
-    return ClaudeGenerator(model=args.model, max_tokens=args.max_tokens, effort=args.effort)
+    return ClaudeCliClient(model=args.model, max_tokens=args.max_tokens, effort=args.effort)
 
 
 def _completed(out: Path) -> set[tuple[str | None, str | None, str | None, int | None]]:
     """(model, arm, ticket, rep) tuples already written to ``out`` -- what ``--resume``
     skips, so a round interrupted (e.g. by a CLI usage limit) can continue without
     redoing work already on disk. A line that fails to parse is ignored (not counted as
-    done): it is likely a partially-written line from an interrupted run."""
+    done): it is likely a partially-written line from an interrupted run. An ``error``
+    record (the harness or the transport failed) is not done either: it is redone."""
     done: set[tuple[str | None, str | None, str | None, int | None]] = set()
     if not out.exists():
         return done
@@ -1524,6 +1533,8 @@ def _completed(out: Path) -> set[tuple[str | None, str | None, str | None, int |
             try:
                 d = json.loads(line)
             except json.JSONDecodeError:
+                continue
+            if d.get("outcome") == "error":
                 continue
             done.add((d.get("model"), d.get("arm"), d.get("ticket"), d.get("rep")))
     return done
@@ -1563,6 +1574,7 @@ def _run_one(
             "reference" if dry else args.model,
             rep,
             outcome="error",
+            failure="cli_error" if isinstance(exc, CliError) else "harness",
             detail=f"{type(exc).__name__}: {exc}"[:_DETAIL_LIMIT],
             dry_run=dry,
         )
@@ -1614,6 +1626,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
 
     stopped_early = False
+    status = 0
+    cli_errors = 0  # consecutive CliError records, in submission order
     with ThreadPoolExecutor(max_workers=max(1, args.workers)) as ex:
         # submit every task up front, then collect results in submission order: workers
         # run concurrently, but the JSONL/report stay in the same deterministic order a
@@ -1627,14 +1641,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             except CliUsageLimitError as exc:
                 print(f"usage limit reached, stopping cleanly: {exc}", file=sys.stderr)
                 ex.shutdown(wait=False, cancel_futures=True)
-                stopped_early = True
+                stopped_early, status = True, 3
                 break
             _write(record)
+            cli_errors = cli_errors + 1 if record.failure == "cli_error" else 0
+            if cli_errors >= MAX_CONSECUTIVE_CLI_ERRORS:
+                print(
+                    f"{cli_errors} consecutive CLI errors (last: {record.detail[:300]}); "
+                    "stopping the run: check the `claude` CLI (login, plan, network), then "
+                    "rerun with --resume (error records are redone)",
+                    file=sys.stderr,
+                )
+                ex.shutdown(wait=False, cancel_futures=True)
+                stopped_early, status = True, 4
+                break
 
     from bench.edit_slice.report import load, render
 
     print(render(load([out])))
-    return 3 if stopped_early else 0
+    return status if stopped_early else 0
 
 
 if __name__ == "__main__":

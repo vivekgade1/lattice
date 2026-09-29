@@ -716,9 +716,317 @@ ROUND4_NEW: tuple[str, ...] = tuple(t.id for t in (*ROUND4_TEMPLATE, *ROUND4_REP
 # every ticket, t1-t30: what `--tickets round4` runs (round3's t1-t24 plus the fresh set)
 ROUND4_TICKETS: tuple[Ticket, ...] = (*ALL_TICKETS, *ROUND4_TEMPLATE, *ROUND4_REPO_TICKETS)
 
+# ---- option 1's pilot set (t31-t38, docs/option1-handoff.md) on the multi-vendor app ----
+#
+# Written in this order, as texts, before any reference, oracle case or Lattice check, and
+# approved as written on 2026-09-29. Two families: aggregations with traps (t31-t34) and
+# ownership inherited through parent tables (t35-t38; t35 is a control: an order line has
+# two owners, which Lattice's single-owner model does not express). Their traps (never
+# sent to a model; ``bench/edit_slice/repos/multivendor.py`` pins each):
+#
+# * t31_vendor_sales -- revenue is the vendor's own lines x price_at_purchase (not the
+#   order total, which includes the other vendor's lines, nor the current price); an order
+#   with two of the vendor's lines is one order; `end` covers the whole day; a vendor with
+#   no sales gets 0/0/0.0, not null; a malformed date is a 422; a non-vendor the usual 404.
+# * t32_monthly_report -- /orders/report is not swallowed by /orders/{order_id}; month
+#   boundaries (Feb 1 00:00 and Feb 28 23:59:59 in, Jan 31 23:30 and Mar 1 00:00 out);
+#   December rolls into the next year; every status listed, zeros included; an empty month
+#   is zeros; 2026-13 and malformed values are 422; a vendor gets the usual 403.
+# * t33_top_sellers -- never-sold products listed with 0; inactive products excluded even
+#   when they sold; not swallowed by /products/{product_id}; cancelled units excluded but
+#   the product still listed.
+# * t34_customer_spend -- buyers without orders listed with 0/0.0; inactive buyers are
+#   customers; vendors and admins are not; no fan-out from joining order lines; not
+#   swallowed by /orders/{order_id}.
+# * t35_vendor_order_lines (control) -- only the vendor's own lines of a multi-vendor
+#   order; inactive products' lines included; cancelled orders included; the non-vendor 404.
+# * t36_cancel_order -- another buyer's order is the usual 403, checked before the status;
+#   every line's stock restored; shipped/delivered is the state machine's 400 and writes
+#   nothing; unknown order the usual 404; admins may cancel any order.
+# * t37_product_buyers -- another vendor's product is 403 "You do not own this product",
+#   after "Product not found"; an admin gets the permission 403 (no admin bypass); a buyer
+#   with several orders appears once, units summed; inactive buyers listed; no sales is [].
+# * t38_reorder -- current prices, not price_at_purchase; another buyer's order the usual
+#   403; not enough stock is the 409 and writes nothing (no order, no stock change: upstream
+#   `place_order` commits line by line); a cancelled order may be reordered; the new order
+#   is pending with a fresh created_at.
+
+MV_VENDOR_ROUTER = "routers/vendor_router.py"
+MV_VENDOR_SERVICE = "services/vendor_service.py"
+MV_ORDER_ROUTER = "routers/order_router.py"
+MV_ORDER_SERVICE = "services/order_service.py"
+MV_PRODUCT_ROUTER = "routers/product_router.py"
+MV_PRODUCT_SERVICE = "services/product_service.py"
+
+OPTION1_TICKETS: tuple[Ticket, ...] = (
+    Ticket(
+        id="t31_vendor_sales",
+        title="Sales summary for vendors",
+        text="""\
+Vendors want to see how their shop is doing. Add `GET /vendors/me/sales`, answering
+
+    {"orders": <number of orders containing the vendor's products>,
+     "units": <units of the vendor's products sold>,
+     "revenue": <money the vendor earned from them>}
+
+It takes two optional query parameters, `start` and `end` (dates, `YYYY-MM-DD`, both
+inclusive), to limit the summary to orders placed in that period. Cancelled orders don't
+count. Same access as `GET /vendors/me`.""",
+        routes=("GET /vendors/me/sales",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t32_monthly_report",
+        title="Monthly order report for admins",
+        text="""\
+Finance wants a monthly snapshot of orders. Add `GET /orders/report?month=YYYY-MM`, for
+admins only (the same permission as viewing every order), answering
+
+    {"month": "2026-02",
+     "orders": <number of orders placed that month>,
+     "revenue": <sum of those orders' totals, not counting cancelled orders>,
+     "by_status": {"pending": <n>, "confirmed": <n>, "shipped": <n>, "delivered": <n>,
+                   "cancelled": <n>}}
+
+`month` is required; an invalid month is a 422.""",
+        routes=("GET /orders/report",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t33_top_sellers",
+        title="Best-seller list",
+        text="""\
+The storefront wants a "popular" shelf. Add `GET /products/top-sellers`, listing every
+active product as
+
+    {"product_id": <id>, "name": <name>, "units_sold": <units sold>}
+
+best-selling first, ties by `product_id`. An optional `category` query parameter limits
+the list to one category. Units in cancelled orders don't count. It is public, like
+`GET /products`.""",
+        routes=("GET /products/top-sellers",),
+        files=(MV_PRODUCT_ROUTER, MV_PRODUCT_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t34_customer_spend",
+        title="Customer spend list for admins",
+        text="""\
+Support wants to know who the big customers are. Add `GET /orders/customers`, for admins
+only (the same permission as viewing every order), listing every buyer as
+
+    {"user_id": <id>, "email": <email>, "orders": <number of their orders>,
+     "spent": <sum of those orders' totals>}
+
+Cancelled orders don't count in either number. Highest `spent` first, ties by
+`user_id`.""",
+        routes=("GET /orders/customers",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t35_vendor_order_lines",
+        title="Vendors see the order lines they must fulfil",
+        text="""\
+Vendors need a packing list. Add `GET /vendors/me/order-lines`, listing every order line
+for the vendor's products as
+
+    {"order_id": <id>, "status": <the order's status>, "product_id": <id>,
+     "product_name": <name>, "quantity": <n>, "price_at_purchase": <price>,
+     "ordered_at": <when the order was placed>}
+
+newest order first, then by line id. Same access as `GET /vendors/me`.""",
+        routes=("GET /vendors/me/order-lines",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t36_cancel_order",
+        title="Buyers cancel their own orders",
+        text="""\
+Buyers keep emailing support to cancel orders. Add `POST /orders/{order_id}/cancel`. A
+buyer can cancel their own order while it is pending or confirmed; admins can cancel any
+order. Cancelling puts the ordered quantities back in stock. Answer with the order, as
+`GET /orders/{order_id}` does.""",
+        routes=("POST /orders/{order_id}/cancel",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t37_product_buyers",
+        title="Who bought my product",
+        text="""\
+Vendors want to know who buys what. Add `GET /products/{product_id}/buyers`, listing the
+customers of one of the vendor's products as
+
+    {"user_id": <id>, "full_name": <name>, "units": <units of this product they bought>}
+
+most units first, ties by `user_id`. Cancelled orders don't count. Same access rules as
+`PATCH /products/{product_id}`.""",
+        routes=("GET /products/{product_id}/buyers",),
+        files=(MV_PRODUCT_ROUTER, MV_PRODUCT_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t38_reorder",
+        title="Buy again",
+        text="""\
+Add a "buy again" button's endpoint: `POST /orders/{order_id}/reorder` places a new order
+for the caller with the same products and quantities as one of their past orders, and
+answers 201 with the new order, like `POST /orders`. Only buyers can reorder, and only
+their own orders. If a product doesn't have enough stock, answer 409 as `POST /orders`
+does.""",
+        routes=("POST /orders/{order_id}/reorder",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+)
+OPTION1: tuple[str, ...] = tuple(t.id for t in OPTION1_TICKETS)
+
+# ---- option 1's second pilot (t39-t44): atomicity, on the same app ---------------------
+#
+# After the first pilot's one real slip (t38: a refused reorder left a partial write), six
+# tickets whose correct change needs several writes to succeed or fail together; the app's
+# own helpers commit partway (update_details, register_vendor, decrement_stock_optimistic).
+# Written as texts first and approved on 2026-09-29. Every error the oracle compares is
+# stated in the text (the first pilot's lesson). Traps (never sent to a model):
+#
+# * t39_bulk_price -- all or nothing: a missing or foreign product anywhere in the list
+#   changes nothing (a per-item PATCH commits each); a repeated id counts once; a price
+#   <= 0 anywhere rejects the whole request.
+# * t40_edit_order_items -- a 409 writes nothing (no stock returned, no lines replaced);
+#   stock the order already holds counts toward the new quantity; another buyer's order is
+#   the 403, checked before the status.
+# * t41_close_shop -- the 409 is decided before any write; cancelling a multi-vendor order
+#   restores every line's stock, the other vendor's too; orders are counted once.
+# * t42_split_order -- every item is validated before the new order exists (a 400 writes
+#   nothing); totals from price_at_purchase, not current prices; stock unchanged.
+# * t43_vendor_onboarding -- a duplicate name writes nothing (no vendor row, the role
+#   stays buyer: register_vendor commits first); an existing vendor creates nothing.
+# * t44_merge_orders -- every order is validated before anything moves; stock is not
+#   returned (the lines moved, nothing was cancelled back into stock).
+
+OPTION1B_TICKETS: tuple[Ticket, ...] = (
+    Ticket(
+        id="t39_bulk_price",
+        title="Update several prices at once",
+        text="""\
+Vendors reprice their catalogue in batches. Add `POST /products/bulk-price` with the JSON
+body
+
+    {"changes": [{"product_id": <id>, "price": <new price>}, ...]}
+
+Each listed product gets its new price, exactly as if it had been changed with
+`PATCH /products/{product_id}`, and the answer is `{"updated": <number of products
+changed>}`. Same access rules and errors as `PATCH /products/{product_id}`: 404 "Product
+not found" for a product that doesn't exist, 403 "You do not own this product" for
+another vendor's.""",
+        routes=("POST /products/bulk-price",),
+        files=(MV_PRODUCT_ROUTER, MV_PRODUCT_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t40_edit_order_items",
+        title="Change the contents of a pending order",
+        text="""\
+Buyers want to fix an order before it is confirmed. Add `PATCH /orders/{order_id}/items`
+with the JSON body
+
+    {"items": [{"product_id": <id>, "quantity": <n>}, ...]}
+
+which becomes the order's new contents. Only the buyer who placed the order can change it
+(anyone else gets 403 "You do not have access to this order"; an unknown order is 404
+"Order not found"), and only while it is pending (otherwise 400 "Only pending orders can
+be changed"). Stock and the order total follow the change, and every line is priced at
+the product's current price. If a product doesn't have enough stock, answer 409 as
+`POST /orders` does. Answer with the order, as `GET /orders/{order_id}` does.""",
+        routes=("PATCH /orders/{order_id}/items",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t41_close_shop",
+        title="Vendors can close their shop",
+        text="""\
+Add `POST /vendors/me/close` for vendors leaving the marketplace. Every product of the
+vendor is deactivated, and every pending order containing their products is cancelled
+(its stock goes back, as when an order is cancelled). If any confirmed or shipped order
+contains their products, the shop can't close yet: answer 409 with detail "Shop has
+orders being fulfilled". The answer is
+
+    {"products_deactivated": <number of the vendor's products that were active>,
+     "orders_cancelled": <number of orders cancelled>}
+
+Same access as `GET /vendors/me`.""",
+        routes=("POST /vendors/me/close",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t42_split_order",
+        title="Split an order",
+        text="""\
+Buyers want part of a pending order shipped separately. Add
+`POST /orders/{order_id}/split` with the JSON body `{"item_ids": [<order item id>, ...]}`:
+the listed lines of the buyer's pending order move to a new pending order for the same
+buyer, and both orders' totals follow. Answer 201 with the new order, as `POST /orders`
+does.
+
+- Someone else's order: 403 "You do not have access to this order"; an unknown order: 404
+  "Order not found".
+- The order isn't pending: 400 "Only pending orders can be split".
+- A listed item isn't a line of this order: 400 "Item <id> is not in this order".
+- Every line of the order is listed: 400 "Cannot move every item".""",
+        routes=("POST /orders/{order_id}/split",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t43_vendor_onboarding",
+        title="Onboard a vendor with their first products",
+        text="""\
+New sellers want to open a shop and list their first products in one step. Add
+`POST /vendors/onboard` with the JSON body
+
+    {"business_name": <name>, "products": [<a product, as for POST /products>, ...]}
+
+It registers the caller as a vendor, exactly as `POST /vendors` does (including its 400
+"This user is already registered as a vendor"), and creates the listed products for the
+new shop, exactly as `POST /products` would. Product names must be unique within the
+request: otherwise answer 400 with detail "Duplicate product name: <name>". Answer 201
+with
+
+    {"vendor": <the vendor, as GET /vendors/me shows it>,
+     "products": [<each product, as GET /products/{product_id} shows it>, ...]}""",
+        routes=("POST /vendors/onboard",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t44_merge_orders",
+        title="Merge pending orders",
+        text="""\
+Buyers who placed several small orders want them shipped together. Add
+`POST /orders/merge` with the JSON body `{"order_ids": [<id>, <id>, ...]}` (at least
+two). Every line of the listed orders moves into the first order listed, whose total
+follows; the other orders are cancelled and left empty, with a total of 0. Answer with
+the merged order, as `GET /orders/{order_id}` does.
+
+Each listed order must be the caller's own pending order: someone else's is 403 "You do
+not have access to this order", an unknown one 404 "Order not found", and one that isn't
+pending 400 "Only pending orders can be merged".""",
+        routes=("POST /orders/merge",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+)
+OPTION1B: tuple[str, ...] = tuple(t.id for t in OPTION1B_TICKETS)
+
 
 def ticket(ticket_id: str) -> Ticket:
-    for t in ROUND4_TICKETS:
+    for t in (*ROUND4_TICKETS, *OPTION1_TICKETS, *OPTION1B_TICKETS):
         if t.id == ticket_id:
             return t
     raise KeyError(f"unknown ticket {ticket_id!r}")

@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import pytest
 
-from bench.edit_slice import oracle, run, smoke, tickets
+from bench.edit_slice import oracle, prompts, run, smoke, tickets
 from bench.edit_slice.apps import repo
 from bench.edit_slice.lattice_reference import GAPS, has_lattice_reference
 from bench.edit_slice.reference import REFERENCE_ROOT, make_reference_app, reference_files
@@ -32,6 +32,7 @@ from bench.edit_slice.tickets import (
 )
 from bench.edit_slice.variant import load_variant
 from bench.template_app import make_app as template_make_app
+from lattice.llm.client import ScriptedGenerator
 
 TEMPLATE_IDS = [t.id for t in ROUND4_TEMPLATE]
 REPO_IDS = [t.id for t in ROUND4_REPO_TICKETS]
@@ -415,3 +416,31 @@ def test_arm_l_dry_run_has_no_reference(tid):
     r = run.dry_run("L", tid)
     assert r.outcome == "no_reference"
     assert "held out" in r.detail
+
+
+@pytest.mark.parametrize("tid", REPO_IDS)
+def test_a_fake_llm_arm_l_run_is_end_to_end(tid):
+    """As ``tests/bench/test_edit_slice_imports.py``'s version for t19-t24: the start
+    programs returned unchanged build, emit into the original app and smoke-run for
+    t28-t30 too (the round-5 CLI re-import)."""
+    programs, _ = run.start_lattice(ticket(tid).repo)
+    answer = prompts.render_files(programs)
+    r = run.run_arm("L", tid, ScriptedGenerator([answer]), model="fake", max_repairs=0)
+    assert r.round_problems == ["smoke"], r.detail
+    assert r.outcome in ("loud", "silent") and sum(r.cases.values()) > 0
+
+
+# t28-t30's routes are all new endpoints (reassign, tag summary, bulk-delete) that don't
+# exist in the original apps, so they are "new" in arm L's start state whatever the import
+# covers -- recorded here the same way t19-t24's LIFT_STATUS is, in
+# ``tests/bench/test_edit_slice_imports.py`` (the round-5 CLI re-import).
+LIFT_STATUS: dict[str, dict[str, str]] = {
+    "t28_task_reassign": {"POST /api/v1/tasks/{task_id}/reassign": "new"},
+    "t29_tag_summary": {"GET /tags/summary": "new"},
+    "t30_bulk_delete_notes": {"POST /notes/bulk-delete": "new"},
+}
+
+
+@pytest.mark.parametrize("tid", REPO_IDS)
+def test_each_tickets_routes_are_lifted_islands_or_new(tid):
+    assert run.lift_status(tid) == LIFT_STATUS[tid]

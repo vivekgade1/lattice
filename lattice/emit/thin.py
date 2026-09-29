@@ -508,6 +508,15 @@ def app_routes(app_factory: str) -> tuple[str, ...]:
 _counter = itertools.count()
 
 
+def _forget_package(name: str) -> None:
+    """Drop the package ``name`` and its submodules from ``sys.modules``. Other threads
+    import while apps are built (the harness's ``--workers``): the scan runs over an
+    atomic snapshot (``list(sys.modules)``), never the live dict, which would raise
+    "dictionary changed size during iteration"."""
+    for module in [n for n in list(sys.modules) if n.split(".")[0] == name]:
+        sys.modules.pop(module, None)
+
+
 def _load_package(out_dir: Path) -> ModuleType:
     """A fresh copy of the emitted package under a unique module name."""
     name = f"_lattice_emitted_{next(_counter)}"
@@ -550,8 +559,7 @@ def make_emitted_app(out_dir: str | Path, db_path: str | Path) -> FastAPI:
         kit.DB_PATH = str(db_path)
         routes = importlib.import_module(f"{package.__name__}.routes")
     finally:  # the app holds what it needs; keep sys.modules from growing per app
-        for name in [n for n in sys.modules if n.split(".")[0] == package.__name__]:
-            del sys.modules[name]
+        _forget_package(package.__name__)
     lattice_routes = _leaf_routes(routes.router)
     for route in lattice_routes:
         route.tags = [_tag(route.path)]
@@ -590,8 +598,7 @@ def _make_into_app(
         kit.DB_PATH = str(db_path)
         routes = importlib.import_module(f"{package.__name__}.routes")
     finally:  # the app holds what it needs; keep sys.modules from growing per app
-        for name in [n for n in sys.modules if n.split(".")[0] == package.__name__]:
-            del sys.modules[name]
+        _forget_package(package.__name__)
     leaves = _app_leaves(app.router)
     lattice_routes = _leaf_routes(routes.router)
     order = _merge_order(

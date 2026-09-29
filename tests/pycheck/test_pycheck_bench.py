@@ -2,7 +2,8 @@
 
 * **Precision:** every hand-written reference (t1-t30) checks clean against its app's
   policy, derived from the original app.
-* **Recall on the traps:** the oracle tests' trap variants (``TRAPS`` in
+* **Recall on the traps** (with pycheck's own derived policy, ``derived_policy``): the
+  oracle tests' trap variants (``TRAPS`` in
   tests/bench/test_edit_slice_{oracle,repos,round4}.py); the measured hits are pinned
   below. Most traps are not guarantee violations at all (off-by-one bounds, ``GROUP BY``
   dropping zero rows, atomicity, repeated ids, check order, case folding) and no
@@ -25,7 +26,7 @@ from pathlib import Path
 
 import pytest
 
-from bench.edit_slice.qcheck import check_files, repo_policy
+from bench.edit_slice.qcheck import check_files, derived_policy, repo_policy, start_ownership
 from bench.edit_slice.reference import reference_files
 from bench.edit_slice.tickets import ROUND4_TICKETS, ticket
 from lattice.pycheck import ErrorAnswer
@@ -38,7 +39,9 @@ TRAP_MODULES = ("test_edit_slice_oracle", "test_edit_slice_repos", "test_edit_sl
 
 
 def test_the_policies_derived_from_the_three_apps():
-    template = repo_policy("template")
+    """pycheck's own derivation (every fact from the original code). Arm Q's policy
+    takes its ownership facts from arm L's start profile instead (below)."""
+    template = derived_policy("template")
     assert dict(template.owners) == {"Item": "owner_id"}
     assert dict(template.private) == {"User": ("hashed_password",)}
     assert (
@@ -46,14 +49,14 @@ def test_the_policies_derived_from_the_three_apps():
     )
     assert dict(template.not_owned) == {"Item": ErrorAnswer(403, "Not enough permissions")}
 
-    taskflow = repo_policy("taskflow")
+    taskflow = derived_policy("taskflow")
     assert dict(taskflow.owners) == {"Task": "owner_id"}
     assert dict(taskflow.private) == {"User": ("password_hash",)}
     assert taskflow.admin is None
     # every task lookup is owner-scoped: another user's task is "not found"
     assert dict(taskflow.not_owned) == {"Task": ErrorAnswer(404, "Task not found")}
 
-    justnotes = repo_policy("justnotes")
+    justnotes = derived_policy("justnotes")
     assert dict(justnotes.owners) == {"Note": "owner_id", "Tag": "owner_id", "Keyword": "owner_id"}
     # the importer calls Note.owner_id private, but every note dict returns it: public
     assert dict(justnotes.private) == {"User": ("password",)}
@@ -65,8 +68,19 @@ def test_the_policies_derived_from_the_three_apps():
 
 
 @pytest.mark.parametrize("name", ["template", "taskflow", "justnotes"])
+def test_arm_qs_policy_is_the_derivation_with_arm_ls_ownership(name):
+    policy, derived = repo_policy(name), derived_policy(name)
+    start = start_ownership(name)
+    assert start is not None
+    assert dict(policy.owners) == dict(start.owners)
+    assert dict(policy.owner_via) == dict(start.owner_via)
+    assert policy.private == derived.private and policy.admin == derived.admin
+
+
+@pytest.mark.parametrize("name", ["template", "taskflow", "justnotes"])
 def test_each_original_app_checks_clean(name):
     assert check_files(name, {}, strict=True) == []
+    assert check_files(name, {}, strict=True, policy=derived_policy(name)) == []
 
 
 # ---- precision: the references ----------------------------------------------------------------
@@ -74,8 +88,9 @@ def test_each_original_app_checks_clean(name):
 
 @pytest.mark.parametrize("tid", [t.id for t in ROUND4_TICKETS])
 def test_every_reference_has_no_findings(tid):
-    found = check_files(ticket(tid).repo, reference_files(tid), strict=True)
-    assert found == [], "\n".join(f.render() for f in found)
+    for policy in (None, derived_policy(ticket(tid).repo)):
+        found = check_files(ticket(tid).repo, reference_files(tid), strict=True, policy=policy)
+        assert found == [], "\n".join(f.render() for f in found)
 
 
 # ---- recall: the trap variants ----------------------------------------------------------------
@@ -124,7 +139,8 @@ TRAP_HITS: dict[str, tuple[str, ...]] = {
 def test_trap_recall_is_as_measured():
     measured: dict[str, tuple[str, ...]] = {}
     for name, (tid, make) in sorted(all_traps().items()):
-        found = check_files(ticket(tid).repo, make(), strict=True)  # type: ignore[operator]
+        repo_name = ticket(tid).repo
+        found = check_files(repo_name, make(), strict=True, policy=derived_policy(repo_name))  # type: ignore[operator]
         if found:
             measured[name] = tuple(f.code for f in found)
     assert measured == TRAP_HITS
@@ -148,7 +164,9 @@ def test_round4_p_silent_runs_pycheck_would_flag():
             files = {
                 p.relative_to(files_dir).as_posix(): p.read_text() for p in files_dir.rglob("*.py")
             }
-            flagged = bool(check_files(ticket(run["ticket"]).repo, files, strict=True))
+            repo_name = ticket(run["ticket"]).repo
+            policy = derived_policy(repo_name)
+            flagged = bool(check_files(repo_name, files, strict=True, policy=policy))
             counts[(run["model"], run["outcome"], flagged)] += 1
     haiku, sonnet = "claude-haiku-4-5", "claude-sonnet-5"
     # silent runs flagged / all silent runs, per model

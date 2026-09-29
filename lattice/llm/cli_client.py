@@ -45,9 +45,11 @@ over recomputing from the price table; the API transport leaves both ``None`` an
 fall back to the price table as before.
 
 **Errors.** A non-zero exit, ``is_error: true``, or output that isn't parsable JSON all
-raise a typed :class:`CliError` (or a subclass). A message that looks like a transient
-rate limit is :class:`CliTransientError` and is retried with backoff, like a timeout. A
-message that looks like the CLI's own plan/usage limit being exhausted is
+raise a typed :class:`CliError` (or a subclass); the JSON ``result``, stdout and stderr
+are all scanned. A message that looks like a transient rate limit (429, 529, "rate
+limit") is :class:`CliTransientError` and is retried with backoff, like a timeout. A
+message that looks like the CLI's own plan/usage limit being exhausted ("hit your
+limit", "usage limit", "limit reached", "resets ...", "credit balance") is
 :class:`CliUsageLimitError` and is *not* retried -- callers (the harness's ``main``) must
 let it stop the whole run cleanly rather than record it as a failed run, since there is no
 point (or budget) to keep going once the plan is out of usage.
@@ -56,6 +58,8 @@ point (or budget) to keep going once the plan is out of usage.
 from __future__ import annotations
 
 import json
+import logging
+import os
 import re
 import subprocess
 import tempfile
@@ -70,6 +74,7 @@ __all__ = [
     "CliError",
     "CliTransientError",
     "CliUsageLimitError",
+    "cli_env",
     "render_conversation",
 ]
 
@@ -78,18 +83,45 @@ DEFAULT_MAX_RETRIES = 2  # transient-error retries, on top of the first attempt
 DEFAULT_REFUSAL_RETRIES = 2  # symmetric with lattice.llm.client.ClaudeGenerator's default
 DEFAULT_BACKOFF_BASE = 1.0  # seconds; attempt k sleeps backoff_base * 2**k
 
-# Heuristic classification of an `is_error` call's `result` text. A usage-limit message
-# (the account/plan is out of usage) is fatal and must stop the harness; a rate-limit or
-# other transient-sounding message is retried like a timeout.
+log = logging.getLogger(__name__)
+
+# Heuristic classification of a failed call's text (the JSON `result`, stdout and stderr).
+# A plan/usage-limit message (the account is out of usage until a reset, or out of
+# credit) is fatal and must stop the harness; a rate limit (429), an overload (529) or
+# another transient-sounding message is retried like a timeout. The plan-limit patterns
+# are checked first; "limit reached" counts as a plan limit unless it is a rate limit's.
 _USAGE_LIMIT_RE = re.compile(
-    r"usage limit|usage cap|plan limit|weekly limit|5-hour limit|session limit|"
-    r"out of (usage|credits)",
+    r"usage limit|usage cap|hit your limit|plan limit|weekly limit|5-hour limit|"
+    r"session limit|out of (usage|credits)|credit balance|\bresets\b|"
+    r"(?<!rate )(?<!rate-)(?<!rate_)limit reached",
     re.IGNORECASE,
 )
 _RATE_LIMIT_RE = re.compile(
-    r"rate.?limit|overloaded|too many requests|\b529\b|\b529\b|temporarily unavailable",
+    r"rate.?limit|overloaded|too many requests|\b429\b|\b529\b|temporarily unavailable",
     re.IGNORECASE,
 )
+# The CLI's own output cap (CLAUDE_CODE_MAX_OUTPUT_TOKENS): past it, `claude -p` answers
+# is_error with this text (after its own continuation attempts) -- the API's max_tokens.
+_OUTPUT_CAP_RE = re.compile(r"exceeded the \d+ output token maximum", re.IGNORECASE)
+
+# Never bill the API account or switch provider: `claude -p` must authenticate as the
+# logged-in CLI (bench/envfile.py loads ANTHROPIC_API_KEY into os.environ for the API arm).
+_SCRUBBED_ENV = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL")
+_SCRUBBED_PREFIX = "CLAUDE_CODE_USE_"  # CLAUDE_CODE_USE_BEDROCK / _VERTEX / _FOUNDRY ...
+MAX_OUTPUT_ENV = "CLAUDE_CODE_MAX_OUTPUT_TOKENS"
+
+
+def cli_env(base: Mapping[str, str], max_tokens: int | None) -> dict[str, str]:
+    """The environment of a ``claude -p`` call: ``base`` without the API credentials and
+    provider switches, with the output cap set to ``max_tokens``."""
+    env = {
+        k: v
+        for k, v in base.items()
+        if k not in _SCRUBBED_ENV and not k.startswith(_SCRUBBED_PREFIX)
+    }
+    if max_tokens is not None:
+        env[MAX_OUTPUT_ENV] = str(max_tokens)
+    return env
 
 _ISOLATION_FLAGS: tuple[str, ...] = (
     "--tools", "", "--setting-sources", "", "--no-session-persistence",
@@ -144,11 +176,23 @@ class ClaudeCliClient:
     surfacing as :class:`~lattice.llm.client.GenerationRefused` -- symmetric with the API
     transport.
 
-    ``max_tokens`` is accepted for interface parity (recorded, e.g. in
-    ``bench.edit_slice.run.RunRecord.max_tokens``) but is not enforced by any CLI flag:
-    ``claude -p --help`` (2.1.283) has no per-call output-token cap. The model's own
-    default output limit applies instead, and a cut-off answer is still detected the same
-    way as the API arm, via the reported ``stop_reason`` (``"max_tokens"``).
+    ``max_tokens`` is enforced through the environment (``CLAUDE_CODE_MAX_OUTPUT_TOKENS``;
+    no CLI flag exists), so both transports have the same cap. Verified on the real CLI
+    (2.1.283, cap 50): it honours the cap, but instead of a ``max_tokens`` stop it makes
+    up to three continuation attempts (billed) and then answers ``is_error`` with
+    "exceeded the 50 output token maximum" and exit 1, the answer text lost. That is
+    returned as a ``stop_reason="max_tokens"`` generation with empty text -- the
+    harness's truncation, as on the API -- never retried.
+
+    **Environment.** Every call runs with a copy of the environment (``env`` or
+    ``os.environ``, read at call time) without ``ANTHROPIC_API_KEY``,
+    ``ANTHROPIC_AUTH_TOKEN``, ``ANTHROPIC_BASE_URL`` and any ``CLAUDE_CODE_USE_*``
+    provider switch (:func:`cli_env`): the CLI authenticates as the logged-in user and
+    never bills the API account. Verified on the real CLI: with the key removed it
+    still authenticates.
+
+    **Stop reason.** The CLI's JSON carries ``stop_reason``; a missing one is recorded as
+    ``"unknown"`` (and logged), never assumed to be ``end_turn``.
     """
 
     def __init__(
@@ -201,15 +245,20 @@ class ClaudeCliClient:
     def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Generation:
         spent = Usage(0, 0)
         latency = 0.0
+        cost: float | None = None  # the refused attempts' reported cost, summed
         for attempt in range(self.refusal_retries + 1):
             try:
                 result = self._generate_once(system, messages)
             except GenerationRefused as refused:
                 spent, latency = spent + refused.usage, latency + refused.latency_s
+                cost = _add(cost, refused.cost_usd)
                 if attempt == self.refusal_retries:
                     refused.usage, refused.latency_s = spent, latency
+                    refused.cost_usd = cost
+                    refused.cost_basis = "cli_list_estimate" if cost is not None else None
                     raise
                 continue
+            total = _add(cost, result.cost_usd)
             return Generation(
                 text=result.text,
                 usage=spent + result.usage,
@@ -217,8 +266,8 @@ class ClaudeCliClient:
                 stop_reason=result.stop_reason,
                 model=result.model,
                 refusals=attempt,
-                cost_usd=result.cost_usd,
-                cost_basis=result.cost_basis,
+                cost_usd=total,
+                cost_basis="cli_list_estimate" if total is not None else None,
             )
         raise AssertionError("unreachable")
 
@@ -250,7 +299,7 @@ class ClaudeCliClient:
                 text=True,
                 cwd=str(self.cwd),
                 timeout=self.timeout,
-                env=self._env,
+                env=cli_env(self._env if self._env is not None else os.environ, self.max_tokens),
             )
         except subprocess.TimeoutExpired:
             return CliTransientError(f"claude -p timed out after {self.timeout}s")
@@ -262,46 +311,79 @@ class ClaudeCliClient:
                 data = json.loads(proc.stdout)
             except json.JSONDecodeError:
                 data = None
+        stderr = (proc.stderr or "").strip()
         if data is None:
-            message = (proc.stderr or proc.stdout or "").strip()[:500] or f"exit {proc.returncode}"
+            message = (stderr or proc.stdout or "").strip()[:500] or f"exit {proc.returncode}"
+            if _USAGE_LIMIT_RE.search(f"{proc.stdout or ''}\n{stderr}"):
+                raise CliUsageLimitError(message)
             if proc.returncode == 0:
                 raise CliError(f"claude -p produced no parsable JSON output: {message}")
             return CliTransientError(f"claude -p exited {proc.returncode}: {message}")
 
         is_error = bool(data.get("is_error"))
         text = data.get("result") or ""
-        if is_error:
-            if _USAGE_LIMIT_RE.search(text):
-                raise CliUsageLimitError(text[:500] or f"claude -p exited {proc.returncode}")
-            if _RATE_LIMIT_RE.search(text) or proc.returncode != 0:
-                return CliTransientError(text[:500] or f"claude -p exited {proc.returncode}")
-            raise CliError(text[:500] or f"claude -p exited {proc.returncode}")
+        usage = _usage(data)
+        if is_error and _OUTPUT_CAP_RE.search(text):
+            return self._generation(data, "", "max_tokens", usage, latency_s)
+        if is_error or (proc.returncode != 0 and stderr):
+            message = "\n".join(m for m in (text, stderr) if m)[:500]
+            message = message or f"claude -p exited {proc.returncode}"
+            if _USAGE_LIMIT_RE.search(f"{text}\n{stderr}"):
+                raise CliUsageLimitError(message)
+            if _RATE_LIMIT_RE.search(f"{text}\n{stderr}") or proc.returncode != 0:
+                return CliTransientError(message)
+            raise CliError(message)
 
-        usage_data = data.get("usage") or {}
-        usage = Usage(
-            input_tokens=int(usage_data.get("input_tokens") or 0),
-            output_tokens=int(usage_data.get("output_tokens") or 0),
-            cache_read_input_tokens=int(usage_data.get("cache_read_input_tokens") or 0),
-            cache_creation_input_tokens=int(usage_data.get("cache_creation_input_tokens") or 0),
-        )
-        model_usage = data.get("modelUsage") or {}
-        served_model = next(iter(model_usage), "") or self.model
-        stop_reason = data.get("stop_reason") or "end_turn"
-        cost = data.get("total_cost_usd")
-
+        stop_reason = data.get("stop_reason")
+        if not stop_reason:
+            log.warning("claude -p reported no stop_reason; recording it as 'unknown'")
+            stop_reason = "unknown"
         if stop_reason == "refusal":
+            cost = _cost(data)
             raise GenerationRefused(
                 f"model refused to generate: {text[:300]}",
                 usage=usage,
                 latency_s=latency_s,
-                model=served_model,
+                model=self._served(data),
+                cost_usd=cost,
+                cost_basis="cli_list_estimate" if cost is not None else None,
             )
+        return self._generation(data, text, stop_reason, usage, latency_s)
+
+    def _served(self, data: Mapping[str, object]) -> str:
+        model_usage = data.get("modelUsage") or {}
+        return next(iter(model_usage), "") or self.model  # type: ignore[call-overload]
+
+    def _generation(
+        self, data: Mapping[str, object], text: str, stop_reason: str, usage: Usage, latency: float
+    ) -> Generation:
+        cost = _cost(data)
         return Generation(
             text=text,
             usage=usage,
-            latency_s=latency_s,
+            latency_s=latency,
             stop_reason=stop_reason,
-            model=served_model,
-            cost_usd=float(cost) if cost is not None else None,
+            model=self._served(data),
+            cost_usd=cost,
             cost_basis="cli_list_estimate" if cost is not None else None,
         )
+
+
+def _usage(data: Mapping[str, object]) -> Usage:
+    u = data.get("usage") or {}
+    assert isinstance(u, Mapping)
+    return Usage(
+        input_tokens=int(u.get("input_tokens") or 0),
+        output_tokens=int(u.get("output_tokens") or 0),
+        cache_read_input_tokens=int(u.get("cache_read_input_tokens") or 0),
+        cache_creation_input_tokens=int(u.get("cache_creation_input_tokens") or 0),
+    )
+
+
+def _cost(data: Mapping[str, object]) -> float | None:
+    cost = data.get("total_cost_usd")
+    return float(cost) if cost is not None else None  # type: ignore[arg-type]
+
+
+def _add(a: float | None, b: float | None) -> float | None:
+    return b if a is None else a if b is None else a + b

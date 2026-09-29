@@ -2,6 +2,8 @@
 
 > Status: living document · 2026-09-27 · Companion to the feasibility report (`docs/LLM-Native Coding Language Feasibility v1.md`), the language spec (`docs/superpowers/specs/2026-09-26-lattice-design.md`) and the API spec (`docs/superpowers/specs/2026-09-27-lattice-api-design.md`). Evidence: `docs/results/2026-09-26-bench-smoke.md`.
 
+> **Status 2026-09-29:** the pre-registered confirmation run did not support the central claim (LLM edits through Lattice, or with its checks, are safer than plain Python edits on CRUD tickets). See `docs/lattice-reference.md` §6 and the next step, `docs/option1-handoff.md`.
+
 ## 1. The idea
 
 **Lattice is the native interface through which LLMs write and change software.**

@@ -747,6 +747,211 @@ The next levers, in order of expected impact:
 3. **More repair rounds with better checker feedback:** each guarantee error should point at the exact fix in the model's own code.
 4. **Cost:** prompt caching of the static Lattice guide. The guide is identical across runs and is ~60% of arm L's input tokens.
 
+## Held-out import (round 5, CLI)
+
+Lever 1 above, closed: sound owner inference (df8c1c5 -- single-user-FK + caller-use, shared tables, `owner_via` for link/child tables) and the Claude Code CLI transport (7931377, `lattice.llm.cli_client.ClaudeCliClient`, identical prompts to the API arm) re-import both held-out apps, replacing the committed `bench/imports/taskflow` and `bench/imports/justnotes` that round 5's arm L starts from:
+
+```
+uv run python -m lattice.importer . --package bench.import_repos.<repo>.app \
+  --app-factory bench.import_repos.<repo>:make_app --out bench/imports/<repo> \
+  --backend cli --method M2 --model claude-sonnet-5 --max-cost-usd 6
+```
+
+Other flags at node N3's defaults: 32k max output tokens, effort medium (R1)/medium (R2 relift)/max (R3), per-route budget shares of the repo cap. Round artefacts are in the gitignored `bench/results/imports/<repo>-r5/`; cost is the CLI's own list-price estimate (`total_cost_usd` from `claude -p --output-format json`, `cost_basis="cli_list_estimate"`), the same figure a user's terminal would show.
+
+| repo | routes | R0 | R1 | R2 | R3 | R4 (islands) | tier mix | cost |
+|---|---:|---:|---:|---:|---:|---:|---|---:|
+| TaskFlow | 10 | 1 | 4 | 1 | 0 | 4 | T0 6, island 4 | $2.02 |
+| JustNotes | 30 | 1 | 9 | 0 | 0 | 20 | T0 10, island 20 | $6.01 |
+
+Total spend: **$8.03** (well inside the $6-per-repo cap, $12 combined authorisation).
+
+**Owners now declared in the profile** (previously unset -- every table read "unclear" and every `accessible()`/`owner=` the edit slice wrote was refused with L404):
+- **TaskFlow:** `Task.owner = 'owner_id'` -- "its one users foreign key, which create_task, delete_task, read_task, read_tasks, update_task filter, check or set from the caller". `User` carries no owner (it's the users table itself). No unclear ownership decisions remain for TaskFlow.
+- **JustNotes:** `Note.owner = 'owner_id'` (also private, since no response model returns it directly), `Tag.owner = 'owner_id'`, `Keyword.owner = 'owner_id'`; the link tables are owned through Note: `NoteTagLink.owner_via = ('note_id', 'Note')`, `NoteKeywordLink.owner_via = ('note_id', 'Note')`. Remaining "Unclear profile decisions" are unrelated to ownership: `NoteTagLink`/`Tag`/`NoteKeywordLink`/`Keyword` have no response model to infer private columns from, and the auth lookup column (`User.username`) is not declared unique so the importer keeps `NativeToken(..., unique="runtime")` (an ambiguous-caller 500, not a 401, on a duplicate username -- unchanged from the previous import).
+
+**Verified routes:**
+- **TaskFlow (6):** `register`, `read_current_user`, `create_task`, `read_tasks`, `read_task`, `delete_task`. Islands (4): `login` (checker refuses the lifted program), `update_task` (behaviour not reproduced: `PATCH`'s partial-null semantics), `service_info`/`health_check` (defined inside `create_app()`, no request suite).
+- **JustNotes (10):** `read_users_me`, `health`, `get_notes_summarize`, `get_notes_related`, `get_note`, `delete_note`, `delete_tag`, `get_user_keywords`, `delete_keyword`, `list_users`. Islands (20): `register` (behaviour not reproduced: database effects differ), `update_note`/`get_user_tags` (checker refuses the lifted program), `add_tag_to_note`/`remove_tag_from_note`/`add_keyword_to_note`/`remove_keyword_from_note` (a 403 branch no suite case reaches), the rest (`login`, `get_notes`, `create_notes`, `get_public_notes`, `get_notes_extend`, `get_notes_translate`, `get_notes_auto_tag`, `get_notes_keywords`, `get_notes_sentiment`, `create_tag`, `get_note_tags`, `create_keyword`, `get_note_keywords`) budget -- the $6 cap was reached before their turn.
+
+**Lift status of the routes t19-t24 and t28-t30 touch, recomputed against this import** (`bench.edit_slice.run.lift_status`):
+
+| ticket | touched routes in the start state |
+|---|---|
+| t19_task_summary | `GET /api/v1/tasks/summary`: new |
+| t20_bulk_status | `POST /api/v1/tasks/bulk-status`: new |
+| t21_completed_at | `POST /api/v1/tasks`, `GET /api/v1/tasks`, `GET /api/v1/tasks/{task_id}`: lifted; `PATCH /api/v1/tasks/{task_id}`: island |
+| t22_copy_note | `POST /notes/{id}/copy`: new |
+| t23_note_filter | `GET /notes`: island (budget) |
+| t24_note_stats | `GET /notes/stats`: new |
+| t28_task_reassign | `POST /api/v1/tasks/{task_id}/reassign`: new |
+| t29_tag_summary | `GET /tags/summary`: new |
+| t30_bulk_delete_notes | `POST /notes/bulk-delete`: new |
+
+t19-t24's status is unchanged from the previous import (TaskFlow's task routes and JustNotes' `/notes` were already lifted/island the same way); t28-t30 touch routes with no prior existence in either app, so they are `new` under any import. A fake-LLM arm-L run (the start programs returned unchanged) builds, emits into the original app and smoke-runs end to end on all nine tickets (`tests/bench/test_edit_slice_imports.py::test_a_fake_llm_arm_l_run_is_end_to_end` for t19/t24, `tests/bench/test_edit_slice_round4.py::test_a_fake_llm_arm_l_run_is_end_to_end` for t28-t30).
+
+**Comparison with the previous import** (TaskFlow 6/10, JustNotes 6/30, both LLM loop on M2/claude-sonnet-5 at the same N3 defaults, API backend):
+
+| repo | verified before | verified now | change |
+|---|---:|---:|---|
+| TaskFlow | 6/10 | 6/10 | **same routes** verified and island as before (`register`, `read_current_user`, `create_task`, `read_tasks`, `read_task`, `delete_task` verified; `login`, `service_info`, `health_check`, `update_task` islands) -- `create_task`/`read_tasks` swapped R1/R2, and `login`/`update_task`'s island reasons changed from the old run's stale-token/cut-off artefacts to a checker refusal and an unreproduced `PATCH`-partial-null; cost $1.46 -> $2.02. Ownership now sound (`Task.owner='owner_id'`, 0 unclear decisions, was 1 "touch Task without comparing owner_id to the caller") |
+| JustNotes | 6/30 | 10/30 | **+4 routes** (`get_notes_summarize`, `get_notes_related`, `get_note`, `get_user_keywords`, `list_users` newly verified; `get_notes_extend` no longer verified, net +4); ownership now sound on 5 tables (was 0, all "unclear"); cost $6.57 -> $6.01 |
+
+TaskFlow's verified/island route *membership* didn't move -- it's still bottlenecked by `login`'s checker refusal and `update_task`'s `PATCH`-partial-null semantics, not by ownership -- but its one ownership decision (`Task`) went from unclear to sound. JustNotes gained 4 routes net, and -- more importantly for round 5's arm L -- every table it touches now has a sound owner or `owner_via`, so edits that write `accessible()`/`owner=` against Note, Tag, Keyword or their link tables are no longer refused for a profile gap (this is exactly the lever the round-4 write-up above flagged: "the imported TaskFlow and JustNotes profiles leave table owners unset... every `accessible`/`mine`/`owner=` the model writes is refused"). No importer bug was hit in this run; both re-imports completed under budget with no CLI usage-limit error.
+
+## Round 5 — pre-registered decision experiment: language vs checks (900 runs, Claude CLI, 2026-09-28)
+
+**Setup.**
+- Spec: `docs/superpowers/specs/2026-09-28-lattice-round5-decision-experiment.md`.
+- 5 arms × 30 tickets × 2 models × 3 reps, sent through `claude -p` with context isolated and the API key stripped.
+- About $59 at list prices, charged to the plan. Two usage-limit pauses; both resumed cleanly, with no error records.
+
+### Results on the decision scope t7–t30 (pre-registered)
+
+| model | P | L | Q | L+ | Q+ |
+|---|---|---|---|---|---|
+| sonnet-5: correct / silent / loud | **64**/72 · 8 · 0 | 34 · 31 · 7 | 60 · 12 · 0 | 36 · 32 · 4 | 60 · 12 · 0 |
+| sonnet-5: $/correct | 0.078 | 0.137 | 0.076 | 0.186 | 0.106 |
+| haiku-4-5: correct / silent / loud | 51 · 20 · 1 | 30 · **14** · 28 | 55 · 17 · 0 | 31 · 20 · 21 | **61** · **11** · 0 |
+| haiku-4-5: $/correct | 0.063 | 0.200 | 0.071 | 0.211 | 0.075 |
+
+### Decision rule (§5), applied mechanically
+
+- **Rule 1 ("checks are enough")** holds on Sonnet (S_Q 12 ≤ 33, C_Q 60 ≥ 34, $ within 1.5×). It fails on Haiku by one run: S_Q 17 against S_L + 2 = 16.
+- **Rule 2 ("the language is needed")** fails on both models.
+- **Outcome: MIXED (§5.3).**
+
+### Secondary: L+ and Q+ (§7)
+
+- **L+** closed 2 of the 30-point correctness gap to P on Sonnet, and 1 of 21 on Haiku. The context aids do **not** fix the knowledge problem, so the §7 criterion is not met.
+- **Q+** improved Haiku markedly: 61/72 correct with 11 silent, against P's 51 with 20. It made no difference on Sonnet.
+
+### Confound found in the results
+
+The imported **JustNotes** start state (arm L's starting app) is **unfaithful before any edit**:
+- `GET /notes/{id}` answers `owner: <id>` where the original returns the nested owner object;
+- another user's *public* note answers 404 where the original answers 200.
+
+These lifted routes passed the importer's generated verification, but the ticket oracles cover cases it didn't. So L/L+ on t22–t24 and t29–t30 were scored against an app that was already wrong. That accounts for most of Sonnet-L's 31 silent failures (20 are on held-out apps). The TaskFlow start state checks out.
+
+**Post-hoc views.** These are not pre-registered and are reported for interpretation only.
+
+| scope | model | P | L | Q | Q+ |
+|---|---|---|---|---|---|
+| t7–t30 without the JustNotes tickets | sonnet | 50/57 · S7 | 34 · S19 | 45 · S12 | 45 · S12 |
+| t7–t30 without the JustNotes tickets | haiku | 45 · S11 | 30 · **S7** (20 loud) | 46 · S11 | **52 · S5** |
+| template tickets only (t7–t18, t25–t27) | sonnet | **38/45** · **S7** | 32 · S11 | 33 · S12 | 33 · S12 |
+| template tickets only (t7–t18, t25–t27) | haiku | 37 · S7 | 29 · **S4** (12 loud) | 36 · S9 | **42 · S3** |
+
+### What this says
+
+1. **Lattice as the editing interface did not earn its keep in round 5.** Its correctness is well below plain Python on every scope and on both models. Its silent-bug advantage **did not replicate on Sonnet**, even on the unconfounded template tickets (11 vs 7). It shows only on Haiku (4 vs 7), and there at the price of many loud failures.
+2. **Plain Python on a frontier model is already strong.** Sonnet-P has 64/72 correct and only 8 silent failures on t7–t30. Round 4's P had more silent failures; sampling variance at 3 reps is large.
+3. **Checks + aids on ordinary code (Q+) are the most practical configuration for weaker models.** On Haiku, Q+ is the best arm on correctness and on silent failures, at P's cost.
+4. **The importer's verification is too weak for real use:** it passed routes that the ticket oracles show to be wrong. The generated suite needs cases for "another user's public row" and for nested response shapes.
+
+### Honest bottom line and recommendation
+
+The pre-registered rule says MIXED. The weight of evidence points to the **checker plus verified-edit loop on ordinary code** as the product, with Lattice's IR kept as an internal representation where it is lossless (SQL compilation, verified generation). Lattice as the language LLMs write is not supported.
+
+Caveats:
+- 3 reps per cell is noisy.
+- Round 5 changed the transport (the CLI) and several arms at once.
+- The JustNotes confound affects the held-out-app half of the scope.
+
+A confirmatory round with more reps on the template tickets alone would settle the Sonnet silent-failure question cheaply.
+
+## Confirmation run (pre-registered, 2026-09-29)
+
+Spec: `docs/superpowers/specs/2026-09-28-lattice-confirmation-run.md`.
+
+**Setup.**
+- The 15 unconfounded template tickets (t7–t18, t25–t27).
+- 6 reps per cell, through the Claude CLI.
+- 607 of 630 runs completed. Sonnet-L has 67/90: every Sonnet-L run on t25 timed out after 600 s, recorded as 7 error records, and the remaining reps were not reached.
+
+| model | arm | correct [95% CI] | silent [95% CI] | loud | $/correct |
+|---|---|---|---|---:|---:|
+| sonnet-5 | **P** | **89/90** [0.94, 1.00] | **1/90** [0.00, 0.06] | 0 | 0.060 |
+| sonnet-5 | L | 52/67 [0.66, 0.86] | 7/67 [0.05, 0.20] | 1 (+7 timeouts) | 0.074 |
+| sonnet-5 | Q | 69/90 [0.67, 0.84] | 21/90 [0.16, 0.33] | 0 | 0.075 |
+| sonnet-5 | Q+ | 79/90 [0.79, 0.93] | 11/90 [0.07, 0.21] | 0 | 0.089 |
+| haiku-4-5 | P | 80/90 [0.81, 0.94] | 10/90 [0.06, 0.19] | 0 | 0.037 |
+| haiku-4-5 | L | 54/90 [0.50, 0.70] | 15/90 [0.10, 0.26] | 21 | 0.114 |
+| haiku-4-5 | Q+ | 82/90 [0.83, 0.95] | 8/90 [0.05, 0.17] | 0 | 0.055 |
+
+### Pre-registered verdicts
+
+- **Q1: does Lattice reduce silent bugs with a strong model? REFUTED.**
+  - Sonnet-L has 7/67 silent against Sonnet-P's 1/90 (one-sided Fisher p = 0.999, per-ticket sign test 0 wins, 2 losses).
+  - The missing Sonnet-L runs cannot change this: even with all 23 non-silent, L is 7/90 against 1/90.
+- **Q2: do checks plus aids beat plain Python on a weaker model? NOT CONFIRMED.**
+  - Haiku-Q+ has 82 correct and 8 silent, against Haiku-P's 80 correct and 10 silent (p = 0.40 for both).
+  - Round 5's large Q+ advantage did not replicate.
+- **Outcome per the spec:** "neither confirmed". At this scale, the measured value of both the Lattice language and the Lattice checks on Python is small, or negative.
+
+### Additional observations (not pre-registered)
+
+1. **Plain Python on a frontier model was nearly perfect on these tickets:** 89/90 correct and 1 silent.
+2. **The checks made Sonnet worse.** Sonnet-Q (checks, no aids) had 21 silent against P's 1. Acting on check findings seems to push a strong model into wrong edits. The likely cause is over-applying the ownership and admin rules where a ticket wants the opposite, e.g. t15, where an admin's duplicate must keep the original owner. The aids reduced this (Q+: 11), but not below P.
+3. **Lattice's failures concentrate on specific tickets:**
+   - t15 (copying another row's values) and t11 (trimming an optional field) account for most of the silent failures in both models;
+   - t25 (bulk delete) makes Sonnet reason past the 600 s timeout.
+4. **Earlier rounds overstated effects.** Rounds 4–5 used 3 reps, and their single-digit differences are within this run's confidence intervals.
+
+### Conclusion
+
+The core hypothesis is not supported by the pre-registered evidence: LLMs editing through Lattice, or with Lattice's guarantees checked, do not produce fewer silent bugs than LLMs editing ordinary Python.
+- With a frontier model, plain Python edits are already highly reliable on this class of task.
+- With a weaker model, the checks add nothing measurable.
+
+The parts of the project that stand on their own evidence are the engineering artefacts:
+- the verified import/emit pipeline;
+- differential verification;
+- trap-based oracles;
+- the SQL compilation of the plan IR, whose output code is shorter and fewer-query.
+
+Their value as an *LLM editing interface* is not demonstrated.
+
+## Option 1 pilot (pre-registered gates, 2026-09-29)
+
+Spec: `docs/superpowers/specs/2026-09-29-option1-pilot.md` (committed in `a1cc717` before any run). Arm P only, claude-sonnet-5, CLI, 3 reps × 8 tickets (t31–t38) on the new held-out multi-vendor app (`bench/import_repos/multivendor`). Family A = aggregations with traps (t31–t34); family O = ownership through parent tables (t35 control, t36–t38).
+
+### Results as scored by the pre-registered oracle
+
+| family | correct | silent [95% CI] | loud | silent-rate gate | mechanism gate |
+|---|---|---|---|---|---|
+| A | 10/12 | 2/12 [5%, 45%] | 0 | PASS | PASS (2/2 covered, `typed-params`) |
+| O | 6/12 | 6/12 [25%, 75%] | 0 | PASS | PASS (3/6 covered) |
+
+Mechanical decision: **GO: A + O**.
+
+### Oracle defects found on inspection (the same treatment as t14/t17 after round 3)
+
+Every silent run was re-scored from its saved final candidate and its diff read:
+
+- **t32 (2 runs):** the model answered an invalid month with **422**, as the ticket says, but with its own error text (`"Invalid month format, expected YYYY-MM"`). The ticket states only the status, so the oracle's comparison of the body over-specified.
+- **t36 (3 runs):** a shipped, delivered or already-cancelled order got **400**, as the reference does, with different wording (`"Cannot cancel order with status shipped"`). The ticket never gives the message, so this is the same over-specification.
+- **t36 rep 1:** the model also let an **admin cancel a shipped order**. "Admins can cancel any order" supports that reading, so the ticket is ambiguous here; the case (`t36.admin_shipped`) is dropped.
+- **t38 (3 runs): a real data-integrity bug.** On a reorder that runs out of stock, all three reps answered 409 but **left a new pending order with total 0 and the candle's stock decremented**. They reused upstream's `place_order`, which commits line by line. This is the trap flagged when the tickets were approved: it is inherited from upstream, and the ticket says "answer 409 as `POST /orders` does", and `POST /orders` itself has the same partial write.
+
+The oracle now compares status and database effects, not bodies, on the 8 cases whose error body the ticket never states (`STATUS_ONLY` in `bench/edit_slice/repos/multivendor.py`), and excludes `t36.admin_shipped`. Rescored with `bench/edit_slice/rescore.py`, with no new model calls (5 outcomes changed, silent → correct):
+
+| family | correct | silent [95% CI] | loud | silent-rate gate | mechanism gate |
+|---|---|---|---|---|---|
+| A | **12/12** | **0/12** [0%, 24%] | 0 | FAIL | FAIL |
+| O | 9/12 | 3/12 [9%, 53%] (all t38) | 0 | PASS | PASS (3/3 covered, `one-statement/atomic`) |
+
+Corrected decision: **GO: O**, resting entirely on one ticket (t38) and one trap.
+
+**Efficiency (24 runs):** $2.07 list-price equivalent (CLI, plan-billed); 233k input and 113k output tokens; 1.08 rounds per run; 41.7 s per run; 58.7 lines changed per run.
+
+### What it says
+
+1. **Aggregation traps don't bite Sonnet in an ORM edit either.** Fan-out, null sums, zero-row groups, month and day boundaries, inactive rows and route order were all handled in 12/12 runs. This matches tabular step 2, where frontier models were at parity.
+2. **Ownership through parent tables was also handled.** No run leaked another buyer's or vendor's rows, and all ownership-before-status orderings were right.
+3. **The one real slip is transactional:** reusing an existing helper that commits partway through, so a refused request leaves partial writes. That is family 3 of the handoff (effect ordering and atomicity), not the ownership family this ticket was filed under. Lattice's one-transaction-per-write guarantee targets exactly that, but the evidence is 1 ticket × 3 reps.
+
 ## Go target — equivalence gate (sub-project 5a, 2026-09-29)
 
 Plan: `docs/superpowers/plans/2026-09-28-lattice-go-target-5a.md`. Ledger and task reports:

@@ -135,3 +135,57 @@ def test_load_variant_is_atomic_per_content():
     with ThreadPoolExecutor(THREADS) as ex:
         loaded = list(ex.map(work, range(THREADS)))
     assert len({id(v) for v in loaded}) == 1
+
+
+def test_emitted_apps_build_while_other_threads_import(emitted: EmitResult, tmp_path: Path):
+    """Building an emitted app drops its package's modules from ``sys.modules``; that scan
+    must not iterate the live dict while other workers import (``RuntimeError:
+    dictionary changed size during iteration``) -- review I4."""
+    import sys
+    import types
+
+    from bench.template_app.seed import build_template_db
+    from lattice.emit import thin
+
+    seed = build_template_db(tmp_path / "seed.db")
+    stop = threading.Event()
+
+    def noise() -> None:  # another worker importing modules, as fast as it can
+        i = 0
+        while not stop.is_set():
+            name = f"_thin_conc_noise_{i % 64}"
+            sys.modules[name] = types.ModuleType(name)
+            sys.modules.pop(f"_thin_conc_noise_{(i + 32) % 64}", None)
+            i += 1
+
+    def work(i: int) -> str | None:
+        for k in range(ROUNDS):
+            db = tmp_path / f"n{i}-{k}.db"
+            db.write_bytes(seed.read_bytes())
+            try:
+                app = make_emitted_app(emitted.out_dir, db)
+                app.state.engine.dispose()
+            except RuntimeError as exc:
+                return f"{i}/{k}: {exc}"
+        return None
+
+    threads = [threading.Thread(target=noise, daemon=True) for _ in range(2)]
+    for t in threads:
+        t.start()
+    try:
+        with ThreadPoolExecutor(THREADS) as ex:
+            problems = [p for p in ex.map(work, range(THREADS)) if p]
+    finally:
+        stop.set()
+        for t in threads:
+            t.join()
+        for n in [n for n in list(sys.modules) if n.startswith("_thin_conc_noise_")]:
+            sys.modules.pop(n, None)
+    assert problems == []
+    # and the helper forgets exactly the package's modules
+    sys.modules["_thin_pkg_probe"] = types.ModuleType("_thin_pkg_probe")
+    sys.modules["_thin_pkg_probe.sub"] = types.ModuleType("_thin_pkg_probe.sub")
+    sys.modules["_thin_pkg_probe_other"] = types.ModuleType("_thin_pkg_probe_other")
+    thin._forget_package("_thin_pkg_probe")
+    assert "_thin_pkg_probe" not in sys.modules and "_thin_pkg_probe.sub" not in sys.modules
+    assert sys.modules.pop("_thin_pkg_probe_other") is not None

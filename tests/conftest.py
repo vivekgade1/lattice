@@ -17,6 +17,7 @@ _FAKE_CLAUDE_IMPL = '''\
 """Fake `claude` CLI for tests: pops the next canned response off a queue file and
 prints it, logging every invocation's argv and stdin for the test to inspect."""
 import json
+import os
 import sys
 import time
 
@@ -39,7 +40,8 @@ with open(state_path, "w") as f:
 
 stdin_data = sys.stdin.read()
 with open(log_path, "a") as f:
-    f.write(json.dumps({"argv": argv, "stdin": stdin_data}) + "\\n")
+    env = {k: v for k, v in os.environ.items() if k.startswith(("ANTHROPIC", "CLAUDE_CODE"))}
+    f.write(json.dumps({"argv": argv, "stdin": stdin_data, "env": env}) + "\\n")
 
 delay = spec.get("delay", 0)
 if delay:
@@ -91,7 +93,8 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 class FakeClaudeCli:
     """Controls a fake `claude` executable placed first on PATH. ``queue`` sets the
     canned responses (one per invocation, the queue's last entry repeats once
-    exhausted); ``calls`` is every invocation's argv and stdin, in order."""
+    exhausted); ``calls`` is every invocation's argv, stdin and the ``ANTHROPIC*`` /
+    ``CLAUDE_CODE*`` variables of its environment, in order."""
 
     bin_dir: Path
     responses_path: Path

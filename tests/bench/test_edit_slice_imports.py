@@ -21,8 +21,8 @@ REPO_IDS = [t.id for t in REPO_TICKETS]
 
 # per ticket, whether the routes it touches are Lattice in arm L's start state (the
 # import's verified routes), islands (kept as the original code) or new -- the record of
-# the N3 live re-import (32k tokens, effort medium, per-route budgets; spec 2026-09-27
-# surface §4)
+# the round-5 CLI re-import (32k tokens, effort medium, per-route budgets, sound owner
+# inference df8c1c5; spec 2026-09-27 surface §4)
 LIFT_STATUS: dict[str, dict[str, str]] = {
     "t19_task_summary": {"GET /api/v1/tasks/summary": "new"},
     "t20_bulk_status": {"POST /api/v1/tasks/bulk-status": "new"},
@@ -117,7 +117,15 @@ def test_the_committed_import_emits_exactly_its_verified_routes(name):
         plans, errors = check_program(path.read_text(), profile)
         assert plans is not None, (path.name, errors)
         tree = ast.parse(path.read_text())
-        emitted |= {n.name for n in tree.body if isinstance(n, ast.FunctionDef)}
+        emitted |= {  # the endpoints (a @step is a procedure, not a route)
+            n.name
+            for n in tree.body
+            if isinstance(n, ast.FunctionDef)
+            and any(
+                isinstance(d, ast.Call) and getattr(d.func, "id", None) == "endpoint"
+                for d in n.decorator_list
+            )
+        }
     assert emitted == verified
     assert len(report["routes"]) == len(app_routes(run.APP_FACTORIES[name])) - len(
         [
@@ -128,10 +136,11 @@ def test_the_committed_import_emits_exactly_its_verified_routes(name):
     )
 
 
-# the committed live import (N3): repo -> (routes, verified, R0, R1, R2, R3, R4)
+# the committed live import (round 5, CLI backend, owner inference df8c1c5): repo ->
+# (routes, verified, R0, R1, R2, R3, R4)
 LIVE_COVERAGE = {
     "taskflow": (10, 6, 1, 4, 1, 0, 4),
-    "justnotes": (30, 6, 1, 5, 0, 0, 24),
+    "justnotes": (30, 10, 1, 9, 0, 0, 20),
 }
 # the original's answers to a bad token and to one naming no user (spec §4.1)
 TOKEN_ANSWERS = {
