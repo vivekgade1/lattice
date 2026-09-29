@@ -230,3 +230,21 @@ def extract_code(text: str) -> str | None:
             return body
 
     return None
+
+
+def extract_go_code(text: str) -> str | None:
+    """The Go counterpart of :func:`extract_code`, same convention: the first
+    ```go`/```golang fenced block; else the first bare fence; else None (a
+    ```python or other tagged block is never taken for Go)."""
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    blocks = [(info.strip().lower(), body) for info, body in _FENCE_RE.findall(normalized)]
+
+    for info, body in blocks:
+        if info in ("go", "golang"):
+            return body
+
+    for info, body in blocks:
+        if info == "":
+            return body
+
+    return None

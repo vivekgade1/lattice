@@ -44,6 +44,7 @@ from bench.runners import (
     harness_error_outcome,
     prepare_workdir,
     run_api_baseline,
+    run_api_go,
     run_api_lattice,
     run_baseline,
     run_baseline_repair,
@@ -56,13 +57,17 @@ from lattice.llm.client import ClaudeGenerator, Generator, ScriptedGenerator
 from lattice.runtime import is_panic
 
 _SEPARATOR_RE = re.compile(r"(?m)^=====$")
-_KNOWN_ARMS = ("A", "P", "B", "C")
+_KNOWN_ARMS = ("A", "P", "B", "C", "G")
+# Arm G (the 5b Go pilot: Go written by the model) exists on the api suite only.
+_API_ONLY_ARMS = ("G",)
 # This many CliError records in a row stop the run (exit 4): a logged-out or broken CLI
 # must not burn the rest of the job list into harness_error records one at a time.
 # Mirrors bench.edit_slice.run.MAX_CONSECUTIVE_CLI_ERRORS.
 MAX_CONSECUTIVE_CLI_ERRORS = 3
 # FastAPI scaffolding copied into every arm A/P workdir of the api suite.
 API_KIT_PATH = Path(__file__).resolve().parent / "api_kit" / "platform_kit.py"
+# The Go platform kit arm G's handlers.go is built against (bench.go_arm).
+API_KIT_GO_DIR = Path(__file__).resolve().parent / "api_kit_go"
 API_DB_NAME = "app.db"
 
 
@@ -94,7 +99,11 @@ def _build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run_parser = subparsers.add_parser("run", help="run the benchmark and write a report")
-    run_parser.add_argument("--arms", default="A", help="comma-separated arms, e.g. A,P,B,C")
+    run_parser.add_argument(
+        "--arms",
+        default="A",
+        help="comma-separated arms, e.g. A,P,B,C (api suite: also G, Go written directly)",
+    )
     run_parser.add_argument(
         "--suite", default="seed", choices=("seed", "deep", "all", "bench2", "api")
     )
@@ -311,6 +320,17 @@ def _run_one_api(
             kit_path=context.kit_path,
             implicit=implicit,
         )
+    if arm == "G":
+        return run_api_go(
+            task,
+            generator,
+            workdir,
+            db_builder=context.db_builder,
+            kit_dir=API_KIT_GO_DIR,
+            max_repairs=max_repairs,
+            hints=hints,
+            implicit=implicit,
+        )
     raise ValueError(f"unknown arm: {arm!r}")
 
 
@@ -387,6 +407,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     for arm in arms:
         if arm not in _KNOWN_ARMS:
             parser.error(f"unknown arm: {arm!r}")
+        if arm in _API_ONLY_ARMS and args.suite != "api":
+            parser.error(f"arm {arm} applies to --suite api only")
 
     models: tuple[str, ...] = (
         tuple(m.strip() for m in args.models.split(",") if m.strip())
