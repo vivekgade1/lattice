@@ -160,7 +160,7 @@ def test_conventions_carry_the_same_facts_as_the_fastapi_prompt() -> None:
         "only on rows the caller may change, and answer 404 when no user has the new id.",
         # transactions
         "Everything a request writes succeeds or fails together",
-        "only after every check passed",
+        "only after every check",
         # dates, imports
         "Dates are ISO `YYYY-MM-DD` strings.",
         "Import only the standard library",
@@ -188,10 +188,33 @@ def test_own_rows_rule_is_the_same_sentence_in_go_terms() -> None:
 
 def test_transaction_rule_in_go_terms() -> None:
     go = _flat(_sections(GO)["Conventions"])
-    begin = "run a request that writes more than once inside one `k.DB.Begin()` transaction"
-    assert begin in go
-    assert "`tx.Commit()` only after every check passed" in go
+    # P's "commit only after every check passed" also covers "write once, then a
+    # check fails" (sqlite3 rolls back an uncommitted write), so G's rule covers it too
+    assert (
+        "a request that writes more than once, or writes before a check that can still "
+        "fail, runs in one `k.DB.Begin()` transaction"
+    ) in go
+    assert "calls `tx.Commit()` only after every check has passed" in go
     assert "otherwise each statement commits on its own" in go
+
+
+def test_empty_list_is_an_empty_array() -> None:
+    go = _flat(_sections(GO)["Conventions"])
+    assert "An empty list is `[]`, never `null`" in go
+    assert "a nil Go slice encodes as `null`, so start every list from `[]T{}`" in go
+
+
+def test_case_insensitive_search_pages_the_filtered_slice() -> None:
+    opt = _flat(_sections(GO)["Optional values, search, time and ordering"])
+    for fact in (
+        "query without `LIMIT`/`OFFSET` (every other filter still in SQL)",
+        "`strings.Contains(strings.ToLower(title), strings.ToLower(q))` in Go",
+        "then apply `offset` and `limit` to that filtered slice",
+        "compute any total from it",
+        "an empty `q` matches every string",
+        "This is the one exception to `LIMIT ? OFFSET ?` in SQL.",
+    ):
+        assert fact in opt, fact
 
 
 def test_forbidden_constructs_are_stated() -> None:

@@ -805,7 +805,8 @@ come from the query string for GET/DELETE (`r.URL.Query()`) and from the JSON bo
 - Success responses: a single row is its JSON object (200); a list is \
 `{{"items": [...], "limit": n, "offset": n}}` (200); a created row is its JSON object \
 with status 201; a delete or update without a body is status 204 with no body \
-(`w.WriteHeader(http.StatusNoContent)`).
+(`w.WriteHeader(http.StatusNoContent)`). An empty list is `[]`, never `null`: a nil \
+Go slice encodes as `null`, so start every list from `[]T{{}}`.
 - Errors: {_error_table()}, each as that status with the JSON body \
 `{{"error": "not_found", "detail": "order"}}` (`Content-Type: application/json`).
 - Invalid input (missing, wrong type or outside its constraints) answers 422 \
@@ -823,10 +824,11 @@ and change every row. Columns listed as private never appear in a response.
 {GO_OWN_ROWS}
 - To hand rows to another user, set the owner column (`UPDATE ... SET owner_id = ?`) \
 only on rows the caller may change, and answer 404 when no user has the new id.
-- Everything a request writes succeeds or fails together: run a request that writes \
-more than once inside one `k.DB.Begin()` transaction (every statement through the \
-`*sql.Tx`, `defer tx.Rollback()`) and `tx.Commit()` only after every check passed; \
-otherwise each statement commits on its own.
+- Everything a request writes succeeds or fails together: a request that writes more \
+than once, or writes before a check that can still fail, runs in one `k.DB.Begin()` \
+transaction (every statement through the `*sql.Tx`, `defer tx.Rollback()`) and calls \
+`tx.Commit()` only after every check has passed; otherwise each statement commits on \
+its own.
 - Dates are ISO `YYYY-MM-DD` strings. Import only the standard library and \
 `platformkit`; no network, no files. Open no other database connection (use only \
 `k.DB`), and pass one SQL statement per `Exec`/`Query`/`QueryRow` call."""
@@ -896,10 +898,11 @@ means "not given"; a partial update keeps every column whose field was not sent.
 - Whether a body field was sent (even as null): read the body once and decode it into \
 `map[string]json.RawMessage` as well, then test `_, sent := raw["title"]`; usable in any \
 check, e.g. reject a late title change with 403.
-- Case-insensitive substring: \
-`strings.Contains(strings.ToLower(title), strings.ToLower(q))`, applied in Go to the \
-rows a query returned, before paging them (SQLite's `lower()` folds ASCII only); an \
-empty `q` matches every string.
+- Case-insensitive substring (SQLite's `lower()` folds ASCII only): query without \
+`LIMIT`/`OFFSET` (every other filter still in SQL), keep the rows where \
+`strings.Contains(strings.ToLower(title), strings.ToLower(q))` in Go, then apply \
+`offset` and `limit` to that filtered slice and compute any total from it; an empty `q` \
+matches every string. This is the one exception to `LIMIT ? OFFSET ?` in SQL.
 - Time: `time.Now().UTC()` once per request; `now.Add(-24 * time.Hour)`; whole units \
 truncated toward zero: `int64(end.Sub(start) / time.Hour)`; compare with stored values \
 in UTC and their stored text format.
