@@ -951,3 +951,44 @@ Corrected decision: **GO: O**, resting entirely on one ticket (t38) and one trap
 1. **Aggregation traps don't bite Sonnet in an ORM edit either.** Fan-out, null sums, zero-row groups, month and day boundaries, inactive rows and route order were all handled in 12/12 runs. This matches tabular step 2, where frontier models were at parity.
 2. **Ownership through parent tables was also handled.** No run leaked another buyer's or vendor's rows, and all ownership-before-status orderings were right.
 3. **The one real slip is transactional:** reusing an existing helper that commits partway through, so a refused request leaves partial writes. That is family 3 of the handoff (effect ordering and atomicity), not the ownership family this ticket was filed under. Lattice's one-transaction-per-write guarantee targets exactly that, but the evidence is 1 ticket × 3 reps.
+
+## Option 1b: atomicity pilot (pre-registered gates, 2026-09-29)
+
+Spec: `docs/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md` (committed in `273d87f` before any run). Arm P only, claude-sonnet-5, **CLI only** (no API key; that transport has been refused in code since `9f1f857`), 3 reps × 6 tickets (t39–t44), each needing several writes to succeed or fail together.
+
+| scoring | correct | silent [95% CI] | loud | silent-rate gate | mechanism gate | decision |
+|---|---|---|---|---|---|---|
+| as pre-registered | 6/18 | 12/18 [44%, 84%] | 0 | PASS | FAIL (4/12 covered) | SILENT-BUT-UNCOVERED |
+| corrected (below) | 11/18 | 7/18 [20%, 61%] | 0 | PASS | PASS (4/7 covered) | **GO: T** |
+
+### Oracle defects (same rule as after the first pilot)
+
+The saved final candidate of every silent run was read. Two cases asked for behaviour the ticket text does not determine, and are now excluded (`EXCLUDED` in `bench/edit_slice/repos/multivendor.py`):
+
+- `t42.empty_list` (3 runs): an empty `item_ids` has no stated answer.
+- `t44.one_order` (2 runs): "at least two" order ids, but no stated status for one. The model answered 422 through its own validator, with a different error body.
+
+Rescored with `rescore.py`, with no new model calls: 5 runs changed from silent to correct. **The correction flips the decision.** The pre-registered verdict is SILENT-BUT-UNCOVERED; the corrected one is GO.
+
+### The real slips (read in the code)
+
+- **Partial writes when the model reuses a helper that commits midway:**
+  - **t40, 3/3 reps:** the model returned the old stock, deleted the old lines, then called `decrement_stock_optimistic`, which commits each line. A 409 left the order half-rewritten.
+  - **t39, 2/3 reps:** the model called `update_details`, which commits, once per product. A later 403 or 404 left the earlier prices changed.
+  - This matches t38 in the first pilot, where `place_order` commits line by line. That makes **8 of 9 runs** on the three tickets with a committing helper, against **0 of 12** on t41–t44, where the model wrote the multi-step logic itself and validated everything first.
+- **A price of 0 accepted:**
+  - t39, 3/3 reps: the ticket says "exactly as if changed with `PATCH`", and PATCH rejects prices ≤ 0.
+  - t43, 1/3 reps: the ticket says "as for `POST /products`", which also rejects them.
+  - The model declared its own body models without `gt=0`.
+- **Admin bypass:** in t40 rep 2 an admin could edit another buyer's order, against "only the buyer who placed the order".
+- **Count:** t39, 3/3 reps: a repeated product id counted twice in `updated` (the text asks for the number of products changed). No guarantee applies (tag `none`), which is why the three t39 runs are not covered.
+
+**Efficiency (18 runs):** $2.20 list-price equivalent (plan-billed through the CLI); 213k input and 139k output tokens; 1.17 rounds per run; 64.1 s per run; 80.2 lines changed per run.
+
+### What it says
+
+1. **Sonnet's one systematic weakness on this app is transactional.** It shows when an existing helper commits partway, and the model reuses it inside a multi-step change. Lattice's one-transaction-per-write guarantee is aimed at exactly this. The case is still narrow: 3 tickets, all with committing helpers.
+2. **Unvalidated parameters on hand-rolled request models** (price 0) are the second pattern, and typed, bounded parameters cover them.
+3. **Everything else Sonnet handled:** aggregations, ownership, validate-before-write when writing its own code, route order, and date boundaries.
+
+Per the spec, a GO means pre-registering the main experiment (P / L / Q on t38–t44, ≥ 6 reps, CLI only) after importing the app into Lattice with a verified start state. It needs the user's go-ahead, since the decision rests on a post-hoc correction.
