@@ -39,7 +39,7 @@ from lattice.catalog import (
     T2_STDLIB,
     StdSig,
 )
-from lattice.check.astutil import literal_value
+from lattice.check.astutil import INT64_MAX, INT64_MIN, literal_value
 from lattice.check.context import CheckContext
 from lattice.check.loop_hints import t1_shape_warning
 from lattice.check.re2 import re2_problem
@@ -798,7 +798,7 @@ class BodyChecker:
                 if isinstance(value, bool):
                     return T.BOOL
                 if isinstance(value, int):
-                    return T.INT
+                    return self._int_literal(node, value)
                 if isinstance(value, float):
                     return T.FLOAT
                 if isinstance(value, str):
@@ -876,6 +876,18 @@ class BodyChecker:
             case ast.Starred():
                 return self.err("L147", node, "starred expressions are not allowed")
         return self.err("L147", node, f"'{type(node).__name__}' is not allowed in a procedure")
+
+    def _int_literal(self, node: ast.expr, value: int) -> T2Type:
+        """Range-check a (possibly negated as a unit, see `_unary`) Int literal;
+        same code and message style as T0's `p1_nodes._check_int_range`."""
+        if not INT64_MIN <= value <= INT64_MAX:
+            return self.err(
+                "L404",
+                node,
+                f"integer literal {value} does not fit in a 64-bit Int",
+                f"use a value between {INT64_MIN} and {INT64_MAX}",
+            )
+        return T.INT
 
     def _load_name(self, node: ast.Name, env: Env) -> T2Type:
         name = node.id
@@ -1173,6 +1185,19 @@ class BodyChecker:
         return self.err("L903", node, f"unsupported operand types for {sym}: {lt} and {rt}", hint)
 
     def _unary(self, node: ast.UnaryOp, env: Env) -> T2Type:
+        operand = node.operand
+        if (
+            isinstance(node.op, ast.USub)
+            and isinstance(operand, ast.Constant)
+            and isinstance(operand.value, int)
+            and not isinstance(operand.value, bool)
+        ):
+            # `-9223372036854775808` parses as USub(Constant(2**63)); the positive
+            # magnitude alone overflows Int64 even though the negated literal (Int64
+            # MIN) does not, so range-check the literal as one signed unit, mirroring
+            # T0's p1_nodes._check_expr (Constant | UnaryOp(USub)).
+            self.types[id(operand)] = T.INT
+            return self._int_literal(node, -operand.value)
         t = self.expr(node.operand, env)
         if isinstance(node.op, ast.Not):
             return T.BOOL
