@@ -109,6 +109,7 @@ from lattice.api.codegen import compile_source_to_fastapi
 from lattice.api.ir import lower_api
 from lattice.check import check_source
 from lattice.diagnostics import Diagnostic
+from lattice.parse import HEADERS, split_header
 from lattice.profile import Profile
 from lattice.typesys import Scalar
 
@@ -195,7 +196,8 @@ class EmitResult:
 
 
 def join_sources(lattice_sources: Mapping[str, str] | Sequence[str] | str) -> str:
-    """One program from several Lattice sources (each file's ``# lattice: v1`` once)."""
+    """One program from several Lattice sources (each file's ``# lattice: v1`` once; the
+    ``v1.1`` header when any source has it)."""
     if isinstance(lattice_sources, str):
         return lattice_sources
     items = (
@@ -204,11 +206,15 @@ def join_sources(lattice_sources: Mapping[str, str] | Sequence[str] | str) -> st
         else [(f"source {i}", s) for i, s in enumerate(lattice_sources)]
     )
     parts = []
+    header = HEADER
     for name, src in items:
-        if not src.startswith(HEADER):
-            raise ValueError(f"{name} must start with {HEADER!r}")
-        parts.append(src.removeprefix(HEADER).strip("\n"))
-    return HEADER + "\n\n\n".join(parts) + "\n"
+        split = split_header(src)
+        if split is None:
+            raise ValueError(f"{name} must start with {HEADER!r} (or '{HEADERS[1]}')")
+        if split[0].rstrip() != HEADERS[0]:  # v1 and v1.1 both run under v1.1 rules
+            header = split[0].rstrip() + "\n"
+        parts.append(split[1].strip("\n"))
+    return header + "\n\n\n".join(parts) + "\n"
 
 
 def _natives_module(module: str) -> str:
@@ -481,7 +487,7 @@ def _dispose(app: Any) -> None:
 
 
 def app_routes(app_factory: str) -> tuple[str, ...]:
-    """"METHOD /path" of every route of the app ``app_factory`` builds (on a scratch
+    """ "METHOD /path" of every route of the app ``app_factory`` builds (on a scratch
     database), in order, full paths (HEAD excluded)."""
     import tempfile
 
