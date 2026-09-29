@@ -1,9 +1,11 @@
 """RE2 subset (spec 2026-09-28 go-target §3.1, L926): patterns every target can run.
 
-Go's regexp is RE2: no lookaround, backreferences, conditionals, possessive repeats or
-atomic groups. v1.1 refuses them on every target so a program means the same
-everywhere. Character classes (`\\d \\w \\s \\b`) are ASCII on every target: the Python
-runtime compiles patterns with `re.ASCII`."""
+The subset is RE2's: no lookaround, backreferences, conditionals, possessive repeats or
+atomic groups. v1.1 refuses them on every target for portability to future targets
+(JavaScript and others) and a bounded matching cost (docs/lattice-language-rules.md §6).
+Go itself runs Python's own SRE engine (lattice.gogen.regex, rt/regex.go), so on Go the
+subset is not needed for equal answers. Character classes (`\\d \\w \\s \\b`) are ASCII
+on every target: patterns are compiled with `re.ASCII`."""
 
 from __future__ import annotations
 
@@ -56,7 +58,7 @@ def _children(name: str, av: Any) -> Any:  # noqa: ANN401
 
 
 def re2_problem(pattern: str) -> str | None:
-    """Why `pattern` is outside Go's RE2 subset, or None when RE2 accepts it (also for a
+    """Why `pattern` is outside the RE2 subset, or None when it is inside (also for a
     pattern that does not compile: that is reported elsewhere, L916/L601)."""
     try:
         parsed = _p.parse(pattern)

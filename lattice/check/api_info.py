@@ -389,8 +389,10 @@ def _pattern(name: str, node: ast.expr) -> str | Problem:
 
 
 def pattern_problem(spec: ParamType | ParamSpec, value: str) -> str | None:
-    """The 422 message when a Str value does not match the parameter's pattern. ASCII
-    only (`re.ASCII`): `\\d \\w \\s \\b` match the same characters as Go's RE2."""
+    """The 422 message when a Str value does not match the parameter's pattern:
+    `re.fullmatch` with `re.ASCII` (`\\d \\w \\s \\b` are ASCII on every target, for
+    portability; docs/lattice-language-rules.md §6). Go runs the same compiled pattern on
+    its port of Python's SRE engine (lattice.gogen.endpoints, rt/params.go)."""
     if spec.pattern is None or re.fullmatch(spec.pattern, value, flags=re.ASCII):
         return None
     return "must be an email address" if spec.email else f"must match the pattern {spec.pattern!r}"
