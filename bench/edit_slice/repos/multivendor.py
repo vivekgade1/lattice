@@ -694,6 +694,269 @@ def mechanism(case_name: str) -> str:
     return MECHANISMS.get(case_name, "none")
 
 
+# ---- arm L's start state: the imported app answers as the original, route by route -----------
+#
+# The JustNotes lesson (round 5): an import that passed its own generated suite was
+# already wrong on requests that suite never made. Before any run, the app arm L starts
+# from (bench/imports/multivendor emitted into the original, islands kept as Python) is
+# compared with the original on these requests: every existing route, as every kind of
+# caller, on other users' rows, bad ids and bodies, and each auth failure.
+
+FIDELITY_WRITES = ("users", "vendors", "products", "orders", "order_items")
+
+
+def _fid(what: str, method: str, path: str, user: str | None = None, db: str = "seed",
+         **kw: Any) -> Case:  # fmt: skip
+    return Case(f"start.{what}", method, path, user=user, db=db, route=None, **kw)
+
+
+def fidelity_cases() -> list[Case]:
+    w = {"tables": FIDELITY_WRITES}
+    out: list[Case] = []
+    # the auth routes
+    reg = {"full_name": "New Person", "email": "new@example.com", "password": "pw123456"}
+    out += [
+        _fid("register", "POST", "/auth/register", json=reg, **w),
+        _fid(
+            "register_taken",
+            "POST",
+            "/auth/register",
+            json={**reg, "email": "carol@example.com"},
+            **w,
+        ),
+        _fid("register_bad_email", "POST", "/auth/register", json={**reg, "email": "nope"}, **w),
+        _fid("register_missing", "POST", "/auth/register", json={"email": "x@example.com"}, **w),
+    ]
+    for who, pw in (
+        ("carol", "carolpass1"),
+        ("carol", "wrong"),
+        ("erin", "erinpass1"),
+        ("nobody", "whatever1"),
+    ):
+        out.append(
+            _fid(
+                f"login_{who}_{pw}",
+                "POST",
+                "/auth/login",
+                form={"username": f"{who}@example.com", "password": pw},
+            )
+        )
+    # the caller's own profile
+    for who in HANDLES:
+        if who != "erin":
+            out.append(_fid(f"me_{who}", "GET", "/users/me", who))
+    out += [
+        _fid("me_rename", "PATCH", "/users/me", "carol", json={"full_name": "Carol C."}, **w),
+        _fid("me_bad_email", "PATCH", "/users/me", "carol", json={"email": "nope"}, **w),
+    ]
+    # vendors
+    out += [
+        _fid(
+            "vendor_register_buyer", "POST", "/vendors", "carol", json={"business_name": "C"}, **w
+        ),
+        _fid(
+            "vendor_register_again", "POST", "/vendors", "vicky", json={"business_name": "V"}, **w
+        ),
+        *(
+            _fid(f"vendor_me_{who}", "GET", "/vendors/me", who)
+            for who in ("vicky", "vera", "carol", "admin")
+        ),
+        _fid("vendor_rename", "PATCH", "/vendors/me", "vicky", json={"business_name": "VV"}, **w),
+        _fid(
+            "vendor_rename_buyer", "PATCH", "/vendors/me", "carol", json={"business_name": "X"}, **w
+        ),
+        _fid(
+            "verify_admin", "PATCH", "/vendors/3/verify", "admin", json={"is_verified": True}, **w
+        ),
+        _fid(
+            "verify_vendor", "PATCH", "/vendors/3/verify", "vicky", json={"is_verified": True}, **w
+        ),
+        _fid(
+            "verify_missing",
+            "PATCH",
+            f"/vendors/{MISSING}/verify",
+            "admin",
+            json={"is_verified": True},
+            **w,
+        ),
+    ]
+    # products
+    new = {"name": "Lamp", "category": "home", "price": 30.0, "stock_quantity": 5}
+    out += [
+        _fid("product_create", "POST", "/products", "vicky", json=new, **w),
+        _fid("product_create_buyer", "POST", "/products", "carol", json=new, **w),
+        _fid("product_create_admin", "POST", "/products", "admin", json=new, **w),
+        _fid("product_create_no_profile", "POST", "/products", "vera", "vendorless", json=new, **w),
+        _fid(
+            "product_create_zero_price", "POST", "/products", "vicky", json={**new, "price": 0}, **w
+        ),
+        _fid("products", "GET", "/products"),
+        _fid("products_tools", "GET", "/products", params={"category": "tools"}),
+        _fid("products_price", "GET", "/products", params={"min_price": 8, "max_price": 20}),
+        _fid("products_window", "GET", "/products", params={"skip": 2, "limit": 3}),
+        _fid("products_limit_101", "GET", "/products", params={"limit": 101}),
+        _fid("products_negative_price", "GET", "/products", params={"min_price": -1}),
+        _fid("products_inactive_sold", "GET", "/products", db="poster_sold"),
+        *(_fid(f"product_{pid}", "GET", f"/products/{pid}") for pid in (MUG, POSTER, MISSING)),
+        _fid("product_bad_id", "GET", "/products/abc"),
+        _fid("product_update", "PATCH", f"/products/{MUG}", "vicky", json={"price": 13.0}, **w),
+        _fid(
+            "product_deactivate",
+            "PATCH",
+            f"/products/{MUG}",
+            "vicky",
+            json={"is_active": False},
+            **w,
+        ),
+        _fid(
+            "product_update_foreign",
+            "PATCH",
+            f"/products/{HAMMER}",
+            "vicky",
+            json={"price": 1.0},
+            **w,
+        ),
+        _fid(
+            "product_update_missing",
+            "PATCH",
+            f"/products/{MISSING}",
+            "vicky",
+            json={"price": 1.0},
+            **w,
+        ),
+        _fid(
+            "product_update_buyer", "PATCH", f"/products/{MUG}", "carol", json={"price": 1.0}, **w
+        ),
+        _fid(
+            "product_update_admin", "PATCH", f"/products/{MUG}", "admin", json={"price": 1.0}, **w
+        ),
+    ]
+    # orders
+    one = {"items": [{"product_id": MUG, "quantity": 2}]}
+    out += [
+        _fid("order_place", "POST", "/orders", "carol", json=one, **w),
+        _fid(
+            "order_place_two",
+            "POST",
+            "/orders",
+            "dave",
+            json={
+                "items": [
+                    {"product_id": CANDLE, "quantity": 1},
+                    {"product_id": GLOVES, "quantity": 3},
+                ]
+            },
+            **w,
+        ),
+        _fid(
+            "order_place_no_stock",
+            "POST",
+            "/orders",
+            "carol",
+            json={"items": [{"product_id": TAPE, "quantity": 1}]},
+            **w,
+        ),
+        _fid("order_place_vendor", "POST", "/orders", "vicky", json=one, **w),
+        _fid(
+            "order_place_zero",
+            "POST",
+            "/orders",
+            "carol",
+            json={"items": [{"product_id": MUG, "quantity": 0}]},
+            **w,
+        ),
+        _fid("order_place_empty", "POST", "/orders", "carol", json={"items": []}, **w),
+        *(
+            _fid(f"orders_me_{who}", "GET", "/orders/me", who)
+            for who in ("carol", "dave", "vicky", "admin", "frank")
+        ),
+        *(
+            _fid(f"order_{oid}_{who}", "GET", f"/orders/{oid}", who)
+            for oid, who in (
+                (1, "carol"),
+                (3, "carol"),
+                (3, "admin"),
+                (MISSING, "carol"),
+                (1, "vicky"),
+            )
+        ),
+        _fid(
+            "status_confirm",
+            "PATCH",
+            "/orders/7/status",
+            "admin",
+            json={"status": "confirmed"},
+            **w,
+        ),
+        _fid(
+            "status_ship_vendor",
+            "PATCH",
+            "/orders/5/status",
+            "vicky",
+            json={"status": "shipped"},
+            **w,
+        ),
+        _fid(
+            "status_buyer", "PATCH", "/orders/7/status", "carol", json={"status": "confirmed"}, **w
+        ),
+        _fid(
+            "status_bad_transition",
+            "PATCH",
+            "/orders/7/status",
+            "admin",
+            json={"status": "delivered"},
+            **w,
+        ),
+        _fid(
+            "status_bad_value", "PATCH", "/orders/7/status", "admin", json={"status": "lost"}, **w
+        ),
+        _fid(
+            "status_missing",
+            "PATCH",
+            f"/orders/{MISSING}/status",
+            "admin",
+            json={"status": "confirmed"},
+            **w,
+        ),
+        _fid(
+            "flash",
+            "POST",
+            "/orders/flash-sale-purchase",
+            "carol",
+            json={"product_id": HAMMER, "quantity": 1},
+            **w,
+        ),
+        _fid(
+            "flash_no_stock",
+            "POST",
+            "/orders/flash-sale-purchase",
+            "carol",
+            json={"product_id": TAPE, "quantity": 1},
+            **w,
+        ),
+        _fid(
+            "flash_vendor",
+            "POST",
+            "/orders/flash-sale-purchase",
+            "vicky",
+            json={"product_id": HAMMER, "quantity": 1},
+            **w,
+        ),
+    ]
+    # each auth failure, on one route of each router
+    for path in ("/users/me", "/vendors/me", "/orders/me"):
+        for what, token in (
+            ("no_token", None),
+            ("garbage", "not-a-jwt"),
+            ("unknown_user", mint(MISSING)),
+            ("inactive", mint(ERIN)),
+        ):
+            out.append(
+                Case(f"start.{path.strip('/').replace('/', '_')}_{what}", "GET", path, token=token)
+            )
+    return out
+
+
 # ---- the oracle -------------------------------------------------------------------------------
 
 _EMPTY_PLAN = SeedPlan(users=())
@@ -733,6 +996,8 @@ def multivendor_ticket_oracle(ticket_id: str) -> TicketOracle:
 
 __all__ = [
     "CONTROL_TICKETS",
+    "FIDELITY_WRITES",
+    "fidelity_cases",
     "EXCLUDED",
     "STATUS_ONLY",
     "MECHANISMS",

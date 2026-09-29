@@ -108,6 +108,12 @@ def describe_policy(policy: Policy) -> str:
         )
     else:
         out.append("- Datetimes: a naive and an aware datetime are never compared.")
+    out.append(
+        "- Writes: a request's writes succeed or fail together. Every check that can "
+        "refuse the request comes before the first commit, so a refused request leaves "
+        "nothing it wrote in the database (commit once, after the last check; calling a "
+        "helper that commits counts as committing)."
+    )
     return "\n".join(out) + "\n"
 
 

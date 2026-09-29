@@ -45,6 +45,15 @@ What each check cannot see is listed with it.
   of a stored datetime column with a request datetime parameter that was never converted
   (it may carry any UTC offset). A name assigned values of different kinds is not judged.
   *Cannot see:* values crossing function boundaries, awareness decided at run time.
+* **PY807 partial writes** (Lattice's one transaction per write, spec 2026-09-29 option
+  1). In a function a route runs (the route, or a package helper it calls), a commit --
+  ``<session>.commit()``, or a call to a package function that commits -- that a failure
+  can follow: a later ``raise``, a later call to a package function that can raise, or,
+  inside one loop, a failure the next iteration can hit after this one committed. A
+  refused request then leaves the earlier writes in the database. A ``raise`` inside an
+  ``except`` handler converts a failure that already happened and is not one. *Cannot
+  see:* failures raised by the database or libraries, a helper deeper than
+  :data:`HELPER_DEPTH`, a commit through a callable passed as a value.
 """
 
 from __future__ import annotations
@@ -60,6 +69,7 @@ from lattice.pycheck.findings import Finding
 from lattice.pycheck.policy import ErrorAnswer, Policy
 from lattice.pycheck.view import (
     AppView,
+    Callee,
     FunctionNode,
     bind_args,
     dead_lines,
@@ -110,6 +120,7 @@ def all_findings(view: AppView, policy: Policy) -> list[Finding]:
         check_route_order,
         check_error_conventions,
         check_datetimes,
+        check_partial_writes,
     ):
         check(ctx)
     seen: set[str] = set()
@@ -1518,3 +1529,161 @@ __all__ = [
     "run_pycheck",
     "swallows",
 ]
+
+
+# ---- PY807 partial writes ---------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class _Effect:
+    kind: str  # "commit" or "fail"
+    node: ast.AST
+    loops: tuple[int, ...]  # the enclosing loops, outermost first
+    what: str  # how it reads in a message
+
+
+class _EffectScan:
+    """Which package functions commit and which can raise (memoised, to HELPER_DEPTH)."""
+
+    def __init__(self, view: AppView) -> None:
+        self.view = view
+        self.memo: dict[tuple[int, str], bool] = {}
+
+    def callee(self, mod: str, fn: FunctionNode, call: ast.Call) -> Callee | None:
+        found = self.view.callee(mod, call, self.view.local_classes(mod, fn))
+        return None if found is None or _is_route_fn(found.fn) else found
+
+    def does(self, what: str, mod: str, fn: FunctionNode, depth: int = 0) -> bool:
+        key = (id(fn), what)
+        if key in self.memo:
+            return self.memo[key]
+        self.memo[key] = False  # recursion
+        found = False
+        handlers = _handler_nodes(fn)
+        for node in ast.walk(fn):
+            if what == "commit" and _is_commit(node):
+                found = True
+            elif what == "fail" and isinstance(node, ast.Raise) and node.exc is not None:
+                found = id(node) not in handlers
+            elif isinstance(node, ast.Call) and depth < HELPER_DEPTH:
+                c = self.callee(mod, fn, node)
+                found = c is not None and self.does(what, c.module, c.fn, depth + 1)
+            if found:
+                break
+        self.memo[key] = found
+        return found
+
+    def effects(self, mod: str, fn: FunctionNode) -> list[_Effect]:
+        """The commits and failures of ``fn`` in execution (source) order."""
+        out: list[_Effect] = []
+        handlers = _handler_nodes(fn)
+
+        def visit(stmts: list[ast.stmt], loops: tuple[int, ...]) -> None:
+            for stmt in stmts:
+                inner = loops + (id(stmt),) if isinstance(stmt, ast.For | ast.While) else loops
+                heads: list[ast.AST] = []
+                bodies: list[list[ast.stmt]] = []
+                if isinstance(stmt, ast.For | ast.While | ast.If):
+                    heads = [stmt.iter if isinstance(stmt, ast.For) else stmt.test]
+                    bodies = [stmt.body, stmt.orelse]
+                elif isinstance(stmt, ast.With):
+                    heads = [i.context_expr for i in stmt.items]
+                    bodies = [stmt.body]
+                elif isinstance(stmt, ast.Try):
+                    bodies = [stmt.body, *(h.body for h in stmt.handlers), stmt.orelse,
+                              stmt.finalbody]  # fmt: skip
+                elif isinstance(stmt, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+                    continue
+                else:
+                    heads = [stmt]
+                for head in heads:
+                    calls = sorted((n for n in ast.walk(head) if isinstance(n, ast.Call)),
+                                   key=lambda n: (n.lineno, n.col_offset))  # fmt: skip
+                    for call in calls:
+                        self._call(mod, fn, call, loops if head is not stmt else inner, out)
+                    if (isinstance(head, ast.Raise) and head.exc is not None
+                            and id(head) not in handlers):  # fmt: skip
+                        out.append(_Effect("fail", head, loops, "raise"))
+                for body in bodies:
+                    visit(body, inner)
+
+        visit(fn.body, ())
+        return out
+
+    def _call(self, mod: str, fn: FunctionNode, call: ast.Call, loops: tuple[int, ...],
+              out: list[_Effect]) -> None:  # fmt: skip
+        if _is_commit(call):
+            out.append(_Effect("commit", call, loops, "commit()"))
+            return
+        c = self.callee(mod, fn, call)
+        if c is None:
+            return
+        name = c.fn.name
+        if self.does("fail", c.module, c.fn):  # a helper fails before it commits, if at all
+            out.append(_Effect("fail", call, loops, f"{name}() (it can raise)"))
+        if self.does("commit", c.module, c.fn):
+            out.append(_Effect("commit", call, loops, f"{name}() (it commits)"))
+
+
+def _is_commit(node: ast.AST) -> bool:
+    return (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "commit"
+        and not node.args
+    )
+
+
+def _handler_nodes(fn: ast.AST) -> set[int]:
+    """The ids of the raise statements inside ``except`` handlers of ``fn``."""
+    out: set[int] = set()
+    for node in ast.walk(fn):
+        if isinstance(node, ast.ExceptHandler):
+            out |= {id(n) for n in ast.walk(node) if isinstance(n, ast.Raise)}
+    return out
+
+
+def _partial_write(effects: list[_Effect]) -> tuple[_Effect, _Effect] | None:
+    """(the commit, the failure that can follow it), or None."""
+    for i, e in enumerate(effects):
+        if e.kind != "commit":
+            continue
+        for f in effects[i + 1 :]:
+            if f.kind == "fail":
+                return e, f
+        for f in effects:
+            if f.kind == "fail" and set(e.loops) & set(f.loops):
+                return e, f
+    return None
+
+
+def check_partial_writes(ctx: _Ctx) -> None:
+    view = ctx.view
+    scan = _EffectScan(view)
+    for route in view.model.routes:
+        fn = view.route_fn(route)
+        if fn is None:
+            continue
+        for mod, f in _reachable(view, route.module, fn):
+            hit = _partial_write(scan.effects(mod, f))
+            if hit is None:
+                continue
+            commit, fail = hit
+            where = "" if f is fn else f" (in {f.name})"
+            again = " on a later pass of the same loop" if fail.node is commit.node or (
+                getattr(fail.node, "lineno", 0) < getattr(commit.node, "lineno", 0)) else ""
+            message = (
+                f"{route.method} {route.path} ({route.name}) commits{where} at line "
+                f"{commit.node.lineno} ({commit.what}) and can still fail afterwards{again} at "
+                f"line {fail.node.lineno} ({fail.what}): a refused request leaves the earlier "
+                "writes in the database"
+            )
+            hint = (
+                "check everything that can refuse the request first, then write and call "
+                "`session.commit()` once at the end; don't call a helper that commits "
+                "before the last check (use `session.add`/`session.flush()` instead)"
+            )
+            ctx.add("PY807", mod, commit.node.lineno, message, hint,
+                    f"{route_key(route)}|{f.name}")  # fmt: skip
+            break
+

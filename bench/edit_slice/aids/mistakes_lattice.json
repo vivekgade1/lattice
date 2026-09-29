@@ -2,7 +2,7 @@
   "source": "bench/results/edit_slice/round4_*_L.jsonl",
   "method": "C3 repair persistence of arm-L checker refusals; codes ranked by repeated refusals, then persistence, then refused rounds; row text: the code's generic, ticket-neutral row",
   "candidates": 8,
-  "chars_budget": 1144,
+  "chars_budget": 1444,
   "cell_chars": 280,
   "max_rows": 8,
   "chars": 1123,

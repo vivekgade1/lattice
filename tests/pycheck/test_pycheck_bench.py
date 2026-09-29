@@ -133,6 +133,11 @@ TRAP_HITS: dict[str, tuple[str, ...]] = {
     "reassign-ignores-ownership-scope": ("PY801",),
     "tag-summary-counts-any-linked-note": ("PY801", "PY801"),
     "bulk-delete-notes-skips-ownership-check": ("PY801",),
+    # PY807 partial writes (added 2026-09-29, option 1): the atomicity traps of earlier rounds
+    "bulk-writes-before-the-404": ("PY807",),
+    "bulk-delete-items-not-atomic": ("PY807",),
+    "move-items-checks-inactive-after-moving": ("PY807",),
+    "bulk-delete-notes-not-atomic": ("PY807",),
 }
 
 
@@ -144,7 +149,7 @@ def test_trap_recall_is_as_measured():
         if found:
             measured[name] = tuple(f.code for f in found)
     assert measured == TRAP_HITS
-    assert (len(measured), len(all_traps())) == (15, 63)
+    assert (len(measured), len(all_traps())) == (19, 63)
 
 
 # ---- the ceiling: round 4's arm-P runs --------------------------------------------------------
@@ -170,8 +175,10 @@ def test_round4_p_silent_runs_pycheck_would_flag():
             counts[(run["model"], run["outcome"], flagged)] += 1
     haiku, sonnet = "claude-haiku-4-5", "claude-sonnet-5"
     # silent runs flagged / all silent runs, per model
-    assert (counts[(haiku, "silent", True)], counts[(haiku, "silent", False)]) == (12, 19)
-    assert (counts[(sonnet, "silent", True)], counts[(sonnet, "silent", False)]) == (6, 8)
+    # (12, 19) before PY807: one more Haiku partial write is caught
+    assert (counts[(haiku, "silent", True)], counts[(haiku, "silent", False)]) == (13, 18)
+    # (6, 8) before PY807: three more Sonnet partial writes are caught
+    assert (counts[(sonnet, "silent", True)], counts[(sonnet, "silent", False)]) == (9, 5)
     # and no correct run is flagged: no repair round wasted on a right answer
     assert counts[(haiku, "correct", True)] == counts[(sonnet, "correct", True)] == 0
     assert counts[(haiku, "correct", False)] + counts[(sonnet, "correct", False)] == 135

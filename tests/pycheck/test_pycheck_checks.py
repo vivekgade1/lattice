@@ -423,3 +423,86 @@ def test_py806_accepts_normalised_datetimes(demo_app, policy):
     )
     for src in (fresh, naive_now, since):
         assert check(demo_app, policy, src) == [], src
+
+
+# ---- PY807 partial writes ------------------------------------------------------------------
+
+SAVE_HELPER = """
+def save(session, row):
+    session.add(row)
+    session.commit()
+    return row
+"""
+
+
+def test_py807_flags_a_commit_in_a_loop_that_can_still_fail(demo_app, policy):
+    extra = SAVE_HELPER + """
+@router.post("/bulk", response_model=ItemPublic)
+def bulk_items(session: SessionDep, current_user: CurrentUser, ids: list[int]) -> Any:
+    for id in ids:
+        item = session.get(Item, id)
+        if not item or item.owner_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not enough permissions")
+        item.title = "archived"
+        save(session, item)
+    return item
+"""
+    found = [f for f in check(demo_app, policy, extra) if f.code == "PY807"]
+    assert len(found) == 1, found
+    assert "bulk_items" in found[0].message and "save" in found[0].message
+
+
+def test_py807_flags_a_check_after_a_commit(demo_app, policy):
+    extra = """
+@router.post("/{id}/copy", response_model=ItemPublic)
+def copy_item(session: SessionDep, current_user: CurrentUser, id: int) -> Any:
+    copy = Item(title="copy", owner_id=current_user.id)
+    session.add(copy)
+    session.commit()
+    original = session.get(Item, id)
+    if not original:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return copy
+"""
+    found = [f for f in check(demo_app, policy, extra) if f.code == "PY807"]
+    assert len(found) == 1, found
+    assert "copy_item" in found[0].message
+
+
+def test_py807_accepts_checks_first_and_one_commit(demo_app, policy):
+    extra = """
+@router.post("/bulk", response_model=ItemPublic)
+def bulk_items(session: SessionDep, current_user: CurrentUser, ids: list[int]) -> Any:
+    items = []
+    for id in ids:
+        item = session.get(Item, id)
+        if not item or item.owner_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not enough permissions")
+        items.append(item)
+    for item in items:
+        item.title = "archived"
+        session.add(item)
+    session.commit()
+    return items[0]
+"""
+    assert "PY807" not in codes(check(demo_app, policy, extra))
+
+
+def test_py807_accepts_an_error_converted_after_a_service_that_commits_last(demo_app, policy):
+    extra = SAVE_HELPER + """
+def archive(session, current_user, id):
+    item = session.get(Item, id)
+    if not item:
+        raise ValueError("Item not found")
+    item.title = "archived"
+    return save(session, item)
+
+
+@router.post("/{id}/archive", response_model=ItemPublic)
+def archive_item(session: SessionDep, current_user: CurrentUser, id: int) -> Any:
+    try:
+        return archive(session, current_user, id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+"""
+    assert "PY807" not in codes(check(demo_app, policy, extra))

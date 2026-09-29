@@ -196,7 +196,7 @@ def imported_repo(repo: str) -> tuple[dict[str, str], str]:
 # repo -> a function returning ({program file: source}, profile source): the template's
 # lifters' output; a held-out repo's is its committed import (import_dir), when written
 LATTICE_STARTS: dict[str, Callable[[], tuple[dict[str, str], str]]] = {"template": imported}
-HELD_OUT_REPOS = ("taskflow", "justnotes")
+HELD_OUT_REPOS = ("taskflow", "justnotes", "multivendor")
 
 
 def _start(repo: str) -> Callable[[], tuple[dict[str, str], str]] | None:

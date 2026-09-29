@@ -1,13 +1,13 @@
 {
   "source": "bench/results/edit_slice/round4_*_P.jsonl",
   "method": "the final candidate of every round-4 arm-P run (whatever the oracle said) checked by pycheck with arm Q's policy; codes ranked by runs flagged; row text: the code's generic, ticket-neutral row",
-  "candidates": 3,
+  "candidates": 4,
   "final_rounds": 180,
-  "final_rounds_flagged": 18,
-  "chars_budget": 1144,
+  "final_rounds_flagged": 22,
+  "chars_budget": 1444,
   "cell_chars": 280,
   "max_rows": 8,
-  "chars": 1144,
+  "chars": 1444,
   "rows": [
     {
       "code": "PY801",
@@ -26,6 +26,12 @@
       "mistake": "a request datetime, which may carry any UTC offset, is compared with a stored datetime that the database returns as naive UTC",
       "fix": "convert it first: `if <datetime>.tzinfo is not None: <datetime> = <datetime>.astimezone(UTC).replace(tzinfo=None)`",
       "count": 6
+    },
+    {
+      "code": "PY807",
+      "mistake": "a commit (or a call to a helper that commits) comes before a check that can still refuse the request, so a refused request leaves its earlier writes in the database",
+      "fix": "check everything that can refuse the request first, then write and call `<session>.commit()` once at the end",
+      "count": 4
     }
   ]
 }

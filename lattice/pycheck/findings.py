@@ -14,6 +14,7 @@ CODES: dict[str, str] = {
     "PY804": "route order: a literal path is declared after a parameter path that swallows it",
     "PY805": "error conventions: an HTTP error differs from the app's answer for the same case",
     "PY806": "datetimes: a naive and an aware datetime are compared",
+    "PY807": "partial writes: a commit that a later failure of the same request can follow",
 }
 
 

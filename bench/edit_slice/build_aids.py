@@ -155,6 +155,12 @@ GENERIC_ROWS: dict[str, tuple[str, str]] = {
         "convert it first: `if <datetime>.tzinfo is not None: <datetime> = "
         "<datetime>.astimezone(UTC).replace(tzinfo=None)`",
     ),
+    "PY807": (
+        "a commit (or a call to a helper that commits) comes before a check that can still "
+        "refuse the request, so a refused request leaves its earlier writes in the database",
+        "check everything that can refuse the request first, then write and call "
+        "`<session>.commit()` once at the end",
+    ),
 }
 
 
