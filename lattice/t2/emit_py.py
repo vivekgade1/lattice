@@ -48,6 +48,7 @@ from lattice.check.t2.types import T2Type
 from lattice.runtime import LatticeInternalError
 from lattice.t2.support import T2_BUILTIN_NAMES
 from lattice.t2ir import nodes as n
+from lattice.t2ir.lower import _widened
 
 __all__ = ["T2Code", "emit_python"]
 
@@ -123,9 +124,13 @@ def _is_int(t: T2Type) -> bool:
     return T.strip_opt(t) == T.INT
 
 
-def _float_keyed(t: T2Type) -> bool:
-    """A dict whose keys are Floats (a Counter's reads never store: no helper)."""
-    return isinstance(t, T.DictT) and t.key == T.FLOAT
+def _exact_key(obj: T2Type, key: T2Type) -> bool:
+    """A dict (or Counter) key holding an Int where the keys hold a Float, at any depth:
+    looked up exactly (R-widen); a defaultdict or Counter that stores it widens it."""
+    match obj:
+        case T.DictT(key=k) | T.CounterT(key=k):
+            return _widened(key, k) != key
+    return False
 
 
 # ---- names ----------------------------------------------------------------------------------
@@ -287,7 +292,9 @@ class _Emit:
         op = _BINOPS[s.op]()
         ttype = self._target_type(s.target)
         ranged = ttype is not None and _is_int(ttype) and s.op in _RANGED_BINARY
-        if not s.grow and not ranged:
+        t = s.target
+        exact = isinstance(t, n.IndexT) and _exact_key(t.obj.type, t.index.type)
+        if not s.grow and not ranged and not exact:
             return [ast.AugAssign(self.target(s.target), op, self.expr(s.value))]
         stmts: list[ast.stmt] = []
 
@@ -304,6 +311,11 @@ class _Emit:
             if isinstance(index, ast.Slice):  # xs[a:b] += ...: each bound once
                 parts = (index.lower, index.upper, index.step)
                 key = ast.Slice(*(None if p is None else bind(p) for p in parts))
+            elif exact:  # the key read and written: exact, or widened where a read stores
+                assert isinstance(t, n.IndexT) and isinstance(t.obj.type, T.DictT | T.CounterT)
+                how = ast.Constant(_widen_how(t.index.type, t.obj.type.key))
+                fkey = self._name(f"{self.fuel}_fkey")
+                key = bind(ast.Call(fkey, [container, index, how], []))
             else:
                 key = bind(index)
             target = ast.Subscript(container, key, ast.Store())
@@ -347,10 +359,11 @@ class _Emit:
             case n.Attr(obj=obj, name=name):
                 return ast.Attribute(self.expr(obj), name, ast.Load())
             case n.Index(obj=obj, index=index):
-                if _float_keyed(obj.type) and index.type == T.INT:
+                if isinstance(obj.type, T.DictT) and _exact_key(obj.type, index.type):
                     # an exact lookup; a defaultdict stores the key widened (R-widen)
                     fget = self._name(f"{self.fuel}_fget")
-                    return ast.Call(fget, [self.expr(obj), self.expr(index)], [])
+                    how = ast.Constant(_widen_how(index.type, obj.type.key))
+                    return ast.Call(fget, [self.expr(obj), self.expr(index), how], [])
                 return ast.Subscript(self.expr(obj), self.expr(index), ast.Load())
             case n.SliceOf(obj=obj, lo=lo, hi=hi, step=step):
                 sl = ast.Slice(self._opt(lo), self._opt(hi), self._opt(step))
@@ -515,6 +528,8 @@ def _widen_how(src: T2Type, dst: T2Type) -> object:
     match src, dst:
         case T.Opt(inner=a), T.Opt(inner=b):
             return ("?", _widen_how(a, b))
+        case _, T.Opt(inner=b) if not isinstance(src, T.Opt):
+            return _widen_how(src, b)
         case T.TupleT(elems=xs), T.TupleT(elems=ys) if len(xs) == len(ys):
             pairs = zip(xs, ys, strict=True)
             return ("t", tuple(None if a == b else _widen_how(a, b) for a, b in pairs))
@@ -570,6 +585,7 @@ def emit_python(module: n.T2Module) -> T2Code:
     lines.append(f"{fuel}_float = t2_builtin('float')")
     lines.append(f"{fuel}_widen = t2_widen")
     lines.append(f"{fuel}_fget = t2_fget")
+    lines.append(f"{fuel}_fkey = t2_fkey")
     for name, _, value in module.constants:
         # copied as written: a constant is evaluated once, uncharged, when loaded
         lines.append(f"{name} = {ast.unparse(_plain(value, fuel))}")

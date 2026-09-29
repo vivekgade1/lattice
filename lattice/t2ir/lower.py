@@ -53,15 +53,18 @@ checker's side tables:
 * list / set / dict literal elements (the literal's element types, a `**d` entry
   included), the branches of an if-expression and the operands of `and` / `or` (their
   result type);
-* a tuple indexed with a non-literal index or iterated (`for`, a comprehension, `in`:
-  its element type), an `in` probe (the container's element type) and a dict lookup's
-  key;
+* a tuple indexed with a non-literal index or iterated (`for`, a comprehension: its
+  element type);
 * `sum` of Floats without a start gets the start `0.0` (an empty sum is `0.0`), and
   `Int ** n` typed Float (a non-literal `n`) raises both operands to Floats: it is
   Float arithmetic.
 
-The one-argument `round(Int)` is left exact (its result is an Int), and comparisons are
-not widening sites (an Int and a Float compare exactly).
+The one-argument `round(Int)` is left exact (its result is an Int). Comparisons,
+membership and lookups are not widening sites: an Int and a Float compare exactly, at
+any depth -- `x in c` widens nothing, and a probe holding an Int where the keys or
+elements hold a Float (`d[k]`, the read of `d[k] op= v`, `get`, `pop`, `index`,
+`count`, `remove`, `discard`) stays as written (`_exact_probe`); the emitters look it
+up exactly, and store it widened only where a lookup stores (a defaultdict, a Counter).
 
 Statements the checker leaves untyped because they cannot run (after a `return`,
 `break`, `continue`, an endless `while True`, or an `if` whose branches all return)
@@ -172,8 +175,9 @@ _PROBES = frozenset(
 
 
 def _exact_probe(probe: T2Type, slot: T2Type | None) -> bool:
-    """An Int looked up among Floats: compared exactly (as `==`), not widened."""
-    return probe == T.INT and slot == T.FLOAT
+    """A probe that holds an Int where the slot holds a Float (at any depth: a tuple's
+    elements, an optional value): looked up exactly (as `==`), never widened."""
+    return slot is not None and _widened(probe, slot) != probe
 
 
 def _key_type(t: T2Type) -> T2Type | None:
@@ -181,10 +185,6 @@ def _key_type(t: T2Type) -> T2Type | None:
         case T.DictT(key=k) | T.CounterT(key=k):
             return k
     return None
-
-
-def _has_float_elems(t: T2Type) -> bool:
-    return isinstance(t, T.TupleT) and T.FLOAT in t.elems
 
 
 def _param(pattern: str, b: T.Bindings) -> T2Type:
@@ -383,9 +383,8 @@ class _Proc:
             case ast.AnnAssign(target=t, value=v) if v is not None:
                 return self.store(t, self.expr(v))
             case ast.AugAssign(target=t, op=op, value=v):
-                return [
-                    n.AugAssign(self.target(t), _OPS[type(op)], self.expr(v), type(op) in _GROWING)
-                ]
+                target = self.target(t, lookup=True)
+                return [n.AugAssign(target, _OPS[type(op)], self.expr(v), type(op) in _GROWING)]
             case ast.If(test=t, body=b, orelse=o):
                 return [n.If(self.expr(t), self.block(b), self.block(o))]
             case ast.For(target=t, iter=it, body=b, orelse=o):
@@ -501,7 +500,10 @@ class _Proc:
 
         return via_temp(t), after
 
-    def target(self, t: ast.expr) -> n.AssignTarget:
+    def target(self, t: ast.expr, *, lookup: bool = False) -> n.AssignTarget:
+        """An assignment target. `lookup`: an augmented assignment's, whose item is read
+        first -- a dict key that is an exact probe stays unwidened (the emitters look it
+        up exactly, as `d[k]`; see `_exact_probe`)."""
         match t:
             case ast.Name(id=name):
                 return n.NameT(name)
@@ -510,8 +512,10 @@ class _Proc:
             case ast.Subscript(value=obj, slice=ast.Slice(lower=lo, upper=hi, step=st)):
                 return n.SliceT(self.expr(obj), self._opt(lo), self._opt(hi), self._opt(st))
             case ast.Subscript(value=obj, slice=index):
-                o = self.expr(obj)
-                return n.IndexT(o, self._key(o, self.expr(index)))
+                o, i = self.expr(obj), self.expr(index)
+                if lookup and _exact_probe(i.type, _key_type(o.type)):
+                    return n.IndexT(o, i)
+                return n.IndexT(o, self._key(o, i))
             case ast.Attribute(value=obj, attr=name):
                 return n.AttrT(self.expr(obj), name)
         raise _unsupported(t)
@@ -623,18 +627,10 @@ class _Proc:
 
     @staticmethod
     def _membership(x: n.Expr, c: n.Expr) -> tuple[n.Expr, n.Expr]:
-        """`x in c`: the probe widened to the container's element type, and a tuple's
-        elements to their join (a Float probe into Int elements stays exact)."""
-        if c.type == T.STR or isinstance(c.type, T.Opt):
-            return x, c
-        el = T.elem_of(c.type)
-        if el is None:
-            return x, c
-        if (x.type == T.INT and el == T.FLOAT) or (
-            x.type in T.NUMERIC and _has_float_elems(c.type)
-        ):
-            return x, c  # Ints and Floats compare exactly, as `==` (nothing is widened)
-        return _coerce(x, el), _Proc.iterable(c)
+        """`x in c`: nothing is widened. Membership is `==` against each element (a
+        tuple's elements each with its own type), and an Int and a Float compare
+        exactly, at any depth (docs/lattice-language-rules.md R-widen)."""
+        return x, c
 
     def gens(self, gens: list[ast.comprehension]) -> tuple[n.Gen, ...]:
         """Each clause's iterable is charged per element (`<fuel>.each`)."""

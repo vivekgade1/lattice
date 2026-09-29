@@ -242,6 +242,49 @@ class GoTypes:
                 return f"{a} == {b}"  # identity: iterators and matches compare by identity
         raise LatticeInternalError(f"gogen: no equality for {t.render()}")
 
+    def exact(self, src: T2Type, dst: T2Type) -> str:
+        """A Go func `func(x src) (dst, bool)`: x as a dst value equal to it, exactly --
+        an Int as a Float only when the Float is exact, a Float as an Int only when
+        integral and in range (false: no dst value equals x), through tuples and
+        optional values."""
+        if src == dst or self.spell(src) == self.spell(dst):
+            go = self.spell(src)
+            return f"func(x {go}) ({go}, bool) {{ return x, true }}"
+        if src == T.INT and dst == T.FLOAT:
+            return "rt.IntAsFloat"
+        if src == T.FLOAT and dst == T.INT:
+            return "rt.FloatAsInt"
+        s, d = self.spell(src), self.spell(dst)
+        name = f"xc_{_digest(T.TupleT((src, dst)))}"
+
+        def make() -> str:  # noqa: PLR0911
+            head = f"func {name}(x {s}) ({d}, bool) {{\n"
+            match src, dst:
+                case T.TupleT(elems=xs), T.TupleT(elems=ys) if len(xs) == len(ys):
+                    lines = [f"\tvar out {d}\n", "\tvar ok bool\n"]
+                    for i, (a, b) in enumerate(zip(xs, ys, strict=True)):
+                        sub = self.exact(a, b)
+                        lines.append(
+                            f"\tif out.F{i}, ok = ({sub})(x.F{i}); !ok {{ return out, false }}\n"
+                        )
+                    return head + "".join(lines) + "\treturn out, true\n}\n"
+                case T.Opt(inner=a), T.Opt(inner=b):
+                    none = f"rt.None[{self.spell(b)}]()"
+                    return (
+                        f"{head}\tif !x.Ok {{ return {none}, true }}\n"
+                        f"\tv, ok := ({self.exact(a, b)})(x.V)\n"
+                        f"\treturn rt.Some(v), ok\n}}\n"
+                    )
+                case _, T.Opt(inner=b) if src == T.NONE:
+                    return f"{head}\treturn rt.None[{self.spell(b)}](), true\n}}\n"
+                case _, T.Opt(inner=b):
+                    return (
+                        f"{head}\tv, ok := ({self.exact(src, b)})(x)\n\treturn rt.Some(v), ok\n}}\n"
+                    )
+            raise LatticeInternalError(f"gogen: no exact {src.render()} -> {dst.render()}")
+
+        return self.helper(name, make)
+
     def order(self, t: T2Type, op: str) -> str:
         """A Go func value `func(a, b T) bool`: Python's `a op b` for op in < <= > >=."""
         go = self.spell(t)

@@ -1719,7 +1719,7 @@ WIDEN = [
     ),
 ]
 
-from tests.semantics_v11.cases_task10 import COLL, GATED, JSON_MORE, MATH, TIME_MORE  # noqa: E402
+from tests.semantics_v11.cases_task10 import COLL, EXACT, GATED, JSON_MORE, MATH, TIME_MORE  # noqa: E402
 
 CASES: tuple[Case, ...] = tuple(
     INT + FLOAT_TEXT + STR + LIST + DICT_SET + TIME + REGEX + JSON + FUEL + CORE + WIDEN
@@ -1729,6 +1729,7 @@ CASES: tuple[Case, ...] = tuple(
     + MATH
     + TIME_MORE
     + JSON_MORE
+    + EXACT
     + GATED
 )
 

@@ -1274,6 +1274,125 @@ JSON_MORE = [
     ),
 ]
 
+# Ints and Floats compare exactly at any depth (tuples, optional values): ==, ordering,
+# membership and lookups (fix round 1; docs/lattice-language-rules.md R-widen).
+_T53 = (float(N53), 0.0)
+EXACT = [
+    Case(
+        "exact_tuple_equality_and_order",
+        P(
+            "f(n: Int, t: tuple[Float, Float]) -> list[Bool]",
+            "return [(n, 0) == t, (n, 0) != t, (n, 0) < t, (n, 0) > t, (n - 1, 0) == t, "
+            "(n - 1, 0) <= t, (n - 1, -1) < t]",
+        ),
+        "f",
+        (N53 + 1, _T53),
+        [False, True, False, True, True, True, True],
+    ),
+    Case(
+        "exact_nested_tuple_equality_and_order",
+        P(
+            "f(n: Int, x: Float) -> list[Bool]",
+            "return [((n, 1), 0) == ((x, 1.0), 0.0), ((n - 1, 1), 0) == ((x, 1.0), 0.0), "
+            "((n, 1), 0) < ((x, 1.0), 0.0), ((n, 1), 0) >= ((x, 1.0), 0.0)]",
+        ),
+        "f",
+        (N53 + 1, float(N53)),
+        [False, True, False, True],
+    ),
+    Case(
+        "exact_optional_equality",
+        P(
+            "f(n: Int, x: Float) -> list[Bool]",
+            B(
+                "a: Int | None = n",
+                "b: Float | None = x",
+                "c: Int | None = None",
+                "d: Float | None = None",
+                "return [a == b, a == x, c == d, a == d, (a, 1) == (b, 1.0)]",
+            ),
+        ),
+        "f",
+        (N53 + 1, float(N53)),
+        [False, False, True, False, False],
+    ),
+    Case(
+        "exact_nested_membership",
+        P(
+            "f(n: Int, t: tuple[Float, Float]) -> list[Bool]",
+            B(
+                "xs = [t]",
+                "s = {t}",
+                "d = {t: 1}",
+                "ys: list[Float | None] = [t[0], None]",
+                "return [(n, 0) in xs, (n, 0) in s, (n, 0) in d, (n - 1, 0) in xs, (n - 1, 0) in s,"
+                " (n - 1, 0) in d, n in ys, n - 1 in ys, (n, 0) in d.keys()]",
+            ),
+        ),
+        "f",
+        (N53 + 1, _T53),
+        [False, False, False, True, True, True, False, True, False],
+    ),
+    Case(
+        "exact_nested_lookups",
+        P(
+            "f(n: Int, t: tuple[Float, Float]) -> list[Str]",
+            B(
+                "d = {t: 1}",
+                "xs = [t, t]",
+                "s = {t}",
+                "out = [str(d.get((n, 0), -1)), str(d.get((n - 1, 0), -1)), str(xs.count((n, 0))),",
+                "       str(xs.count((n - 1, 0))), str(d.pop((n, 0), -1))]",
+                "s.discard((n, 0))",
+                "out.append(str(len(s)))",
+                "try:",
+                "    out.append(str(d[(n, 0)]))",
+                "except KeyError as e:",
+                "    out.append(str(e))",
+                "out.append(str(d[(n - 1, 0)]))",
+                "return out",
+            ),
+        ),
+        "f",
+        (N53 + 1, _T53),
+        ["-1", "1", "0", "2", "-1", "1", "(9007199254740993, 0)", "1"],
+    ),
+    Case(
+        "exact_augmented_item_keyerror",
+        P(
+            "f(n: Int) -> Int",
+            B("d: dict[Float, Int] = {9007199254740992.0: 1}", "d[n] += 1", "return d[n - 1]"),
+        ),
+        "f",
+        (N53 + 1,),
+        Exc("KeyError"),
+    ),
+    Case(
+        "exact_augmented_item_present_counter_defaultdict",
+        P(
+            "f(n: Int, xs: list[Float]) -> list[Str]",
+            B(
+                "d: dict[Float, Int] = {9007199254740992.0: 1}",
+                "d[n - 1] += 1",
+                "c = Counter(xs)",
+                "c[n] += 1",
+                "c[3] += 1",
+                "e: dict[Float, Int] = defaultdict(int)",
+                "e[n] += 5",
+                "e[n] += 1",
+                "return [', '.join(str(k) + ':' + str(v) for k, v in m.items()) for m in [d, c, e]]",
+            ),
+        ),
+        "f",
+        (N53 + 1, [float(N53), 3.0]),
+        [
+            "9007199254740992.0:2",
+            "9007199254740992.0:2, 3.0:2",
+            "9007199254740992.0:6",
+        ],
+    ),
+]
+
 
 # The constructs Go still refuses (L892; docs/lattice-language-rules.md §6): each case runs
 # on Python, and tests/semantics_v11/test_go.py checks Go refuses exactly these, by prefix.

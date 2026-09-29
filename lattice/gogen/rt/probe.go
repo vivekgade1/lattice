@@ -1,7 +1,11 @@
 package rt
 
-// An Int looked up among Floats (R-widen, docs/lattice-language-rules.md): the lookup is
-// exact, as == is -- `2**53 + 1 in [2.0**53]` is False -- and never widens the Int.
+// A probe holding an Int where a container holds a Float (at any depth: a tuple's
+// elements, an optional value) is looked up exactly, as == compares (R-widen,
+// docs/lattice-language-rules.md): `2**53 + 1 in [2.0**53]` and
+// `(2**53 + 1, 0) in {(2.0**53, 0.0)}` are False. The generated code converts the probe
+// exactly (kk, exact: the key equal to it, when one can be) and, where a lookup stores
+// the key, widened (as a store does).
 
 // IntAsFloat is n as a Float when that is exact (the only Float equal to n).
 func IntAsFloat(n int64) (float64, bool) {
@@ -15,79 +19,83 @@ func IntAsFloat(n int64) (float64, bool) {
 // EqIF is n == f exactly.
 func EqIF(n int64, f float64) bool { return CmpIF(n, f) == 0 }
 
-// DictGetIF is d[n] for Float keys: an exact lookup (a KeyError shows the Int); a
-// defaultdict stores a missing key widened, as a store does (t2_fget).
-func DictGetIF[V any](d *Dict[float64, V], n int64) V {
-	f, exact := IntAsFloat(n)
-	if d.kind == defaultDict && !(exact && d.Has(f)) {
-		return d.GetP(float64(n), n)
+// DictGetX is d[probe] for a probe converted exactly to kk (exact false: no key can
+// equal it) and widened: a KeyError shows the probe; a Counter reads 0; a defaultdict
+// stores a missing key widened (t2_fget).
+func DictGetX[K comparable, V any](d *Dict[K, V], kk K, exact bool, widened K, probe any) V {
+	if d.kind == defaultDict && !(exact && d.Has(kk)) {
+		return d.GetP(widened, probe)
 	}
 	if !exact {
-		return d.missing(float64(n), n)
+		return d.missing(widened, probe)
 	}
-	return d.GetP(f, n)
+	return d.GetP(kk, probe)
 }
 
-// DictHasIF is n in d for Float keys.
-func DictHasIF[V any](d *Dict[float64, V], n int64) bool {
-	f, ok := IntAsFloat(n)
-	return ok && d.Has(f)
+// DictKeyX is the key `d[probe] op= v` reads and writes (t2_fkey): the exact key when d
+// holds it; else the widened key where the read stores or counts it (a defaultdict, a
+// Counter); ok false for a plain dict, whose read then raises KeyError (DictReadX).
+func DictKeyX[K comparable, V any](d *Dict[K, V], kk K, exact bool, widened K) (K, bool) {
+	if exact && d.Has(kk) {
+		return kk, true
+	}
+	return widened, d.kind != plainDict
 }
 
-// DictGetOptIF is d.get(n) for Float keys.
-func DictGetOptIF[V any](d *Dict[float64, V], n int64) Opt[V] {
-	if f, ok := IntAsFloat(n); ok {
-		return d.GetOpt(f)
+// DictReadX is d[k] for a key from DictKeyX.
+func DictReadX[K comparable, V any](d *Dict[K, V], k K, ok bool, probe any) V {
+	if !ok {
+		Raise("KeyError", Repr(probe))
+	}
+	return d.GetP(k, probe)
+}
+
+// DictGetOptX is d.get(probe).
+func DictGetOptX[K comparable, V any](d *Dict[K, V], kk K, exact bool) Opt[V] {
+	if exact {
+		return d.GetOpt(kk)
 	}
 	return None[V]()
 }
 
-// DictGetOrIF is d.get(n, dflt) for Float keys.
-func DictGetOrIF[V any](d *Dict[float64, V], n int64, dflt V) V {
-	if f, ok := IntAsFloat(n); ok {
-		return d.GetOr(f, dflt)
+// DictGetOrX is d.get(probe, dflt).
+func DictGetOrX[K comparable, V any](d *Dict[K, V], kk K, exact bool, dflt V) V {
+	if exact {
+		return d.GetOr(kk, dflt)
 	}
 	return dflt
 }
 
-// DictPopIF is d.pop(n) for Float keys.
-func DictPopIF[V any](d *Dict[float64, V], n int64) V {
-	f, ok := IntAsFloat(n)
-	if !ok {
-		Raise("KeyError", StrInt(n))
+// DictPopX is d.pop(probe).
+func DictPopX[K comparable, V any](d *Dict[K, V], kk K, exact bool, probe any) V {
+	if !exact {
+		Raise("KeyError", Repr(probe))
 	}
-	return d.Pop(f, n)
+	return d.Pop(kk, probe)
 }
 
-// DictPopOrIF is d.pop(n, dflt) for Float keys.
-func DictPopOrIF[V any](d *Dict[float64, V], n int64, dflt V) V {
-	if f, ok := IntAsFloat(n); ok {
-		return d.PopOr(f, dflt)
+// DictPopOrX is d.pop(probe, dflt).
+func DictPopOrX[K comparable, V any](d *Dict[K, V], kk K, exact bool, dflt V) V {
+	if exact {
+		return d.PopOr(kk, dflt)
 	}
 	return dflt
 }
 
-// SetHasIF is n in s for a set of Floats.
-func SetHasIF(s *Set[float64], n int64) bool {
-	f, ok := IntAsFloat(n)
-	return ok && s.Has(f)
-}
-
-// SetDiscardIF is s.discard(n) for a set of Floats.
-func SetDiscardIF(s *Set[float64], n int64) struct{} {
-	if f, ok := IntAsFloat(n); ok {
-		s.Discard(f)
+// SetDiscardX is s.discard(probe).
+func SetDiscardX[T comparable](s *Set[T], kk T, exact bool) struct{} {
+	if exact {
+		s.Discard(kk)
 	}
 	return struct{}{}
 }
 
-// SetRemoveIF is s.remove(n) for a set of Floats.
-func SetRemoveIF(s *Set[float64], n int64) struct{} {
-	f, ok := IntAsFloat(n)
-	if !ok {
-		Raise("KeyError", StrInt(n))
+// SetRemoveX is s.remove(probe).
+func SetRemoveX[T comparable](s *Set[T], kk T, exact bool, probe any) struct{} {
+	if !exact {
+		Raise("KeyError", Repr(probe))
 	}
-	return s.RemoveP(f, n)
+	return s.RemoveP(kk, probe)
 }
 
 // IterContainsBy is x in it where match compares x with each element.

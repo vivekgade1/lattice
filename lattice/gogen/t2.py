@@ -624,13 +624,25 @@ class _Proc:
                 self.emit("{")
                 with self.indented():
                     self.emit(f"{o} := {self.expr(obj)}")
-                    self.emit(f"{k} := {self.conv(self.expr(index), index.type, kt)}")
+                    read = f"{o}.Get({k})"
+                    if isinstance(ot, T.DictT | T.CounterT) and _mismatch(index.type, kt):
+                        # the key read and written (t2_fkey): exact when present, else
+                        # widened where the read stores or counts it; a plain dict's
+                        # read raises KeyError
+                        p, kk, ok, kok = self.temp(), self.temp(), self.temp(), self.temp()
+                        self.emit(f"{p} := {self.expr(index)}")
+                        self.emit(f"{kk}, {ok} := ({self.types.exact(index.type, kt)})({p})")
+                        widened = self.conv(p, index.type, kt)
+                        self.emit(f"{k}, {kok} := rt.DictKeyX({o}, {kk}, {ok}, {widened})")
+                        read = f"rt.DictReadX({o}, {k}, {kok}, {p})"
+                    else:
+                        self.emit(f"{k} := {self.conv(self.expr(index), index.type, kt)}")
                     if s.grow:
                         v = self.temp()
                         self.emit(f"{v} := {self.expr(s.value)}")
-                        self.emit(f"{cur} := {o}.Get({k})")
+                        self.emit(f"{cur} := {read}")
                     else:
-                        self.emit(f"{cur} := {o}.Get({k})")
+                        self.emit(f"{cur} := {read}")
                         v = self.expr(s.value)
                     self.aug_op(
                         cur, et, s.op, v, s.value.type, store=lambda r: f"{o}.Set({k}, {r})"
@@ -789,8 +801,10 @@ class _Proc:
             case T.ListT():
                 return f"{self.expr(obj)}.Get({self.expr(index)})"
             case T.DictT(key=kt) | T.CounterT(key=kt):
-                if kt == T.FLOAT and index.type == T.INT:
-                    return f"rt.DictGetIF({self.expr(obj)}, {self.expr(index)})"  # exact
+                if _mismatch(index.type, kt):  # exact (a defaultdict stores it widened)
+                    return self.probe_call(
+                        "rt.DictGetX(d, kk, ok, {w}, p)", ot, self.expr(obj), index, kt, e.type
+                    )
                 return f"{self.expr(obj)}.Get({self.conv(self.expr(index), index.type, kt)})"
             case T.TupleT(elems=es):
                 i = _int_literal(index)
@@ -987,6 +1001,8 @@ class _Proc:
                 return f"({a} {op} {b})"
             if at == bt == T.DURATION:
                 return f"({a}.Cmp({b}) {op} 0)"
+            if isinstance(at, T.TupleT) and isinstance(bt, T.TupleT) and _mismatch(at, bt):
+                return self.mixed_order(op, a, at, b, bt)
             common = T.join(at, bt)
             if common is None:
                 raise LatticeInternalError(f"gogen: {at.render()} {op} {bt.render()}")
@@ -1027,6 +1043,9 @@ class _Proc:
                 f"func(o {self.spell(at)}, v {self.spell(bt)}) bool {{ return o.Ok && "
                 f"{self.equal('o.V', inner, 'v', bt)} }}({a}, {b})"
             )
+        if _mismatch(at, bt):
+            # Ints and Floats inside: compared exactly, each item with its own type
+            return self.mixed_equal(a, at, b, bt)
         common = at if at == bt else T.join(at, bt)
         if common is None:
             raise LatticeInternalError(f"gogen: {at.render()} == {bt.render()}")
@@ -1034,6 +1053,36 @@ class _Proc:
         if common in (T.INT, T.FLOAT, T.STR, T.BOOL, T.UUID, *_TIME):
             return f"({ca} == {cb})"
         return f"{self.types.eq(common)}({ca}, {cb})"
+
+    def mixed_equal(self, a: str, at: T2Type, b: str, bt: T2Type) -> str:
+        """a == b for two optional values or two tuples whose Int and Float items differ
+        (Python compares them item by item, exactly)."""
+        fn = f"func(x {self.spell(at)}, y {self.spell(bt)}) bool"
+        match at, bt:
+            case T.Opt(inner=ai), T.Opt(inner=bi):
+                test = self.equal("x.V", ai, "y.V", bi)
+                body = f"if !x.Ok || !y.Ok {{ return x.Ok == y.Ok }}; return {test}"
+            case T.TupleT(elems=xs), T.TupleT(elems=ys):
+                if len(xs) != len(ys):
+                    body = "return false"
+                else:
+                    pairs = enumerate(zip(xs, ys, strict=True))
+                    tests = [self.equal(f"x.F{i}", p, f"y.F{i}", q) for i, (p, q) in pairs]
+                    body = "return " + " && ".join(tests)
+            case _:
+                raise LatticeInternalError(f"gogen: {at.render()} == {bt.render()}")
+        return f"{fn} {{ {body} }}({a}, {b})"
+
+    def mixed_order(self, op: str, a: str, at: T.TupleT, b: str, bt: T.TupleT) -> str:
+        """a op b for two tuples whose Int and Float items differ: CPython's tuple
+        comparison (the first items that differ decide, exactly; else the lengths)."""
+        lines = [f"func(x {self.spell(at)}, y {self.spell(bt)}) bool {{"]
+        for i, (p, q) in enumerate(zip(at.elems, bt.elems, strict=False)):
+            same = self.equal(f"x.F{i}", p, f"y.F{i}", q)
+            decide = self.cmp(op, f"x.F{i}", p, f"y.F{i}", q)
+            lines.append(f"if !({same}) {{ return {decide} }}")
+        lines.append(f"return {len(at.elems)} {op} {len(bt.elems)} }}({a}, {b})")
+        return "; ".join(lines)
 
     def contains(self, x: str, xt: T2Type, c: str, ct: T2Type) -> str:
         """x in c (x evaluated before c, as Python)."""
@@ -1046,31 +1095,23 @@ class _Proc:
             tests = " || ".join(self.equal("x", xt, f"t.F{i}", e) for i, e in enumerate(ct.elems))
             xs_ = self.spell(xt)
             return f"func(x {xs_}, t {cs}) bool {{ return {tests or 'false'} }}({x}, {c})"
-        if xt == T.INT and elem == T.FLOAT:
-            # exactly, as ==: only a Float equal to the Int (never the Int widened)
+        if _mismatch(xt, elem):
+            # exactly, as ==: an Int and a Float (at any depth) are never converted
+            xs_, es = self.spell(xt), self.spell(elem)
             match ct:
-                case T.ListT():
-                    return (
-                        f"func(x int64, c {cs}) bool {{ return c.CountBy(func(y float64) bool "
-                        f"{{ return rt.EqIF(x, y) }}) > 0 }}({x}, {c})"
+                case T.ListT() | T.IterT():
+                    match_fn = f"func(y {es}) bool {{ return {self.equal('x', xt, 'y', elem)} }}"
+                    body = (
+                        f"c.CountBy({match_fn}) > 0"
+                        if isinstance(ct, T.ListT)
+                        else f"rt.IterContainsBy(c, {match_fn})"
                     )
-                case T.SetT():
-                    return f"func(x int64, c {cs}) bool {{ return rt.SetHasIF(c, x) }}({x}, {c})"
-                case T.DictT() | T.CounterT():
-                    return f"func(x int64, c {cs}) bool {{ return rt.DictHasIF(c, x) }}({x}, {c})"
-                case T.IterT():
-                    return (
-                        f"func(x int64, c {cs}) bool {{ return rt.IterContainsBy(c, "
-                        f"func(y float64) "
-                        f"bool {{ return rt.EqIF(x, y) }}) }}({x}, {c})"
-                    )
-        if xt == T.FLOAT and elem == T.INT:
-            # exactly, as Python: only an integral Float in the Int range equals an Int
-            inner = self.contains("i", T.INT, "c", ct)
-            return (
-                f"func(x float64, c {cs}) bool {{ i, ok := rt.FloatAsInt(x); "
-                f"return ok && {inner} }}({x}, {c})"
-            )
+                case T.SetT() | T.DictT() | T.CounterT():
+                    exact = self.types.exact(xt, elem)
+                    body = f"func() bool {{ k, ok := ({exact})(x); return ok && c.Has(k) }}()"
+                case _:
+                    raise LatticeInternalError(f"gogen: 'in' {ct.render()}")
+            return f"func(x {xs_}, c {cs}) bool {{ return {body} }}({x}, {c})"
         xs = self.spell(elem)
         xg = self.conv(x, xt, elem)
         eq = self.types.eq(elem)
@@ -1582,8 +1623,13 @@ class _Proc:
         def val(i: int, t: T2Type) -> str:
             return self.conv(self.expr(args[i]), args[i].type, t)
 
-        def probe(el: T2Type) -> bool:  # an Int looked up among Floats (exact)
-            return bool(args) and args[0].type == T.INT and el == T.FLOAT
+        def probe(el: T2Type) -> bool:  # an Int (at any depth) looked up among Floats
+            return bool(args) and _mismatch(args[0].type, el)
+
+        def px(body: str, slot: T2Type, extra: T2Type | None = None) -> str:
+            return self.probe_call(
+                body, rt_, r, args[0], slot, c.type, args[1] if extra else None, extra
+            )
 
         if isinstance(rt_, T.ListT):
             el = rt_.elem
@@ -1600,8 +1646,11 @@ class _Proc:
                 case "remove" | "index" | "count":
                     fn = {"remove": "RemoveBy", "index": "IndexBy", "count": "CountBy"}[name]
                     if probe(el):
-                        match = "func(y float64) bool { return rt.EqIF(x, y) }"
-                        xt = "int64"
+                        match = (
+                            f"func(y {self.spell(el)}) bool "
+                            f"{{ return {self.equal('x', args[0].type, 'y', el)} }}"
+                        )
+                        xt = self.spell(args[0].type)
                     else:
                         match = f"func(y {self.spell(el)}) bool {{ return {eq}(y, x) }}"
                         xt = self.spell(el)
@@ -1624,8 +1673,9 @@ class _Proc:
                     return f"{r}.Add({val(0, el)})"
                 case "discard" | "remove":
                     if probe(el):
-                        fn = "SetDiscardIF" if name == "discard" else "SetRemoveIF"
-                        return f"rt.{fn}({r}, {self.expr(args[0])})"
+                        if name == "discard":
+                            return px("rt.SetDiscardX(d, kk, ok)", el)
+                        return px("rt.SetRemoveX(d, kk, ok, p)", el)
                     return f"{r}.{name.capitalize()}({val(0, el)})"
                 case "clear" | "copy":
                     return f"{r}.{name.capitalize()}()"
@@ -1642,21 +1692,21 @@ class _Proc:
             match name:
                 case "get" if len(args) == 1:
                     if probe(kt):
-                        return self.flat_opt(f"rt.DictGetOptIF({r}, {self.expr(args[0])})", vt)
+                        return px(self.flat_opt("rt.DictGetOptX(d, kk, ok)", vt), kt)
                     return self.flat_opt(f"{r}.GetOpt({val(0, kt)})", vt)
                 case "get":
                     if probe(kt):
-                        return f"rt.DictGetOrIF({r}, {self.expr(args[0])}, {val(1, vt)})"
+                        return px("rt.DictGetOrX(d, kk, ok, dflt)", kt, vt)
                     return f"{r}.GetOr({val(0, kt)}, {val(1, vt)})"
                 case "pop" if len(args) == 1:
                     if probe(kt):
-                        return f"rt.DictPopIF({r}, {self.expr(args[0])})"
+                        return px("rt.DictPopX(d, kk, ok, p)", kt)
                     return (
                         f"func(k {self.spell(kt)}) {res} {{ return {r}.Pop(k, k) }}({val(0, kt)})"
                     )
                 case "pop":
                     if probe(kt):
-                        return f"rt.DictPopOrIF({r}, {self.expr(args[0])}, {val(1, vt)})"
+                        return px("rt.DictPopOrX(d, kk, ok, dflt)", kt, vt)
                     return f"{r}.PopOr({val(0, kt)}, {val(1, vt)})"
                 case "setdefault":
                     return f"{r}.SetDefault({val(0, kt)}, {val(1, vt)})"
@@ -1675,6 +1725,35 @@ class _Proc:
                     assert isinstance(c.type, T.ListT)
                     return f"rt.MostCommon({r}, {n_}, {self.pair_fn(kt, T.INT, c.type)})"
         raise LatticeInternalError(f"gogen: call target {c.target!r} is not available on Go")
+
+    def probe_call(  # noqa: PLR0913
+        self,
+        body: str,
+        ct: T2Type,
+        c: str,
+        probe: n.Expr,
+        slot: T2Type,
+        result: T2Type,
+        extra: n.Expr | None = None,
+        extra_t: T2Type | None = None,
+    ) -> str:
+        """A lookup of `probe` (holding an Int where `slot` holds a Float) in the
+        container c: `body` sees d (the container), p (the probe), kk and ok (the probe
+        converted exactly, when a slot value can equal it), {w} (the probe widened, the
+        key a store uses) and dflt (the evaluated `extra` argument)."""
+        pt = probe.type
+        params = f"d {self.spell(ct)}, p {self.spell(pt)}"
+        values = f"{c}, {self.expr(probe)}"
+        if extra is not None and extra_t is not None:
+            params += f", dflt {self.spell(extra_t)}"
+            values += f", {self.conv(self.expr(extra), extra.type, extra_t)}"
+        widened = self.conv("p", pt, slot) if "{w}" in body else ""
+        call = body.replace("{w}", widened)
+        exact = self.types.exact(pt, slot)
+        return (
+            f"func({params}) {self.spell(result)} {{ kk, ok := ({exact})(p); _ = ok; "
+            f"return {call} }}({values})"
+        )
 
     def pair_fn(self, kt: T2Type, vt: T2Type, container: T2Type) -> str:
         """A Go func building the (key, value) tuple an items view / most_common yields."""
@@ -2177,6 +2256,23 @@ class _Proc:
         if start.type == T.INT:
             return f"rt.SumFloatV({cur}, float64({self.expr(start)}), true)"
         return f"rt.SumFloatV({cur}, {self.expr(start)}, false)"
+
+
+def _mismatch(a: T2Type, b: T2Type) -> bool:
+    """a and b differ by an Int where the other has a Float, at some depth (a tuple's
+    items, an optional value): such values compare exactly, never converted."""
+    if {a, b} == {T.INT, T.FLOAT}:
+        return True
+    match a, b:
+        case T.Opt(inner=x), T.Opt(inner=y):
+            return _mismatch(x, y)
+        case T.Opt(inner=x), _:
+            return _mismatch(x, b)
+        case _, T.Opt(inner=y):
+            return _mismatch(a, y)
+        case T.TupleT(elems=xs), T.TupleT(elems=ys):
+            return any(_mismatch(x, y) for x, y in zip(xs, ys, strict=False))
+    return False
 
 
 def _strip_charge(e: n.Expr) -> n.Expr:

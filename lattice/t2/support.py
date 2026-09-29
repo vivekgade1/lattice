@@ -600,13 +600,23 @@ def t2_widen(value: object, how: object) -> object:
     raise ValueError(f"unknown widening {how!r}")
 
 
-def t2_fget(d: dict, n: int) -> object:
-    """`d[n]` for an Int `n` and a dict of Float keys (docs/lattice-language-rules.md
-    R-widen): the lookup is exact, as `==` is; a defaultdict that stores a missing key
-    stores it widened (a store, like `d[n] = v`)."""
-    if isinstance(d, t2_collections.defaultdict) and n not in d:
-        return d[float(n)]
-    return d[n]
+def t2_fget(d: dict, k: object, how: object) -> object:
+    """`d[k]` where `k` holds an Int in a place the dict's keys hold a Float (at any
+    depth; docs/lattice-language-rules.md R-widen): the lookup is exact, as `==` is; a
+    defaultdict that stores a missing key stores it widened (`t2_widen(k, how)`), as a
+    store does."""
+    if isinstance(d, t2_collections.defaultdict) and k not in d:
+        return d[t2_widen(k, how)]
+    return d[k]
+
+
+def t2_fkey(d: dict, k: object, how: object) -> object:
+    """The key `d[k] op= v` reads and writes (`k` as in `t2_fget`): `k` itself when the
+    dict holds it (exactly), or when a missing key raises KeyError (a plain dict);
+    widened when the read stores or counts a missing key (a defaultdict, a Counter)."""
+    if k in d or not isinstance(d, t2_collections.defaultdict | t2_collections.Counter):
+        return k
+    return t2_widen(k, how)
 
 
 class T2Row:
@@ -765,11 +775,12 @@ def t2_load(source: str, natives: dict[str, object] | None = None) -> dict[str, 
         "t2_int": t2_int,
         "t2_widen": t2_widen,
         "t2_fget": t2_fget,
+        "t2_fkey": t2_fkey,
         "native": t2_types.SimpleNamespace(**(natives or {})),
     }
     exec(compile(source, "<lattice-procedures>", "exec"), namespace)  # noqa: S102
     loaders = ("t2_builtin", "t2_std_module", "t2_std", "t2_helper", "t2_record", "t2_int")
-    for loader in (*loaders, "t2_widen", "t2_fget"):
+    for loader in (*loaders, "t2_widen", "t2_fget", "t2_fkey"):
         del namespace[loader]
     return namespace
 
