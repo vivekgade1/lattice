@@ -79,7 +79,14 @@ from lattice.api.ir import (
 )
 from lattice.api.native_context import bind_settings
 from lattice.api.sql import bind_values, compile_lookup, decode
-from lattice.catalog import EMAIL_MAX_LEN, LIST_KIND, PUBLIC_ROLE, T2_EFFECT_PREFIX, USER_PARAM
+from lattice.catalog import (
+    AUTHENTICATED,
+    EMAIL_MAX_LEN,
+    LIST_KIND,
+    PUBLIC_ROLE,
+    T2_EFFECT_PREFIX,
+    USER_PARAM,
+)
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, UNSET, ParamSpec, pattern_problem
 from lattice.profile import Profile
@@ -399,7 +406,20 @@ def caller_role(plan: EndpointPlan, row: Sequence[Any]) -> str:
     if plan.admin_flag is not None:
         flagged = row[plan.user_columns.index(plan.admin_flag)]
         return plan.admin_role if flagged else plan.flag_role
-    return str(row[plan.user_columns.index(plan.role_column)])
+    stored = str(row[plan.user_columns.index(plan.role_column)])
+    if plan.role_values:  # RoleColumn(values=...): a value outside the map is no role
+        return dict(plan.role_values).get(stored, "")
+    return stored
+
+
+def role_allowed(plan: EndpointPlan, role: str) -> bool:
+    """Whether a caller of this role may call the endpoint: exactly `plan.roles` when set
+    (auth=Roles(...) / Authenticated), else the endpoint's role or the admin role."""
+    if plan.auth in (PUBLIC_ROLE, AUTHENTICATED):  # anyone / any authenticated caller
+        return True
+    if plan.roles is not None:
+        return role in plan.roles
+    return role in (plan.auth, plan.admin_role)
 
 
 def _authenticate(
@@ -420,7 +440,7 @@ def _authenticate(
         status = plan.inactive_status
         raise _ErrorResponse(status, STATUS_CODES[status], plan.inactive_detail)
     role = caller_role(plan, row)
-    if not (plan.auth == PUBLIC_ROLE or role == plan.auth or role == plan.admin_role):
+    if not role_allowed(plan, role):
         raise _ErrorResponse(403, "forbidden", plan.forbidden_detail)
     return user_id, role, tuple(row)
 

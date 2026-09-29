@@ -68,7 +68,7 @@ HEADER = (
     "# lattice: v1\n"
     "# ruff: noqa: F821, F841 -- Lattice names are ambient; some bindings exist for their effect\n"
 )
-USER_DEP_KINDS = frozenset({"current_user", "active_user", "admin"})
+USER_DEP_KINDS = frozenset({"current_user", "active_user", "admin", "roles"})
 
 
 @dataclass
@@ -208,6 +208,9 @@ def _functions(model: RepoModel, route: Route) -> list[Callable[..., Any]]:
         d = deps.get(name)
         if d is None or d.kind not in USER_DEP_KINDS or name in names:
             continue
+        if d.kind == "roles":  # a factory's closure: not addressable; its user dependency is
+            todo += list(d.depends_on)
+            continue
         names.append(name)
         todo += list(d.depends_on)
     out = [getattr(importlib.import_module(route.module), route.name)]
@@ -224,14 +227,19 @@ def lift_repo(
     only: Collection[str] | None = None,
     rules: Sequence[Rule] | None = None,
     hypothesis_bodies: int = 5,
+    dialect: str | None = None,
 ) -> ImportResult:
     """Import the repository with the deterministic lifters only (see the module
     docstring). ``app_factory(db_path)`` builds the original app on a SQLite file;
-    ``only`` limits the routes (by key: the route name, module-qualified when repeated)."""
+    ``only`` limits the routes (by key: the route name, module-qualified when repeated).
+    ``dialect``: the deployment's database dialect when the package does not name one
+    (its URL comes from the environment); what the package says always wins."""
     root = Path(repo_root).resolve()
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
     model = extract(root, app_package)
+    if model.dialect is None and dialect is not None:
+        model = dataclasses.replace(model, dialect=dialect)
     index = _Index(root, app_package)
     try:
         answers = token_answers(model, index)

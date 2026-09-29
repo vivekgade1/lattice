@@ -197,6 +197,10 @@ class Endpoint:
     admin_flag: str | None = None  # a Bool column: true -> admin_role, else flag_role
     flag_role: str = ""
     fixed_role: str | None = None  # NoRoles: every caller's role (no column is read)
+    # auth=Roles(...) / Authenticated: exactly these roles may call (None: auth or admin)
+    roles: tuple[str, ...] | None = None
+    # RoleColumn(values=...): stored spelling -> role name ("" when unmapped)
+    role_values: tuple[tuple[str, str], ...] = ()
     form: bool = False  # body parameters are URL-encoded form fields, not a JSON object
     effects: bool = False  # for_each: the steps collect outbox rows, sent after COMMIT
     # NativeToken(unique="runtime"): the 500 message (R311) when the token matches
@@ -864,7 +868,15 @@ def authenticate(ep: Endpoint, conn: sqlite3.Connection, token: str) -> Caller:
         role = ep.admin_role if row[ep.user_columns.index(ep.admin_flag)] else ep.flag_role
     else:
         role = str(row[ep.user_columns.index(ep.role_column)])
-    if not (ep.auth == "Public" or role == ep.auth or role == ep.admin_role):
+        if ep.role_values:
+            role = dict(ep.role_values).get(role, "")
+    if ep.auth in ("Public", "Authenticated"):
+        allowed = True
+    elif ep.roles is not None:
+        allowed = role in ep.roles
+    else:
+        allowed = ep.auth == "Public" or role == ep.auth or role == ep.admin_role
+    if not allowed:
         raise ErrorResponse(403, "forbidden", FORBIDDEN_DETAIL)
     return Caller(user_id, int(role == ep.admin_role), tuple(row))
 
@@ -1179,7 +1191,13 @@ def t2_begin(
         role = ep.fixed_role
     elif caller is not None:
         role = t2_role(
-            ep.user_columns, caller.row, ep.role_column, ep.admin_flag, ep.admin_role, ep.flag_role
+            ep.user_columns,
+            caller.row,
+            ep.role_column,
+            ep.admin_flag,
+            ep.admin_role,
+            ep.flag_role,
+            ep.role_values,
         )
     is_admin = caller is not None and bool(caller.is_admin)
     request = T2Request(values, UNSET, row, T2_CALLER, ep.user_key, is_admin, role, now)
@@ -1642,6 +1660,10 @@ class _EndpointGen:
             out.append(_Kw("flag_role", _py_str(plan.flag_role)))
         if plan.fixed_role is not None:
             out.append(_Kw("fixed_role", _py_str(plan.fixed_role)))
+        if plan.roles is not None:
+            out.append(_Kw("roles", _strs(plan.roles)))
+        if plan.role_values:
+            out.append(_Kw("role_values", repr(plan.role_values)))
         return out
 
     def render(self) -> str:

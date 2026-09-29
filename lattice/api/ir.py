@@ -43,6 +43,7 @@ from lattice.api.sql import (
 )
 from lattice.catalog import (
     API_ERRORS,
+    AUTHENTICATED,
     DEFAULT_FUEL,
     DEFAULT_MAX_VALUE_SIZE,
     ELSE_KW,
@@ -334,6 +335,11 @@ class EndpointPlan:
     user_stored: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = ()
     # ApiProfile.max_value_size: the largest value a procedure may build (R622).
     max_value_size: int = DEFAULT_MAX_VALUE_SIZE
+    # auth=Roles(...) / Authenticated: exactly the roles that may call (sorted; the admin
+    # only when listed); None: `auth` or the admin role (spec 2026-09-29 role sets)
+    roles: tuple[str, ...] | None = None
+    # RoleColumn(values=...): stored spelling -> role name, decoded before any comparison
+    role_values: tuple[tuple[str, str], ...] = ()
     # NativeContext: every profile native that reads settings -- (native, ((setting,
     # scalar), ...)) -- by name, so the natives of steps and procedures are bound too.
     native_settings: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = ()
@@ -1512,9 +1518,11 @@ class _Endpoint:
                 token_invalid = getattr(self.api.auth, "invalid", None)
                 token_unknown = getattr(self.api.auth, "unknown", None)
         role_column, admin_flag, flag_role, fixed_role = "role", None, "", None
+        role_values: tuple[tuple[str, str], ...] = ()
         match self.api.roles_from:
-            case RoleColumn(column=column):
+            case RoleColumn(column=column, values=values):
                 role_column = column
+                role_values = tuple(values or ())
             case AdminFlag(column=column, role=role):
                 admin_flag, flag_role = column, role
             case NoRoles(role=role):
@@ -1573,6 +1581,12 @@ class _Endpoint:
             native_settings=native_settings(self.api),
             user_stored=users.stored_spellings() if users is not None else (),
             max_value_size=getattr(self.api, "max_value_size", DEFAULT_MAX_VALUE_SIZE),
+            roles=(
+                tuple(sorted(self.api.roles - {PUBLIC_ROLE}))
+                if self.info.auth == AUTHENTICATED
+                else self.info.roles
+            ),
+            role_values=role_values,
         )
 
     def _t2_caller(self) -> tuple[tuple[str, str], ...]:

@@ -94,6 +94,12 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--artefacts", type=Path, default=None)
     p.add_argument("--hypothesis-bodies", type=int, default=5)
     p.add_argument(
+        "--dialect",
+        default=None,
+        help="the deployment's database dialect (e.g. sqlite) when the package does not "
+        "name one (its database URL comes from the environment)",
+    )
+    p.add_argument(
         "--backend",
         choices=("cli",),
         default="cli",
@@ -112,7 +118,9 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
     factory = resolve_factory(args.app_factory)
-    result = lift_repo(root, args.package, factory, hypothesis_bodies=args.hypothesis_bodies)
+    result = lift_repo(
+        root, args.package, factory, hypothesis_bodies=args.hypothesis_bodies, dialect=args.dialect
+    )
     corpus = None
     if not args.no_corpus:
         corpus = CorpusLog(args.corpus, repo=str(root), package=args.package)

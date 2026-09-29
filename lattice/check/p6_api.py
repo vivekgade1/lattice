@@ -18,6 +18,7 @@ from lattice.catalog import (
     API_ENDPOINT_OPS,
     API_ERRORS,
     API_FN_FUNCS,
+    AUTHENTICATED,
     ELSE_KW,
     FN_SIGS,
     FOR_EACH,
@@ -25,6 +26,7 @@ from lattice.catalog import (
     LIST_KIND,
     PAGE_LIMIT_MAX,
     PUBLIC_ROLE,
+    ROLES_CALL,
     SENT,
     T2_CALL,
     TABLE_OPS,
@@ -35,6 +37,7 @@ from lattice.catalog import (
 from lattice.check.api_info import (
     EndpointInfo,
     ParamSpec,
+    auth_label,
     endpoint_decorator,
     endpoint_info,
     parse_decl,
@@ -375,8 +378,14 @@ class _Endpoint:
                 f"add auth=<role> to @endpoint(...), one of: {roles}",
             )
             return
+        if isinstance(auth, ast.Call):
+            self._role_set(auth, roles)
+            return
         if not isinstance(auth, ast.Name):
             self.ctx.error("L801", auth, "auth= must name a role", f"one of: {roles}")
+            return
+        if auth.id == AUTHENTICATED:
+            self._needs_caller(auth.id)
             return
         if auth.id not in self.api.roles:
             close = did_you_mean(auth.id, sorted(self.api.roles))
@@ -401,21 +410,63 @@ class _Endpoint:
                 f"auth={PUBLIC_ROLE}",
             )
             return
-        has_user = USER_PARAM in self.params
-        if auth.id == PUBLIC_ROLE and has_user:
+        if auth.id == PUBLIC_ROLE and USER_PARAM in self.params:
             self.ctx.error(
                 "L801",
                 self._arg(USER_PARAM),
                 "a Public endpoint has no authenticated caller",
                 "remove the user parameter, or require a role with auth=",
             )
-        elif auth.id != PUBLIC_ROLE and not has_user:
+        elif auth.id != PUBLIC_ROLE:
+            self._needs_caller(auth.id)
+
+    def _needs_caller(self, label: str) -> None:
+        if USER_PARAM not in self.params:
             self.ctx.error(
                 "L801",
                 self.fn,
-                f"endpoint '{self.fn.name}' (auth={auth.id}) must take the caller",
+                f"endpoint '{self.fn.name}' (auth={label}) must take the caller",
                 "add a parameter user: CurrentUser",
             )
+
+    def _role_set(self, auth: ast.Call, roles: str) -> None:
+        """auth=Roles(A, B, ...): exactly these roles (the admin only when listed)."""
+        usage = f"e.g. auth={ROLES_CALL}(<role>, ...) with roles from: {roles}"
+        if not (isinstance(auth.func, ast.Name) and auth.func.id == ROLES_CALL):
+            self.ctx.error(
+                "L801", auth, f"auth= must name a role, {AUTHENTICATED} or {ROLES_CALL}(...)", usage
+            )
+            return
+        if not auth.args or auth.keywords:
+            self.ctx.error(
+                "L801", auth, f"{ROLES_CALL}(...) lists one or more roles, by name only", usage
+            )
+            return
+        seen: set[str] = set()
+        allowed = self.api.roles - {PUBLIC_ROLE}
+        if isinstance(self.api.roles_from, NoRoles):
+            allowed = frozenset({self.api.roles_from.role})
+        for arg in auth.args:
+            if not isinstance(arg, ast.Name):
+                self.ctx.error("L801", arg, f"{ROLES_CALL}(...) takes role names", usage)
+                return
+            if arg.id in seen:
+                self.ctx.error("L801", arg, f"role '{arg.id}' is listed twice", "list it once")
+                return
+            seen.add(arg.id)
+            if arg.id not in allowed:
+                why = (
+                    "Public is not a role a caller has (use auth=Public)"
+                    if arg.id == PUBLIC_ROLE
+                    else f"no caller has the role '{arg.id}'"
+                    if arg.id in self.api.roles
+                    else f"unknown role '{arg.id}'"
+                )
+                self.ctx.error(
+                    "L801", arg, why, f"roles a caller may have: {', '.join(sorted(allowed))}"
+                )
+                return
+        self._needs_caller(auth_label(auth))
 
     def _path(self) -> None:
         names = path_params(self.info.path)

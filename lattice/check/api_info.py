@@ -25,6 +25,7 @@ from lattice.catalog import (
     LIST_KIND,
     PARAM_CONSTRAINTS,
     QUERY_METHODS,
+    ROLES_CALL,
     UNSET_NAME,
 )
 from lattice.check.astutil import literal_value
@@ -144,6 +145,35 @@ class EndpointInfo:
     page_total: bool = False
     # @endpoint(..., body="form"): body parameters are form fields (BODY_FORMATS)
     body: str = "json"
+    # auth=Roles(A, B): exactly these roles, sorted (the admin only when listed); None
+    # for auth=R (R or the admin), Public and Authenticated (every non-Public role, which
+    # lowering expands from the profile)
+    roles: tuple[str, ...] | None = None
+
+
+def role_set(auth: ast.expr | None) -> tuple[str, ...] | None:
+    """The names of a well-formed ``Roles(A, B, ...)`` (P6 reports a malformed one)."""
+    if (
+        isinstance(auth, ast.Call)
+        and isinstance(auth.func, ast.Name)
+        and auth.func.id == ROLES_CALL
+        and auth.args
+        and not auth.keywords
+        and all(isinstance(a, ast.Name) for a in auth.args)
+    ):
+        return tuple(a.id for a in auth.args)  # type: ignore[attr-defined]
+    return None
+
+
+def auth_label(auth: ast.expr | None) -> str:
+    """The auth= value as the plan names it: a role, ``Authenticated``, or
+    ``Roles(A, B)`` (sorted)."""
+    if isinstance(auth, ast.Name):
+        return auth.id
+    roles = role_set(auth)
+    if roles is not None:
+        return f"{ROLES_CALL}({', '.join(sorted(set(roles)))})"
+    return ""
 
 
 Problem = tuple[str, str | None]  # (message, hint)
@@ -638,7 +668,8 @@ def endpoint_info(fn: ast.FunctionDef) -> EndpointInfo | None:
     if not isinstance(decl, Decl) or not isinstance(ret[1], tuple):
         return None
     success, errors = ret
-    auth = decl.auth.id if isinstance(decl.auth, ast.Name) else ""
+    auth = auth_label(decl.auth)
+    roles = role_set(decl.auth)
     return EndpointInfo(
         fn.name,
         decl.method,
@@ -651,4 +682,5 @@ def endpoint_info(fn: ast.FunctionDef) -> EndpointInfo | None:
         span_of(fn),
         response=decl.response,
         body=decl.body,
+        roles=tuple(sorted(set(roles))) if roles is not None else None,
     )

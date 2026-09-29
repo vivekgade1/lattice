@@ -161,7 +161,7 @@ class RouteSource:
     @property
     def user(self) -> str | None:
         """The parameter holding the caller (a current-user dependency)."""
-        return self._dep_param("current_user", "active_user", "admin")
+        return self._dep_param("current_user", "active_user", "admin", "roles")
 
     def params_of(self, source: str) -> list[str]:
         return [p.name for p in self.route.params if p.source == source]

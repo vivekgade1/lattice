@@ -125,6 +125,13 @@ class Dependency:
     scheme: str | None = None  # token kind: the fastapi.security class
     reason: str = ""
     provides: str | None = None  # repository kind: the class ("module:Name") it returns
+    # roles kind -- a dependency factory's checker (``Depends(grant(Perm.X))``) refusing
+    # callers by the users table's enum column ``role_column``: the enum values it lets
+    # through (probed on the original, one call per value), with its refusal
+    role_column: str | None = None
+    roles_allowed: tuple[str, ...] = ()
+    roles_status: int | None = None
+    roles_detail: str | None = None
 
 
 @dataclass(frozen=True)
@@ -141,6 +148,12 @@ class RouteParam:
     dependency: str | None = None
     item: str | None = None
     choices: tuple[str | int, ...] = ()  # an Enum / Literal parameter's allowed values
+    # bounds declared in the parameter's ``Query(...)`` / ``Path(...)`` (``gt``/``lt`` on
+    # an int become ``ge``/``le``)
+    ge: int | float | None = None
+    le: int | float | None = None
+    min_length: int | None = None
+    max_length: int | None = None
 
 
 @dataclass(frozen=True)
@@ -229,6 +242,22 @@ class NativeCandidate:
 
 
 @dataclass(frozen=True)
+class RoleScheme:
+    """The users table's enum role column, read from a dependency factory's checker:
+    ``roles`` are (enum value, stored spelling, Lattice role name) per member, in the
+    enum's order; the admin role is the member named like an admin (``ADMIN_HINTS``)."""
+
+    column: str
+    roles: tuple[tuple[str, str, str], ...]
+    admin: str | None  # the Lattice name of the admin member, if any
+    status: int | None  # the checkers' refusal
+    detail: str | None
+
+    def name(self, value: str) -> str:
+        return next(n for v, _, n in self.roles if v == value)
+
+
+@dataclass(frozen=True)
 class RepoModel:
     app_package: str
     tables: tuple[TableModel, ...]
@@ -240,6 +269,7 @@ class RepoModel:
     dialect: str | None
     exception_handlers: tuple[str, ...]  # "module:line" of each custom handler
     custom_serialization: tuple[str, ...]  # descriptions of non-default serialisation
+    role_scheme: RoleScheme | None = None  # an enum role column read by role checkers
 
     def to_dict(self) -> dict[str, object]:
         return dataclasses.asdict(self)
@@ -299,7 +329,8 @@ EFFECT_PREFIXES = (
 EFFECT_CALLS = frozenset({"builtins:print", "builtins:open"})
 EFFECT_MODULES = ("smtplib", "requests", "httpx", "urllib", "subprocess", "socket", "emails")
 MUTATING_METHODS = frozenset({"append", "extend", "add", "update", "insert", "pop", "remove"})
-USER_DEP_KINDS = frozenset({"current_user", "active_user", "admin"})
+USER_DEP_KINDS = frozenset({"current_user", "active_user", "admin", "roles"})
+FACTORY_MARK = "#call:"  # classify key of a Depends(factory(args)) call
 # how deep owner evidence is followed into helpers handed the caller (or its id)
 OWNER_HELPER_DEPTH = 5
 # The marker of a reason (an Unclear decision, an island) that is a gap in the language.
@@ -514,6 +545,8 @@ class _Extractor:
                 self.models[qual] = DataModel(node.name, mod, fields, bases)
         self.table_by_name = {t.name: t for t in self.tables.values()}
         self.dep_memo: dict[str, Dependency] = {}
+        # Depends(factory(args)): synthetic qual -> (module of the call, the call)
+        self.factory_calls: dict[str, tuple[str, ast.Call]] = {}
 
     # -- classes and fields --
 
@@ -769,6 +802,8 @@ class _Extractor:
     ) -> tuple[str | None, str | None] | None:
         """(dependency qual, annotated type qual) when a parameter is a dependency."""
         if isinstance(default, ast.Call) and _ends(self.ix.resolve(mod, default.func), "Depends"):
+            if default.args and isinstance(default.args[0], ast.Call):
+                return self._factory_qual(mod, default.args[0]), self.ix.resolve(mod, ann)
             target = self.ix.resolve(mod, default.args[0]) if default.args else None
             return target or self.ix.resolve(mod, ann), self.ix.resolve(mod, ann)
         found = self._annotated_depends(mod, ann, 0)
@@ -793,6 +828,15 @@ class _Extractor:
                 return self._annotated_depends(found[0], found[1], depth + 1)
         return None
 
+    def _factory_qual(self, mod: str, call: ast.Call) -> str | None:
+        """``Depends(factory(args))``: a qual naming this very call of the factory."""
+        factory = self.ix.resolve(mod, call.func)
+        if factory is None:
+            return None
+        qual = f"{factory}{FACTORY_MARK}{ast.unparse(call)}"
+        self.factory_calls[qual] = (mod, call)
+        return qual
+
     def classify(self, qual: str | None) -> Dependency:
         name = _short(qual) or "?"
         if qual is None:
@@ -805,6 +849,8 @@ class _Extractor:
         return dep
 
     def _classify(self, qual: str, name: str) -> Dependency:
+        if qual in self.factory_calls:
+            return self._classify_factory(qual)
         mod = qual.split(":", 1)[0]
         if _ends(qual, *FORM_CLASSES):
             return Dependency(name, mod, "form")
@@ -875,6 +921,56 @@ class _Extractor:
                 return Dependency(**base, kind="current_user", returns=returns, **extra)
         return Dependency(
             **base, kind="unknown", returns=returns, reason="not a recognised auth pattern"
+        )
+
+    def _classify_factory(self, qual: str) -> Dependency:
+        """``Depends(factory(args))`` whose factory returns a nested checker taking the
+        current user and refusing some callers by an enum column of the users table: a
+        ``roles`` dependency. Which values pass is read by calling the original's checker
+        once per enum member (a stand-in user holding only that column)."""
+        call_mod, call = self.factory_calls[qual]
+        factory = qual.split(FACTORY_MARK, 1)[0]
+        name = f"{_short(factory)}({', '.join(ast.unparse(a) for a in call.args)})"
+
+        def unknown(reason: str) -> Dependency:
+            return Dependency(name, call_mod, "unknown", reason=reason)
+
+        found = self.ix.node(factory)
+        if found is None or not isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
+            return unknown(f"dependency factory {factory} is not a function of the package")
+        mod, node = found
+        inner = _returned_nested_def(node)
+        if inner is None:
+            return unknown("the dependency factory does not return a nested checker")
+        user_arg, user_dep = None, None
+        for arg, default in _args_with_defaults(inner.args):
+            target = self.dep_target(mod, arg.annotation, default)
+            if target is not None:
+                sub = self.classify(target[0])
+                if sub.kind in USER_DEP_KINDS:
+                    user_arg, user_dep = arg.arg, sub
+                elif sub.kind != "session":
+                    return unknown(f"the checker depends on {sub.name}, not the current user")
+        if user_arg is None or user_dep is None:
+            return unknown("the checker does not take the current user")
+        users = self.table_by_name.get(user_dep.returns or "")
+        if users is None:
+            return unknown("the current user is not a users table row")
+        probed = _probe_role_checker(call_mod, call, user_arg, users)
+        if isinstance(probed, str):
+            return unknown(probed)
+        column, allowed, status, detail = probed
+        return Dependency(
+            name,
+            call_mod,
+            "roles",
+            depends_on=(user_dep.name,),
+            returns=user_dep.returns,
+            raises=tuple(self.raise_sites(mod, inner)),
+            role_column=column,
+            roles_allowed=allowed,
+            roles_status=status,
+            roles_detail=detail,
         )
 
     def _yields_session(self, mod: str, fn: ast.AST) -> bool:
@@ -1371,6 +1467,11 @@ class _Extractor:
             dep_quals.append(dep_qual or "<unresolved>")
             return RouteParam(arg.arg, shown, dep.returns, "dependency", dependency=dep.name)
         t = self.type_of(mod, ann)
+        bounds: dict[str, int | float | None] = {}
+        if isinstance(default, ast.Call) and _ends(
+            self.ix.resolve(mod, default.func), *PARAM_DECLARATIONS
+        ):
+            default, bounds = _declared_param(default, t.type)
         default_src = ast.unparse(default) if default is not None else None
         required = default is None
         if arg.arg in path_names:
@@ -1382,7 +1483,16 @@ class _Extractor:
         else:
             source = "query"
         return RouteParam(
-            arg.arg, shown, t.type, source, default_src, required, None, t.item, t.choices
+            arg.arg,
+            shown,
+            t.type,
+            source,
+            default_src,
+            required,
+            None,
+            t.item,
+            t.choices,
+            **bounds,  # type: ignore[arg-type]
         )
 
     def _model_name(self, mod: str, expr: ast.expr | None) -> str | None:
@@ -2394,7 +2504,7 @@ def _route_auth(deps: list[Dependency]) -> tuple[str, str]:
     kinds = {d.kind for d in deps}
     if "admin" in kinds:
         return "Admin", "superuser dependency"
-    if kinds & {"current_user", "active_user"}:
+    if kinds & {"current_user", "active_user", "roles"}:
         return "Customer", "current-user dependency"
     return "Public", "no auth dependency"
 
@@ -2442,6 +2552,163 @@ def _claim(fn: ast.AST) -> str:
 # ---- entry point -----------------------------------------------------------------------------
 
 
+PARAM_DECLARATIONS = ("Query", "Path")  # fastapi's parameter declarations (_ends names)
+
+
+def _declared_param(
+    call: ast.Call, type_name: str | None
+) -> tuple[ast.expr | None, dict[str, int | float | None]]:
+    """``Query(default=20, le=100)`` / ``Query(20, ge=0)``: (the default expression, or
+    None when it is required -- absent or ``...``; the literal bounds)."""
+    kws = {k.arg: k.value for k in call.keywords if k.arg}
+    default = kws.get("default", call.args[0] if call.args else None)
+    if isinstance(default, ast.Constant) and default.value is Ellipsis:
+        default = None
+    bounds: dict[str, int | float | None] = {}
+    for src, dst in (("ge", "ge"), ("le", "le"), ("min_length", "min_length"),
+                     ("max_length", "max_length")):  # fmt: skip
+        v = _lit(kws.get(src))
+        if isinstance(v, int | float) and not isinstance(v, bool):
+            bounds[dst] = v
+    for src, dst, step in (("gt", "ge", 1), ("lt", "le", -1)):
+        v = _lit(kws.get(src))
+        if isinstance(v, int) and not isinstance(v, bool) and type_name == "Int":
+            bounds.setdefault(dst, v + step)
+    return default, bounds
+
+
+def _returned_nested_def(fn: ast.FunctionDef | ast.AsyncFunctionDef) -> ast.FunctionDef | None:
+    """The nested function a factory returns (``def check(...): ...; return check``)."""
+    nested = {s.name: s for s in fn.body if isinstance(s, ast.FunctionDef | ast.AsyncFunctionDef)}
+    last = fn.body[-1] if fn.body else None
+    if isinstance(last, ast.Return) and isinstance(last.value, ast.Name):
+        found = nested.get(last.value.id)
+        return found if isinstance(found, ast.FunctionDef) else None
+    return None
+
+
+def _probe_role_checker(
+    call_mod: str, call: ast.Call, user_arg: str, users: TableModel
+) -> tuple[str, tuple[str, ...], int | None, str | None] | str:
+    """(role column, the enum values the checker lets through, its refusal status and
+    detail), or why not: the original's ``factory(args)`` is evaluated in the module the
+    route declares it in, and its checker called once per member of each enum column of
+    the users table, with a stand-in user holding only that column."""
+    import importlib
+    import types
+
+    try:
+        module = importlib.import_module(call_mod)
+        checker = eval(compile(ast.Expression(call), f"<{call_mod}>", "eval"), vars(module))  # noqa: S307
+        model = getattr(importlib.import_module(users.module), users.name)
+    except Exception as e:  # noqa: BLE001 -- any failure leaves the dependency unclear
+        return f"the dependency factory cannot be evaluated: {type(e).__name__}: {e}"
+    fields = getattr(model, "model_fields", {})
+    outcomes: list[tuple[str, tuple[str, ...], int | None, str | None]] = []
+    for column in users.columns:
+        if not column.choices or column.name not in fields:
+            continue
+        enum_cls = _enum_of(fields[column.name].annotation)
+        if enum_cls is None:
+            continue
+        allowed: list[str] = []
+        refusals: set[tuple[int, str | None]] = set()
+        for value in column.choices:
+            stand_in = types.SimpleNamespace(**{column.name: enum_cls(value)})
+            try:
+                checker(**{user_arg: stand_in})
+            except AttributeError:
+                break  # the checker reads another attribute: not this column's check
+            except Exception as e:  # noqa: BLE001
+                status = getattr(e, "status_code", None)
+                if not isinstance(status, int):
+                    return f"the checker raised {type(e).__name__} for {value!r}"
+                refusals.add((status, getattr(e, "detail", None)))
+                continue
+            allowed.append(str(value))
+        else:
+            if refusals and len(refusals) == 1:
+                status, detail = next(iter(refusals))
+                outcomes.append((column.name, tuple(allowed), status, detail))
+            elif not refusals:
+                outcomes.append((column.name, tuple(allowed), None, None))
+    decisive = [o for o in outcomes if o[2] is not None]
+    if len(decisive) == 1:
+        return decisive[0]
+    if not decisive and len(outcomes) == 1:
+        return outcomes[0]
+    return "the checker's refusals do not follow one enum column of the users table"
+
+
+def _enum_of(annotation: object) -> type | None:
+    import enum
+    import typing
+
+    for a in (annotation, *typing.get_args(annotation)):
+        if isinstance(a, type) and issubclass(a, enum.Enum):
+            return a
+    return None
+
+
+def role_name(value: str) -> str:
+    """A Lattice role name for an enum value: ``"member"`` -> ``Member``,
+    ``"super_user"`` -> ``SuperUser``."""
+    parts = [p for p in re.split(r"[^0-9A-Za-z]+", value) if p]
+    return "".join(p[:1].upper() + p[1:].lower() for p in parts)
+
+
+def role_scheme(tables: dict[str, TableModel], deps: list[Dependency]) -> RoleScheme | None:
+    """The users table's role column, when role checkers read one (one column)."""
+    checkers = [d for d in deps if d.kind == "roles" and d.role_column]
+    columns = {d.role_column for d in checkers}
+    if len(columns) != 1:
+        return None
+    column = columns.pop()
+    table = next(
+        (t for t in tables.values() if any(c.name == column and c.choices for c in t.columns)),
+        None,
+    )
+    if table is None:
+        return None
+    spec = next(c for c in table.columns if c.name == column)
+    stored = spec.choice_names or tuple(map(str, spec.choices))
+    roles: list[tuple[str, str, str]] = []
+    admin = None
+    for value, name in zip(spec.choices, stored, strict=True):
+        hinted = any(h in str(value).lower() or h in str(name).lower() for h in ADMIN_HINTS)
+        role = "Admin" if hinted and admin is None else role_name(str(value))
+        if hinted and admin is None:
+            admin = role
+        roles.append((str(value), str(name), role))
+    refusals = {(d.roles_status, d.roles_detail) for d in checkers if d.roles_status is not None}
+    status, detail = next(iter(refusals)) if len(refusals) == 1 else (None, None)
+    return RoleScheme(column, tuple(roles), admin, status, detail)
+
+
+def _role_auth(route: Route, deps: dict[str, Dependency], scheme: RoleScheme) -> Route:
+    """A route's auth under the role scheme: a role checker's values as ``Roles(...)``
+    (``Authenticated`` when it lets every role through); a plain current user as
+    ``Authenticated``."""
+    names = {p.dependency for p in route.params if p.source == "dependency"}
+    checker = next((deps[n] for n in names if n in deps and deps[n].kind == "roles"), None)
+    if checker is not None and checker.role_column == scheme.column:
+        allowed = sorted(scheme.name(v) for v in checker.roles_allowed)
+        if len(allowed) == len(scheme.roles):
+            return dataclasses.replace(route, auth="Authenticated",
+                                       auth_reason=f"{checker.name}: every role")  # fmt: skip
+        if not allowed:
+            reason = f"{checker.name} lets no role through"
+            return dataclasses.replace(route, auth="unclear", auth_reason=reason)
+        return dataclasses.replace(
+            route, auth=f"Roles({', '.join(allowed)})", auth_reason=f"{checker.name}"
+        )
+    if route.auth == "Customer":
+        return dataclasses.replace(
+            route, auth="Authenticated", auth_reason=route.auth_reason + "; any role"
+        )
+    return route
+
+
 def extract(repo_root: Path, app_package: str) -> RepoModel:
     """Analyse ``app_package`` (a dotted package under ``repo_root``) into a RepoModel."""
     ex = _Extractor(Path(repo_root), app_package)
@@ -2450,6 +2717,10 @@ def extract(repo_root: Path, app_package: str) -> RepoModel:
     natives = ex.natives(routes)
     url, dialect = ex.database()
     deps = [d for d in ex.dep_memo.values() if d.kind != "form"]
+    scheme = role_scheme(ex.tables, deps)
+    if scheme is not None:
+        by_name = {d.name: d for d in deps}
+        routes = [_role_auth(r, by_name, scheme) for r in routes]
     return RepoModel(
         app_package=app_package,
         tables=tuple(ex.tables.values()),
@@ -2461,4 +2732,5 @@ def extract(repo_root: Path, app_package: str) -> RepoModel:
         dialect=dialect,
         exception_handlers=ex.exception_handlers(),
         custom_serialization=ex.custom_serialization(),
+        role_scheme=scheme,
     )

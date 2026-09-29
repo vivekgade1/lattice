@@ -114,6 +114,27 @@ class AuthSpec:
     subject_column: str | None = None
     bad_token: str = "not-a-jwt"
     key_type: ColumnType = "uuid"  # the users key: "uuid", or "int" (1, 2, ... in the seed)
+    # an enum role column (RoleColumn(values=...)): (value as the seed writes it, role
+    # name) per role, in the enum's order; the seed gives every role a user
+    role_column: str | None = None
+    role_values: tuple[tuple[str, str], ...] = ()
+    admin_role: str = "Admin"
+
+    def role_users(self) -> tuple[tuple[str, str, str], ...]:
+        """(handle, role value, role name) of the seed's users by role: ``admin`` holds
+        the admin role, ``alice``/``bob``/``carol`` the first other role, and one
+        ``role_<name>`` user each further role."""
+        if self.role_column is None:
+            return ()
+        admin = next((v for v, n in self.role_values if n == self.admin_role), None)
+        others = [(v, n) for v, n in self.role_values if n != self.admin_role]
+        out: list[tuple[str, str, str]] = []
+        if admin is not None:
+            out.append((ADMIN, admin, self.admin_role))
+        if others:
+            out += [(h, others[0][0], others[0][1]) for h in (ACTOR, OTHER, INACTIVE)]
+            out += [(f"role_{n.lower()}", v, n) for v, n in others[1:]]
+        return tuple(out)
 
     @property
     def missing_user(self) -> Any:
@@ -174,12 +195,15 @@ class RouteSpec:
     path: str
     kind: RouteKind
     table: str | None
-    auth: Literal["public", "user", "admin"] = "user"
+    auth: Literal["public", "user", "admin", "roles"] = "user"
     params: tuple[ParamSpec, ...] = ()
     body: Literal["json", "form"] = "json"
     pagination: tuple[str, str] | None = None
     errors: tuple[ErrorSpec, ...] = ()
     tables: tuple[str, ...] = ()
+    # auth="roles": the role names that may call it (auth=Roles(...)); the suite calls
+    # it as a user of every role (AuthSpec.role_values)
+    roles: tuple[str, ...] | None = None
 
     def of(self, source: str) -> list[ParamSpec]:
         return [p for p in self.params if p.source == source]
@@ -204,6 +228,7 @@ class SeedUser:
     active: bool
     admin: bool
     id: Any  # uuid.UUID, or an int for an integer users key
+    role: str | None = None  # the role column's value (AuthSpec.role_column)
 
 
 @dataclass
@@ -254,15 +279,22 @@ def seed_plan(
     third row, distinct datetimes in a shuffled order. A pure function of ``seed``."""
     rng = random.Random(seed)
     ns = uuid.uuid5(uuid.NAMESPACE_URL, f"https://lattice.invalid/importer-seed/{seed}")
+    roles = {h: v for h, v, _ in auth.role_users()}
+    people = [*SEED_USERS, *((h, False, True) for h in roles if h not in dict.fromkeys(
+        u[0] for u in SEED_USERS))]  # fmt: skip
     users = tuple(
         SeedUser(h, f"{h}@example.com", f"{h}-pass-{seed:04d}", active, admin,
-                 k + 1 if auth.key_type == "int" else uuid.uuid5(ns, f"user/{h}"))
-        for k, (h, admin, active) in enumerate(SEED_USERS)
+                 k + 1 if auth.key_type == "int" else uuid.uuid5(ns, f"user/{h}"),
+                 roles.get(h))
+        for k, (h, admin, active) in enumerate(people)
     )  # fmt: skip
     plan = SeedPlan(users, owner_columns={t.name: t.owner for t in tables if t.owner})
     by_name = {t.name: t for t in tables}
     for t in tables:
         n = len(users) if t.name == auth.users_table else rows_per_table
+        if any(c.unique and c.foreign_key and c.foreign_key.split(".")[0] == auth.users_table
+               for c in t.columns):  # fmt: skip
+            n = min(n, len(users))  # one row per user at most (a unique users foreign key)
         hours = list(range(n))
         rng.shuffle(hours)
         rows = []
@@ -297,6 +329,8 @@ def _seed_value(
             return u.active
         if c.name == auth.admin_column:
             return u.admin
+        if c.name == auth.role_column and u.role is not None:
+            return u.role
         if c.primary_key:
             return u.id
     if c.primary_key:
@@ -578,6 +612,9 @@ class _Builder:
         return self.route.path.replace("{" + p.name + "}", id_value or self.missing_id())
 
     def happy_actor(self) -> str | None:
+        if self.route.auth == "roles":
+            allowed = set(self.route.roles or ())
+            return next((h for h, _, n in self.auth.role_users() if n in allowed), ACTOR)
         return None if self.route.auth == "public" else (
             ADMIN if self.route.auth == "admin" else ACTOR)  # fmt: skip
 
@@ -636,6 +673,10 @@ def _route_cases(b: _Builder, hypothesis_bodies: int, seed: int) -> None:
         b.add("admin", user=ADMIN, id_value=b.other_id() if idp is not None else "<own>")
         if r.kind in ("me", "update_me", "list", "read"):
             b.add("other_user", user=OTHER)
+        # a user of every role (RoleColumn(values=...)): a wrong role set cannot verify
+        for handle, _, name in auth.role_users():
+            if handle != INACTIVE:
+                b.add(f"role.{name}.{handle}", user=handle)
     if idp is not None:
         b.add("missing_id", id_value=b.missing_id())
         b.add("malformed_id", id_value=MALFORMED.get(idp.type, "%%"))

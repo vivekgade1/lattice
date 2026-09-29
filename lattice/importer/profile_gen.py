@@ -349,8 +349,7 @@ class _Generator:
                 }
             )
             reason = (
-                f"routes {', '.join(routes)} compare {', '.join(other)} (not {fk}) "
-                "to the caller"
+                f"routes {', '.join(routes)} compare {', '.join(other)} (not {fk}) to the caller"
             )
             self.note("owner", table.name, reason, (fk, *other))
             self._decide(plan, UNCLEAR, reason)
@@ -412,8 +411,7 @@ class _Generator:
         ]
         if len(checked) != 1:
             reason = (
-                f"no route touching {table.name} checks the caller through "
-                f"{', '.join(parents)}"
+                f"no route touching {table.name} checks the caller through {', '.join(parents)}"
                 if not checked
                 else f"routes touching {table.name} check the caller through several "
                 f"owned parents ({', '.join(p.table.name for _, p in checked)})"
@@ -589,7 +587,10 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
         )
     users_cols = {c.name: c for c in g.tables[users].columns} if users in g.tables else {}
     no_roles = False
-    if admin is None:
+    scheme = model.role_scheme
+    if scheme is not None:
+        admin = None  # the role column decides who is the admin (RoleColumn(values=...))
+    elif admin is None:
         role = users_cols.get("role")
         if users is not None and (role is None or role.type != "Str"):
             # no admin concept: every caller is a Customer (single-role auth)
@@ -660,6 +661,8 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
     if settings:
         out += ["from collections.abc import Mapping"]
     names = "AdminFlag, ApiProfile, NativeSig, NativeToken, " + ("NoRoles, " if no_roles else "")
+    if scheme is not None:
+        names += "RoleColumn, "
     out += [
         "",
         f"from lattice.profile import {names}Profile",
@@ -740,7 +743,16 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
         "table_names={"
         + ", ".join(f"{p.table.name!r}: {p.table.table_name!r}" for p in plans)
         + "}",
-        f"roles=frozenset({{'Public', {CUSTOMER!r}, {ADMIN!r}}})",
+        "roles=frozenset({"
+        + ", ".join(
+            repr(r)
+            for r in (
+                ["Public", *(n for _, _, n in scheme.roles), *([] if scheme.admin else [ADMIN])]
+                if scheme is not None
+                else ["Public", CUSTOMER, ADMIN]
+            )
+        )
+        + "})",
     ]
     if emit_users:
         api.append(f"users_table={users!r}")
@@ -780,7 +792,12 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
             if answer is not None and answer != (401, unauthorized):
                 lookup += f", {name}={answer!r}"
         api.append(f"auth=NativeToken({decoder.name!r}{lookup})")
-    if admin is not None and admin.admin_column:
+    if scheme is not None:
+        # keyed by the column's value as the profile reads it: an enum column stored by
+        # member name is decoded to its value first (one_of_stored)
+        values = {value: name for value, _, name in scheme.roles}
+        api.append(f"roles_from=RoleColumn({scheme.column!r}, values={values!r})")
+    elif admin is not None and admin.admin_column:
         api.append(f"roles_from=AdminFlag({admin.admin_column!r}, {CUSTOMER!r})")
     elif no_roles:
         api.append(f"roles_from=NoRoles({CUSTOMER!r})")
@@ -801,6 +818,8 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
             api.append(f"unauthorized_detail={unauthorized!r}")
         if admin is not None and admin.admin_detail:
             api.append(f"forbidden_detail={admin.admin_detail!r}")
+        elif scheme is not None and scheme.detail:
+            api.append(f"forbidden_detail={scheme.detail!r}")
     if sqlite and not model.custom_serialization:
         api.append("datetime_wire='naive'")
     out += ["def profile() -> Profile:", f'    """The Lattice profile of {model.app_package}."""']

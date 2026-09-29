@@ -285,6 +285,11 @@ API_ERRORS: Mapping[str, int] = {
     "BadRequest": 400,
 }
 PUBLIC_ROLE = "Public"
+# auth=Authenticated: any authenticated caller; auth=Roles(A, B): exactly these roles
+# (spec 2026-09-29-lattice-role-sets-design). Reserved: no profile role may be named so.
+AUTHENTICATED = "Authenticated"
+ROLES_CALL = "Roles"
+RESERVED_ROLE_NAMES = frozenset({AUTHENTICATED, ROLES_CALL})
 CURRENT_USER = "CurrentUser"
 USER_PARAM = "user"
 PAGE_LIMIT_MAX = 100

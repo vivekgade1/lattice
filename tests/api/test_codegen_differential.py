@@ -61,6 +61,7 @@ from tests.api import (
     n1b,
     partb,
     realapps,
+    rolesets,
     round2,
     solo,
     t2prog,
@@ -1132,6 +1133,25 @@ PROGRAMS["t2"] = (
     ApiTask("t2", "control", "procedures in endpoints", T2_CASES + _probes(T2_CASES)),
 )
 
+# ---- exact role sets and stored role values (tests/api/rolesets.py)
+_RS = rolesets
+ROLESETS_CASES: tuple[HttpCase, ...] = tuple(
+    _case(
+        f"{path} {who}",
+        "GET",
+        path,
+        None if who is None else _RS.TOKENS[who],
+        status=401 if who is None else 200 if who in _RS.ALLOWED[path] else 403,
+    )
+    for path in sorted(_RS.ALLOWED)
+    for who in (*_RS.USERS, None)
+)
+PROGRAMS["rolesets"] = (
+    _RS.PROGRAM,
+    ApiTask("rolesets", "control", "Roles(...), Authenticated, RoleColumn(values=)",
+            ROLESETS_CASES + _probes(ROLESETS_CASES)),
+)  # fmt: skip
+
 # ---- N1b (tests/api/n1b.py): named column expressions, row values in insert/update/derive,
 # when(..., otherwise=None) -- on the gap-features profile and database
 _N1B = n1b
@@ -1174,6 +1194,7 @@ EXTRA_IDS = [
     "solo_runtime",
     "solo_answers",
     "n1b",
+    "rolesets",
 ]
 
 
@@ -1207,6 +1228,7 @@ SETUPS = {
         _SO.PROFILE_ANSWERS, _SO.build_db, _SO.NATIVES, _SO.NATIVES_FILE, _SO.SETTINGS
     ),
     "n1b": Setup(n1b.PROFILE, n1b.build_db, n1b.NATIVES, n1b.NATIVES_FILE),
+    "rolesets": Setup(rolesets.PROFILE, rolesets.build_db),
 }
 
 
@@ -1916,3 +1938,16 @@ def test_the_hardening_program_passes_its_cases(differential_runs):
         codes = (("pad over cap", "R622"), ("grow fuel", "R620"), ("shift huge", "R622"))
         for name, code in codes:
             assert f"error {code}" in json.dumps(body[name])
+
+
+def test_the_role_set_program_passes_its_cases(differential_runs):
+    """auth=Roles(...), Authenticated and stored role values admit exactly the same
+    callers on both backends (compared above), and the expected ones."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs["rolesets"]
+    want = {c.name: c.expect_status for c in ROLESETS_CASES}
+    for results in (rt_results, gen_results):
+        assert {c.name: c.status for c in results.cases if c.name in want} == want
+    for captured in (rt_captured, gen_captured):
+        body = {c["name"]: c["body"] for c in captured}
+        assert body["/me ada"]["admin"] is True and body["/me odd"]["admin"] is False
+        assert [r["id"] for r in body["/items ada"]["items"]] == [1, 2, 3]

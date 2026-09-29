@@ -73,7 +73,24 @@ COLUMN_TYPES = {
     "Uuid": "uuid",
     "DateTime": "datetime",
 }
-AUTH_KINDS = {"Public": "public", "Customer": "user", "Admin": "admin"}
+AUTH_KINDS = {"Public": "public", "Customer": "user", "Admin": "admin", "Authenticated": "user"}
+
+
+def auth_kind(auth: str) -> str | None:
+    """The suite's kind of a route's auth: ``Roles(...)`` routes are ``roles`` (called
+    as a user of every role, see suite.AuthSpec.role_users)."""
+    if auth.startswith("Roles(") and auth.endswith(")"):
+        return "roles"
+    return AUTH_KINDS.get(auth)
+
+
+def auth_roles(auth: str) -> tuple[str, ...] | None:
+    """The role names of ``Roles(A, B)``."""
+    if auth_kind(auth) != "roles":
+        return None
+    return tuple(n.strip() for n in auth[len("Roles(") : -1].split(",") if n.strip())
+
+
 FORM_FIELDS = ("username", "password")
 LOGIN_NAMES = ("email", "username", "login", "user_name")
 PASSWORD_HINT = "password"
@@ -265,6 +282,10 @@ def _params(model: RepoModel, route: Route, table: TableModel | None) -> tuple[P
                     required=p.required,  # type: ignore[arg-type]
                     default=_default(p.default, p.choices),
                     choices=p.choices,
+                    ge=p.ge,
+                    le=p.le,
+                    min_len=p.min_length,
+                    max_len=p.max_length,
                 )
             )
         elif p.source == "body":
@@ -323,7 +344,7 @@ def _errors(
 def route_spec(
     model: RepoModel, route: Route, api: ApiProfile, blocker: str | None = None
 ) -> RouteSpec:
-    if route.auth not in AUTH_KINDS:
+    if auth_kind(route.auth) is None:
         raise Unsupported(f"auth {route.auth}: {route.auth_reason}")
     if route.auth != "Public" and blocker is not None:
         raise Unsupported(blocker)
@@ -348,7 +369,8 @@ def route_spec(
         route.path,
         kind,  # type: ignore[arg-type]
         table.table_name if table is not None else None,
-        auth=AUTH_KINDS[route.auth],  # type: ignore[arg-type]
+        auth=auth_kind(route.auth),  # type: ignore[arg-type]
+        roles=auth_roles(route.auth),
         params=params,
         body="form" if kind == "login" else "json",
         pagination=_pagination(route) if kind == "list" else None,
@@ -485,7 +507,20 @@ def auth_spec(
         mint_claims=minter,
         claim=decoder.claim if decoder is not None and decoder.claim else "sub",
         subject_column=decoder.lookup if decoder is not None else None,
+        **_role_spec(model),
     )
+
+
+def _role_spec(model: RepoModel) -> dict[str, object]:
+    """AuthSpec's role column: the enum values the seed writes, with their role names."""
+    scheme = model.role_scheme
+    if scheme is None:
+        return {}
+    return {
+        "role_column": scheme.column,
+        "role_values": tuple((value, name) for value, _, name in scheme.roles),
+        "admin_role": scheme.admin or "Admin",
+    }
 
 
 MINTED_TOKEN_SECONDS = 7 * 24 * 3600  # test tokens: outlive any import run
@@ -565,9 +600,7 @@ def _decode_call(node: ast.AST) -> ast.Call | None:
 def _insert_hook(tables: Sequence[TableModel]) -> Callable[[Path, SeedPlan], None] | None:
     """The seed written through the original's own SQLModel classes."""
     try:
-        classes = {
-            t.table_name: getattr(importlib.import_module(t.module), t.name) for t in tables
-        }
+        classes = {t.table_name: getattr(importlib.import_module(t.module), t.name) for t in tables}
     except (ImportError, AttributeError):
         return None
 

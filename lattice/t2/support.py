@@ -83,11 +83,14 @@ def t2_role(
     admin_flag: str | None,
     admin_role: str,
     flag_role: str,
+    role_values: tuple[tuple[str, str], ...] = (),
 ) -> str:
-    """The caller's role from its users row (a role column, or an Admin flag column)."""
+    """The caller's role from its users row (a role column, or an Admin flag column);
+    stored spellings decoded by `role_values` (RoleColumn(values=...))."""
     if admin_flag is not None:
         return admin_role if row[columns.index(admin_flag)] else flag_role
-    return str(row[columns.index(role_column)])
+    stored = str(row[columns.index(role_column)])
+    return dict(role_values).get(stored, "") if role_values else stored
 
 
 class T2FuelExhausted(T2Error):

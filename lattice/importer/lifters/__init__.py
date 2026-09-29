@@ -70,7 +70,15 @@ LIFTERS = (
     returns,
     login,
 )
-AUTH_ROLES = frozenset({"Public", "Customer", "Admin"})
+AUTH_ROLES = frozenset({"Public", "Customer", "Admin", "Authenticated"})
+
+
+def lattice_auth(auth: str) -> bool:
+    """An auth= the lifted program can say: a role kind, or ``Roles(...)`` (an exact role
+    set read from a role checker, extract.RoleScheme)."""
+    return auth in AUTH_ROLES or (auth.startswith("Roles(") and auth.endswith(")"))
+
+
 SUCCESS_BY_STATUS = {None: "One", 200: "One", 201: "Created"}
 LINE = 99
 _HOLE = re.compile(r"\{([@#])(\w+)\}")
@@ -114,7 +122,7 @@ def _line(route: RouteSource, i: int) -> int:
 
 def compose(route: RouteSource, fragments: Sequence[LiftFragment]) -> RouteLift:
     r = route.route
-    if r.auth not in AUTH_ROLES:
+    if not lattice_auth(r.auth):
         raise _Reject(f"auth is {r.auth}: {r.auth_reason}")
     if r.status_code not in SUCCESS_BY_STATUS:
         raise _Reject(f"status_code={r.status_code} has no Lattice success kind here")

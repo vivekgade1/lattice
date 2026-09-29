@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
-from lattice.catalog import DEFAULT_FUEL, DEFAULT_MAX_VALUE_SIZE
+from lattice.catalog import DEFAULT_FUEL, DEFAULT_MAX_VALUE_SIZE, PUBLIC_ROLE, RESERVED_ROLE_NAMES
 from lattice.typesys import Scalar, Schema
 
 # page_shape keys: the JSON fields of a Page response envelope.
@@ -127,9 +127,17 @@ AuthScheme = TokenColumn | NativeToken
 @dataclass(frozen=True)
 class RoleColumn:
     """The caller's role is the value of this (Str) column of the users table (today's
-    behaviour)."""
+    behaviour). ``values`` maps the column's values, as the profile reads them, to role
+    names (``{"buyer": "Buyer"}``; for a column with ``one_of_stored`` spellings, the
+    decoded value); a value outside the map is a role no endpoint allows but
+    ``auth=Authenticated``. None: the column holds role names."""
 
     column: str = "role"
+    values: tuple[tuple[str, str], ...] | None = None
+
+    def __post_init__(self) -> None:
+        if isinstance(self.values, Mapping):
+            object.__setattr__(self, "values", tuple(self.values.items()))
 
 
 @dataclass(frozen=True)
@@ -384,10 +392,21 @@ class ApiProfile:
             )
 
     def _validate_roles_from(self) -> None:
+        reserved = sorted(self.roles & RESERVED_ROLE_NAMES)
+        if reserved:
+            raise ValueError(
+                f"ApiProfile.roles may not include {', '.join(reserved)}: reserved by "
+                "auth=Authenticated / auth=Roles(...)"
+            )
         users = self.tables.get(self.users_table)
         match self.roles_from:
-            case RoleColumn():
-                pass  # today's behaviour: not validated (the column is read at runtime)
+            case RoleColumn(values=values):
+                for stored, role in values or ():
+                    if role not in self.roles or role == PUBLIC_ROLE or not stored:
+                        raise ValueError(
+                            f"RoleColumn values {stored!r} -> {role!r} must name a "
+                            "non-Public role of the profile"
+                        )
             case NoRoles(role=role):
                 if role not in self.roles or role == self.admin_role:
                     raise ValueError(
