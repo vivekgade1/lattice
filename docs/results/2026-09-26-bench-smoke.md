@@ -746,3 +746,166 @@ The next levers, in order of expected impact:
 2. **Output budget:** raise `max_tokens` in both arms equally (e.g. 32k) and use lower effort for edits.
 3. **More repair rounds with better checker feedback:** each guarantee error should point at the exact fix in the model's own code.
 4. **Cost:** prompt caching of the static Lattice guide. The guide is identical across runs and is ~60% of arm L's input tokens.
+
+## Go target — equivalence gate (sub-project 5a, 2026-09-29)
+
+Plan: `docs/superpowers/plans/2026-09-28-lattice-go-target-5a.md`. Ledger and task reports:
+`.superpowers/sdd/2026-09-28-lattice-go-target-5a/`. Branch `go-target`.
+
+### What was built
+
+A second compile target for the T2 (procedure) profile: Lattice programs compile to a
+standalone Go binary — `net/http`, a pure-Go SQLite driver (no cgo) — instead of, or
+alongside, the generated FastAPI app. The T2 plan IR is shared with the Python path; Go
+has its own runtime (`lattice/gogen/rt`) implementing every T2 call, with its own
+regex, math, datetime, JSON and collection code written to match CPython's own
+algorithms rather than approximate them (notably a full port of CPython 3.14's SRE
+regex engine, and a dict/set implementation that reproduces CPython's entry-table
+layout and resize policy, because programs can observe iteration order).
+
+### The gate
+
+`tests/gogen/test_go_differential.py` runs every Go-eligible program in the registry
+through both the in-process Python runtime and the built Go binary (over HTTP, through
+`lattice/gogen/proxy.py`), on the same fresh copy of the seed database per case, and
+compares:
+
+- status, and the **first hop's** status and `Location` (so a followed redirect can't
+  hide a divergence behind the final 200);
+- content type;
+- the full JSON body, type-strict (or the raw bytes, for a non-JSON body);
+- the SQL statement count (`X-Lattice-Sql-Count`);
+- for the two T2 (procedure) programs, the SQL statements themselves — text, bound
+  values and order, via a test-only trace that expands each statement exactly as
+  SQLite's own C trace callback would;
+- `after_sql` rows;
+- a whole-database digest.
+
+**Result: 49 programs, 2,458 cases, 0 mismatches** (commit `545d1ea`; the first-hop,
+content-type and raw-body checks were added in a fix round, commit `a0a283f`, still 0
+mismatches). Two further checks pass: on the two T2 programs, the 478 cases with SQL
+steps run identical statements in identical order on both sides, and fuel parity holds
+on both (three bisected sizes give 500/200/500 on both targets, with matching R620
+bodies).
+
+The 49 programs cover page totals (including a page past the end), trailing-slash 307
+redirects (with and without a query, PATCH included), `unique_or=Conflict` (409, DB
+unchanged), owner transfer (success and missing-user 404), UNSET partial updates
+(including an explicit null written to a nullable column), 204 deletes, R310 (500),
+route precedence, and, for the T2 programs, derive/where/require compiled to SQL,
+`call` bound as a scalar and for `insert_many`, and procedures called from derive over
+the caller.
+
+**Exclusions: 11 programs**, each rejected with **L890 only** ("a native (call, effect
+or NativeToken auth) on a target without natives"): `realapps`, `partb`, `effects`
+(uses `for_each`, a native effect), `gaps`, `mine`, `round2`, `t2`, `solo`,
+`solo_runtime`, `solo_answers`, `n1b`. Getting to that exact set required one checker
+fix: `p8_target` was also flagging the `native` namespace's own value kind as a second,
+duplicate error (L892, "values of type native are not available on target 'go'") for
+the same native use L890 already reported. With the fix, every exclusion's error set is
+`{L890}` alone. `t2`'s Go-eligible variant, `t2go` (natives removed), is one of the 49
+gated programs.
+
+### The semantics suite
+
+391 cases in the shared suite (`tests/semantics_v11`), each verified against real
+Python 3.14 before being checked on either target. **385 run on Go and match Python
+strictly** — exact type, exact value, exact fuel left — swept across fuel budgets. **6
+remain gated**, all L892, in three forms: `str()`/f-string of a container value (list,
+dict, set, Counter), a non-literal `re.sub` replacement, and a `strftime` format (or a
+Date/DateTime f-string spec) that isn't a literal of the directives Go implements
+(`%Y %m %d %H %M %S %f %y %a %A %b %B %j %p %%`, C locale). Fuel parity holds on all
+385 Go cases.
+
+### v1.1 behaviour changes (every target, not Go-specific)
+
+These are language-version changes (`# lattice: v1.1`), decided during this
+sub-project and implemented identically on Python and Go; see
+`docs/lattice-language-rules.md` §6 (decision log) and §8 (version notes) for the
+full rationale and dates.
+
+| Change | Effect |
+|---|---|
+| 64-bit `Int` (R623) | arithmetic outside the signed 64-bit range raises R623 at runtime (was unbounded, up to 65,536 bits) |
+| Insertion-ordered sets | sets iterate in insertion order; set algebra keeps the left operand's elements first, in its order; `Counter.most_common` ties keep insertion order |
+| ASCII regex classes | `\d \w \s \b` match ASCII only |
+| RE2 subset (L926) | lookaround, backreferences, conditionals, possessive repeats and atomic groups are rejected at check time |
+| L913, augmented slice assignment | `xs[a:b] += ys` is rejected, as slice assignment already was |
+| R-widen | an Int value in a place the checker types Float converts to a float there (assignment, argument, return, container element, an unstarted `sum`'s `0.0`, a tuple index, `min`/`max`, `round(Int, n)`, `Int ** n`); comparisons stay exact at any depth |
+| Exact membership and lookup | `in`, `d[k]` (and the read of `d[k] op= v`), `get`, `pop`, `index`, `count`, `remove`, `discard` compare an Int probe against a Float container exactly, at any depth, consistent with `==` (`2**53 + 1 in [2.0**53]` is False) |
+| R-pow | a negative, finite Float base raised to a finite, non-integral exponent raises `ValueError: math domain error` on every target, instead of Python's complex-number result |
+
+### Notable engineering findings
+
+- **Fused multiply-add on arm64.** Go's compiler can fuse `x*y + z` into one FMA
+  instruction on arm64, giving a different last bit than CPython's separate multiply
+  then add. Caught as Critical in the Task 8 review; fixed by wrapping Float arithmetic
+  in explicit `float64(...)` conversions in the emitter, which forces separate
+  rounding (`TestExplicitConversionPreventsFusedMultiplyAdd`, and semantics cases
+  `float_mul_add_not_fused` / `float_mul_then_sub_not_fused`).
+- **Go's own regex engine cannot match Python, even on the checked RE2 subset.** `$`
+  without `(?m)` before a trailing newline, empty-match handling next to a previous
+  match, `must_advance` semantics, ASCII `\s` including `\v` under `re.ASCII`, and
+  ASCII-only `(?i)` all diverge from `regexp.MustCompile`. Task 9 ported CPython
+  3.14's SRE engine to Go, opcode for opcode, instead of translating patterns to RE2
+  syntax — more code than a translator, but Python's own algorithm rather than an
+  approximation of it.
+- **The Int→Float widening hole.** Python silently kept an exact int where Go's typed
+  Float slot held a converted float (`x: Float = n; str(x)` gave `'1'` on Python,
+  `'1.0'` on Go). Turned into the R-widen language rule above (2026-09-28): an Int
+  value entering a Float-typed place converts at that point, on every target.
+- **The checker's `findall`/`split` typing hole, fixed on every target.** `re.findall`
+  and `re.split` were typed `list[Str]` regardless of the pattern's capture groups, so
+  a checked program could crash at runtime with an uncatchable AttributeError on real
+  Python (`re.findall(r"(a)(b)", s)[0].upper()`). Fixed in the checker
+  (`lattice/check/t2/body.py::_regex_result`) for both targets: `findall` with ≥2
+  groups types as `list[tuple[Str, ...]]`, `split` with groups as `list[Str | None]`.
+
+### Known limitations (honest)
+
+- **amd64 is not verified.** Rosetta 2 is not installed on the build machine (an Apple
+  M5 Pro), so the gate ran on arm64 only — the architecture where FMA fusion is a risk,
+  so also the more demanding one to have passed. `GOARCH=amd64` builds succeed but
+  could not be run here.
+- **Only macOS CPython was checked** as the reference. glibc's `libm` and its
+  `strftime` `%Y` padding may differ from macOS's; this was not tested on Linux.
+- **Last-ulp differences in transcendental functions.** Go's `math.exp/log/log10/pow`
+  and Float `**` are correctly rounded; CPython calls the platform's `libm`, which
+  differs from the correctly-rounded value in 9 of 22,403 sampled answers on macOS
+  arm64 (one ulp), and differs between platforms even for Python itself. The
+  semantics suite avoids such inputs.
+- **The JSON nesting depth limit is not identical.** CPython's `json.loads`/`dumps`
+  raise RecursionError at a stack-dependent depth (about 50,000 on macOS); Go uses a
+  fixed 100,000-level limit.
+- **Unicode 15 (Go's `x/text`) vs Unicode 16 (Python 3.14)** for case mapping and
+  character classes. No semantics case uses a code point new in Unicode 16.
+- **NaN in sort keys and identity shortcuts.** Python's container `==`/sort take an
+  identity shortcut for a value compared with itself (so a NaN found this way compares
+  equal); Go's lists and dicts get the same shortcut, but a tuple compared with itself
+  holding a NaN does not (Go compares values, not identity) — an unusual program.
+- **The HTTP request body is unbounded on both targets.** Neither Python nor Go caps
+  it; a production deployment needs a body-size profile setting and a matching 413 on
+  both, not yet built.
+- **Natives, `for_each`, `NativeToken` auth and the tabular profile are not on Go**
+  (L890/L891 in the decision log, §6 of `docs/lattice-language-rules.md`). A program
+  using any of them compiles for Python only.
+
+### What is not claimed
+
+This is **tested equivalence, not a proof**: 2,458 request/response comparisons and
+385 semantics cases, 0 divergences found — not a formal equivalence proof covering
+every Lattice program. It makes **no claim about LLM benefit, cost or runtime
+performance** of the Go target; that is sub-project 5b (the benchmark), not yet run.
+
+### Binary size and cold start (measured)
+
+Apple M5 Pro, arm64, macOS. `tests/fixtures/api/c01/lattice.py`, profile
+`bench.api_datasets:api_profile`, built with
+`uv run python -m lattice.gogen build ... --out <dir>`.
+
+- **Binary size:** 15,266,994 bytes (~14.6 MiB) — one statically linked Mach-O arm64
+  executable, no cgo, no external SQLite library.
+- **Cold start:** median **6.6 ms** over 20 starts (wall-clock from process launch to
+  the `LISTENING <host:port>` line on stdout), range 5.8–10.6 ms; one of the 20 runs
+  took 195 ms (evidently a first-run disk-cache effect), which the median is
+  insensitive to.
