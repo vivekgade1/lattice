@@ -134,8 +134,9 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument(
         "--lattice-backend",
         default="runtime",
-        choices=("runtime", "generated"),
-        help="api suite: serve Lattice arms (B/C) with the runtime or the generated FastAPI app",
+        choices=("runtime", "generated", "go"),
+        help="api suite: serve Lattice arms (B/C) with the runtime, the generated FastAPI "
+        "app, or a Go binary built by lattice.gogen.build.build_go_app",
     )
     run_parser.add_argument(
         "--implicit",

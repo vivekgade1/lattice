@@ -907,6 +907,49 @@ def _run_generated_cases(
     return run_cases_fastapi(app_source, workdir, task, db_builder=db_builder, kit_path=kit_path)
 
 
+def _run_go_cases(
+    code: str,
+    workdir: Path,
+    task: Any,
+    *,
+    db_builder: Any,
+    profile: Profile,
+    out_dir: Path,
+) -> Any:
+    """Check for the Go target, build (``lattice.gogen.build.build_go_app``, cached
+    under ``out_dir/.cache`` -- the caller passes the stable per-(model, arm, task,
+    rep) workdir, already unique per job, so parallel workers never share a build
+    directory, while still reusing the cache across this job's repair rounds) and
+    run the task's cases on the binary (``bench.api_runner.run_cases_go``, given its
+    own ``workdir`` for case-execution scratch), with the semantics of
+    ``run_cases_fastapi``/``run_cases_lattice``.
+
+    A checker rejection for Go (a native L890, the tabular profile L891, a T2
+    construct Go lacks L892, or any other static error) is a ``GoBuildError`` whose
+    ``check`` is set: it yields the same result shape as ``run_cases_lattice`` (not
+    started, with the checker's diagnostics), so it repairs exactly like the other
+    backends. A ``GoBuildError`` with no ``check`` -- ``go build`` itself failed on a
+    program that passed the checker, or the toolchain is missing/too old -- is a bug
+    in gogen, not the model's program: it is left to propagate, so the caller
+    (``bench.cli``) records it loudly as a ``harness_error`` carrying the build's
+    stderr, instead of being silently treated as a repairable checker failure."""
+    from bench.api_runner import CaseResults, run_cases_go
+    from lattice.gogen.build import GoBuildError, build_go_app
+
+    try:
+        build = build_go_app(code, profile, out_dir)
+    except GoBuildError as exc:
+        if exc.check is None:
+            raise
+        return CaseResults(
+            cases=(),
+            started=False,
+            start_error=render_for_llm(exc.check.diagnostics),
+            diagnostics=tuple(exc.check.diagnostics),
+        )
+    return run_cases_go(build.binary, task, db_builder=db_builder, workdir=workdir)
+
+
 def _run_api_lattice(
     task: Any,
     generator: Generator,
@@ -920,7 +963,7 @@ def _run_api_lattice(
     prompts: Any = None,
     serve: Any = None,
     hooks: Any = None,
-    backend: Literal["runtime", "generated"] = "runtime",
+    backend: Literal["runtime", "generated", "go"] = "runtime",
     kit_path: Path | None = None,
 ) -> TaskOutcome:
     """Arms B (repair) and C (single shot): a Lattice API program, checked and
@@ -934,7 +977,10 @@ def _run_api_lattice(
     ``backend="generated"`` serves the checked program through the FastAPI app
     ``lattice.api.codegen`` generates from it (run in the sandbox over the
     platform kit at ``kit_path``, like arms A/P) instead of the runtime; the
-    outcome's detail then starts with ``backend=generated``."""
+    outcome's detail then starts with ``backend=generated``. ``backend="go"``
+    checks the program for the Go target and builds it with
+    ``lattice.gogen.build.build_go_app``, then runs the cases on the binary
+    (``_run_go_cases``); the outcome's detail then starts with ``backend=go``."""
     from bench.api_runner import run_cases_lattice
 
     if arm == "C":
@@ -975,6 +1021,15 @@ def _run_api_lattice(
                     db_builder=db_builder,
                     profile=profile,
                     kit_path=kit_path,
+                )
+            elif backend == "go":
+                results = _run_go_cases(
+                    code,
+                    workdir / f"go_round{index}",
+                    task,
+                    db_builder=db_builder,
+                    profile=profile,
+                    out_dir=workdir,
                 )
             else:
                 results = run_cases_lattice(
