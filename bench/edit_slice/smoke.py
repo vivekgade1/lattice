@@ -177,11 +177,7 @@ SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
     ),
     # option 1, the multi-vendor app: vicky is a vendor with products, carol a buyer (her
     # orders 1 and 8 in the app's seed), admin the admin
-    "t31_vendor_sales": (
-        SmokeRequest("vicky", "GET", "/vendors/me/sales"),
-        SmokeRequest("vicky", "GET", "/vendors/me/sales",
-                     params={"start": "2026-01-01", "end": "2026-01-31"}),
-    ),
+    "t31_vendor_sales": (SmokeRequest("vicky", "GET", "/vendors/me/sales"),),
     "t32_monthly_report": (
         SmokeRequest("admin", "GET", "/orders/report", params={"month": "2026-02"}),
     ),

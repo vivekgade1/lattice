@@ -1,6 +1,5 @@
 """Live smoke test against the real Claude API. Run with: uv run pytest -m live"""
 
-import os
 from pathlib import Path
 
 import pytest
@@ -14,9 +13,9 @@ pytestmark = pytest.mark.live
 load_env_file()
 
 
-@pytest.mark.skipif(
-    not (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")),
-    reason="no Anthropic credentials in the environment",
+@pytest.mark.skip(
+    reason="the tabular bench's live transport is the Anthropic API-key SDK, disabled in "
+    "this project (lattice.llm.client.ApiKeyTransportDisabled); no CLI transport there yet"
 )
 def test_live_single_task_arms_a_and_b(tmp_path: Path) -> None:
     assert main(["run", "--arms", "A,B", "--tasks", "s01", "--out", str(tmp_path)]) == 0

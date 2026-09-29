@@ -427,7 +427,7 @@ def test_no_artefacts_without_a_root():
 
 
 def test_the_cli_writes_artefacts_next_to_the_jsonl(tmp_path, monkeypatch):
-    import lattice.llm.client as client
+    import lattice.llm.cli_client as client
 
     seen: dict[str, object] = {}
 
@@ -439,7 +439,7 @@ def test_the_cli_writes_artefacts_next_to_the_jsonl(tmp_path, monkeypatch):
         def generate(self, system, messages):
             return self.inner.generate(system, messages)
 
-    monkeypatch.setattr(client, "ClaudeGenerator", _Fake)
+    monkeypatch.setattr(client, "ClaudeCliClient", _Fake)
     out = tmp_path / "res.jsonl"
     args = ["--model", "fake", "--arm", "L", "--tickets", "t6_stats", "--out", str(out)]
     assert run.main([*args, "--max-tokens", "777"]) == 0
@@ -595,10 +595,7 @@ def test_a_new_l_endpoint_is_placed_after_the_step_it_calls():
 
 
 def test_a_new_l_step_or_constant_used_by_a_kept_definition_comes_before_it():
-    base = (
-        "# lattice: v1\n"
-        '@endpoint("GET", "/a")\ndef a():\n    return 1\n'
-    )
+    base = '# lattice: v1\n@endpoint("GET", "/a")\ndef a():\n    return 1\n'
     fragment = (
         '@endpoint("GET", "/a")\ndef a():\n    x = s2(fetch(Item))\n    return N\n\n\n'
         "@step\ndef s2(t: Table[Item]) -> Table:\n    return t\n\n\n"
@@ -842,8 +839,19 @@ def test_backend_cli_is_wired_instead_of_the_api_client(tmp_path, monkeypatch):
     assert seen == {"model": "fake-cli-model", "max_tokens": run.MAX_TOKENS, "effort": "high"}
 
 
-def test_backend_defaults_to_api(tmp_path):
-    assert run._parser().parse_args([]).backend == "api"
+def test_backend_is_the_cli_only(tmp_path):
+    assert run._parser().parse_args([]).backend == "cli"
+    with pytest.raises(SystemExit):
+        run._parser().parse_args(["--backend", "api"])
+
+
+def test_the_estimate_never_calls_the_api(monkeypatch):
+    import anthropic
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-must-not-be-used")
+    monkeypatch.setattr(anthropic, "Anthropic", lambda *a, **k: pytest.fail("API client built"))
+    count = run.token_counter("claude-sonnet-5")
+    assert count("abc" * 7, "") == 6
 
 
 def test_backend_cli_usage_limit_stops_cleanly_without_recording_a_failure(tmp_path, monkeypatch):

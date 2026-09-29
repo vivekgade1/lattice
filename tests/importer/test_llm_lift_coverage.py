@@ -162,17 +162,24 @@ def test_the_cli_defaults_to_32k_tokens_at_effort_medium_for_r1_and_r2(monkeypat
          "--strong-model", "claude-opus-5"]
     )  # fmt: skip
     assert args.max_tokens == 32000
-    gen, strong, _notes, relift = cli._claude(args)
+    gen, strong, _notes, relift = cli._cli(args)
     assert (gen.model, gen.effort, gen.max_tokens) == ("claude-sonnet-5", "medium", 32000)
     assert (relift.model, relift.effort, relift.max_tokens) == ("claude-opus-5", "medium", 32000)
     assert (strong.model, strong.effort) == ("claude-opus-5", "max")
-    # a non-streaming call with 32k output tokens needs an explicit timeout
-    assert gen.client.timeout != cli.DEFAULT_SDK_TIMEOUT
 
 
-def test_the_cli_backend_flag_defaults_to_api():
+def test_the_cli_backend_flag_defaults_to_cli_and_the_api_key_transport_is_disabled():
+    import pytest
+
+    from lattice.llm.client import ApiKeyTransportDisabled
+
     args = cli.parser().parse_args([".", "--package", "p", "--app-factory", "m:f"])
-    assert args.backend == "api"
+    assert args.backend == "cli"
+    with pytest.raises(SystemExit):
+        cli.parser().parse_args([".", "--package", "p", "--app-factory", "m:f",
+                                 "--backend", "api"])  # fmt: skip
+    with pytest.raises(ApiKeyTransportDisabled):
+        cli._claude(args)
 
 
 def test_the_cli_backend_cli_builds_claude_cli_clients_with_the_same_settings_as_claude(

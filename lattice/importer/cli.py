@@ -95,10 +95,10 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--hypothesis-bodies", type=int, default=5)
     p.add_argument(
         "--backend",
-        choices=("api", "cli"),
-        default="api",
-        help="transport for the close-the-gap loop's model calls: api (Anthropic SDK, "
-        "default) or cli (the local `claude -p`, identical prompts)",
+        choices=("cli",),
+        default="cli",
+        help="transport for the close-the-gap loop's model calls: the local `claude -p` "
+        "(the API-key transport is disabled in this project)",
     )
     return p
 
@@ -153,21 +153,11 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
 
 
 def _claude(args: argparse.Namespace) -> tuple[Any, Any, Any, Any]:
-    """(R1 generator, R3 strong generator, notes generator, R2 relift generator)."""
-    import anthropic
+    """The Anthropic-SDK generators: disabled in this project (no API keys; use
+    ``--backend cli``, :func:`_cli`)."""
+    from lattice.llm.client import ApiKeyTransportDisabled
 
-    from lattice.llm.client import ClaudeGenerator
-
-    timeout = LONG_CALL_TIMEOUT if args.max_tokens > 20000 else DEFAULT_SDK_TIMEOUT
-    client = anthropic.Anthropic(timeout=timeout)
-    strong_model = args.strong_model or args.model
-
-    def make(model: str, effort: str) -> ClaudeGenerator:
-        return ClaudeGenerator(model=model, effort=effort, max_tokens=args.max_tokens,
-                               client=client)  # fmt: skip
-
-    gen = make(args.model, args.effort)
-    return gen, make(strong_model, args.strong_effort), gen, make(strong_model, args.relift_effort)
+    raise ApiKeyTransportDisabled()
 
 
 def _cli(args: argparse.Namespace) -> tuple[Any, Any, Any, Any]:

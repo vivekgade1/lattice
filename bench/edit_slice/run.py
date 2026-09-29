@@ -86,9 +86,9 @@ reported as ``no_reference``. ``--dry-run-partial`` feeds each reference as a pa
 answer (endpoint-scoped edits, diffed against the start down to the top-level names
 that changed -- :func:`partial_reference_answer`) instead of the whole file.
 
-``--backend api|cli`` (default ``api``) picks the live transport: the Anthropic SDK, or
-the local ``claude -p`` (:class:`lattice.llm.cli_client.ClaudeCliClient`) -- identical
-prompts either way; the record's ``backend`` says which one ran. ``--resume`` skips
+``--backend cli`` (the only choice, and the default) is the live transport: the local
+``claude -p`` (:class:`lattice.llm.cli_client.ClaudeCliClient`); the API-key transport is
+disabled in this project. The record's ``backend`` says which one ran. ``--resume`` skips
 (model, arm, ticket, rep) tuples already in ``--out``, so a round a CLI usage limit cut
 short can continue without redoing finished work (a usage limit stops the whole run --
 exit code 3 -- rather than being recorded as a failure). ``--workers N`` (default 1)
@@ -105,7 +105,6 @@ import dataclasses
 import difflib
 import json
 import logging
-import os
 import shutil
 import statistics
 import sys
@@ -1333,20 +1332,8 @@ OUTPUT_OVERHEAD = 1.25  # answer tokens over the solution's own (headings, prose
 
 
 def token_counter(model: str) -> Callable[[str, str], int]:
-    """Prompt tokens of (system, user): the count_tokens API when a key is set, else
-    chars / 3.5."""
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        import anthropic
-
-        client = anthropic.Anthropic()
-
-        def count(system: str, user: str) -> int:
-            r = client.messages.count_tokens(
-                model=model, system=system or "-", messages=[{"role": "user", "content": user}]
-            )
-            return r.input_tokens
-
-        return count
+    """Prompt tokens of (system, user), estimated as chars / 3.5. (The count_tokens API
+    would need an API key, which no tool in this project uses.)"""
     return lambda system, user: round((len(system) + len(user)) / CHARS_PER_TOKEN)
 
 
@@ -1406,7 +1393,7 @@ def estimate(
         "rows": rows,
         "total_usd": total,
         "runs": len(rows) * reps,
-        "counted": bool(os.environ.get("ANTHROPIC_API_KEY")),
+        "counted": False,
     }
 
 
@@ -1479,10 +1466,10 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--estimate-models", default="claude-sonnet-5,claude-haiku-4-5")
     p.add_argument(
         "--backend",
-        choices=("api", "cli"),
-        default="api",
-        help="transport for a live model call: api (Anthropic SDK, default) or cli "
-        "(the local `claude -p`, identical prompts)",
+        choices=("cli",),
+        default="cli",
+        help="transport for a live model call: the local `claude -p` (the API-key "
+        "transport is disabled in this project)",
     )
     p.add_argument(
         "--resume",
@@ -1517,15 +1504,12 @@ def _tickets(spec: str) -> list[str]:
 
 
 def _make_generator(args: argparse.Namespace) -> Generator:
-    """The generator for a live (non-dry-run) call, per ``--backend``: the Anthropic API
-    (default) or the local ``claude -p`` CLI, identical prompts either way."""
-    if args.backend == "cli":
-        from lattice.llm.cli_client import ClaudeCliClient
+    """The generator for a live (non-dry-run) call: the local ``claude -p`` CLI. The
+    API-key transport is disabled in this project (:class:`lattice.llm.client.
+    ApiKeyTransportDisabled`)."""
+    from lattice.llm.cli_client import ClaudeCliClient
 
-        return ClaudeCliClient(model=args.model, max_tokens=args.max_tokens, effort=args.effort)
-    from lattice.llm.client import ClaudeGenerator
-
-    return ClaudeGenerator(model=args.model, max_tokens=args.max_tokens, effort=args.effort)
+    return ClaudeCliClient(model=args.model, max_tokens=args.max_tokens, effort=args.effort)
 
 
 def _completed(out: Path) -> set[tuple[str | None, str | None, str | None, int | None]]:
