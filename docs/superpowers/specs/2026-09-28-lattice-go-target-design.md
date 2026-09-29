@@ -27,6 +27,8 @@ source ─► parse ─► p1–p7 + T2 checker ─► p8_target ─► CheckedP
                                            └─► gogen/t2     (new)
 ```
 
+As built (2026-09-29): the Go runtime module is `lattice/gogen/rt` (planned as `lattice/gogen/prelude`), and the ordered collections are `rt.Dict` / `rt.Set` (planned as `OrderedMap` / `OrderedSet`); "prelude" below means that runtime.
+
 | Unit | Job | Depends on |
 |---|---|---|
 | `lattice/t2ir/nodes.py` | Frozen dataclasses: typed expressions and statements, explicit `Fuel(cost)` and size-check nodes, calls, records. Every node carries its `T2Type`. No Python `ast` inside. | `check/t2/types.py` |
@@ -34,10 +36,10 @@ source ─► parse ─► p1–p7 + T2 checker ─► p8_target ─► CheckedP
 | `lattice/t2/emit_py.py` | T2 IR → Python source running on the existing `t2/support.py` | T2 IR |
 | `lattice/targets.py` | The v1.1 semantics table (§3) and `TargetCapabilities` for `python` and `go`, mirroring `api/backend.Capabilities` | — |
 | `lattice/check/p8_target.py` | Rejects programs the chosen target cannot run, in the style of `p7_backend` (§3.2) | `targets.py` |
-| `lattice/gogen/prelude/` | Hand-written Go module: request pipeline (parameter parsing and constraints, token auth, error bodies, UUID/DateTime wire formats, transactions, outbox), T2 support (fuel, checked Int, ordered map, slicing, formatting), the SQLite functions the Python runtime registers (`modernc.org/sqlite`, pure Go) | — |
+| `lattice/gogen/rt/` (module `lattice.dev/rt`) | Hand-written Go module: request pipeline (parameter parsing and constraints, token auth, error bodies, UUID/DateTime wire formats, transactions, outbox), T2 support (fuel, checked Int, ordered map, slicing, formatting), the SQLite functions the Python runtime registers (`modernc.org/sqlite`, pure Go) | — |
 | `lattice/gogen/endpoints.py` | `EndpointPlan` → one `net/http` handler per endpoint: each plan step becomes a straight-line block (no runtime interpreter); rows scan into structs generated from each step's `Schema`, pointer fields for nullable columns | `api/ir.py` |
 | `lattice/gogen/t2.py` | T2 IR → Go functions | T2 IR |
-| `lattice/gogen/build.py` | Writes a Go module (prelude + generated files), runs `go build`, returns the binary path; caches by content hash | Go toolchain |
+| `lattice/gogen/build.py` | Writes a Go module (the `rt` runtime + generated files), runs `go build`, returns the binary path; caches by content hash | Go toolchain |
 | `lattice/importer/verify.py` (extended) | HTTP adapter: start a binary against a copy of the seeded DB and drive cases over a socket; comparison logic unchanged | — |
 
 Unchanged: surface syntax, prompts, diagnostics, `p1`–`p7`, `EndpointPlan`, the SQL layer, the tabular profile. Programs marked `# lattice: v1` keep working (§3.3).
@@ -59,8 +61,8 @@ Lattice's meaning is currently whatever Python does. v1.1 writes it down once, i
 | Float `**` | A negative finite base with a finite non-integral exponent raises ValueError (`math domain error`), never a complex number (R-pow) | `T2Fuel.pow` / `rt.PowF` |
 | `Str` | `len`, indexing and slicing are over code points | Go helpers on `[]rune` |
 | `list` | Negative indexes and Python slice rules (clamped bounds, steps); every slice read is a **new list** (Go copies, never aliases); slice assignment stays rejected (L913) | Go slice helpers |
-| `dict` | Insertion-ordered iteration | Generated Go `OrderedMap[K, V]` |
-| `set` | Insertion-ordered iteration on every target (Python's string hashing is seeded per process) | Generated Go `OrderedSet[T]` |
+| `dict` | Insertion-ordered iteration | Go `rt.Dict[K, V]` |
+| `set` | Insertion-ordered iteration on every target (Python's string hashing is seeded per process) | Go `rt.Set[T]` |
 | `Counter.most_common` | Ties in insertion order | Prelude |
 | Regex | RE2 subset: lookaround and backreferences rejected on every target; also rejects possessive repeats and atomic groups; `\d \w \s \b` are ASCII (Python compiles with `re.ASCII`) | New checker rule next to `check/redos.py` |
 | `str.upper/lower/casefold/title` | Full Unicode case mapping (`'ß'.upper() == 'SS'`) | Prelude |

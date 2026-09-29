@@ -81,10 +81,11 @@ A construct missing any of these is not part of the language.
 ## 7. Recommendations (not yet in place)
 
 1. **Add `BigInt` and `Decimal` as portable types** (R6) before any user needs integers beyond 64 bits or exact decimal money. Go has `math/big`; Python has `int` and `decimal`.
-2. **Implement the R14 CI checks** as part of plan 5a's semantics suite (Task 6) and gate test (Task 13): one test that fails when any `p8_target` code has no decision-log row, and one that fails when a semantics case is missing on a target.
-3. **Treat `lattice/targets.py` as the single source of truth** for both the semantics table and the gates. Generate the decision-log rows for gates from it, so the log can't drift from the code.
-4. **Review gates at the end of each sub-project** (R12). Each review either lifts a gate or turns it into a language rule, and writes down which.
-5. **Choose the next target by what it adds, not by its reach.** Before adding a third target, check its gaps against this log. A target that would need many new language-wide rules is a sign it should be gated or deferred, not accommodated.
+2. **Treat `lattice/targets.py` as the single source of truth** for both the semantics table and the gates. Generate the decision-log rows for gates from it, so the log can't drift from the code.
+3. **Review gates at the end of each sub-project** (R12). Each review either lifts a gate or turns it into a language rule, and writes down which.
+4. **Choose the next target by what it adds, not by its reach.** Before adding a third target, check its gaps against this log. A target that would need many new language-wide rules is a sign it should be gated or deferred, not accommodated.
+
+Done: **the R14 CI checks** (plan 5a Tasks 6 and 13): `tests/test_language_rules.py` fails when a `p8_target` code or a v1.1 language-wide rule has no decision-log row, or when a semantics case is missing on a target.
 
 ## 8. Version notes (R13)
 
