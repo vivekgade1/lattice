@@ -100,8 +100,15 @@ for q in ["t=2026-09-28T10:11:12.1234567", "t=2026-09-28T24:00", "t=2026-02-28T2
     add(f"datetime {q}", [sp("t", "query", "DateTime")], ("P9",), query=q)
 for q in ["d=2026-09-28", "d=20260928", "d=2026-W01-1", "d=2026-02-30", "d=2026-09-28T00"]:
     add(f"date {q}", [sp("d", "query", "Date")], ("P9",), query=q)
-add("datetime surrogate body", [sp("t", "body", "DateTime")], ("P2", "P9"),
-    body=b'{"t": "2026-09-28\\ud80010:00"}')  # fmt: skip
+for t in ["2026-09-28\\ud80010:00", "2026-09-28\\udc0010:00", "2026-09-2\\ud800T10:00",
+          "2026-09-28T1\\ud8000:00", "2026-09-28\\ud800", "2026-09-28T10:00\\ud800"]:  # fmt: skip
+    add(f"datetime surrogate body {t}", [sp("t", "body", "DateTime")], ("P2", "P9"),
+        body=('{"t": "' + t + '"}').encode())
+for t in ["2026-09-2\\ud800", "2026-09-28\\ud800"]:
+    add(f"date surrogate body {t}", [sp("d", "body", "Date")], ("P2", "P9"),
+        body=('{"d": "' + t + '"}').encode())
+add("uuid surrogate body", [sp("u", "body", "Uuid")], ("P2", "P9"),
+    body=b'{"u": "0123456789abcdef0123456789abcde\\ud800"}')  # fmt: skip
 for q in [
     "u=0123456789ABCDEF0123456789ABCDEF",
     "u=01234567-89ab-cdef-0123-456789abcdef",

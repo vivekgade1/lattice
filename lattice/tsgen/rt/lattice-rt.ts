@@ -677,7 +677,13 @@ const MAX_DT = makeDateTime(9999, 12, 31, 23, 59, 59, 999_999);
 
 /** The prelude's parse_datetime: µs since the epoch (UTC; naive is UTC), or null. */
 export function parseDateTime(s: string): bigint | null {
-  if (!s.isWellFormed() || cpLen(s) < 7) return null;
+  // CPython's _sanitize_isoformat_str: a lone surrogate at code point index 10 is the separator
+  const cps = Array.from(s);
+  if (cps.length > 10 && cps[10] >= "\ud800" && cps[10] <= "\udfff") {
+    cps[10] = "T";
+    s = cps.join("");
+  }
+  if (!s.isWellFormed() || cps.length < 7) return null;
   const b = ENCODER.encode(s);
   const sepAt = isoSeparator(b);
   if (sepAt < 0) return null;
@@ -792,16 +798,8 @@ function convert(spec: ParamSpec, raw: Raw, text: boolean): PyValue | Problem {
   const bad: Problem = { problem: "must be " + TYPE_NAMES[spec.scalar] };
   let str: string | null = typeof raw === "string" ? raw : null;
   if (isJsonStr(raw)) {
-    if (raw.bad) {
-      if (spec.scalar === "Str") return { problem: "must be valid UTF-8 text" };
-      if (spec.scalar !== "DateTime") return bad;
-      // CPython's fromisoformat reads a lone surrogate at index 10 as the date-time separator
-      const cps = Array.from(raw.s);
-      if (cps.length <= 10 || cps[10] < "\ud800" || cps[10] > "\udfff") return bad;
-      cps[10] = "T";
-      str = cps.join("");
-      if (!str.isWellFormed()) return bad;
-    } else str = raw.s;
+    if (raw.bad && spec.scalar === "Str") return { problem: "must be valid UTF-8 text" };
+    str = raw.s; // a lone surrogate stays: parseDateTime, parseISODate and uuidText decide
   }
   switch (spec.scalar) {
     case "Int": {

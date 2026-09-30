@@ -60,8 +60,13 @@ test("uuids", () => {
   for (const c of GO.uuids) assert.equal(rt.uuidText(c.in), c.out, JSON.stringify(c.in));
 });
 
-test("lone surrogates never parse (Review Focus 3)", () => {
-  assert.equal(rt.parseDateTime("2026-09-28\ud80010:00"), null);
+test("lone surrogates: only a date-time's index-10 separator parses (Review Focus 3)", () => {
+  const ok = (s: string) => { const t = rt.parseDateTime(s); return t === null ? null : rt.dateTimeText(t); };
+  assert.equal(ok("2026-09-28\ud80010:00"), "2026-09-28T10:00:00.000000Z");
+  assert.equal(ok("2026-09-28\udc0010:00"), "2026-09-28T10:00:00.000000Z");
+  assert.equal(ok("2026-09-2\ud800T10:00"), null);
+  assert.equal(ok("2026-09-28T1\ud8000:00"), null);
+  assert.equal(ok("2026-09-28\ud800"), null);
   assert.equal(rt.parseISODate("2026-09-2\ud800"), null);
   assert.equal(rt.uuidText("0123456789abcdef0123456789abcde\ud800"), null);
 });

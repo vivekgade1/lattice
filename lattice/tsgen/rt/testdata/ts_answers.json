@@ -3450,7 +3450,7 @@
    "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}"
   },
   {
-   "name": "datetime surrogate body",
+   "name": "datetime surrogate body 2026-09-28\\ud80010:00",
    "specs": [
     {
      "name": "t",
@@ -3476,6 +3476,188 @@
    "order": [
     "t"
    ]
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28\\udc0010:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhcdWRjMDAxMDowMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime surrogate body 2026-09-2\\ud800T10:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMlx1ZDgwMFQxMDowMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28T1\\ud8000:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhUMVx1ZDgwMDA6MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28\\ud800",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhcdWQ4MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28T10:00\\ud800",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhUMTA6MDBcdWQ4MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "date surrogate body 2026-09-2\\ud800",
+   "specs": [
+    {
+     "name": "d",
+     "source": "body",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJkIjogIjIwMjYtMDktMlx1ZDgwMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}"
+  },
+  {
+   "name": "date surrogate body 2026-09-28\\ud800",
+   "specs": [
+    {
+     "name": "d",
+     "source": "body",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJkIjogIjIwMjYtMDktMjhcdWQ4MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}"
+  },
+  {
+   "name": "uuid surrogate body",
+   "specs": [
+    {
+     "name": "u",
+     "source": "body",
+     "scalar": "Uuid"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ1IjogIjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVcdWQ4MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"u\"],\"msg\":\"must be a UUID\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"u\"],\"msg\":\"must be a UUID\"}]}"
   },
   {
    "name": "uuid u=0123456789ABCDEF0123456789ABCDEF",
