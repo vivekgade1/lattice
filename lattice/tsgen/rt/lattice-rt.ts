@@ -677,11 +677,16 @@ const MAX_DT = makeDateTime(9999, 12, 31, 23, 59, 59, 999_999);
 
 /** The prelude's parse_datetime: µs since the epoch (UTC; naive is UTC), or null. */
 export function parseDateTime(s: string): bigint | null {
-  // CPython's _sanitize_isoformat_str: a lone surrogate at code point index 10 is the separator
+  // CPython's _sanitize_isoformat_str: the first lone surrogate (a single code unit, not half
+  // of a pair) at code point 7, 8 or 10 is the separator and is replaced by "T"
   const cps = Array.from(s);
-  if (cps.length > 10 && cps[10] >= "\ud800" && cps[10] <= "\udfff") {
-    cps[10] = "T";
-    s = cps.join("");
+  for (const pos of [7, 8, 10]) {
+    const c = cps[pos];
+    if (c !== undefined && c.length === 1 && c >= "\ud800" && c <= "\udfff") {
+      cps[pos] = "T";
+      s = cps.join("");
+      break;
+    }
   }
   if (!s.isWellFormed() || cps.length < 7) return null;
   const b = ENCODER.encode(s);
