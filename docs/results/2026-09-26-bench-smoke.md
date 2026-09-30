@@ -1190,8 +1190,10 @@ commit `d5df467` (parent `4b078d8`) immediately before the live run.
 - Transport: the Claude CLI only, with the existing isolation flags, resumable via
   `--resume`; cost from the CLI's list-price estimate (`cost_basis =
   "cli_list_estimate"`, the same basis for both arms).
-- **0 harness errors** in either Sonnet cell after dedup (of 120 runs/cell each for B
-  and G) — well under the 5% threshold that would have made the run INVALID.
+- **0 harness errors** in all four cells (120 runs/cell each for B and G, both models)
+  — well under the 5% threshold that would have made the run INVALID.
+- Raw records: `results/go-pilot/outcomes.jsonl` (gitignored, per `/results/` in
+  `.gitignore`). sha256: `a4729b82741b7a61c12d39bcee6ca947a916435ffb98e8ff39560d132c3aa7db`.
 
 | model | arm | n | correct [95% CI] | silent [95% CI] | loud [95% CI] | $/correct |
 |---|---|---|---|---|---|---:|
@@ -1234,14 +1236,53 @@ fails"**:
 3. **Programs: B is about 12 lines vs G's about 80** (S2: Sonnet 11.6 vs 77.9, Haiku
    11.9 vs 83.8 — roughly 6–7× fewer lines), and about 4× fewer AST nodes (Sonnet 116
    vs 450, Haiku 115 vs 472). Output tokens on Sonnet: G is about 2–3× B (1071 vs 370,
-   computed from S2). The cost gap is smaller than the size gap, because B's large
-   system prompt (the Lattice guide) is paid on every call, and prompt caching changed
-   per-call costs during the run (early calls about $0.05, later about
-   $0.015–0.02, from `outcomes.jsonl`).
-4. **Threats that applied** (from the spec): the tasks were written for Lattice; P2
+   computed from S2). The cost gap is smaller than the size gap. **Correction: the
+   frozen spec's threat line ("B's system prompt is much larger") is wrong, and so was
+   this write-up's first draft.** `api_go_system_prompt` (G) is 21,303 chars against
+   `api_lattice_system_prompt` (B)'s 17,319 — G's is the larger one
+   (`bench/offline/go_pilot/ESTIMATE.md`). This shows up in the data too: the first
+   (uncached) call of each arm ran 10,383 input tokens for G vs 8,405 for B on Sonnet,
+   and 7,938 vs 6,468 on Haiku. The real reason the cost gap is smaller than the size
+   gap is that **input dominates B's bill**: on Sonnet, output tokens are only 28% of
+   B's total cost against 57% of G's (fit from `outcomes.jsonl`'s per-token cost
+   components; see observation 4), and B re-sends its (smaller but still substantial)
+   input on every repair round, which G rarely needs. Per-call cost fell sharply as
+   prompt caching engaged, but the "$0.05 early, $0.015–0.02 later" pattern from an
+   earlier draft of this section fits **Sonnet G only**; Sonnet B's per-call cost went
+   from about $0.035 on its first two (cold) calls to about $0.008–0.013 on later
+   single-round calls (repaired runs run higher, up to ~$0.019, from the extra round's
+   tokens).
+4. **Prompt-caching caveat.** Fitting `cost_usd` against `(uncached, cache_write,
+   cache_read, output)` tokens recovers exactly Sonnet $2 / $4 / $0.20 / $10 per Mtok
+   and Haiku $1 / $2 / $0.10 / $5 (zero residual). Recomputing every run's cost at the
+   uncached list price (no cache write or read discount) drops the cost advantage:
+   Sonnet R = 0.806, Haiku R = 0.645. Caching helps B more than G because B's cost is
+   more input-heavy (observation 3), so **the ~30% advantage reported above holds
+   under this harness's warm-cache batching; run cold, it is closer to ~20%.** The
+   batching also matters at the start: each model's runs went arm G fully, then arm B
+   (G ran before B in the file), so B's cache did not inherit any warmth from G — the
+   two arms' system prompts differ, so B's own first record(s) still show
+   `cache_read_tokens == 0` (2 of Sonnet-B's 120, 1 of Haiku-B's 120, both the
+   earliest records for that arm). Normalizing those handful of cold-start records to
+   what a warm call of the same size would have cost moves Sonnet R to ≈0.71 and Haiku
+   R to ≈0.60 (close to the review's reproduced 0.706 / 0.599). **STOP is robust to
+   all three framings** (actual, uncached, cold-normalized): every one is well above
+   the pre-registered ≤ 0.6 threshold on Sonnet.
+5. **Checker-repair cost, not pre-registered.** On Sonnet, 31/120 B runs needed at
+   least one repair round; the checker codes seen before the final (passing) round,
+   summed over those 31 runs, were L821×9, L802×8, L205×7, L801×6, L002×4 (plus a few
+   singles/doubles). Repaired runs averaged $0.023 per run against $0.0096 for the 89
+   single-round runs, and make up 46% of B's total Sonnet cost. If every B run had
+   cost what a single-round run costs on average (i.e., no repair cost at all), R
+   would be ≈0.51 — comfortably under the 0.6 threshold. G needed exactly one repair,
+   for a `go build` error (task c04). Caveat: this is not a controlled comparison —
+   the 31 repaired tasks may simply be the harder ones, on both arms, not tasks where
+   B specifically struggles.
+6. **Threats that applied** (from the spec): the tasks were written for Lattice; P2
    was relaxed before the freeze; one machine and one CLI version; the estimate
    predicted about $21 (central scenario) — the actual total cost, summed over all 480
-   records in `results/go-pilot/outcomes.jsonl`, was **$8.81**.
+   records in `results/go-pilot/outcomes.jsonl`, was **$8.81**. The spec's own threat
+   about B's system prompt size was also wrong (observation 3).
 
 ### Conclusion
 
