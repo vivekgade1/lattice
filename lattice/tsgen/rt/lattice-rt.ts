@@ -1027,22 +1027,31 @@ export function decodeList(v: JsonVal | undefined, cols: readonly Col[]): Record
   return v.map((r) => decodeRow(r, cols));
 }
 
-/** A Page envelope: `shape` is [page_shape key, JSON field]; counts are exact numbers. */
+/** How a Page envelope number decodes: "count" (`total`: 0 .. 2^53 - 1, a number), "number"
+ * (a limit/offset whose declared range fits: |x| <= 2^53 - 1, a number) or "bigint" (a
+ * limit/offset parameter whose range does not fit: any integer, kept exact). */
+export type PageNum = "count" | "number" | "bigint";
+
+/** A Page envelope: `shape` is [page_shape key, JSON field, how its number decodes]. */
 export function decodePage(
   v: JsonVal | undefined,
   cols: readonly Col[],
-  shape: readonly (readonly [string, string])[],
+  shape: readonly (readonly [string, string, PageNum?])[],
 ): Record<string, unknown> {
   if (!isJsonObj(v) || v.keys.length !== shape.length) throw new DecodeError("not the page envelope");
   const out: Record<string, unknown> = {};
-  for (const [key, field] of shape) {
+  const safe = BigInt(Number.MAX_SAFE_INTEGER);
+  for (const [key, field, mode = "count"] of shape) {
     const x = v.vals.get(field);
     if (key === "items") {
       if (!Array.isArray(x)) throw new DecodeError(`${field}: not a list`);
       out[field] = x.map((r) => decodeRow(r, cols));
+    } else if (typeof x !== "bigint") {
+      throw new DecodeError(`${field}: not an integer`);
+    } else if (mode === "bigint") {
+      out[field] = x;
     } else {
-      if (typeof x !== "bigint" || x < 0n || x > BigInt(Number.MAX_SAFE_INTEGER))
-        throw new DecodeError(`${field}: not a count`);
+      if (x > safe || x < (mode === "count" ? 0n : -safe)) throw new DecodeError(`${field}: out of range`);
       out[field] = Number(x);
     }
   }

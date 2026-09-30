@@ -175,23 +175,41 @@ def param_field(d: dict[str, object]) -> str:
     return f"  {name}?: {t}{' | null' if nullable else ''};"
 
 
+# Every response column may be null: the lowered plan's response schema does not carry
+# nullability through select/derive/joins (its `nullable` is the checker's L420/L421 dataset
+# metadata, empty after a projection), and a stored or derived value can be NULL (found by
+# the L3 gate: realapps read_item answers "description": null with an empty `nullable`).
+# Promising non-null would make a valid answer a decode error.
+
+
 def row_type(schema: Schema) -> str:
-    fields = [
-        f"  {n}: {TS_SCALAR[s.value]}{' | null' if n in schema.nullable else ''};"
-        for n, s in schema.columns
-    ]
+    fields = [f"  {n}: {TS_SCALAR[s.value]} | null;" for n, s in schema.columns]
     return "{\n" + "\n".join(fields) + "\n}"
 
 
 def cols_literal(schema: Schema) -> str:
-    cols = (f'[{json.dumps(n)}, "{s.value}", {"true" if n in schema.nullable else "false"}]'
-            for n, s in schema.columns)  # fmt: skip
+    cols = (f'[{json.dumps(n)}, "{s.value}", true]' for n, s in schema.columns)
     return "[" + ", ".join(cols) + "]"
 
 
 def page_shape(plan: EndpointPlan) -> list[tuple[str, str]]:
     total = plan.page is not None and plan.page.total
     return [(k, f) for k, f in plan.page_shape if f and (k != "total" or total)]
+
+
+def page_num(plan: EndpointPlan, key: str) -> str:
+    """How a Page envelope number decodes (rt.PageNum). `total` is a row count; `limit` and
+    `offset` echo page()'s argument, a literal or a parameter's value: a number when it fits
+    in +-(2^53 - 1) (a parameter: by its declared bounds, as for Int parameters), else a
+    bigint (found by the L3 gate: `offset: Int(ge=0)` echoes 2^63 - 1)."""
+    if key == "total":
+        return "count"
+    arg = getattr(plan.page, key) if plan.page is not None else None
+    if isinstance(arg, int):
+        return "number" if abs(arg) <= SAFE else "bigint"
+    spec = next((d for d in plan_specs(plan) if d["name"] == arg), None)
+    ok = spec is not None and spec["scalar"] == "Int" and int_is_number(spec)
+    return "number" if ok else "bigint"
 
 
 def _response(plan: EndpointPlan, row: str) -> tuple[str, str]:
@@ -203,8 +221,14 @@ def _response(plan: EndpointPlan, row: str) -> tuple[str, str]:
     cols = cols_literal(plan.schema)
     if plan.success == "Page":
         shape = page_shape(plan)
-        fields = [f"{f}: {row}[]" if k == "items" else f"{f}: number" for k, f in shape]
-        shape_ts = "[" + ", ".join(f"[{json.dumps(k)}, {json.dumps(f)}]" for k, f in shape) + "]"
+        modes = {k: page_num(plan, k) for k, _f in shape if k != "items"}
+        ts_num = {k: "bigint" if m == "bigint" else "number" for k, m in modes.items()}
+        fields = [f"{f}: {row}[]" if k == "items" else f"{f}: {ts_num[k]}" for k, f in shape]
+        shape_ts = "[" + ", ".join(
+            f"[{json.dumps(k)}, {json.dumps(f)}]" if k == "items"
+            else f"[{json.dumps(k)}, {json.dumps(f)}, {json.dumps(modes[k])}]"
+            for k, f in shape
+        ) + "]"  # fmt: skip
         return "{ " + "; ".join(fields) + " }", f"(v) => rt.decodePage(v, {cols}, {shape_ts})"
     if plan.success == LIST_KIND:
         return f"{row}[]", f"(v) => rt.decodeList(v, {cols})"

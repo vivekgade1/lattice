@@ -239,3 +239,74 @@ def test_call_never_rejects_and_zero_keys_differ(tmp_path: Path) -> None:
     assert got["net"] == [False, "unexpected", "network", 0]
     zero, neg, obj_neg, obj_zero = got["keys"]
     assert zero != neg and obj_neg != obj_zero
+
+
+NULL_ROWS = """
+import { readFileSync } from "node:fs";
+const dir = JSON.parse(readFileSync(0, "utf8"));
+const api = await import(dir + "/api.ts");
+const rt = await import(dir + "/lattice-rt.ts");
+const enc = (s) => new TextEncoder().encode(s);
+const row = '{"title": "Beta", "description": null, "id": "00000000-0000-4000-8000-000000000102",'
+  + ' "owner_id": "00000000-0000-4000-8000-000000000002", "created_at": null}';
+const loud = '{"id": "00000000-0000-4000-8000-000000000105", "loud": "E!", "size": null,'
+  + ' "year": null}';
+const tryDecode = (name, s) => {
+  try { return api.ENDPOINTS[name].decode(rt.decodeJson(enc(s))); }
+  catch (e) { return e instanceof rt.DecodeError ? "decode" : "crash"; } };
+console.log(JSON.stringify([tryDecode("read_item", row), tryDecode("loud_item", loud)]));
+"""
+
+
+def test_every_response_column_may_be_null(tmp_path: Path) -> None:
+    """L3 finding: the lowered plan's response schema does not carry nullability through
+    select/derive (realapps read_item answers "description": null, loud_item "size": null,
+    yet their schemas' `nullable` is empty), so no column is promised non-null."""
+    plans = plans_of("realapps")
+    assert all(not p.schema.nullable for p in plans if p.name in ("read_item", "loud_item"))
+    write(tmp_path, plans)
+    got = node_json(NULL_ROWS, tmp_path.as_uri(), cwd=tmp_path)
+    assert got == [
+        {"title": "Beta", "description": None, "id": "00000000-0000-4000-8000-000000000102",
+         "owner_id": "00000000-0000-4000-8000-000000000002", "created_at": None},
+        {"id": "00000000-0000-4000-8000-000000000105", "loud": "E!", "size": None, "year": None},
+    ]  # fmt: skip
+    api = generate_ts(plans)["api.ts"]
+    assert "description: string | null;" in api and "size: bigint | null;" in api
+
+
+PAGE_COUNTS = """
+import { readFileSync } from "node:fs";
+const dir = JSON.parse(readFileSync(0, "utf8"));
+const api = await import(dir + "/api.ts");
+const rt = await import(dir + "/lattice-rt.ts");
+const enc = (s) => new TextEncoder().encode(s);
+const show = (v) => typeof v === "bigint" ? v.toString() + "n" : v;
+const tryPage = (s) => { try {
+    const p = api.ENDPOINTS.list_reviews.decode(rt.decodeJson(enc(s)));
+    const counts = Object.entries(p).filter(([k]) => k !== "items");
+    return Object.fromEntries(counts.map(([k, v]) => [k, show(v)]));
+  } catch (e) { return e instanceof rt.DecodeError ? "decode" : "crash"; } };
+console.log(JSON.stringify([
+  tryPage('{"items": [], "limit": 3, "offset": 9223372036854775807, "total": 120}'),
+  tryPage('{"items": [], "limit": 9007199254740992, "offset": 0, "total": 120}'),
+  tryPage('{"items": [], "limit": 3, "offset": 0, "total": 9007199254740992}'),
+  tryPage('{"items": [], "limit": 3, "offset": 1.0, "total": 1}'),
+]));
+"""
+
+
+def test_page_limit_and_offset_are_typed_like_their_parameters(tmp_path: Path) -> None:
+    """L3 finding: the envelope echoes the request's limit and offset; `skip` (ge=0, no le)
+    may be 2^63 - 1, so it is a bigint; `limit` (1..100) is a number; `total` a count."""
+    plans = plans_of("edges")
+    write(tmp_path, plans)
+    got = node_json(PAGE_COUNTS, tmp_path.as_uri(), cwd=tmp_path)
+    assert got == [
+        {"limit": 3, "offset": "9223372036854775807n", "total": 120},
+        "decode",
+        "decode",
+        "decode",
+    ]
+    api = generate_ts(plans)["api.ts"]
+    assert "limit: number; offset: bigint; total: number" in api
