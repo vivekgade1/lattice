@@ -83,6 +83,7 @@ A construct missing any of these is not part of the language.
 | 2026-09-29 | Representation (client) | Int typed by declared range: `number` when ge and le lie within ±(2^53−1), else `bigint`; response Int columns `bigint`; page counts `number`, decoded exactly | JS `number` is exact only to 2^53 | — | never (representation) |
 | 2026-09-29 | Known limitation (client) | A path `Str` that is empty, `.`, `..` or contains `/` is sent unvalidated for routing | `fetch` normalises `.`/`..`; Starlette routes on the decoded path | use a query or body parameter | never (HTTP routing) |
 | 2026-09-29 | Target gate (R4) | L893: the TS client cannot be generated for a plan (an untranslatable pattern, a non-finite bound, an unknown success kind) | emitter coverage | compile without `--target ts` | the emitter handles the construct |
+| 2026-09-30 | Known limitation (client) | `repr()` in client messages (one_of, pattern) uses Node's Unicode data: Node 22 (ICU, Unicode 17) prints code points first assigned in Unicode 17 that Python 3.14 (Unicode 16) escapes | library versions | — | Python's Unicode data reaches Node's |
 
 ## 7. Recommendations (not yet in place)
 

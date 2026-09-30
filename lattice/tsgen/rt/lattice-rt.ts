@@ -476,3 +476,258 @@ export function pctEncode(s: string): string {
   }
   return out;
 }
+
+// ---- dates (CPython's date/datetime.fromisoformat, over the UTF-8 bytes) ------------------
+
+const MIN_YEAR = 1;
+const MAX_YEAR = 9999;
+const EPOCH_ORD = 719163; // date(1970, 1, 1).toordinal()
+const US_PER_DAY = 86_400_000_000n;
+const DAYS_BEFORE_MONTH = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+const DAYS_IN_MONTH = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+const isLeap = (y: number) => y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0);
+const daysInMonth = (y: number, m: number) => (m === 2 && isLeap(y) ? 29 : DAYS_IN_MONTH[m]);
+const daysBeforeYear = (y: number) => {
+  const p = y - 1;
+  return p * 365 + Math.floor(p / 4) - Math.floor(p / 100) + Math.floor(p / 400);
+};
+const ymdToOrd = (y: number, m: number, d: number) =>
+  daysBeforeYear(y) + DAYS_BEFORE_MONTH[m] + (m > 2 && isLeap(y) ? 1 : 0) + d;
+const validDate = (y: number, m: number, d: number) =>
+  y >= MIN_YEAR && y <= MAX_YEAR && m >= 1 && m <= 12 && d >= 1 && d <= daysInMonth(y, m);
+
+function ordToYMD(ord: number): [number, number, number] {
+  let n = ord - 1;
+  const n400 = Math.floor(n / 146097);
+  n %= 146097;
+  let year = n400 * 400 + 1;
+  const n100 = Math.floor(n / 36524);
+  n %= 36524;
+  const n4 = Math.floor(n / 1461);
+  n %= 1461;
+  const n1 = Math.floor(n / 365);
+  n %= 365;
+  year += n100 * 100 + n4 * 4 + n1;
+  if (n1 === 4 || n100 === 4) return [year - 1, 12, 31];
+  const leap = n1 === 3 && (n4 !== 24 || n100 === 3);
+  let month = (n + 50) >> 5;
+  let preceding = DAYS_BEFORE_MONTH[month] + (month > 2 && leap ? 1 : 0);
+  if (preceding > n) {
+    month -= 1;
+    preceding -= DAYS_IN_MONTH[month] + (month === 2 && leap ? 1 : 0);
+  }
+  return [year, month, n - preceding + 1];
+}
+
+const pad = (n: number, w: number) => String(n).padStart(w, "0");
+const isDigit = (c: number) => c >= 0x30 && c <= 0x39;
+const at = (b: Uint8Array, i: number) => (i >= 0 && i < b.length ? b[i] : 0);
+
+function digitsAt(b: Uint8Array, i: number, n: number): [number, number] | null {
+  let v = 0;
+  for (let k = 0; k < n; k++) {
+    const c = at(b, i + k);
+    if (!isDigit(c)) return null;
+    v = v * 10 + (c - 0x30);
+  }
+  return [v, i + n];
+}
+
+function isoToYMD(year: number, week: number, day: number): [number, number, number] | null {
+  if (year < MIN_YEAR || year > MAX_YEAR) return null;
+  if (week <= 0 || week >= 53) {
+    const first = ymdToOrd(year, 1, 1) % 7;
+    if (!(week === 53 && (first === 4 || (first === 3 && isLeap(year))))) return null;
+  }
+  if (day <= 0 || day >= 8) return null;
+  const first = ymdToOrd(year, 1, 1);
+  const wd = (first + 6) % 7;
+  const monday = first - wd + (wd > 3 ? 7 : 0);
+  return ordToYMD(monday + (week - 1) * 7 + day - 1);
+}
+
+function parseDatePart(b: Uint8Array, n: number): [number, number, number] | null {
+  const y = digitsAt(b, 0, 4);
+  if (y === null) return null;
+  let p = y[1];
+  const sep = at(b, p) === 0x2d;
+  if (sep) p++;
+  if (at(b, p) === 0x57) {
+    const w = digitsAt(b, p + 1, 2);
+    if (w === null) return null;
+    p = w[1];
+    let day = 1;
+    if (p < n) {
+      if (sep) {
+        if (at(b, p) !== 0x2d) return null;
+        p++;
+      }
+      const d = digitsAt(b, p, 1);
+      if (d === null) return null;
+      day = d[0];
+    }
+    return isoToYMD(y[0], w[0], day);
+  }
+  const m = digitsAt(b, p, 2);
+  if (m === null) return null;
+  p = m[1];
+  if (sep) {
+    if (at(b, p) !== 0x2d) return null;
+    p++;
+  }
+  const d = digitsAt(b, p, 2);
+  return d === null ? null : [y[0], m[0], d[0]];
+}
+
+/** date.fromisoformat(s).isoformat(), or null where Python raises. */
+export function parseISODate(s: string): string | null {
+  if (!s.isWellFormed()) return null;
+  const b = ENCODER.encode(s);
+  if (b.length !== 7 && b.length !== 8 && b.length !== 10) return null;
+  const ymd = parseDatePart(b, b.length);
+  if (ymd === null || !validDate(...ymd)) return null;
+  return `${pad(ymd[0], 4)}-${pad(ymd[1], 2)}-${pad(ymd[2], 2)}`;
+}
+
+function isoSeparator(b: Uint8Array): number {
+  const n = b.length;
+  if (n === 7) return 7;
+  if (at(b, 4) === 0x2d) {
+    if (at(b, 5) === 0x57) {
+      if (n < 8) return -1;
+      if (n > 8 && at(b, 8) === 0x2d) {
+        if (n === 9) return -1;
+        return n > 10 && isDigit(at(b, 10)) ? 8 : 10;
+      }
+      return 8;
+    }
+    return 10;
+  }
+  if (at(b, 4) === 0x57) {
+    let idx = 7;
+    while (idx < n && isDigit(b[idx])) idx++;
+    if (idx < 9) return idx;
+    return idx % 2 === 0 ? 7 : 8;
+  }
+  return 8;
+}
+
+/** CPython's parse_hh_mm_ss_ff over b[:end]: rv 0 at the end, 1 when more follows, <0 error. */
+function parseHMSF(b: Uint8Array, end: number): [number, number, number, number, number] {
+  const vals = [0, 0, 0];
+  let p = 0;
+  let hasSep = true;
+  let i = 0;
+  for (; i < 3; i++) {
+    const v = digitsAt(b, p, 2);
+    if (v === null) return [0, 0, 0, 0, -3];
+    [vals[i], p] = v;
+    const c = at(b, p);
+    p++;
+    if (i === 0) hasSep = c === 0x3a;
+    if (p >= end) return [vals[0], vals[1], vals[2], 0, c !== 0 ? 1 : 0];
+    if (hasSep && c === 0x3a) {
+      if (i === 2) return [0, 0, 0, 0, -4];
+      continue;
+    }
+    if (c === 0x2e || c === 0x2c) {
+      if (i < 2) return [0, 0, 0, 0, -3];
+      break;
+    }
+    if (!hasSep) p--;
+    else return [0, 0, 0, 0, -4];
+  }
+  const remains = end - p;
+  if (remains <= 0) return [0, 0, 0, 0, -3];
+  const toParse = Math.min(remains, 6);
+  const f = digitsAt(b, p, toParse);
+  if (f === null) return [0, 0, 0, 0, -3];
+  let frac = f[0];
+  for (let k = toParse; k < 6; k++) frac *= 10;
+  p = f[1];
+  while (isDigit(at(b, p))) p++;
+  return [vals[0], vals[1], vals[2], frac, at(b, p) !== 0 ? 1 : 0];
+}
+
+/** CPython's parse_isoformat_time: [h, m, s, us, offset µs] or null. */
+function parseISOTime(b: Uint8Array): [number, number, number, number, number] | null {
+  let tz = b.findIndex((c) => c === 0x5a || c === 0x2b || c === 0x2d);
+  if (tz < 0) tz = b.length;
+  const [h, m, s, us, rv] = parseHMSF(b, tz);
+  if (rv < 0) return null;
+  if (tz >= b.length) return rv === 1 ? null : [h, m, s, us, 0];
+  if (b[tz] === 0x5a) return tz + 1 === b.length ? [h, m, s, us, 0] : null;
+  const sign = b[tz] === 0x2d ? -1 : 1;
+  const rest = b.subarray(tz + 1);
+  const [th, tm, ts, tus, trv] = parseHMSF(rest, rest.length);
+  if (th > 23 || tm > 59 || ts > 59 || trv !== 0) return null;
+  return [h, m, s, us, sign * ((th * 3600 + tm * 60 + ts) * 1_000_000 + tus)];
+}
+
+function makeDateTime(y: number, mo: number, d: number, h: number, mi: number, s: number, us: number): bigint {
+  return BigInt(ymdToOrd(y, mo, d) - EPOCH_ORD) * US_PER_DAY + BigInt(((h * 60 + mi) * 60 + s) * 1_000_000 + us);
+}
+const MIN_DT = makeDateTime(1, 1, 1, 0, 0, 0, 0);
+const MAX_DT = makeDateTime(9999, 12, 31, 23, 59, 59, 999_999);
+
+/** The prelude's parse_datetime: µs since the epoch (UTC; naive is UTC), or null. */
+export function parseDateTime(s: string): bigint | null {
+  if (!s.isWellFormed() || cpLen(s) < 7) return null;
+  const b = ENCODER.encode(s);
+  const sepAt = isoSeparator(b);
+  if (sepAt < 0) return null;
+  const ymd = parseDatePart(b, sepAt);
+  if (ymd === null) return null;
+  let [y, mo, d] = ymd;
+  let [h, mi, sec, us, off] = [0, 0, 0, 0, 0];
+  if (b.length > sepAt) {
+    const lead = b[sepAt];
+    const size = lead < 0x80 ? 1 : lead < 0xe0 ? 2 : lead < 0xf0 ? 3 : 4;
+    const t = parseISOTime(b.subarray(sepAt + size));
+    if (t === null) return null;
+    [h, mi, sec, us, off] = t;
+  }
+  if (h === 24 && mo >= 1 && mo <= 12) {
+    const dim = daysInMonth(y, mo);
+    if (d <= dim) {
+      if (mi !== 0 || sec !== 0 || us !== 0) return null;
+      h = 0;
+      d++;
+      if (d > dim) {
+        d = 1;
+        mo++;
+        if (mo > 12) [mo, y] = [1, y + 1];
+      }
+    }
+  }
+  if (!validDate(y, mo, d) || h > 23 || mi > 59 || sec > 59) return null;
+  const t = makeDateTime(y, mo, d, h, mi, sec, us) - BigInt(off);
+  return t < MIN_DT || t > MAX_DT ? null : t;
+}
+
+/** The prelude's datetime_text. */
+export function dateTimeText(t: bigint): string {
+  let days = t / US_PER_DAY;
+  let rem = t % US_PER_DAY;
+  if (rem < 0n) {
+    rem += US_PER_DAY;
+    days -= 1n;
+  }
+  const [y, mo, d] = ordToYMD(Number(days) + EPOCH_ORD);
+  const us = Number(rem);
+  const secs = Math.floor(us / 1_000_000);
+  return (
+    `${pad(y, 4)}-${pad(mo, 2)}-${pad(d, 2)}T${pad(Math.floor(secs / 3600), 2)}:` +
+    `${pad(Math.floor(secs / 60) % 60, 2)}:${pad(secs % 60, 2)}.${pad(us % 1_000_000, 6)}Z`
+  );
+}
+
+const UUID_TEXT = /^[0-9a-fA-F]{8}(-?)[0-9a-fA-F]{4}\1[0-9a-fA-F]{4}\1[0-9a-fA-F]{4}\1[0-9a-fA-F]{12}$/;
+
+/** The prelude's uuid_text: canonical lowercase hyphenated, or null. */
+export function uuidText(s: string): string | null {
+  if (!UUID_TEXT.test(s)) return null;
+  const h = s.replaceAll("-", "").toLowerCase();
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}

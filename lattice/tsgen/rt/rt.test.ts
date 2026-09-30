@@ -44,3 +44,24 @@ test("loadsJson", () => {
 test("parseQS", () => {
   for (const c of TS.qs) assert.deepEqual(Object.fromEntries(rt.parseQS(c.raw)), c.pairs, c.raw);
 });
+
+test("dates", () => {
+  for (const c of GO.dates) assert.equal(rt.parseISODate(c.in), c.out, JSON.stringify(c.in));
+});
+
+test("datetimes", () => {
+  for (const c of GO.datetimes) {
+    const t = rt.parseDateTime(c.in);
+    assert.equal(t === null ? null : rt.dateTimeText(t), c.out, JSON.stringify(c.in));
+  }
+});
+
+test("uuids", () => {
+  for (const c of GO.uuids) assert.equal(rt.uuidText(c.in), c.out, JSON.stringify(c.in));
+});
+
+test("lone surrogates never parse (Review Focus 3)", () => {
+  assert.equal(rt.parseDateTime("2026-09-28\ud80010:00"), null);
+  assert.equal(rt.parseISODate("2026-09-2\ud800"), null);
+  assert.equal(rt.uuidText("0123456789abcdef0123456789abcde\ud800"), null);
+});
