@@ -1,6 +1,6 @@
 {"app":"o03",
 "patterns":{},
-"specs":{"delete_address":[{"ge":1,"name":"address_id","scalar":"Int","source":"path"}]},
+"specs":{"delete_address":[{"ge":1,"name":"address_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}}]},
 "params":[
 {"body":"","endpoint":"delete_address","name":"delete_address suite 0","order":["address_id"],"path":{"address_id":"12"},"query":"","values":{"address_id":{"t":"int","v":"12"}}},
 {"body":"","endpoint":"delete_address","name":"delete_address suite 1","order":["address_id"],"path":{"address_id":"23"},"query":"","values":{"address_id":{"t":"int","v":"23"}}},

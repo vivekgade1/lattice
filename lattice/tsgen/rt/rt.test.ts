@@ -26,11 +26,10 @@ test("reprFloat", () => {
   }
 });
 
-test("strings: repr, strip, len", () => {
+test("strings: strip, len", () => {
   for (const c of TS.strs) {
-    assert.equal(rt.pyRepr(c.s), c.repr, c.repr);
-    assert.equal(rt.pyStrip(c.s), c.strip, c.repr);
-    assert.equal(rt.cpLen(c.s), c.len, c.repr);
+    assert.equal(rt.pyStrip(c.s), c.strip, JSON.stringify(c.s));
+    assert.equal(rt.cpLen(c.s), c.len, JSON.stringify(c.s));
   }
 });
 
@@ -80,7 +79,7 @@ test("lone surrogates: only the first at code point 7, 8 or 10 is the date-time 
 import { replayParams } from "./replay.ts";
 
 test("params: Go corpus", () => {
-  const bad = replayParams(GO.params, TS.patterns);
+  const bad = replayParams(GO.params, TS.patterns, {}, TS.go_checks);
   assert.deepEqual(bad, [], bad.slice(0, 10).join("\n"));
 });
 

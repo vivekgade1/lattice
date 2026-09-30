@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 import json
-import math
 from collections.abc import Sequence
 
 from lattice.api.ir import EndpointPlan, ErrorSpec, WriteStep
 from lattice.catalog import API_ERRORS, LIST_KIND
 from lattice.targets import TS_REFUSAL
 from lattice.tsgen.regex import Untranslatable, fullmatch_source
-from lattice.tsgen.specs import plan_specs
+from lattice.tsgen.specs import BoundError, plan_specs, ts_checks
 from lattice.typesys import Schema
 
 SAFE = 2**53 - 1
@@ -117,10 +116,10 @@ def error_statuses(plan: EndpointPlan) -> list[int]:
     return sorted(out)
 
 
-def js_number(plan: EndpointPlan, v: float) -> str:
-    if not math.isfinite(v):
-        raise TsGenRefusal(plan, f"the bound {v!r} is not finite")
-    return repr(float(v)) if isinstance(v, float) else str(v)
+def js_bound(tagged: dict[str, object]) -> str:
+    """A bound (specs.tag_bound) as a JS literal: an int bound a bigint (exact), a float
+    bound its repr (the shortest text that reads back as the same double, in JS too)."""
+    return f"{tagged['v']}n" if tagged["t"] == "int" else str(tagged["v"])
 
 
 def ts_value(tagged: dict[str, object]) -> str:
@@ -132,22 +131,29 @@ def ts_value(tagged: dict[str, object]) -> str:
 
 
 def ts_spec(d: dict[str, object], plan: EndpointPlan) -> str:
+    """The runtime's ParamSpec: each constraint with its message (specs.ts_checks)."""
+    try:
+        checks = ts_checks(d)
+    except BoundError as err:
+        raise TsGenRefusal(plan, f"parameter '{d['name']}': {err}") from None
     parts = [
         f"name: {json.dumps(d['name'])}",
         f'source: "{d["source"]}"',
         f'scalar: "{d["scalar"]}"',
     ]
+
+    def check(key: str, v: str) -> None:
+        parts.append(f"{key}: {{ v: {v}, msg: {json.dumps(checks[key]['msg'])} }}")
+
     for key in ("ge", "le"):
         if key in d:
-            parts.append(f"{key}: {js_number(plan, d[key])}")  # type: ignore[arg-type]
-    for key in ("min_len", "max_len"):
+            check(key, js_bound(checks[key]["v"]))  # type: ignore[arg-type]
+    for key in ("min_len", "max_len", "one_of"):
         if key in d:
-            parts.append(f"{key}: {d[key]}")
-    if "one_of" in d:
-        parts.append(f"one_of: {json.dumps(d['one_of'])}")
+            check(key, json.dumps(d[key]))
     if "default" in d:
         parts.append(f"default: {ts_value(d['default'])}")  # type: ignore[arg-type]
-    for key in ("optional", "nullable", "email"):
+    for key in ("optional", "nullable"):
         if d.get(key):
             parts.append(f"{key}: true")
     if "pattern" in d:
@@ -155,7 +161,9 @@ def ts_spec(d: dict[str, object], plan: EndpointPlan) -> str:
             js = fullmatch_source(d["pattern"])  # type: ignore[arg-type]
         except Untranslatable as err:
             raise TsGenRefusal(plan, f"pattern {d['pattern']!r}: {err}") from None
-        parts.append(f"pattern: {{ py: {json.dumps(d['pattern'])}, js: {json.dumps(js)} }}")
+        check("pattern", json.dumps(js))
+    if d.get("email"):
+        check("email", json.dumps(checks["email"]["v"]))
     return "{ " + ", ".join(parts) + " }"
 
 

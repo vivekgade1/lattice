@@ -1,6 +1,6 @@
 {"app":"c05",
 "patterns":{},
-"specs":{"delete_review":[{"ge":1,"name":"review_id","scalar":"Int","source":"path"}]},
+"specs":{"delete_review":[{"ge":1,"name":"review_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}}]},
 "params":[
 {"body":"","endpoint":"delete_review","name":"delete_review suite 0","order":["review_id"],"path":{"review_id":"111"},"query":"","values":{"review_id":{"t":"int","v":"111"}}},
 {"body":"","endpoint":"delete_review","name":"delete_review suite 1","order":["review_id"],"path":{"review_id":"60"},"query":"","values":{"review_id":{"t":"int","v":"60"}}},

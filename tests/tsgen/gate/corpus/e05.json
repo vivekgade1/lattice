@@ -1,6 +1,6 @@
 {"app":"e05",
 "patterns":{},
-"specs":{"ship_order":[{"ge":1,"name":"order_id","scalar":"Int","source":"path"}]},
+"specs":{"ship_order":[{"ge":1,"name":"order_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}}]},
 "params":[
 {"body":"","endpoint":"ship_order","name":"ship_order suite 0","order":["order_id"],"path":{"order_id":"2"},"query":"","values":{"order_id":{"t":"int","v":"2"}}},
 {"body":"","endpoint":"ship_order","name":"ship_order suite 1","order":["order_id"],"path":{"order_id":"1"},"query":"","values":{"order_id":{"t":"int","v":"1"}}},

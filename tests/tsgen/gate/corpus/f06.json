@@ -1,6 +1,6 @@
 {"app":"f06",
 "patterns":{},
-"specs":{"customer_stats":[{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query"},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query"}]},
+"specs":{"customer_stats":[{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}},"le":{"msg":"must be <= 100","v":{"t":"int","v":"100"}}}},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 0","v":{"t":"int","v":"0"}}}}]},
 "params":[
 {"body":"","endpoint":"customer_stats","name":"customer_stats suite 0","order":["limit","offset"],"path":{},"query":"","values":{"limit":{"t":"int","v":"20"},"offset":{"t":"int","v":"0"}}},
 {"body":"","endpoint":"customer_stats","name":"customer_stats suite 1","order":["limit","offset"],"path":{},"query":"limit=3&offset=34","values":{"limit":{"t":"int","v":"3"},"offset":{"t":"int","v":"34"}}},

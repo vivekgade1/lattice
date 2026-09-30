@@ -1,6 +1,6 @@
 {"app":"v02",
 "patterns":{},
-"specs":{"create_address":[{"max_len":100,"min_len":1,"name":"line1","scalar":"Str","source":"body"},{"max_len":60,"min_len":1,"name":"city","scalar":"Str","source":"body"},{"max_len":5,"min_len":5,"name":"zip","scalar":"Str","source":"body"}]},
+"specs":{"create_address":[{"max_len":100,"min_len":1,"name":"line1","scalar":"Str","source":"body","ts":{"max_len":{"msg":"must have at most 100 characters"},"min_len":{"msg":"must have at least 1 characters"}}},{"max_len":60,"min_len":1,"name":"city","scalar":"Str","source":"body","ts":{"max_len":{"msg":"must have at most 60 characters"},"min_len":{"msg":"must have at least 1 characters"}}},{"max_len":5,"min_len":5,"name":"zip","scalar":"Str","source":"body","ts":{"max_len":{"msg":"must have at most 5 characters"},"min_len":{"msg":"must have at least 5 characters"}}}]},
 "params":[
 {"body":"eyJsaW5lMSI6ICIxMiBXaGFyZiBTdCIsICJjaXR5IjogIkJvc3RvbiIsICJ6aXAiOiAiMDIxMTAifQ==","endpoint":"create_address","name":"create_address suite 0","order":["line1","city","zip"],"path":{},"query":"","values":{"city":{"t":"str","v":"Boston"},"line1":{"t":"str","v":"12 Wharf St"},"zip":{"t":"str","v":"02110"}}},
 {"body":"eyJsaW5lMSI6ICIzIE9hayBBdmUiLCAiY2l0eSI6ICJBdXN0aW4iLCAiemlwIjogIjczMzAxIn0=","endpoint":"create_address","name":"create_address suite 1","order":["line1","city","zip"],"path":{},"query":"","values":{"city":{"t":"str","v":"Austin"},"line1":{"t":"str","v":"3 Oak Ave"},"zip":{"t":"str","v":"73301"}}},

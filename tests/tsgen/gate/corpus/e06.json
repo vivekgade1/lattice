@@ -1,6 +1,6 @@
 {"app":"e06",
 "patterns":{},
-"specs":{"review_product":[{"ge":1,"name":"product_id","scalar":"Int","source":"path"},{"ge":1,"le":5,"name":"rating","scalar":"Int","source":"body"},{"max_len":500,"min_len":1,"name":"body","scalar":"Str","source":"body"}]},
+"specs":{"review_product":[{"ge":1,"name":"product_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}},{"ge":1,"le":5,"name":"rating","scalar":"Int","source":"body","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}},"le":{"msg":"must be <= 5","v":{"t":"int","v":"5"}}}},{"max_len":500,"min_len":1,"name":"body","scalar":"Str","source":"body","ts":{"max_len":{"msg":"must have at most 500 characters"},"min_len":{"msg":"must have at least 1 characters"}}}]},
 "params":[
 {"body":"eyJyYXRpbmciOiA0LCAiYm9keSI6ICJSb29teS4ifQ==","endpoint":"review_product","name":"review_product suite 0","order":["product_id","rating","body"],"path":{"product_id":"1"},"query":"","values":{"body":{"t":"str","v":"Roomy."},"product_id":{"t":"int","v":"1"},"rating":{"t":"int","v":"4"}}},
 {"body":"eyJyYXRpbmciOiAzLCAiYm9keSI6ICJGaW5lLiJ9","endpoint":"review_product","name":"review_product suite 1","order":["product_id","rating","body"],"path":{"product_id":"23"},"query":"","values":{"body":{"t":"str","v":"Fine."},"product_id":{"t":"int","v":"23"},"rating":{"t":"int","v":"3"}}},

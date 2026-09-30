@@ -1,6 +1,6 @@
 {"app":"v08",
 "patterns":{},
-"specs":{"restock":[{"ge":1,"name":"product_id","scalar":"Int","source":"path"},{"ge":1,"le":1000,"name":"qty","scalar":"Int","source":"body"}]},
+"specs":{"restock":[{"ge":1,"name":"product_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}},{"ge":1,"le":1000,"name":"qty","scalar":"Int","source":"body","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}},"le":{"msg":"must be <= 1000","v":{"t":"int","v":"1000"}}}}]},
 "params":[
 {"body":"eyJxdHkiOiAxMH0=","endpoint":"restock","name":"restock suite 0","order":["product_id","qty"],"path":{"product_id":"1"},"query":"","values":{"product_id":{"t":"int","v":"1"},"qty":{"t":"int","v":"10"}}},
 {"body":"eyJxdHkiOiAxMDAwfQ==","endpoint":"restock","name":"restock suite 1","order":["product_id","qty"],"path":{"product_id":"2"},"query":"","values":{"product_id":{"t":"int","v":"2"},"qty":{"t":"int","v":"1000"}}},

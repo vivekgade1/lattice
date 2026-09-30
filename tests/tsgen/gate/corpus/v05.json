@@ -1,6 +1,6 @@
 {"app":"v05",
 "patterns":{},
-"specs":{"set_status":[{"ge":1,"name":"order_id","scalar":"Int","source":"path"},{"name":"status","one_of":["pending","paid","shipped","cancelled"],"scalar":"Str","source":"body"}]},
+"specs":{"set_status":[{"ge":1,"name":"order_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}},{"name":"status","one_of":["pending","paid","shipped","cancelled"],"scalar":"Str","source":"body","ts":{"one_of":{"msg":"must be one of 'pending', 'paid', 'shipped', 'cancelled'"}}}]},
 "params":[
 {"body":"eyJzdGF0dXMiOiAic2hpcHBlZCJ9","endpoint":"set_status","name":"set_status suite 0","order":["order_id","status"],"path":{"order_id":"1"},"query":"","values":{"order_id":{"t":"int","v":"1"},"status":{"t":"str","v":"shipped"}}},
 {"body":"eyJzdGF0dXMiOiAicGVuZGluZyJ9","endpoint":"set_status","name":"set_status suite 1","order":["order_id","status"],"path":{"order_id":"4"},"query":"","values":{"order_id":{"t":"int","v":"4"},"status":{"t":"str","v":"pending"}}},

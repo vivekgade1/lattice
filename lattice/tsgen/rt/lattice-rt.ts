@@ -29,31 +29,6 @@ export function pyStrip(s: string): string {
   return cps.slice(i, j).join("");
 }
 
-const NOT_PRINTABLE = /[\p{Cc}\p{Cf}\p{Cs}\p{Co}\p{Cn}\p{Zl}\p{Zp}\p{Zs}]/u;
-const hex = (prefix: string, cp: number, width: number) =>
-  prefix + cp.toString(16).padStart(width, "0");
-
-/** repr(s) */
-export function pyRepr(s: string): string {
-  const quote = s.includes("'") && !s.includes('"') ? '"' : "'";
-  let out = quote;
-  for (let i = 0; i < s.length; ) {
-    const cp = s.codePointAt(i)!;
-    i += cp > 0xffff ? 2 : 1;
-    const ch = String.fromCodePoint(cp);
-    if (ch === quote || ch === "\\") out += "\\" + ch;
-    else if (cp === 9) out += "\\t";
-    else if (cp === 10) out += "\\n";
-    else if (cp === 13) out += "\\r";
-    else if (cp < 0x20 || cp === 0x7f) out += hex("\\x", cp, 2);
-    else if (cp < 0x7f) out += ch;
-    else if (NOT_PRINTABLE.test(ch))
-      out += cp <= 0xff ? hex("\\x", cp, 2) : cp <= 0xffff ? hex("\\u", cp, 4) : hex("\\U", cp, 8);
-    else out += ch;
-  }
-  return out + quote;
-}
-
 // ---- numbers ------------------------------------------------------------------------------
 
 export const INT_MIN = -(1n << 63n);
@@ -77,11 +52,6 @@ export function reprFloat(x: number): string {
   if (exp < 0) return sign + "0." + "0".repeat(-exp - 1) + digits;
   if (digits.length <= exp + 1) return sign + digits + "0".repeat(exp + 1 - digits.length) + ".0";
   return sign + digits.slice(0, exp + 1) + "." + digits.slice(exp + 1);
-}
-
-/** The prelude's _num: a bound as Python prints it. */
-export function num(v: number): string {
-  return Number.isInteger(v) ? BigInt(v).toString() : reprFloat(v);
 }
 
 // ---- JSON (json.loads of request bytes) ---------------------------------------------------
@@ -760,25 +730,32 @@ export type PyValue =
   | { t: "date"; v: string }
   | { t: "datetime"; v: string }
   | { t: "uuid"; v: string };
+/** A constraint and the 422 message the server gives when it fails. The message is
+ * formatted at generation time, in Python, exactly as the server's prelude formats it (`_num`
+ * for a bound, repr() for one_of values and the pattern): the client never formats a number
+ * or a repr (spec 2026-09-29 ui-a §10). */
+export type Check<T> = { readonly v: T; readonly msg: string };
 export type ParamSpec = {
   name: string;
   source: "path" | "query" | "body";
   scalar: Scalar;
-  ge?: number;
-  le?: number;
-  min_len?: number;
-  max_len?: number;
-  one_of?: readonly string[];
+  /** A bigint for an int bound (compared exactly), a number for a float bound. */
+  ge?: Check<bigint | number>;
+  le?: Check<bigint | number>;
+  min_len?: Check<number>;
+  max_len?: Check<number>;
+  one_of?: Check<readonly string[]>;
   default?: PyValue;
   optional?: boolean;
   nullable?: boolean;
-  pattern?: { py: string; js: string };
-  email?: boolean;
+  /** The pattern as JS source (tsgen/regex.py; for Email, its address pattern). */
+  pattern?: Check<string>;
+  /** Email: the address length limit (the prelude's EMAIL_MAX_LEN). */
+  email?: Check<number>;
 };
 export type FieldError = { loc: string[]; msg: string };
 export type Parsed = { ok: true; values: Map<string, PyValue> } | { ok: false; detail: FieldError[] };
 
-export const EMAIL_MAX_LEN = 254;
 const TYPE_NAMES: Record<Scalar, string> = {
   Int: "an integer",
   Float: "a number",
@@ -856,16 +833,21 @@ function convert(spec: ParamSpec, raw: Raw, text: boolean): PyValue | Problem {
   }
 }
 
-/** A parameter value (int or float) compared exactly with a float bound, as Python does. */
-function cmpNum(v: PyValue, bound: number): number {
-  if (v.t === "float") return v.v < bound ? -1 : v.v > bound ? 1 : 0;
-  if (v.t !== "int") return 0;
-  if (!Number.isFinite(bound)) return bound > 0 ? -1 : 1;
-  if (Number.isInteger(bound)) {
-    const b = BigInt(bound);
-    return v.v < b ? -1 : v.v > b ? 1 : 0;
-  }
-  return v.v <= BigInt(Math.floor(bound)) ? -1 : 1;
+const cmpBig = (a: bigint, b: bigint) => (a < b ? -1 : a > b ? 1 : 0);
+
+/** A parameter value (int or float) compared exactly with a bound (a bigint for an int
+ * bound, a number for a float one), as Python compares int and float. */
+export function cmpNum(v: PyValue, bound: bigint | number): number {
+  if (v.t !== "int" && v.t !== "float") return 0;
+  if (v.t === "int" && typeof bound === "bigint") return cmpBig(v.v, bound);
+  if (v.t === "float" && typeof bound === "number") return v.v < bound ? -1 : v.v > bound ? 1 : 0;
+  // one side an integer (bigint), the other a double: exact
+  const [i, x, sign] = v.t === "int" ? [v.v, bound as number, 1] : [bound as bigint, v.v, -1];
+  if (Number.isNaN(x)) return 0;
+  if (!Number.isFinite(x)) return (x > 0 ? -1 : 1) * sign;
+  // x not integral: i < x exactly when i <= floor(x)
+  const c = Number.isInteger(x) ? cmpBig(i, BigInt(x)) : i <= BigInt(Math.floor(x)) ? -1 : 1;
+  return c * sign;
 }
 
 const PATTERNS = new Map<string, RegExp>();
@@ -876,19 +858,18 @@ function fullMatch(js: string, s: string): boolean {
 }
 
 function constrain(spec: ParamSpec, value: PyValue): string | null {
-  if (spec.one_of !== undefined && !(value.t === "str" && spec.one_of.includes(value.v)))
-    return "must be one of " + spec.one_of.map(pyRepr).join(", ");
+  if (spec.one_of !== undefined && !(value.t === "str" && spec.one_of.v.includes(value.v)))
+    return spec.one_of.msg;
   if (value.t === "int" || value.t === "float") {
-    if (spec.ge !== undefined && cmpNum(value, spec.ge) < 0) return "must be >= " + num(spec.ge);
-    if (spec.le !== undefined && cmpNum(value, spec.le) > 0) return "must be <= " + num(spec.le);
+    if (spec.ge !== undefined && cmpNum(value, spec.ge.v) < 0) return spec.ge.msg;
+    if (spec.le !== undefined && cmpNum(value, spec.le.v) > 0) return spec.le.msg;
   }
   if (value.t === "str") {
     const n = cpLen(value.v);
-    if (spec.min_len !== undefined && n < spec.min_len) return `must have at least ${spec.min_len} characters`;
-    if (spec.max_len !== undefined && n > spec.max_len) return `must have at most ${spec.max_len} characters`;
-    if (spec.email && n > EMAIL_MAX_LEN) return `must have at most ${EMAIL_MAX_LEN} characters`;
-    if (spec.pattern !== undefined && !fullMatch(spec.pattern.js, value.v))
-      return spec.email ? "must be an email address" : "must match the pattern " + pyRepr(spec.pattern.py);
+    if (spec.min_len !== undefined && n < spec.min_len.v) return spec.min_len.msg;
+    if (spec.max_len !== undefined && n > spec.max_len.v) return spec.max_len.msg;
+    if (spec.email !== undefined && n > spec.email.v) return spec.email.msg;
+    if (spec.pattern !== undefined && !fullMatch(spec.pattern.v, value.v)) return spec.pattern.msg;
   }
   return null;
 }

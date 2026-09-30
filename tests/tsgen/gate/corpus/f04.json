@@ -1,6 +1,6 @@
 {"app":"f04",
 "patterns":{},
-"specs":{"moderation_queue":[{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query"},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query"}]},
+"specs":{"moderation_queue":[{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}},"le":{"msg":"must be <= 100","v":{"t":"int","v":"100"}}}},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 0","v":{"t":"int","v":"0"}}}}]},
 "params":[
 {"body":"","endpoint":"moderation_queue","name":"moderation_queue suite 0","order":["limit","offset"],"path":{},"query":"","values":{"limit":{"t":"int","v":"20"},"offset":{"t":"int","v":"0"}}},
 {"body":"","endpoint":"moderation_queue","name":"moderation_queue suite 1","order":["limit","offset"],"path":{},"query":"limit=5&offset=118","values":{"limit":{"t":"int","v":"5"},"offset":{"t":"int","v":"118"}}},

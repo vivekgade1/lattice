@@ -9,7 +9,15 @@
      "source": "query",
      "scalar": "Str",
      "min_len": 2,
-     "max_len": 3
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -38,7 +46,15 @@
      "source": "query",
      "scalar": "Str",
      "min_len": 2,
-     "max_len": 3
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -61,7 +77,15 @@
      "source": "query",
      "scalar": "Str",
      "min_len": 2,
-     "max_len": 3
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -90,7 +114,15 @@
      "source": "query",
      "scalar": "Str",
      "min_len": 2,
-     "max_len": 3
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -113,7 +145,15 @@
      "source": "query",
      "scalar": "Str",
      "min_len": 2,
-     "max_len": 3
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -136,7 +176,15 @@
      "source": "query",
      "scalar": "Str",
      "min_len": 2,
-     "max_len": 3
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -164,7 +212,12 @@
      "name": "s",
      "source": "body",
      "scalar": "Str",
-     "max_len": 5
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -188,7 +241,12 @@
      "name": "s",
      "source": "body",
      "scalar": "Str",
-     "max_len": 5
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -218,7 +276,12 @@
      "name": "s",
      "source": "body",
      "scalar": "Str",
-     "max_len": 5
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -242,7 +305,12 @@
      "name": "s",
      "source": "body",
      "scalar": "Str",
-     "max_len": 5
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -266,7 +334,12 @@
      "name": "s",
      "source": "body",
      "scalar": "Str",
-     "max_len": 5
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -296,7 +369,12 @@
      "name": "s",
      "source": "body",
      "scalar": "Str",
-     "max_len": 5
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
     }
    ],
    "path": {},
@@ -1719,7 +1797,16 @@
      "name": "x",
      "source": "query",
      "scalar": "Float",
-     "ge": 2.5e-05
+     "ge": 2.5e-05,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "2.5e-05"
+       },
+       "msg": "must be >= 2.5e-05"
+      }
+     }
     }
    ],
    "path": {},
@@ -1741,7 +1828,16 @@
      "name": "n",
      "source": "query",
      "scalar": "Int",
-     "ge": 2.5e-05
+     "ge": 2.5e-05,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "2.5e-05"
+       },
+       "msg": "must be >= 2.5e-05"
+      }
+     }
     }
    ],
    "path": {},
@@ -1763,7 +1859,16 @@
      "name": "x",
      "source": "query",
      "scalar": "Float",
-     "le": 1.0000000000000002
+     "le": 1.0000000000000002,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002"
+       },
+       "msg": "must be <= 1.0000000000000002"
+      }
+     }
     }
    ],
    "path": {},
@@ -1785,7 +1890,16 @@
      "name": "n",
      "source": "query",
      "scalar": "Int",
-     "le": 1.0000000000000002
+     "le": 1.0000000000000002,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002"
+       },
+       "msg": "must be <= 1.0000000000000002"
+      }
+     }
     }
    ],
    "path": {},
@@ -1807,7 +1921,16 @@
      "name": "x",
      "source": "query",
      "scalar": "Float",
-     "ge": 1e+16
+     "ge": 1e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1e+16"
+       },
+       "msg": "must be >= 10000000000000000"
+      }
+     }
     }
    ],
    "path": {},
@@ -1829,7 +1952,16 @@
      "name": "n",
      "source": "query",
      "scalar": "Int",
-     "ge": 1e+16
+     "ge": 1e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1e+16"
+       },
+       "msg": "must be >= 10000000000000000"
+      }
+     }
     }
    ],
    "path": {},
@@ -1851,7 +1983,16 @@
      "name": "x",
      "source": "query",
      "scalar": "Float",
-     "ge": 1e+22
+     "ge": 1e+22,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1e+22"
+       },
+       "msg": "must be >= 10000000000000000000000"
+      }
+     }
     }
    ],
    "path": {},
@@ -1873,7 +2014,16 @@
      "name": "n",
      "source": "query",
      "scalar": "Int",
-     "ge": 1e+22
+     "ge": 1e+22,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1e+22"
+       },
+       "msg": "must be >= 10000000000000000000000"
+      }
+     }
     }
    ],
    "path": {},
@@ -1895,7 +2045,16 @@
      "name": "x",
      "source": "query",
      "scalar": "Float",
-     "ge": 0.1
+     "ge": 0.1,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "0.1"
+       },
+       "msg": "must be >= 0.1"
+      }
+     }
     }
    ],
    "path": {},
@@ -1917,7 +2076,16 @@
      "name": "n",
      "source": "query",
      "scalar": "Int",
-     "ge": 0.1
+     "ge": 0.1,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "0.1"
+       },
+       "msg": "must be >= 0.1"
+      }
+     }
     }
    ],
    "path": {},
@@ -1939,7 +2107,16 @@
      "name": "x",
      "source": "query",
      "scalar": "Float",
-     "ge": -1.5e-07
+     "ge": -1.5e-07,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "-1.5e-07"
+       },
+       "msg": "must be >= -1.5e-07"
+      }
+     }
     }
    ],
    "path": {},
@@ -1961,7 +2138,16 @@
      "name": "n",
      "source": "query",
      "scalar": "Int",
-     "ge": -1.5e-07
+     "ge": -1.5e-07,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "-1.5e-07"
+       },
+       "msg": "must be >= -1.5e-07"
+      }
+     }
     }
    ],
    "path": {},
@@ -1983,7 +2169,16 @@
      "name": "x",
      "source": "query",
      "scalar": "Float",
-     "le": 1.2345678901234568e+17
+     "le": 1.2345678901234568e+17,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "1.2345678901234568e+17"
+       },
+       "msg": "must be <= 123456789012345680"
+      }
+     }
     }
    ],
    "path": {},
@@ -2005,7 +2200,16 @@
      "name": "n",
      "source": "query",
      "scalar": "Int",
-     "le": 1.2345678901234568e+17
+     "le": 1.2345678901234568e+17,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "1.2345678901234568e+17"
+       },
+       "msg": "must be <= 123456789012345680"
+      }
+     }
     }
    ],
    "path": {},
@@ -2019,6 +2223,1162 @@
    "status": 422,
    "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 123456789012345680\"}]}",
    "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 123456789012345680\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': 0, 'le': 999999999999999999} n=1000000000000000000",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=1000000000000000000",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': 0, 'le': 999999999999999999} n=999999999999999999",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=999999999999999999",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "999999999999999999"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'ge': 0, 'le': 999999999999999999} n=-1",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-1",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 0\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 0\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': -9223372036854775808} n=-9223372036854775808",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -9223372036854775808,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775808"
+       },
+       "msg": "must be >= -9223372036854775808"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775808",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "-9223372036854775808"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'ge': -9223372036854775808} n=-9223372036854775809",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -9223372036854775808,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775808"
+       },
+       "msg": "must be >= -9223372036854775808"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775809",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': -9223372036854775807} n=-9223372036854775808",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -9223372036854775807,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775807"
+       },
+       "msg": "must be >= -9223372036854775807"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775808",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= -9223372036854775807\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= -9223372036854775807\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': -9223372036854775807} n=-9223372036854775807",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -9223372036854775807,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775807"
+       },
+       "msg": "must be >= -9223372036854775807"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775807",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "-9223372036854775807"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'le': 9223372036854775806} n=9223372036854775807",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "le": 9223372036854775806,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "9223372036854775806"
+       },
+       "msg": "must be <= 9223372036854775806"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9223372036854775807",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 9223372036854775806\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 9223372036854775806\"}]}"
+  },
+  {
+   "name": "big bound int {'le': 9223372036854775806} n=9223372036854775806",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "le": 9223372036854775806,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "9223372036854775806"
+       },
+       "msg": "must be <= 9223372036854775806"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9223372036854775806",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9223372036854775806"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'ge': 9007199254740993} n=9007199254740992",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 9007199254740993,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "9007199254740993"
+       },
+       "msg": "must be >= 9007199254740993"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9007199254740992",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 9007199254740993\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 9007199254740993\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': 9007199254740993} n=9007199254740993",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 9007199254740993,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "9007199254740993"
+       },
+       "msg": "must be >= 9007199254740993"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9007199254740993",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9007199254740993"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'ge': 1.0000000000000002e+16} n=10000000000000001",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=10000000000000001",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 10000000000000002\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 10000000000000002\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': 1.0000000000000002e+16} n=10000000000000002",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=10000000000000002",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "10000000000000002"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'le': 9.223372036854776e+18} n=9223372036854775807",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "le": 9.223372036854776e+18,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "9.223372036854776e+18"
+       },
+       "msg": "must be <= 9223372036854775808"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9223372036854775807",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9223372036854775807"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound float {'ge': 0, 'le': 999999999999999999} x=1e18",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=1e18",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float {'ge': 0, 'le': 999999999999999999} x=999999999999999999",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=999999999999999999",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float {'ge': 0, 'le': 999999999999999999} x=999999999999999872",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=999999999999999872",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "9.999999999999999e+17"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'ge': 1.0000000000000002e+16} x=10000000000000001",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=10000000000000001",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 10000000000000002\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 10000000000000002\"}]}"
+  },
+  {
+   "name": "big bound float {'ge': 1.0000000000000002e+16} x=10000000000000002",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=10000000000000002",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.0000000000000002e+16"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'ge': 1.0000000000000002e+16} x=1.0000000000000002e16",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=1.0000000000000002e16",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.0000000000000002e+16"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'ge': 9007199254740993} x=9007199254740992",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 9007199254740993,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "9007199254740993"
+       },
+       "msg": "must be >= 9007199254740993"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=9007199254740992",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 9007199254740993\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 9007199254740993\"}]}"
+  },
+  {
+   "name": "big bound float {'ge': 9007199254740993} x=9007199254740994",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 9007199254740993,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "9007199254740993"
+       },
+       "msg": "must be >= 9007199254740993"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=9007199254740994",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "9007199254740994.0"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'le': -9223372036854775807} x=-9223372036854775808",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "le": -9223372036854775807,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775807"
+       },
+       "msg": "must be <= -9223372036854775807"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=-9223372036854775808",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "-9.223372036854776e+18"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'le': -9223372036854775807} x=-1e19",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "le": -9223372036854775807,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775807"
+       },
+       "msg": "must be <= -9223372036854775807"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=-1e19",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "-1e+19"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound int body b'{\"n\": 1000000000000000000}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogMTAwMDAwMDAwMDAwMDAwMDAwMH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound int body b'{\"n\": 999999999999999999}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogOTk5OTk5OTk5OTk5OTk5OTk5fQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "999999999999999999"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int body b'{\"n\": 1e18}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogMWUxOH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound int body b'{\"n\": 999999999999999999.0}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogOTk5OTk5OTk5OTk5OTk5OTk5LjB9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float body b'{\"x\": 1000000000000000000}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogMTAwMDAwMDAwMDAwMDAwMDAwMH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float body b'{\"x\": 999999999999999999}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogOTk5OTk5OTk5OTk5OTk5OTk5fQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float body b'{\"x\": 1e18}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogMWUxOH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
   },
   {
    "name": "one_of s=zz",
@@ -2038,7 +3398,12 @@
       "\ud83d\ude00",
       "back\\slash",
       "\ud7ff"
-     ]
+     ],
+     "ts": {
+      "one_of": {
+       "msg": "must be one of \"it's\", 'say \"hi\"', 'both\\'\"', 'tab\\t', '\u00e9', '\\x7f', '\\u200b', '\ud83d\ude00', 'back\\\\slash', '\\ud7ff'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2071,7 +3436,12 @@
       "\ud83d\ude00",
       "back\\slash",
       "\ud7ff"
-     ]
+     ],
+     "ts": {
+      "one_of": {
+       "msg": "must be one of \"it's\", 'say \"hi\"', 'both\\'\"', 'tab\\t', '\u00e9', '\\x7f', '\\u200b', '\ud83d\ude00', 'back\\\\slash', '\\ud7ff'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2110,7 +3480,12 @@
       "\ud83d\ude00",
       "back\\slash",
       "\ud7ff"
-     ]
+     ],
+     "ts": {
+      "one_of": {
+       "msg": "must be one of \"it's\", 'say \"hi\"', 'both\\'\"', 'tab\\t', '\u00e9', '\\x7f', '\\u200b', '\ud83d\ude00', 'back\\\\slash', '\\ud7ff'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2138,7 +3513,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "a$"
+     "pattern": "a$",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern 'a$'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2166,7 +3546,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "a$"
+     "pattern": "a$",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern 'a$'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2188,7 +3573,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "a.b"
+     "pattern": "a.b",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern 'a.b'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2210,7 +3600,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "a.b"
+     "pattern": "a.b",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern 'a.b'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2238,7 +3633,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\s+"
+     "pattern": "\\s+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\s+'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2260,7 +3660,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\s+"
+     "pattern": "\\s+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\s+'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2282,7 +3687,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\s+"
+     "pattern": "\\s+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\s+'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2310,7 +3720,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\s+"
+     "pattern": "\\s+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\s+'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2338,7 +3753,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\w+"
+     "pattern": "\\w+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\w+'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2360,7 +3780,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\w+"
+     "pattern": "\\w+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\w+'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2388,7 +3813,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\bfoo\\b"
+     "pattern": "\\bfoo\\b",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\bfoo\\\\b'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2416,7 +3846,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "(?i)k"
+     "pattern": "(?i)k",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?i)k'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2438,7 +3873,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "(?i)k"
+     "pattern": "(?i)k",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?i)k'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2466,7 +3906,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "(?i)s"
+     "pattern": "(?i)s",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?i)s'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2488,7 +3933,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "(?i)s"
+     "pattern": "(?i)s",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?i)s'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2516,7 +3966,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "[^a]"
+     "pattern": "[^a]",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '[^a]'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2544,7 +3999,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "[^a]"
+     "pattern": "[^a]",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '[^a]'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2572,7 +4032,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\d"
+     "pattern": "\\d",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\d'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2594,7 +4059,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "\\d"
+     "pattern": "\\d",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\d'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2622,7 +4092,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "(?s).+"
+     "pattern": "(?s).+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?s).+'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2650,7 +4125,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "(?m)a$\\nb"
+     "pattern": "(?m)a$\\nb",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?m)a$\\\\nb'"
+      }
+     }
     }
    ],
    "path": {},
@@ -2678,7 +4158,12 @@
      "name": "s",
      "source": "query",
      "scalar": "Str",
-     "pattern": "it's\\d"
+     "pattern": "it's\\d",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern \"it's\\\\d\""
+      }
+     }
     }
    ],
    "path": {},
@@ -4144,13 +5629,27 @@
      "name": "a",
      "source": "query",
      "scalar": "Int",
-     "ge": 1.0
+     "ge": 1.0,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0"
+       },
+       "msg": "must be >= 1"
+      }
+     }
     },
     {
      "name": "b",
      "source": "body",
      "scalar": "Str",
-     "max_len": 1
+     "max_len": 1,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 1 characters"
+      }
+     }
     },
     {
      "name": "c",
@@ -4180,7 +5679,15 @@
      "source": "query",
      "scalar": "Str",
      "min_len": 5,
-     "pattern": "[a-z]+"
+     "pattern": "[a-z]+",
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 5 characters"
+      },
+      "pattern": {
+       "msg": "must match the pattern '[a-z]+'"
+      }
+     }
     }
    ],
    "path": {},
@@ -4202,13 +5709,27 @@
      "name": "a",
      "source": "query",
      "scalar": "Int",
-     "ge": 1.0
+     "ge": 1.0,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0"
+       },
+       "msg": "must be >= 1"
+      }
+     }
     },
     {
      "name": "b",
      "source": "body",
      "scalar": "Str",
-     "max_len": 1
+     "max_len": 1,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 1 characters"
+      }
+     }
     },
     {
      "name": "c",
@@ -4413,7 +5934,12 @@
      "name": "s",
      "source": "body",
      "scalar": "Str",
-     "max_len": 1
+     "max_len": 1,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 1 characters"
+      }
+     }
     },
     {
      "name": "n",
@@ -4446,6 +5972,1817 @@
     "n"
    ]
   }
+ ],
+ "go_checks": [
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.5"
+     },
+     "msg": "must be >= 0.5"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "1e+20"
+     },
+     "msg": "must be <= 100000000000000000000"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "-1e+20"
+     },
+     "msg": "must be >= -100000000000000000000"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "1e+20"
+     },
+     "msg": "must be <= 100000000000000000000"
+    }
+   }
+  ],
+  [
+   {
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "2.5"
+     },
+     "msg": "must be <= 2.5"
+    }
+   }
+  ],
+  [
+   {
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "2.5"
+     },
+     "msg": "must be <= 2.5"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "-1.5"
+     },
+     "msg": "must be >= -1.5"
+    }
+   }
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "one_of": {
+     "msg": "must be one of 'a', \"b'c\", 'd\"e'"
+    }
+   }
+  ],
+  [
+   {
+    "one_of": {
+     "msg": "must be one of 'a', \"b'c\", 'd\"e', '\u00e9\\n'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '[a-z]+\\\\d?'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '[a-z]+\\\\d?'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern \"it's\\\\\\\\d\""
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '(?i)[a-z]+'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '(?i)[a-z]+'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '(?i)[a-z]+'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'x\\\\Z'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'x\\\\Z'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'a{1001}'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'a{1001}'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'x{,2}'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'x{,2}'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '[[:alpha:]]'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '[[:alpha:]]'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '\\\\s'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'a$'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '\\\\d+'"
+    }
+   }
+  ],
+  [
+   {
+    "email": {
+     "v": 254,
+     "msg": "must have at most 254 characters"
+    },
+    "pattern": {
+     "msg": "must be an email address"
+    }
+   }
+  ],
+  [
+   {
+    "email": {
+     "v": 254,
+     "msg": "must have at most 254 characters"
+    },
+    "pattern": {
+     "msg": "must be an email address"
+    }
+   }
+  ],
+  [
+   {
+    "max_len": {
+     "msg": "must have at most 1000 characters"
+    },
+    "email": {
+     "v": 254,
+     "msg": "must have at most 254 characters"
+    },
+    "pattern": {
+     "msg": "must be an email address"
+    }
+   }
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 3 characters"
+    }
+   },
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {},
+   {},
+   {},
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {},
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ]
  ],
  "patterns": {
   "(?i)[a-z]+": "^(?:(?:(?:[\\u{61}-\\u{7A}]|[\\u{41}-\\u{5A}])){1,})$",
@@ -4541,73 +7878,61 @@
  "strs": [
   {
    "s": "it's",
-   "repr": "\"it's\"",
    "strip": "it's",
    "len": 4
   },
   {
    "s": "say \"hi\"",
-   "repr": "'say \"hi\"'",
    "strip": "say \"hi\"",
    "len": 8
   },
   {
    "s": "both'\"",
-   "repr": "'both\\'\"'",
    "strip": "both'\"",
    "len": 6
   },
   {
    "s": "\u0000\u001f\u007f\u0080\u009f\u00a0\u00ad",
-   "repr": "'\\x00\\x1f\\x7f\\x80\\x9f\\xa0\\xad'",
    "strip": "\u0000\u001f\u007f\u0080\u009f\u00a0\u00ad",
    "len": 7
   },
   {
    "s": "\u200b\u2028\u3000",
-   "repr": "'\\u200b\\u2028\\u3000'",
    "strip": "\u200b",
    "len": 3
   },
   {
    "s": "\ud800",
-   "repr": "'\\ud800'",
    "strip": "\ud800",
    "len": 1
   },
   {
    "s": "\ud83d\ude00",
-   "repr": "'\ud83d\ude00'",
    "strip": "\ud83d\ude00",
    "len": 1
   },
   {
    "s": "\udb40\udc01",
-   "repr": "'\\U000e0001'",
    "strip": "\udb40\udc01",
    "len": 1
   },
   {
    "s": "\u001c5\u001f",
-   "repr": "'\\x1c5\\x1f'",
    "strip": "5",
    "len": 3
   },
   {
    "s": "\u0085x\u00a0",
-   "repr": "'\\x85x\\xa0'",
    "strip": "x",
    "len": 3
   },
   {
    "s": "\ufeffx",
-   "repr": "'\\ufeffx'",
    "strip": "\ufeffx",
    "len": 2
   },
   {
    "s": " \t\n",
-   "repr": "' \\t\\n'",
    "strip": "",
    "len": 3
   }

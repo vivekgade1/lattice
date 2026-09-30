@@ -1,6 +1,6 @@
 {"app":"f08",
 "patterns":{},
-"specs":{"list_users":[{"default":{"t":"str","v":"Customer"},"name":"role","one_of":["Customer","Admin"],"scalar":"Str","source":"query"},{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query"},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query"}]},
+"specs":{"list_users":[{"default":{"t":"str","v":"Customer"},"name":"role","one_of":["Customer","Admin"],"scalar":"Str","source":"query","ts":{"one_of":{"msg":"must be one of 'Customer', 'Admin'"}}},{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}},"le":{"msg":"must be <= 100","v":{"t":"int","v":"100"}}}},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 0","v":{"t":"int","v":"0"}}}}]},
 "params":[
 {"body":"","endpoint":"list_users","name":"list_users suite 0","order":["role","limit","offset"],"path":{},"query":"role=Admin&limit=20","values":{"limit":{"t":"int","v":"20"},"offset":{"t":"int","v":"0"},"role":{"t":"str","v":"Admin"}}},
 {"body":"","endpoint":"list_users","name":"list_users suite 1","order":["role","limit","offset"],"path":{},"query":"limit=5&offset=2","values":{"limit":{"t":"int","v":"5"},"offset":{"t":"int","v":"2"},"role":{"t":"str","v":"Customer"}}},

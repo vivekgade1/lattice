@@ -1,6 +1,6 @@
 {"app":"v07",
 "patterns":{},
-"specs":{"rename_me":[{"max_len":60,"min_len":1,"name":"name","scalar":"Str","source":"body"}]},
+"specs":{"rename_me":[{"max_len":60,"min_len":1,"name":"name","scalar":"Str","source":"body","ts":{"max_len":{"msg":"must have at most 60 characters"},"min_len":{"msg":"must have at least 1 characters"}}}]},
 "params":[
 {"body":"eyJuYW1lIjogIkFsaWNlIE4uIn0=","endpoint":"rename_me","name":"rename_me suite 0","order":["name"],"path":{},"query":"","values":{"name":{"t":"str","v":"Alice N."}}},
 {"body":"eyJuYW1lIjogIkQifQ==","endpoint":"rename_me","name":"rename_me suite 1","order":["name"],"path":{},"query":"","values":{"name":{"t":"str","v":"D"}}},

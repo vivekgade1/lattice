@@ -1,6 +1,6 @@
 {"app":"c06",
 "patterns":{},
-"specs":{"get_user":[{"ge":1,"name":"user_id","scalar":"Int","source":"path"}]},
+"specs":{"get_user":[{"ge":1,"name":"user_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}}]},
 "params":[
 {"body":"","endpoint":"get_user","name":"get_user suite 0","order":["user_id"],"path":{"user_id":"2"},"query":"","values":{"user_id":{"t":"int","v":"2"}}},
 {"body":"","endpoint":"get_user","name":"get_user suite 1","order":["user_id"],"path":{"user_id":"999"},"query":"","values":{"user_id":{"t":"int","v":"999"}}},

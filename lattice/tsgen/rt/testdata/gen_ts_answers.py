@@ -1,7 +1,9 @@
 # ruff: noqa: E501
 """Generate ts_answers.json: Python answers for the JS hazards of spec 2026-09-29 ui-a §4.
 
-Run from the repository root: python lattice/tsgen/rt/testdata/gen_ts_answers.py
+Run from the repository root: python lattice/tsgen/rt/testdata/gen_ts_answers.py [OUT]
+(OUT defaults to ts_answers.json beside this file; tests/tsgen/test_rt.py regenerates into a
+temporary file and requires it to equal the checked-in one.)
 Every params case carries the API_PARAM_RULES ids it pins (tests/tsgen/test_governance.py
 fails when a rule has no case)."""
 
@@ -20,6 +22,7 @@ sys.path.insert(0, str(ROOT))
 from starlette.datastructures import QueryParams  # noqa: E402
 
 from lattice.tsgen.pyref import answer, case, pattern_map  # noqa: E402
+from lattice.tsgen.specs import ts_checks  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 GO = json.loads((ROOT / "lattice/gogen/rt/testdata/prelude_answers.json").read_text())
@@ -76,6 +79,34 @@ for ge, le, x, n in [(2.5e-5, None, "0", "0"), (None, 1.0000000000000002, "2", "
     kw = {k: v for k, v in (("ge", ge), ("le", le)) if v is not None}
     add(f"message float {kw}", [sp("x", "query", "Float", **kw)], ("P6",), query=f"x={x}")
     add(f"message int {kw}", [sp("n", "query", "Int", **kw)], ("P6",), query=f"n={n}")
+# bounds beyond 2^53: an int bound is exact (Python compares int with int), a float bound
+# compares as Python compares a float with an int; every message is Python's (_num)
+BIG = 10**18 - 1
+for kw, qs in [
+    ({"ge": 0, "le": BIG}, ["n=1000000000000000000", "n=999999999999999999", "n=-1"]),
+    ({"ge": -(2**63)}, ["n=-9223372036854775808", "n=-9223372036854775809"]),
+    ({"ge": -(2**63) + 1}, ["n=-9223372036854775808", "n=-9223372036854775807"]),
+    ({"le": 2**63 - 2}, ["n=9223372036854775807", "n=9223372036854775806"]),
+    ({"ge": 2**53 + 1}, ["n=9007199254740992", "n=9007199254740993"]),
+    ({"ge": 1e16 + 2}, ["n=10000000000000001", "n=10000000000000002"]),
+    ({"le": 2.0**63}, ["n=9223372036854775807"]),
+]:
+    for q in qs:
+        add(f"big bound int {kw} {q}", [sp("n", "query", "Int", **kw)], ("P6",), query=q)
+for kw, qs in [
+    ({"ge": 0, "le": BIG}, ["x=1e18", "x=999999999999999999", "x=999999999999999872"]),
+    ({"ge": 1e16 + 2}, ["x=10000000000000001", "x=10000000000000002", "x=1.0000000000000002e16"]),
+    ({"ge": 2**53 + 1}, ["x=9007199254740992", "x=9007199254740994"]),
+    ({"le": -(2**63) + 1}, ["x=-9223372036854775808", "x=-1e19"]),
+]:
+    for q in qs:
+        add(f"big bound float {kw} {q}", [sp("x", "query", "Float", **kw)], ("P6",), query=q)
+for b in [b'{"n": 1000000000000000000}', b'{"n": 999999999999999999}', b'{"n": 1e18}',
+          b'{"n": 999999999999999999.0}']:  # fmt: skip
+    add(f"big bound int body {b!r}", [sp("n", "body", "Int", ge=0, le=BIG)], ("P4", "P6"), body=b)
+for b in [b'{"x": 1000000000000000000}', b'{"x": 999999999999999999}', b'{"x": 1e18}']:
+    add(f"big bound float body {b!r}", [sp("x", "body", "Float", ge=0, le=BIG)], ("P5", "P6"),
+        body=b)  # fmt: skip
 ONE = sp("s", "query", "Str", one_of=["it's", 'say "hi"', "both'\"", "tab\t", "é", "\x7f",
                                       "​", "\U0001f600", "back\\slash", "퟿"])  # fmt: skip
 for q in ["s=zz", "s=%C3%A9", "s=tab%09"]:
@@ -104,11 +135,19 @@ for t in ["2026-09-28\\ud80010:00", "2026-09-28\\udc0010:00", "2026-09-2\\ud800T
           "2026-09-28T1\\ud8000:00", "2026-09-28\\ud800", "2026-09-28T10:00\\ud800",
           "20260928\\ud80010:00", "2026W01\\ud80010:00", "2026-W01\\ud80010", "2026-09\\ud80010",
           "2026W01\\ud800\\ud80010:00", "2026-09-28\\ud83d\\ude0010:00", "2026-09-28\U0001F60010:00"]:  # fmt: skip
-    add(f"datetime surrogate body {t}", [sp("t", "body", "DateTime")], ("P2", "P9"),
-        body=('{"t": "' + t + '"}').encode())
+    add(
+        f"datetime surrogate body {t}",
+        [sp("t", "body", "DateTime")],
+        ("P2", "P9"),
+        body=('{"t": "' + t + '"}').encode(),
+    )
 for t in ["2026-09-2\\ud800", "2026-09-28\\ud800"]:
-    add(f"date surrogate body {t}", [sp("d", "body", "Date")], ("P2", "P9"),
-        body=('{"d": "' + t + '"}').encode())
+    add(
+        f"date surrogate body {t}",
+        [sp("d", "body", "Date")],
+        ("P2", "P9"),
+        body=('{"d": "' + t + '"}').encode(),
+    )
 add("uuid surrogate body", [sp("u", "body", "Uuid")], ("P2", "P9"),
     body=b'{"u": "0123456789abcdef0123456789abcde\\ud800"}')  # fmt: skip
 for q in [
@@ -146,7 +185,7 @@ for x in [0.1, 1e16, 1e-5, 1.5e-7, 123456789012345680.0, 1e22, 5e-324, 1.7976931
 strs = []
 for s in ["it's", 'say "hi"', "both'\"", "\x00\x1f\x7f\x80\x9f\xa0\xad", "​ 　",
           "\ud800", "\U0001f600", "\U000e0001", "\x1c5\x1f", "\x85x\xa0", "﻿x", " \t\n"]:  # fmt: skip
-    strs.append({"s": s, "repr": repr(s), "strip": s.strip(), "len": len(s)})
+    strs.append({"s": s, "strip": s.strip(), "len": len(s)})
 
 
 def jtag(v: object) -> object:
@@ -185,11 +224,14 @@ for raw in ["a=1&b=2", "a=1&a=2", "a", "a=", "=1", "a=%zz", "a=%C3", "a=%C3%A9",
 out = {
     "python": sys.version.split()[0],
     "params": params,
+    # the Go corpus's specs have no `ts`: each case's, in order (specs.ts_checks)
+    "go_checks": [[ts_checks(s) for s in c["specs"]] for c in GO["params"]],
     "patterns": pattern_map(params, GO["params"]),
     "floats": floats,
     "strs": strs,
     "json": json_cases,
     "qs": qs,
 }
-(HERE / "ts_answers.json").write_text(json.dumps(out, indent=1, ensure_ascii=True) + "\n")
-print(f"wrote ts_answers.json ({len(params)} parameter cases)")
+target = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "ts_answers.json"
+target.write_text(json.dumps(out, indent=1, ensure_ascii=True) + "\n")
+print(f"wrote {target.name} ({len(params)} parameter cases)")

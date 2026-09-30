@@ -1,6 +1,6 @@
 {"app":"v06",
 "patterns":{},
-"specs":{"browse":[{"name":"category","one_of":["electronics","home","outdoor","office","kitchen","sports"],"scalar":"Str","source":"query"},{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query"},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query"}]},
+"specs":{"browse":[{"name":"category","one_of":["electronics","home","outdoor","office","kitchen","sports"],"scalar":"Str","source":"query","ts":{"one_of":{"msg":"must be one of 'electronics', 'home', 'outdoor', 'office', 'kitchen', 'sports'"}}},{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}},"le":{"msg":"must be <= 100","v":{"t":"int","v":"100"}}}},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 0","v":{"t":"int","v":"0"}}}}]},
 "params":[
 {"body":"","endpoint":"browse","name":"browse suite 0","order":["category","limit","offset"],"path":{},"query":"category=kitchen","values":{"category":{"t":"str","v":"kitchen"},"limit":{"t":"int","v":"20"},"offset":{"t":"int","v":"0"}}},
 {"body":"","endpoint":"browse","name":"browse suite 1","order":["category","limit","offset"],"path":{},"query":"category=outdoor&limit=2&offset=1","values":{"category":{"t":"str","v":"outdoor"},"limit":{"t":"int","v":"2"},"offset":{"t":"int","v":"1"}}},

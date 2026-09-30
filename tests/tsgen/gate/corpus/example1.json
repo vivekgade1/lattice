@@ -1,6 +1,6 @@
 {"app":"example1",
 "patterns":{},
-"specs":{"list_addresses":[{"default":{"t":"int","v":"20"},"ge":1,"le":50,"name":"limit","scalar":"Int","source":"query"},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query"}]},
+"specs":{"list_addresses":[{"default":{"t":"int","v":"20"},"ge":1,"le":50,"name":"limit","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}},"le":{"msg":"must be <= 50","v":{"t":"int","v":"50"}}}},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 0","v":{"t":"int","v":"0"}}}}]},
 "params":[
 {"body":"","endpoint":"list_addresses","name":"list_addresses suite 0","order":["limit","offset"],"path":{},"query":"","values":{"limit":{"t":"int","v":"20"},"offset":{"t":"int","v":"0"}}},
 {"body":"","endpoint":"list_addresses","name":"list_addresses suite 1","order":["limit","offset"],"path":{},"query":"limit=1&offset=1","values":{"limit":{"t":"int","v":"1"},"offset":{"t":"int","v":"1"}}},

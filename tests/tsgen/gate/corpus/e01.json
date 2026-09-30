@@ -1,6 +1,6 @@
 {"app":"e01",
 "patterns":{},
-"specs":{"get_product":[{"ge":1,"name":"product_id","scalar":"Int","source":"path"}]},
+"specs":{"get_product":[{"ge":1,"name":"product_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}}]},
 "params":[
 {"body":"","endpoint":"get_product","name":"get_product suite 0","order":["product_id"],"path":{"product_id":"1"},"query":"","values":{"product_id":{"t":"int","v":"1"}}},
 {"body":"","endpoint":"get_product","name":"get_product suite 1","order":["product_id"],"path":{"product_id":"2"},"query":"","values":{"product_id":{"t":"int","v":"2"}}},

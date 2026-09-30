@@ -17,6 +17,7 @@ from starlette.datastructures import QueryParams
 
 from lattice.api.codegen import _PRELUDE
 from lattice.tsgen.regex import fullmatch_source
+from lattice.tsgen.specs import ts_checks
 
 KIT_DIR = Path(__file__).resolve().parents[2] / "bench" / "api_kit"  # the prelude's platform_kit
 
@@ -71,12 +72,18 @@ def _untag(d: dict[str, Any]) -> object:
 
 
 def to_param(d: dict[str, Any]) -> object:
-    kw = {k: v for k, v in d.items() if k not in ("name", "source", "scalar", "default")}
+    kw = {k: v for k, v in d.items() if k not in ("name", "source", "scalar", "default", "ts")}
     if "one_of" in kw:
         kw["one_of"] = tuple(kw["one_of"])
     if "default" in d:
         kw["default"] = _untag(d["default"])
     return prelude()["Param"](d["name"], d["source"], d["scalar"], **kw)
+
+
+def with_checks(d: dict[str, object]) -> dict[str, object]:
+    """`d` with its `ts` (none when it has no constraint)."""
+    checks = ts_checks({k: v for k, v in d.items() if k != "ts"})
+    return {**d, "ts": checks} if checks else {k: v for k, v in d.items() if k != "ts"}
 
 
 def case(
@@ -90,10 +97,11 @@ def case(
     ctype: str | None = None,
     rules: Iterable[str] = (),
 ) -> dict[str, object]:
-    """A wire case: `query` is the raw query string as latin-1 text."""
+    """A wire case: `query` is the raw query string as latin-1 text. Each spec carries its
+    `ts` (specs.ts_checks: the messages and exact bounds the client runtime is given)."""
     return {
         "name": name,
-        "specs": list(specs),
+        "specs": [with_checks(s) for s in specs],
         "path": path or {},
         "query": query,
         "body": base64.b64encode(body).decode(),

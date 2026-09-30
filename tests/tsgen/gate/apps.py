@@ -1,5 +1,5 @@
 """The proof apps (spec 2026-09-29 ui-a §5.2): every API program in the codegen differential
-registry, plus the FastAPI template."""
+registry, plus the FastAPI template, plus the gate's own programs (GATE_PROGRAMS)."""
 
 from __future__ import annotations
 
@@ -42,6 +42,61 @@ class App:
     requests: tuple[Request, ...]
 
 
+# Programs only the client gate runs (on a registry program's profile and database): bounds
+# no registry program has. `bounds`: Int and Float bounds beyond 2^53, int and float, exact
+# (final review #1), and a Page whose limit is a parameter within +-(2^53 - 1) and whose offset
+# is a literal (both "number" mode, #14).
+BOUNDS_PROGRAM = """# lattice: v1
+@endpoint("GET", "/bounded", auth=Public)
+def bounded(
+    n: Int(ge=-9223372036854775808, le=999999999999999999) = 0,
+    m: Int(ge=-9223372036854775807, le=9223372036854775806) = 0,
+    big: Int(ge=9007199254740993) = 9007199254740993,
+    x: Float(ge=0, le=999999999999999999) = 0.0,
+    y: Float(ge=10000000000000002.0, le=1e300) = 1e17,
+    limit: Int(ge=1, le=100) = 5,
+) -> Page:
+    products = fetch(Products)
+    small = where(products, (col("id") <= n) & (col("id") >= m) & (col("id") < big))
+    found = where(small, (col("price") >= x) & (col("price") < y))
+    slim = select(found, cols=["id", "price"])
+    ordered = sort(slim, by=["id"])
+    result = page(ordered, limit=limit, offset=0)
+    return result
+
+
+@endpoint("POST", "/bounded", auth=Public)
+def bounded_body(
+    n: Int(ge=-9223372036854775808, le=999999999999999999),
+    x: Float(ge=0, le=999999999999999999),
+) -> List:
+    products = fetch(Products)
+    found = where(products, (col("id") <= n) & (col("price") <= x))
+    slim = select(found, cols=["id", "price"])
+    ordered = sort(slim, by=["id"])
+    return limit(ordered, n=10)
+"""
+_BIG = 10**18
+GATE_PROGRAMS: dict[str, tuple[str, str, tuple[Request, ...]]] = {
+    "bounds": (BOUNDS_PROGRAM, "numeric", (
+        Request("GET", "/bounded", {}, None),
+        Request("GET", "/bounded", {"n": str(_BIG - 1), "x": str(_BIG - 1)}, None),
+        Request("GET", "/bounded", {"n": str(_BIG), "m": str(-(2**63))}, None),
+        Request("GET", "/bounded", {"big": str(2**53), "y": "10000000000000001"}, None),
+        Request("POST", "/bounded", {}, {"n": _BIG - 1, "x": _BIG - 1}),
+        Request("POST", "/bounded", {}, {"n": _BIG, "x": float(_BIG)}),
+    )),
+}  # fmt: skip
+
+
+def source_and_setup(name: str) -> tuple[str, Any]:
+    """A registry or gate program's source and its setup (profile, database)."""
+    if name in GATE_PROGRAMS:
+        source, setup_name, _reqs = GATE_PROGRAMS[name]
+        return source, setup_of(setup_name)
+    return PROGRAMS[name][0], setup_of(name)
+
+
 @functools.cache
 def app(name: str) -> App:
     if name == "template":
@@ -51,15 +106,17 @@ def app(name: str) -> App:
             for c in TEMPLATE_SUITE
         )
         return App(name, tuple(template_plans()), reqs)
-    source, task = PROGRAMS[name]
-    result, files = compile_source_to_ts(source, setup_of(name).profile)
+    source, setup = source_and_setup(name)
+    result, files = compile_source_to_ts(source, setup.profile)
     assert files is not None, result.diagnostics
     plans = tuple(lower_api(result.program))
-    reqs = tuple(Request(c.method, c.path, dict(c.query), c.json) for c in task.cases)
+    if name in GATE_PROGRAMS:
+        return App(name, plans, GATE_PROGRAMS[name][2])
+    reqs = tuple(Request(c.method, c.path, dict(c.query), c.json) for c in PROGRAMS[name][1].cases)
     return App(name, plans, reqs)
 
 
-APP_NAMES = sorted(PROGRAMS) + ["template"]
+APP_NAMES = sorted(PROGRAMS) + ["template"] + sorted(GATE_PROGRAMS)
 
 
 # ---- L3: the generated FastAPI app over real HTTP -------------------------------------------
@@ -83,6 +140,7 @@ def _admin_tokens() -> dict[str, str]:
         "hardening": hardening.TOKENS,
     }
     out = {name: modules.get(name, DATASET_TOKENS)["admin"] for name in PROGRAMS}
+    out |= {name: DATASET_TOKENS["admin"] for name in GATE_PROGRAMS}
     # solo*: NoRoles (no admin role exists); alice is an active user every
     # Customer endpoint admits
     for name in ("solo", "solo_answers", "solo_runtime"):
@@ -142,8 +200,7 @@ def serve(name: str, workdir: Path) -> Iterator[str]:
                                                natives_module="bench.template_profile")  # fmt: skip
         build_template_db(workdir / "pristine.db")
     else:
-        source, _task = PROGRAMS[name]
-        setup = setup_of(name)
+        source, setup = source_and_setup(name)
         _res, code = compile_source_to_fastapi(source, setup.profile)
         if setup.natives_file is not None:  # imported by the generated app as `natives`
             shutil.copyfile(setup.natives_file, workdir / "natives.py")

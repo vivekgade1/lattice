@@ -10,13 +10,15 @@ from pathlib import Path
 
 import pytest
 
+from lattice.api.codegen import _flat, _param
 from lattice.api.ir import EndpointPlan, lower_api
 from lattice.check import check_source
 from lattice.tsgen import generate_ts
 from lattice.tsgen.emit import TsGenRefusal, camel, error_statuses, pascal, ts_spec
-from lattice.tsgen.pyref import answer, case
-from lattice.tsgen.specs import plan_specs
+from lattice.tsgen.pyref import answer, case, prelude, to_param
+from lattice.tsgen.specs import plan_specs, spec_dict
 from tests.api.test_codegen_differential import PROGRAMS, setup_of
+from tests.tsgen.gate.apps import APP_NAMES, app
 from tests.tsgen.node import node_json
 
 
@@ -310,3 +312,38 @@ def test_page_limit_and_offset_are_typed_like_their_parameters(tmp_path: Path) -
     ]
     api = generate_ts(plans)["api.ts"]
     assert "limit: number; offset: bigint; total: number" in api
+
+
+# ---- final review ----------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("name", APP_NAMES)
+def test_spec_dict_is_codegen_param(name: str) -> None:
+    """The fixture-format spec dict (specs.spec_dict) is exactly the server's Param: the
+    Param codegen._param writes into the generated app, evaluated, equals the one the
+    fixtures build from the dict (pyref.to_param)."""
+    ns = prelude()
+    for plan in app(name).plans:
+        for spec in plan.params:
+            if spec.source == "user":
+                continue
+            server = eval(_flat(_param(spec, plan.null_ok)), ns)  # noqa: S307 - generated code
+            mine = to_param(spec_dict(spec, plan.null_ok))
+            # repr too: an int bound and an equal float bound are different specs here
+            assert (mine, repr(mine)) == (server, repr(server)), (plan.name, spec.name)
+
+
+def test_bounds_beyond_2_53_are_exact_bigints() -> None:
+    api = generate_ts(app("bounds").plans)["api.ts"]
+    assert 'le: { v: 999999999999999999n, msg: "must be <= 999999999999999999" }' in api
+    assert 'ge: { v: -9223372036854775808n, msg: "must be >= -9223372036854775808" }' in api
+    assert 'ge: { v: 1.0000000000000002e+16, msg: "must be >= 10000000000000002" }' in api
+    assert "pyRepr" not in api and "pyRepr" not in generate_ts(())["lattice-rt.ts"]
+
+
+@pytest.mark.parametrize("bound", [10**400, -(10**309), float("inf"), float("-inf"), float("nan")])
+def test_unprintable_or_non_finite_bound_is_l893(bound: float) -> None:
+    plan = plans_of("realapps")[0]
+    scalar = "Int" if isinstance(bound, int) else "Float"
+    with pytest.raises(TsGenRefusal, match="L893"):
+        ts_spec({"name": "n", "source": "query", "scalar": scalar, "le": bound}, plan)

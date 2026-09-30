@@ -1,6 +1,6 @@
 {"app":"o05",
 "patterns":{},
-"specs":{"order_items":[{"ge":1,"name":"order_id","scalar":"Int","source":"path"},{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query"},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query"}]},
+"specs":{"order_items":[{"ge":1,"name":"order_id","scalar":"Int","source":"path","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}}}},{"default":{"t":"int","v":"20"},"ge":1,"le":100,"name":"limit","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 1","v":{"t":"int","v":"1"}},"le":{"msg":"must be <= 100","v":{"t":"int","v":"100"}}}},{"default":{"t":"int","v":"0"},"ge":0,"name":"offset","scalar":"Int","source":"query","ts":{"ge":{"msg":"must be >= 0","v":{"t":"int","v":"0"}}}}]},
 "params":[
 {"body":"","endpoint":"order_items","name":"order_items suite 0","order":["order_id","limit","offset"],"path":{"order_id":"1"},"query":"","values":{"limit":{"t":"int","v":"20"},"offset":{"t":"int","v":"0"},"order_id":{"t":"int","v":"1"}}},
 {"body":"","endpoint":"order_items","name":"order_items suite 1","order":["order_id","limit","offset"],"path":{"order_id":"8"},"query":"limit=2&offset=1","values":{"limit":{"t":"int","v":"2"},"offset":{"t":"int","v":"1"},"order_id":{"t":"int","v":"8"}}},
