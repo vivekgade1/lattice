@@ -10,6 +10,8 @@ Lattice has more than one code target (Python today, Go next, others later). The
 
 **R2. Every target implements the full meaning, or rejects the program before code is generated.** A target may say "not available here yet" (a check-time diagnostic from `p8_target`). It may never run a program with a different result, whether that is a different value, a different error, a different order or a different fuel point.
 
+**R2a. Client targets.** A client target (the TypeScript client) carries the *API request semantics* — parameter conversion and validation, wire formats, error bodies (`API_PARAM_RULES` in `lattice/targets.py`) — and not T2. It must accept exactly the requests the server accepts, with the same 422 detail, for a caller the endpoint admits.
+
 ## 2. When a restriction is allowed
 
 **R3. A rule may apply to every target only when the targets would otherwise give different answers.** Examples: RE2-only regular expressions, insertion-ordered sets, 64-bit `Int`. A language-wide restriction therefore needs:
@@ -30,7 +32,7 @@ Lattice has more than one code target (Python today, Go next, others later). The
 2. its lowering into the IR;
 3. semantics cases in the shared suite, run on **every** target;
 4. either an implementation on every target or an explicit target gate with a tracking entry (§5);
-5. differential tests at the gate level (Python ≡ Go on the same program).
+5. differential tests at the gate level across every target that carries the construct (Python ≡ Go for T2; Python ≡ TS client for API parameters).
 
 A construct missing any of these is not part of the language.
 
@@ -54,7 +56,8 @@ A construct missing any of these is not part of the language.
 - a construct has no semantics case on some target;
 - a semantics case's result differs between targets;
 - a `p8_target` gate has no decision-log entry;
-- a new language-wide diagnostic appears without a decision-log entry.
+- a new language-wide diagnostic appears without a decision-log entry;
+- an API parameter feature (PARAM_FEATURES) or rule (API_PARAM_RULES) has no fixture case on a client target.
 
 ## 6. Decision log
 
@@ -77,6 +80,9 @@ A construct missing any of these is not part of the language.
 | 2026-09-29 | Known limitation | `math.exp/log/log10/pow` and Float `**` are correctly rounded on Go; CPython calls the platform's libm, which is off by one in the last place for rare inputs (macOS 26 arm64: 9 of 22,403 sampled math answers, rt/testdata/gen_math_answers.py) | a portable, deterministic result needs one algorithm; the platform libm differs between machines even for Python | — | never (Go's answer is the correctly rounded one) |
 | 2026-09-29 | Known limitation | JSON nesting deeper than the host's C stack: CPython's `json.loads`/`json.dumps` raise RecursionError at a depth set by the machine's stack (about 50,000 on macOS); Go has no such limit | Python's limit is not a fixed number | — | never |
 | 2026-09-28 | Known limitation | Unicode 15 (Go, x/text) vs 16 (Python 3.14) | Library versions | — | Go's x/text reaches Unicode 16 |
+| 2026-09-29 | Representation (client) | Int typed by declared range: `number` when ge and le lie within ±(2^53−1), else `bigint`; response Int columns `bigint`; page counts `number`, decoded exactly | JS `number` is exact only to 2^53 | — | never (representation) |
+| 2026-09-29 | Known limitation (client) | A path `Str` that is empty, `.`, `..` or contains `/` is sent unvalidated for routing | `fetch` normalises `.`/`..`; Starlette routes on the decoded path | use a query or body parameter | never (HTTP routing) |
+| 2026-09-29 | Target gate (R4) | L893: the TS client cannot be generated for a plan (an untranslatable pattern, a non-finite bound, an unknown success kind) | emitter coverage | compile without `--target ts` | the emitter handles the construct |
 
 ## 7. Recommendations (not yet in place)
 

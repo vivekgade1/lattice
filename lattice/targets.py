@@ -109,3 +109,45 @@ def supports_type(target: Target, kind: str) -> bool:
 TARGETS: Mapping[str, Target] = MappingProxyType(
     {"python": Target("python", natives=True, tabular=True, t2_calls=None), "go": _go()}
 )
+
+# ---- API request semantics (spec 2026-09-29 ui-a §4, §6) -----------------------------------
+# The parameter rules every target carrying the API profile implements: parse_params in the
+# Python prelude (lattice/api/codegen.py), rt/params.go on Go, lattice-rt.ts on the
+# TypeScript client. Each id is pinned by fixture cases tagged with it (ts_answers.json).
+API_PARAM_RULES: Mapping[str, str] = MappingProxyType(
+    {
+        "P1": "Str length counts code points",
+        "P2": "a lone surrogate in a Str is 'must be valid UTF-8 text'",
+        "P3": "Int/Float/Bool text is stripped of Python whitespace",
+        "P4": "Int is signed 64-bit, exact from text and JSON (3.0 is 3)",
+        "P5": "Float must be finite; NaN/Infinity tokens parse, then fail",
+        "P6": "numbers in messages print as Python prints them",
+        "P7": "pattern is re.fullmatch with re.ASCII over the RE2 subset",
+        "P8": "one_of messages quote values as Python repr",
+        "P9": "Date/DateTime parse as date/datetime.fromisoformat; naive is UTC",
+        "P10": "Uuid is hyphenated or 32 hex digits, any case, canonical lowercase",
+        "P11": "Bool text is true/1/yes/on or false/0/no/off, lowercased",
+        "P12": "a JSON body is read as Python's json.loads reads bytes",
+        "P13": "422 detail: parameters in order, first failure per parameter, exact loc/msg",
+        "P14": "missing, null, UNSET and defaults as the prelude resolves them",
+    }
+)
+PARAM_FEATURES = (
+    "ge", "le", "min_len", "max_len", "one_of", "pattern", "email",
+    "optional", "nullable", "default", "form",
+)  # fmt: skip
+TS_REFUSAL = "L893"  # the TypeScript client cannot be generated for a plan (decision log)
+
+
+@dataclass(frozen=True)
+class ClientTarget:
+    """A target that carries the API request semantics (not T2): it validates requests
+    exactly as the server does before sending them."""
+
+    name: str
+    param_features: frozenset[str]
+
+
+CLIENT_TARGETS: Mapping[str, ClientTarget] = MappingProxyType(
+    {"ts": ClientTarget("ts", frozenset(PARAM_FEATURES))}
+)

@@ -126,7 +126,7 @@ A line-by-line port of the prelude's `_convert`, `_constrain` and `parse_params`
 For every proof app and every request in its corpus:
 
 1. TS `parseParams` and Python `parse_params`, given the same wire request, return the same result: equal converted values, or the same 422 detail (compared as canonical JSON).
-2. Over real HTTP, the client reports a local 422 exactly when the running server answers 422, with identical detail.
+2. Over real HTTP, for a caller the endpoint admits, the client reports a local 422 exactly when the running server answers 422, with identical detail.
 3. Every server response decodes in the client losslessly (bigint values equal Python's ints) and matches the declared type; every error response maps to its declared `kind`; only 5xx, network failure and undeclared statuses become `Unexpected`.
 
 **Bar: 0 mismatches.** No tolerance.
@@ -196,3 +196,15 @@ Tasks 2, 3 and 4 are independent and can run in parallel.
 - L1–L4 green in CI with 0 mismatches over the template and every registry program.
 - The negative exhaustiveness test fails `tsc` as intended.
 - Every client decision-log row is present, and the R14 client checks run in CI.
+
+## 10. Amendments (2026-09-29, from planning)
+
+The following amendments to §4 and §5 are documented in the decision log and language rules (docs/lattice-language-rules.md):
+
+1. **Auth runs before validation** (`lattice/api/codegen.py:1080-1086`): a server answers 401/403/inactive before any 422. Claim 2 therefore holds **for a caller the endpoint admits**; a local 422 predicts the server's answer once authentication passes. The L3 gate uses an admin token (the admin role is admitted everywhere, `codegen.py:867`).
+2. **R-a widens:** a path `Str` that is empty, `.`, `..` or contains `/` cannot be routed faithfully (URL normalisation by `fetch`, Starlette routing). The client sends it; the corpus excludes it; the decision-log row names all four.
+3. **Page envelope counts** (`limit`, `offset`, `total`) are `number`, decoded exactly (a value beyond 2^53 − 1 is a decode error, never rounded).
+4. **Hooks take `opts` as a required argument** (no provider/context).
+5. **CLI:** there is no `lattice codegen` command; the plan adds `python -m lattice.tsgen`.
+6. **"Required in CI"** becomes `LATTICE_REQUIRE_NODE=1` (no CI config exists).
+7. **Generation refusal code:** `L893`.
