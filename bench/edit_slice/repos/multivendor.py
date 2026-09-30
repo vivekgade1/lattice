@@ -180,8 +180,11 @@ STATUS_ONLY: frozenset[str] = frozenset({
 # ... and a case the ticket text does not determine is dropped: "admins can cancel any
 # order" also reads as "whatever its status". Corrected after the atomicity pilot (results
 # log "Option 1b"): an empty `item_ids` (t42) and a single order id (t44, "at least two")
-# have no stated status or answer either.
-EXCLUDED: frozenset[str] = frozenset({"t36.admin_shipped", "t42.empty_list", "t44.one_order"})
+# have no stated status or answer either; after the main experiment (results log "Option 1
+# main"): an empty ``products`` list (t43) is neither allowed nor refused by the text.
+EXCLUDED: frozenset[str] = frozenset(
+    {"t36.admin_shipped", "t42.empty_list", "t44.one_order", "t43.no_products"}
+)
 
 
 def canon(record: CaseRecord) -> CaseRecord:

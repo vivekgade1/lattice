@@ -88,12 +88,15 @@ def _lattice_factory(repo: str, files: Mapping[str, str]) -> tuple[AppFactory, A
     return (lambda path: make_emitted_app(out, path)), cleanup
 
 
+PYTHON_ARMS = frozenset({"P", "Q", "Q+"})
+
+
 def _candidate_factory(
     arm: str, ticket_id: str, files: Mapping[str, str]
 ) -> tuple[AppFactory, Any]:
     """(app factory, cleanup) rebuilt from a round's saved ``files/``."""
     t = ticket(ticket_id)
-    if arm == "P":
+    if arm in PYTHON_ARMS:  # P, Q, Q+ edit the Python app; L, L+ edit Lattice
         return load_variant(dict(files), repo=t.repo).make_app, (lambda: None)
     return _lattice_factory(t.repo, files)
 

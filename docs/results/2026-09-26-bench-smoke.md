@@ -992,3 +992,60 @@ Rescored with `rescore.py`, with no new model calls: 5 runs changed from silent 
 3. **Everything else Sonnet handled:** aggregations, ownership, validate-before-write when writing its own code, route order, and date boundaries.
 
 Per the spec, a GO means pre-registering the main experiment (P / L / Q on t38–t44, ≥ 6 reps, CLI only) after importing the app into Lattice with a verified start state. It needs the user's go-ahead, since the decision rests on a post-hoc correction.
+
+## Option 1 main experiment: Lattice's atomicity guarantee as a check on Python (pre-registered, 2026-09-29)
+
+Spec: `docs/superpowers/specs/2026-09-29-option1-main-experiment.md`, committed in `66be834` before any run.
+
+- **Design:** arm P (plain Python) vs arm Q (Python plus pycheck findings, including the new PY807 partial-writes check) on t38–t44 of the multi-vendor app.
+- **Scale:** claude-sonnet-5 (primary) and claude-haiku-4-5, 6 reps: **168 runs, all through the CLI**, no API key.
+- **Arm L was dropped before any run:** Lattice's flat responses cannot express 5 of the 7 tickets' nested answers, and the import verified only 3 of 17 routes. The spec records both reasons.
+
+| model | arm | correct [95% CI] | silent [95% CI] | loud | silent on a partial-write case | $/correct | rounds | s/run |
+|---|---|---|---|---|---|---|---|---|
+| sonnet-5 | P | 24/42 [42%, 71%] | 18/42 [29%, 58%] | 0 | 17 | 0.169 | 1.07 | 53 |
+| sonnet-5 | Q | **34/42** [67%, 90%] | **8/42** [10%, 33%] | 0 | **0** | 0.167 | 1.38 | 72 |
+| haiku-4-5 | P | 10/42 [13%, 39%] | 30/42 [56%, 83%] | 2 | 14 | 0.253 | 1.33 | 71 |
+| haiku-4-5 | Q | 16/42 [25%, 53%] | 23/42 [40%, 69%] | 3 | **0** | 0.231 | 1.83 | 97 |
+
+Per ticket, silent runs (P / Q):
+
+| model | t38 | t39 | t40 | t41 | t42 | t43 | t44 |
+|---|---|---|---|---|---|---|---|
+| Sonnet | 6/0 | 6/6 | 6/2 | 0/0 | 0/0 | 0/0 | 0/0 |
+| Haiku | 6/0 | 6/6 | 6/5 | 2/2 | 2/3 | 5/5 | 3/2 |
+
+Cost: $15.97 list-price equivalent in total, plan-billed through the CLI. Tokens (in/out): Sonnet P 408k/242k, Q 605k/326k; Haiku P 422k/337k, Q 686k/465k.
+
+### Pre-registered verdicts (`bench/edit_slice/main_analysis.py`)
+
+- **Q1 (Sonnet): CONFIRMED.**
+  - One-sided Fisher on silent runs: p = **0.016**.
+  - The sign test favours Q, 2 tickets to 0; with only two untied tickets its p is 0.25.
+  - Correctness guard met: Q's correct rate is higher than P's, 81% against 57%.
+- **Q2 (Haiku): NOT CONFIRMED** (Fisher p = 0.087; sign test 3 to 1).
+- **Q3 (mechanism): CONFIRMED on both models.** Runs silent on a partial-write case: Sonnet **17 → 0**, Haiku **14 → 0** (Fisher p < 0.0001 for each).
+
+### Oracle review (as pre-registered)
+
+Every silent run's final candidate was re-run and its diff read.
+
+**Genuine on both arms:**
+- partial writes (P only);
+- a price of 0 accepted, against "exactly as PATCH" (t39) and "as `POST /products` would" (t43);
+- a repeated product id counted twice (t39);
+- the admin answered with the permission message where the ticket gives "You do not have access to this order" (t40);
+- a stock check that ignores what the order already holds (t40);
+- response shapes off the stated models: an extra `order_id` in items (t42, t44) and a missing `version` in products (t43);
+- a buyer answered 409 instead of the 404 of "same access as `GET /vendors/me`" (t41).
+
+**One oracle defect:** `t43.no_products`. The text neither allows nor refuses an empty `products` list, so the case is now excluded. Rescored without new model calls, it changes no run's outcome (the affected run was also silent on another case). **The corrected verdicts equal the pre-registered ones.**
+
+The review also found a bug in `bench/edit_slice/rescore.py`: it rebuilt arm Q candidates as Lattice. It is fixed and tested; only arms L and L+ are Lattice.
+
+### What it says
+
+1. **This is the project's first confirmed, pre-registered advantage on a frontier model.** The confirmation run had found that checks made Sonnet *worse*. Here, one of Lattice's guarantees, stated as a check on ordinary Python (PY807: one transaction per write), removes a class of silent bug Sonnet makes: every partial write on both models, with correctness up, not down. It comes from the checker applied to Python, not from Lattice as an editing language.
+2. **The effect is where the mechanism is.** Q's remaining silent runs are all on traps PY807 does not cover: validation, counting and response shapes. On those, Q and P do about equally, which fits the checks having no effect outside their rule.
+3. **Haiku gains the same mechanism but not overall.** Its silent failures are spread over many trap kinds the checks don't cover, so removing partial writes alone did not reach significance.
+4. **Scope:** 7 tickets on one app, 3 of which (t38–t40) involve a helper that commits partway. The result is about that class of change, not about edits in general.

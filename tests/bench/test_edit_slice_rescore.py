@@ -157,3 +157,13 @@ def test_arm_l_candidates_are_rebuilt_through_the_emitter(tmp_path):
     assert note == "silent -> correct"
     assert new["outcome"] == "correct"
     assert new["failed_cases"] == []
+
+
+def test_arm_q_candidates_are_rebuilt_as_python(tmp_path):
+    """Arm Q edits the Python app (with pycheck's findings); only L / L+ are Lattice."""
+    answer = _p_answer("t14_email_change")
+    record = _run_record(tmp_path, "t14_email_change", answer)
+    stale = dict(record, arm="Q", outcome="silent", failed_cases=["x"])
+    new, note = rescore.rescore_record(stale, {"t14_email_change"})
+    assert note == "silent -> correct" and new["arm"] == "Q"
+    assert rescore.PYTHON_ARMS == {"P", "Q", "Q+"}
