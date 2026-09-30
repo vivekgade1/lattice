@@ -755,13 +755,41 @@ def render_markdown_step2(outcomes: Sequence[TaskOutcome]) -> str:
     )
 
 
+_API_TITLE = "# Lattice Benchmark Report — API suite"
+
+
+def _requested_model(outcome: TaskOutcome) -> str:
+    """The model a run asked for (``requested_model``, the CLI's ``--model``); outcomes
+    written before that field existed fall back to the served ``model``."""
+    return outcome.requested_model or outcome.model
+
+
 def render_markdown_api(outcomes: Sequence[TaskOutcome]) -> str:
     """The step-2 style family report for ``--suite api``: the same family rows,
     an efficiency table with queries / request latency columns, and the api gate
-    (``evaluate_gate_api``)."""
-    return _render_family_report(
-        outcomes, "# Lattice Benchmark Report — API suite", evaluate_gate_api, api=True
-    )
+    (``evaluate_gate_api``).
+
+    Outcomes of several requested models (``bench.cli run --models a,b``) are never
+    pooled: the report then has one section per requested model (``## Model: <name>``,
+    its headings demoted one level), each with its own tables and gate. A single-model
+    report is unchanged."""
+    models = sorted({_requested_model(o) for o in outcomes})
+    if len(models) <= 1:
+        return _render_family_report(outcomes, _API_TITLE, evaluate_gate_api, api=True)
+    lines = [
+        _API_TITLE,
+        "",
+        f"Models: {', '.join(models)}. Every table and gate below is for one requested "
+        "model; outcomes of different models are never pooled.",
+        "",
+    ]
+    for model in models:
+        group = [o for o in outcomes if _requested_model(o) == model]
+        section = _render_family_report(group, f"# Model: {model}", evaluate_gate_api, api=True)
+        for line in section.splitlines():
+            lines.append("#" + line if line.startswith("#") else line)
+        lines.append("")
+    return "\n".join(lines)
 
 
 # Header line per api spec condition (spec 2026-09-27 §5.6); the explicit

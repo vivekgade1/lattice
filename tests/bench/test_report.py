@@ -406,3 +406,63 @@ def test_summarize_and_render_include_deep_tier_rows() -> None:
     assert "| A | deep | 2 | 50.00% |" in md
     assert "| B | deep | 1 | 100.00% |" in md
     assert "pools the multi and deep tiers" in md
+
+
+# ---- the api report never pools models (bench.cli run --models a,b) ------------------------
+
+
+def _api_outcome(arm: str, requested_model: str, **overrides: object) -> TaskOutcome:
+    fields: dict[str, object] = dict(
+        task_id="o01",
+        arm=arm,
+        tier="api",
+        family="ownership",
+        requested_model=requested_model,
+        model=requested_model,
+    )
+    fields.update(overrides)
+    return _outcome(**fields)
+
+
+def test_api_report_splits_tables_and_gate_by_requested_model() -> None:
+    from bench.report import render_markdown_api
+
+    outcomes = [
+        _api_outcome("B", "claude-sonnet-5"),
+        _api_outcome("G", "claude-sonnet-5"),
+        _api_outcome("B", "claude-haiku-4-5", correct=False, failure="wrong_result"),
+        _api_outcome("G", "claude-haiku-4-5", correct=False, failure="wrong_result"),
+        # a served model that differs from the requested one stays in the requested cell
+        _api_outcome("G", "claude-haiku-4-5", task_id="c01", family="control", model="x-fallback"),
+    ]
+    report = render_markdown_api(outcomes)
+    assert report.startswith("# Lattice Benchmark Report — API suite")
+    assert "never pooled" in report
+    haiku = report.index("## Model: claude-haiku-4-5")
+    sonnet = report.index("## Model: claude-sonnet-5")
+    assert haiku < sonnet
+    haiku_part, sonnet_part = report[haiku:sonnet], report[sonnet:]
+    # per-model rows: Sonnet's B is 100% correct, Haiku's B 0% -- never a pooled 50%
+    assert "| B | all | 1 | 100.00% |" in sonnet_part
+    assert "| B | all | 1 | 0.00% |" in haiku_part
+    assert "| G | all | 2 | 50.00% |" in haiku_part
+    assert "50.00%" not in sonnet_part
+    # each section has its own (demoted) efficiency table and gate
+    assert haiku_part.count("### Efficiency") == 1 and sonnet_part.count("### Efficiency") == 1
+    assert haiku_part.count("### Gate") == 1 and sonnet_part.count("### Gate") == 1
+    assert "\n## Gate" not in report and "\n## Efficiency" not in report
+
+
+def test_api_report_for_one_model_is_unchanged() -> None:
+    from bench.report import render_markdown_api
+
+    outcomes = [_api_outcome("B", "claude-sonnet-5"), _api_outcome("G", "claude-sonnet-5")]
+    report = render_markdown_api(outcomes)
+    assert "## Model:" not in report
+    assert "\n## Efficiency" in report and "\n## Gate" in report
+    # legacy records without requested_model group by the served model: still one model
+    legacy = [
+        _api_outcome("B", "", model="claude-opus-5"),
+        _api_outcome("P", "", model="claude-opus-5"),
+    ]
+    assert "## Model:" not in render_markdown_api(legacy)
