@@ -824,3 +824,19 @@ def test_render_prints_p2_margin_as_points_not_percent():
     md = render(records)
     assert "margin 10 points" in md
     assert "margin 10%" not in md
+
+
+def test_zero_cost_arm_g_makes_the_ratio_undefined_not_a_crash(tmp_path) -> None:
+    """An offline dry run's scripted calls cost nothing: a zero arm-G cost is an
+    undefined ratio (reported as not computable), never a ZeroDivisionError."""
+    rows = []
+    for t in range(3):
+        for arm in ("B", "G"):
+            rows += _records([(f"t{t}", arm, HAIKU, 0, True, 0.0)])
+    path = tmp_path / "outcomes.jsonl"
+    _write_jsonl(path, rows)
+    records = load(path)
+    with pytest.raises(ValueError, match="cost ratio undefined"):
+        ratio_bootstrap(records, HAIKU, n=10)
+    report = render(records)
+    assert "Not computable: cost ratio undefined" in report

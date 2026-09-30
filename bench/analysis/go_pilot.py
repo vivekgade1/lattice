@@ -213,9 +213,13 @@ def cost_per_correct(records: Records, arm: str, model: str) -> float:
 
 
 def _ratio_or_none(records: Records, model: str) -> float | None:
+    """R = cost/correct(B) / cost/correct(G), or None when it is undefined: an arm with
+    zero correct runs, or arm G with zero total cost (a zero denominator; never the
+    case for live CLI-priced runs, but it is for an offline dry run, whose scripted
+    calls cost nothing)."""
     cost_b, correct_b, _ = _cost_and_correct(records, "B", model)
     cost_g, correct_g, _ = _cost_and_correct(records, "G", model)
-    if correct_b == 0 or correct_g == 0:
+    if correct_b == 0 or correct_g == 0 or cost_g == 0:
         return None
     return (cost_b / correct_b) / (cost_g / correct_g)
 
@@ -245,7 +249,10 @@ def _bootstrap_detail(
         raise ValueError(f"no records for model {model!r}")
     r_point = _ratio_or_none(group, model)
     if r_point is None:
-        raise ValueError(f"no correct runs in one or both arms for model {model!r}")
+        raise ValueError(
+            f"cost ratio undefined for model {model!r}: no correct runs in one or both "
+            "arms, or zero total cost in arm G"
+        )
 
     by_task: dict[str, list[Record]] = defaultdict(list)
     for r in group:
