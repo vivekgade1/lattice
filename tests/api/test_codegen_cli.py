@@ -55,8 +55,10 @@ def test_lattice_arms_on_the_generated_app(tmp_path: Path) -> None:
         for o in (b, c):
             assert o.detail.startswith("backend=generated"), o.detail
             assert o.mean_queries > 0
-    # the generated app was written next to each round's cases
-    work = tmp_path / "out" / "work" / "C" / API_TASKS[0].id
+    # the generated app was written next to each round's cases (work_root/model/arm/
+    # task_id/rep{N}; no --model given, so the default "claude-opus-5", and rep0 since
+    # --reps defaults to 1)
+    work = tmp_path / "out" / "work" / "claude-opus-5" / "C" / API_TASKS[0].id / "rep0"
     assert (
         (work / "generated_round1" / "solution.py")
         .read_text()

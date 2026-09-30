@@ -731,4 +731,9 @@ T2_CODES: Mapping[str, str] = {
     "L923": "dict key or set element of an unhashable type",
     "L925": "regular expression that may backtrack catastrophically (nested unbounded "
     "repeats, or a repeated alternation whose branches start alike)",
+    "L926": "a regular expression outside the RE2 subset (lookaround, backreference, "
+    "conditional, possessive repeat or atomic group)",
+    "L890": "a native (call, effect or NativeToken auth) on a target without natives",
+    "L891": "a tabular-profile program on a target without the tabular profile",
+    "L892": "a T2 call the chosen target does not implement yet",
 }

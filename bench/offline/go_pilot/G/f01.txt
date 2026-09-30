@@ -1,0 +1,91 @@
+Here is `handlers.go`.
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"math"
+	"net/http"
+	"strconv"
+
+	"platformkit"
+)
+
+func writeJSON(w http.ResponseWriter, status int, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(v)
+}
+
+func invalid(w http.ResponseWriter, detail ...string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusUnprocessableEntity)
+	_ = json.NewEncoder(w).Encode(map[string]any{"error": "validation", "detail": detail})
+}
+
+func boundedInt(s string, lo, hi int64) (int64, bool) {
+	n, err := strconv.ParseInt(s, 10, 64)
+	return n, err == nil && lo <= n && n <= hi
+}
+
+type orderUnits struct {
+	ID        int64   `json:"id"`
+	Status    string  `json:"status"`
+	CreatedAt string  `json:"created_at"`
+	Total     float64 `json:"total"`
+	Units     int64   `json:"units"`
+}
+
+func Register(mux *http.ServeMux, k *platformkit.Kit) {
+	mux.HandleFunc("GET /orders", func(w http.ResponseWriter, r *http.Request) {
+		user, ok := k.Authenticate(w, r, "Customer")
+		if !ok {
+			return
+		}
+		query := r.URL.Query()
+		limit, offset := int64(20), int64(0)
+		var problems []string
+		if query.Has("limit") {
+			if limit, ok = boundedInt(query.Get("limit"), 1, 100); !ok {
+				problems = append(problems, "limit: an integer 1-100")
+			}
+		}
+		if query.Has("offset") {
+			if offset, ok = boundedInt(query.Get("offset"), 0, math.MaxInt64); !ok {
+				problems = append(problems, "offset: an integer >= 0")
+			}
+		}
+		if len(problems) > 0 {
+			invalid(w, problems...)
+			return
+		}
+		rows, err := k.DB.Query(
+			"SELECT o.id, o.status, o.created_at, o.total, COALESCE(SUM(i.qty), 0)"+
+				" FROM orders o LEFT JOIN order_items i ON i.order_id = o.id"+
+				" WHERE o.customer_id = ? OR ? = 'Admin'"+
+				" GROUP BY o.id ORDER BY o.id LIMIT ? OFFSET ?",
+			user.ID, user.Role, limit, offset,
+		)
+		if err != nil {
+			platformkit.WriteError(w, err)
+			return
+		}
+		defer rows.Close()
+		items := []orderUnits{}
+		for rows.Next() {
+			var o orderUnits
+			if err := rows.Scan(&o.ID, &o.Status, &o.CreatedAt, &o.Total, &o.Units); err != nil {
+				platformkit.WriteError(w, err)
+				return
+			}
+			items = append(items, o)
+		}
+		if err := rows.Err(); err != nil {
+			platformkit.WriteError(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]any{"items": items, "limit": limit, "offset": offset})
+	})
+}
+```

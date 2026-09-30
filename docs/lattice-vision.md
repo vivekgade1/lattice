@@ -39,6 +39,7 @@
 | Loop constructs (`window`, `traverse`, `iterate`, `for_each` with outbox) | Built — 11/11 real-style loops equivalent, 1 documented native island |
 | Lifting existing code into Lattice | **In progress** (§4): extraction + profile generation and the generated-suite verifier are built; lifters, LLM close-the-gap loop and method experiment are under way |
 | Self-improvement loop | **Partly manual** (§5): every language fix so far came from benchmark failures, done by hand |
+| Go target: a second compiler for the T2 (procedure) profile, own runtime (regex, math, datetime, JSON, collections matching CPython's own algorithms), shown equal to the Python runtime by differential testing (tested, not proven) | Built — 49 programs, 2,478 requests compared (status, first hop, content type, full body, SQL statements and order, after_sql rows, DB digest), 0 mismatches; 385/391 shared semantics cases pass on Go strictly; known limitations (amd64 unverified, natives/`for_each`/tabular not yet on Go) in `docs/results/2026-09-26-bench-smoke.md`, "Go target — equivalence gate" |
 
 ## 3. Design principles (learned, not assumed)
 
@@ -120,9 +121,11 @@ Tabular + API profiles, checker, plan IR, polars/SQL runtimes, FastAPI code gene
 | 2 | **Importer** (in progress) | FastAPI + SQLModel → Lattice + native islands; LLM-assisted with differential equivalence verification, deterministic lifters for recurring idioms; loop patterns mapped to 1b constructs; per-repo coverage + policy-deviation report |
 | 3 | **SQLModel emitter + edit loop** | idiomatic SQLModel/FastAPI in the repo's style; import → LLM edits Lattice → emit minimal diff; emitter proven equal to the runtime |
 | 4 | **Backends** | Postgres + MySQL, then MongoDB (aggregation pipelines), then ClickHouse (reads first); capability model rejects programs a backend cannot run with full guarantees |
+| 5a | **Go target — compiler and equivalence gate** (done) | the T2 (procedure) profile compiles to a standalone Go binary (`net/http`, pure-Go SQLite, no cgo), with its own runtime matching CPython's own algorithms (a full SRE regex port, CPython's dict/set layout) rather than approximating them; shown equal to the Python runtime by a differential gate (49 programs, 2,478 requests, 0 mismatches) and a shared semantics suite (385/391 cases on Go, strict) — tested, not proven. v1.1 language changes (64-bit `Int`, insertion-ordered sets, ASCII regex classes, the RE2 subset, explicit numeric widening, exact Float membership/lookup, the Float power domain) apply to both targets. Known limitations: amd64 unverified (no Rosetta), natives/`for_each`/`NativeToken`/tabular not yet on Go, last-ulp transcendental differences, the JSON depth limit, Unicode 15 vs 16 (`docs/results/2026-09-26-bench-smoke.md`, "Go target — equivalence gate") |
+| 5b | **Go target — benchmark** (stage 1 done: STOP (P1 not confirmed, R = 0.69)) | ran the existing benchmark harness against the Go target (CLI transport, Go platform kit, 40 API tasks, 480 runs) to measure what 5a only proved equivalent: cost and correctness of Lattice→Go vs hand-written Go on claude-sonnet-5/claude-haiku-4-5. Pre-registered verdict: STOP — B is ~30% cheaper per correct task on Sonnet under this harness's warm-cache batching (~20% cold; R = 0.689 [0.591, 0.803]), short of the ≤0.6 threshold; repair rounds are ~46% of B's cost; correctness parity holds; every cell hit a 120/120 correctness ceiling (`docs/results/2026-09-26-bench-smoke.md`, "Go cost pilot (5b stage 1, pre-registered, 2026-09-29)") |
 
 ### Later
-Learning loop (verified-program corpus, retrieval few-shots, failure clustering proposing constructs), optimizer pass, more targets (TypeScript/Go), optional fine-tuned Lattice models.
+Learning loop (verified-program corpus, retrieval few-shots, failure clustering proposing constructs), optimizer pass, more targets (TypeScript), optional fine-tuned Lattice models.
 
 ## 7. Long-term direction: agents own the code, humans own the intent
 

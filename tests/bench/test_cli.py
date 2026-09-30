@@ -302,7 +302,9 @@ def test_outcomes_are_written_as_each_task_completes(
     assert [(o.task_id, o.correct) for o in outcomes] == [("s01", True)]
 
 
-def test_rerun_into_same_out_dir_starts_a_fresh_outcomes_file(tmp_path: Path) -> None:
+def test_rerun_into_same_out_dir_without_resume_is_refused(tmp_path: Path) -> None:
+    # A non-empty outcomes file is never silently overwritten (it can hold paid runs):
+    # a rerun into the same --out without --resume must refuse to start, not truncate it.
     offline_dir = tmp_path / "offline"
     _write_offline_arm_a(offline_dir)
     out_dir = tmp_path / "out"
@@ -310,9 +312,26 @@ def test_rerun_into_same_out_dir_starts_a_fresh_outcomes_file(tmp_path: Path) ->
             "--out", str(out_dir)]
 
     main(argv)
-    main(argv)
+    with pytest.raises(SystemExit):
+        main(argv)
 
-    assert len(read_outcomes(out_dir / "outcomes.jsonl")) == 1
+    assert len(read_outcomes(out_dir / "outcomes.jsonl")) == 1  # not truncated, not doubled
+
+
+def test_rerun_into_same_out_dir_with_resume_appends_only_the_missing_work(
+    tmp_path: Path,
+) -> None:
+    offline_dir = tmp_path / "offline"
+    _write_offline_arm_a(offline_dir)
+    out_dir = tmp_path / "out"
+    argv = ["run", "--arms", "A", "--tasks", "s01,s02", "--offline", str(offline_dir),
+            "--out", str(out_dir)]
+
+    assert main(argv) == 0
+    assert main([*argv, "--resume"]) == 0
+
+    outcomes = read_outcomes(out_dir / "outcomes.jsonl")
+    assert sorted(o.task_id for o in outcomes) == ["s01", "s02"]  # no duplicates
 
 
 def test_no_hints_flag_reaches_both_arms(tmp_path, monkeypatch) -> None:

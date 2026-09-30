@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import stat
 import sys
 from dataclasses import dataclass
@@ -56,6 +57,38 @@ sys.exit(int(spec.get("exit_code", 0)))
 '''
 
 
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--update-golden",
+        action="store_true",
+        default=False,
+        help="rewrite golden files (tests/t2ir/golden/*.txt) from the current output",
+    )
+
+
+# `@pytest.mark.go`: the test runs the Go toolchain (it builds or runs Go code). Without
+# `go` on PATH it is skipped; with it, it runs (a cold module cache then fails with the
+# actionable GoBuildError of lattice.gogen.build: `go mod download` once, Go >= 1.26).
+GO_MISSING = shutil.which("go") is None
+GO_SKIP_REASON = (
+    "needs the Go toolchain (go not on PATH): install Go >= 1.26, then run "
+    "`cd lattice/gogen/rt && go mod download` once, with network access"
+)
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    config.addinivalue_line("markers", "go: runs the Go toolchain (skipped without `go`)")
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    if not GO_MISSING:
+        return
+    skip = pytest.mark.skip(reason=GO_SKIP_REASON)
+    for item in items:
+        if item.get_closest_marker("go") is not None:
+            item.add_marker(skip)
+
+
 @dataclass
 class FakeClaudeCli:
     """Controls a fake `claude` executable placed first on PATH. ``queue`` sets the
@@ -78,6 +111,20 @@ class FakeClaudeCli:
         if not self.log_path.exists():
             return []
         return [json.loads(line) for line in self.log_path.read_text().splitlines() if line]
+
+
+@pytest.fixture
+def realapps_source() -> str:
+    from tests.api import realapps
+
+    return realapps.PROGRAM
+
+
+@pytest.fixture
+def realapps_profile():
+    from tests.api import realapps
+
+    return realapps.PROFILE
 
 
 @pytest.fixture

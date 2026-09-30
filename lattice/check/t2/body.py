@@ -39,9 +39,10 @@ from lattice.catalog import (
     T2_STDLIB,
     StdSig,
 )
-from lattice.check.astutil import literal_value
+from lattice.check.astutil import INT64_MAX, INT64_MIN, literal_value
 from lattice.check.context import CheckContext
 from lattice.check.loop_hints import t1_shape_warning
+from lattice.check.re2 import re2_problem
 from lattice.check.redos import redos_risk
 from lattice.check.t2 import types as T
 from lattice.check.t2.model import ProcSig, RecordDef
@@ -554,6 +555,10 @@ class BodyChecker:
                     self.mutations.append((s, tgt))  # in place: xs += [...]
                 env.types[name] = self._narrowed(res, d)
                 env.drop_paths(name)
+            case ast.Subscript(slice=ast.Slice()):
+                self._load_subscript(tgt, env)  # types the operands (no cascade)
+                # v1.1: `xs[a:b] op= v` assigns a slice, rejected like `xs[a:b] = v`
+                self.err("L913", tgt, "slice assignment is not supported", "build a new list")
             case ast.Subscript():
                 cur = self._load_subscript(tgt, env)
                 res = self.binop(s.op, cur, rt, s, tgt, s.value)
@@ -793,7 +798,7 @@ class BodyChecker:
                 if isinstance(value, bool):
                     return T.BOOL
                 if isinstance(value, int):
-                    return T.INT
+                    return self._int_literal(node, value)
                 if isinstance(value, float):
                     return T.FLOAT
                 if isinstance(value, str):
@@ -871,6 +876,18 @@ class BodyChecker:
             case ast.Starred():
                 return self.err("L147", node, "starred expressions are not allowed")
         return self.err("L147", node, f"'{type(node).__name__}' is not allowed in a procedure")
+
+    def _int_literal(self, node: ast.expr, value: int) -> T2Type:
+        """Range-check a (possibly negated as a unit, see `_unary`) Int literal;
+        same code and message style as T0's `p1_nodes._check_int_range`."""
+        if not INT64_MIN <= value <= INT64_MAX:
+            return self.err(
+                "L404",
+                node,
+                f"integer literal {value} does not fit in a 64-bit Int",
+                f"use a value between {INT64_MIN} and {INT64_MAX}",
+            )
+        return T.INT
 
     def _load_name(self, node: ast.Name, env: Env) -> T2Type:
         name = node.id
@@ -1168,6 +1185,19 @@ class BodyChecker:
         return self.err("L903", node, f"unsupported operand types for {sym}: {lt} and {rt}", hint)
 
     def _unary(self, node: ast.UnaryOp, env: Env) -> T2Type:
+        operand = node.operand
+        if (
+            isinstance(node.op, ast.USub)
+            and isinstance(operand, ast.Constant)
+            and isinstance(operand.value, int)
+            and not isinstance(operand.value, bool)
+        ):
+            # `-9223372036854775808` parses as USub(Constant(2**63)); the positive
+            # magnitude alone overflows Int64 even though the negated literal (Int64
+            # MIN) does not, so range-check the literal as one signed unit, mirroring
+            # T0's p1_nodes._check_expr (Constant | UnaryOp(USub)).
+            self.types[id(operand)] = T.INT
+            return self._int_literal(node, -operand.value)
         t = self.expr(node.operand, env)
         if isinstance(node.op, ast.Not):
             return T.BOOL
@@ -1521,7 +1551,19 @@ class BodyChecker:
         if qual == "collections.defaultdict":
             return self._defaultdict(node, env, expected)
         label = qual.rsplit(".", 1)[-1] if qual.startswith("collections.") else qual
-        return self.apply(node, overloads, {}, env, expected, label, f"std:{qual}")
+        result = self.apply(node, overloads, {}, env, expected, label, f"std:{qual}")
+        if qual == "collections.Counter" and len(node.args) == 1:
+            # Counter(mapping) takes the mapping's values as the counts (R9: a Counter's
+            # counts are Ints, so the values must be)
+            at = self.types.get(id(node.args[0]))
+            if isinstance(at, T.DictT) and at.val not in (T.INT, UNK):
+                return self.err(
+                    "L904",
+                    node.args[0],
+                    f"Counter of a {at} counts its values, which must be Int",
+                    "count the keys: Counter(d.keys())",
+                )
+        return result
 
     def _defaultdict(self, node: ast.Call, env: Env, expected: T2Type | None) -> T2Type:
         self.targets[id(node)] = "std:collections.defaultdict"
@@ -1779,6 +1821,9 @@ class BodyChecker:
 
         for i in chosen.literal:
             self._regex_literal(node.args[i] if i < len(node.args) else node, label)
+        grouped = _regex_result(target, node)
+        if grouped is not None:
+            return grouped
 
         if target in _ORDERING and "key" not in kw_types:
             el = bindings.get("T")
@@ -1876,10 +1921,17 @@ class BodyChecker:
             self.err(
                 "L925",
                 node,
-                f"the pattern of {label}() may backtrack catastrophically on request input: "
-                f"{risk}",
+                f"the pattern of {label}() may backtrack catastrophically on request input: {risk}",
                 "make the repeated pieces disjoint, bound the repeat ({0,50}) or make it "
                 "possessive (a++)",
+            )
+        problem = re2_problem(node.value)
+        if problem is not None:
+            self.err(
+                "L926",
+                node,
+                f"the pattern of {label}(): {problem}",
+                "rewrite without lookaround/backreferences, e.g. two matches or a split",
             )
 
     # ---- parameter immutability (L145) -------------------------------------------------
@@ -2010,6 +2062,28 @@ def _root_name(e: ast.AST) -> str | None:
                 e = v
             case _:
                 return None
+
+
+def _regex_result(target: str, node: ast.Call) -> T2Type | None:
+    """The result of `re.findall` / `re.split` follows the literal pattern's capturing
+    groups (R3/R9, docs/lattice-language-rules.md §6): findall of k >= 2 groups gives
+    tuples of k Strs; split by a pattern with groups gives the groups too, None for
+    one that did not participate. None: the catalog's `list[Str]` holds."""
+    if target not in ("std:re.findall", "std:re.split") or not node.args:
+        return None
+    match node.args[0]:
+        case ast.Constant(value=str() as pattern):
+            try:
+                groups = re.compile(pattern).groups
+            except re.error:
+                return None  # L916 reported
+        case _:
+            return None
+    if target == "std:re.findall" and groups >= 2:
+        return T.ListT(T.TupleT((T.STR,) * groups))
+    if target == "std:re.split" and groups >= 1:
+        return T.ListT(T.opt(T.STR))
+    return None
 
 
 def _is_concrete(t: T2Type) -> bool:

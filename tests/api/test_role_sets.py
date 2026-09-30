@@ -133,3 +133,24 @@ def test_stored_values_must_name_roles() -> None:
 def test_the_unchanged_rule_still_admits_the_admin(client: TestClient) -> None:
     r = client.get("/vendors", headers={"Authorization": f"Bearer {F.TOKENS['ada']}"})
     assert r.status_code == 200
+
+
+# ---- targets (docs/lattice-language-rules.md: implemented on every target or gated) -------
+
+
+def test_role_sets_are_gated_on_go_until_its_runtime_checks_them() -> None:
+    result = check_source(F.PROGRAM, F.PROFILE, target="go")
+    gated = [d.message for d in result.diagnostics if d.code == "L892"]
+    # the RoleColumn(values=...) map, and the 5 endpoints using Roles(...)/Authenticated
+    # (auth=Vendor keeps its meaning and is not gated)
+    assert len(gated) == 6, gated
+    assert any("RoleColumn(values=...)" in m for m in gated)
+    assert not [m for m in gated if "auth=Vendor" in m]
+    plain = Profile(schemas={}, api=replace(F.API, roles_from=RoleColumn("role")))
+    legacy = (
+        '# lattice: v1\n@endpoint("GET", "/v", auth=Vendor)\n'
+        "def v(user: CurrentUser) -> One:\n"
+        '    shown = select(user, cols=["id"])\n    return shown\n'
+    )
+    diagnostics = check_source(legacy, plain, target="go").diagnostics
+    assert not [d for d in diagnostics if d.code == "L892"]

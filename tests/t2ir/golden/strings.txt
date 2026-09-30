@@ -1,0 +1,83 @@
+procedure strings(name: Str, n: Int, ratio: Float) -> Str
+  recursive: False
+  locals: cleaned: Str, head: Str, joined: Str, n: Int, name: Str, padded: Str, ratio: Float, width: Str
+  Assign
+    target: NameT head
+    FStr : Str
+      parts:
+        FPart
+          Var name : Str
+          spec: ''
+          conversion: 'r'
+        ': '
+        FPart
+          Var n : Int
+          spec: '>5'
+          conversion: ''
+        ' '
+        FPart
+          Var ratio : Float
+          spec: '.2f'
+          conversion: ''
+        ' '
+        FPart
+          Var name : Str
+          spec: ''
+          conversion: ''
+  Assign
+    target: NameT width
+    FStr : Str
+      parts:
+        FPart
+          Var name : Str
+          spec: FStr : Str
+            parts:
+              '>'
+              FPart
+                Var n : Int
+                spec: ''
+                conversion: ''
+          conversion: ''
+  Assign
+    target: NameT cleaned
+    Sized(replace) : Str
+      Call method:Str.replace : Str
+        Var name : Str
+        Const '-' : Str
+        Const ' ' : Str
+  Assign
+    target: NameT joined
+    Sized(join) : Str
+      Call method:Str.join : Str
+        Const ', ' : Str
+        ListLit : list[Str]
+          Var cleaned : Str
+          Var head : Str
+  Assign
+    target: NameT padded
+    Grow(+) : Str
+      Grow(+) : Str
+        Charged : Str
+          Call method:Str.ljust : Str
+            Var joined : Str
+            Sized(pad) : Int
+              Var n : Int
+            Const '.' : Str
+        Charged : Str
+          Call method:Str.zfill : Str
+            Var name : Str
+            Sized(pad) : Int
+              Const 3 : Int
+      Charged : Str
+        Call method:Str.center : Str
+          Var name : Str
+          Sized(pad) : Int
+            Var n : Int
+  Return
+    Grow(+) : Str
+      Grow(+) : Str
+        Var padded : Str
+        Var width : Str
+      Charged : Str
+        Call method:Str.upper : Str
+          Var name : Str

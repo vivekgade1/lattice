@@ -754,7 +754,7 @@ def _constrain(spec: Param, value: object) -> None:
             raise ValueError(f"must have at most {spec.max_len} characters")
         if spec.email and len(value) > EMAIL_MAX_LEN:
             raise ValueError(f"must have at most {EMAIL_MAX_LEN} characters")
-        if spec.pattern is not None and not re.fullmatch(spec.pattern, value):
+        if spec.pattern is not None and not re.fullmatch(spec.pattern, value, flags=re.ASCII):
             if spec.email:
                 raise ValueError("must be an email address")
             raise ValueError(f"must match the pattern {spec.pattern!r}")

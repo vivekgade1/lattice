@@ -1,0 +1,25 @@
+record Point(x: Int, y: Int, tag: Str | None)
+  defaults: tag=None
+procedure shift(p: Point, dx: Int) -> Point
+  recursive: False
+  locals: dx: Int, moved: Point, p: Point
+  Assign
+    target: NameT moved
+    Charged : Point
+      Call record:Point : Point
+        kwargs:
+          x: Grow(+) : Int
+            Attr x : Int
+              Var p : Point
+            Var dx : Int
+          y: Attr y : Int
+            Var p : Point
+  Return
+    Charged : Point
+      Call record:Point : Point
+        Attr x : Int
+          Var moved : Point
+        Attr y : Int
+          Var moved : Point
+        kwargs:
+          tag: Const 'moved' : Str

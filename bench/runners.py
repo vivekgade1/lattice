@@ -1,4 +1,4 @@
-"""Task runners: arm A (pandas baseline), arms B/C (Lattice generate/check/repair)."""
+"""Task runners: arm A (pandas baseline), arms B/C (Lattice generate/check/repair), arm G (Go)."""
 
 from __future__ import annotations
 
@@ -21,7 +21,14 @@ from bench.sandbox import ScriptResult, run_python_script
 from bench.tasks import Task
 from lattice.check import check_source
 from lattice.diagnostics import Diagnostic, Severity, Span, render_for_llm, sort_key
-from lattice.llm.client import Generation, GenerationRefused, Generator, Usage, extract_code
+from lattice.llm.client import (
+    Generation,
+    GenerationRefused,
+    Generator,
+    Usage,
+    extract_code,
+    extract_go_code,
+)
 from lattice.llm.prompt import (
     baseline_system_prompt,
     baseline_task_message,
@@ -32,7 +39,7 @@ from lattice.profile import Profile
 from lattice.runtime import LatticeRuntimeError
 from lattice.runtime.exec import run_source
 
-Arm = Literal["A", "P", "B", "C"]
+Arm = Literal["A", "P", "B", "C", "G"]
 
 # Files a pandas script's workdir may legitimately contain after a run: the
 # output, the script itself, its private temp dir, and (arm B/C only) the
@@ -141,6 +148,13 @@ class TaskOutcome:
     # cache creation); cache_read_tokens is the cached share of it.
     cache_read_tokens: int = 0
     model: str = ""  # comma-separated distinct served models, in call order
+    # The requested model (the CLI's --model argument), set by the caller (bench.cli) on
+    # every record, including a harness_error one. Distinct from `model` above (the
+    # served model(s)): a repair loop's calls can be served by a different exact model
+    # (retry, fallback) than what was requested, so analyses that group by "the model
+    # under test" (bench.analysis.go_pilot) key on this field, never on `model`.
+    requested_model: str = ""
+    rep: int = 0  # repetition index of (requested_model, arm, task_id); set by bench.cli
     refused_attempts: int = 0  # refused calls that were retried and then answered
     # Executed unsafe effects only, unioned over every round: files a run
     # created in the workdir beyond the allowed set (``extra_file:<name>``),
@@ -168,7 +182,14 @@ class TaskOutcome:
     # One entry per round: Lattice error codes (static, or the runtime code),
     # pandas failure labels; () for a round that ran and wrote output.
     diagnostics_per_round: tuple[tuple[str, ...], ...] = ()
-    cost_usd: float = 0.0  # tokens x bench.metrics.PRICES; 0 for an unknown model
+    # tokens x bench.metrics.PRICES, or a transport-reported figure when the call carried
+    # one (see _call_cost below); 0 for an unknown model
+    cost_usd: float = 0.0
+    # how cost_usd was priced, comma-joined over the run's calls: "cli_list_estimate" for
+    # a call the CLI transport itself priced (its total_cost_usd); "" for a call priced
+    # here instead from usage tokens and bench.metrics.PRICES (every API-key-transport
+    # call, and offline/scripted runs, which report no cost at all)
+    cost_basis: str = ""
     # API suite only (final round's case run; 0 / () when no case ran):
     # SQL data statements per request (mean and max over the cases, auth
     # included), mean request latency, and the names of the failed cases.
@@ -250,6 +271,7 @@ class _Totals:
     latency_s: float
     models: tuple[str, ...]
     cost_usd: float
+    cost_bases: tuple[str, ...]  # non-empty cost_basis of each call that reported one
 
 
 class _Ledger:
@@ -274,6 +296,7 @@ class _Ledger:
 
     def totals(self) -> _Totals:
         g = self.generations
+        costs = [_call_cost(x) for x in g]
         return _Totals(
             output_tokens=sum(x.usage.output_tokens for x in g),
             input_tokens=sum(x.usage.total_input_tokens for x in g),
@@ -281,7 +304,8 @@ class _Ledger:
             cache_creation_tokens=sum(x.usage.cache_creation_input_tokens for x in g),
             latency_s=sum(x.latency_s for x in g),
             models=tuple(x.model for x in g),
-            cost_usd=sum(_generation_cost(x.model, x.usage) for x in g),
+            cost_usd=sum(c for c, _ in costs),
+            cost_bases=tuple(b for _, b in costs if b),
         )
 
     def outcome(
@@ -315,6 +339,7 @@ class _Ledger:
             exec_s=self.exec_s,
             diagnostics_per_round=tuple(self.diagnostics),
             cost_usd=t.cost_usd,
+            cost_basis=_join_bases(t.cost_bases),
         )
 
     def refused(self, exc: GenerationRefused, *, check_passed: bool | None) -> TaskOutcome:
@@ -322,6 +347,8 @@ class _Ledger:
         self.start_round(None)
         self.diagnostics.append(("refused",))
         t = self.totals()
+        exc_cost, exc_basis = _call_cost(exc)
+        bases = t.cost_bases + ((exc_basis,) if exc_basis else ())
         return dataclasses.replace(
             self.outcome(
                 correct=False, check_passed=check_passed, failure="refused", detail=str(exc)
@@ -333,7 +360,8 @@ class _Ledger:
             cache_read_tokens=t.cache_read_tokens + exc.usage.cache_read_input_tokens,
             cache_creation_tokens=t.cache_creation_tokens + exc.usage.cache_creation_input_tokens,
             model=_join_models([*t.models, exc.model]),
-            cost_usd=t.cost_usd + _generation_cost(exc.model, exc.usage),
+            cost_usd=t.cost_usd + exc_cost,
+            cost_basis=_join_bases(bases),
         )
 
 
@@ -345,6 +373,23 @@ def _generation_cost(model: str, usage: Usage) -> float:
         cache_read_tokens=usage.cache_read_input_tokens,
         cache_creation_tokens=usage.cache_creation_input_tokens,
     )
+
+
+def _call_cost(gen: Generation | GenerationRefused) -> tuple[float, str | None]:
+    """One call's dollar cost and how it was priced. A transport that already knows the
+    call's cost (the CLI transport's own ``total_cost_usd``, on ``Generation.cost_usd``/
+    ``GenerationRefused.cost_usd``) is preferred over recomputing it, mirroring
+    ``bench.edit_slice.run._account``; ``cost_basis`` names that transport figure (e.g.
+    ``"cli_list_estimate"``). ``None`` means the transport reported no such figure (the
+    API-key transport, or an offline/scripted call): derive it from usage tokens and
+    ``bench.metrics.PRICES`` instead, with no cost_basis."""
+    if gen.cost_usd is not None:
+        return gen.cost_usd, gen.cost_basis
+    return _generation_cost(gen.model, gen.usage), None
+
+
+def _join_bases(bases: Sequence[str]) -> str:
+    return ",".join(dict.fromkeys(b for b in bases if b))
 
 
 def _score(
@@ -869,6 +914,90 @@ def _run_generated_cases(
     return run_cases_fastapi(app_source, workdir, task, db_builder=db_builder, kit_path=kit_path)
 
 
+class _GogenBuildFailure(Exception):
+    """A checked program (it passed ``check_source(..., target="go")``) failed
+    somewhere later in the Lattice -> Go pipeline: ``go build`` itself on the
+    generated module, or an exception while lowering/emitting it. A gogen bug, not
+    the model's program -- but per the pilot spec's "Tests and decision" (third
+    pre-freeze revision), it still counts against arm B as a loud, final failure,
+    not a harness error: excluding it from cost/n (as a harness error would) would
+    silently drop a real B failure and bias the pilot's cost comparison toward B.
+    Raised only once the Go toolchain itself is known good (``check_toolchain()``
+    ran first, unwrapped) so a missing/too-old toolchain -- a genuine harness
+    infrastructure failure -- is never mistaken for this."""
+
+
+def _run_go_cases(
+    code: str,
+    workdir: Path,
+    task: Any,
+    *,
+    db_builder: Any,
+    profile: Profile,
+    out_dir: Path,
+    timeout_s: float | None = None,
+) -> Any:
+    """Check for the Go target, build (``lattice.gogen.build.build_go_app``, cached
+    under ``out_dir/.cache`` -- the caller passes the stable per-(model, arm, task,
+    rep) workdir, already unique per job, so parallel workers never share a build
+    directory, while still reusing the cache across this job's repair rounds) and
+    run the task's cases on the binary with the semantics of
+    ``run_cases_fastapi``/``run_cases_lattice``.
+
+    The cases run through ``bench.go_arm.run_cases`` -- exactly as arm G's do: the
+    binary sandboxed, resource-limited and supervised by the launcher (``workdir`` is
+    the round directory; its ``run/`` is the only writable directory), the whole case
+    run on one wall-clock budget (``timeout_s``, 60 s by default, arm G's and arm P's),
+    and the binary's stderr captured per case and attached to a start error or a 5xx
+    case's reason -- so a slow or crashing program is treated, and its repair
+    feedback built, identically in arms B and G. The Go runtime's response bodies are
+    untouched.
+
+    ``check_toolchain()`` runs first, unwrapped: a missing or too-old Go toolchain is
+    a genuine harness infrastructure failure (the run environment isn't set up, not
+    a defect in gogen or the model's program), so it propagates out of this function
+    uncaught -- the caller (``bench.cli``) records it as a loud ``harness_error``.
+
+    A checker rejection for Go (a native L890, the tabular profile L891, a T2
+    construct Go lacks L892, or any other static error) is a ``GoBuildError`` whose
+    ``check`` is set: it yields the same result shape as ``run_cases_lattice`` (not
+    started, with the checker's diagnostics), so it repairs exactly like the other
+    backends. Once the toolchain is known good, any other failure -- ``go build``
+    itself failing on a program that passed the checker (``GoBuildError`` with no
+    ``check``), or any exception while lowering/emitting it (``lattice.api.ir.
+    lower_api``, ``lattice.gogen.endpoints``/``t2``) -- is raised as
+    ``_GogenBuildFailure`` for ``_run_api_lattice`` to record as arm B's loud, final,
+    unrepairable failure (see ``_GogenBuildFailure``'s docstring)."""
+    from bench import go_arm
+    from bench.api_runner import CaseResults
+    from lattice.gogen.build import GoBuildError, build_go_app, check_toolchain
+
+    check_toolchain()
+    # the launcher and sandbox work here (once per process): a failure is the
+    # harness's (GoHarnessError, uncaught), never a start error scored against B
+    go_arm.ensure_ready()
+    try:
+        build = build_go_app(code, profile, out_dir)
+    except GoBuildError as exc:
+        if exc.check is not None:
+            return CaseResults(
+                cases=(),
+                started=False,
+                start_error=render_for_llm(exc.check.diagnostics),
+                diagnostics=tuple(exc.check.diagnostics),
+            )
+        raise _GogenBuildFailure(str(exc)) from exc
+    except Exception as exc:
+        raise _GogenBuildFailure(f"{type(exc).__name__}: {exc}") from exc
+    return go_arm.run_cases(
+        build.binary,
+        task,
+        db_builder=db_builder,
+        round_dir=workdir,
+        timeout_s=go_arm.DEFAULT_CASE_TIMEOUT_S if timeout_s is None else timeout_s,
+    )
+
+
 def _run_api_lattice(
     task: Any,
     generator: Generator,
@@ -882,8 +1011,9 @@ def _run_api_lattice(
     prompts: Any = None,
     serve: Any = None,
     hooks: Any = None,
-    backend: Literal["runtime", "generated"] = "runtime",
+    backend: Literal["runtime", "generated", "go"] = "runtime",
     kit_path: Path | None = None,
+    go_timeout_s: float | None = None,
 ) -> TaskOutcome:
     """Arms B (repair) and C (single shot): a Lattice API program, checked and
     served by the runtime, run against the task's HTTP cases in process.
@@ -896,7 +1026,16 @@ def _run_api_lattice(
     ``backend="generated"`` serves the checked program through the FastAPI app
     ``lattice.api.codegen`` generates from it (run in the sandbox over the
     platform kit at ``kit_path``, like arms A/P) instead of the runtime; the
-    outcome's detail then starts with ``backend=generated``."""
+    outcome's detail then starts with ``backend=generated``. ``backend="go"``
+    checks the program for the Go target and builds it with
+    ``lattice.gogen.build.build_go_app``, then runs the cases on the binary
+    (``_run_go_cases``); the outcome's detail then starts with ``backend=go``. A
+    ``_GogenBuildFailure`` from ``_run_go_cases`` (go build itself failing, or any
+    other exception, on a program that already passed the checker -- a gogen bug)
+    is never fed back for repair: it ends the task immediately as a loud, final,
+    scored failure (``failure="loud"``), counted against arm B, not a harness
+    error. A missing/too-old Go toolchain is a genuine harness failure and is left
+    to propagate uncaught (see ``_run_go_cases``)."""
     from bench.api_runner import run_cases_lattice
 
     if arm == "C":
@@ -938,6 +1077,35 @@ def _run_api_lattice(
                     profile=profile,
                     kit_path=kit_path,
                 )
+            elif backend == "go":
+                try:
+                    results = _run_go_cases(
+                        code,
+                        workdir / f"go_round{index}",
+                        task,
+                        db_builder=db_builder,
+                        profile=profile,
+                        out_dir=workdir,
+                        timeout_s=go_timeout_s,
+                    )
+                except _GogenBuildFailure as exc:
+                    # A gogen bug on a program that already passed the checker: the
+                    # model cannot fix this by rewriting its Lattice source, so
+                    # (unlike a checker rejection or a runtime start error) it is
+                    # never fed back for repair -- it ends the task here as arm B's
+                    # loud, final, scored failure (never a harness error: excluding
+                    # it from cost/n would silently drop a real B failure). Spec
+                    # 2026-09-29 pilot doc, "Tests and decision", third pre-freeze
+                    # revision.
+                    ledger.diagnostics.append(("loud",))
+                    return _api_outcome(
+                        ledger,
+                        None,
+                        correct=False,
+                        check_passed=True,
+                        failure="loud",
+                        detail=_backend_detail(backend, f"gogen_build: {exc}"[:_DETAIL_LIMIT]),
+                    )
             else:
                 results = run_cases_lattice(
                     code,
@@ -992,6 +1160,171 @@ def _run_api_lattice(
     raise AssertionError("unreachable")  # pragma: no cover
 
 
+_GO_RETURN_FILE = "Return the complete corrected handlers.go in one ```go block."
+
+
+def _go_repair_message(label: str, text: str, vet: str = "") -> str:
+    """Arm G's repair feedback: arm P's message (``_api_repair_message``: the label and
+    the last lines of the error output), asking for Go. ``vet`` (go vet's findings,
+    advisory) is appended only to a repair a visible failure already triggered."""
+    tail = "\n".join(text.splitlines()[-_STDERR_TAIL_LINES:])
+    advisory = ""
+    if vet.strip():
+        vet_tail = "\n".join(vet.strip().splitlines()[-_STDERR_TAIL_LINES:])
+        advisory = f"go vet also reported:\n{vet_tail}\n"
+    return f"The app failed: {label}. Error output:\n{tail}\n{advisory}{_GO_RETURN_FILE}"
+
+
+def _go_outcome(ledger: _Ledger, results: Any, size: Any, **kwargs: Any) -> TaskOutcome:
+    """``_api_outcome`` with the final round's program size measured by goast (Go's
+    AST; ``_Ledger`` measures Python's). ``size`` is None when the final round had no
+    code (all zeros, as for the other arms)."""
+    outcome = _api_outcome(ledger, results, **kwargs)
+    if size is None:
+        return outcome
+    return dataclasses.replace(
+        outcome,
+        program_lines=size.lines,
+        program_statements=size.statements,
+        program_ast_nodes=size.ast_nodes,
+        program_chars=size.chars,
+    )
+
+
+def _run_api_go(
+    task: Any,
+    generator: Generator,
+    workdir: Path,
+    *,
+    db_builder: Any,
+    kit_dir: Path | None = None,
+    max_repairs: int = 2,
+    hints: bool = True,
+    prompts: Any = None,
+    timeout_s: float | None = None,
+) -> TaskOutcome:
+    """Arm G (5b Go pilot): the model writes ``handlers.go`` against the Go platform
+    kit (``bench/api_kit_go``); see ``bench.go_arm`` for the build, the screen and
+    the sandbox.
+
+    Each round: extract the ```go block (``extract_go_code``); screen it with goast
+    (a forbidden construct -- another DB connection, a way around the counted
+    ``k.DB``, a multi-statement SQL string -- is repair feedback); ``go build`` (the
+    compiler's output is feedback; a build over its time limit, or goast failing on
+    the file, counts as a build error); ``go vet``, ADVISORY only: it never gates the
+    run and never triggers a repair (that would give arm G a repair chance arm P
+    lacks), and its findings ride along only on a repair a visible failure already
+    triggered. Then run the task's cases on the binary in the sandbox and repair on
+    exactly the visible failures arm P repairs on (``_api_visible_failure``: start
+    error, time-out, a crashed happy case, every happy case failing), never a trap
+    case. Repair budget ``max_repairs`` (2), as arm P. Whatever is still failing when
+    the budget is spent is a scored loud failure (``forbidden``, ``build_error``,
+    ``no_code``, or the case run's label), counted in cost and n; wrong results are
+    classified by ``bench.api_runner.classify`` exactly as for arm B.
+
+    Harness failures -- the Go toolchain missing or too old, the kit failing to
+    build/vet/start on its own (``bench.go_arm.ensure_ready``, checked before the
+    first generation) -- raise (``GoBuildError``/``GoHarnessError``) for the caller
+    to record as ``harness_error``; they are never scored as the model's."""
+    from bench import go_arm
+
+    kit = go_arm.KIT_DIR if kit_dir is None else Path(kit_dir)
+    case_timeout = go_arm.DEFAULT_CASE_TIMEOUT_S if timeout_s is None else timeout_s
+    go_arm.ensure_ready(kit)
+    workdir.mkdir(parents=True, exist_ok=True)
+    api_prompt = _api_prompts(prompts)
+    system = api_prompt.api_go_system_prompt(hints=hints)
+    messages: list[dict[str, str]] = [
+        {"role": "user", "content": api_prompt.api_task_message(task, "go")}
+    ]
+    ledger = _Ledger(task, "G")
+
+    for attempt in range(max_repairs + 1):
+        try:
+            generation = generator.generate(system, messages)
+        except GenerationRefused as exc:
+            return ledger.refused(exc, check_passed=None)
+        ledger.generations.append(generation)
+        index = len(ledger.generations)
+
+        code = extract_go_code(generation.text)
+        ledger.start_round(code)
+        results = None
+        size = None
+        if code is None:
+            failure, detail = "no_code", "response contained no ```go code block"
+            feedback = _go_repair_message(failure, detail)
+        else:
+            (workdir / f"program_round{index}.go").write_text(code)
+            round_dir = workdir / f"go_round{index}"
+            if round_dir.exists():
+                shutil.rmtree(round_dir)
+            module = round_dir / "module"
+            size = go_arm.analyze(go_arm.write_module(code, module, kit))
+            built = False
+            vet_output = ""
+            if size.error:
+                # goast itself failed on this file: scored like a build failure
+                failure, detail = "build_error", size.error
+            elif size.violations:
+                failure, detail = "forbidden", size.render_violations()
+            else:
+                ok, output = go_arm.build(module)
+                if not ok:
+                    failure, detail = "build_error", output
+                else:
+                    built = True
+                    # advisory only: never a gate, never a repair of its own
+                    vet_ok, vet_output = go_arm.vet(module)
+                    if vet_ok:
+                        vet_output = ""
+            if not built:
+                feedback = _go_repair_message(failure, detail)
+                detail = detail[:_DETAIL_LIMIT]
+            else:
+                started = time.perf_counter()
+                results = go_arm.run_cases(
+                    module / "app",
+                    task,
+                    db_builder=db_builder,
+                    round_dir=round_dir,
+                    timeout_s=case_timeout,
+                )
+                if results.started:
+                    ledger.exec_s = time.perf_counter() - started
+                correct, label, detail = _api_verdict(results)
+                visible = _api_visible_failure(results)
+                if visible is None or correct:
+                    ledger.diagnostics.append(() if label in (None, "wrong_result") else (label,))
+                    return _go_outcome(
+                        ledger,
+                        results,
+                        size,
+                        correct=correct,
+                        check_passed=None,
+                        failure=label,
+                        detail=detail,
+                    )
+                failure = label or visible[0]
+                feedback = _go_repair_message(visible[0], visible[1], vet=vet_output)
+
+        ledger.diagnostics.append((failure,))
+        if attempt == max_repairs:
+            return _go_outcome(
+                ledger,
+                results,
+                size,
+                correct=False,
+                check_passed=None,
+                failure=failure,
+                detail=detail,
+            )
+        messages.append({"role": "assistant", "content": generation.text})
+        messages.append({"role": "user", "content": feedback})
+
+    raise AssertionError("unreachable")  # pragma: no cover
+
+
 API_CONDITION_IMPLICIT = "implicit"
 
 
@@ -1023,6 +1356,20 @@ def run_api_lattice(
     if implicit:
         task = task.implicit_view()
     outcome = _run_api_lattice(task, counter, *args, **kwargs)
+    return dataclasses.replace(
+        outcome, refused_attempts=counter.count, condition=api_condition(implicit)
+    )
+
+
+def run_api_go(
+    task: Any, generator: Generator, *args: Any, implicit: bool = False, **kwargs: Any
+) -> TaskOutcome:
+    """Arm G on an ``ApiTask`` (see ``_run_api_go``); ``implicit`` as in
+    ``run_api_baseline`` -- every arm sees the same view."""
+    counter = _RefusalCounter(generator)
+    if implicit:
+        task = task.implicit_view()
+    outcome = _run_api_go(task, counter, *args, **kwargs)
     return dataclasses.replace(
         outcome, refused_attempts=counter.count, condition=api_condition(implicit)
     )

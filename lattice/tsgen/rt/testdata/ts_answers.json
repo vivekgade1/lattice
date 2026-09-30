@@ -1,0 +1,8387 @@
+{
+ "python": "3.14.0",
+ "params": [
+  {
+   "name": "len s=%F0%9F%91%8B%F0%9F%91%8B",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "min_len": 2,
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%F0%9F%91%8B%F0%9F%91%8B",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "\ud83d\udc4b\ud83d\udc4b"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "len s=%F0%9F%91%8B",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "min_len": 2,
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%F0%9F%91%8B",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must have at least 2 characters\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must have at least 2 characters\"}]}"
+  },
+  {
+   "name": "len s=ab%F0%9F%91%8B",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "min_len": 2,
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=ab%F0%9F%91%8B",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "ab\ud83d\udc4b"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "len s=abcd",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "min_len": 2,
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=abcd",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must have at most 3 characters\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must have at most 3 characters\"}]}"
+  },
+  {
+   "name": "len s=%F0%9F%91%8Ba%F0%9F%91%8Bb",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "min_len": 2,
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%F0%9F%91%8Ba%F0%9F%91%8Bb",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must have at most 3 characters\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must have at most 3 characters\"}]}"
+  },
+  {
+   "name": "len s=%E2%80%8B%E2%80%8B",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "min_len": 2,
+     "max_len": 3,
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 2 characters"
+      },
+      "max_len": {
+       "msg": "must have at most 3 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%E2%80%8B%E2%80%8B",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "\u200b\u200b"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "surrogate b'{\"s\": \"\\\\ud800\"}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogIlx1ZDgwMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1",
+    "P2",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+  },
+  {
+   "name": "surrogate b'{\"s\": \"a\\\\ud83d\\\\ude00\"}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogImFcdWQ4M2RcdWRlMDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1",
+    "P2",
+    "P12"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "a\ud83d\ude00"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "surrogate b'{\"s\": \"\\\\udc00\\\\ud800\"}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogIlx1ZGMwMFx1ZDgwMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1",
+    "P2",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+  },
+  {
+   "name": "surrogate b'{\"s\": \"\\\\ud83d\"}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogIlx1ZDgzZCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1",
+    "P2",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+  },
+  {
+   "name": "surrogate b'{\"s\": \"\\xf0\\x9f\\x98\\x80\\xf0\\x9f\\x98\\x80\"}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogIvCfmIDwn5iAIn0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1",
+    "P2",
+    "P12"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "\ud83d\ude00\ud83d\ude00"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "surrogate b'{\"s\": \"\\xed\\xa0\\x80\"}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 5,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 5 characters"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogIu2ggCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P1",
+    "P2",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+  },
+  {
+   "name": "strip int %1C",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=%1C5%1C",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "5"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "strip float %1C",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=%1C1.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.5"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "strip bool %1C",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%1Ctrue",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3",
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "strip int %1F",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=%1F5%1F",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "5"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "strip float %1F",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=%1F1.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.5"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "strip bool %1F",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%1Ftrue",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3",
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "strip int %C2%85",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=%C2%855%C2%85",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "5"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "strip float %C2%85",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=%C2%851.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.5"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "strip bool %C2%85",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%C2%85true",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3",
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "strip int %EF%BB%BF",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=%EF%BB%BF5%EF%BB%BF",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer\"}]}"
+  },
+  {
+   "name": "strip float %EF%BB%BF",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=%EF%BB%BF1.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "strip bool %EF%BB%BF",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%EF%BB%BFtrue",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3",
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "strip int %E3%80%80",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=%E3%80%805%E3%80%80",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "5"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "strip float %E3%80%80",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=%E3%80%801.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.5"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "strip bool %E3%80%80",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%E3%80%80true",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3",
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "strip int %C2%A0",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=%C2%A05%C2%A0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "5"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "strip float %C2%A0",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=%C2%A01.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.5"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "strip bool %C2%A0",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%C2%A0true",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3",
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "strip int %0B",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=%0B5%0B",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "5"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "strip float %0B",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=%0B1.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.5"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "strip bool %0B",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%0Btrue",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3",
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "strip int %E2%80%8B",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=%E2%80%8B5%E2%80%8B",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer\"}]}"
+  },
+  {
+   "name": "strip float %E2%80%8B",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=%E2%80%8B1.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "strip bool %E2%80%8B",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%E2%80%8Btrue",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P3",
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "int body b'{\"n\": 9007199254740993}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogOTAwNzE5OTI1NDc0MDk5M30=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9007199254740993"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "int body b'{\"n\": 9007199254740993.0}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogOTAwNzE5OTI1NDc0MDk5My4wfQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9007199254740992"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "int body b'{\"n\": 3.0}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogMy4wfQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "3"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "int body b'{\"n\": -0.0}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogLTAuMH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "0"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "int body b'{\"n\": 1e300}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogMWUzMDB9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+  },
+  {
+   "name": "int body b'{\"n\": 9223372036854775808}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogOTIyMzM3MjAzNjg1NDc3NTgwOH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+  },
+  {
+   "name": "int body b'{\"n\": -9223372036854775809}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogLTkyMjMzNzIwMzY4NTQ3NzU4MDl9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+  },
+  {
+   "name": "int body b'{\"n\": 1.5}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogMS41fQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer\"}]}"
+  },
+  {
+   "name": "int body b'{\"n\": true}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogdHJ1ZX0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer\"}]}"
+  },
+  {
+   "name": "int body b'{\"n\": \"5\"}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogIjUifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer\"}]}"
+  },
+  {
+   "name": "int body b'{\"n\": NaN}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogTmFOfQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be an integer\"}]}"
+  },
+  {
+   "name": "int body b'{\"n\": 9999999999999999999999999999999999'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogOTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTl9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}"
+  },
+  {
+   "name": "int text n=9007199254740993",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=9007199254740993",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9007199254740993"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "int text n=-9223372036854775808",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775808",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "-9223372036854775808"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "int text n=00009",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=00009",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "int text n=+0",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=+0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "0"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "int text n=-0",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "n=-0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "0"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "float body b'{\"x\": NaN}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogTmFOfQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "float body b'{\"x\": Infinity}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogSW5maW5pdHl9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "float body b'{\"x\": -Infinity}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogLUluZmluaXR5fQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "float body b'{\"x\": 1e400}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogMWU0MDB9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "float body b'{\"x\": 1000000000000000000000000000000000'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogMTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDB9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "float body b'{\"x\": 9007199254740993}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogOTAwNzE5OTI1NDc0MDk5M30=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P12"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "9007199254740992.0"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "float body b'{\"x\": -0.0}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogLTAuMH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P12"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "-0.0"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "float body b'{\"x\": 1e-400}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogMWUtNDAwfQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P12"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "0.0"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "float text x=nan",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=nan",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "float text x=inf",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=inf",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "float text x=1e400",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=1e400",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be a number\"}]}"
+  },
+  {
+   "name": "float text x=5.",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=5.",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "5.0"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "float text x=.5",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "0.5"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "float text x=+.5",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=+.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "0.5"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "float text x=1E5",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=1E5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "100000.0"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "float text x=1e-400",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float"
+    }
+   ],
+   "path": {},
+   "query": "x=1e-400",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "0.0"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "message float {'ge': 2.5e-05}",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 2.5e-05,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "2.5e-05"
+       },
+       "msg": "must be >= 2.5e-05"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 2.5e-05\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 2.5e-05\"}]}"
+  },
+  {
+   "name": "message int {'ge': 2.5e-05}",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 2.5e-05,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "2.5e-05"
+       },
+       "msg": "must be >= 2.5e-05"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 2.5e-05\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 2.5e-05\"}]}"
+  },
+  {
+   "name": "message float {'le': 1.0000000000000002}",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "le": 1.0000000000000002,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002"
+       },
+       "msg": "must be <= 1.0000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=2",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 1.0000000000000002\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 1.0000000000000002\"}]}"
+  },
+  {
+   "name": "message int {'le': 1.0000000000000002}",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "le": 1.0000000000000002,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002"
+       },
+       "msg": "must be <= 1.0000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=2",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 1.0000000000000002\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 1.0000000000000002\"}]}"
+  },
+  {
+   "name": "message float {'ge': 1e+16}",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 1e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1e+16"
+       },
+       "msg": "must be >= 10000000000000000"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 10000000000000000\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 10000000000000000\"}]}"
+  },
+  {
+   "name": "message int {'ge': 1e+16}",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 1e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1e+16"
+       },
+       "msg": "must be >= 10000000000000000"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 10000000000000000\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 10000000000000000\"}]}"
+  },
+  {
+   "name": "message float {'ge': 1e+22}",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 1e+22,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1e+22"
+       },
+       "msg": "must be >= 10000000000000000000000"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 10000000000000000000000\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 10000000000000000000000\"}]}"
+  },
+  {
+   "name": "message int {'ge': 1e+22}",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 1e+22,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1e+22"
+       },
+       "msg": "must be >= 10000000000000000000000"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 10000000000000000000000\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 10000000000000000000000\"}]}"
+  },
+  {
+   "name": "message float {'ge': 0.1}",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 0.1,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "0.1"
+       },
+       "msg": "must be >= 0.1"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 0.1\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 0.1\"}]}"
+  },
+  {
+   "name": "message int {'ge': 0.1}",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 0.1,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "0.1"
+       },
+       "msg": "must be >= 0.1"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 0.1\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 0.1\"}]}"
+  },
+  {
+   "name": "message float {'ge': -1.5e-07}",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": -1.5e-07,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "-1.5e-07"
+       },
+       "msg": "must be >= -1.5e-07"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=-1",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= -1.5e-07\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= -1.5e-07\"}]}"
+  },
+  {
+   "name": "message int {'ge': -1.5e-07}",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -1.5e-07,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "-1.5e-07"
+       },
+       "msg": "must be >= -1.5e-07"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-1",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= -1.5e-07\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= -1.5e-07\"}]}"
+  },
+  {
+   "name": "message float {'le': 1.2345678901234568e+17}",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "le": 1.2345678901234568e+17,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "1.2345678901234568e+17"
+       },
+       "msg": "must be <= 123456789012345680"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=1e18",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 123456789012345680\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 123456789012345680\"}]}"
+  },
+  {
+   "name": "message int {'le': 1.2345678901234568e+17}",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "le": 1.2345678901234568e+17,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "1.2345678901234568e+17"
+       },
+       "msg": "must be <= 123456789012345680"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=123456789012345681",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 123456789012345680\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 123456789012345680\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': 0, 'le': 999999999999999999} n=1000000000000000000",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=1000000000000000000",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': 0, 'le': 999999999999999999} n=999999999999999999",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=999999999999999999",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "999999999999999999"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'ge': 0, 'le': 999999999999999999} n=-1",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-1",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 0\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 0\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': -9223372036854775808} n=-9223372036854775808",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -9223372036854775808,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775808"
+       },
+       "msg": "must be >= -9223372036854775808"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775808",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "-9223372036854775808"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'ge': -9223372036854775808} n=-9223372036854775809",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -9223372036854775808,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775808"
+       },
+       "msg": "must be >= -9223372036854775808"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775809",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': -9223372036854775807} n=-9223372036854775808",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -9223372036854775807,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775807"
+       },
+       "msg": "must be >= -9223372036854775807"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775808",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= -9223372036854775807\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= -9223372036854775807\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': -9223372036854775807} n=-9223372036854775807",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": -9223372036854775807,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775807"
+       },
+       "msg": "must be >= -9223372036854775807"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=-9223372036854775807",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "-9223372036854775807"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'le': 9223372036854775806} n=9223372036854775807",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "le": 9223372036854775806,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "9223372036854775806"
+       },
+       "msg": "must be <= 9223372036854775806"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9223372036854775807",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 9223372036854775806\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be <= 9223372036854775806\"}]}"
+  },
+  {
+   "name": "big bound int {'le': 9223372036854775806} n=9223372036854775806",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "le": 9223372036854775806,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "9223372036854775806"
+       },
+       "msg": "must be <= 9223372036854775806"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9223372036854775806",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9223372036854775806"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'ge': 9007199254740993} n=9007199254740992",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 9007199254740993,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "9007199254740993"
+       },
+       "msg": "must be >= 9007199254740993"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9007199254740992",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 9007199254740993\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 9007199254740993\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': 9007199254740993} n=9007199254740993",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 9007199254740993,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "9007199254740993"
+       },
+       "msg": "must be >= 9007199254740993"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9007199254740993",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9007199254740993"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'ge': 1.0000000000000002e+16} n=10000000000000001",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=10000000000000001",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 10000000000000002\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 10000000000000002\"}]}"
+  },
+  {
+   "name": "big bound int {'ge': 1.0000000000000002e+16} n=10000000000000002",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=10000000000000002",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "10000000000000002"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int {'le': 9.223372036854776e+18} n=9223372036854775807",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "le": 9.223372036854776e+18,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "float",
+        "v": "9.223372036854776e+18"
+       },
+       "msg": "must be <= 9223372036854775808"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "n=9223372036854775807",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "9223372036854775807"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound float {'ge': 0, 'le': 999999999999999999} x=1e18",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=1e18",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float {'ge': 0, 'le': 999999999999999999} x=999999999999999999",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=999999999999999999",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float {'ge': 0, 'le': 999999999999999999} x=999999999999999872",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=999999999999999872",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "9.999999999999999e+17"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'ge': 1.0000000000000002e+16} x=10000000000000001",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=10000000000000001",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 10000000000000002\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 10000000000000002\"}]}"
+  },
+  {
+   "name": "big bound float {'ge': 1.0000000000000002e+16} x=10000000000000002",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=10000000000000002",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.0000000000000002e+16"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'ge': 1.0000000000000002e+16} x=1.0000000000000002e16",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 1.0000000000000002e+16,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0000000000000002e+16"
+       },
+       "msg": "must be >= 10000000000000002"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=1.0000000000000002e16",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "1.0000000000000002e+16"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'ge': 9007199254740993} x=9007199254740992",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 9007199254740993,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "9007199254740993"
+       },
+       "msg": "must be >= 9007199254740993"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=9007199254740992",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 9007199254740993\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"x\"],\"msg\":\"must be >= 9007199254740993\"}]}"
+  },
+  {
+   "name": "big bound float {'ge': 9007199254740993} x=9007199254740994",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "ge": 9007199254740993,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "9007199254740993"
+       },
+       "msg": "must be >= 9007199254740993"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=9007199254740994",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "9007199254740994.0"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'le': -9223372036854775807} x=-9223372036854775808",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "le": -9223372036854775807,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775807"
+       },
+       "msg": "must be <= -9223372036854775807"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=-9223372036854775808",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "-9.223372036854776e+18"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound float {'le': -9223372036854775807} x=-1e19",
+   "specs": [
+    {
+     "name": "x",
+     "source": "query",
+     "scalar": "Float",
+     "le": -9223372036854775807,
+     "ts": {
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "-9223372036854775807"
+       },
+       "msg": "must be <= -9223372036854775807"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "x=-1e19",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P6"
+   ],
+   "values": {
+    "x": {
+     "t": "float",
+     "v": "-1e+19"
+    }
+   },
+   "order": [
+    "x"
+   ]
+  },
+  {
+   "name": "big bound int body b'{\"n\": 1000000000000000000}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogMTAwMDAwMDAwMDAwMDAwMDAwMH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound int body b'{\"n\": 999999999999999999}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogOTk5OTk5OTk5OTk5OTk5OTk5fQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P6"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "999999999999999999"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "big bound int body b'{\"n\": 1e18}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogMWUxOH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound int body b'{\"n\": 999999999999999999.0}'",
+   "specs": [
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJuIjogOTk5OTk5OTk5OTk5OTk5OTk5LjB9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P4",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"n\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float body b'{\"x\": 1000000000000000000}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogMTAwMDAwMDAwMDAwMDAwMDAwMH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float body b'{\"x\": 999999999999999999}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogOTk5OTk5OTk5OTk5OTk5OTk5fQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "big bound float body b'{\"x\": 1e18}'",
+   "specs": [
+    {
+     "name": "x",
+     "source": "body",
+     "scalar": "Float",
+     "ge": 0,
+     "le": 999999999999999999,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "int",
+        "v": "0"
+       },
+       "msg": "must be >= 0"
+      },
+      "le": {
+       "v": {
+        "t": "int",
+        "v": "999999999999999999"
+       },
+       "msg": "must be <= 999999999999999999"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ4IjogMWUxOH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P5",
+    "P6"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"x\"],\"msg\":\"must be <= 999999999999999999\"}]}"
+  },
+  {
+   "name": "one_of s=zz",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "one_of": [
+      "it's",
+      "say \"hi\"",
+      "both'\"",
+      "tab\t",
+      "\u00e9",
+      "\u007f",
+      "\u200b",
+      "\ud83d\ude00",
+      "back\\slash",
+      "\ud7ff"
+     ],
+     "ts": {
+      "one_of": {
+       "msg": "must be one of \"it's\", 'say \"hi\"', 'both\\'\"', 'tab\\t', '\u00e9', '\\x7f', '\\u200b', '\ud83d\ude00', 'back\\\\slash', '\\ud7ff'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=zz",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P8"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must be one of \\\"it's\\\", 'say \\\"hi\\\"', 'both\\\\'\\\"', 'tab\\\\t', '\u00e9', '\\\\x7f', '\\\\u200b', '\ud83d\ude00', 'back\\\\\\\\slash', '\\\\ud7ff'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must be one of \\\"it's\\\", 'say \\\"hi\\\"', 'both\\\\'\\\"', 'tab\\\\t', '\u00e9', '\\\\x7f', '\\\\u200b', '\ud83d\ude00', 'back\\\\\\\\slash', '\\\\ud7ff'\"}]}"
+  },
+  {
+   "name": "one_of s=%C3%A9",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "one_of": [
+      "it's",
+      "say \"hi\"",
+      "both'\"",
+      "tab\t",
+      "\u00e9",
+      "\u007f",
+      "\u200b",
+      "\ud83d\ude00",
+      "back\\slash",
+      "\ud7ff"
+     ],
+     "ts": {
+      "one_of": {
+       "msg": "must be one of \"it's\", 'say \"hi\"', 'both\\'\"', 'tab\\t', '\u00e9', '\\x7f', '\\u200b', '\ud83d\ude00', 'back\\\\slash', '\\ud7ff'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%C3%A9",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P8"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "\u00e9"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "one_of s=tab%09",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "one_of": [
+      "it's",
+      "say \"hi\"",
+      "both'\"",
+      "tab\t",
+      "\u00e9",
+      "\u007f",
+      "\u200b",
+      "\ud83d\ude00",
+      "back\\slash",
+      "\ud7ff"
+     ],
+     "ts": {
+      "one_of": {
+       "msg": "must be one of \"it's\", 'say \"hi\"', 'both\\'\"', 'tab\\t', '\u00e9', '\\x7f', '\\u200b', '\ud83d\ude00', 'back\\\\slash', '\\ud7ff'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=tab%09",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P8"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "tab\t"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern 'a$' a",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "a$",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern 'a$'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=a",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "a"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern 'a$' a%0A",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "a$",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern 'a$'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=a%0A",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'a$'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'a$'\"}]}"
+  },
+  {
+   "name": "pattern 'a.b' a%0Ab",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "a.b",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern 'a.b'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=a%0Ab",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'a.b'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern 'a.b'\"}]}"
+  },
+  {
+   "name": "pattern 'a.b' axb",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "a.b",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern 'a.b'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=axb",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "axb"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '\\\\s+' %C2%85",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\s+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\s+'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%C2%85",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\s+'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\s+'\"}]}"
+  },
+  {
+   "name": "pattern '\\\\s+' %C2%A0",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\s+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\s+'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%C2%A0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\s+'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\s+'\"}]}"
+  },
+  {
+   "name": "pattern '\\\\s+' %0B",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\s+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\s+'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%0B",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "\u000b"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '\\\\s+' %20",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\s+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\s+'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%20",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": " "
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '\\\\w+' %C3%A9",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\w+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\w+'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%C3%A9",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\w+'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\w+'\"}]}"
+  },
+  {
+   "name": "pattern '\\\\w+' a_1",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\w+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\w+'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=a_1",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "a_1"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '\\\\bfoo\\\\b' foo",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\bfoo\\b",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\bfoo\\\\b'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=foo",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "foo"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '(?i)k' %E2%84%AA",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?i)k",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?i)k'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%E2%84%AA",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '(?i)k'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '(?i)k'\"}]}"
+  },
+  {
+   "name": "pattern '(?i)k' K",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?i)k",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?i)k'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=K",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "K"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '(?i)s' %C5%BF",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?i)s",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?i)s'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%C5%BF",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '(?i)s'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '(?i)s'\"}]}"
+  },
+  {
+   "name": "pattern '(?i)s' S",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?i)s",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?i)s'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=S",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "S"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '[^a]' %0A",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "[^a]",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '[^a]'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%0A",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "\n"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '[^a]' b",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "[^a]",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '[^a]'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=b",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "b"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '\\\\d' %D9%A3",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\d",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\d'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=%D9%A3",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\d'\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must match the pattern '\\\\\\\\d'\"}]}"
+  },
+  {
+   "name": "pattern '\\\\d' 3",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "\\d",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '\\\\d'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=3",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "3"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '(?s).+' a%0Ab",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?s).+",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?s).+'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=a%0Ab",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "a\nb"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern '(?m)a$\\\\nb' a%0Ab",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "(?m)a$\\nb",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern '(?m)a$\\\\nb'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=a%0Ab",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "a\nb"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "pattern \"it's\\\\d\" it's5",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "pattern": "it's\\d",
+     "ts": {
+      "pattern": {
+       "msg": "must match the pattern \"it's\\\\d\""
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=it's5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P7"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "it's5"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "datetime t=2026-09-28T10:11:12.1234567",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-09-28T10:11:12.1234567",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:11:12.123456Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-09-28T24:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-09-28T24:00",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-29T00:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-02-28T24:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-02-28T24:00",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-03-01T00:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=0001-01-01T00:00:00%2B01:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=0001-01-01T00:00:00%2B01:00",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=9999-12-31T23:59:59-01:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=9999-12-31T23:59:59-01:00",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=2026-W53-1",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-W53-1",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-12-28T00:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2020-W53-7T01",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2020-W53-7T01",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2021-01-03T01:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=20260928T101112",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=20260928T101112",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:11:12.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-09-28%E2%80%8310:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-09-28%E2%80%8310:00",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-01-29_24%2B05:60",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29_24%2B05:60",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-01-29T18:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-01-29T10%2B05:30:60",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29T10%2B05:30:60",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-01-29T04:29:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-01-29T10%2B24:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29T10%2B24:00",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=2026-01-29T10%2B23:59:59.999999",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29T10%2B23:59:59.999999",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-01-28T10:00:00.000001Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-01-29T10-23:59:59.999999",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29T10-23:59:59.999999",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-01-30T09:59:59.999999Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-12-28T23-00:00:00.123456",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-12-28T23-00:00:00.123456",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-12-28T23:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-12-28T23%2B00:00:00.5",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-12-28T23%2B00:00:00.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-12-28T23:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-12-28T23-00:00:01.5",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-12-28T23-00:00:01.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-12-28T23:00:01.500000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-12-28T23:59:59.123456-00:00:00.123456",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-12-28T23:59:59.123456-00:00:00.123456",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-12-28T23:59:59.123456Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-00-00x24",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-00-00x24",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-01-01T00:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-00-00x10",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-00-00x10",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=1900-01-00x24",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-01-00x24",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-01-01T00:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-00-01x24",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-00-01x24",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=1900-00-00x24:00:01",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-00-00x24:00:01",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=1900-13-01x24",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-13-01x24",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=1900-01-00x10",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-01-00x10",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "date d=2026-09-28",
+   "specs": [
+    {
+     "name": "d",
+     "source": "query",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "d=2026-09-28",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "d": {
+     "t": "date",
+     "v": "2026-09-28"
+    }
+   },
+   "order": [
+    "d"
+   ]
+  },
+  {
+   "name": "date d=20260928",
+   "specs": [
+    {
+     "name": "d",
+     "source": "query",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "d=20260928",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "d": {
+     "t": "date",
+     "v": "2026-09-28"
+    }
+   },
+   "order": [
+    "d"
+   ]
+  },
+  {
+   "name": "date d=2026-W01-1",
+   "specs": [
+    {
+     "name": "d",
+     "source": "query",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "d=2026-W01-1",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "d": {
+     "t": "date",
+     "v": "2025-12-29"
+    }
+   },
+   "order": [
+    "d"
+   ]
+  },
+  {
+   "name": "date d=2026-02-30",
+   "specs": [
+    {
+     "name": "d",
+     "source": "query",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "d=2026-02-30",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}"
+  },
+  {
+   "name": "date d=2026-09-28T00",
+   "specs": [
+    {
+     "name": "d",
+     "source": "query",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "d=2026-09-28T00",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28\\ud80010:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhcdWQ4MDAxMDowMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28\\udc0010:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhcdWRjMDAxMDowMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime surrogate body 2026-09-2\\ud800T10:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMlx1ZDgwMFQxMDowMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28T1\\ud8000:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhUMVx1ZDgwMDA6MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28\\ud800",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhcdWQ4MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28T10:00\\ud800",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhUMTA6MDBcdWQ4MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 20260928\\ud80010:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYwOTI4XHVkODAwMTA6MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime surrogate body 2026W01\\ud80010:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjZXMDFcdWQ4MDAxMDowMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2025-12-29T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime surrogate body 2026-W01\\ud80010",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtVzAxXHVkODAwMTAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2025-12-29T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime surrogate body 2026-09\\ud80010",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDlcdWQ4MDAxMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026W01\\ud800\\ud80010:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjZXMDFcdWQ4MDBcdWQ4MDAxMDowMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28\\ud83d\\ude0010:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjhcdWQ4M2RcdWRlMDAxMDowMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime surrogate body 2026-09-28\ud83d\ude0010:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "body",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ0IjogIjIwMjYtMDktMjjwn5iAMTA6MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-09-28T10:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "date surrogate body 2026-09-2\\ud800",
+   "specs": [
+    {
+     "name": "d",
+     "source": "body",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJkIjogIjIwMjYtMDktMlx1ZDgwMCJ9",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}"
+  },
+  {
+   "name": "date surrogate body 2026-09-28\\ud800",
+   "specs": [
+    {
+     "name": "d",
+     "source": "body",
+     "scalar": "Date"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJkIjogIjIwMjYtMDktMjhcdWQ4MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"d\"],\"msg\":\"must be an ISO date (YYYY-MM-DD)\"}]}"
+  },
+  {
+   "name": "uuid surrogate body",
+   "specs": [
+    {
+     "name": "u",
+     "source": "body",
+     "scalar": "Uuid"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJ1IjogIjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVcdWQ4MDAifQ==",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P2",
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"u\"],\"msg\":\"must be a UUID\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"u\"],\"msg\":\"must be a UUID\"}]}"
+  },
+  {
+   "name": "uuid u=0123456789ABCDEF0123456789ABCDEF",
+   "specs": [
+    {
+     "name": "u",
+     "source": "query",
+     "scalar": "Uuid"
+    }
+   ],
+   "path": {},
+   "query": "u=0123456789ABCDEF0123456789ABCDEF",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P10"
+   ],
+   "values": {
+    "u": {
+     "t": "uuid",
+     "v": "01234567-89ab-cdef-0123-456789abcdef"
+    }
+   },
+   "order": [
+    "u"
+   ]
+  },
+  {
+   "name": "uuid u=01234567-89ab-cdef-0123-456789abcdef",
+   "specs": [
+    {
+     "name": "u",
+     "source": "query",
+     "scalar": "Uuid"
+    }
+   ],
+   "path": {},
+   "query": "u=01234567-89ab-cdef-0123-456789abcdef",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P10"
+   ],
+   "values": {
+    "u": {
+     "t": "uuid",
+     "v": "01234567-89ab-cdef-0123-456789abcdef"
+    }
+   },
+   "order": [
+    "u"
+   ]
+  },
+  {
+   "name": "uuid u=01234567-89abcdef-0123-456789abcdef",
+   "specs": [
+    {
+     "name": "u",
+     "source": "query",
+     "scalar": "Uuid"
+    }
+   ],
+   "path": {},
+   "query": "u=01234567-89abcdef-0123-456789abcdef",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P10"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"u\"],\"msg\":\"must be a UUID\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"u\"],\"msg\":\"must be a UUID\"}]}"
+  },
+  {
+   "name": "uuid u=0123456789abcdef0123456789abcde",
+   "specs": [
+    {
+     "name": "u",
+     "source": "query",
+     "scalar": "Uuid"
+    }
+   ],
+   "path": {},
+   "query": "u=0123456789abcdef0123456789abcde",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P10"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"u\"],\"msg\":\"must be a UUID\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"u\"],\"msg\":\"must be a UUID\"}]}"
+  },
+  {
+   "name": "bool b=TRUE",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=TRUE",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P11"
+   ],
+   "values": {
+    "b": {
+     "t": "bool",
+     "v": true
+    }
+   },
+   "order": [
+    "b"
+   ]
+  },
+  {
+   "name": "bool b=Yes",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=Yes",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P11"
+   ],
+   "values": {
+    "b": {
+     "t": "bool",
+     "v": true
+    }
+   },
+   "order": [
+    "b"
+   ]
+  },
+  {
+   "name": "bool b=oN",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=oN",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P11"
+   ],
+   "values": {
+    "b": {
+     "t": "bool",
+     "v": true
+    }
+   },
+   "order": [
+    "b"
+   ]
+  },
+  {
+   "name": "bool b=0",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P11"
+   ],
+   "values": {
+    "b": {
+     "t": "bool",
+     "v": false
+    }
+   },
+   "order": [
+    "b"
+   ]
+  },
+  {
+   "name": "bool b=OFF",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=OFF",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P11"
+   ],
+   "values": {
+    "b": {
+     "t": "bool",
+     "v": false
+    }
+   },
+   "order": [
+    "b"
+   ]
+  },
+  {
+   "name": "bool b=maybe",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=maybe",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "bool b=",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "bool b=%C4%B0",
+   "specs": [
+    {
+     "name": "b",
+     "source": "query",
+     "scalar": "Bool"
+    }
+   ],
+   "path": {},
+   "query": "b=%C4%B0",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P11"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"b\"],\"msg\":\"must be a boolean\"}]}"
+  },
+  {
+   "name": "detail order",
+   "specs": [
+    {
+     "name": "a",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 1.0,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0"
+       },
+       "msg": "must be >= 1"
+      }
+     }
+    },
+    {
+     "name": "b",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 1,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 1 characters"
+      }
+     }
+    },
+    {
+     "name": "c",
+     "source": "path",
+     "scalar": "Uuid"
+    }
+   ],
+   "path": {
+    "c": "nope"
+   },
+   "query": "a=0",
+   "body": "eyJiIjogInh5In0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P13"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"a\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"b\"],\"msg\":\"must have at most 1 characters\"},{\"loc\":[\"path\",\"c\"],\"msg\":\"must be a UUID\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"a\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"b\"],\"msg\":\"must have at most 1 characters\"},{\"loc\":[\"path\",\"c\"],\"msg\":\"must be a UUID\"}]}"
+  },
+  {
+   "name": "detail first failure",
+   "specs": [
+    {
+     "name": "s",
+     "source": "query",
+     "scalar": "Str",
+     "min_len": 5,
+     "pattern": "[a-z]+",
+     "ts": {
+      "min_len": {
+       "msg": "must have at least 5 characters"
+      },
+      "pattern": {
+       "msg": "must match the pattern '[a-z]+'"
+      }
+     }
+    }
+   ],
+   "path": {},
+   "query": "s=A",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P13"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must have at least 5 characters\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"s\"],\"msg\":\"must have at least 5 characters\"}]}"
+  },
+  {
+   "name": "body not object",
+   "specs": [
+    {
+     "name": "a",
+     "source": "query",
+     "scalar": "Int",
+     "ge": 1.0,
+     "ts": {
+      "ge": {
+       "v": {
+        "t": "float",
+        "v": "1.0"
+       },
+       "msg": "must be >= 1"
+      }
+     }
+    },
+    {
+     "name": "b",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 1,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 1 characters"
+      }
+     }
+    },
+    {
+     "name": "c",
+     "source": "path",
+     "scalar": "Uuid"
+    }
+   ],
+   "path": {
+    "c": "x"
+   },
+   "query": "",
+   "body": "WzFd",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P13",
+    "P12"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}"
+  },
+  {
+   "name": "null None b'{\"s\": null}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "default": {
+      "t": "unset"
+     },
+     "optional": true
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogbnVsbH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P14"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must not be null\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"body\",\"s\"],\"msg\":\"must not be null\"}]}"
+  },
+  {
+   "name": "null None b'{}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "default": {
+      "t": "unset"
+     },
+     "optional": true
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "e30=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P14"
+   ],
+   "values": {
+    "s": {
+     "t": "unset"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "null True b'{\"s\": null}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "default": {
+      "t": "unset"
+     },
+     "optional": true,
+     "nullable": true
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogbnVsbH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P14"
+   ],
+   "values": {
+    "s": {
+     "t": "none"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "null None b'{\"s\": null}'",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "default": {
+      "t": "none"
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "eyJzIjogbnVsbH0=",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P14"
+   ],
+   "values": {
+    "s": {
+     "t": "none"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "null None b''",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "default": {
+      "t": "none"
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P14"
+   ],
+   "values": {
+    "s": {
+     "t": "none"
+    }
+   },
+   "order": [
+    "s"
+   ]
+  },
+  {
+   "name": "default int",
+   "specs": [
+    {
+     "name": "n",
+     "source": "query",
+     "scalar": "Int",
+     "default": {
+      "t": "int",
+      "v": "7"
+     }
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P14"
+   ],
+   "values": {
+    "n": {
+     "t": "int",
+     "v": "7"
+    }
+   },
+   "order": [
+    "n"
+   ]
+  },
+  {
+   "name": "form hazards",
+   "specs": [
+    {
+     "name": "s",
+     "source": "body",
+     "scalar": "Str",
+     "max_len": 1,
+     "ts": {
+      "max_len": {
+       "msg": "must have at most 1 characters"
+      }
+     }
+    },
+    {
+     "name": "n",
+     "source": "body",
+     "scalar": "Int"
+    }
+   ],
+   "path": {},
+   "query": "",
+   "body": "cz0lRjAlOUYlOTElOEImbj0lMUM1",
+   "form": true,
+   "ctype": "application/x-www-form-urlencoded; charset=utf-8",
+   "rules": [
+    "P1",
+    "P3",
+    "P12"
+   ],
+   "values": {
+    "s": {
+     "t": "str",
+     "v": "\ud83d\udc4b"
+    },
+    "n": {
+     "t": "int",
+     "v": "5"
+    }
+   },
+   "order": [
+    "s",
+    "n"
+   ]
+  }
+ ],
+ "go_checks": [
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "10.0"
+     },
+     "msg": "must be <= 10"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.5"
+     },
+     "msg": "must be >= 0.5"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "1e+20"
+     },
+     "msg": "must be <= 100000000000000000000"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "-1e+20"
+     },
+     "msg": "must be >= -100000000000000000000"
+    },
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "1e+20"
+     },
+     "msg": "must be <= 100000000000000000000"
+    }
+   }
+  ],
+  [
+   {
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "2.5"
+     },
+     "msg": "must be <= 2.5"
+    }
+   }
+  ],
+  [
+   {
+    "le": {
+     "v": {
+      "t": "float",
+      "v": "2.5"
+     },
+     "msg": "must be <= 2.5"
+    }
+   }
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "-1.5"
+     },
+     "msg": "must be >= -1.5"
+    }
+   }
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "min_len": {
+     "msg": "must have at least 2 characters"
+    },
+    "max_len": {
+     "msg": "must have at most 4 characters"
+    }
+   }
+  ],
+  [
+   {
+    "one_of": {
+     "msg": "must be one of 'a', \"b'c\", 'd\"e'"
+    }
+   }
+  ],
+  [
+   {
+    "one_of": {
+     "msg": "must be one of 'a', \"b'c\", 'd\"e', '\u00e9\\n'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '[a-z]+\\\\d?'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '[a-z]+\\\\d?'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern \"it's\\\\\\\\d\""
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '(?i)[a-z]+'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '(?i)[a-z]+'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '(?i)[a-z]+'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'x\\\\Z'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'x\\\\Z'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'a{1001}'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'a{1001}'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'x{,2}'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'x{,2}'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '[[:alpha:]]'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '[[:alpha:]]'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '\\\\s'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern 'a$'"
+    }
+   }
+  ],
+  [
+   {
+    "pattern": {
+     "msg": "must match the pattern '\\\\d+'"
+    }
+   }
+  ],
+  [
+   {
+    "email": {
+     "v": 254,
+     "msg": "must have at most 254 characters"
+    },
+    "pattern": {
+     "msg": "must be an email address"
+    }
+   }
+  ],
+  [
+   {
+    "email": {
+     "v": 254,
+     "msg": "must have at most 254 characters"
+    },
+    "pattern": {
+     "msg": "must be an email address"
+    }
+   }
+  ],
+  [
+   {
+    "max_len": {
+     "msg": "must have at most 1000 characters"
+    },
+    "email": {
+     "v": 254,
+     "msg": "must have at most 254 characters"
+    },
+    "pattern": {
+     "msg": "must be an email address"
+    }
+   }
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "1.0"
+     },
+     "msg": "must be >= 1"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 3 characters"
+    }
+   },
+   {}
+  ],
+  [
+   {}
+  ],
+  [
+   {},
+   {},
+   {},
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {},
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {
+    "ge": {
+     "v": {
+      "t": "float",
+      "v": "0.0"
+     },
+     "msg": "must be >= 0"
+    }
+   },
+   {
+    "max_len": {
+     "msg": "must have at most 5 characters"
+    }
+   },
+   {},
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ],
+  [
+   {},
+   {},
+   {}
+  ]
+ ],
+ "patterns": {
+  "(?i)[a-z]+": "^(?:(?:(?:[\\u{61}-\\u{7A}]|[\\u{41}-\\u{5A}])){1,})$",
+  "(?i)k": "^(?:[\\u{6B}\\u{4B}])$",
+  "(?i)s": "^(?:[\\u{73}\\u{53}])$",
+  "(?m)a$\\nb": "^(?:\\u{61}(?=\\n|$)\\u{A}\\u{62})$",
+  "(?s).+": "^(?:(?:[\\s\\S]){1,})$",
+  "[[:alpha:]]": "^(?:(?:\\u{5B}|\\u{3A}|\\u{61}|\\u{6C}|\\u{70}|\\u{68})\\u{5D})$",
+  "[^@\\s]+@[^@\\s]+\\.[^@\\s]+": "^(?:(?:(?!(?:\\u{40}|[\\t\\n\\v\\f\\r ]))[\\s\\S]){1,}\\u{40}(?:(?!(?:\\u{40}|[\\t\\n\\v\\f\\r ]))[\\s\\S]){1,}\\u{2E}(?:(?!(?:\\u{40}|[\\t\\n\\v\\f\\r ]))[\\s\\S]){1,})$",
+  "[^a]": "^(?:(?!\\u{61})[\\s\\S])$",
+  "[a-z]+": "^(?:(?:(?:[\\u{61}-\\u{7A}])){1,})$",
+  "[a-z]+\\d?": "^(?:(?:(?:[\\u{61}-\\u{7A}])){1,}(?:(?:[0-9])){0,1})$",
+  "\\bfoo\\b": "^(?:(?:(?<=[A-Za-z0-9_])(?![A-Za-z0-9_])|(?<![A-Za-z0-9_])(?=[A-Za-z0-9_]))\\u{66}\\u{6F}\\u{6F}(?:(?<=[A-Za-z0-9_])(?![A-Za-z0-9_])|(?<![A-Za-z0-9_])(?=[A-Za-z0-9_])))$",
+  "\\d": "^(?:(?:[0-9]))$",
+  "\\d+": "^(?:(?:(?:[0-9])){1,})$",
+  "\\s": "^(?:(?:[\\t\\n\\v\\f\\r ]))$",
+  "\\s+": "^(?:(?:(?:[\\t\\n\\v\\f\\r ])){1,})$",
+  "\\w+": "^(?:(?:(?:[A-Za-z0-9_])){1,})$",
+  "a$": "^(?:\\u{61}(?=\\n?$))$",
+  "a.b": "^(?:\\u{61}[^\\n]\\u{62})$",
+  "a{1001}": "^(?:(?:\\u{61}){1001,1001})$",
+  "it's\\\\d": "^(?:\\u{69}\\u{74}\\u{27}\\u{73}\\u{5C}\\u{64})$",
+  "it's\\d": "^(?:\\u{69}\\u{74}\\u{27}\\u{73}(?:[0-9]))$",
+  "x\\Z": "^(?:\\u{78}$)$",
+  "x{,2}": "^(?:(?:\\u{78}){0,2})$"
+ },
+ "floats": [
+  {
+   "bits": "3fb999999999999a",
+   "repr": "0.1"
+  },
+  {
+   "bits": "4341c37937e08000",
+   "repr": "1e+16"
+  },
+  {
+   "bits": "3ee4f8b588e368f1",
+   "repr": "1e-05"
+  },
+  {
+   "bits": "3e8421f5f40d8376",
+   "repr": "1.5e-07"
+  },
+  {
+   "bits": "437b69b4ba630f35",
+   "repr": "1.2345678901234568e+17"
+  },
+  {
+   "bits": "4480f0cf064dd592",
+   "repr": "1e+22"
+  },
+  {
+   "bits": "0000000000000001",
+   "repr": "5e-324"
+  },
+  {
+   "bits": "7fefffffffffffff",
+   "repr": "1.7976931348623157e+308"
+  },
+  {
+   "bits": "8000000000000000",
+   "repr": "-0.0"
+  },
+  {
+   "bits": "0000000000000000",
+   "repr": "0.0"
+  },
+  {
+   "bits": "4340000000000000",
+   "repr": "9007199254740992.0"
+  },
+  {
+   "bits": "4340000000000001",
+   "repr": "9007199254740994.0"
+  },
+  {
+   "bits": "3fd5555555555555",
+   "repr": "0.3333333333333333"
+  },
+  {
+   "bits": "4059000000000000",
+   "repr": "100.0"
+  },
+  {
+   "bits": "430c6bf526340000",
+   "repr": "1000000000000000.0"
+  },
+  {
+   "bits": "4341c37937e08000",
+   "repr": "1e+16"
+  }
+ ],
+ "strs": [
+  {
+   "s": "it's",
+   "strip": "it's",
+   "len": 4
+  },
+  {
+   "s": "say \"hi\"",
+   "strip": "say \"hi\"",
+   "len": 8
+  },
+  {
+   "s": "both'\"",
+   "strip": "both'\"",
+   "len": 6
+  },
+  {
+   "s": "\u0000\u001f\u007f\u0080\u009f\u00a0\u00ad",
+   "strip": "\u0000\u001f\u007f\u0080\u009f\u00a0\u00ad",
+   "len": 7
+  },
+  {
+   "s": "\u200b\u2028\u3000",
+   "strip": "\u200b",
+   "len": 3
+  },
+  {
+   "s": "\ud800",
+   "strip": "\ud800",
+   "len": 1
+  },
+  {
+   "s": "\ud83d\ude00",
+   "strip": "\ud83d\ude00",
+   "len": 1
+  },
+  {
+   "s": "\udb40\udc01",
+   "strip": "\udb40\udc01",
+   "len": 1
+  },
+  {
+   "s": "\u001c5\u001f",
+   "strip": "5",
+   "len": 3
+  },
+  {
+   "s": "\u0085x\u00a0",
+   "strip": "x",
+   "len": 3
+  },
+  {
+   "s": "\ufeffx",
+   "strip": "\ufeffx",
+   "len": 2
+  },
+  {
+   "s": " \t\n",
+   "strip": "",
+   "len": 3
+  }
+ ],
+ "json": [
+  {
+   "b64": "eyJhIjogMX0=",
+   "value": {
+    "ok": {
+     "obj": [
+      [
+       "a",
+       {
+        "int": "1"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "b64": "77u/e30=",
+   "value": {
+    "ok": {
+     "obj": []
+    }
+   }
+  },
+  {
+   "b64": "//57ACIAYQAiADoAIAAiAOkAIgB9AA==",
+   "value": {
+    "ok": {
+     "obj": [
+      [
+       "a",
+       {
+        "str": "\u00e9"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "b64": "ewAiAGEAIgA6ACAAIgDpACIAfQA=",
+   "value": {
+    "ok": {
+     "obj": [
+      [
+       "a",
+       {
+        "str": "\u00e9"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "b64": "AHsAIgBhACIAOgAgACIA6QAiAH0=",
+   "value": {
+    "ok": {
+     "obj": [
+      [
+       "a",
+       {
+        "str": "\u00e9"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "b64": "//4AAHsAAAAiAAAAYQAAACIAAAA6AAAAIAAAADEAAAB9AAAA",
+   "value": {
+    "ok": {
+     "obj": [
+      [
+       "a",
+       {
+        "int": "1"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "b64": "ewAAACIAAABhAAAAIgAAADoAAAAgAAAAMQAAAH0AAAA=",
+   "value": {
+    "ok": {
+     "obj": [
+      [
+       "a",
+       {
+        "int": "1"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "b64": "Iu2ggCI=",
+   "value": {
+    "ok": {
+     "str": "\ud800"
+    }
+   }
+  },
+  {
+   "b64": "TmFO",
+   "value": {
+    "ok": {
+     "float": "nan"
+    }
+   }
+  },
+  {
+   "b64": "LUluZmluaXR5",
+   "value": {
+    "ok": {
+     "float": "-inf"
+    }
+   }
+  },
+  {
+   "b64": "WzEsIDEuMCwgLTAsIC0wLjAsIDFlMiwgMUUrMl0=",
+   "value": {
+    "ok": [
+     {
+      "int": "1"
+     },
+     {
+      "float": "1.0"
+     },
+     {
+      "int": "0"
+     },
+     {
+      "float": "-0.0"
+     },
+     {
+      "float": "100.0"
+     },
+     {
+      "float": "100.0"
+     }
+    ]
+   }
+  },
+  {
+   "b64": "MDE=",
+   "value": {
+    "error": true
+   }
+  },
+  {
+   "b64": "MS4=",
+   "value": {
+    "error": true
+   }
+  },
+  {
+   "b64": "LQ==",
+   "value": {
+    "error": true
+   }
+  },
+  {
+   "b64": "ImEBIg==",
+   "value": {
+    "error": true
+   }
+  },
+  {
+   "b64": "eyJhIjogMSwgImEiOiAyLCAiYiI6IDN9",
+   "value": {
+    "ok": {
+     "obj": [
+      [
+       "a",
+       {
+        "int": "2"
+       }
+      ],
+      [
+       "b",
+       {
+        "int": "3"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "b64": "Ilx1ZDgwMCI=",
+   "value": {
+    "ok": {
+     "str": "\ud800"
+    }
+   }
+  },
+  {
+   "b64": "Ilx1ZDgzZFx1ZGUwMCI=",
+   "value": {
+    "ok": {
+     "str": "\ud83d\ude00"
+    }
+   }
+  },
+  {
+   "b64": "IAkKDTENCg==",
+   "value": {
+    "ok": {
+     "int": "1"
+    }
+   }
+  },
+  {
+   "b64": "MSAy",
+   "value": {
+    "error": true
+   }
+  },
+  {
+   "b64": "DDE=",
+   "value": {
+    "error": true
+   }
+  },
+  {
+   "b64": "OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk=",
+   "value": {
+    "error": true
+   }
+  },
+  {
+   "b64": "W1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tdXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXQ==",
+   "value": {
+    "ok": [
+     [
+      [
+       [
+        [
+         [
+          [
+           [
+            [
+             [
+              [
+               [
+                [
+                 [
+                  [
+                   [
+                    [
+                     [
+                      [
+                       [
+                        [
+                         [
+                          [
+                           [
+                            [
+                             [
+                              [
+                               [
+                                [
+                                 [
+                                  [
+                                   [
+                                    [
+                                     [
+                                      [
+                                       [
+                                        [
+                                         [
+                                          [
+                                           [
+                                            [
+                                             [
+                                              [
+                                               [
+                                                [
+                                                 [
+                                                  [
+                                                   [
+                                                    [
+                                                     []
+                                                    ]
+                                                   ]
+                                                  ]
+                                                 ]
+                                                ]
+                                               ]
+                                              ]
+                                             ]
+                                            ]
+                                           ]
+                                          ]
+                                         ]
+                                        ]
+                                       ]
+                                      ]
+                                     ]
+                                    ]
+                                   ]
+                                  ]
+                                 ]
+                                ]
+                               ]
+                              ]
+                             ]
+                            ]
+                           ]
+                          ]
+                         ]
+                        ]
+                       ]
+                      ]
+                     ]
+                    ]
+                   ]
+                  ]
+                 ]
+                ]
+               ]
+              ]
+             ]
+            ]
+           ]
+          ]
+         ]
+        ]
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "b64": "IlwvIg==",
+   "value": {
+    "ok": {
+     "str": "/"
+    }
+   }
+  },
+  {
+   "b64": "Ilx4Ig==",
+   "value": {
+    "error": true
+   }
+  },
+  {
+   "b64": "/w==",
+   "value": {
+    "error": true
+   }
+  }
+ ],
+ "qs": [
+  {
+   "raw": "a=1&b=2",
+   "pairs": {
+    "a": "1",
+    "b": "2"
+   }
+  },
+  {
+   "raw": "a=1&a=2",
+   "pairs": {
+    "a": "2"
+   }
+  },
+  {
+   "raw": "a",
+   "pairs": {
+    "a": ""
+   }
+  },
+  {
+   "raw": "a=",
+   "pairs": {
+    "a": ""
+   }
+  },
+  {
+   "raw": "=1",
+   "pairs": {
+    "": "1"
+   }
+  },
+  {
+   "raw": "a=%zz",
+   "pairs": {
+    "a": "%zz"
+   }
+  },
+  {
+   "raw": "a=%C3",
+   "pairs": {
+    "a": "\ufffd"
+   }
+  },
+  {
+   "raw": "a=%C3%A9",
+   "pairs": {
+    "a": "\u00e9"
+   }
+  },
+  {
+   "raw": "a+b=c+d",
+   "pairs": {
+    "a b": "c d"
+   }
+  },
+  {
+   "raw": "a=\u00e9",
+   "pairs": {
+    "a": "\u00e9"
+   }
+  },
+  {
+   "raw": "&&a=1&&",
+   "pairs": {
+    "a": "1"
+   }
+  },
+  {
+   "raw": "a=%E2%82",
+   "pairs": {
+    "a": "\ufffd"
+   }
+  },
+  {
+   "raw": "a=%F0%9F%91%8B",
+   "pairs": {
+    "a": "\ud83d\udc4b"
+   }
+  },
+  {
+   "raw": "a=1;b=2",
+   "pairs": {
+    "a": "1;b=2"
+   }
+  }
+ ]
+}

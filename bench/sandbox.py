@@ -19,8 +19,16 @@ Isolation layers, in order of strength:
    access and denies file writes anywhere except the workdir and a handful of
    device nodes (``/dev/null`` etc.). The script's temp dir (``TMPDIR``) is a
    private ``.tmp`` directory inside the workdir, so it is covered too.
-   **Reads outside the workdir remain allowed**: the interpreter needs the
-   stdlib and site-packages, so the profile does not try to confine reads.
+   Reads are confined only where it matters for the benchmark's integrity: the
+   harness's sources and tests (``<repo>/bench``, ``<repo>/tests`` -- the hidden
+   cases live there), every earlier run's outputs (``<repo>/results``, the CLI's
+   default out root: other runs' programs, outcomes and reports), the same
+   directories of the main checkout when this is a worktree, and every directory
+   registered with ``deny_reads_under`` (the CLI registers the run's out dir, which
+   may lie outside ``results/``) are unreadable,
+   EXCEPT the run's own workdir (SBPL: the last matching rule wins, so the
+   workdir's allow follows the denies). Everything else stays readable: the
+   interpreter needs its stdlib and site-packages (outside those directories).
 
 Fallback: without ``sandbox-exec`` (Linux, or a macOS where it is missing or
 cannot be applied — e.g. when already inside a sandbox) only layers 1–3
@@ -61,10 +69,59 @@ def _sbpl_string(value: str) -> str:
     return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def sandbox_profile(workdir: Path) -> str:
-    """The Seatbelt profile: deny network, deny writes outside ``workdir``."""
+_REPO = Path(__file__).resolve().parent.parent
+# bench/ and tests/: the harness and the hidden cases; results/: earlier runs' outputs
+# (bench.cli's default out root; the edit-slice runs write under bench/results/).
+_READ_DENIED_DIRS = ("bench", "tests", "results")
+_registered_read_denies: set[Path] = set()
+
+
+def deny_reads_under(path: Path) -> None:
+    """Make ``path`` (e.g. a benchmark run's out dir) unreadable to sandboxed code,
+    except each run's own workdir inside it. Process-wide."""
+    _registered_read_denies.add(Path(path).resolve())
+
+
+def _main_checkout(repo: Path) -> Path | None:
+    """The main checkout's root when ``repo`` is a worktree (its ``.git`` is a file
+    naming ``<main>/.git/worktrees/<name>``), else None."""
+    marker = repo / ".git"
+    if not marker.is_file():
+        return None
+    try:
+        text = marker.read_text().strip()
+    except OSError:
+        return None
+    if not text.startswith("gitdir:"):
+        return None
+    pointed = Path(text.split(":", 1)[1].strip())
+    if not pointed.is_absolute():
+        pointed = (repo / pointed).resolve()
+    if pointed.parent.name == "worktrees" and pointed.parent.parent.name == ".git":
+        return pointed.parent.parent.parent
+    return None
+
+
+def read_denied_paths() -> tuple[Path, ...]:
+    """Directories sandboxed code may not read (see the module docstring)."""
+    roots = [_REPO]
+    main = _main_checkout(_REPO)
+    if main is not None:
+        roots.append(main)
+    paths = [root / name for root in roots for name in _READ_DENIED_DIRS]
+    paths += sorted(_registered_read_denies)
+    return tuple(dict.fromkeys(p.resolve() for p in paths))
+
+
+def sandbox_profile(
+    workdir: Path, *, confine_reads: bool = True, extra_reads: tuple[Path, ...] = ()
+) -> str:
+    """The Seatbelt profile: deny network, deny writes outside ``workdir``, and (with
+    ``confine_reads``) deny reading the contents (files and directory listings; not
+    metadata) of ``read_denied_paths()`` except ``workdir`` and
+    ``extra_reads`` (files or directories the process itself needs, e.g. its binary)."""
     root = _sbpl_string(str(workdir.resolve()))
-    return (
+    profile = (
         "(version 1)\n"
         "(allow default)\n"
         "(deny network*)\n"
@@ -76,6 +133,18 @@ def sandbox_profile(workdir: Path) -> str:
         '  (literal "/dev/dtracehelper")\n'
         '  (regex #"^/dev/tty"))\n'
     )
+    if not confine_reads:
+        return profile
+    denied = " ".join(f"(subpath {_sbpl_string(str(p))})" for p in read_denied_paths())
+    allowed = [f"(subpath {root})"] + [
+        f"(subpath {_sbpl_string(str(Path(p).resolve()))})" for p in extra_reads
+    ]
+    # file-read-data (contents, directory listings), not file-read-metadata: a process
+    # in a workdir nested inside a denied directory must still stat its ancestors
+    # (realpath, getcwd, SQLite opening its database) to work at all. The allow names
+    # the same operation as the deny: Seatbelt lets a later rule override an earlier
+    # one only for the operation it names (a later `file-read*` does not undo it).
+    return profile + f"(deny file-read-data {denied})\n(allow file-read-data {' '.join(allowed)})\n"
 
 
 @functools.cache

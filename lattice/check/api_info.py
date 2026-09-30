@@ -401,8 +401,8 @@ def _pattern(name: str, node: ast.expr) -> str | Problem:
             'e.g. pattern="[A-Z]{2}[0-9]{4}"',
         )
     try:
-        re.compile(v)
-    except re.error as err:
+        re.compile(v, re.ASCII)  # as it is matched (pattern_problem): `(?u)` is refused
+    except (re.error, ValueError) as err:
         return (
             f"constraint pattern= of '{name}' is not a valid regular expression: {err}",
             "fix the pattern (Python `re` syntax; the whole value must match)",
@@ -419,8 +419,11 @@ def _pattern(name: str, node: ast.expr) -> str | Problem:
 
 
 def pattern_problem(spec: ParamType | ParamSpec, value: str) -> str | None:
-    """The 422 message when a Str value does not match the parameter's pattern."""
-    if spec.pattern is None or re.fullmatch(spec.pattern, value):
+    """The 422 message when a Str value does not match the parameter's pattern:
+    `re.fullmatch` with `re.ASCII` (`\\d \\w \\s \\b` are ASCII on every target, for
+    portability; docs/lattice-language-rules.md §6). Go runs the same compiled pattern on
+    its port of Python's SRE engine (lattice.gogen.endpoints, rt/params.go)."""
+    if spec.pattern is None or re.fullmatch(spec.pattern, value, flags=re.ASCII):
         return None
     return "must be an email address" if spec.email else f"must match the pattern {spec.pattern!r}"
 

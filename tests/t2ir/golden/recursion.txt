@@ -1,0 +1,47 @@
+procedure fact(n: Int) -> Int
+  recursive: True
+  locals: n: Int
+  If
+    test: Compare(<=) : Bool
+      Var n : Int
+      Const 1 : Int
+    body:
+      Return
+        Const 1 : Int
+  Return
+    Grow(*) : Int
+      Var n : Int
+      Call proc:fact : Int
+        Binary(-) : Int
+          Var n : Int
+          Const 1 : Int
+procedure is_even(n: Int) -> Bool
+  recursive: True
+  locals: n: Int
+  If
+    test: Compare(==) : Bool
+      Var n : Int
+      Const 0 : Int
+    body:
+      Return
+        Const True : Bool
+  Return
+    Call proc:is_odd : Bool
+      Binary(-) : Int
+        Var n : Int
+        Const 1 : Int
+procedure is_odd(n: Int) -> Bool
+  recursive: True
+  locals: n: Int
+  If
+    test: Compare(==) : Bool
+      Var n : Int
+      Const 0 : Int
+    body:
+      Return
+        Const False : Bool
+  Return
+    Call proc:is_even : Bool
+      Binary(-) : Int
+        Var n : Int
+        Const 1 : Int

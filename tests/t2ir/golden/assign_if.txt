@@ -1,0 +1,57 @@
+procedure classify(n: Int, flag: Bool) -> Str
+  recursive: False
+  locals: a: Int, b: Int, flag: Bool, label: Str, limit: Int, n: Int, size: Str
+  Pass
+  Assign
+    target: NameT label
+    Const 'zero' : Str
+  Pass
+  Assign
+    target: NameT a
+    Binary(-) : Int
+      Var n : Int
+      Const 1 : Int
+  Assign
+    target: NameT b
+    Var a : Int
+  If
+    test: BoolOp(and) : Bool
+      Compare(>) : Bool
+        Var n : Int
+        Const 0 : Int
+      Var flag : Bool
+    body:
+      Assign
+        target: NameT label
+        Const 'positive' : Str
+    orelse:
+      If
+        test: BoolOp(or) : Bool
+          Compare(<) : Bool
+            Var n : Int
+            Const 0 : Int
+          Unary(not) : Bool
+            Var flag : Bool
+        body:
+          Assign
+            target: NameT label
+            Const 'negative' : Str
+        orelse:
+          Pass
+  Assign
+    target: NameT size
+    IfExp : Str
+      test: Compare(>) : Bool
+        Var a : Int
+        Const 100 : Int
+      body: Const 'big' : Str
+      orelse: Const 'small' : Str
+  Return
+    IfExp : Str
+      test: Compare(!=) : Bool
+        Var b : Int
+        Const 0 : Int
+      body: Grow(+) : Str
+        Var label : Str
+        Var size : Str
+      orelse: Var label : Str

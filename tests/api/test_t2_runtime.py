@@ -247,3 +247,31 @@ def test_an_app_without_procedures_has_no_t2_code():
     _, code = compile_source_to_fastapi(effects.PROGRAM, effects.PROFILE)
     assert code is not None
     assert "T2_SOURCE" not in code and "class T2Fuel" not in code
+
+
+# ---- R-widen at the boundary: an Int handed to a Float parameter arrives as a float ------
+
+_WIDEN = '''
+
+@procedure
+def floats(x: Float, y: Float, z: Float) -> Str:
+    return f"{x}|{y}|{z}"
+
+
+@endpoint("GET", "/widen", auth=Customer)
+def widen_args(user: CurrentUser, n: Int(ge=0) = 3) -> Page:
+    items = fetch(Items)
+    mine = accessible(items, by=user)
+    ordered = sort(mine, by=["id"])
+    flagged = derive(ordered, text=floats(col("owner_id"), n, 2))
+    shown = select(flagged, cols=["id", "text"])
+    return page(shown, limit=1, offset=0, total=False)
+'''
+
+
+def test_int_arguments_of_float_parameters_arrive_as_floats(db: Path):
+    _, app = serve_source(t2prog.PROGRAM + _WIDEN, t2prog.PROFILE, db, natives=t2prog.NATIVES)
+    assert app is not None
+    with TestClient(app) as c:
+        body = c.get("/widen?n=4", headers=H["alice"]).json()
+    assert [row["text"] for row in body["items"]] == ["2.0|4.0|2.0"]

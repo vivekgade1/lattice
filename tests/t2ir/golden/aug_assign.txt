@@ -1,0 +1,58 @@
+procedure aug(xs: list[Int], k: Int) -> Int
+  recursive: False
+  locals: k: Int, n: Int, s: Str, xs: list[Int], ys: list[Int]
+  Assign
+    target: NameT ys
+    Charged : list[Int]
+      Call builtin:list : list[Int]
+        Bulk : list[Int]
+          Var xs : list[Int]
+  AugAssign(+)
+    target: NameT ys
+    ListLit : list[Int]
+      Var k : Int
+    grow: True
+  AugAssign(-)
+    target: IndexT
+      Var ys : list[Int]
+      Const 0 : Int
+    Const 1 : Int
+    grow: False
+  AugAssign(*)
+    target: IndexT
+      Var ys : list[Int]
+      Const 1 : Int
+    Var k : Int
+    grow: True
+  Assign
+    target: NameT s
+    Const 'a' : Str
+  AugAssign(*)
+    target: NameT s
+    Var k : Int
+    grow: True
+  Assign
+    target: NameT n
+    Const 2 : Int
+  AugAssign(**)
+    target: NameT n
+    Const 2 : Int
+    grow: True
+  AugAssign(<<)
+    target: NameT n
+    Const 1 : Int
+    grow: True
+  AugAssign(//)
+    target: NameT n
+    Const 3 : Int
+    grow: False
+  Return
+    Grow(+) : Int
+      Grow(+) : Int
+        Var n : Int
+        Charged : Int
+          Call builtin:len : Int
+            Var s : Str
+      Charged : Int
+        Call builtin:len : Int
+          Var ys : list[Int]

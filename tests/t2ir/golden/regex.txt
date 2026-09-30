@@ -1,0 +1,65 @@
+import re = re
+procedure regex(s: Str) -> Str
+  recursive: False
+  locals: cleaned: Str, found: list[Str], head: Str, m: Match | None, parts: list[Str], s: Str
+  If
+    test: Compare(is not) : Bool
+      Charged : Match | None
+        Call std:re.fullmatch : Match | None
+          Const '[a-z]+' : Str
+          Scan : Str
+            Var s : Str
+      Const None : None
+    body:
+      Return
+        Var s : Str
+  Assign
+    target: NameT m
+    Charged : Match | None
+      Call std:re.search : Match | None
+        Const '\\d+' : Str
+        Scan : Str
+          Var s : Str
+  Assign
+    target: NameT parts
+    Charged : list[Str]
+      Call std:re.split : list[Str]
+        Const ',' : Str
+        Scan : Str
+          Var s : Str
+  Assign
+    target: NameT found
+    Charged : list[Str]
+      Call std:re.findall : list[Str]
+        Const '[A-Z]' : Str
+        Scan : Str
+          Var s : Str
+  Assign
+    target: NameT cleaned
+    Sized(sub) : Str
+      Call std:re.sub : Str
+        Const '\\s+' : Str
+        Const ' ' : Str
+        Var s : Str
+  Assign
+    target: NameT head
+    IfExp : Str
+      test: Compare(is) : Bool
+        Var m : Match | None
+        Const None : None
+      body: Const 'none' : Str
+      orelse: Const 'some' : Str
+  Return
+    Grow(+) : Str
+      Grow(+) : Str
+        Var head : Str
+        Var cleaned : Str
+      Charged : Str
+        Call builtin:str : Str
+          Grow(+) : Int
+            Charged : Int
+              Call builtin:len : Int
+                Var parts : list[Str]
+            Charged : Int
+              Call builtin:len : Int
+                Var found : list[Str]

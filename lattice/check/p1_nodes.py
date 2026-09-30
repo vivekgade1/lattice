@@ -43,6 +43,7 @@ from lattice.check.astutil import (
 )
 from lattice.check.context import CheckContext
 from lattice.check.loop_hints import comprehension_hint, loop_hint
+from lattice.check.re2 import re2_problem
 
 _BIN_OPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Mod, ast.BitAnd, ast.BitOr)
 _CMP_OPS = (ast.Eq, ast.NotEq, ast.Lt, ast.LtE, ast.Gt, ast.GtE)
@@ -467,6 +468,15 @@ def _check_endpoint_signature(fn: ast.FunctionDef, ctx: CheckContext) -> None:
         if not isinstance(pt, ParamType):
             ctx.error("L601", a, pt[0], pt[1])
             continue
+        if pt.pattern is not None:
+            problem = re2_problem(pt.pattern)
+            if problem is not None:
+                ctx.error(
+                    "L926",
+                    a,
+                    f"constraint pattern= of '{a.arg}': {problem}",
+                    "rewrite without lookaround/backreferences, e.g. two matches or a split",
+                )
         if pt.scalar is None and a.arg != USER_PARAM:
             ctx.error(
                 "L601",

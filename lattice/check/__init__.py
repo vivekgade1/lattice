@@ -16,6 +16,7 @@ from lattice.check import (
     p5_effects,
     p6_api,
     p7_backend,
+    p8_target,
     t2,
 )
 from lattice.check.api_info import EndpointInfo
@@ -27,6 +28,7 @@ from lattice.check.tiers import tier_summary as _tier_summary
 from lattice.diagnostics import Diagnostic, Span, has_errors, sort_key
 from lattice.parse import parse, too_deep
 from lattice.profile import Profile
+from lattice.targets import target_named
 from lattice.typesys import StepT, Type
 
 
@@ -81,15 +83,15 @@ def _depth(module: ast.Module) -> int:
     return deepest
 
 
-def check_source(source: str, profile: Profile) -> CheckResult:
+def check_source(source: str, profile: Profile, *, target: str = "python") -> CheckResult:
     """Never raises: pathological nesting yields a single L003 diagnostic."""
     try:
-        return _check_source(source, profile)
+        return _check_source(source, profile, target=target)
     except RecursionError:
         return CheckResult(None, (too_deep(),))
 
 
-def _check_source(source: str, profile: Profile) -> CheckResult:
+def _check_source(source: str, profile: Profile, *, target: str = "python") -> CheckResult:
     parsed = parse(source)
     if parsed.module is None:
         return CheckResult(None, _sorted(list(parsed.diagnostics)))
@@ -151,6 +153,7 @@ def _check_source(source: str, profile: Profile) -> CheckResult:
     p5_effects.run(module, ctx)
     endpoints = p6_api.run(module, ctx)
     p7_backend.run(module, ctx)
+    p8_target.run(module, ctx, t2_program, target_named(target))
 
     if has_errors(ctx.diagnostics):
         return result(None)

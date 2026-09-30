@@ -279,6 +279,21 @@ def test_counter_and_defaultdict():
     ok(src)
 
 
+def test_counter_of_a_dict_needs_int_counts():
+    """Counter(d) takes d's values as the counts: they must be Ints (Task 10)."""
+    src = """
+    from collections import Counter
+
+    @procedure
+    def f(d: dict[Str, Str], e: dict[Str, Int]) -> Int:
+        a = Counter(d)
+        b = Counter(e)
+        c = Counter(d.keys())
+        return len(a) + len(b) + len(c)
+    """
+    assert errors(src) == ["L904"]
+
+
 def test_comprehensions_and_scopes():
     src = proc(
         """
@@ -510,3 +525,50 @@ def test_bad_annotation_does_not_cascade():
     src = "from collections import Counter\n" + proc("c: Counter = Counter()\nreturn 0")
     assert errors(src) == ["L902"]
     assert errors(proc("xs: Widget = []\nreturn len(xs)")) == ["L902"]
+
+
+@pytest.mark.parametrize("stmt", ["ys[0:1] += [x]", "ys[:] *= 2", "ys[::2] -= ys", "s[1:] += 'a'"])
+def test_augmented_slice_assignment_is_l913(stmt):
+    """v1.1: `xs[a:b] op= v` is slice assignment, rejected on every target like `xs[a:b] = v`."""
+    src = proc(f"ys = [x]\ns = 'ab'\n{stmt}\nreturn len(ys)")
+    assert errors(src) == ["L913"]
+    assert "slice assignment" in first(src, "L913").message
+
+
+# ---- re.findall / re.split follow the pattern's groups (R3/R9, 2026-09-29) ---------------
+
+
+def _re_proc(body: str, sig: str = "(s: Str) -> Int") -> str:
+    return "import re\n\n" + proc(body, sig=sig)
+
+
+@pytest.mark.parametrize(
+    ("call", "local"),
+    [
+        ('re.findall(r"\\d+", s)', "list[Str]"),
+        ('re.findall(r"(\\d+)x", s)', "list[Str]"),
+        ('re.findall(r"(?:a)(?:b)", s)', "list[Str]"),
+        ('re.findall(r"(a)(b)", s)', "tuple[Str, Str]"),
+        ('re.findall(r"(a)(?P<n>b)(c)?", s)', "tuple[Str, Str, Str]"),
+        ('re.split(r",", s)', "list[Str]"),
+        ('re.split(r"(?:,)", s)', "list[Str]"),
+        ('re.split(r"(,)|;", s)', "list[Str | None]"),
+    ],
+)
+def test_findall_and_split_types_follow_the_groups(call, local):
+    types = _local_types(_re_proc(f"xs = {call}\nreturn len(xs)"))
+    want = local if local.startswith("list") else f"list[{local}]"
+    assert types["xs"].render() == want
+
+
+def test_findall_of_two_groups_is_not_a_list_of_str():
+    """The hole: this used to check, then raise an uncatchable AttributeError."""
+    src = _re_proc('xs = re.findall(r"(a)(b)", s)\nreturn len(xs[0].upper())')
+    assert errors(src)
+    ok(_re_proc('xs = re.findall(r"(a)(b)", s)\nx, y = xs[0]\nreturn len(x.upper() + y)'))
+
+
+def test_split_with_groups_may_hold_none():
+    src = _re_proc('xs = re.split(r"(,)|;", s)\nreturn len(xs[0].upper())')
+    assert errors(src)
+    ok(_re_proc('xs = re.split(r"(,)|;", s)\nreturn len((xs[0] or "").upper())'))

@@ -1,0 +1,3058 @@
+{
+ "python": "3.14.0",
+ "schema": "\nCREATE TABLE users (\n    id INTEGER PRIMARY KEY, token TEXT NOT NULL UNIQUE, role TEXT NOT NULL,\n    active INTEGER NOT NULL, name TEXT NOT NULL\n);\nCREATE TABLE items (\n    id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, price REAL NOT NULL,\n    owner_id INTEGER NOT NULL, created_at DATETIME NOT NULL\n);\nINSERT INTO users VALUES\n    (1, 'tok-ann', 'Customer', 1, 'Ann'),\n    (2, 'tok-bob', 'Admin', 1, 'Bob'),\n    (3, 'tok-cy', 'Customer', 0, 'Cy');\nINSERT INTO items VALUES\n    (1, 'apple', 1.5, 1, '2000-01-02T03:04:05.000000Z'),\n    (2, 'pear', 1e16, 2, '2000-01-02 05:04:05+02:00'),\n    (3, 'fig', 0.25, 1, '2000-01-03 00:00:00');\n",
+ "styles": {
+  "lattice": {
+   "endpoints": {
+    "list_items": {
+     "auth": "Public",
+     "writes": false,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": [
+      {
+       "name": "n",
+       "source": "query",
+       "scalar": "Int",
+       "ge": 1,
+       "le": 100,
+       "max_len": null,
+       "default": 10
+      },
+      {
+       "name": "skip",
+       "source": "query",
+       "scalar": "Int",
+       "ge": 0,
+       "le": null,
+       "max_len": null,
+       "default": 0
+      }
+     ]
+    },
+    "create_item": {
+     "auth": "Customer",
+     "writes": true,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": [
+      {
+       "name": "name",
+       "source": "body",
+       "scalar": "Str",
+       "ge": null,
+       "le": null,
+       "max_len": 20,
+       "default": null
+      },
+      {
+       "name": "price",
+       "source": "body",
+       "scalar": "Float",
+       "ge": 0,
+       "le": 1000,
+       "max_len": null,
+       "default": null
+      }
+     ]
+    },
+    "my_items": {
+     "auth": "Customer",
+     "writes": false,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": []
+    },
+    "admin_ping": {
+     "auth": "Admin",
+     "writes": false,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": []
+    },
+    "get_item": {
+     "auth": "Public",
+     "writes": false,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": [
+      {
+       "name": "id",
+       "source": "path",
+       "scalar": "Int",
+       "ge": null,
+       "le": null,
+       "max_len": null,
+       "default": null
+      }
+     ]
+    }
+   },
+   "constants": {
+    "OUTBOX_COLUMNS": "SELECT \"name\" FROM pragma_table_info('lattice_outbox')",
+    "LIST_ITEMS_RESULT_COLUMNS": [
+     "id",
+     "name",
+     "price",
+     "created_at"
+    ],
+    "LIST_ITEMS_RESULT_SQL": "WITH t0 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t0),\nt2 AS (SELECT \"id\", \"name\", \"price\", \"created_at\", __ord FROM t1),\nt3 AS (SELECT \"id\", \"name\", \"price\", \"created_at\", __ord FROM t2 ORDER BY __ord LIMIT :p_n OFFSET :p_skip)\nSELECT f.\"id\", f.\"name\", f.\"price\", f.\"created_at\", (f.__ord IS NOT NULL) AS __in_page, n.__total FROM (SELECT COUNT(*) AS __total FROM t2) AS n LEFT JOIN t3 AS f ON 1 ORDER BY f.__ord",
+    "LIST_ITEMS_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "name",
+      "Str"
+     ],
+     [
+      "price",
+      "Float"
+     ],
+     [
+      "created_at",
+      "DateTime"
+     ]
+    ],
+    "LIST_ITEMS_PAGE_SHAPE": [
+     [
+      "items",
+      "data"
+     ],
+     [
+      "total",
+      "count"
+     ],
+     [
+      "limit",
+      "limit"
+     ],
+     [
+      "offset",
+      ""
+     ]
+    ],
+    "CREATE_ITEM_ITEM_COLUMNS": [
+     "id",
+     "name",
+     "price",
+     "owner_id",
+     "created_at"
+    ],
+    "CREATE_ITEM_ITEM_SQL": "INSERT INTO \"items\" (\"owner_id\", \"name\", \"price\", \"created_at\") VALUES (:__user_id, :p_name, :p_price, :__now) RETURNING \"id\", \"name\", \"price\", \"owner_id\", \"created_at\"",
+    "CREATE_ITEM_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "name",
+      "Str"
+     ],
+     [
+      "price",
+      "Float"
+     ],
+     [
+      "created_at",
+      "DateTime"
+     ]
+    ],
+    "MY_ITEMS_FEW_COLUMNS": [
+     "id",
+     "name",
+     "price",
+     "created_at"
+    ],
+    "MY_ITEMS_FEW_SQL": "WITH t0 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", __ord FROM t0 WHERE (\"owner_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t1),\nt3 AS (SELECT \"id\", \"name\", \"price\", \"created_at\", __ord FROM t2),\nt4 AS (SELECT \"id\", \"name\", \"price\", \"created_at\", __ord FROM t3 ORDER BY __ord LIMIT :__l0)\nSELECT \"id\", \"name\", \"price\", \"created_at\" FROM t4 ORDER BY __ord",
+    "MY_ITEMS_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "name",
+      "Str"
+     ],
+     [
+      "price",
+      "Float"
+     ],
+     [
+      "created_at",
+      "DateTime"
+     ]
+    ],
+    "ADMIN_PING_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "role",
+      "Str"
+     ],
+     [
+      "name",
+      "Str"
+     ]
+    ],
+    "GET_ITEM_FOUND_COLUMNS": [
+     "id",
+     "name",
+     "price",
+     "owner_id",
+     "created_at"
+    ],
+    "GET_ITEM_FOUND_SQL": "WITH t0 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", __ord FROM t0 WHERE (\"id\" = :p_id))\nSELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\" FROM t1 ORDER BY __ord",
+    "GET_ITEM_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "name",
+      "Str"
+     ],
+     [
+      "price",
+      "Float"
+     ],
+     [
+      "created_at",
+      "DateTime"
+     ]
+    ]
+   },
+   "routes": [
+    {
+     "path": "/items",
+     "method": "GET",
+     "name": "list_items"
+    },
+    {
+     "path": "/items",
+     "method": "POST",
+     "name": "create_item"
+    },
+    {
+     "path": "/items/mine",
+     "method": "GET",
+     "name": "my_items"
+    },
+    {
+     "path": "/admin/ping",
+     "method": "GET",
+     "name": "admin_ping"
+    },
+    {
+     "path": "/items/{id}",
+     "method": "GET",
+     "name": "get_item"
+    }
+   ],
+   "replies": [
+    {
+     "name": "page",
+     "method": "GET",
+     "path": "/items",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"data\":[{\"id\":1,\"name\":\"apple\",\"price\":1.5,\"created_at\":\"2000-01-02T03:04:05.000000Z\"},{\"id\":2,\"name\":\"pear\",\"price\":1e+16,\"created_at\":\"2000-01-02T03:04:05.000000Z\"},{\"id\":3,\"name\":\"fig\",\"price\":0.25,\"created_at\":\"2000-01-03T00:00:00.000000Z\"}],\"count\":3,\"limit\":10}",
+     "content_type": "application/json",
+     "content_length": "268",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "page 2",
+     "method": "GET",
+     "path": "/items?n=1&skip=1",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"data\":[{\"id\":2,\"name\":\"pear\",\"price\":1e+16,\"created_at\":\"2000-01-02T03:04:05.000000Z\"}],\"count\":3,\"limit\":1}",
+     "content_type": "application/json",
+     "content_length": "110",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "page repeated n",
+     "method": "GET",
+     "path": "/items?n=5&n=1",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"data\":[{\"id\":1,\"name\":\"apple\",\"price\":1.5,\"created_at\":\"2000-01-02T03:04:05.000000Z\"}],\"count\":3,\"limit\":1}",
+     "content_type": "application/json",
+     "content_length": "109",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "page n=0",
+     "method": "GET",
+     "path": "/items?n=0",
+     "auth": null,
+     "body": null,
+     "status": 422,
+     "reply": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 1\"}]}",
+     "content_type": "application/json",
+     "content_length": "76",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "page two problems",
+     "method": "GET",
+     "path": "/items?n=abc&skip=-1",
+     "auth": null,
+     "body": null,
+     "status": 422,
+     "reply": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"skip\"],\"msg\":\"must be >= 0\"}]}",
+     "content_type": "application/json",
+     "content_length": "128",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one offset spelling",
+     "method": "GET",
+     "path": "/items/2",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"id\":2,\"name\":\"pear\",\"price\":1e+16,\"created_at\":\"2000-01-02T03:04:05.000000Z\"}",
+     "content_type": "application/json",
+     "content_length": "79",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one space spelling",
+     "method": "GET",
+     "path": "/items/3",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"id\":3,\"name\":\"fig\",\"price\":0.25,\"created_at\":\"2000-01-03T00:00:00.000000Z\"}",
+     "content_type": "application/json",
+     "content_length": "77",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one missing",
+     "method": "GET",
+     "path": "/items/99",
+     "auth": null,
+     "body": null,
+     "status": 404,
+     "reply": "{\"error\":\"not_found\",\"detail\":\"item not found\"}",
+     "content_type": "application/json",
+     "content_length": "47",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one bad id",
+     "method": "GET",
+     "path": "/items/x",
+     "auth": null,
+     "body": null,
+     "status": 422,
+     "reply": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"id\"],\"msg\":\"must be an integer\"}]}",
+     "content_type": "application/json",
+     "content_length": "82",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one slash redirect",
+     "method": "GET",
+     "path": "/items/2/",
+     "auth": null,
+     "body": null,
+     "status": 307,
+     "reply": "",
+     "content_type": null,
+     "content_length": "0",
+     "location": "http://testserver/items/2",
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "list slash redirect",
+     "method": "GET",
+     "path": "/items/?n=1",
+     "auth": null,
+     "body": null,
+     "status": 307,
+     "reply": "",
+     "content_type": null,
+     "content_length": "0",
+     "location": "http://testserver/items?n=1",
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "put slash redirect",
+     "method": "PUT",
+     "path": "/items/1/",
+     "auth": null,
+     "body": null,
+     "status": 307,
+     "reply": "",
+     "content_type": null,
+     "content_length": "0",
+     "location": "http://testserver/items/1",
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "unknown path",
+     "method": "GET",
+     "path": "/nowhere",
+     "auth": null,
+     "body": null,
+     "status": 404,
+     "reply": "{\"error\":\"not_found\"}",
+     "content_type": "application/json",
+     "content_length": "21",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "unknown slash",
+     "method": "GET",
+     "path": "/nowhere/",
+     "auth": null,
+     "body": null,
+     "status": 404,
+     "reply": "{\"error\":\"not_found\"}",
+     "content_type": "application/json",
+     "content_length": "21",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "wrong method",
+     "method": "DELETE",
+     "path": "/items",
+     "auth": null,
+     "body": null,
+     "status": 405,
+     "reply": "{\"error\":\"method_not_allowed\"}",
+     "content_type": "application/json",
+     "content_length": "30",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "head",
+     "method": "HEAD",
+     "path": "/items",
+     "auth": null,
+     "body": null,
+     "status": 405,
+     "reply": "",
+     "content_type": "application/json",
+     "content_length": "30",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "encoded slash",
+     "method": "GET",
+     "path": "/items/a%2Fb",
+     "auth": null,
+     "body": null,
+     "status": 404,
+     "reply": "{\"error\":\"not_found\"}",
+     "content_type": "application/json",
+     "content_length": "21",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine no token",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": null,
+     "body": null,
+     "status": 401,
+     "reply": "{\"error\":\"unauthorized\"}",
+     "content_type": "application/json",
+     "content_length": "24",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine unknown token",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Bearer nope",
+     "body": null,
+     "status": 401,
+     "reply": "{\"error\":\"unauthorized\"}",
+     "content_type": "application/json",
+     "content_length": "24",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine basic",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Basic tok-ann",
+     "body": null,
+     "status": 401,
+     "reply": "{\"error\":\"unauthorized\"}",
+     "content_type": "application/json",
+     "content_length": "24",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine lowercase scheme",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "  bearer   tok-ann ",
+     "body": null,
+     "status": 200,
+     "reply": "[{\"id\":1,\"name\":\"apple\",\"price\":1.5,\"created_at\":\"2000-01-02T03:04:05.000000Z\"},{\"id\":3,\"name\":\"fig\",\"price\":0.25,\"created_at\":\"2000-01-03T00:00:00.000000Z\"}]",
+     "content_type": "application/json",
+     "content_length": "158",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine inactive",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Bearer tok-cy",
+     "body": null,
+     "status": 400,
+     "reply": "{\"error\":\"bad_request\",\"detail\":\"Inactive user\"}",
+     "content_type": "application/json",
+     "content_length": "48",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "admin as customer",
+     "method": "GET",
+     "path": "/admin/ping",
+     "auth": "Bearer tok-ann",
+     "body": null,
+     "status": 403,
+     "reply": "{\"error\":\"forbidden\"}",
+     "content_type": "application/json",
+     "content_length": "21",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "admin",
+     "method": "GET",
+     "path": "/admin/ping",
+     "auth": "Bearer tok-bob",
+     "body": null,
+     "status": 200,
+     "reply": "{\"id\":2,\"role\":\"Admin\",\"name\":\"Bob\"}",
+     "content_type": "application/json",
+     "content_length": "36",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "admin calls customer endpoint",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Bearer tok-bob",
+     "body": null,
+     "status": 200,
+     "reply": "[{\"id\":2,\"name\":\"pear\",\"price\":1e+16,\"created_at\":\"2000-01-02T03:04:05.000000Z\"}]",
+     "content_type": "application/json",
+     "content_length": "81",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-ann",
+     "body": "{\"name\": \"kiwi\", \"price\": 2}",
+     "status": 201,
+     "reply": "{\"id\":4,\"name\":\"kiwi\",\"price\":2.0,\"created_at\":\"<now>\"}",
+     "content_type": "application/json",
+     "content_length": "77",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create conflict",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-ann",
+     "body": "{\"name\": \"kiwi\", \"price\": 3}",
+     "status": 409,
+     "reply": "{\"error\":\"conflict\",\"detail\":\"an item with this name exists\"}",
+     "content_type": "application/json",
+     "content_length": "61",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create invalid",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-ann",
+     "body": "{\"price\": -1}",
+     "status": 422,
+     "reply": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"name\"],\"msg\":\"field required\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0\"}]}",
+     "content_type": "application/json",
+     "content_length": "126",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create non-object",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-ann",
+     "body": "[1]",
+     "status": 422,
+     "reply": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}",
+     "content_type": "application/json",
+     "content_length": "89",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create no token",
+     "method": "POST",
+     "path": "/items",
+     "auth": null,
+     "body": "{\"name\": \"x\"}",
+     "status": 401,
+     "reply": "{\"error\":\"unauthorized\"}",
+     "content_type": "application/json",
+     "content_length": "24",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create inactive before validation",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-cy",
+     "body": "[1]",
+     "status": 400,
+     "reply": "{\"error\":\"bad_request\",\"detail\":\"Inactive user\"}",
+     "content_type": "application/json",
+     "content_length": "48",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create unknown before validation",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer nope",
+     "body": "{",
+     "status": 401,
+     "reply": "{\"error\":\"unauthorized\"}",
+     "content_type": "application/json",
+     "content_length": "24",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create as admin",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-bob",
+     "body": "{\"name\": \"plum\", \"price\": 1000}",
+     "status": 201,
+     "reply": "{\"id\":5,\"name\":\"plum\",\"price\":1000.0,\"created_at\":\"<now>\"}",
+     "content_type": "application/json",
+     "content_length": "80",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ],
+      [
+       5,
+       "plum",
+       1000.0,
+       2
+      ]
+     ]
+    },
+    {
+     "name": "mine after create",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Bearer tok-ann",
+     "body": null,
+     "status": 200,
+     "reply": "[{\"id\":1,\"name\":\"apple\",\"price\":1.5,\"created_at\":\"2000-01-02T03:04:05.000000Z\"},{\"id\":3,\"name\":\"fig\",\"price\":0.25,\"created_at\":\"2000-01-03T00:00:00.000000Z\"},{\"id\":4,\"name\":\"kiwi\",\"price\":2.0,\"created_at\":\"<now>\"}]",
+     "content_type": "application/json",
+     "content_length": "236",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ],
+      [
+       5,
+       "plum",
+       1000.0,
+       2
+      ]
+     ]
+    },
+    {
+     "name": "page after create",
+     "method": "GET",
+     "path": "/items?n=2&skip=3",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"data\":[{\"id\":4,\"name\":\"kiwi\",\"price\":2.0,\"created_at\":\"<now>\"},{\"id\":5,\"name\":\"plum\",\"price\":1000.0,\"created_at\":\"<now>\"}],\"count\":5,\"limit\":2}",
+     "content_type": "application/json",
+     "content_length": "189",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ],
+      [
+       5,
+       "plum",
+       1000.0,
+       2
+      ]
+     ]
+    }
+   ]
+  },
+  "fastapi": {
+   "endpoints": {
+    "list_items": {
+     "auth": "Public",
+     "writes": false,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": [
+      {
+       "name": "n",
+       "source": "query",
+       "scalar": "Int",
+       "ge": 1,
+       "le": 100,
+       "max_len": null,
+       "default": 10
+      },
+      {
+       "name": "skip",
+       "source": "query",
+       "scalar": "Int",
+       "ge": 0,
+       "le": null,
+       "max_len": null,
+       "default": 0
+      }
+     ]
+    },
+    "create_item": {
+     "auth": "Customer",
+     "writes": true,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": [
+      {
+       "name": "name",
+       "source": "body",
+       "scalar": "Str",
+       "ge": null,
+       "le": null,
+       "max_len": 20,
+       "default": null
+      },
+      {
+       "name": "price",
+       "source": "body",
+       "scalar": "Float",
+       "ge": 0,
+       "le": 1000,
+       "max_len": null,
+       "default": null
+      }
+     ]
+    },
+    "my_items": {
+     "auth": "Customer",
+     "writes": false,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": []
+    },
+    "admin_ping": {
+     "auth": "Admin",
+     "writes": false,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": []
+    },
+    "get_item": {
+     "auth": "Public",
+     "writes": false,
+     "auth_sql": "SELECT \"id\", \"token\", \"role\", \"active\", \"name\" FROM \"users\" WHERE \"token\" = ?",
+     "user_columns": [
+      "id",
+      "token",
+      "role",
+      "active",
+      "name"
+     ],
+     "user_key": "id",
+     "admin_role": "Admin",
+     "params": [
+      {
+       "name": "id",
+       "source": "path",
+       "scalar": "Int",
+       "ge": null,
+       "le": null,
+       "max_len": null,
+       "default": null
+      }
+     ]
+    }
+   },
+   "constants": {
+    "OUTBOX_COLUMNS": "SELECT \"name\" FROM pragma_table_info('lattice_outbox')",
+    "LIST_ITEMS_RESULT_COLUMNS": [
+     "id",
+     "name",
+     "price",
+     "created_at"
+    ],
+    "LIST_ITEMS_RESULT_SQL": "WITH t0 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t0),\nt2 AS (SELECT \"id\", \"name\", \"price\", \"created_at\", __ord FROM t1),\nt3 AS (SELECT \"id\", \"name\", \"price\", \"created_at\", __ord FROM t2 ORDER BY __ord LIMIT :p_n OFFSET :p_skip)\nSELECT f.\"id\", f.\"name\", f.\"price\", f.\"created_at\", (f.__ord IS NOT NULL) AS __in_page, n.__total FROM (SELECT COUNT(*) AS __total FROM t2) AS n LEFT JOIN t3 AS f ON 1 ORDER BY f.__ord",
+    "LIST_ITEMS_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "name",
+      "Str"
+     ],
+     [
+      "price",
+      "Float"
+     ],
+     [
+      "created_at",
+      "DateTime"
+     ]
+    ],
+    "LIST_ITEMS_PAGE_SHAPE": [
+     [
+      "items",
+      "data"
+     ],
+     [
+      "total",
+      "count"
+     ],
+     [
+      "limit",
+      "limit"
+     ],
+     [
+      "offset",
+      ""
+     ]
+    ],
+    "CREATE_ITEM_ITEM_COLUMNS": [
+     "id",
+     "name",
+     "price",
+     "owner_id",
+     "created_at"
+    ],
+    "CREATE_ITEM_ITEM_SQL": "INSERT INTO \"items\" (\"owner_id\", \"name\", \"price\", \"created_at\") VALUES (:__user_id, :p_name, :p_price, :__now) RETURNING \"id\", \"name\", \"price\", \"owner_id\", \"created_at\"",
+    "CREATE_ITEM_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "name",
+      "Str"
+     ],
+     [
+      "price",
+      "Float"
+     ],
+     [
+      "created_at",
+      "DateTime"
+     ]
+    ],
+    "MY_ITEMS_FEW_COLUMNS": [
+     "id",
+     "name",
+     "price",
+     "created_at"
+    ],
+    "MY_ITEMS_FEW_SQL": "WITH t0 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", __ord FROM t0 WHERE (\"owner_id\" = :__user_id)),\nt2 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", ROW_NUMBER() OVER (ORDER BY (\"id\" IS NULL), \"id\", __ord) AS __ord FROM t1),\nt3 AS (SELECT \"id\", \"name\", \"price\", \"created_at\", __ord FROM t2),\nt4 AS (SELECT \"id\", \"name\", \"price\", \"created_at\", __ord FROM t3 ORDER BY __ord LIMIT :__l0)\nSELECT \"id\", \"name\", \"price\", \"created_at\" FROM t4 ORDER BY __ord",
+    "MY_ITEMS_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "name",
+      "Str"
+     ],
+     [
+      "price",
+      "Float"
+     ],
+     [
+      "created_at",
+      "DateTime"
+     ]
+    ],
+    "ADMIN_PING_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "role",
+      "Str"
+     ],
+     [
+      "name",
+      "Str"
+     ]
+    ],
+    "GET_ITEM_FOUND_COLUMNS": [
+     "id",
+     "name",
+     "price",
+     "owner_id",
+     "created_at"
+    ],
+    "GET_ITEM_FOUND_SQL": "WITH t0 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", \"id\" AS __ord FROM \"items\"),\nt1 AS (SELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\", __ord FROM t0 WHERE (\"id\" = :p_id))\nSELECT \"id\", \"name\", \"price\", \"owner_id\", \"created_at\" FROM t1 ORDER BY __ord",
+    "GET_ITEM_RESPONSE": [
+     [
+      "id",
+      "Int"
+     ],
+     [
+      "name",
+      "Str"
+     ],
+     [
+      "price",
+      "Float"
+     ],
+     [
+      "created_at",
+      "DateTime"
+     ]
+    ]
+   },
+   "routes": [
+    {
+     "path": "/items",
+     "method": "GET",
+     "name": "list_items"
+    },
+    {
+     "path": "/items",
+     "method": "POST",
+     "name": "create_item"
+    },
+    {
+     "path": "/items/mine",
+     "method": "GET",
+     "name": "my_items"
+    },
+    {
+     "path": "/admin/ping",
+     "method": "GET",
+     "name": "admin_ping"
+    },
+    {
+     "path": "/items/{id}",
+     "method": "GET",
+     "name": "get_item"
+    }
+   ],
+   "replies": [
+    {
+     "name": "page",
+     "method": "GET",
+     "path": "/items",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"data\":[{\"id\":1,\"name\":\"apple\",\"price\":1.5,\"created_at\":\"2000-01-02T03:04:05.000000Z\"},{\"id\":2,\"name\":\"pear\",\"price\":1e+16,\"created_at\":\"2000-01-02T03:04:05.000000Z\"},{\"id\":3,\"name\":\"fig\",\"price\":0.25,\"created_at\":\"2000-01-03T00:00:00.000000Z\"}],\"count\":3,\"limit\":10}",
+     "content_type": "application/json",
+     "content_length": "268",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "page 2",
+     "method": "GET",
+     "path": "/items?n=1&skip=1",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"data\":[{\"id\":2,\"name\":\"pear\",\"price\":1e+16,\"created_at\":\"2000-01-02T03:04:05.000000Z\"}],\"count\":3,\"limit\":1}",
+     "content_type": "application/json",
+     "content_length": "110",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "page repeated n",
+     "method": "GET",
+     "path": "/items?n=5&n=1",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"data\":[{\"id\":1,\"name\":\"apple\",\"price\":1.5,\"created_at\":\"2000-01-02T03:04:05.000000Z\"}],\"count\":3,\"limit\":1}",
+     "content_type": "application/json",
+     "content_length": "109",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "page n=0",
+     "method": "GET",
+     "path": "/items?n=0",
+     "auth": null,
+     "body": null,
+     "status": 422,
+     "reply": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be >= 1\"}]}",
+     "content_type": "application/json",
+     "content_length": "55",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "page two problems",
+     "method": "GET",
+     "path": "/items?n=abc&skip=-1",
+     "auth": null,
+     "body": null,
+     "status": 422,
+     "reply": "{\"detail\":[{\"loc\":[\"query\",\"n\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"skip\"],\"msg\":\"must be >= 0\"}]}",
+     "content_type": "application/json",
+     "content_length": "107",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one offset spelling",
+     "method": "GET",
+     "path": "/items/2",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"id\":2,\"name\":\"pear\",\"price\":1e+16,\"created_at\":\"2000-01-02T03:04:05.000000Z\"}",
+     "content_type": "application/json",
+     "content_length": "79",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one space spelling",
+     "method": "GET",
+     "path": "/items/3",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"id\":3,\"name\":\"fig\",\"price\":0.25,\"created_at\":\"2000-01-03T00:00:00.000000Z\"}",
+     "content_type": "application/json",
+     "content_length": "77",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one missing",
+     "method": "GET",
+     "path": "/items/99",
+     "auth": null,
+     "body": null,
+     "status": 404,
+     "reply": "{\"detail\":\"item not found\"}",
+     "content_type": "application/json",
+     "content_length": "27",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one bad id",
+     "method": "GET",
+     "path": "/items/x",
+     "auth": null,
+     "body": null,
+     "status": 422,
+     "reply": "{\"detail\":[{\"loc\":[\"path\",\"id\"],\"msg\":\"must be an integer\"}]}",
+     "content_type": "application/json",
+     "content_length": "61",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "one slash redirect",
+     "method": "GET",
+     "path": "/items/2/",
+     "auth": null,
+     "body": null,
+     "status": 307,
+     "reply": "",
+     "content_type": null,
+     "content_length": "0",
+     "location": "http://testserver/items/2",
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "list slash redirect",
+     "method": "GET",
+     "path": "/items/?n=1",
+     "auth": null,
+     "body": null,
+     "status": 307,
+     "reply": "",
+     "content_type": null,
+     "content_length": "0",
+     "location": "http://testserver/items?n=1",
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "put slash redirect",
+     "method": "PUT",
+     "path": "/items/1/",
+     "auth": null,
+     "body": null,
+     "status": 307,
+     "reply": "",
+     "content_type": null,
+     "content_length": "0",
+     "location": "http://testserver/items/1",
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "unknown path",
+     "method": "GET",
+     "path": "/nowhere",
+     "auth": null,
+     "body": null,
+     "status": 404,
+     "reply": "{\"detail\":\"Not Found\"}",
+     "content_type": "application/json",
+     "content_length": "22",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "unknown slash",
+     "method": "GET",
+     "path": "/nowhere/",
+     "auth": null,
+     "body": null,
+     "status": 404,
+     "reply": "{\"detail\":\"Not Found\"}",
+     "content_type": "application/json",
+     "content_length": "22",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "wrong method",
+     "method": "DELETE",
+     "path": "/items",
+     "auth": null,
+     "body": null,
+     "status": 405,
+     "reply": "{\"detail\":\"Method Not Allowed\"}",
+     "content_type": "application/json",
+     "content_length": "31",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "head",
+     "method": "HEAD",
+     "path": "/items",
+     "auth": null,
+     "body": null,
+     "status": 405,
+     "reply": "",
+     "content_type": "application/json",
+     "content_length": "31",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "encoded slash",
+     "method": "GET",
+     "path": "/items/a%2Fb",
+     "auth": null,
+     "body": null,
+     "status": 404,
+     "reply": "{\"detail\":\"Not Found\"}",
+     "content_type": "application/json",
+     "content_length": "22",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine no token",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": null,
+     "body": null,
+     "status": 401,
+     "reply": "{\"detail\":\"Not authenticated\"}",
+     "content_type": "application/json",
+     "content_length": "30",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine unknown token",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Bearer nope",
+     "body": null,
+     "status": 401,
+     "reply": "{\"detail\":\"Not authenticated\"}",
+     "content_type": "application/json",
+     "content_length": "30",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine basic",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Basic tok-ann",
+     "body": null,
+     "status": 401,
+     "reply": "{\"detail\":\"Not authenticated\"}",
+     "content_type": "application/json",
+     "content_length": "30",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine lowercase scheme",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "  bearer   tok-ann ",
+     "body": null,
+     "status": 200,
+     "reply": "[{\"id\":1,\"name\":\"apple\",\"price\":1.5,\"created_at\":\"2000-01-02T03:04:05.000000Z\"},{\"id\":3,\"name\":\"fig\",\"price\":0.25,\"created_at\":\"2000-01-03T00:00:00.000000Z\"}]",
+     "content_type": "application/json",
+     "content_length": "158",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "mine inactive",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Bearer tok-cy",
+     "body": null,
+     "status": 403,
+     "reply": "{\"detail\":\"Inactive\"}",
+     "content_type": "application/json",
+     "content_length": "21",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "admin as customer",
+     "method": "GET",
+     "path": "/admin/ping",
+     "auth": "Bearer tok-ann",
+     "body": null,
+     "status": 403,
+     "reply": "{\"detail\":\"Not enough privileges\"}",
+     "content_type": "application/json",
+     "content_length": "34",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "admin",
+     "method": "GET",
+     "path": "/admin/ping",
+     "auth": "Bearer tok-bob",
+     "body": null,
+     "status": 200,
+     "reply": "{\"id\":2,\"role\":\"Admin\",\"name\":\"Bob\"}",
+     "content_type": "application/json",
+     "content_length": "36",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "admin calls customer endpoint",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Bearer tok-bob",
+     "body": null,
+     "status": 200,
+     "reply": "[{\"id\":2,\"name\":\"pear\",\"price\":1e+16,\"created_at\":\"2000-01-02T03:04:05.000000Z\"}]",
+     "content_type": "application/json",
+     "content_length": "81",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-ann",
+     "body": "{\"name\": \"kiwi\", \"price\": 2}",
+     "status": 201,
+     "reply": "{\"id\":4,\"name\":\"kiwi\",\"price\":2.0,\"created_at\":\"<now>\"}",
+     "content_type": "application/json",
+     "content_length": "77",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create conflict",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-ann",
+     "body": "{\"name\": \"kiwi\", \"price\": 3}",
+     "status": 409,
+     "reply": "{\"detail\":\"an item with this name exists\"}",
+     "content_type": "application/json",
+     "content_length": "42",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create invalid",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-ann",
+     "body": "{\"price\": -1}",
+     "status": 422,
+     "reply": "{\"detail\":[{\"loc\":[\"body\",\"name\"],\"msg\":\"field required\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0\"}]}",
+     "content_type": "application/json",
+     "content_length": "105",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create non-object",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-ann",
+     "body": "[1]",
+     "status": 422,
+     "reply": "{\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}",
+     "content_type": "application/json",
+     "content_length": "68",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create no token",
+     "method": "POST",
+     "path": "/items",
+     "auth": null,
+     "body": "{\"name\": \"x\"}",
+     "status": 401,
+     "reply": "{\"detail\":\"Not authenticated\"}",
+     "content_type": "application/json",
+     "content_length": "30",
+     "location": null,
+     "queries": 0,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create inactive before validation",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-cy",
+     "body": "[1]",
+     "status": 403,
+     "reply": "{\"detail\":\"Inactive\"}",
+     "content_type": "application/json",
+     "content_length": "21",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create unknown before validation",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer nope",
+     "body": "{",
+     "status": 401,
+     "reply": "{\"detail\":\"Not authenticated\"}",
+     "content_type": "application/json",
+     "content_length": "30",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ]
+     ]
+    },
+    {
+     "name": "create as admin",
+     "method": "POST",
+     "path": "/items",
+     "auth": "Bearer tok-bob",
+     "body": "{\"name\": \"plum\", \"price\": 1000}",
+     "status": 201,
+     "reply": "{\"id\":5,\"name\":\"plum\",\"price\":1000.0,\"created_at\":\"<now>\"}",
+     "content_type": "application/json",
+     "content_length": "80",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ],
+      [
+       5,
+       "plum",
+       1000.0,
+       2
+      ]
+     ]
+    },
+    {
+     "name": "mine after create",
+     "method": "GET",
+     "path": "/items/mine",
+     "auth": "Bearer tok-ann",
+     "body": null,
+     "status": 200,
+     "reply": "[{\"id\":1,\"name\":\"apple\",\"price\":1.5,\"created_at\":\"2000-01-02T03:04:05.000000Z\"},{\"id\":3,\"name\":\"fig\",\"price\":0.25,\"created_at\":\"2000-01-03T00:00:00.000000Z\"},{\"id\":4,\"name\":\"kiwi\",\"price\":2.0,\"created_at\":\"<now>\"}]",
+     "content_type": "application/json",
+     "content_length": "236",
+     "location": null,
+     "queries": 2,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ],
+      [
+       5,
+       "plum",
+       1000.0,
+       2
+      ]
+     ]
+    },
+    {
+     "name": "page after create",
+     "method": "GET",
+     "path": "/items?n=2&skip=3",
+     "auth": null,
+     "body": null,
+     "status": 200,
+     "reply": "{\"data\":[{\"id\":4,\"name\":\"kiwi\",\"price\":2.0,\"created_at\":\"<now>\"},{\"id\":5,\"name\":\"plum\",\"price\":1000.0,\"created_at\":\"<now>\"}],\"count\":5,\"limit\":2}",
+     "content_type": "application/json",
+     "content_length": "189",
+     "location": null,
+     "queries": 1,
+     "items": [
+      [
+       1,
+       "apple",
+       1.5,
+       1
+      ],
+      [
+       2,
+       "pear",
+       1e+16,
+       2
+      ],
+      [
+       3,
+       "fig",
+       0.25,
+       1
+      ],
+      [
+       4,
+       "kiwi",
+       2.0,
+       1
+      ],
+      [
+       5,
+       "plum",
+       1000.0,
+       2
+      ]
+     ]
+    }
+   ]
+  }
+ }
+}

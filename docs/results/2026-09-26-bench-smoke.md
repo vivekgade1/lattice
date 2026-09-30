@@ -1049,3 +1049,345 @@ The review also found a bug in `bench/edit_slice/rescore.py`: it rebuilt arm Q c
 2. **The effect is where the mechanism is.** Q's remaining silent runs are all on traps PY807 does not cover: validation, counting and response shapes. On those, Q and P do about equally, which fits the checks having no effect outside their rule.
 3. **Haiku gains the same mechanism but not overall.** Its silent failures are spread over many trap kinds the checks don't cover, so removing partial writes alone did not reach significance.
 4. **Scope:** 7 tickets on one app, 3 of which (t38–t40) involve a helper that commits partway. The result is about that class of change, not about edits in general.
+
+## Go target — equivalence gate (sub-project 5a, 2026-09-29)
+
+Plan: `docs/superpowers/plans/2026-09-28-lattice-go-target-5a.md`. Ledger and task reports:
+`.superpowers/sdd/2026-09-28-lattice-go-target-5a/`. Branch `go-target`.
+
+### What was built
+
+A second compile target for the T2 (procedure) profile: Lattice programs compile to a
+standalone Go binary — `net/http`, a pure-Go SQLite driver (no cgo) — instead of, or
+alongside, the generated FastAPI app. The T2 plan IR is shared with the Python path; Go
+has its own runtime (`lattice/gogen/rt`) implementing every T2 call, with its own
+regex, math, datetime, JSON and collection code written to match CPython's own
+algorithms rather than approximate them (notably a full port of CPython 3.14's SRE
+regex engine, and a dict/set implementation that reproduces CPython's entry-table
+layout and resize policy, because programs can observe iteration order).
+
+### The gate
+
+`tests/gogen/test_go_differential.py` runs every Go-eligible program in the registry
+through both the in-process Python runtime and the built Go binary (over HTTP, through
+`lattice/gogen/proxy.py`), on the same fresh copy of the seed database per case, and
+compares:
+
+- status, and the **first hop's** status and `Location` (so a followed redirect can't
+  hide a divergence behind the final 200);
+- content type;
+- the full JSON body, type-strict (or the raw bytes, for a non-JSON body);
+- the SQL statement count (`X-Lattice-Sql-Count`);
+- for the two T2 (procedure) programs, the SQL statements themselves — text, bound
+  values and order, via a test-only trace that expands each statement exactly as
+  SQLite's own C trace callback would;
+- `after_sql` rows;
+- a whole-database digest.
+
+**Result: 49 programs, 2,478 cases, 0 mismatches** (commit `545d1ea` with 2,458
+cases; the first-hop, content-type and raw-body checks were added in a fix round,
+commit `a0a283f`, still 0 mismatches; the final review's fix round added 20 `pattern=`
+cases, 13 plus their generated probes, to the `edges` program, still 0 mismatches). Two further checks pass: on the two T2 programs, the 478 cases with SQL
+steps run identical statements in identical order on both sides, and fuel parity holds
+on both (three bisected sizes give 500/200/500 on both targets, with matching R620
+bodies).
+
+The 49 programs cover page totals (including a page past the end), trailing-slash 307
+redirects (with and without a query, PATCH included), `unique_or=Conflict` (409, DB
+unchanged), owner transfer (success and missing-user 404), UNSET partial updates
+(including an explicit null written to a nullable column), 204 deletes, R310 (500),
+route precedence, `Str(pattern=...)` constraints (`(?i)` without Unicode case folding,
+so "ſ" and the Kelvin sign are refused; `\Z`; `{m,n}` and `{,n}` bounds), and, for the T2 programs, derive/where/require compiled to SQL,
+`call` bound as a scalar and for `insert_many`, and procedures called from derive over
+the caller.
+
+**Exclusions: 11 programs**, each rejected with **L890 only** ("a native (call, effect
+or NativeToken auth) on a target without natives"): `realapps`, `partb`, `effects`
+(uses `for_each`, a native effect), `gaps`, `mine`, `round2`, `t2`, `solo`,
+`solo_runtime`, `solo_answers`, `n1b`. Getting to that exact set required one checker
+fix: `p8_target` was also flagging the `native` namespace's own value kind as a second,
+duplicate error (L892, "values of type native are not available on target 'go'") for
+the same native use L890 already reported. With the fix, every exclusion's error set is
+`{L890}` alone. `t2`'s Go-eligible variant, `t2go` (natives removed), is one of the 49
+gated programs.
+
+### The semantics suite
+
+391 cases in the shared suite (`tests/semantics_v11`), each verified against real
+Python 3.14 before being checked on either target. **385 run on Go and match Python
+strictly** — exact type, exact value, exact fuel left — swept across fuel budgets. **6
+remain gated**, all L892, in three forms: `str()`/f-string of a container value (list,
+dict, set, Counter), a non-literal `re.sub` replacement, and a `strftime` format (or a
+Date/DateTime f-string spec) that isn't a literal of the directives Go implements
+(`%Y %m %d %H %M %S %f %y %a %A %b %B %j %p %%`, C locale). Fuel parity holds on all
+385 Go cases.
+
+### v1.1 behaviour changes (every target, not Go-specific)
+
+These are language-version changes (`# lattice: v1.1`; the `v1` and `v1.1` headers
+are both accepted and both run under the v1.1 rules), decided during this
+sub-project and implemented identically on Python and Go; see
+`docs/lattice-language-rules.md` §6 (decision log) and §8 (version notes) for the
+full rationale and dates.
+
+| Change | Effect |
+|---|---|
+| 64-bit `Int` (R623) | arithmetic outside the signed 64-bit range raises R623 at runtime (was unbounded, up to 65,536 bits) |
+| Insertion-ordered sets | sets iterate in insertion order; set algebra keeps the left operand's elements first, in its order; `Counter.most_common` ties keep insertion order |
+| ASCII regex classes | `\d \w \s \b` match ASCII only |
+| RE2 subset (L926) | lookaround, backreferences, conditionals, possessive repeats and atomic groups are rejected at check time |
+| L913, augmented slice assignment | `xs[a:b] += ys` is rejected, as slice assignment already was |
+| R-widen | an Int value in a place the checker types Float converts to a float there (assignment, argument, return, container element, an unstarted `sum`'s `0.0`, a tuple index, `min`/`max`, `round(Int, n)`, `Int ** n`); comparisons stay exact at any depth |
+| Exact membership and lookup | `in`, `d[k]` (and the read of `d[k] op= v`), `get`, `pop`, `index`, `count`, `remove`, `discard` compare an Int probe against a Float container exactly, at any depth, consistent with `==` (`2**53 + 1 in [2.0**53]` is False) |
+| R-pow | a negative, finite Float base raised to a finite, non-integral exponent raises `ValueError: math domain error` on every target, instead of Python's complex-number result |
+
+### Notable engineering findings
+
+- **Fused multiply-add on arm64.** Go's compiler can fuse `x*y + z` into one FMA
+  instruction on arm64, giving a different last bit than CPython's separate multiply
+  then add. Caught as Critical in the Task 8 review; fixed by wrapping Float arithmetic
+  in explicit `float64(...)` conversions in the emitter, which forces separate
+  rounding (`TestExplicitConversionPreventsFusedMultiplyAdd`, and semantics cases
+  `float_mul_add_not_fused` / `float_mul_then_sub_not_fused`).
+- **Go's own regex engine cannot match Python, even on the checked RE2 subset.** `$`
+  without `(?m)` before a trailing newline, empty-match handling next to a previous
+  match, `must_advance` semantics, ASCII `\s` including `\v` under `re.ASCII`, and
+  ASCII-only `(?i)` all diverge from `regexp.MustCompile`. Task 9 ported CPython
+  3.14's SRE engine to Go, opcode for opcode, instead of translating patterns to RE2
+  syntax — more code than a translator, but Python's own algorithm rather than an
+  approximation of it.
+- **The Int→Float widening hole.** Python silently kept an exact int where Go's typed
+  Float slot held a converted float (`x: Float = n; str(x)` gave `'1'` on Python,
+  `'1.0'` on Go). Turned into the R-widen language rule above (2026-09-28): an Int
+  value entering a Float-typed place converts at that point, on every target.
+- **The checker's `findall`/`split` typing hole, fixed on every target.** `re.findall`
+  and `re.split` were typed `list[Str]` regardless of the pattern's capture groups, so
+  a checked program could crash at runtime with an uncatchable AttributeError on real
+  Python (`re.findall(r"(a)(b)", s)[0].upper()`). Fixed in the checker
+  (`lattice/check/t2/body.py::_regex_result`) for both targets: `findall` with ≥2
+  groups types as `list[tuple[Str, ...]]`, `split` with groups as `list[Str | None]`.
+
+- **Parameter patterns were still on Go's regexp until the final review.** T2
+  regexes ran on the SRE port, but a `Str(pattern=...)` constraint was matched with
+  `regexp.MustCompile`: `(?i)[a-z]+` accepted "ſ" and the Kelvin sign on Go (Python
+  refuses them under `re.ASCII`), `x\Z` answered 500 on every request, and `a{1001}`,
+  `[[:alpha:]]`, `x{,2}` and `\s` vs `\v` differed. No gated program used such a
+  pattern, so the gate could not see it. Parameter patterns are now compiled when the
+  Go code is generated, as Python compiles them, and matched by the same SRE port with
+  `re.fullmatch` semantics; `tests/api/edges.py` covers them in both differentials.
+
+### Prerequisites (building for Go)
+
+- **Go >= 1.26 on PATH.** Builds run with `GOTOOLCHAIN=local` (go never downloads a
+  newer toolchain); a missing or older `go` fails with a `GoBuildError` naming the
+  minimum.
+- **The runtime's dependencies in the module cache.** Builds are offline
+  (`GOPROXY=off`), so a fresh machine needs, once and with network access,
+  `cd lattice/gogen/rt && go mod download`. Without it the build fails with a
+  `GoBuildError` saying exactly that (go's own message is only "module lookup disabled
+  by GOPROXY=off").
+- Tests that run the Go toolchain carry the `go` pytest marker and are skipped, with
+  that reason, when `go` is not on PATH (`tests/conftest.py`).
+
+### Known limitations (honest)
+
+- **amd64 is not verified.** Rosetta 2 is not installed on the build machine (an Apple
+  M5 Pro), so the gate ran on arm64 only — the architecture where FMA fusion is a risk,
+  so also the more demanding one to have passed. `GOARCH=amd64` builds succeed but
+  could not be run here.
+- **Only macOS CPython was checked** as the reference. glibc's `libm` and its
+  `strftime` `%Y` padding may differ from macOS's; this was not tested on Linux.
+- **Last-ulp differences in transcendental functions.** Go's `math.exp/log/log10/pow`
+  and Float `**` are correctly rounded; CPython calls the platform's `libm`, which
+  differs from the correctly-rounded value in 9 of 22,403 sampled answers on macOS
+  arm64 (one ulp), and differs between platforms even for Python itself. The
+  semantics suite avoids such inputs.
+- **The JSON nesting depth limit is not identical.** CPython's `json.loads`/`dumps`
+  raise RecursionError at a stack-dependent depth (about 50,000 on macOS); Go uses a
+  fixed 100,000-level limit.
+- **Unicode 15 (Go's `x/text`) vs Unicode 16 (Python 3.14)** for case mapping and
+  character classes. No semantics case uses a code point new in Unicode 16.
+- **NaN in sort keys.** Go's `sort.SliceStable` and Python's timsort give the same
+  result under a consistent ordering, but NaN compares false to everything, including
+  itself, so once NaN breaks the ordering the two algorithms may order the sequence
+  differently; `min`/`max` inherit the same risk. Not reachable by the semantics suite
+  (`task-8-report.md` concern 3).
+- **Identity shortcuts in container `==`, tuples only.** Python's container `==` and
+  `in` treat `x is y` as equal, so `[nan] == [nan]` is True when both hold the same
+  float object. Go's lists and dicts get the same shortcut (matching Python), but a
+  tuple compared with itself holding a NaN does not — Go compares values there, not
+  identity — an unusual program (`task-10-report.md` concern 4).
+- **A `Json` string holding a lone surrogate is WTF-8 on Go, not UTF-8.** `"\ud800"`
+  decoded from JSON and turned into a T2 `Str` (`str(j)`) is held as WTF-8 text on Go
+  so its code point survives `dumps`/`repr`/indexing; further `Str` operations on that
+  value would count its bytes as invalid UTF-8, which a Python `str` never has
+  (`task-10-report.md` §1 and concern 4; the ledger's Task 7 carry-forward: "no parity
+  attempted for ... lone surrogates").
+- **A record with a list field used as a dict key or set element.** Python raises
+  `TypeError` (unhashable); Go compares it by pointer instead of raising
+  (`task-8-report.md` concern 3).
+- **A module constant that would overflow the 64-bit `Int` range fails only on Go, at
+  process start.** Go evaluates module constants at package init and applies R623
+  there; Python loads the same constant unbounded and only raises once it is used in
+  Int arithmetic. A program with a module constant like `BIG = 2 ** 70` starts on
+  Python and fails to start on Go (`task-8-report.md` concern 3).
+- **The R622 error message's bit count is clamped on Go.** When an intermediate Int's
+  bit count exceeds Go's `int64` range, the message shows the clamped `MaxInt64`
+  instead of the exact (larger) bit count Python prints; only the message text
+  differs, not the error code or behaviour (ledger, Task 7 minor).
+- **Two small HTTP-layer divergences from Task 11 remain deferred and are not
+  exercised by the gate:** header values are decoded as raw UTF-8 on Go where
+  Starlette decodes latin-1 (`auth.go:29`); and `MergeUpdate` compares partial-update
+  keys by their JSON text on Go where Python compares by tuple equality, so an Int and
+  a Float key that are numerically equal (`1` and `1.0`) merge differently
+  (`http.go:247`).
+- **The Go runtime reads two private fields of the SQLite driver.** To return stored
+  values as Python's sqlite3 does (the driver turns DATE/DATETIME TEXT into
+  `time.Time`), `rt/rawsql.go` runs statements through SQLite's C API on the handle
+  and TLS in modernc.org/sqlite's unexported `conn.db` / `conn.tls`, behind type
+  guards that panic rather than misuse memory. Upgrading modernc.org/sqlite therefore
+  follows the procedure in `rawsql.go`'s header: pin modernc.org/libc to the exact
+  version sqlite requires, then `go test ./...` (`TestHandleOnRealConnection`,
+  `TestLibcMatchesSqlite`) and the gate.
+- **The HTTP request body is unbounded on both targets.** Neither Python nor Go caps
+  it; a production deployment needs a body-size profile setting and a matching 413 on
+  both, not yet built.
+- **Natives, `for_each`, `NativeToken` auth and the tabular profile are not on Go**
+  (L890/L891 in the decision log, §6 of `docs/lattice-language-rules.md`). A program
+  using any of them compiles for Python only.
+
+### What is not claimed
+
+This is **tested equivalence, not a proof**: 2,478 request/response comparisons and
+385 semantics cases, 0 divergences found — not a formal equivalence proof covering
+every Lattice program. It makes **no claim about LLM benefit, cost or runtime
+performance** of the Go target; that is sub-project 5b (the benchmark), not yet run.
+
+### Binary size and cold start (measured)
+
+Apple M5 Pro, arm64, macOS. `tests/fixtures/api/c01/lattice.py`, profile
+`bench.api_datasets:api_profile`, built with
+`uv run python -m lattice.gogen build ... --out <dir>`.
+
+- **Binary size:** 15,266,994 bytes (~14.6 MiB) — one statically linked Mach-O arm64
+  executable, no cgo, no external SQLite library.
+- **Cold start:** median **6.6 ms** over 20 starts (wall-clock from process launch to
+  the `LISTENING <host:port>` line on stdout), range 5.8–10.6 ms; one of the 20 runs
+  took 195 ms (evidently a first-run disk-cache effect), which the median is
+  insensitive to.
+
+## Go cost pilot (5b stage 1, pre-registered, 2026-09-29)
+
+Spec: `docs/superpowers/specs/2026-09-29-lattice-go-pilot.md`, pre-registered and frozen at
+commit `d5df467` (parent `4b078d8`) immediately before the live run.
+
+**Setup.**
+- 480 runs: the 40 API tasks × 2 arms (B = Lattice→Go, G = hand-written Go against a
+  Go platform kit that only authenticates) × 2 models (claude-sonnet-5 primary,
+  claude-haiku-4-5 secondary) × 3 reps.
+- Transport: the Claude CLI only, with the existing isolation flags, resumable via
+  `--resume`; cost from the CLI's list-price estimate (`cost_basis =
+  "cli_list_estimate"`, the same basis for both arms).
+- **0 harness errors** in all four cells (120 runs/cell each for B and G, both models)
+  — well under the 5% threshold that would have made the run INVALID.
+- Raw records: `results/go-pilot/outcomes.jsonl` (gitignored, per `/results/` in
+  `.gitignore`). sha256: `a4729b82741b7a61c12d39bcee6ca947a916435ffb98e8ff39560d132c3aa7db`.
+
+| model | arm | n | correct [95% CI] | silent [95% CI] | loud [95% CI] | $/correct |
+|---|---|---|---|---|---|---:|
+| claude-haiku-4-5 | B | 120 | 120/120 [0.97, 1.00] | 0/120 [0.00, 0.03] | 0/120 [0.00, 0.03] | 0.0156 |
+| claude-haiku-4-5 | G | 120 | 120/120 [0.97, 1.00] | 0/120 [0.00, 0.03] | 0/120 [0.00, 0.03] | 0.0259 |
+| claude-sonnet-5 | B | 120 | 120/120 [0.97, 1.00] | 0/120 [0.00, 0.03] | 0/120 [0.00, 0.03] | 0.0130 |
+| claude-sonnet-5 | G | 120 | 120/120 [0.97, 1.00] | 0/120 [0.00, 0.03] | 0/120 [0.00, 0.03] | 0.0189 |
+
+### S2 (secondary, descriptive): program size, rounds, output tokens
+
+| model | arm | n | mean program lines | mean AST nodes | mean rounds | mean output tokens |
+|---|---|---|---:|---:|---:|---:|
+| claude-haiku-4-5 | B | 120 | 11.9 | 115 | 1.23 | 2421 |
+| claude-haiku-4-5 | G | 120 | 83.8 | 472 | 1.06 | 4571 |
+| claude-sonnet-5 | B | 120 | 11.6 | 116 | 1.28 | 370 |
+| claude-sonnet-5 | G | 120 | 77.9 | 450 | 1.01 | 1071 |
+
+### Pre-registered verdicts
+
+- **P1** (cost ratio R = B/G on claude-sonnet-5): R = 0.689 [0.591, 0.803] → **not
+  confirmed** (the threshold was ≤ 0.6 with an upper bound < 1.0).
+- **P2** (non-inferiority of correct(B) on claude-sonnet-5, margin 10 points): **holds**.
+- **Stage-1 verdict: STOP.**
+
+Per the spec's "What each outcome means" table, for **"STOP, P1 not confirmed or P2
+fails"**:
+
+> Any cost advantage is too small or costs correctness. Report honestly; no further Go
+> benchmark investment.
+
+### Additional observations (not pre-registered)
+
+1. **B is cheaper per correct task on both models** (Sonnet R = 0.69, Haiku R = 0.60),
+   and the Sonnet interval excludes 1.0. So there is a real cost advantage of about
+   30%, but it falls short of the pre-registered 40% threshold. This does not change
+   the verdict above.
+2. **Every cell was 120/120 correct with 0 silent failures: a ceiling effect.** The
+   tasks can't distinguish the arms on correctness or safety at this model strength,
+   which echoes the earlier API rounds and the confirmation run above.
+3. **Programs: B is about 12 lines vs G's about 80** (S2: Sonnet 11.6 vs 77.9, Haiku
+   11.9 vs 83.8 — roughly 6–7× fewer lines), and about 4× fewer AST nodes (Sonnet 116
+   vs 450, Haiku 115 vs 472). Output tokens on Sonnet: G is about 2–3× B (1071 vs 370,
+   computed from S2). The cost gap is smaller than the size gap. **Correction: the
+   frozen spec's threat line ("B's system prompt is much larger") is wrong, and so was
+   this write-up's first draft.** `api_go_system_prompt` (G) is 21,303 chars against
+   `api_lattice_system_prompt` (B)'s 17,319 — G's is the larger one
+   (`bench/offline/go_pilot/ESTIMATE.md`). This shows up in the data too: the first
+   (uncached) call of each arm ran 10,383 input tokens for G vs 8,405 for B on Sonnet,
+   and 7,938 vs 6,468 on Haiku. The real reason the cost gap is smaller than the size
+   gap is that **input dominates B's bill**: on Sonnet, output tokens are only 28% of
+   B's total cost against 57% of G's (fit from `outcomes.jsonl`'s per-token cost
+   components; see observation 4), and B re-sends its (smaller but still substantial)
+   input on every repair round, which G rarely needs. Per-call cost fell sharply as
+   prompt caching engaged, but the "$0.05 early, $0.015–0.02 later" pattern from an
+   earlier draft of this section fits **Sonnet G only**; Sonnet B's per-call cost went
+   from about $0.035 on its first two (cold) calls to about $0.008–0.013 on later
+   single-round calls (repaired runs run higher, up to ~$0.019, from the extra round's
+   tokens).
+4. **Prompt-caching caveat.** Fitting `cost_usd` against `(uncached, cache_write,
+   cache_read, output)` tokens recovers exactly Sonnet $2 / $4 / $0.20 / $10 per Mtok
+   and Haiku $1 / $2 / $0.10 / $5 (zero residual). Recomputing every run's cost at the
+   uncached list price (no cache write or read discount) drops the cost advantage:
+   Sonnet R = 0.806, Haiku R = 0.645. Caching helps B more than G because B's cost is
+   more input-heavy (observation 3), so **the ~30% advantage reported above holds
+   under this harness's warm-cache batching; run cold, it is closer to ~20%.** The
+   batching also matters at the start: each model's runs went arm G fully, then arm B
+   (G ran before B in the file), so B's cache did not inherit any warmth from G — the
+   two arms' system prompts differ, so B's own first record(s) still show
+   `cache_read_tokens == 0` (2 of Sonnet-B's 120, 1 of Haiku-B's 120, both the
+   earliest records for that arm). Normalizing those handful of cold-start records to
+   what a warm call of the same size would have cost moves Sonnet R to ≈0.71 and Haiku
+   R to ≈0.60 (close to the review's reproduced 0.706 / 0.599). **STOP is robust to
+   all three framings** (actual, uncached, cold-normalized): every one is well above
+   the pre-registered ≤ 0.6 threshold on Sonnet.
+5. **Checker-repair cost, not pre-registered.** On Sonnet, 31/120 B runs needed at
+   least one repair round; the checker codes seen before the final (passing) round,
+   summed over those 31 runs, were L821×9, L802×8, L205×7, L801×6, L002×4 (plus a few
+   singles/doubles). Repaired runs averaged $0.023 per run against $0.0096 for the 89
+   single-round runs, and make up 46% of B's total Sonnet cost. If every B run had
+   cost what a single-round run costs on average (i.e., no repair cost at all), R
+   would be ≈0.51 — comfortably under the 0.6 threshold. G needed exactly one repair,
+   for a `go build` error (task c04). Caveat: this is not a controlled comparison —
+   the 31 repaired tasks may simply be the harder ones, on both arms, not tasks where
+   B specifically struggles.
+6. **Threats that applied** (from the spec): the tasks were written for Lattice; P2
+   was relaxed before the freeze; one machine and one CLI version; the estimate
+   predicted about $21 (central scenario) — the actual total cost, summed over all 480
+   records in `results/go-pilot/outcomes.jsonl`, was **$8.81**. The spec's own threat
+   about B's system prompt size was also wrong (observation 3).
+
+### Conclusion
+
+Per the pre-registration, stage 1 is STOP: there is no stage 2. The Go target's
+demonstrated value remains what 5a proved — verified multi-target compilation, tested
+equivalent to the Python runtime on 2,478 cases — not a demonstrated LLM-cost win
+beyond about 30%, which falls short of the pre-registered bar. As with the confirmation
+run above, a real but modest effect did not clear the pre-registered threshold, and the
+tasks again hit a ceiling on correctness; no further Go benchmark investment is
+warranted on this evidence.

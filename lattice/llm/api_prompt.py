@@ -14,6 +14,7 @@ description is imported lazily inside :func:`api_task_message`.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 from lattice.catalog import (
@@ -34,7 +35,7 @@ from lattice.llm.prompt import (
 if TYPE_CHECKING:
     from bench.api_model import ApiTask
 
-ArmKind = Literal["baseline", "lattice"]
+ArmKind = Literal["baseline", "lattice", "go"]
 
 # ---------------------------------------------------------------------------
 # Shared: response conventions and the three example problems
@@ -736,12 +737,489 @@ def api_baseline_system_prompt(hints: bool = True) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Task message (identical in both arms but for one line)
+# Go arm (5b pilot, arm G): Go handlers against the auth-only Go platform kit
+# ---------------------------------------------------------------------------
+#
+# The baseline prompt above, section by section, rewritten for Go and
+# bench/api_kit_go (spec 2026-09-29 lattice-go-pilot). The shared conventions (error
+# envelope and statuses, page shape and bounds, own-rows rule, validation, the
+# transaction rule, the query-count advice) carry the same information; only the
+# language and the kit differ. The kit section is the model-facing part of the kit's
+# README (between its `prompt:` markers), read when the prompt is built. The worked
+# examples are the baseline's, translated by hand; tests/fixtures/go_examples holds
+# each as a buildable file (tests/llm/test_api_go_prompt.py builds, vets and runs them).
+
+_GO_KIT_README = Path(__file__).resolve().parents[2] / "bench" / "api_kit_go" / "README.md"
+_GO_KIT_BEGIN, _GO_KIT_END = "<!-- prompt:begin -->", "<!-- prompt:end -->"
+
+_GO_INTRO = (
+    "You are an expert backend engineer. Write one Go source file, `handlers.go`, that "
+    "adds HTTP endpoints to a Go `net/http` server over a SQLite database, using the "
+    "provided `platformkit` package for authentication and database access. The file is "
+    "compiled once, unattended, together with the kit and a `main` that calls your "
+    "`Register`, and the program serves the application database; its endpoints are "
+    "then called over HTTP and their responses (status codes, JSON bodies and database "
+    "effects) are compared with the specification, so follow the task and the "
+    "conventions below precisely."
+)
+
+
+def _go_kit_section() -> str:
+    """The kit's model-facing section: README.md between its prompt markers."""
+    text = _GO_KIT_README.read_text(encoding="utf-8")
+    start, end = text.index(_GO_KIT_BEGIN), text.index(_GO_KIT_END)
+    return text[start + len(_GO_KIT_BEGIN) : end].strip()
+
+
+# The same information as BASELINE_OWN_ROWS (and LATTICE_OWN_ROWS), in Go/SQL terms.
+GO_OWN_ROWS = (
+    "- For the caller's own rows only ('my …' features), filter by "
+    "`owner_id = ?` with the caller's `ID` (admins too); the access filter "
+    "`(owner_id = ? OR ? = 'Admin')` lets superusers see all rows."
+)
+
+# Shared with the examples: the one 422 writer, as the baseline's handler is.
+_GO_INVALID = """func invalid(w http.ResponseWriter, detail ...string) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusUnprocessableEntity)
+    _ = json.NewEncoder(w).Encode(map[string]any{"error": "validation", "detail": detail})
+}"""
+
+
+def _tabs(src: str) -> str:
+    """Go source written with 4-space indents in this file, as gofmt writes it: each
+    leading 4-space step becomes a tab (alignment inside a line is left alone)."""
+    out = []
+    for line in src.split("\n"):
+        stripped = line.lstrip(" ")
+        depth = (len(line) - len(stripped)) // 4
+        out.append("\t" * depth + stripped)
+    return "\n".join(out)
+
+
+_GO_CONVENTIONS_SECTION = f"""## Conventions
+
+- Parameters: path segments come from the path (`r.PathValue("order_id")`); the others \
+come from the query string for GET/DELETE (`r.URL.Query()`) and from the JSON body \
+(decoded with `encoding/json`) for POST/PUT/PATCH.
+- Success responses: a single row is its JSON object (200); a list is \
+`{{"items": [...], "limit": n, "offset": n}}` (200); a created row is its JSON object \
+with status 201; a delete or update without a body is status 204 with no body \
+(`w.WriteHeader(http.StatusNoContent)`). An empty list is `[]`, never `null`: a nil \
+Go slice encodes as `null`, so start every list from `[]T{{}}`.
+- Errors: {_error_table()}, each as that status with the JSON body \
+`{{"error": "not_found", "detail": "order"}}` (`Content-Type: application/json`).
+- Invalid input (missing, wrong type or outside its constraints) answers 422 \
+`{{"error": "validation", "detail": [...]}}`, `detail` being a list with one message per \
+invalid parameter. The kit parses and checks no parameter: check every one after \
+authenticating and before any other statement, and answer with this function, defined \
+once per file:
+
+```go
+{_tabs(_GO_INVALID)}
+```
+
+- Rows of a table with an owner column belong to that user; Admin callers may see \
+and change every row. Columns listed as private never appear in a response.
+{GO_OWN_ROWS}
+- To hand rows to another user, set the owner column (`UPDATE ... SET owner_id = ?`) \
+only on rows the caller may change, and answer 404 when no user has the new id.
+- Everything a request writes succeeds or fails together: a request that writes more \
+than once, or writes before a check that can still fail, runs in one `k.DB.Begin()` \
+transaction (every statement through the `*sql.Tx`, `defer tx.Rollback()`) and calls \
+`tx.Commit()` only after every check has passed; otherwise each statement commits on \
+its own.
+- Dates are ISO `YYYY-MM-DD` strings. Import only the standard library and \
+`platformkit`; no network, no files. Open no other database connection (use only \
+`k.DB`), and pass one SQL statement per `Exec`/`Query`/`QueryRow` call."""
+
+# The same information as _BASELINE_LOOPS_SECTION, for SQL and Go. The two SQL bullets
+# are the baseline's, word for word.
+_GO_LOOPS_SECTION = """## Row-by-row work, formats and uniqueness
+
+- Per-row values over ordered rows: SQL window functions \
+`... OVER (PARTITION BY ... ORDER BY ...)`: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`; \
+`LAG(x, 1)` / `LEAD(x, 1)` (NULL past the edge); `SUM(x)`, `COUNT(*)`, `MIN(x)`, `MAX(x)` \
+(running); `AVG(x)` / `SUM(x)` with `ROWS BETWEEN N-1 PRECEDING AND CURRENT ROW`. End \
+`ORDER BY` with a key so ties cannot change the result; nulls last: `ORDER BY x IS NULL, \
+x`. E.g. `ROW_NUMBER() OVER (PARTITION BY status ORDER BY created_at, id) AS n`.
+- Tree walks (parent/child columns): one `WITH RECURSIVE` query from the start rows with \
+a depth counter and `WHERE w.depth < N`, then `MIN(depth)` per id (cycle-safe; each row \
+once at its smallest depth, 0 = start); apply the ownership filter inside. E.g. \
+`WITH RECURSIVE w(id, depth) AS (SELECT id, 0 FROM categories WHERE id = ? UNION \
+SELECT c.id, w.depth + 1 FROM categories c JOIN w ON c.parent_id = w.id WHERE w.depth \
+< 10) SELECT id, MIN(depth) AS depth FROM w GROUP BY id`.
+- Side effects the task provides (e.g. send an email): call it once per row only after \
+the request's writes committed, in order, for at most 100 rows, ignoring its error so \
+the response never depends on it (it may be retried: at-least-once). E.g. \
+`for _, row := range rows { _ = sendWelcome(row["email"].(string)) }`.
+- Formats: ``regexp.MustCompile(`^(?:...)$`)`` (the whole value must match); for an email \
+use an email pattern such as `^[^@\\s]+@[^@\\s]+\\.[A-Za-z]{2,}$`; a bad value answers 422.
+- A write that hits a unique column fails with an error whose text contains \
+`UNIQUE constraint failed`: answer 409 with the JSON error body.
+- A package-level list of column names, e.g. \
+`var public = []string{"id", "email", "name"}`, can be reused in every `SELECT` \
+(`strings.Join(public, ", ")`)."""
+
+# The same information as _BASELINE_T2_SECTION, for ordinary Go.
+_GO_T2_SECTION = """## Step-by-step logic
+
+Prefer a single SQL statement (a JOIN/GROUP BY, or a window function -- see \
+"Row-by-row work" above) whenever the shape fits one. When it does not -- the logic \
+is naturally step-by-step, with several branches carrying state together, such as a \
+small state machine that reads its own previous state at every step -- write it as a \
+plain Go function and call it from the handler; there is no separate construct for \
+it, and beyond the compiler's type checks and your own tests, nothing checks it.
+
+- A helper function used from more than one handler is defined once in the file, \
+with a type for every parameter and its result, and takes plain values or rows \
+(e.g. `map[string]any`), never a `*sql.DB` or `*sql.Tx` (read the rows it needs with \
+one query first, then pass them in).
+- Nothing bounds a loop automatically, and a request that runs too long is killed \
+outright with no response at all: read at most a fixed number of rows (e.g. `LIMIT \
+100`, exactly as for a per-row side effect) before working row by row, and give any \
+`for` loop a simple, obviously terminating exit condition, checked at the top of \
+each pass.
+- A helper never mutates the map (or slice) a caller passed it in place; build and \
+return a new map (or a small struct) with the changed fields instead, so every \
+caller can still rely on its own copy afterward.
+- An effectful helper (e.g. send an email) still runs only after the writes committed, \
+once per row, in order, exactly as described in "Row-by-row work" above -- never inside \
+the step-by-step function itself, before the transaction is known to have succeeded."""
+
+# The same information as _BASELINE_OPTIONAL_SECTION, for SQL and Go. The last two
+# bullets are the baseline's, word for word.
+_GO_OPTIONAL_SECTION = """## Optional values, search, time and ordering
+
+- An optional parameter that is nil when not sent: a query parameter absent from \
+`r.URL.Query()` (`Has`), or a body field decoded into a pointer (`Since *string`); \
+filter with `WHERE (? IS NULL OR created_at >= ?)`, passing nil when not given. nil \
+means "not given"; a partial update keeps every column whose field was not sent.
+- Whether a body field was sent (even as null): read the body once and decode it into \
+`map[string]json.RawMessage` as well, then test `_, sent := raw["title"]`; usable in any \
+check, e.g. reject a late title change with 403.
+- Case-insensitive substring (SQLite's `lower()` folds ASCII only): query without \
+`LIMIT`/`OFFSET` (every other filter still in SQL), keep the rows where \
+`strings.Contains(strings.ToLower(title), strings.ToLower(q))` in Go, then apply \
+`offset` and `limit` to that filtered slice and compute any total from it; an empty `q` \
+matches every string. This is the one exception to `LIMIT ? OFFSET ?` in SQL.
+- Time: `time.Now().UTC()` once per request; `now.Add(-24 * time.Hour)`; whole units \
+truncated toward zero: `int64(end.Sub(start) / time.Hour)`; compare with stored values \
+in UTC and their stored text format.
+- `UPDATE items SET deleted_at = NULL WHERE id = ?` clears a nullable column.
+- A sort direction from a parameter: pick `"DESC"` or `"ASC"` in code from a fixed \
+choice (never paste input into SQL); SQLite puts NULLs first ascending and last \
+descending; `ORDER BY x IS NULL, x` puts them last."""
+
+# Pitfall advice, removable for the no-hints condition (the reference stays). The
+# Ownership bullet is the baseline's, word for word (it is all SQL).
+GO_ADVICE: tuple[str, ...] = (
+    BASELINE_ADVICE[0],
+    "- Bounds: every input written to the database needs both bounds: check "
+    "`lo <= v && v <= hi` for a number, the length in characters "
+    "(`utf8.RuneCountInString`) for a string, or membership in a fixed set, for body "
+    "fields and other parameters alike, using the limits the task states, so "
+    "out-of-range input answers 422 and never reaches the database.",
+    "- Errors: map a missing row to 404 (`sql.ErrNoRows` from `QueryRow(...).Scan`, or "
+    "`RowsAffected() == 0`) instead of letting it fail with a 500; answer a business "
+    "rule with 409, 403 or 400 as the task says, with the JSON error body, in the order "
+    "the task lists the checks.",
+    "- Lists and related data: add `ORDER BY` a key and `LIMIT ? OFFSET ?` to every "
+    "list query, with `limit` bounded (at most 100); fetch related data in one statement "
+    "with JOIN / GROUP BY (e.g. a count per order) instead of one query per row.",
+)
+
+# The shared helpers of every example (as _BASELINE_IMPORTS is): JSON answers, the
+# 422 writer of the conventions, a bounded integer, and rows as JSON objects.
+_GO_HELPERS = (
+    """func writeJSON(w http.ResponseWriter, status int, v any) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(status)
+    _ = json.NewEncoder(w).Encode(v)
+}
+
+func fail(w http.ResponseWriter, status int, name, detail string) {
+    writeJSON(w, status, map[string]any{"error": name, "detail": detail})
+}
+
+"""
+    + _GO_INVALID
+    + """
+
+func boundedInt(s string, lo, hi int64) (int64, bool) {
+    n, err := strconv.ParseInt(s, 10, 64)
+    return n, err == nil && lo <= n && n <= hi
+}
+
+func scanRows(rows *sql.Rows) ([]map[string]any, error) {
+    defer rows.Close()
+    cols, err := rows.Columns()
+    if err != nil {
+        return nil, err
+    }
+    out := []map[string]any{}
+    for rows.Next() {
+        vals := make([]any, len(cols))
+        ptrs := make([]any, len(cols))
+        for i := range vals {
+            ptrs[i] = &vals[i]
+        }
+        if err := rows.Scan(ptrs...); err != nil {
+            return nil, err
+        }
+        row := map[string]any{}
+        for i, col := range cols {
+            row[col] = vals[i]
+        }
+        out = append(out, row)
+    }
+    return out, rows.Err()
+}
+"""
+)
+
+
+def _go_file(imports: tuple[str, ...], body: str) -> str:
+    lines = "\n".join(f'    "{name}"' for name in imports)
+    head = f'package main\n\nimport (\n{lines}\n\n    "platformkit"\n)\n\n'
+    return _tabs(head + _GO_HELPERS + "\n" + body)
+
+
+GO_EXAMPLES: tuple[str, ...] = (
+    _go_file(
+        ("database/sql", "encoding/json", "math", "net/http", "strconv"),
+        """func Register(mux *http.ServeMux, k *platformkit.Kit) {
+    mux.HandleFunc("GET /addresses", func(w http.ResponseWriter, r *http.Request) {
+        user, ok := k.Authenticate(w, r, "Customer")
+        if !ok {
+            return
+        }
+        query := r.URL.Query()
+        limit, offset := int64(20), int64(0)
+        var problems []string
+        if query.Has("limit") {
+            if limit, ok = boundedInt(query.Get("limit"), 1, 50); !ok {
+                problems = append(problems, "limit: an integer 1-50")
+            }
+        }
+        if query.Has("offset") {
+            if offset, ok = boundedInt(query.Get("offset"), 0, math.MaxInt64); !ok {
+                problems = append(problems, "offset: an integer >= 0")
+            }
+        }
+        if len(problems) > 0 {
+            invalid(w, problems...)
+            return
+        }
+        rows, err := k.DB.Query(
+            "SELECT id, customer_id, line1, city, zip FROM addresses"+
+                " WHERE customer_id = ? OR ? = 'Admin' ORDER BY id LIMIT ? OFFSET ?",
+            user.ID, user.Role, limit, offset,
+        )
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        items, err := scanRows(rows)
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        writeJSON(w, http.StatusOK, map[string]any{"items": items, "limit": limit, "offset": offset})
+    })
+}
+""",  # noqa: E501
+    ),
+    _go_file(
+        ("database/sql", "encoding/json", "math", "net/http", "strconv"),
+        """func Register(mux *http.ServeMux, k *platformkit.Kit) {
+    mux.HandleFunc("PATCH /products/{product_id}/stock", func(w http.ResponseWriter, r *http.Request) {
+        if _, ok := k.Authenticate(w, r, "Admin"); !ok {
+            return
+        }
+        var problems []string
+        productID, ok := boundedInt(r.PathValue("product_id"), 1, math.MaxInt64)
+        if !ok {
+            problems = append(problems, "product_id: an integer >= 1")
+        }
+        var in struct {
+            Stock *int64 `json:"stock"`
+        }
+        if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+            problems = append(problems, "body: a JSON object")
+        } else if in.Stock == nil || *in.Stock < 0 || *in.Stock > 10000 {
+            problems = append(problems, "stock: an integer 0-10000")
+        }
+        if len(problems) > 0 {
+            invalid(w, problems...)
+            return
+        }
+        res, err := k.DB.Exec("UPDATE products SET stock = ? WHERE id = ?", *in.Stock, productID)
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        if n, err := res.RowsAffected(); err != nil || n == 0 {
+            fail(w, http.StatusNotFound, "not_found", "product")
+            return
+        }
+        rows, err := k.DB.Query("SELECT id, name, stock FROM products WHERE id = ?", productID)
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        product, err := scanRows(rows)
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        writeJSON(w, http.StatusOK, product[0])
+    })
+}
+""",  # noqa: E501
+    ),
+    _go_file(
+        ("database/sql", "encoding/json", "errors", "net/http", "strconv", "unicode/utf8"),
+        """func Register(mux *http.ServeMux, k *platformkit.Kit) {
+    mux.HandleFunc("POST /products/{product_id}/reviews", func(w http.ResponseWriter, r *http.Request) {
+        user, ok := k.Authenticate(w, r, "Customer")
+        if !ok {
+            return
+        }
+        var problems []string
+        productID, ok := boundedInt(r.PathValue("product_id"), 1, 1000000)
+        if !ok {
+            problems = append(problems, "product_id: an integer 1-1000000")
+        }
+        var in struct {
+            Rating *int64  `json:"rating"`
+            Body   *string `json:"body"`
+        }
+        if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+            problems = append(problems, "body: a JSON object")
+        } else {
+            if in.Rating == nil || *in.Rating < 1 || *in.Rating > 5 {
+                problems = append(problems, "rating: an integer 1-5")
+            }
+            if in.Body == nil || utf8.RuneCountInString(*in.Body) < 1 || utf8.RuneCountInString(*in.Body) > 500 {
+                problems = append(problems, "body: a string of 1-500 characters")
+            }
+        }
+        if len(problems) > 0 {
+            invalid(w, problems...)
+            return
+        }
+        var found int
+        err := k.DB.QueryRow("SELECT 1 FROM products WHERE id = ?", productID).Scan(&found)
+        if errors.Is(err, sql.ErrNoRows) {
+            fail(w, http.StatusNotFound, "not_found", "product")
+            return
+        }
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        var bought int
+        err = k.DB.QueryRow(
+            "SELECT COUNT(*) FROM order_items i JOIN orders o ON o.id = i.order_id"+
+                " WHERE i.product_id = ? AND (o.customer_id = ? OR ? = 'Admin')",
+            productID, user.ID, user.Role,
+        ).Scan(&bought)
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        if bought == 0 {
+            fail(w, http.StatusForbidden, "forbidden", "product not ordered")
+            return
+        }
+        var existing int
+        err = k.DB.QueryRow(
+            "SELECT COUNT(*) FROM reviews"+
+                " WHERE product_id = ? AND (customer_id = ? OR ? = 'Admin')",
+            productID, user.ID, user.Role,
+        ).Scan(&existing)
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        if existing > 0 {
+            fail(w, http.StatusConflict, "conflict", "already reviewed")
+            return
+        }
+        res, err := k.DB.Exec(
+            "INSERT INTO reviews (product_id, customer_id, rating, body) VALUES (?, ?, ?, ?)",
+            productID, user.ID, *in.Rating, *in.Body,
+        )
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        id, err := res.LastInsertId()
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        rows, err := k.DB.Query("SELECT * FROM reviews WHERE id = ?", id)
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        review, err := scanRows(rows)
+        if err != nil {
+            platformkit.WriteError(w, err)
+            return
+        }
+        writeJSON(w, http.StatusCreated, review[0])
+    })
+}
+""",  # noqa: E501
+    ),
+)
+
+# The example directories under tests/fixtures/go_examples, in GO_EXAMPLES order.
+GO_EXAMPLE_NAMES: tuple[str, ...] = ("list_addresses", "set_stock", "post_review")
+
+_GO_OUTPUT_FORMAT_SECTION = (
+    "## Output format\n\n"
+    "Respond with exactly one ```go code block holding the complete `handlers.go`; "
+    "no prose, no other code blocks."
+)
+
+
+def _go_examples_section() -> str:
+    parts = ["## Examples"]
+    for problem, code in zip(EXAMPLE_PROBLEMS, GO_EXAMPLES, strict=True):
+        parts.append(problem)
+        parts.append(f"```go\n{code.rstrip()}\n```")
+    return "\n\n".join(parts)
+
+
+def api_go_system_prompt(hints: bool = True) -> str:
+    """Arm G system prompt (Go handlers on bench/api_kit_go), section for section the
+    baseline's; ``hints=False`` drops the Advice section."""
+    sections = [
+        _GO_INTRO,
+        _go_kit_section(),
+        _GO_CONVENTIONS_SECTION,
+        _GO_LOOPS_SECTION,
+        _GO_T2_SECTION,
+        _GO_OPTIONAL_SECTION,
+    ]
+    if hints:
+        sections.append(_advice_section(GO_ADVICE))
+    sections += [_go_examples_section(), _GO_OUTPUT_FORMAT_SECTION]
+    return "\n\n".join(sections) + "\n"
+
+
+# ---------------------------------------------------------------------------
+# Task message (identical in every arm but for one line)
 # ---------------------------------------------------------------------------
 
 ARM_NOTES: dict[str, str] = {
     "lattice": "Write a Lattice program; the Lattice runtime serves its endpoints.",
     "baseline": "Write a Python script whose routes are defined on `platform_kit.app`.",
+    "go": "Write `handlers.go` whose `Register` adds the routes to the kit's `ServeMux`.",
 }
 
 

@@ -1,0 +1,58 @@
+procedure scan(xs: list[Int], limit: Int) -> Int
+  recursive: False
+  locals: i: Int, limit: Int, n: Int, total: Int, x: Int, xs: list[Int]
+  Assign
+    target: NameT total
+    Const 0 : Int
+  For
+    target: TupleTarget
+      NameT i
+      NameT x
+    Charged : Iter[tuple[Int, Int]]
+      Call builtin:enumerate : Iter[tuple[Int, Int]]
+        Var xs : list[Int]
+    body:
+      Tick
+      If
+        test: Compare(<) : Bool
+          Var x : Int
+          Const 0 : Int
+        body:
+          Continue
+      If
+        test: Compare(>) : Bool
+          Var i : Int
+          Var limit : Int
+        body:
+          Break
+      Assign
+        target: NameT total
+        Binary(-) : Int
+          Var total : Int
+          Var x : Int
+  Assign
+    target: NameT n
+    Const 0 : Int
+  While
+    test: Compare(<) : Bool
+      Var n : Int
+      Var limit : Int
+    body:
+      Tick
+      Assign
+        target: NameT n
+        Grow(+) : Int
+          Var n : Int
+          Const 1 : Int
+      If
+        test: Compare(==) : Bool
+          Var n : Int
+          Const 3 : Int
+        body:
+          Break
+  While
+    test: Const True : Bool
+    body:
+      Tick
+      Return
+        Var total : Int

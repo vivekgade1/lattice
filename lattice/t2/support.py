@@ -28,10 +28,12 @@ with its caller.
 from __future__ import annotations
 
 # ---- begin (copied into generated apps) --------------------------------------------------
+import collections as t2_collections
 import dataclasses as t2_dataclasses
 import datetime as t2_dt
 import importlib as t2_importlib
 import logging as t2_logging
+import math as t2_math
 import re as t2_re
 import types as t2_types
 import uuid as t2_uuid
@@ -106,6 +108,201 @@ class T2TooLarge(T2Error):
 
     def __init__(self, message: str) -> None:
         super().__init__("R622", message)
+
+
+# Semantics v1.1 (spec 2026-09-28 go-target §3.1), always on: Int is 64-bit (R623
+# outside), sets iterate in insertion order, Counter.most_common keeps ties in insertion
+# order.
+
+
+class T2IntOverflow(T2Error):
+    """An Int result outside the signed 64-bit range (v1.1)."""
+
+    def __init__(self, value: int) -> None:
+        super().__init__("R623", f"integer {value} is outside the 64-bit range")
+
+
+_T2_INT_MIN, _T2_INT_MAX = -(1 << 63), (1 << 63) - 1
+
+
+def t2_int(v: object) -> object:
+    """An Int-typed result, range-checked (R623); anything else passes unchanged."""
+    if type(v) is int and not (_T2_INT_MIN <= v <= _T2_INT_MAX):  # noqa: E721 - not a bool
+        raise T2IntOverflow(v)
+    return v
+
+
+def _t2_set_like(other: object) -> bool:
+    return isinstance(other, T2Set | set | frozenset)
+
+
+class T2Set:
+    """A set whose iteration order is insertion order (v1.1). The set algebra orders
+    its result like lattice/gogen/rt/sets.go: the left operand's elements first, in its
+    order, then (union, symmetric difference) the right operand's new ones in its
+    order. Re-adding an element keeps its position; discarding then adding moves it
+    last."""
+
+    __slots__ = ("_d",)
+    __hash__ = None  # type: ignore[assignment] - mutable, like set
+
+    def __init__(self, items: object = ()) -> None:
+        self._d: dict[object, None] = dict.fromkeys(items)  # type: ignore[call-overload]
+
+    # ---- reading ----
+    def __iter__(self):  # noqa: ANN204
+        return iter(self._d)
+
+    def __len__(self) -> int:
+        return len(self._d)
+
+    def __contains__(self, x: object) -> bool:
+        return x in self._d
+
+    def __repr__(self) -> str:
+        if not self._d:
+            return "set()"
+        return "{" + ", ".join(repr(x) for x in self._d) + "}"
+
+    def __eq__(self, other: object) -> bool:
+        if not _t2_set_like(other):
+            return NotImplemented
+        return len(self) == len(other) and all(x in other for x in self._d)  # type: ignore[arg-type,operator]
+
+    def __ne__(self, other: object) -> bool:
+        eq = self.__eq__(other)
+        return eq if eq is NotImplemented else not eq
+
+    def issubset(self, other: object) -> bool:
+        o = other if _t2_set_like(other) else T2Set(other)
+        return len(self) <= len(o) and all(x in o for x in self._d)  # type: ignore[arg-type,operator]
+
+    def issuperset(self, other: object) -> bool:
+        return all(x in self._d for x in other)  # type: ignore[attr-defined]
+
+    def isdisjoint(self, other: object) -> bool:
+        return not any(x in self._d for x in other)  # type: ignore[attr-defined]
+
+    def __le__(self, other: object) -> bool:
+        return self.issubset(other) if _t2_set_like(other) else NotImplemented
+
+    def __lt__(self, other: object) -> bool:
+        if not _t2_set_like(other):
+            return NotImplemented
+        return len(self) < len(other) and self.issubset(other)  # type: ignore[arg-type]
+
+    def __ge__(self, other: object) -> bool:
+        return self.issuperset(other) if _t2_set_like(other) else NotImplemented
+
+    def __gt__(self, other: object) -> bool:
+        if not _t2_set_like(other):
+            return NotImplemented
+        return len(self) > len(other) and self.issuperset(other)  # type: ignore[arg-type]
+
+    # ---- changing ----
+    def add(self, x: object) -> None:
+        self._d[x] = None
+
+    def discard(self, x: object) -> None:
+        self._d.pop(x, None)
+
+    def remove(self, x: object) -> None:
+        del self._d[x]  # KeyError(x), as set.remove
+
+    def clear(self) -> None:
+        self._d.clear()
+
+    def update(self, *others: object) -> None:
+        for other in others:
+            for x in other:  # type: ignore[attr-defined]
+                self._d[x] = None
+
+    def copy(self) -> T2Set:
+        return T2Set(self._d)
+
+    __copy__ = copy
+
+    # ---- algebra: the left operand's order first ----
+    def union(self, *others: object) -> T2Set:
+        out = self.copy()
+        out.update(*others)
+        return out
+
+    def intersection(self, *others: object) -> T2Set:
+        keep = [o if _t2_set_like(o) else T2Set(o) for o in others]
+        return T2Set(x for x in self._d if all(x in o for o in keep))  # type: ignore[operator]
+
+    def difference(self, *others: object) -> T2Set:
+        drop = [o if _t2_set_like(o) else T2Set(o) for o in others]
+        return T2Set(x for x in self._d if not any(x in o for o in drop))  # type: ignore[operator]
+
+    def symmetric_difference(self, other: object) -> T2Set:
+        o = other if isinstance(other, T2Set) else T2Set(other)
+        out = T2Set(x for x in self._d if x not in o)
+        out.update(x for x in o if x not in self._d)
+        return out
+
+    def __or__(self, other: object) -> T2Set:
+        return self.union(other) if _t2_set_like(other) else NotImplemented
+
+    def __and__(self, other: object) -> T2Set:
+        return self.intersection(other) if _t2_set_like(other) else NotImplemented
+
+    def __sub__(self, other: object) -> T2Set:
+        return self.difference(other) if _t2_set_like(other) else NotImplemented
+
+    def __xor__(self, other: object) -> T2Set:
+        return self.symmetric_difference(other) if _t2_set_like(other) else NotImplemented
+
+    # in place (`s |= t` changes s itself, as for set)
+    def __ior__(self, other: object) -> T2Set:
+        if not _t2_set_like(other):
+            return NotImplemented
+        self.update(other)
+        return self
+
+    def __iand__(self, other: object) -> T2Set:
+        if not _t2_set_like(other):
+            return NotImplemented
+        for x in [x for x in self._d if x not in other]:  # type: ignore[operator]
+            del self._d[x]
+        return self
+
+    def __isub__(self, other: object) -> T2Set:
+        if not _t2_set_like(other):
+            return NotImplemented
+        for x in list(other):  # type: ignore[call-overload]
+            self._d.pop(x, None)
+        return self
+
+    def __ixor__(self, other: object) -> T2Set:
+        if not _t2_set_like(other):
+            return NotImplemented
+        o = other if isinstance(other, T2Set) else T2Set(other)
+        common = [x for x in o if x in self._d]
+        new = [x for x in o if x not in self._d]
+        for x in common:
+            del self._d[x]
+        self.update(new)
+        return self
+
+
+class T2Counter(t2_collections.Counter):
+    """collections.Counter whose most_common keeps ties in insertion order (v1.1)."""
+
+    def most_common(self, n: int | None = None) -> list[tuple[object, int]]:
+        ranked = sorted(self.items(), key=lambda kv: -kv[1])  # stable: ties keep order
+        return ranked if n is None else ranked[: max(n, 0)]
+
+    def update(self, iterable: object = None, /) -> None:  # type: ignore[override]
+        """Counter.update, with each count an Int (R623 outside the 64-bit range, as
+        every target): a non-empty Counter adds a mapping's counts to its own."""
+        if self and isinstance(iterable, dict):
+            get = self.get
+            for elem, count in iterable.items():
+                self[elem] = t2_int(count + get(elem, 0))
+            return
+        super().update(iterable)  # type: ignore[arg-type]
 
 
 _T2_SEQ = (str, list, tuple)
@@ -234,9 +431,12 @@ class T2Fuel:
     def _pow_size(self, a: object, b: object) -> None:
         if isinstance(a, int) and isinstance(b, int) and b > 1 and abs(a) > 1:
             self.bits(abs(a).bit_length() * b)
+        t2_pow_domain(a, b)
 
     def pow(self, a: object, b: object) -> object:
-        """`a ** b`: an Int power is charged its bits (at most bit_length(a) * b)."""
+        """`a ** b`: an Int power is charged its bits (at most bit_length(a) * b); a
+        Float power of a negative base to a non-integral exponent is a ValueError
+        (`t2_pow_domain`)."""
         self._pow_size(a, b)
         return a**b  # type: ignore[operator]
 
@@ -309,11 +509,11 @@ class T2Fuel:
     def sub(self, fn: object, pattern: str, repl: str, s: str, *rest: object) -> str:
         """`re.sub(pattern, repl, s)`: charged its input, then the most it can grow to --
         each match replaced by `repl`, whose group references expand to at most the
-        longest match -- before it runs."""
+        longest match -- before it runs. `\\d \\w \\s \\b` are ASCII (like `fn`, below)."""
         self.scan(s)
         count = 0
         longest = 0
-        for m in t2_re.finditer(pattern, s):
+        for m in t2_re.finditer(pattern, s, flags=t2_re.ASCII):
             count += 1
             longest = max(longest, m.end() - m.start())
         self.grow(len(s) + count * len(repl) * max(longest, 1))
@@ -328,6 +528,12 @@ class T2Fuel:
         while stack:
             v, d = stack.pop()
             nodes += 1
+            # each node is charged as it is counted: the same total as charging them all
+            # after, and a value that contains itself runs out of fuel instead of
+            # walking forever
+            self.left -= 1
+            if self.left < 0:
+                raise self._spent()
             depth = max(depth, d)
             if isinstance(v, dict):
                 stack.extend((x, d + 1) for x in v.values())
@@ -336,15 +542,78 @@ class T2Fuel:
                 stack.extend((x, d + 1) for x in v)
             elif isinstance(v, str):
                 text += len(v)
-        self.left -= nodes
-        if self.left < 0:
-            raise self._spent()
         indent = kw.get("indent")
         step = len(indent) if isinstance(indent, str) else indent if isinstance(indent, int) else 0
         self.grow(text + nodes * (max(step, 0) * depth + 4))
         out = fn(value, *args, **kw)  # type: ignore[operator]
         self.grow(len(out))
         return out
+
+
+def t2_pow_domain(a: object, b: object) -> None:
+    """R-pow (docs/lattice-language-rules.md): a Float power whose base is a negative
+    finite number and whose exponent is finite and not integral has no Float value --
+    Python's `**` would return a complex number -- so it raises ValueError with
+    `math.pow`'s message, as on every target. Int powers (both operands int) are
+    never in this domain; an infinite base or exponent keeps Python's float result."""
+    if isinstance(a, bool) or isinstance(b, bool):
+        return
+    if not (isinstance(a, float) or isinstance(b, float)):
+        return
+    if not (isinstance(a, int | float) and isinstance(b, int | float)):
+        return
+    if a < 0 and t2_math.isfinite(a) and t2_math.isfinite(b) and b != t2_math.floor(b):
+        raise ValueError("math domain error")
+
+
+def t2_widen(value: object, how: object) -> object:
+    """R-widen (docs/lattice-language-rules.md): a value holding Ints where the
+    procedure's types say Float, converted (`lattice.t2.emit_py` emits a plain
+    `float(x)` for a single Int). `how`: "f" an Int to a float; ("?", h) an optional
+    value; ("t", (h | None, ...)) a tuple element-wise (None: unchanged); ("i", h) an
+    iterator, lazily; ("l", h) a list, set or dict (its keys) into a fresh list; ("d",
+    hk | None, hv | None) a dict into a fresh dict (keys, values)."""
+    if how == "f":
+        return float(value)  # type: ignore[arg-type]
+    tag = how[0]  # type: ignore[index]
+    if tag == "?":
+        return None if value is None else t2_widen(value, how[1])  # type: ignore[index]
+    if tag == "t":
+        parts = how[1]  # type: ignore[index]
+        return tuple(
+            x if h is None else t2_widen(x, h)
+            for x, h in zip(value, parts, strict=True)  # type: ignore[call-overload]
+        )
+    if tag == "i":
+        return (t2_widen(x, how[1]) for x in value)  # type: ignore[attr-defined,index]
+    if tag == "l":
+        return [t2_widen(x, how[1]) for x in value]  # type: ignore[attr-defined,index]
+    if tag == "d":
+        hk, hv = how[1], how[2]  # type: ignore[index]
+        return {
+            (k if hk is None else t2_widen(k, hk)): (v if hv is None else t2_widen(v, hv))
+            for k, v in value.items()  # type: ignore[attr-defined]
+        }
+    raise ValueError(f"unknown widening {how!r}")
+
+
+def t2_fget(d: dict, k: object, how: object) -> object:
+    """`d[k]` where `k` holds an Int in a place the dict's keys hold a Float (at any
+    depth; docs/lattice-language-rules.md R-widen): the lookup is exact, as `==` is; a
+    defaultdict that stores a missing key stores it widened (`t2_widen(k, how)`), as a
+    store does."""
+    if isinstance(d, t2_collections.defaultdict) and k not in d:
+        return d[t2_widen(k, how)]
+    return d[k]
+
+
+def t2_fkey(d: dict, k: object, how: object) -> object:
+    """The key `d[k] op= v` reads and writes (`k` as in `t2_fget`): `k` itself when the
+    dict holds it (exactly), or when a missing key raises KeyError (a plain dict);
+    widened when the read stores or counts a missing key (a defaultdict, a Counter)."""
+    if k in d or not isinstance(d, t2_collections.defaultdict | t2_collections.Counter):
+        return k
+    return t2_widen(k, how)
 
 
 class T2Row:
@@ -416,18 +685,41 @@ _T2_UNITS = ("days", "hours", "minutes", "seconds")
 
 
 def _t2_builtins() -> dict[str, object]:
+    """The builtins by name; `set` is the insertion-ordered T2Set (v1.1)."""
     import builtins
 
-    return {name: getattr(builtins, name) for name in T2_BUILTIN_NAMES}
+    names = {name: getattr(builtins, name) for name in T2_BUILTIN_NAMES}
+    names["set"] = T2Set
+    return names
+
+
+def _t2_re_ascii(name: str) -> object:
+    """`re.fullmatch`/`match`/`search`/`sub`/`findall`/`split`, bound with `re.ASCII`:
+    `\\d \\w \\s \\b` match only ASCII on every target (spec 2026-09-28 go-target §3.1;
+    for portability to future targets, docs/lattice-language-rules.md §6). Go compiles
+    the same pattern with the same flag and runs Python's SRE engine (lattice.gogen.regex)."""
+    fn = getattr(t2_re, name)
+
+    def wrapped(*args: object, **kwargs: object) -> object:
+        return fn(*args, flags=t2_re.ASCII, **kwargs)
+
+    wrapped.__name__ = name
+    return wrapped
 
 
 def _t2_std_module(module: str, names: tuple[str, ...]) -> object:
-    """An allowlisted stdlib module as a namespace holding only `names`."""
-    real = t2_importlib.import_module(module)
-    return t2_types.SimpleNamespace(**{n: getattr(real, n) for n in names})
+    """An allowlisted stdlib module as a namespace holding only `names` (the `re`
+    module's functions bound with `re.ASCII`, see `_t2_re_ascii`)."""
+    return t2_types.SimpleNamespace(**{n: _t2_std(module, n) for n in names})
 
 
 def _t2_std(module: str, name: str) -> object:
+    """An allowlisted stdlib name: `re` functions bound with `re.ASCII`, and
+    `collections.Counter` is T2Counter (v1.1: most_common ties in insertion order)."""
+    if module == "re":
+        return _t2_re_ascii(name)
+    if module == "collections" and name == "Counter":
+        return T2Counter
     return getattr(t2_importlib.import_module(module), name)
 
 
@@ -464,7 +756,7 @@ def _t2_import(name: str, *args: object, **kwargs: object) -> object:
 
 
 def t2_load(source: str, natives: dict[str, object] | None = None) -> dict[str, object]:
-    """Run compiled T2 source (`lattice.t2.compile`) in a fresh restricted namespace:
+    """Run compiled T2 source (`lattice.t2.emit_py`) in a fresh restricted namespace:
     no ambient builtins (only a restricted `__import__` the standard library uses
     internally), only what its preamble binds through the loader functions
     (allowlisted builtins, stdlib names, Duration helpers, records, constants) and
@@ -477,10 +769,15 @@ def t2_load(source: str, natives: dict[str, object] | None = None) -> dict[str, 
         "t2_std": _t2_std,
         "t2_helper": _t2_helper,
         "t2_record": _t2_record,
+        "t2_int": t2_int,
+        "t2_widen": t2_widen,
+        "t2_fget": t2_fget,
+        "t2_fkey": t2_fkey,
         "native": t2_types.SimpleNamespace(**(natives or {})),
     }
     exec(compile(source, "<lattice-procedures>", "exec"), namespace)  # noqa: S102
-    for loader in ("t2_builtin", "t2_std_module", "t2_std", "t2_helper", "t2_record"):
+    loaders = ("t2_builtin", "t2_std_module", "t2_std", "t2_helper", "t2_record", "t2_int")
+    for loader in (*loaders, "t2_widen", "t2_fget", "t2_fkey"):
         del namespace[loader]
     return namespace
 
@@ -588,8 +885,9 @@ def t2_arg(arg: tuple, cells: dict[str, object] | None, req: T2Request, ns: dict
     kind = arg[0]
     if kind == "col":
         return t2_decode((cells or {})[arg[1]], arg[2])
-    if kind == "param":
-        return req.param(arg[1])
+    if kind == "param":  # ("param", name[, scalar]): an Int for a Float is widened
+        value = req.param(arg[1])
+        return value if len(arg) < 3 else t2_decode(value, arg[2])
     if kind == "const":
         return arg[1]
     if kind == "now":

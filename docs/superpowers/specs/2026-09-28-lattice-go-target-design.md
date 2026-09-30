@@ -27,6 +27,8 @@ source ─► parse ─► p1–p7 + T2 checker ─► p8_target ─► CheckedP
                                            └─► gogen/t2     (new)
 ```
 
+As built (2026-09-29): the Go runtime module is `lattice/gogen/rt` (planned as `lattice/gogen/prelude`), and the ordered collections are `rt.Dict` / `rt.Set` (planned as `OrderedMap` / `OrderedSet`); "prelude" below means that runtime.
+
 | Unit | Job | Depends on |
 |---|---|---|
 | `lattice/t2ir/nodes.py` | Frozen dataclasses: typed expressions and statements, explicit `Fuel(cost)` and size-check nodes, calls, records. Every node carries its `T2Type`. No Python `ast` inside. | `check/t2/types.py` |
@@ -34,10 +36,10 @@ source ─► parse ─► p1–p7 + T2 checker ─► p8_target ─► CheckedP
 | `lattice/t2/emit_py.py` | T2 IR → Python source running on the existing `t2/support.py` | T2 IR |
 | `lattice/targets.py` | The v1.1 semantics table (§3) and `TargetCapabilities` for `python` and `go`, mirroring `api/backend.Capabilities` | — |
 | `lattice/check/p8_target.py` | Rejects programs the chosen target cannot run, in the style of `p7_backend` (§3.2) | `targets.py` |
-| `lattice/gogen/prelude/` | Hand-written Go module: request pipeline (parameter parsing and constraints, token auth, error bodies, UUID/DateTime wire formats, transactions, outbox), T2 support (fuel, checked Int, ordered map, slicing, formatting), the SQLite functions the Python runtime registers (`modernc.org/sqlite`, pure Go) | — |
+| `lattice/gogen/rt/` (module `lattice.dev/rt`) | Hand-written Go module: request pipeline (parameter parsing and constraints, token auth, error bodies, UUID/DateTime wire formats, transactions, outbox), T2 support (fuel, checked Int, ordered map, slicing, formatting), the SQLite functions the Python runtime registers (`modernc.org/sqlite`, pure Go) | — |
 | `lattice/gogen/endpoints.py` | `EndpointPlan` → one `net/http` handler per endpoint: each plan step becomes a straight-line block (no runtime interpreter); rows scan into structs generated from each step's `Schema`, pointer fields for nullable columns | `api/ir.py` |
 | `lattice/gogen/t2.py` | T2 IR → Go functions | T2 IR |
-| `lattice/gogen/build.py` | Writes a Go module (prelude + generated files), runs `go build`, returns the binary path; caches by content hash | Go toolchain |
+| `lattice/gogen/build.py` | Writes a Go module (the `rt` runtime + generated files), runs `go build`, returns the binary path; caches by content hash | Go toolchain |
 | `lattice/importer/verify.py` (extended) | HTTP adapter: start a binary against a copy of the seeded DB and drive cases over a socket; comparison logic unchanged | — |
 
 Unchanged: surface syntax, prompts, diagnostics, `p1`–`p7`, `EndpointPlan`, the SQL layer, the tabular profile. Programs marked `# lattice: v1` keep working (§3.3).
@@ -55,10 +57,16 @@ Lattice's meaning is currently whatever Python does. v1.1 writes it down once, i
 | `Int` | Signed 64-bit. Overflow raises **R623** (new). Today T2 allows up to 65,536 bits (`T2_MAX_INT_BITS`). | Checked arithmetic in both emitters |
 | `Float` | IEEE-754 double; text is the shortest round-trip form in Python's `repr` format | Prelude formatter per target |
 | Division | `/` gives Float; `//` and `%` floor as in Python | Go helpers (Go truncates) |
+| Int in a Float place | Converted to a float where the checker's types put it (R-widen, docs/lattice-language-rules.md): assignments, arguments, returns, elements, branches, `sum`'s start, `Int ** n` typed Float. Comparisons stay exact | `Widen` nodes placed by T2 IR lowering |
+| Float `**` | A negative finite base with a finite non-integral exponent raises ValueError (`math domain error`), never a complex number (R-pow) | `T2Fuel.pow` / `rt.PowF` |
 | `Str` | `len`, indexing and slicing are over code points | Go helpers on `[]rune` |
 | `list` | Negative indexes and Python slice rules (clamped bounds, steps); every slice read is a **new list** (Go copies, never aliases); slice assignment stays rejected (L913) | Go slice helpers |
-| `dict` | Insertion-ordered iteration | Generated Go `OrderedMap[K, V]` |
-| Regex | RE2 subset: lookaround and backreferences rejected on every target | New checker rule next to `check/redos.py` |
+| `dict` | Insertion-ordered iteration | Go `rt.Dict[K, V]` |
+| `set` | Insertion-ordered iteration on every target (Python's string hashing is seeded per process) | Go `rt.Set[T]` |
+| `Counter.most_common` | Ties in insertion order | Prelude |
+| Regex | RE2 subset: lookaround and backreferences rejected on every target; also rejects possessive repeats and atomic groups; `\d \w \s \b` are ASCII (Python compiles with `re.ASCII`) | New checker rule next to `check/redos.py` |
+| `str.upper/lower/casefold/title` | Full Unicode case mapping (`'ß'.upper() == 'SS'`) | Prelude |
+| `str()` / f-string of a `list`, `dict`, `set` or `tuple` | L892 on Go in this sub-project | `p8_target` |
 | `DateTime` / `Duration` | UTC, microsecond precision, the existing wire format | Prelude |
 | `IndexError` / `KeyError` | Catchable Lattice errors on both targets; Go returns typed errors, never `panic` for them | Go T2 support |
 | Fuel, depth, size | Charged exactly where T2 IR places `Fuel` and size-check nodes; R620/R621/R622 at the same step on both targets | T2 IR |
@@ -67,15 +75,15 @@ Lattice's meaning is currently whatever Python does. v1.1 writes it down once, i
 
 | Code | Rule |
 |---|---|
-| L880 | `decimal` is not available on target `go` |
-| L881 | A `native.<name>` call (or `NativeToken` auth) needs a native implementation for the target; none exist for `go` in this sub-project |
-| L882 | A tabular-profile program has no `go` target yet |
+| L890 | A `native.<name>` call (or `NativeToken` auth) needs a native implementation for the target; none exist for `go` in this sub-project |
+| L891 | A tabular-profile program has no `go` target yet |
+| L892 | A T2 call (builtin, method or stdlib function) the target does not implement yet — the staging mechanism |
 
 The target is a check option (`--target python|go`, default `python`). A program passes for Go only if it passes for Python and `p8_target` finds nothing.
 
 ### 3.3 Versioning
 
-v1.1 only makes Lattice stricter. A v1 program either behaves the same or is rejected at check time, with one exception: `Int` values beyond 64 bits now fail at runtime with R623. That change is recorded in the version notes. The header `# lattice: v1.1` is accepted; `v1` programs run under v1.1 rules.
+v1.1 only makes Lattice stricter. A v1 program either behaves the same or is rejected at check time, with exceptions that each fix a divergence between targets: `Int` values beyond 64 bits now fail at runtime with R623, an Int in a Float-typed place becomes a float (R-widen), and a negative Float base with a non-integral exponent raises ValueError (R-pow). These changes are listed in the version notes (docs/lattice-language-rules.md §8). The header `# lattice: v1.1` is accepted; `v1` programs run under v1.1 rules.
 
 ## 4. Runtime behaviour on Go
 
@@ -86,6 +94,7 @@ Request flow: parse and constrain parameters → authenticate (one statement) �
 | Parameter or constraint violation | 422, existing validation envelope |
 | Unknown token | 401 |
 | Declared `ErrorSpec` | Its status and JSON body |
+| `IndexError`/`KeyError` | Raised as a Lattice error value (`*rt.Error`) that `try` blocks catch and the handler turns into a 500; never an unrecovered panic |
 | R310, R620, R621, R622, R623 | 500 with the located message, logged |
 | Unexpected Go error or panic | 500 `internal`; handlers `recover()`, the server keeps running |
 
@@ -144,13 +153,13 @@ The Go baseline gets `bench/api_kit_go/`, the Go counterpart of `bench/api_kit/p
 | Semantics v1.1 | Shared fixture suite (~150 cases: overflow → R623, floor division, float text, rune slicing, negative indexes, copy-on-slice, dict order, RE2 rejection, datetime wire format), each run on both targets against the expected value |
 | `p8_target` | One positive and one negative test per rule |
 | Go prelude | `go test` unit tests; Python and Go prelude helpers compared on the same inputs |
-| Equivalence gate | Template suite (1,460 requests), loop corpus and the 40 API reference programs run against Lattice→Python and Lattice→Go: 0 mismatches, equal SQL counts |
+| Equivalence gate | The API codegen differential registry (`tests/api/test_codegen_differential.py` `PROGRAMS`: the 40 task programs with probes, plus the t2/hardening/loops/gaps/mine/round2/partb/n1b/solo programs) — every program that passes `check_source(..., target="go")`; programs rejected only with L890 are listed and asserted as the expected exclusions. The FastAPI template suite is excluded: its auth is a native (`NativeToken("decode_token")`). Run against Lattice→Python and Lattice→Go: 0 mismatches, equal SQL counts |
 | Fuel parity | Procedures built to exhaust fuel at a known step fail at the same step on both targets |
 | Harness | Go kit and runner unit tests; dry run of every arm with canned responses before any paid run |
 
 ## 7. Build order
 
-1. `targets.py`, `p8_target` (L880–L882), the RE2 rule, R623 in the Python runtime
+1. `targets.py`, `p8_target` (L890–L892), the RE2 rule, R623 in the Python runtime
 2. T2 IR: nodes, lowering, `emit_py`; differential against the instrumentation path, then delete it
 3. Go prelude and SQLite functions, with `go test`
 4. Go T2 emitter, through the shared semantics suite

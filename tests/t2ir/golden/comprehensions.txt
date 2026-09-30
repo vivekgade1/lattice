@@ -1,0 +1,95 @@
+procedure comps(xs: list[Int], words: list[Str]) -> Int
+  recursive: False
+  locals: evens: list[Int], has_big: Bool, index: dict[Str, Int], pairs: list[tuple[Int, Int]], uniq: set[Str], words: list[Str], xs: list[Int]
+  Assign
+    target: NameT evens
+    Comp(list) : list[Int]
+      Binary(//) : Int
+        Var x : Int
+        Const 2 : Int
+      Gen
+        target: NameT x
+        Each : list[Int]
+          Var xs : list[Int]
+        Compare(==) : Bool
+          Binary(%) : Int
+            Var x : Int
+            Const 2 : Int
+          Const 0 : Int
+        Compare(>) : Bool
+          Var x : Int
+          Const 0 : Int
+  Assign
+    target: NameT uniq
+    Comp(set) : set[Str]
+      Charged : Str
+        Call method:Str.lower : Str
+          Var w : Str
+      Gen
+        target: NameT w
+        Each : list[Str]
+          Var words : list[Str]
+  Assign
+    target: NameT index
+    Comp(dict) : dict[Str, Int]
+      Var w : Str
+      Var i : Int
+      Gen
+        target: TupleTarget
+          NameT i
+          NameT w
+        Each : Iter[tuple[Int, Str]]
+          Charged : Iter[tuple[Int, Str]]
+            Call builtin:enumerate : Iter[tuple[Int, Str]]
+              Var words : list[Str]
+        Compare(!=) : Bool
+          Var w : Str
+          Const '' : Str
+  Assign
+    target: NameT pairs
+    Comp(list) : list[tuple[Int, Int]]
+      TupleLit : tuple[Int, Int]
+        Var x : Int
+        Var y : Int
+      Gen
+        target: NameT x
+        Each : list[Int]
+          Var xs : list[Int]
+      Gen
+        target: NameT y
+        Each : list[Int]
+          Var evens : list[Int]
+  Assign
+    target: NameT has_big
+    Charged : Bool
+      Call builtin:any : Bool
+        Bulk : Iter[Bool]
+          Comp(gen) : Iter[Bool]
+            Compare(>) : Bool
+              Var x : Int
+              Const 10 : Int
+            Gen
+              target: NameT x
+              Each : list[Int]
+                Var xs : list[Int]
+  Return
+    Grow(+) : Int
+      Grow(+) : Int
+        Grow(+) : Int
+          Grow(+) : Int
+            Charged : Int
+              Call builtin:len : Int
+                Var evens : list[Int]
+            Charged : Int
+              Call builtin:len : Int
+                Var uniq : set[Str]
+          Charged : Int
+            Call builtin:len : Int
+              Var index : dict[Str, Int]
+        Charged : Int
+          Call builtin:len : Int
+            Var pairs : list[tuple[Int, Int]]
+      IfExp : Int
+        test: Var has_big : Bool
+        body: Const 1 : Int
+        orelse: Const 0 : Int
