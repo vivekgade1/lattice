@@ -1177,3 +1177,78 @@ Apple M5 Pro, arm64, macOS. `tests/fixtures/api/c01/lattice.py`, profile
   the `LISTENING <host:port>` line on stdout), range 5.8–10.6 ms; one of the 20 runs
   took 195 ms (evidently a first-run disk-cache effect), which the median is
   insensitive to.
+
+## Go cost pilot (5b stage 1, pre-registered, 2026-09-29)
+
+Spec: `docs/superpowers/specs/2026-09-29-lattice-go-pilot.md`, pre-registered and frozen at
+commit `d5df467` (parent `4b078d8`) immediately before the live run.
+
+**Setup.**
+- 480 runs: the 40 API tasks × 2 arms (B = Lattice→Go, G = hand-written Go against a
+  Go platform kit that only authenticates) × 2 models (claude-sonnet-5 primary,
+  claude-haiku-4-5 secondary) × 3 reps.
+- Transport: the Claude CLI only, with the existing isolation flags, resumable via
+  `--resume`; cost from the CLI's list-price estimate (`cost_basis =
+  "cli_list_estimate"`, the same basis for both arms).
+- **0 harness errors** in either Sonnet cell after dedup (of 120 runs/cell each for B
+  and G) — well under the 5% threshold that would have made the run INVALID.
+
+| model | arm | n | correct [95% CI] | silent [95% CI] | loud [95% CI] | $/correct |
+|---|---|---|---|---|---|---:|
+| claude-haiku-4-5 | B | 120 | 120/120 [0.97, 1.00] | 0/120 [0.00, 0.03] | 0/120 [0.00, 0.03] | 0.0156 |
+| claude-haiku-4-5 | G | 120 | 120/120 [0.97, 1.00] | 0/120 [0.00, 0.03] | 0/120 [0.00, 0.03] | 0.0259 |
+| claude-sonnet-5 | B | 120 | 120/120 [0.97, 1.00] | 0/120 [0.00, 0.03] | 0/120 [0.00, 0.03] | 0.0130 |
+| claude-sonnet-5 | G | 120 | 120/120 [0.97, 1.00] | 0/120 [0.00, 0.03] | 0/120 [0.00, 0.03] | 0.0189 |
+
+### S2 (secondary, descriptive): program size, rounds, output tokens
+
+| model | arm | n | mean program lines | mean AST nodes | mean rounds | mean output tokens |
+|---|---|---|---:|---:|---:|---:|
+| claude-haiku-4-5 | B | 120 | 11.9 | 115 | 1.23 | 2421 |
+| claude-haiku-4-5 | G | 120 | 83.8 | 472 | 1.06 | 4571 |
+| claude-sonnet-5 | B | 120 | 11.6 | 116 | 1.28 | 370 |
+| claude-sonnet-5 | G | 120 | 77.9 | 450 | 1.01 | 1071 |
+
+### Pre-registered verdicts
+
+- **P1** (cost ratio R = B/G on claude-sonnet-5): R = 0.689 [0.591, 0.803] → **not
+  confirmed** (the threshold was ≤ 0.6 with an upper bound < 1.0).
+- **P2** (non-inferiority of correct(B) on claude-sonnet-5, margin 10 points): **holds**.
+- **Stage-1 verdict: STOP.**
+
+Per the spec's "What each outcome means" table, for **"STOP, P1 not confirmed or P2
+fails"**:
+
+> Any cost advantage is too small or costs correctness. Report honestly; no further Go
+> benchmark investment.
+
+### Additional observations (not pre-registered)
+
+1. **B is cheaper per correct task on both models** (Sonnet R = 0.69, Haiku R = 0.60),
+   and the Sonnet interval excludes 1.0. So there is a real cost advantage of about
+   30%, but it falls short of the pre-registered 40% threshold. This does not change
+   the verdict above.
+2. **Every cell was 120/120 correct with 0 silent failures: a ceiling effect.** The
+   tasks can't distinguish the arms on correctness or safety at this model strength,
+   which echoes the earlier API rounds and the confirmation run above.
+3. **Programs: B is about 12 lines vs G's about 80** (S2: Sonnet 11.6 vs 77.9, Haiku
+   11.9 vs 83.8 — roughly 6–7× fewer lines), and about 4× fewer AST nodes (Sonnet 116
+   vs 450, Haiku 115 vs 472). Output tokens on Sonnet: G is about 2–3× B (1071 vs 370,
+   computed from S2). The cost gap is smaller than the size gap, because B's large
+   system prompt (the Lattice guide) is paid on every call, and prompt caching changed
+   per-call costs during the run (early calls about $0.05, later about
+   $0.015–0.02, from `outcomes.jsonl`).
+4. **Threats that applied** (from the spec): the tasks were written for Lattice; P2
+   was relaxed before the freeze; one machine and one CLI version; the estimate
+   predicted about $21 (central scenario) — the actual total cost, summed over all 480
+   records in `results/go-pilot/outcomes.jsonl`, was **$8.81**.
+
+### Conclusion
+
+Per the pre-registration, stage 1 is STOP: there is no stage 2. The Go target's
+demonstrated value remains what 5a proved — verified multi-target compilation, tested
+equivalent to the Python runtime on 2,478 cases — not a demonstrated LLM-cost win
+beyond about 30%, which falls short of the pre-registered bar. As with the confirmation
+run above, a real but modest effect did not clear the pre-registered threshold, and the
+tasks again hit a ceiling on correctness; no further Go benchmark investment is
+warranted on this evidence.
