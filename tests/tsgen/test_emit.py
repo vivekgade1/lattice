@@ -151,6 +151,8 @@ def renamed(plan: EndpointPlan, name: str, response: str | None = None) -> Endpo
         (["x"], "Result"),  # a model named like a re-exported runtime type
         (["x"], "string"),  # a predefined type name
         (["x", "x"], None),  # two endpoints, one name
+        (["query"], None),  # its hook is the imported useQuery
+        (["mutation"], None),  # its hook is the imported useMutation
     ],
 )
 def test_invalid_or_colliding_names_are_l893(names: list[str], response: str | None) -> None:
