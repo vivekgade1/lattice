@@ -1142,21 +1142,21 @@ export async function call(ep: Endpoint, p: Record<string, unknown>, o: CallOpts
   } catch (e) {
     return unexpected(res.status, "network", String(e)); // aborted or dropped mid-body
   }
+  // Decoding is total: any error while decoding a body (a DecodeError, or e.g. a RangeError
+  // from nesting deeper than the stack) is Unexpected "decode"; call() never rejects.
   if (res.status === ep.success) {
     try {
       return { ok: true, value: ep.decode(res.status === 204 ? undefined : decodeJson(bytes)) };
-    } catch (e) {
-      if (e instanceof DecodeError) return unexpected(res.status, "decode", bytes);
-      throw e;
+    } catch {
+      return unexpected(res.status, "decode", bytes);
     }
   }
   const kind = ep.errors[res.status];
   if (kind === undefined) return unexpected(res.status, "status", bytes);
   try {
     return { ok: false, error: { kind, status: res.status, detail: decodeErrorBody(res.status, bytes).detail } };
-  } catch (e) {
-    if (e instanceof DecodeError) return unexpected(res.status, "decode", bytes);
-    throw e;
+  } catch {
+    return unexpected(res.status, "decode", bytes);
   }
 }
 

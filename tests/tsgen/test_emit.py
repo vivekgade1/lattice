@@ -347,3 +347,30 @@ def test_unprintable_or_non_finite_bound_is_l893(bound: float) -> None:
     scalar = "Int" if isinstance(bound, int) else "Float"
     with pytest.raises(TsGenRefusal, match="L893"):
         ts_spec({"name": "n", "source": "query", "scalar": scalar, "le": bound}, plan)
+
+
+DEEP = """
+import { readFileSync } from "node:fs";
+const dir = JSON.parse(readFileSync(0, "utf8"));
+const api = await import(dir + "/api.ts");
+const deep = "[".repeat(20000) + "]".repeat(20000);
+const answer = (status) => async () => new Response(deep, { status });
+const opts = (f) => ({ baseUrl: "http://x", token: "t", fetch: f });
+const out = [];
+for (const [fn, p, status] of [["readItems", {}, 200], ["readItem", { id: "00000000-0000-4000-8000-000000000102" }, 404],
+                               ["readItem", { id: "00000000-0000-4000-8000-000000000102" }, 422]]) {
+  try {
+    const r = await api[fn](p, opts(answer(status)));
+    out.push([r.ok, r.error.kind, r.error.reason, r.error.status]);
+  } catch (e) { out.push("threw " + String(e).slice(0, 80)); }
+}
+console.log(JSON.stringify(out));
+"""
+
+
+def test_decoding_is_total(tmp_path: Path) -> None:
+    """Final review #2: any error while decoding a body (here a RangeError from 20,000 nested
+    arrays) is Unexpected "decode"; call() never rejects."""
+    write(tmp_path, plans_of("realapps"))
+    got = node_json(DEEP, tmp_path.as_uri(), cwd=tmp_path)
+    assert got == [[False, "unexpected", "decode", s] for s in (200, 404, 422)]
