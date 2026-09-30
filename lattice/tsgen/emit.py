@@ -6,7 +6,7 @@ import json
 import math
 from collections.abc import Sequence
 
-from lattice.api.ir import EndpointPlan, ErrorSpec
+from lattice.api.ir import EndpointPlan, ErrorSpec, WriteStep
 from lattice.catalog import API_ERRORS, LIST_KIND
 from lattice.targets import TS_REFUSAL
 from lattice.tsgen.regex import Untranslatable, fullmatch_source
@@ -39,6 +39,53 @@ def pascal(name: str) -> str:
     return "".join(w[:1].upper() + w[1:] for w in name.split("_"))
 
 
+# Names a generated binding may not have: ECMAScript reserved words plus the strict-mode and
+# module restrictions (api.ts is a module); a type alias may not have TypeScript's
+# predefined type names either.
+RESERVED = frozenset(
+    "break case catch class const continue debugger default delete do else enum export extends"
+    " false finally for function if import in instanceof new null return super switch this"
+    " throw true try typeof var void while with implements interface let package private"
+    " protected public static yield await eval arguments".split()
+)
+RESERVED_TYPES = RESERVED | frozenset(
+    "any unknown never object string number boolean bigint symbol undefined".split()
+)
+# Names api.ts itself declares (values, then types).
+FIXED_VALUES = ("rt", "ENDPOINTS")
+FIXED_TYPES = ("rt", "CallOpts", "FieldError", "Result", "Unexpected", "ValidationError")
+
+
+def check_names(plans: Sequence[EndpointPlan]) -> None:
+    """L893 when a plan's generated names are not valid, distinct TypeScript names."""
+    values: dict[str, str] = dict.fromkeys(FIXED_VALUES, "api.ts")
+    types: dict[str, str] = dict.fromkeys(FIXED_TYPES, "api.ts")
+
+    def claim(table: dict[str, str], name: str, owner: str, plan: EndpointPlan) -> None:
+        if name in (RESERVED_TYPES if table is types else RESERVED):
+            raise TsGenRefusal(plan, f"'{owner}' generates the reserved name '{name}'")
+        if name in table and table[name] != owner:
+            raise TsGenRefusal(plan, f"'{owner}' generates '{name}', as '{table[name]}' does")
+        table[name] = owner
+
+    names: set[str] = set()
+    for plan in plans:
+        if plan.name in names:
+            raise TsGenRefusal(plan, f"two endpoints are named '{plan.name}'")
+        names.add(plan.name)
+    for plan in plans:
+        if plan.response is not None:
+            claim(types, plan.response, f"model {plan.response}", plan)
+    for plan in plans:
+        owner = f"endpoint {plan.name}"
+        for value in (plan.name.upper(), f"validate{pascal(plan.name)}", camel(plan.name)):
+            if value in values and values[value] == owner:  # one plan, two roles
+                raise TsGenRefusal(plan, f"'{owner}' generates '{value}' twice")
+            claim(values, value, owner, plan)
+        for suffix in ("Params", "Response", "Error"):
+            claim(types, pascal(plan.name) + suffix, owner, plan)
+
+
 def kind_of(status: int) -> str:
     return KIND.get(status, f"status_{status}")
 
@@ -56,6 +103,8 @@ def error_statuses(plan: EndpointPlan) -> list[int]:
             if answer is not None:
                 out.add(answer[0])
     out |= {API_ERRORS[e] for e in plan.errors if e in API_ERRORS}
+    if any(isinstance(s, WriteStep) and s.kind in ("insert", "update") for s in plan.steps):
+        out.add(409)  # serve: any UNIQUE violation not declared by unique_or= (UNIQUE_CONFLICT)
     for step in plan.steps:
         for attr in ("error", "conflict", "missing"):
             spec = getattr(step, attr, None)
@@ -217,6 +266,7 @@ export type { CallOpts, FieldError, Result, Unexpected, ValidationError } from "
 
 
 def api_ts(plans: Sequence[EndpointPlan]) -> str:
+    check_names(plans)
     models: dict[str, str] = {}
     bodies = [_endpoint(p, models) for p in plans]
     model_text = "".join(f"\nexport type {m} = {t};\n" for m, t in models.items())

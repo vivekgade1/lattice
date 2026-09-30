@@ -1146,7 +1146,12 @@ export async function call(ep: Endpoint, p: Record<string, unknown>, o: CallOpts
   } catch (e) {
     return unexpected(0, "network", String(e));
   }
-  const bytes = new Uint8Array(await res.arrayBuffer());
+  let bytes: Uint8Array;
+  try {
+    bytes = new Uint8Array(await res.arrayBuffer());
+  } catch (e) {
+    return unexpected(res.status, "network", String(e)); // aborted or dropped mid-body
+  }
   if (res.status === ep.success) {
     try {
       return { ok: true, value: ep.decode(res.status === 204 ? undefined : decodeJson(bytes)) };
@@ -1168,6 +1173,7 @@ export async function call(ep: Endpoint, p: Record<string, unknown>, o: CallOpts
 /** A stable query key for params (bigint-safe, key order independent). */
 export function canonicalKey(v: unknown): string {
   if (typeof v === "bigint") return v.toString() + "n";
+  if (Object.is(v, -0)) return "-0"; // sent as -0.0, not 0
   if (v === undefined) return "u";
   if (typeof v === "number" && !Number.isFinite(v)) return String(v);
   if (v === null || typeof v !== "object") return JSON.stringify(v);
