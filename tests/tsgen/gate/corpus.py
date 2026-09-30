@@ -10,6 +10,7 @@ Duplicate wire requests are dropped (the first name is kept)."""
 
 from __future__ import annotations
 
+import base64
 import json
 import math
 import random
@@ -527,3 +528,65 @@ def corpus_text(corpus: dict[str, Any]) -> str:
     head = [f"{dump(k)}:{dump(corpus[k])}" for k in ("app", "patterns", "specs")]
     rows = ",\n".join(dump(c) for c in corpus["params"])
     return "{" + ",\n".join(head) + ',\n"params":[\n' + rows + "\n]}\n"
+
+
+# ---- L3: the same requests as client-side values ---------------------------------------------
+
+
+def _typed(d: dict[str, Any], raw: object, text: bool) -> dict[str, Any]:
+    """A client-side value: what a program would pass for this parameter."""
+    s = d["scalar"]
+    if raw is None:
+        return {"t": "none"}
+    if text and isinstance(raw, str):
+        if s == "Int" and re.fullmatch(r"-?[0-9]+", raw):
+            return {"t": "int", "v": raw}  # BigInt() or Number() of the digits
+        if s == "Bool" and raw in ("true", "false"):
+            return {"t": "bool", "v": raw == "true"}
+        if s in ("Str", "Date", "DateTime", "Uuid"):
+            return {"t": "str", "v": raw}
+        return {"t": "json", "v": raw}  # a wrong-typed string: sent as its text
+    if isinstance(raw, bool):
+        return {"t": "bool", "v": raw}
+    if isinstance(raw, int):
+        return {"t": "int", "v": str(raw)}
+    if isinstance(raw, float):
+        return {"t": "float", "v": repr(raw)}  # the driver maps nan / inf / -inf
+    if isinstance(raw, str) and s in ("Str", "Date", "DateTime", "Uuid"):
+        return {"t": "str", "v": raw}
+    return {"t": "json", "v": raw}
+
+
+def typed_corpus(app: App) -> list[dict[str, Any]]:
+    """L3 cases: the wire corpus's requests (`_endpoint_cases`) as client-side values
+    (JSON-safe: non-finite floats travel as tagged text). Duplicates are dropped."""
+    out: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for plan in app.plans:
+        specs = {d["name"]: d for d in plan_specs(plan)}
+        if not specs:  # nothing to validate; its answers still decode (claim 3)
+            out.append({"name": f"{plan.name} call", "endpoint": plan.name, "params": {}})
+        for c in _endpoint_cases(app, plan):
+            params: dict[str, Any] = {}
+            params.update(c["path"])
+            params.update(dict(urllib.parse.parse_qsl(c["query"], keep_blank_values=True)))
+            body = base64.b64decode(c["body"])
+            if body and plan.body == "form":
+                params.update(dict(urllib.parse.parse_qsl(body.decode(), keep_blank_values=True)))
+            elif body:
+                obj = json.loads(body)
+                if not isinstance(obj, dict):
+                    continue  # a non-object body: no client call sends one (L2 covers it)
+                params.update(obj)
+            form = plan.body == "form"
+            typed = {
+                n: _typed(specs[n], v, specs[n]["source"] != "body" or form)
+                for n, v in params.items()
+                if n in specs
+            }
+            key = json.dumps([plan.name, typed], sort_keys=True)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({"name": c["name"], "endpoint": plan.name, "params": typed})
+    return out
