@@ -50,6 +50,7 @@ from bench.runners import (
     run_baseline_repair,
     run_lattice,
 )
+from bench.sandbox import deny_reads_under
 from bench.tasks import Task, suite
 from lattice.llm import cli_client
 from lattice.llm.cli_client import CliError, CliUsageLimitError
@@ -385,6 +386,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     out_dir = Path(args.out) if args.out else _default_out_dir()
     out_dir.mkdir(parents=True, exist_ok=True)
+    # Sandboxed model code may not read the run's out dir (other runs' outputs and
+    # outcomes), except its own workdir (bench.sandbox).
+    deny_reads_under(out_dir)
 
     fixtures_dir = out_dir / "fixtures"
     api_context: _ApiContext | None = None

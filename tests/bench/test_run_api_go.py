@@ -24,7 +24,7 @@ from bench import go_arm
 from bench.api_datasets import build_db
 from bench.api_tasks import API_TASKS
 from bench.runners import run_api_go
-from bench.sandbox import sandbox_exec_available
+from bench.sandbox import deny_reads_under, run_python_script, sandbox_exec_available
 from lattice.llm.client import (
     Generation,
     ScriptedGenerator,
@@ -328,16 +328,79 @@ def test_compile_error_never_fixed_is_a_scored_loud_failure(tmp_path: Path, db_b
 
 
 @pytest.mark.go
-def test_vet_findings_are_repair_feedback(tmp_path: Path, db_builder) -> None:
+def test_vet_findings_alone_never_gate_or_trigger_a_repair(tmp_path: Path, db_builder) -> None:
+    """go vet is advisory: a program vet flags still runs and is scored by the cases
+    alone, with no extra repair round (arm P has no such chance)."""
     outcome, gen = run(
         O01, [fenced(O01_VET_ERROR), fenced(O01_CORRECT)], tmp_path / "w", db_builder
     )
 
     assert outcome.correct is True, outcome.detail
-    assert outcome.diagnostics_per_round == (("vet_error",), ())
+    assert outcome.rounds == 1
+    assert len(gen.calls) == 1
+    assert outcome.diagnostics_per_round == ((),)
+
+
+@pytest.mark.go
+def test_vet_findings_ride_along_on_a_repair_a_visible_failure_triggered(
+    tmp_path: Path, db_builder
+) -> None:
+    crashing_and_vetted = O01_VET_ERROR.replace(
+        "writeJSON(w, 200, o)", 'panic("boom: the handler blew up")'
+    )
+    outcome, gen = run(
+        O01, [fenced(crashing_and_vetted), fenced(O01_CORRECT)], tmp_path / "w", db_builder
+    )
+
+    assert outcome.correct is True, outcome.detail
+    assert outcome.diagnostics_per_round == (("crash",), ())
     feedback = gen.calls[1][1][-1]["content"]
-    assert feedback.startswith("The app failed: vet_error. Error output:")
+    assert feedback.startswith("The app failed: crash. Error output:")
+    assert "go vet also reported:" in feedback
     assert "Sprintf" in feedback
+    assert feedback.endswith("Return the complete corrected handlers.go in one ```go block.")
+
+
+@pytest.mark.go
+def test_a_build_over_its_time_limit_is_a_scored_build_error(
+    tmp_path: Path, db_builder, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    go_arm.ensure_ready()
+    monkeypatch.setattr(go_arm, "BUILD_TIMEOUT_S", 0.001)
+    outcome, _ = run(O01, [fenced(O01_CORRECT)], tmp_path / "w", db_builder, max_repairs=0)
+    assert outcome.correct is False
+    assert outcome.failure == "build_error"  # loud and counted, not a harness error
+    assert "time limit" in outcome.detail
+
+
+@pytest.mark.go
+def test_goast_failing_on_the_file_is_a_scored_build_error(
+    tmp_path: Path, db_builder, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    go_arm.ensure_ready()
+    monkeypatch.setattr(go_arm, "_goast", lambda: Path("/usr/bin/false"))
+    outcome, gen = run(O01, [fenced(O01_CORRECT)] * 2, tmp_path / "w", db_builder, max_repairs=1)
+    assert outcome.correct is False
+    assert outcome.failure == "build_error"
+    assert outcome.diagnostics_per_round == (("build_error",), ("build_error",))
+    assert "could not be analyzed" in gen.calls[1][1][-1]["content"]
+    assert outcome.program_lines > 30 and outcome.program_ast_nodes == 0
+
+
+@pytest.mark.go
+def test_a_runtime_multi_statement_query_is_refused_by_the_kit(tmp_path: Path, db_builder) -> None:
+    """SQL assembled at run time escapes the static screen; the kit refuses it when
+    it is prepared, and the handler sees the error (as Python's sqlite3.execute)."""
+    code = o01(
+        imports='\t"strings"\n',
+        extra='\t\tif _, err := k.DB.Exec(strings.Repeat("DELETE FROM orders;", 2)); err == nil {\n'
+        '\t\t\tpanic("a multi-statement query ran")\n'
+        '\t\t} else if !strings.Contains(err.Error(), "one statement at a time") {\n'
+        "\t\t\tpanic(err)\n"
+        "\t\t}\n",
+    )
+    outcome, _ = run(O01, [fenced(code)], tmp_path / "w", db_builder, max_repairs=0)
+    assert outcome.correct is True, outcome.detail  # the deletes never ran either
 
 
 @pytest.mark.go
@@ -690,3 +753,109 @@ def test_rounds_do_not_share_directories(tmp_path: Path, db_builder) -> None:
 def test_generation_type_is_unchanged() -> None:
     # guard: the runner relies on Generation's transport-cost fields
     assert {f.name for f in dataclasses.fields(Generation)} >= {"cost_usd", "cost_basis", "model"}
+
+
+# ---- read confinement (both arms) ---------------------------------------------------------
+
+REPO = Path(__file__).resolve().parents[2]
+HIDDEN_CASES = REPO / "bench" / "api_tasks.py"
+
+
+@pytest.mark.go
+@needs_sandbox
+def test_adversarial_go_cannot_read_the_hidden_cases_or_the_out_dir(
+    tmp_path: Path, db_builder
+) -> None:
+    out = tmp_path / "out"
+    secret = out / "outcomes.jsonl"
+    secret.parent.mkdir(parents=True)
+    secret.write_text("secret\n")
+    deny_reads_under(out)
+    workdir = out / "work" / "m" / "G" / "o01" / "rep0"
+    code = _adversarial(
+        f'\t\tif _, err := os.ReadFile("{HIDDEN_CASES}"); err == nil {{\n'
+        '\t\t\tpanic("read escape: the hidden cases")\n'
+        "\t\t}\n"
+        f'\t\tif _, err := os.ReadFile("{secret}"); err == nil {{\n'
+        '\t\t\tpanic("read escape: the out dir")\n'
+        "\t\t}\n"
+        '\t\tif _, err := os.ReadFile("pristine.db"); err != nil {\n'
+        '\t\t\tpanic("cannot read its own run directory: " + err.Error())\n'
+        "\t\t}\n",
+        '\t"os"\n',
+    )
+    outcome, _ = run(O01, [fenced(code)], workdir, db_builder, max_repairs=0)
+    assert outcome.correct is True, outcome.detail  # every forbidden read was denied
+
+
+@needs_sandbox
+def test_adversarial_python_cannot_read_the_hidden_cases_or_the_out_dir(
+    tmp_path: Path,
+) -> None:
+    """The Python arms' sandbox (bench.sandbox.run_python_script, which arm P's
+    run_cases_fastapi uses) denies the same reads."""
+    out = tmp_path / "out"
+    secret = out / "outcomes.jsonl"
+    secret.parent.mkdir(parents=True)
+    secret.write_text("secret\n")
+    deny_reads_under(out)
+    workdir = out / "work" / "m" / "P" / "o01" / "rep0"
+    workdir.mkdir(parents=True)
+    (workdir / "mine.txt").write_text("mine\n")
+    script = (
+        "results = []\n"
+        f"for path in [{str(HIDDEN_CASES)!r}, {str(secret)!r}, 'mine.txt']:\n"
+        "    try:\n"
+        "        open(path).read()\n"
+        "        results.append('read')\n"
+        "    except PermissionError:\n"
+        "        results.append('denied')\n"
+        "print(','.join(results))\n"
+    )
+    result = run_python_script(script, workdir, timeout_s=30)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "denied,denied,read"
+
+
+def test_read_denied_paths_cover_bench_and_tests() -> None:
+    from bench.sandbox import read_denied_paths
+
+    denied = read_denied_paths()
+    assert REPO / "bench" in denied and REPO / "tests" in denied
+
+
+# ---- arm B's Go backend runs its binary exactly as arm G's ---------------------------------
+
+
+@pytest.mark.go
+def test_arm_b_go_backend_uses_the_same_sandboxed_budgeted_case_run(
+    tmp_path: Path, db_builder, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from bench.api_datasets import api_profile
+    from bench.runners import run_api_lattice
+
+    calls: list[dict] = []
+    real = go_arm.run_cases
+
+    def spy(binary, task, **kwargs):
+        calls.append(kwargs)
+        return real(binary, task, **kwargs)
+
+    monkeypatch.setattr(go_arm, "run_cases", spy)
+    source = Path(__file__).resolve().parents[1] / "fixtures" / "api" / "o01" / "lattice.py"
+    gen = ScriptedGenerator([f"```python\n{source.read_text()}```\n"])
+    outcome = run_api_lattice(
+        O01,
+        gen,
+        tmp_path / "w",
+        db_builder=db_builder,
+        profile=api_profile(),
+        arm="C",
+        max_repairs=0,
+        backend="go",
+    )
+    assert outcome.correct is True, outcome.detail
+    assert len(calls) == 1
+    assert calls[0]["timeout_s"] == go_arm.DEFAULT_CASE_TIMEOUT_S
+    assert calls[0]["round_dir"] == tmp_path / "w" / "go_round1"
+    assert (tmp_path / "w" / "go_round1" / "launch.py").exists()  # the same launcher

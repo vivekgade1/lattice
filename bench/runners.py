@@ -935,14 +935,23 @@ def _run_go_cases(
     db_builder: Any,
     profile: Profile,
     out_dir: Path,
+    timeout_s: float | None = None,
 ) -> Any:
     """Check for the Go target, build (``lattice.gogen.build.build_go_app``, cached
     under ``out_dir/.cache`` -- the caller passes the stable per-(model, arm, task,
     rep) workdir, already unique per job, so parallel workers never share a build
     directory, while still reusing the cache across this job's repair rounds) and
-    run the task's cases on the binary (``bench.api_runner.run_cases_go``, given its
-    own ``workdir`` for case-execution scratch), with the semantics of
+    run the task's cases on the binary with the semantics of
     ``run_cases_fastapi``/``run_cases_lattice``.
+
+    The cases run through ``bench.go_arm.run_cases`` -- exactly as arm G's do: the
+    binary sandboxed, resource-limited and supervised by the launcher (``workdir`` is
+    the round directory; its ``run/`` is the only writable directory), the whole case
+    run on one wall-clock budget (``timeout_s``, 60 s by default, arm G's and arm P's),
+    and the binary's stderr captured per case and attached to a start error or a 5xx
+    case's reason -- so a slow or crashing program is treated, and its repair
+    feedback built, identically in arms B and G. The Go runtime's response bodies are
+    untouched.
 
     ``check_toolchain()`` runs first, unwrapped: a missing or too-old Go toolchain is
     a genuine harness infrastructure failure (the run environment isn't set up, not
@@ -959,10 +968,14 @@ def _run_go_cases(
     lower_api``, ``lattice.gogen.endpoints``/``t2``) -- is raised as
     ``_GogenBuildFailure`` for ``_run_api_lattice`` to record as arm B's loud, final,
     unrepairable failure (see ``_GogenBuildFailure``'s docstring)."""
-    from bench.api_runner import CaseResults, run_cases_go
+    from bench import go_arm
+    from bench.api_runner import CaseResults
     from lattice.gogen.build import GoBuildError, build_go_app, check_toolchain
 
     check_toolchain()
+    # the launcher and sandbox work here (once per process): a failure is the
+    # harness's (GoHarnessError, uncaught), never a start error scored against B
+    go_arm.ensure_ready()
     try:
         build = build_go_app(code, profile, out_dir)
     except GoBuildError as exc:
@@ -976,7 +989,13 @@ def _run_go_cases(
         raise _GogenBuildFailure(str(exc)) from exc
     except Exception as exc:
         raise _GogenBuildFailure(f"{type(exc).__name__}: {exc}") from exc
-    return run_cases_go(build.binary, task, db_builder=db_builder, workdir=workdir)
+    return go_arm.run_cases(
+        build.binary,
+        task,
+        db_builder=db_builder,
+        round_dir=workdir,
+        timeout_s=go_arm.DEFAULT_CASE_TIMEOUT_S if timeout_s is None else timeout_s,
+    )
 
 
 def _run_api_lattice(
@@ -994,6 +1013,7 @@ def _run_api_lattice(
     hooks: Any = None,
     backend: Literal["runtime", "generated", "go"] = "runtime",
     kit_path: Path | None = None,
+    go_timeout_s: float | None = None,
 ) -> TaskOutcome:
     """Arms B (repair) and C (single shot): a Lattice API program, checked and
     served by the runtime, run against the task's HTTP cases in process.
@@ -1066,6 +1086,7 @@ def _run_api_lattice(
                         db_builder=db_builder,
                         profile=profile,
                         out_dir=workdir,
+                        timeout_s=go_timeout_s,
                     )
                 except _GogenBuildFailure as exc:
                     # A gogen bug on a program that already passed the checker: the
@@ -1142,11 +1163,16 @@ def _run_api_lattice(
 _GO_RETURN_FILE = "Return the complete corrected handlers.go in one ```go block."
 
 
-def _go_repair_message(label: str, text: str) -> str:
+def _go_repair_message(label: str, text: str, vet: str = "") -> str:
     """Arm G's repair feedback: arm P's message (``_api_repair_message``: the label and
-    the last lines of the error output), asking for Go."""
+    the last lines of the error output), asking for Go. ``vet`` (go vet's findings,
+    advisory) is appended only to a repair a visible failure already triggered."""
     tail = "\n".join(text.splitlines()[-_STDERR_TAIL_LINES:])
-    return f"The app failed: {label}. Error output:\n{tail}\n{_GO_RETURN_FILE}"
+    advisory = ""
+    if vet.strip():
+        vet_tail = "\n".join(vet.strip().splitlines()[-_STDERR_TAIL_LINES:])
+        advisory = f"go vet also reported:\n{vet_tail}\n"
+    return f"The app failed: {label}. Error output:\n{tail}\n{advisory}{_GO_RETURN_FILE}"
 
 
 def _go_outcome(ledger: _Ledger, results: Any, size: Any, **kwargs: Any) -> TaskOutcome:
@@ -1184,20 +1210,22 @@ def _run_api_go(
     Each round: extract the ```go block (``extract_go_code``); screen it with goast
     (a forbidden construct -- another DB connection, a way around the counted
     ``k.DB``, a multi-statement SQL string -- is repair feedback); ``go build`` (the
-    compiler's output is feedback); ``go vet`` (its findings are feedback); then run
-    the task's cases on the binary in the sandbox and repair on exactly the visible
-    failures arm P repairs on (``_api_visible_failure``: start error, time-out, a
-    crashed happy case, every happy case failing), never a trap case. Repair budget
-    ``max_repairs`` (2), as arm P. Whatever is still failing when the budget is spent
-    is a scored loud failure (``forbidden``, ``build_error``, ``vet_error``,
+    compiler's output is feedback; a build over its time limit, or goast failing on
+    the file, counts as a build error); ``go vet``, ADVISORY only: it never gates the
+    run and never triggers a repair (that would give arm G a repair chance arm P
+    lacks), and its findings ride along only on a repair a visible failure already
+    triggered. Then run the task's cases on the binary in the sandbox and repair on
+    exactly the visible failures arm P repairs on (``_api_visible_failure``: start
+    error, time-out, a crashed happy case, every happy case failing), never a trap
+    case. Repair budget ``max_repairs`` (2), as arm P. Whatever is still failing when
+    the budget is spent is a scored loud failure (``forbidden``, ``build_error``,
     ``no_code``, or the case run's label), counted in cost and n; wrong results are
     classified by ``bench.api_runner.classify`` exactly as for arm B.
 
     Harness failures -- the Go toolchain missing or too old, the kit failing to
     build/vet/start on its own (``bench.go_arm.ensure_ready``, checked before the
-    first generation), goast or a build exceeding its time limit -- raise
-    (``GoBuildError``/``GoHarnessError``) for the caller to record as
-    ``harness_error``; they are never scored as the model's."""
+    first generation) -- raise (``GoBuildError``/``GoHarnessError``) for the caller
+    to record as ``harness_error``; they are never scored as the model's."""
     from bench import go_arm
 
     kit = go_arm.KIT_DIR if kit_dir is None else Path(kit_dir)
@@ -1234,18 +1262,22 @@ def _run_api_go(
             module = round_dir / "module"
             size = go_arm.analyze(go_arm.write_module(code, module, kit))
             built = False
-            if size.violations:
+            vet_output = ""
+            if size.error:
+                # goast itself failed on this file: scored like a build failure
+                failure, detail = "build_error", size.error
+            elif size.violations:
                 failure, detail = "forbidden", size.render_violations()
             else:
                 ok, output = go_arm.build(module)
                 if not ok:
                     failure, detail = "build_error", output
                 else:
-                    ok, output = go_arm.vet(module)
-                    if not ok:
-                        failure, detail = "vet_error", output
-                    else:
-                        built = True
+                    built = True
+                    # advisory only: never a gate, never a repair of its own
+                    vet_ok, vet_output = go_arm.vet(module)
+                    if vet_ok:
+                        vet_output = ""
             if not built:
                 feedback = _go_repair_message(failure, detail)
                 detail = detail[:_DETAIL_LIMIT]
@@ -1274,7 +1306,7 @@ def _run_api_go(
                         detail=detail,
                     )
                 failure = label or visible[0]
-                feedback = _go_repair_message(visible[0], visible[1])
+                feedback = _go_repair_message(visible[0], visible[1], vet=vet_output)
 
         ledger.diagnostics.append((failure,))
         if attempt == max_repairs:

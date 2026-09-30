@@ -32,6 +32,55 @@ func countedStatement(query string) bool {
 // run, so one that fails to prepare (a syntax error, an unknown table) is not counted
 // and one that fails while running (a constraint violation) is.
 
+// ErrMultipleStatements refuses a query holding more than one statement, as Python's
+// sqlite3 refuses it in execute() ("You can only execute one statement at a time."):
+// the counter would otherwise see several statements as one. It is not counted (the
+// statement never runs), and database/sql hands it to the handler as the call's error.
+var ErrMultipleStatements = errors.New("You can only execute one statement at a time.")
+
+// multipleStatements: outside quotes ('...', "...", `...`, [...]) and comments (--,
+// /* */), a `;` is followed by anything but whitespace, comments and more `;` -- the
+// scan bench/tools/goast applies to constant SQL strings.
+func multipleStatements(s string) bool {
+	seenSemi := false
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch {
+		case c == '\'' || c == '"' || c == '`' || c == '[':
+			if seenSemi {
+				return true
+			}
+			end := c
+			if c == '[' {
+				end = ']'
+			}
+			j := i + 1
+			for j < len(s) && s[j] != end {
+				j++
+			}
+			i = j
+		case c == '-' && i+1 < len(s) && s[i+1] == '-':
+			for i < len(s) && s[i] != '\n' {
+				i++
+			}
+		case c == '/' && i+1 < len(s) && s[i+1] == '*':
+			j := strings.Index(s[i+2:], "*/")
+			if j < 0 {
+				return false
+			}
+			i += j + 3
+		case c == ';':
+			seenSemi = true
+		case c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v':
+		default:
+			if seenSemi {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 type counter struct {
 	dsn string
 	drv driver.Driver
@@ -62,6 +111,9 @@ func (c *countingConn) Prepare(query string) (driver.Stmt, error) {
 }
 
 func (c *countingConn) PrepareContext(ctx context.Context, query string) (driver.Stmt, error) {
+	if multipleStatements(query) {
+		return nil, ErrMultipleStatements
+	}
 	var st driver.Stmt
 	var err error
 	if p, ok := c.inner.(driver.ConnPrepareContext); ok {

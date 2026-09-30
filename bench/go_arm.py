@@ -31,7 +31,7 @@ Go build cache).
 (the proxy, ``X-Lattice-Sql-Count``, the same scorer as arm B), but the proxy starts
 ``launch.py`` instead of the binary. The launcher (harness code, unsandboxed) forks
 the binary as a new session with a minimal environment, cwd ``run/``, stderr to its
-``state/`` log and the Python arm's resource limits (``RLIMIT_CPU`` = time limit +
+``state/`` log, and the Python arm's resource limits (``RLIMIT_CPU`` = time limit +
 5 s, ``RLIMIT_FSIZE`` 512 MB, ``RLIMIT_AS`` 4 GB where the platform allows), under
 ``bench.sandbox.sandbox_profile(run/)`` extended for a server (see
 ``run_profile``); it kills the binary's whole process group at the wall-clock limit
@@ -42,9 +42,14 @@ still running when it ends makes the run a time-out, as arm P's does.
 **Harness errors** (``GoHarnessError``, and ``lattice.gogen.build.GoBuildError`` from
 ``check_toolchain``) are raised, never scored: the Go toolchain missing or too old,
 the kit (with an empty ``Register``) failing to build, vet or start on its own --
-checked once per kit before any model output (``ensure_ready``) -- goast failing, or
-a build exceeding its (generous) time limit. Everything the model's code causes is
-the runner's to score.
+checked once per kit before any model output (``ensure_ready``) -- or goast failing
+to build. Everything the model's file causes is the runner's to score, including a
+build over its (generous) time limit and goast failing on the file (both reported as
+a failed build). ``go vet`` is advisory: the runner never gates on it.
+
+Arm B's Go backend (``bench.runners._run_go_cases``) runs its binary through the same
+``run_cases`` -- sandbox, limits, budget and stderr capture -- so both arms' programs
+are run, timed and diagnosed alike.
 """
 
 from __future__ import annotations
@@ -72,6 +77,7 @@ from bench.sandbox import (
     sandbox_exec_available,
     sandbox_profile,
 )
+from lattice.gogen.build import GO_ENV
 
 ROOT = Path(__file__).resolve().parent
 KIT_DIR = ROOT / "api_kit_go"
@@ -81,15 +87,9 @@ BUILD_TIMEOUT_S = 600.0  # a warm-cache build takes seconds; beyond this it's th
 DEFAULT_CASE_TIMEOUT_S = 60.0  # arm P's run_cases_fastapi budget
 _CPU_GRACE_S = 5  # as bench.sandbox
 _ERROR_LIMIT = 3000  # as bench.api_runner
-_OFFLINE_ENV = {
-    "GOFLAGS": "-mod=mod",
-    "GOPROXY": "off",
-    "GOWORK": "off",
-    "GOTOOLCHAIN": "local",
-    "GOENV": "off",
-    "GOSUMDB": "off",
-    "CGO_ENABLED": "0",
-}
+# lattice.gogen.build's offline settings (arm B's builds), plus: no user go env file,
+# no checksum database, and no cgo (no C compiler ever runs on model code).
+_OFFLINE_ENV = {**GO_ENV, "GOENV": "off", "GOSUMDB": "off", "CGO_ENABLED": "0"}
 MAIN_GO = 'package main\n\nimport "platformkit"\n\nfunc main() { platformkit.Serve(Register) }\n'
 _EMPTY_HANDLERS = (
     'package main\n\nimport (\n\t"net/http"\n\n\t"platformkit"\n)\n\n'
@@ -109,6 +109,9 @@ class GoastReport:
     ast_nodes: int
     chars: int
     violations: tuple[tuple[int, str], ...]
+    # goast itself failed on the file (crashed, timed out, bad output): scored as a
+    # build error of the model's file, not a harness error; "" normally
+    error: str = ""
 
     def render_violations(self) -> str:
         return "\n".join(f"handlers.go:{line}: {message}" for line, message in self.violations)
@@ -151,21 +154,25 @@ def _go_env(module_dir: Path) -> dict[str, str]:
 def build_profile(module_dir: Path) -> str:
     """``bench.sandbox.sandbox_profile(module_dir)`` (no network, writes only there)
     plus writes to the Go build cache (shared and content-addressed; the module
-    cache stays read-only)."""
+    cache stays read-only). Reads are not confined here: the compiler must read the
+    kit (under bench/), and no model code runs during a build (cgo is off)."""
     cache = Path(_go_env_value("GOCACHE")).resolve()
     return (
-        sandbox_profile(module_dir) + f"(allow file-write* (subpath {_sbpl_string(str(cache))}))\n"
+        sandbox_profile(module_dir, confine_reads=False)
+        + f"(allow file-write* (subpath {_sbpl_string(str(cache))}))\n"
     )
 
 
 def run_profile(run_dir: Path, binary: Path) -> str:
     """The profile the model's binary runs under: ``bench.sandbox.sandbox_profile(
-    run_dir)`` -- the Python arm's (all network denied, writes only in ``run_dir``) --
+    run_dir)`` -- the Python arm's (all network denied, writes only in ``run_dir``, no
+    reads of the harness's sources or the run's out dir but ``run_dir``) -- plus
+    reading the binary itself,
     with the one opening a server needs, binding and accepting on the loopback
     interface (outbound connections, even to localhost, stay denied), and with
     fork and exec denied (a server needs neither; no process can outlive the run)."""
     exe = _sbpl_string(str(binary.resolve()))
-    return sandbox_profile(run_dir) + (
+    return sandbox_profile(run_dir, extra_reads=(binary,)) + (
         '(allow network-bind (local ip "localhost:*"))\n'
         '(allow network-inbound (local ip "localhost:*"))\n'
         "(deny process-fork)\n"
@@ -173,7 +180,11 @@ def run_profile(run_dir: Path, binary: Path) -> str:
     )
 
 
-def _go(args: list[str], module_dir: Path, timeout_s: float) -> subprocess.CompletedProcess[str]:
+def _go(
+    args: list[str], module_dir: Path, timeout_s: float
+) -> subprocess.CompletedProcess[str] | None:
+    """``go <args>`` in the module, offline and sandboxed; None when it exceeded
+    ``timeout_s`` (a pathological file: the caller scores it, never a harness error)."""
     module_dir = module_dir.resolve()
     argv = ["go", *args]
     if sandbox_exec_available():
@@ -191,8 +202,8 @@ def _go(args: list[str], module_dir: Path, timeout_s: float) -> subprocess.Compl
         )
     except FileNotFoundError as exc:
         raise GoHarnessError(f"cannot run go: {exc}") from exc
-    except subprocess.TimeoutExpired as exc:
-        raise GoHarnessError(f"`go {' '.join(args)}` exceeded {timeout_s:g}s") from exc
+    except subprocess.TimeoutExpired:
+        return None
 
 
 def _clean_output(text: str, module_dir: Path) -> str:
@@ -220,12 +231,16 @@ def build(module_dir: Path) -> tuple[bool, str]:
     proc = _go(
         ["build", "-trimpath", "-buildvcs=false", "-o", "app", "."], module_dir, BUILD_TIMEOUT_S
     )
+    if proc is None:
+        return False, f"go build exceeded its {BUILD_TIMEOUT_S:g}s time limit"
     return proc.returncode == 0, _clean_output(proc.stderr + proc.stdout, module_dir)
 
 
 def vet(module_dir: Path) -> tuple[bool, str]:
-    """(ok, findings) of ``go vet`` on the module."""
+    """(ok, findings) of ``go vet`` on the module (advisory for the runner)."""
     proc = _go(["vet", "."], module_dir, BUILD_TIMEOUT_S)
+    if proc is None:
+        return False, f"go vet exceeded its {BUILD_TIMEOUT_S:g}s time limit"
     return proc.returncode == 0, _clean_output(proc.stderr + proc.stdout, module_dir)
 
 
@@ -263,21 +278,37 @@ def _goast() -> Path:
 
 
 def analyze(path: Path) -> GoastReport:
-    """goast's measurement and screen of one Go file."""
+    """goast's measurement and screen of one Go file. goast failing on the file
+    (crash, time-out, unreadable output) is a report with ``error`` set and lines/
+    chars only -- the runner scores it as a build error of the file. goast failing to
+    BUILD is the harness's (``GoHarnessError`` from ``_goast``)."""
+    goast = _goast()
+    code = path.read_text()
     try:
         proc = subprocess.run(  # noqa: S603
-            [str(_goast()), str(path)],
+            [str(goast), str(path)],
             capture_output=True,
             text=True,
             check=False,
             timeout=60,
         )
-        data = json.loads(proc.stdout)
-    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
-        raise GoHarnessError(f"goast failed on {path.name}: {exc}") from exc
-    if proc.returncode != 0:
-        raise GoHarnessError(f"goast failed on {path.name}: {proc.stderr}")
-    code = path.read_text()
+        data = json.loads(proc.stdout) if proc.returncode == 0 else None
+        problem = "" if data is not None else f"exit {proc.returncode}: {proc.stderr[-1000:]}"
+    except subprocess.TimeoutExpired:
+        data, problem = None, "timed out"
+    except ValueError as exc:
+        data, problem = None, f"unreadable output: {exc}"
+    if data is None:
+        lines = sum(1 for ln in code.splitlines() if ln.strip() and not ln.strip().startswith("//"))
+        return GoastReport(
+            parse_error="",
+            lines=lines,
+            statements=0,
+            ast_nodes=0,
+            chars=len(code),
+            violations=(),
+            error=f"the Go source could not be analyzed (goast {problem})",
+        )
     return GoastReport(
         parse_error=data["parse_error"],
         lines=data["lines"],
@@ -310,7 +341,7 @@ def ensure_ready(kit_dir: Path = KIT_DIR) -> None:
         module = root / "module"
         write_module(_EMPTY_HANDLERS, module, kit)
         report = analyze(module / "handlers.go")
-        if report.parse_error or report.violations:
+        if report.error or report.parse_error or report.violations:
             raise GoHarnessError(f"goast rejects the empty handlers: {report}")
         ok, output = build(module)
         if not ok:

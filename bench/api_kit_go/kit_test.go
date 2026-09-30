@@ -2,7 +2,9 @@ package platformkit
 
 import (
 	"bufio"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -25,16 +27,28 @@ INSERT INTO users VALUES (4, 'l@x', 'Lat', 'Customer', 'tok-` + "é" + `');
 INSERT INTO orders VALUES (1, 1, 10);
 `
 
+// loadSchema runs the schema script past the kit (which refuses multiple statements).
+func loadSchema(t *testing.T, path string) {
+	t.Helper()
+	raw, err := sql.Open("sqlite", path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = raw.Close() }()
+	if _, err := raw.Exec(schema); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func testKit(t *testing.T, trace bool) *Kit {
 	t.Helper()
-	k, err := open(filepath.Join(t.TempDir(), "app.db"), trace)
+	path := filepath.Join(t.TempDir(), "app.db")
+	loadSchema(t, path)
+	k, err := open(path, trace)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = k.DB.Close() })
-	if _, err := k.DB.Exec(schema); err != nil {
-		t.Fatal(err)
-	}
 	return k
 }
 
@@ -180,6 +194,54 @@ func TestNoCountHeaderWithoutTrace(t *testing.T) {
 	}
 }
 
+func TestMultipleStatementsAreRefused(t *testing.T) {
+	refused := []string{
+		"UPDATE orders SET total = 1; DELETE FROM orders",
+		"SELECT 1;SELECT 2",
+		"SELECT 1; -- c\n SELECT 2",
+		"SELECT 1; 'x'",
+	}
+	allowed := []string{
+		"SELECT 1",
+		"SELECT 1;",
+		"SELECT 1; ;  ",
+		"SELECT 1; -- trailing comment",
+		"SELECT 1; /* trailing */",
+		"SELECT ';' || \"a;b\" || `c;d` || [e;f]",
+		"SELECT 1 -- ; SELECT 2",
+		"SELECT 1 /* ; SELECT 2 */",
+	}
+	for _, q := range refused {
+		if !multipleStatements(q) {
+			t.Errorf("not refused: %q", q)
+		}
+	}
+	for _, q := range allowed {
+		if multipleStatements(q) {
+			t.Errorf("refused: %q", q)
+		}
+	}
+	// through k.DB: the handler sees the error; nothing ran, nothing was counted
+	k := testKit(t, true)
+	k.queries.Store(0)
+	if _, err := k.DB.Exec("UPDATE orders SET total = 99; DELETE FROM orders"); !errors.Is(err, ErrMultipleStatements) {
+		t.Fatalf("Exec: %v, want ErrMultipleStatements", err)
+	}
+	if _, err := k.DB.Query("SELECT 1; SELECT 2"); !errors.Is(err, ErrMultipleStatements) {
+		t.Fatalf("Query: %v, want ErrMultipleStatements", err)
+	}
+	if n := k.queries.Load(); n != 0 {
+		t.Errorf("counted %d", n)
+	}
+	var total, rows int
+	if err := k.DB.QueryRow("SELECT total, (SELECT COUNT(*) FROM orders) FROM orders WHERE id = 1").Scan(&total, &rows); err != nil {
+		t.Fatal(err)
+	}
+	if total != 10 || rows != 1 {
+		t.Errorf("the refused statements ran: total %d, rows %d", total, rows)
+	}
+}
+
 func TestFastAPIsOwnAnswers(t *testing.T) {
 	k := testKit(t, true)
 	cases := []struct {
@@ -212,14 +274,7 @@ func TestServeCLI(t *testing.T) {
 	}
 	dir := t.TempDir()
 	db := filepath.Join(dir, "cli.db")
-	k, err := open(db, false)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := k.DB.Exec(schema); err != nil {
-		t.Fatal(err)
-	}
-	_ = k.DB.Close()
+	loadSchema(t, db)
 	cmd := exec.Command(os.Args[0], "-test.run=^TestServeCLI$")
 	cmd.Env = append(os.Environ(), "KIT_SERVE_CHILD=1", "LATTICE_TRACE_SQL=1",
 		"KIT_SERVE_ARGS=--db "+db+" --addr 127.0.0.1:0")
