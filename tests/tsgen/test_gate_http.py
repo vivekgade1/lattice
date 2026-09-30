@@ -15,9 +15,11 @@ from lattice.catalog import LIST_KIND
 from lattice.check.api_info import ParamSpec
 from lattice.tsgen import generate_ts
 from lattice.tsgen.emit import page_num, page_shape
+from lattice.tsgen.pyref import answer, case
+from lattice.tsgen.specs import plan_specs
 from tests.tsgen.gate.apps import ADMIN_TOKENS, APP_NAMES, RESET_PATH, app, serve
 from tests.tsgen.gate.corpus import typed_corpus
-from tests.tsgen.node import run_node
+from tests.tsgen.node import node_json, run_node
 
 DRIVER = Path(__file__).resolve().parent / "gate" / "http_driver.ts"
 
@@ -177,14 +179,43 @@ def test_unadmitted_caller_gets_auth_error_first(tmp_path: Path) -> None:
     assert r["error"]["status"] == 401  # the server answers the auth error first
 
 
-def test_unroutable_path_values(tmp_path: Path) -> None:
-    """Review Focus 2 / R-a: sent, never a 422 from the server, never a crash."""
+UNROUTABLE = """
+import { readFileSync } from "node:fs";
+const { dir, endpoint, param, values } = JSON.parse(readFileSync(0, "utf8"));
+const api = await import(dir + "/api.ts");
+const rt = await import(dir + "/lattice-rt.ts");
+const sent = [];
+const spy = async (url, init) => { sent.push(String(url)); return new Response("{}", { status: 200 }); };
+const ep = api.ENDPOINTS[endpoint];
+const out = [];
+for (const v of values) {
+  const p = v === null ? {} : { [param]: v };
+  const r = await rt.call(ep, p, { baseUrl: "http://x", token: "t", fetch: spy });
+  out.push({ result: r, local: rt.validate(ep, p) });
+}
+console.log(JSON.stringify({ sent, out }));
+"""
+
+
+def test_unroutable_path_values_are_never_sent(tmp_path: Path) -> None:
+    """Final review #3 / R-a: a path value that is "", ".", "..", contains "/" or is missing
+    is refused locally: call() answers Unexpected "unroutable" (status 0, empty body) and
+    sends nothing; validate() reports what the server's parse_params would (nothing for a
+    string path value, which the server cannot tell from any other)."""
     name = "realapps"
     plan = next(p for p in app(name).plans if "{" in p.path)
     param = next(s for s in plan.params if s.source == "path")
-    results = _run(name, tmp_path, [
-        {"name": f"R-a {v!r}", "endpoint": plan.name, "params": {param.name: {"t": "str", "v": v}}}
-        for v in ["", ".", "..", "a/b"]
-    ], ADMIN_TOKENS[name])  # fmt: skip
-    for r in results:
-        assert r["ok"] or r["error"]["status"] != 422 or r["local"] != []
+    client = tmp_path / "client"
+    client.mkdir()
+    for fname, text in generate_ts(app(name).plans).items():
+        (client / fname).write_text(text)
+    values = ["", ".", "..", "a/b", "/", None]
+    got = node_json(UNROUTABLE, {"dir": client.as_uri(), "endpoint": plan.name,
+                                 "param": param.name, "values": values}, cwd=tmp_path)  # fmt: skip
+    assert got["sent"] == []
+    want = {"kind": "unexpected", "status": 0, "reason": "unroutable", "body": ""}
+    assert [o["result"] for o in got["out"]] == [{"ok": False, "error": want}] * len(values)
+    for v, o in zip(values, got["out"], strict=True):
+        c = case(v or "", plan_specs(plan), path={param.name: v or ""})
+        done = answer(c)
+        assert o["local"] == (json.loads(done["lattice"])["detail"] if "status" in done else [])

@@ -1043,7 +1043,15 @@ export function decodePage(
 
 export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 export type ValidationError = { kind: "validation"; status: 422; detail: FieldError[] };
-export type Unexpected = { kind: "unexpected"; status: number; reason: "network" | "status" | "decode"; body: string };
+/** Anything but a declared answer: "network" (no answer, or it broke off), "status" (an
+ * undeclared status), "decode" (a body that is not the declared type), "unroutable" (a path
+ * value that cannot reach the endpoint: refused locally, nothing sent; status 0). */
+export type Unexpected = {
+  kind: "unexpected";
+  status: number;
+  reason: "network" | "status" | "decode" | "unroutable";
+  body: string;
+};
 export type CallOpts = {
   baseUrl: string;
   token?: string | (() => string | null);
@@ -1065,6 +1073,8 @@ export type Endpoint = {
 export type Wire = {
   url: string;
   pathValues: Map<string, string>;
+  /** A path value is "", ".", "..", or contains "/" (decision log R-a). */
+  unroutable: boolean;
   query: string;
   body: Uint8Array | null;
   ctype: string | null;
@@ -1075,9 +1085,14 @@ const present = (v: unknown) => v !== undefined && v !== null;
 /** The request exactly as it will be sent, and the path values the server will decode. */
 export function toWire(ep: Endpoint, p: Record<string, unknown>): Wire {
   const pathValues = new Map<string, string>();
+  let unroutable = false;
   const url = ep.path.replace(/\{([^}]+)\}/g, (_m, name: string) => {
     const text = present(p[name]) ? wireText(p[name]) : "";
     pathValues.set(name, text.toWellFormed());
+    // fetch normalises "." and ".." segments away, Starlette routes on the decoded path (a
+    // "/" splits the segment) and redirects "" (a trailing slash) with a 307 that keeps the
+    // method and the Authorization header: such a request reaches another endpoint, or none
+    unroutable ||= text === "" || text === "." || text === ".." || text.includes("/");
     return pctEncode(text);
   });
   const query = ep.params
@@ -1097,7 +1112,7 @@ export function toWire(ep: Endpoint, p: Record<string, unknown>): Wire {
     body = ENCODER.encode(dumpsWire(obj));
     ctype = "application/json";
   }
-  return { url: query ? `${url}?${query}` : url, pathValues, query, body, ctype };
+  return { url: query ? `${url}?${query}` : url, pathValues, unroutable, query, body, ctype };
 }
 
 function validateWire(ep: Endpoint, w: Wire): FieldError[] {
@@ -1115,8 +1130,20 @@ const unexpected = (status: number, reason: Unexpected["reason"], body: Uint8Arr
   error: { kind: "unexpected", status, reason, body: typeof body === "string" ? body : UTF8_REPLACE.decode(body) },
 });
 
+/** String(e), which itself may throw (a hostile toString). */
+const describe = (e: unknown): string => {
+  try {
+    return String(e);
+  } catch {
+    return "error";
+  }
+};
+
 export async function call(ep: Endpoint, p: Record<string, unknown>, o: CallOpts): Promise<Result<unknown, unknown>> {
   const w = toWire(ep, p);
+  // R-a: never sent (it would reach another endpoint); validate() still reports only what
+  // the server's parse_params would
+  if (w.unroutable) return unexpected(0, "unroutable", "");
   if (!o.unchecked) {
     const detail = validateWire(ep, w);
     if (detail.length > 0) return { ok: false, error: { kind: "validation", status: 422, detail } };
@@ -1134,13 +1161,13 @@ export async function call(ep: Endpoint, p: Record<string, unknown>, o: CallOpts
       signal: o.signal,
     });
   } catch (e) {
-    return unexpected(0, "network", String(e));
+    return unexpected(0, "network", describe(e));
   }
   let bytes: Uint8Array;
   try {
     bytes = new Uint8Array(await res.arrayBuffer());
   } catch (e) {
-    return unexpected(res.status, "network", String(e)); // aborted or dropped mid-body
+    return unexpected(res.status, "network", describe(e)); // aborted or dropped mid-body
   }
   // Decoding is total: any error while decoding a body (a DecodeError, or e.g. a RangeError
   // from nesting deeper than the stack) is Unexpected "decode"; call() never rejects.
