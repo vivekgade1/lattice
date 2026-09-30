@@ -214,3 +214,51 @@ def test_env_extra_is_passed_without_inheriting_the_parent_env(
 def test_env_extra_cannot_override_the_isolation_variables(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="HOME"):
         run_python_script("print(1)\n", tmp_path, env_extra={"HOME": "/"})
+
+
+# ---- read confinement: earlier runs' outputs (<repo>/results) ------------------------------
+
+
+def test_read_denied_paths_cover_the_results_tree() -> None:
+    denied = sandbox.read_denied_paths()
+    assert (sandbox._REPO / "results").resolve() in denied
+    main = sandbox._main_checkout(sandbox._REPO)
+    if main is not None:  # a worktree: the main checkout's earlier runs too
+        assert (main / "results").resolve() in denied
+
+
+@pytest.mark.skipif(not _HAS_SANDBOX_EXEC, reason="needs macOS sandbox-exec")
+def test_sandbox_denies_earlier_runs_under_results_but_not_the_own_workdir(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A run under ``<repo>/results/<run>`` cannot read another run's outputs in
+    ``<repo>/results`` (programs, outcomes -- nothing registered with
+    ``deny_reads_under``), yet can read its own workdir inside the same tree."""
+    repo = tmp_path / "repo"
+    earlier = repo / "results" / "earlier-run" / "outcomes.jsonl"
+    earlier.parent.mkdir(parents=True)
+    earlier.write_text("secret\n")
+    workdir = repo / "results" / "this-run" / "work" / "m" / "P" / "o01" / "rep0"
+    workdir.mkdir(parents=True)
+    (workdir / "mine.txt").write_text("mine\n")
+    monkeypatch.setattr(sandbox, "_REPO", repo)
+    monkeypatch.setattr(sandbox, "_registered_read_denies", set())
+    script = (
+        "import os\n"
+        "results = []\n"
+        f"for path in [{str(earlier)!r}, 'mine.txt']:\n"
+        "    try:\n"
+        "        open(path).read()\n"
+        "        results.append('read')\n"
+        "    except PermissionError:\n"
+        "        results.append('denied')\n"
+        "try:\n"
+        f"    os.listdir({str(repo / 'results')!r})\n"
+        "    results.append('listed')\n"
+        "except PermissionError:\n"
+        "    results.append('denied')\n"
+        "print(','.join(results))\n"
+    )
+    result = run_python_script(script, workdir, timeout_s=30)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "denied,read,denied"

@@ -387,7 +387,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     out_dir = Path(args.out) if args.out else _default_out_dir()
     out_dir.mkdir(parents=True, exist_ok=True)
     # Sandboxed model code may not read the run's out dir (other runs' outputs and
-    # outcomes), except its own workdir (bench.sandbox).
+    # outcomes), except its own workdir (bench.sandbox, which also denies the whole
+    # <repo>/results tree: earlier runs' outputs).
     deny_reads_under(out_dir)
 
     fixtures_dir = out_dir / "fixtures"

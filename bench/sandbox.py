@@ -21,9 +21,11 @@ Isolation layers, in order of strength:
    private ``.tmp`` directory inside the workdir, so it is covered too.
    Reads are confined only where it matters for the benchmark's integrity: the
    harness's sources and tests (``<repo>/bench``, ``<repo>/tests`` -- the hidden
-   cases live there -- and the same directories of the main checkout when this is
-   a worktree) and every directory registered with ``deny_reads_under`` (the CLI
-   registers the run's out dir: other runs' outputs and outcomes) are unreadable,
+   cases live there), every earlier run's outputs (``<repo>/results``, the CLI's
+   default out root: other runs' programs, outcomes and reports), the same
+   directories of the main checkout when this is a worktree, and every directory
+   registered with ``deny_reads_under`` (the CLI registers the run's out dir, which
+   may lie outside ``results/``) are unreadable,
    EXCEPT the run's own workdir (SBPL: the last matching rule wins, so the
    workdir's allow follows the denies). Everything else stays readable: the
    interpreter needs its stdlib and site-packages (outside those directories).
@@ -68,7 +70,9 @@ def _sbpl_string(value: str) -> str:
 
 
 _REPO = Path(__file__).resolve().parent.parent
-_READ_DENIED_DIRS = ("bench", "tests")
+# bench/ and tests/: the harness and the hidden cases; results/: earlier runs' outputs
+# (bench.cli's default out root; the edit-slice runs write under bench/results/).
+_READ_DENIED_DIRS = ("bench", "tests", "results")
 _registered_read_denies: set[Path] = set()
 
 
