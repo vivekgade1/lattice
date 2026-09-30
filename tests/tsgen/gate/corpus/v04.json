@@ -1,0 +1,9730 @@
+{
+"app": "v04",
+"params": [
+{
+"name": "set_price suite 0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "7"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDAuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"price": {
+"t": "float",
+"v": "0.5"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "999"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDUuMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "999"
+},
+"price": {
+"t": "float",
+"v": "5.0"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDAuMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price suite 4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IC0zLjB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price suite 5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDI1MDAwLjB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}"
+},
+{
+"name": "set_price suite 6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 9",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "e30=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price suite 12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "WzEsIDJd",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}"
+},
+{
+"name": "set_price suite 13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price suite 14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJhYmMifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price suite 15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IG51bGx9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price suite 16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IC0xfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price suite 17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDkyMjMzNzIwMzY4NTQ3NzU4MDd9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}"
+},
+{
+"name": "set_price suite 18",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDkyMjMzNzIwMzY4NTQ3NzU4MDh9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}"
+},
+{
+"name": "set_price suite 19",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IC05MjIzMzcyMDM2ODU0Nzc1ODA5fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price suite 20",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price suite 21",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDMuMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "3.0"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 22",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDIuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "2.5"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 23",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDFlKzMwMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}"
+},
+{
+"name": "set_price suite 24",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IHRydWV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price suite 25",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxMiJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price suite 26",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJvayBcdWQ4M2RcdWRlMDAifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price suite 27",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 28",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price suite 29",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "987654"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "987654"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 30",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 31",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price suite 32",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price suite 33",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price suite 34",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "\u0661\u0662"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 35",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "\uff17"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 36",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": " 7 "
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 37",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "+3"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "3"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price suite 38",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1_0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 39",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "inf"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 40",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "nan"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 41",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-Infinity"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 42",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1e999"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 43",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "2.5e2"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 44",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": ".5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price suite 45",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0x10"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price product_id b0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price product_id b1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price product_id b3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price product_id b7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price product_id b8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price product_id b10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price product_id b13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price product_id b14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price product_id b17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price price b0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMi41In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIuNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICI1LiJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJuYW4ifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJpbmYifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxZTE2In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxZTQwMCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b9",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxXzAifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJcdTAwMWMxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwLjAxIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMC40OSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxMDAwMC4wIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxMDAwMC41In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price price b16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "1.5"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price price b17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDkwMDcxOTkyNTQ3NDA5OTN9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}"
+},
+{
+"name": "set_price price b18",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b19",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IHRydWV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b20",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price price b21",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IG51bGx9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price price missing",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "e30=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price r0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price r1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price r5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price r6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r9",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IG51bGx9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price r13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDkwMDcxOTkyNTQ3NDA5OTN9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be <= 10000\"}]}"
+},
+{
+"name": "set_price r14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxZTQwMCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "1.5"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r18",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r19",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r20",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMi41In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r21",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJpbmYifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r22",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r23",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r24",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r25",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r26",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJuYW4ifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r27",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r28",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r29",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r30",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r31",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxZTE2In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r32",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIuNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r33",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r34",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r35",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r36",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r37",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r38",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r39",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r40",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r41",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r42",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r43",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r44",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r45",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r46",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r47",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r48",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r49",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r50",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIuNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r51",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIuNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r52",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICI1LiJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r53",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r54",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r55",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r56",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r57",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r58",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIuNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r59",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r60",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price r61",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IHRydWV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r62",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r63",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMC40OSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r64",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price r65",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r66",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r67",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "1.5"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r68",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r69",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJuYW4ifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r70",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r71",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r72",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxZTQwMCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r73",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJuYW4ifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r74",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price r75",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IHRydWV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r76",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJcdTAwMWMxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r77",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r78",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r79",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r80",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r81",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r82",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxMDAwMC41In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r83",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r84",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r85",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r86",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r87",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r88",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r89",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxZTQwMCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r90",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r91",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMi41In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r92",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IHRydWV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r93",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price r94",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r95",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r96",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r97",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IG51bGx9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price r98",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r99",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IG51bGx9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price r100",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r101",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r102",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r103",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r104",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r105",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r106",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"price": {
+"t": "float",
+"v": "1.5"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r107",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r108",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r109",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r110",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMi41In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r111",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r112",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r113",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "1.5"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r114",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwLjAxIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r115",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price r116",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMC40OSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r117",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price r118",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IG51bGx9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price r119",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price r120",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r121",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r122",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJuYW4ifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r123",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r124",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r125",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r126",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIuNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r127",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r128",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r129",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r130",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMC40OSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r131",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMC40OSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r132",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxXzAifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r133",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxMDAwMC4wIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r134",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r135",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r136",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r137",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICItMC40OSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r138",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r139",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICI1LiJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r140",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price r141",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price r142",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r143",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r144",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIuNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r145",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r146",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJpbmYifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r147",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r148",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "1.5"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r149",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price r150",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwLjAxIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r151",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price r152",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r153",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r154",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJcdTAwMWMxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r155",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price r156",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r157",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r158",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJpbmYifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r159",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price r160",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxMDAwMC4wIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r161",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r162",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r163",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r164",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICI1LiJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r165",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r166",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price r167",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICJcdTAwMWMxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r168",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r169",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxXzAifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r170",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_price r171",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICI1LiJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r172",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IHRydWV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r173",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxXzAifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r174",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r175",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxMDAwMC4wIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r176",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be >= 0.01\"}]}"
+},
+{
+"name": "set_price r177",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r178",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r179",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICI1LiJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r180",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r181",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r182",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r183",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price r184",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDEuNX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price r185",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IG51bGx9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_price r186",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price r187",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r188",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r189",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_price r190",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r191",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+},
+{
+"name": "set_price r192",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_price r193",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r194",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r195",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r196",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r197",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r198",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJwcmljZSI6IDM5OS45OX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"price": {
+"t": "float",
+"v": "399.99"
+}
+},
+"order": [
+"product_id",
+"price"
+]
+},
+{
+"name": "set_price r199",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "price",
+"source": "body",
+"scalar": "Float",
+"ge": 0.01,
+"le": 10000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJwcmljZSI6ICIxLjUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"price\"],\"msg\":\"must be a number\"}]}"
+}
+],
+"patterns": {}
+}

@@ -1,0 +1,6564 @@
+{
+"app": "e04",
+"params": [
+{
+"name": "product_stock suite 0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "2"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "2"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "999"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 9",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock suite 12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "987654"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "987654"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock suite 15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock suite 16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock suite 17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "\u0661\u0662"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 18",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "\uff17"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 19",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": " 7 "
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 20",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "+3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "3"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock suite 21",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1_0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 22",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "inf"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 23",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "nan"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 24",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "-Infinity"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 25",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 26",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "2.5e2"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 27",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": ".5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock suite 28",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0x10"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock product_id b0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock product_id b1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock product_id b3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock product_id b7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock product_id b8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock product_id b10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock product_id b13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock product_id b14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock product_id b17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r9",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r18",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r19",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r20",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r21",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r22",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r23",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r24",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r25",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r26",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r27",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r28",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r29",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r30",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r31",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r32",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r33",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r34",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r35",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r36",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r37",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r38",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r39",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r40",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r41",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r42",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r43",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r44",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r45",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r46",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r47",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r48",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r49",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r50",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r51",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r52",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r53",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r54",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r55",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r56",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r57",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r58",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r59",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r60",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r61",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r62",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r63",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r64",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r65",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r66",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r67",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r68",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r69",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r70",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r71",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r72",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r73",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r74",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r75",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r76",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r77",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r78",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r79",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r80",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r81",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r82",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r83",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r84",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r85",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r86",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r87",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r88",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r89",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r90",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r91",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r92",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r93",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r94",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r95",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r96",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r97",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r98",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r99",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r100",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r101",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r102",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r103",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r104",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r105",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r106",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r107",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r108",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r109",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r110",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r111",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r112",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r113",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r114",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r115",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r116",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r117",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r118",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r119",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r120",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r121",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r122",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r123",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r124",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r125",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r126",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r127",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r128",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r129",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r130",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r131",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r132",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r133",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r134",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r135",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r136",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r137",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r138",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r139",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r140",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r141",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r142",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r143",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r144",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r145",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r146",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r147",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r148",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r149",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r150",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r151",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r152",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r153",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r154",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r155",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r156",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r157",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r158",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r159",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r160",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r161",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r162",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r163",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r164",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r165",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r166",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r167",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r168",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r169",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r170",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "product_stock r171",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r172",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r173",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r174",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r175",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r176",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r177",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r178",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r179",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r180",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r181",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r182",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "product_stock r183",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r184",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r185",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r186",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "product_stock r187",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r188",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r189",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r190",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r191",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r192",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r193",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r194",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r195",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r196",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r197",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r198",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"product_id"
+]
+},
+{
+"name": "product_stock r199",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+}
+],
+"patterns": {}
+}

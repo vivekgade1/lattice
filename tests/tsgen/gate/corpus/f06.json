@@ -1,0 +1,10426 @@
+{
+"app": "f06",
+"params": [
+{
+"name": "customer_stats suite 0",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats suite 1",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats suite 2",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats suite 3",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats suite 4",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats suite 5",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats suite 6",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats suite 7",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats suite 8",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b0",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats limit b1",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b2",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats limit b3",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b4",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%205&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b5",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b6",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats limit b7",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats limit b8",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats limit b9",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats limit b10",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats limit b11",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775807&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats limit b12",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775808&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats limit b13",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-9223372036854775809&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats limit b14",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b15",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=007&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b16",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b17",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats limit b18",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "100"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats limit b19",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats limit missing",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b0",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b1",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b2",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats offset b3",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b4",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%205",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b5",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b6",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats offset b7",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats offset b8",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=abc",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats offset b9",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats offset b10",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b11",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b12",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats offset b13",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats offset b14",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b15",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=007",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b16",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats offset b17",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats offset missing",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r0",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r1",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r2",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=abc",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r3",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r4",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r5",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r6",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r7",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r8",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r9",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r10",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r11",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r12",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r13",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r14",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r15",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=007",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r16",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r17",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r18",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r19",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r20",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r21",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r22",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=%205",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r23",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r24",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r25",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r26",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats r27",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r28",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775808&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r29",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775807&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r30",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r31",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%205",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r32",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r33",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r34",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r35",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r36",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r37",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=007&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r38",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r39",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r40",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats r41",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r42",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r43",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r44",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775808&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r45",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "100"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r46",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r47",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=007",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r48",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r49",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r50",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r51",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r52",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-9223372036854775809&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r53",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r54",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r55",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r56",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r57",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r58",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=abc",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r59",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r60",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r61",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r62",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats r63",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r64",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r65",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r66",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r67",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r68",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r69",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r70",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r71",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r72",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=007&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r73",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%205",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r74",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats r75",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats r76",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r77",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r78",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r79",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r80",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r81",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r82",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r83",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r84",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats r85",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%205",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r86",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775807&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r87",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r88",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r89",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats r90",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r91",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r92",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r93",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r94",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%205&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r95",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r96",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r97",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats r98",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r99",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r100",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r101",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r102",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r103",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r104",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775808&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r105",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r106",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "100"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r107",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r108",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r109",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-9223372036854775809&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r110",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r111",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats r112",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r113",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats r114",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r115",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=007&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r116",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r117",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r118",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r119",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r120",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r121",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r122",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r123",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r124",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r125",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r126",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats r127",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r128",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r129",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r130",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r131",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats r132",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r133",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r134",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r135",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r136",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775808&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r137",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r138",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "100"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r139",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r140",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r141",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r142",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r143",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%205&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r144",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r145",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r146",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r147",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r148",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r149",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r150",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r151",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r152",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r153",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r154",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-9223372036854775809&offset=007",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r155",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r156",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r157",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r158",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775807&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r159",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "customer_stats r160",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r161",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=abc",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r162",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r163",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r164",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r165",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r166",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r167",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r168",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r169",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r170",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r171",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r172",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r173",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r174",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r175",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r176",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r177",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r178",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r179",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=abc",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r180",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats r181",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r182",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r183",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r184",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r185",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r186",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r187",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r188",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r189",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r190",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r191",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats r192",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r193",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "customer_stats r194",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775807&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "customer_stats r195",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "3"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r196",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=3&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "customer_stats r197",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-9223372036854775809&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "customer_stats r198",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "customer_stats r199",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=34",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "34"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+}
+],
+"patterns": {}
+}

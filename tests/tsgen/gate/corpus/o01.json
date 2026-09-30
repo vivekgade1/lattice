@@ -1,0 +1,6616 @@
+{
+"app": "o01",
+"params": [
+{
+"name": "get_order suite 0",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 1",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "8"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "8"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 2",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "8"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "8"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 3",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9999"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 4",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "8"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "8"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 5",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 6",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 7",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 8",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 9",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 10",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 11",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 12",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order suite 13",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "987654"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "987654"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 14",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 15",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order suite 16",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order suite 17",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order suite 18",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "\u0661\u0662"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 19",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "\uff17"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 20",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": " 7 "
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 21",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "+3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "3"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order suite 22",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1_0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 23",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "inf"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 24",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "nan"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 25",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-Infinity"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 26",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1e999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 27",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "2.5e2"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 28",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": ".5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order suite 29",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "0x10"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order order_id b0",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order order_id b1",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b2",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order order_id b3",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b4",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b5",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b6",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order order_id b7",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order order_id b8",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order order_id b10",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b11",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b12",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order order_id b13",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order order_id b14",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b15",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b16",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order order_id b17",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r0",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r1",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r2",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r3",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r4",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r5",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r6",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order r7",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r8",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r9",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r10",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r11",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r12",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r13",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r14",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r15",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r16",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r17",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r18",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r19",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r20",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r21",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r22",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r23",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r24",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r25",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r26",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r27",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r28",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r29",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r30",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r31",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r32",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r33",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r34",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r35",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r36",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r37",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r38",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r39",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r40",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r41",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r42",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r43",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r44",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r45",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r46",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r47",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r48",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r49",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r50",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r51",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r52",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r53",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r54",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r55",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r56",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r57",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r58",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r59",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r60",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r61",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r62",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r63",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r64",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order r65",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r66",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r67",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r68",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r69",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r70",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r71",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r72",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r73",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r74",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r75",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r76",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r77",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r78",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r79",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r80",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r81",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r82",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r83",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r84",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r85",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r86",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r87",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r88",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r89",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r90",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r91",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r92",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r93",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r94",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r95",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r96",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r97",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r98",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order r99",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r100",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r101",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r102",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order r103",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r104",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r105",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r106",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r107",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r108",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r109",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r110",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r111",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r112",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r113",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r114",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r115",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r116",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r117",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r118",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r119",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r120",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r121",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r122",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r123",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r124",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r125",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r126",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r127",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r128",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r129",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r130",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r131",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r132",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r133",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r134",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r135",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r136",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r137",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r138",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r139",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r140",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r141",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r142",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r143",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r144",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r145",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r146",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r147",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r148",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r149",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r150",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r151",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r152",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r153",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r154",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r155",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r156",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r157",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r158",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r159",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r160",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r161",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r162",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r163",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r164",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r165",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r166",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r167",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "get_order r168",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r169",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "get_order r170",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r171",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r172",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r173",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r174",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r175",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r176",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r177",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r178",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r179",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r180",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r181",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r182",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r183",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r184",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r185",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r186",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r187",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r188",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r189",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r190",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r191",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r192",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r193",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r194",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r195",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "get_order r196",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r197",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r198",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"order_id"
+]
+},
+{
+"name": "get_order r199",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"order_id"
+]
+}
+],
+"patterns": {}
+}

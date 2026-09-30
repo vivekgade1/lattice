@@ -1,0 +1,9969 @@
+{
+"app": "v08",
+"params": [
+{
+"name": "restock suite 0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "2"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "2"
+},
+"qty": {
+"t": "int",
+"v": "1000"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "999"
+},
+"query": "",
+"body": "eyJxdHkiOiA1fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "999"
+},
+"qty": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock suite 4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMTB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock suite 5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 9",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "e30=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "restock suite 11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "WzEsIDJd",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}"
+},
+{
+"name": "restock suite 12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "restock suite 13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "restock suite 15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock suite 16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA3fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock suite 17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA4fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock suite 18",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtOTIyMzM3MjAzNjg1NDc3NTgwOX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock suite 19",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock suite 20",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAzLjB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "3"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 21",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAyLjV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 22",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxZSszMDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock suite 23",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 24",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiMTIifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 25",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAib2sgXHVkODNkXHVkZTAwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 26",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 27",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock suite 28",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "987654"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "987654"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 29",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 30",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock suite 31",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock suite 32",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock suite 33",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "\u0661\u0662"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 34",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "\uff17"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 35",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": " 7 "
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 36",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "+3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "3"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock suite 37",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1_0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 38",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "inf"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 39",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "nan"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 40",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-Infinity"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 41",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e999"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 42",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "2.5e2"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 43",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": ".5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock suite 44",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0x10"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock product_id b0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock product_id b1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock product_id b3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock product_id b7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock product_id b8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock product_id b10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock product_id b13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock product_id b14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock product_id b17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock qty b0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock qty b1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock qty b2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock qty b3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA1fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock qty b4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiIDUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiXHUwMDFjNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiNS4wIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiMWUzIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b9",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MDA3MTk5MjU0NzQwOTkzfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock qty b11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA3fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock qty b12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA4fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock qty b13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtOTIyMzM3MjAzNjg1NDc3NTgwOX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock qty b14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiKzcifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA3fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock qty b16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock qty b17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock qty b18",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "1000"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock qty b19",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock qty b20",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock qty b21",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock qty b22",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock qty b23",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAzLjB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "3"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock qty b24",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxLjV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b25",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MDA3MTk5MjU0NzQwOTkzfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock qty b26",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA4fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock qty b27",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtOTIyMzM3MjAzNjg1NDc3NTgwOX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock qty b28",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxZSszMDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock qty b29",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b30",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock qty b31",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "restock qty missing",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "e30=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "restock r0",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r1",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxLjV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r2",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxLjV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r3",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r4",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r5",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r6",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJxdHkiOiA3fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r7",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJxdHkiOiAiKzcifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r8",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r9",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA1fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r10",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r11",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r12",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r13",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r14",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r15",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r16",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r17",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r18",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r19",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r20",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r21",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r22",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r23",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r24",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r25",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r26",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r27",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r28",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "1000"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r29",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r30",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r31",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r32",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "eyJxdHkiOiAiMWUzIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r33",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r34",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r35",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r36",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r37",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtOTIyMzM3MjAzNjg1NDc3NTgwOX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r38",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r39",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA3fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r40",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r41",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r42",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r43",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r44",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r45",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r46",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r47",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r48",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "\u001c5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r49",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r50",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r51",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r52",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r53",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJxdHkiOiAzLjB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r54",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r55",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r56",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r57",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r58",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r59",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r60",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "abc"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r61",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r62",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiIDUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r63",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r64",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r65",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r66",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r67",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA4fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r68",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r69",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r70",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r71",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r72",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r73",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r74",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r75",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MDA3MTk5MjU0NzQwOTkzfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r76",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MDA3MTk5MjU0NzQwOTkzfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r77",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "restock r78",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r79",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r80",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r81",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r82",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r83",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA4fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r84",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA3fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r85",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r86",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MDA3MTk5MjU0NzQwOTkzfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r87",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r88",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r89",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r90",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r91",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r92",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r93",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r94",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r95",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r96",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA1fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r97",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MjIzMzcyMDM2ODU0Nzc1ODA4fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r98",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r99",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r100",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r101",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r102",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r103",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAtOTIyMzM3MjAzNjg1NDc3NTgwOX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r104",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r105",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r106",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r107",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r108",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r109",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r110",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA1fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r111",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "1000"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r112",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r113",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r114",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r115",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r116",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r117",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r118",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r119",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r120",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r121",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiKzcifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r122",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r123",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MDA3MTk5MjU0NzQwOTkzfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r124",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiMWUzIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r125",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r126",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r127",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r128",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r129",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r130",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiXHUwMDFjNSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r131",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r132",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxLjV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r133",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r134",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r135",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r136",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxZSszMDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r137",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r138",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": " 5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r139",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r140",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r141",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r142",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA1fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r143",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r144",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r145",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MDA3MTk5MjU0NzQwOTkzfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r146",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r147",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r148",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiMWUzIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r149",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "restock r150",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r151",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r152",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r153",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r154",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r155",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r156",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r157",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r158",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r159",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r160",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r161",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r162",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r163",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r164",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r165",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r166",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r167",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r168",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5.0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r169",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r170",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r171",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r172",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r173",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "+7"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "7"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r174",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "007"
+},
+"query": "",
+"body": "eyJxdHkiOiAiMWUzIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r175",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r176",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r177",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r178",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r179",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r180",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMDAxfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r181",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r182",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiA3fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r183",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r184",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r185",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r186",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "restock r187",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r188",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAzLjB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "3"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r189",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiA5MDA3MTk5MjU0NzQwOTkzfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be <= 1000\"}]}"
+},
+{
+"name": "restock r190",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r191",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJxdHkiOiAwfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"qty\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r192",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "5"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "5"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r193",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1e3"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "restock r194",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r195",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "0"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "restock r196",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r197",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAzLjB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "3"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r198",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "1"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"product_id": {
+"t": "int",
+"v": "1"
+},
+"qty": {
+"t": "int",
+"v": "10"
+}
+},
+"order": [
+"product_id",
+"qty"
+]
+},
+{
+"name": "restock r199",
+"specs": [
+{
+"name": "product_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "qty",
+"source": "body",
+"scalar": "Int",
+"ge": 1,
+"le": 1000
+}
+],
+"path": {
+"product_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJxdHkiOiAxMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"product_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+}
+],
+"patterns": {}
+}

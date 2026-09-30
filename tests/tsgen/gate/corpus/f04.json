@@ -1,0 +1,10327 @@
+{
+"app": "f04",
+"params": [
+{
+"name": "moderation_queue suite 0",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue suite 1",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue suite 2",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue suite 3",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue suite 4",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue suite 5",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue suite 6",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue suite 7",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue suite 8",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b0",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue limit b1",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b2",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue limit b3",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b4",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%205&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b5",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b6",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue limit b7",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue limit b8",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue limit b9",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue limit b10",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue limit b11",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775807&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue limit b12",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775808&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue limit b13",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-9223372036854775809&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue limit b14",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b15",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=007&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b16",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b17",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue limit b18",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "100"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue limit b19",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue limit missing",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "20"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b0",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b1",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b2",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue offset b3",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b4",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%205",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b5",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b6",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue offset b7",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue offset b8",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=abc",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue offset b9",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue offset b10",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b11",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b12",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue offset b13",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue offset b14",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b15",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=007",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b16",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue offset b17",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue offset missing",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r0",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r1",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%205",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r2",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r3",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r4",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r5",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r6",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r7",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r8",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r9",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r10",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r11",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r12",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=007&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r13",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r14",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r15",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r16",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r17",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "100"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r18",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r19",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r20",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r21",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r22",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r23",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r24",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r25",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r26",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r27",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%205&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r28",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r29",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=007&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r30",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%205&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r31",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r32",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r33",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue r34",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r35",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r36",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r37",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r38",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r39",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-9223372036854775809&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r40",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r41",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r42",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r43",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "100"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r44",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r45",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r46",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r47",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r48",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r49",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r50",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=007",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r51",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r52",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r53",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r54",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r55",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r56",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r57",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r58",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=007",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r59",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r60",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r61",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r62",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r63",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r64",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r65",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r66",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue r67",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r68",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r69",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r70",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r71",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r72",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r73",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r74",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r75",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r76",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r77",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r78",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r79",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r80",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue r81",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r82",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%205&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r83",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r84",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r85",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r86",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r87",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r88",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue r89",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r90",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r91",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r92",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r93",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r94",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r95",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r96",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r97",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue r98",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=%2B7",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r99",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r100",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r101",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r102",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r103",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r104",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r105",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r106",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%205",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r107",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r108",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r109",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=abc",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r110",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r111",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r112",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r113",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r114",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r115",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r116",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r117",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=007&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r118",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=abc",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r119",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r120",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r121",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r122",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775807&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r123",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r124",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r125",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=007",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r126",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775807&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r127",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r128",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r129",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r130",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r131",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r132",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r133",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r134",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r135",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r136",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%205&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r137",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r138",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r139",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r140",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r141",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r142",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r143",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r144",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775808&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r145",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r146",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r147",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r148",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r149",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r150",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%2B7&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "7"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r151",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r152",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9223372036854775808&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r153",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=%1C5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r154",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r155",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r156",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r157",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r158",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r159",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r160",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r161",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r162",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9007199254740993",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r163",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r164",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r165",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r166",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r167",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r168",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r169",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=100&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "100"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r170",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r171",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r172",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r173",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=5",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r174",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=%1C5&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r175",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=1e3",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r176",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r177",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue r178",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "0"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r179",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=9007199254740993&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"}]}"
+},
+{
+"name": "moderation_queue r180",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5.0&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r181",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r182",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=101&offset=-1",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be <= 100\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be >= 0\"}]}"
+},
+{
+"name": "moderation_queue r183",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r184",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r185",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "1"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r186",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r187",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r188",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r189",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=0&offset=",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r190",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r191",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r192",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=abc&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r193",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r194",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=1e3&offset=5.0",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be an integer\"},{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "moderation_queue r195",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=-1&offset=9223372036854775807",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"limit\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "moderation_queue r196",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=-9223372036854775809",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r197",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+},
+{
+"name": "moderation_queue r198",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=9223372036854775808",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"query\",\"offset\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "moderation_queue r199",
+"specs": [
+{
+"name": "limit",
+"source": "query",
+"scalar": "Int",
+"ge": 1,
+"le": 100,
+"default": {
+"t": "int",
+"v": "20"
+}
+},
+{
+"name": "offset",
+"source": "query",
+"scalar": "Int",
+"ge": 0,
+"default": {
+"t": "int",
+"v": "0"
+}
+}
+],
+"path": {},
+"query": "limit=5&offset=118",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"limit": {
+"t": "int",
+"v": "5"
+},
+"offset": {
+"t": "int",
+"v": "118"
+}
+},
+"order": [
+"limit",
+"offset"
+]
+}
+],
+"patterns": {}
+}

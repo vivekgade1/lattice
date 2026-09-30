@@ -1,0 +1,11061 @@
+{
+"app": "v05",
+"params": [
+{
+"name": "set_status suite 0",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 1",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "4"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGVuZGluZyJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "4"
+},
+"status": {
+"t": "str",
+"v": "pending"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 2",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9999"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGFpZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9999"
+},
+"status": {
+"t": "str",
+"v": "paid"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 3",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicmVmdW5kZWQifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status suite 4",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiU2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status suite 5",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 6",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 7",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 8",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 9",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 10",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "e30=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status suite 11",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "WzEsIDJd",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\"],\"msg\":\"the body must be a JSON object\"}]}"
+},
+{
+"name": "set_status suite 12",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status suite 13",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status suite 14",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status suite 15",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAtMX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 16",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiA5MjIzMzcyMDM2ODU0Nzc1ODA3fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 17",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiA5MjIzMzcyMDM2ODU0Nzc1ODA4fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 18",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAtOTIyMzM3MjAzNjg1NDc3NTgwOX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 19",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAxMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMH0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 20",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAzLjB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 21",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAyLjV9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 22",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAxZSszMDB9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 23",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiB0cnVlfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status suite 24",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiMTIifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status suite 25",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAib2sgXHVkODNkXHVkZTAwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status suite 26",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 27",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_status suite 28",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "987654"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "987654"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 29",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 30",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status suite 31",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status suite 32",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status suite 33",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\u0661\u0662"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 34",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\uff17"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 35",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": " 7 "
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 36",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "+3"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "3"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status suite 37",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1_0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 38",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "inf"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 39",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "nan"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 40",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-Infinity"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 41",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1e999"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 42",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "2.5e2"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 43",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": ".5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status suite 44",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "0x10"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status order_id b0",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_status order_id b1",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b2",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_status order_id b3",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b4",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": " 5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b5",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b6",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status order_id b7",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status order_id b8",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status order_id b10",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b11",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b12",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status order_id b13",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status order_id b14",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b15",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b16",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status order_id b17",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_status status b0",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b1",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b2",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYWIifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b3",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b4",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYVxuIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b5",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUwMGU5In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b6",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHVkODNkXHVkYzRiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b7",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHVkODNkXHVkYzRiXHVkODNkXHVkYzRiXHVkODNkXHVkYzRiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b8",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIHggIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b9",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUyMTJhIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b10",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQTFfIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b11",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAieEB5LnoifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b12",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiaXQnczUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b13",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGVuZGluZyJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "pending"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status status b14",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGFpZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "paid"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status status b15",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status status b16",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiY2FuY2VsbGVkIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "cancelled"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status status b17",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiUEVORElORyJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b18",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiUEFJRCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b19",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiU0hJUFBFRCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b20",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQ0FOQ0VMTEVEIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status status b21",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHVkODAwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+},
+{
+"name": "set_status status b22",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYVx1ZDgzZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+},
+{
+"name": "set_status status b23",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiA1fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status status b24",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status status b25",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBbImEiXX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status status missing",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "e30=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status r0",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r1",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r2",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiUEVORElORyJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r3",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGFpZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "paid"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r4",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r5",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status r6",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r7",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r8",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r9",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYWJjIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r10",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAieEB5LnoifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r11",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r12",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r13",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status r14",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r15",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r16",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r17",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r18",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r19",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status r20",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r21",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r22",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r23",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r24",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYVx1ZDgzZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+},
+{
+"name": "set_status r25",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r26",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r27",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r28",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r29",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGFpZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+},
+"status": {
+"t": "str",
+"v": "paid"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r30",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status r31",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r32",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiaXQnczUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r33",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiY2FuY2VsbGVkIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_status r34",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status r35",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status r36",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r37",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r38",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r39",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r40",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiUEFJRCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r41",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r42",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r43",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUyMTJhIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r44",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAieEB5LnoifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r45",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiU0hJUFBFRCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r46",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r47",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUyMTJhIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r48",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r49",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r50",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGFpZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "paid"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r51",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r52",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYWIifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r53",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r54",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIHggIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r55",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r56",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQ0FOQ0VMTEVEIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r57",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r58",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAieEB5LnoifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r59",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUwMGU5In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r60",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r61",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGVuZGluZyJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "pending"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r62",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r63",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r64",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r65",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r66",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r67",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": " 5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r68",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r69",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r70",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r71",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r72",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r73",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r74",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r75",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r76",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYWIifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r77",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r78",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status r79",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r80",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUwMGU5In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r81",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r82",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r83",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYVx1ZDgzZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+},
+{
+"name": "set_status r84",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": " 5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQ0FOQ0VMTEVEIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r85",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r86",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYWIifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r87",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r88",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHVkODAwIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+},
+{
+"name": "set_status r89",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r90",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiA1fQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status r91",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r92",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_status r93",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "set_status r94",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQTFfIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r95",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUwMGU5In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r96",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r97",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUyMTJhIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r98",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGFpZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "paid"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r99",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGFpZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "paid"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r100",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r101",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r102",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r103",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r104",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r105",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r106",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r107",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r108",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAieEB5LnoifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r109",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUyMTJhIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r110",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r111",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r112",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiY2FuY2VsbGVkIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status r113",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r114",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYVxuIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r115",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUyMTJhIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r116",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r117",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r118",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r119",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status r120",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r121",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAieEB5LnoifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r122",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9223372036854775807"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r123",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r124",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r125",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r126",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiU0hJUFBFRCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r127",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIHggIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r128",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQTFfIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r129",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHVkODNkXHVkYzRiXHVkODNkXHVkYzRiXHVkODNkXHVkYzRiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r130",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r131",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r132",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r133",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r134",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status r135",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status r136",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r137",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "7"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r138",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIHggIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r139",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status r140",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r141",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiaXQnczUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r142",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r143",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r144",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r145",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r146",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r147",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status r148",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYVx1ZDgzZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+},
+{
+"name": "set_status r149",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQTFfIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r150",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiUEFJRCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r151",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status r152",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r153",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1e3"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status r154",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQ0FOQ0VMTEVEIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r155",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775808"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHVkODNkXHVkYzRiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r156",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQ0FOQ0VMTEVEIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r157",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHVkODNkXHVkYzRiIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r158",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5.0"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYVx1ZDgzZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"},{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+},
+{
+"name": "set_status r159",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r160",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "007"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQTFfIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r161",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r162",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status r163",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r164",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r165",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r166",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "\u001c5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiU0hJUFBFRCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r167",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r168",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": " 5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "5"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r169",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r170",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "-9223372036854775809"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "set_status r171",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r172",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r173",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYSJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r174",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r175",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "abc"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAicGFpZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"order_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "set_status r176",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r177",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status r178",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r179",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUwMGU5In0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r180",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r181",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r182",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r183",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r184",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiIHggIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r185",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "5"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBbImEiXX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+},
+{
+"name": "set_status r186",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiYVx1ZDgzZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be valid UTF-8 text\"}]}"
+},
+{
+"name": "set_status r187",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "9007199254740993"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r188",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r189",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r190",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiaXQnczUifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r191",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9007199254740993"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAieEB5LnoifQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r192",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r193",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiQ0FOQ0VMTEVEIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r194",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "+7"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBudWxsfQ==",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"field required\"}]}"
+},
+{
+"name": "set_status r195",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiY2FuY2VsbGVkIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "cancelled"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r196",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAic2hpcHBlZCJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"order_id": {
+"t": "int",
+"v": "1"
+},
+"status": {
+"t": "str",
+"v": "shipped"
+}
+},
+"order": [
+"order_id",
+"status"
+]
+},
+{
+"name": "set_status r197",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "9223372036854775807"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiUEVORElORyJ9",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r198",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiAiXHUyMTJhIn0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be one of 'pending', 'paid', 'shipped', 'cancelled'\"}]}"
+},
+{
+"name": "set_status r199",
+"specs": [
+{
+"name": "order_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+},
+{
+"name": "status",
+"source": "body",
+"scalar": "Str",
+"one_of": [
+"pending",
+"paid",
+"shipped",
+"cancelled"
+]
+}
+],
+"path": {
+"order_id": "1"
+},
+"query": "",
+"body": "eyJzdGF0dXMiOiBbImEiXX0=",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"body\",\"status\"],\"msg\":\"must be a string\"}]}"
+}
+],
+"patterns": {}
+}

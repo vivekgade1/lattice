@@ -1,0 +1,6466 @@
+{
+"app": "c05",
+"params": [
+{
+"name": "delete_review suite 0",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 1",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "60"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "60"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 2",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9999"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 3",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 4",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 5",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 6",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 7",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 8",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 9",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review suite 10",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "987654"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "987654"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 11",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 12",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review suite 13",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review suite 14",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review suite 15",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\u0661\u0662"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 16",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\uff17"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 17",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": " 7 "
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 18",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "3"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review suite 19",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1_0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 20",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "inf"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 21",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "nan"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 22",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-Infinity"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 23",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1e999"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 24",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "2.5e2"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 25",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": ".5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review suite 26",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0x10"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review review_id b0",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review review_id b1",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b2",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review review_id b3",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b4",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b5",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b6",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review review_id b7",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review review_id b8",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review review_id b10",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b11",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b12",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review review_id b13",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review review_id b14",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b15",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b16",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review review_id b17",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r0",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r1",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r2",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r3",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r4",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r5",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r6",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r7",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r8",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r9",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r10",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r11",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r12",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r13",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r14",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r15",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r16",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r17",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r18",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r19",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r20",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r21",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r22",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r23",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r24",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r25",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r26",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r27",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r28",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r29",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r30",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r31",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r32",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r33",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r34",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r35",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r36",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r37",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r38",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r39",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r40",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r41",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r42",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r43",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r44",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r45",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r46",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r47",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r48",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r49",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r50",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r51",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r52",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r53",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r54",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r55",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r56",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r57",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r58",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r59",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r60",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r61",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r62",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r63",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r64",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r65",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r66",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r67",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r68",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r69",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r70",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r71",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r72",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r73",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r74",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r75",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r76",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r77",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r78",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r79",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r80",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r81",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r82",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r83",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r84",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r85",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r86",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r87",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r88",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r89",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r90",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r91",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r92",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r93",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r94",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r95",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r96",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r97",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r98",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r99",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r100",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r101",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r102",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r103",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r104",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r105",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r106",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r107",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r108",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r109",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r110",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r111",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "1"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r112",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": " 5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r113",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r114",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r115",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r116",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r117",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r118",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r119",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r120",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r121",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r122",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r123",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r124",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r125",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r126",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r127",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r128",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r129",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r130",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r131",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r132",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r133",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r134",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r135",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r136",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r137",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r138",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r139",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r140",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-1"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r141",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r142",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r143",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r144",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r145",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r146",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r147",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r148",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r149",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r150",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r151",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r152",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r153",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r154",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "+7"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r155",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r156",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r157",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r158",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r159",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r160",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r161",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r162",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r163",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r164",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r165",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r166",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r167",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r168",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "1e3"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r169",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r170",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r171",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r172",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r173",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r174",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r175",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r176",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "007"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "7"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r177",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r178",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r179",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "\u001c5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r180",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r181",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "5"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r182",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r183",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r184",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r185",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "-9223372036854775809"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r186",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "5.0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r187",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r188",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "0"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be >= 1\"}]}"
+},
+{
+"name": "delete_review r189",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r190",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r191",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r192",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r193",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r194",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775808"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer between -9223372036854775808 and 9223372036854775807\"}]}"
+},
+{
+"name": "delete_review r195",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "abc"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"status": 422,
+"lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}",
+"fastapi": "{\"detail\":[{\"loc\":[\"path\",\"review_id\"],\"msg\":\"must be an integer\"}]}"
+},
+{
+"name": "delete_review r196",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r197",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9223372036854775807"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9223372036854775807"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r198",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "9007199254740993"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "9007199254740993"
+}
+},
+"order": [
+"review_id"
+]
+},
+{
+"name": "delete_review r199",
+"specs": [
+{
+"name": "review_id",
+"source": "path",
+"scalar": "Int",
+"ge": 1
+}
+],
+"path": {
+"review_id": "111"
+},
+"query": "",
+"body": "",
+"form": false,
+"ctype": null,
+"rules": [],
+"values": {
+"review_id": {
+"t": "int",
+"v": "111"
+}
+},
+"order": [
+"review_id"
+]
+}
+],
+"patterns": {}
+}
