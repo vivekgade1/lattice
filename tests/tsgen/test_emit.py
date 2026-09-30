@@ -14,7 +14,15 @@ from lattice.api.codegen import _flat, _param
 from lattice.api.ir import EndpointPlan, lower_api
 from lattice.check import check_source
 from lattice.tsgen import generate_ts
-from lattice.tsgen.emit import TsGenRefusal, camel, error_statuses, pascal, ts_spec
+from lattice.tsgen.emit import (
+    TsGenRefusal,
+    camel,
+    error_statuses,
+    page_num,
+    param_field,
+    pascal,
+    ts_spec,
+)
 from lattice.tsgen.pyref import answer, case, prelude, to_param
 from lattice.tsgen.specs import plan_specs, spec_dict
 from tests.api.test_codegen_differential import PROGRAMS, setup_of
@@ -423,3 +431,102 @@ def test_inherited_properties_are_not_params(tmp_path: Path) -> None:
     write(tmp_path, (plan,))
     got = node_json(INHERITED, tmp_path.as_uri(), cwd=tmp_path)
     assert got == {"detail": [], "query": "", "own": "constructor=5"}
+
+
+TOKENS = """
+import { readFileSync } from "node:fs";
+const dir = JSON.parse(readFileSync(0, "utf8"));
+const api = await import(dir + "/api.ts");
+const seen = [];
+const spy = async (_url, init) => { seen.push(init.headers["authorization"] ?? null);
+                                     return new Response("[]", { status: 200 }); };
+for (const token of ["", () => "", null, () => null, undefined, "t", () => "u"])
+  await api.readItems({}, { baseUrl: "http://x", token, fetch: spy });
+console.log(JSON.stringify(seen));
+"""
+
+
+def test_an_empty_token_sends_no_authorization(tmp_path: Path) -> None:
+    """Final review #12: "" (or a function returning "") is no token, not "Bearer "."""
+    write(tmp_path, plans_of("realapps"))
+    got = node_json(TOKENS, tmp_path.as_uri(), cwd=tmp_path)
+    assert got == [None, None, None, None, None, "Bearer t", "Bearer u"]
+
+
+def test_null_is_typed_only_where_it_reaches_the_server() -> None:
+    """Final review #9: an UNSET parameter that accepts null is `| null` only in a JSON body
+    (null sets NULL there; a query or form drops null, which would mean "not sent");
+    a `T | None = None` parameter is `| null` everywhere (left out, the server's value is
+    None too)."""
+    unset = {"name": "d", "scalar": "Str", "default": {"t": "unset"}, "optional": True,
+             "nullable": True}  # fmt: skip
+    none = {"name": "d", "scalar": "Str", "default": {"t": "none"}}
+    assert param_field({**unset, "source": "body"}, json_body=True) == "  d?: string | null;"
+    assert param_field({**unset, "source": "body"}, json_body=False) == "  d?: string;"
+    assert param_field({**unset, "source": "query"}, json_body=True) == "  d?: string;"
+    for source, json_body in (("query", True), ("body", False), ("body", True)):
+        got = param_field({**none, "source": source}, json_body=json_body)
+        assert got == "  d?: string | null;"
+
+
+def test_a_shared_model_needs_one_schema() -> None:
+    """Final review #13: endpoints returning the same model must agree on its schema."""
+    by_name = {p.name: p for p in plans_of("realapps")}
+    one = by_name["read_item"]
+    assert one.response is not None
+    generate_ts((one, renamed(one, "read_item_again")))  # the same schema: one model
+    cols = (*one.schema.columns[:-1], (one.schema.columns[-1][0] + "_x", one.schema.columns[-1][1]))
+    clash = dataclasses.replace(one, name="clash",
+                                schema=dataclasses.replace(one.schema, columns=cols))  # fmt: skip
+    with pytest.raises(TsGenRefusal, match="L893"):
+        generate_ts((one, clash))
+
+
+def test_headers_state_requirements_and_caveats() -> None:
+    """Final review #7 and #6."""
+    files = generate_ts(plans_of("realapps"))
+    api, hooks = files["api.ts"], files["hooks.ts"]
+    for text in (api, hooks):
+        assert "allowImportingTsExtensions" in text and "ES2024" in text
+    assert "never throws" in api
+    assert "do not include the base URL or the token" in hooks
+    assert "retry" in hooks and "never" in hooks
+    assert "AbortSignal.any([o.signal, signal])" in hooks
+
+
+PAGE_NUMBERS = """
+import { readFileSync } from "node:fs";
+const dir = JSON.parse(readFileSync(0, "utf8"));
+const api = await import(dir + "/api.ts");
+const rt = await import(dir + "/lattice-rt.ts");
+const enc = (s) => new TextEncoder().encode(s);
+const tryPage = (s) => { try {
+    const p = api.ENDPOINTS.bounded.decode(rt.decodeJson(enc(s)));
+    return Object.fromEntries(Object.entries(p).filter(([k]) => k !== "items")
+      .map(([k, v]) => [k, typeof v === "bigint" ? v.toString() + "n" : v]));
+  } catch (e) { return e instanceof rt.DecodeError ? "decode" : "crash"; } };
+console.log(JSON.stringify([
+  tryPage('{"items": [], "limit": 100, "offset": 0}'),
+  tryPage('{"items": [], "limit": -9007199254740991, "offset": 9007199254740991}'),
+  tryPage('{"items": [], "limit": 9007199254740992, "offset": 0}'),
+  tryPage('{"items": [], "limit": 5, "offset": -9007199254740992}'),
+]));
+"""
+
+
+def test_page_number_mode(tmp_path: Path) -> None:
+    """Final review #14: `limit` a parameter within +-(2^53 - 1) and `offset` a page()
+    literal are numbers, decoded exactly (beyond +-(2^53 - 1): a decode error)."""
+    plans = app("bounds").plans
+    plan = next(p for p in plans if p.name == "bounded")
+    assert plan.page is not None and isinstance(plan.page.offset, int)
+    assert [page_num(plan, k) for k in ("limit", "offset")] == ["number", "number"]
+    write(tmp_path, plans)
+    assert "}[]; limit: number; offset: number }" in generate_ts(plans)["api.ts"]
+    got = node_json(PAGE_NUMBERS, tmp_path.as_uri(), cwd=tmp_path)
+    assert got == [
+        {"limit": 100, "offset": 0},
+        {"limit": -9007199254740991, "offset": 9007199254740991},
+        "decode",
+        "decode",
+    ]

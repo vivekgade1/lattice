@@ -1054,10 +1054,12 @@ export type Unexpected = {
 };
 export type CallOpts = {
   baseUrl: string;
+  /** The bearer token; absent, null or "" sends no Authorization header. */
   token?: string | (() => string | null);
   fetch?: typeof fetch;
   signal?: AbortSignal;
-  /** Test-only: send without validating locally (the L3 gate compares both answers). */
+  /** Test support, not for applications: send without validating locally (the L3 gate
+   * compares the local verdict with the server's answer). */
   unchecked?: boolean;
 };
 export type Endpoint = {
@@ -1067,6 +1069,8 @@ export type Endpoint = {
   form: boolean;
   success: number;
   errors: Readonly<Record<number, string>>;
+  /** Test support, not used by the runtime: the Int parameters typed `number` (their
+   * declared range fits +-(2^53 - 1)), so the L3 driver builds values of the declared type. */
   numberInts: readonly string[];
   decode: (v: JsonVal | undefined) => unknown;
 };
@@ -1154,7 +1158,7 @@ export async function call(ep: Endpoint, p: Record<string, unknown>, o: CallOpts
   }
   const headers: Record<string, string> = {};
   const token = typeof o.token === "function" ? o.token() : o.token;
-  if (token !== undefined && token !== null) headers["authorization"] = "Bearer " + token;
+  if (token !== undefined && token !== null && token !== "") headers["authorization"] = "Bearer " + token;
   if (w.ctype !== null) headers["content-type"] = w.ctype;
   let res: Response;
   try {
