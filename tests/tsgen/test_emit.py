@@ -357,8 +357,9 @@ const deep = "[".repeat(20000) + "]".repeat(20000);
 const answer = (status) => async () => new Response(deep, { status });
 const opts = (f) => ({ baseUrl: "http://x", token: "t", fetch: f });
 const out = [];
-for (const [fn, p, status] of [["readItems", {}, 200], ["readItem", { id: "00000000-0000-4000-8000-000000000102" }, 404],
-                               ["readItem", { id: "00000000-0000-4000-8000-000000000102" }, 422]]) {
+const id = { id: "00000000-0000-4000-8000-000000000102" };
+const calls = [["readItems", {}, 200], ["readItem", id, 404], ["readItem", id, 422]];
+for (const [fn, p, status] of calls) {
   try {
     const r = await api[fn](p, opts(answer(status)));
     out.push([r.ok, r.error.kind, r.error.reason, r.error.status]);
@@ -374,3 +375,51 @@ def test_decoding_is_total(tmp_path: Path) -> None:
     write(tmp_path, plans_of("realapps"))
     got = node_json(DEEP, tmp_path.as_uri(), cwd=tmp_path)
     assert got == [[False, "unexpected", "decode", s] for s in (200, 404, 422)]
+
+
+@pytest.mark.parametrize("name", ["_1x", "__proto__", "a-b", "caf\u00e9"])
+def test_endpoint_names_must_be_js_identifiers(name: str) -> None:
+    """Final review #5: `_1x` gives the function `1x`; `__proto__` in the ENDPOINTS literal
+    would set its prototype."""
+    base = plans_of("realapps")[1]
+    with pytest.raises(TsGenRefusal, match="L893"):
+        generate_ts((renamed(base, name),))
+
+
+def with_param(plan: EndpointPlan, old: str, new: str) -> EndpointPlan:
+    params = tuple(dataclasses.replace(s, name=new) if s.name == old else s for s in plan.params)
+    return dataclasses.replace(plan, params=params)
+
+
+def test_param_and_column_names_are_checked() -> None:
+    by_name = {p.name: p for p in plans_of("realapps")}
+    with pytest.raises(TsGenRefusal, match="L893"):
+        generate_ts((with_param(by_name["read_items"], "skip", "__proto__"),))
+    with pytest.raises(TsGenRefusal, match="L893"):
+        generate_ts((with_param(by_name["read_items"], "skip", "1st"),))
+    plan = by_name["read_item"]
+    cols = tuple(("__proto__" if i == 0 else n, t) for i, (n, t) in enumerate(plan.schema.columns))
+    bad = dataclasses.replace(plan, schema=dataclasses.replace(plan.schema, columns=cols))
+    with pytest.raises(TsGenRefusal, match="L893"):
+        generate_ts((bad,))
+
+
+INHERITED = """
+import { readFileSync } from "node:fs";
+const dir = JSON.parse(readFileSync(0, "utf8"));
+const api = await import(dir + "/api.ts");
+const rt = await import(dir + "/lattice-rt.ts");
+const ep = api.ENDPOINTS.read_items;
+console.log(JSON.stringify({ detail: rt.validate(ep, {}), query: rt.toWire(ep, {}).query,
+  own: rt.toWire(ep, { constructor: 5 }).query }));
+"""
+
+
+def test_inherited_properties_are_not_params(tmp_path: Path) -> None:
+    """A parameter named like an Object.prototype member (`constructor`), left out, is not
+    sent: the runtime reads only the params object's own properties."""
+    plan = with_param(plans_of("realapps")[0], "skip", "constructor")
+    assert plan.name == "read_items"
+    write(tmp_path, (plan,))
+    got = node_json(INHERITED, tmp_path.as_uri(), cwd=tmp_path)
+    assert got == {"detail": [], "query": "", "own": "constructor=5"}

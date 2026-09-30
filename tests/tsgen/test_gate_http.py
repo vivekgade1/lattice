@@ -185,7 +185,7 @@ const { dir, endpoint, param, values } = JSON.parse(readFileSync(0, "utf8"));
 const api = await import(dir + "/api.ts");
 const rt = await import(dir + "/lattice-rt.ts");
 const sent = [];
-const spy = async (url, init) => { sent.push(String(url)); return new Response("{}", { status: 200 }); };
+const spy = async (url) => { sent.push(String(url)); return new Response("{}", { status: 200 }); };
 const ep = api.ENDPOINTS[endpoint];
 const out = [];
 for (const v of values) {

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Sequence
 
 from lattice.api.ir import EndpointPlan, ErrorSpec, WriteStep
@@ -57,12 +58,26 @@ FIXED_TYPES = ("rt", "CallOpts", "FieldError", "Result", "Unexpected", "Validati
 FIXED_HOOKS = ("useMutation", "useQuery", "api", "canonicalKey")
 
 
+# A generated name (binding, type, or property of a generated type or object) is an ASCII
+# JavaScript identifier: `_1x` would give the function `1x`; non-ASCII is refused rather than
+# reasoned about (Python and JS identifier sets and case mappings differ). `__proto__` is
+# never a name: as a key of an object literal (ENDPOINTS) or a property the runtime sets
+# (a decoded row) it sets the prototype instead.
+JS_IDENTIFIER = re.compile(r"[A-Za-z_$][A-Za-z0-9_$]*")
+
+
+def check_identifier(plan: EndpointPlan, name: str, what: str) -> None:
+    if not JS_IDENTIFIER.fullmatch(name) or name == "__proto__":
+        raise TsGenRefusal(plan, f"{what} '{name}' is not a usable JavaScript identifier")
+
+
 def check_names(plans: Sequence[EndpointPlan]) -> None:
     """L893 when a plan's generated names are not valid, distinct TypeScript names."""
     values: dict[str, str] = dict.fromkeys(FIXED_VALUES, "api.ts")
     types: dict[str, str] = dict.fromkeys(FIXED_TYPES, "api.ts")
 
     def claim(table: dict[str, str], name: str, owner: str, plan: EndpointPlan) -> None:
+        check_identifier(plan, name, f"'{owner}' generates the name")
         if name in (RESERVED_TYPES if table is types else RESERVED):
             raise TsGenRefusal(plan, f"'{owner}' generates the reserved name '{name}'")
         if name in table and table[name] != owner:
@@ -75,6 +90,15 @@ def check_names(plans: Sequence[EndpointPlan]) -> None:
         if plan.name in names:
             raise TsGenRefusal(plan, f"two endpoints are named '{plan.name}'")
         names.add(plan.name)
+        check_identifier(plan, plan.name, "the endpoint name")  # the ENDPOINTS key
+        for spec in plan.params:
+            if spec.source != "user":
+                check_identifier(plan, spec.name, "the parameter")
+        for column, _scalar in plan.schema.columns:
+            check_identifier(plan, column, "the response column")
+        if plan.success == "Page":
+            for _key, field in page_shape(plan):
+                check_identifier(plan, field, "the page field")
     for plan in plans:
         if plan.response is not None:
             claim(types, plan.response, f"model {plan.response}", plan)

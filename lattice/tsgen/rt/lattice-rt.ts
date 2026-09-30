@@ -1081,13 +1081,17 @@ export type Wire = {
 };
 
 const present = (v: unknown) => v !== undefined && v !== null;
+/** p[name] if p has it as its own property: a parameter named like an Object.prototype
+ * member (`constructor`), left out, is not sent. */
+const own = (p: Record<string, unknown>, name: string): unknown =>
+  Object.hasOwn(p, name) ? p[name] : undefined;
 
 /** The request exactly as it will be sent, and the path values the server will decode. */
 export function toWire(ep: Endpoint, p: Record<string, unknown>): Wire {
   const pathValues = new Map<string, string>();
   let unroutable = false;
   const url = ep.path.replace(/\{([^}]+)\}/g, (_m, name: string) => {
-    const text = present(p[name]) ? wireText(p[name]) : "";
+    const text = present(own(p, name)) ? wireText(own(p, name)) : "";
     pathValues.set(name, text.toWellFormed());
     // fetch normalises "." and ".." segments away, Starlette routes on the decoded path (a
     // "/" splits the segment) and redirects "" (a trailing slash) with a 307 that keeps the
@@ -1096,19 +1100,19 @@ export function toWire(ep: Endpoint, p: Record<string, unknown>): Wire {
     return pctEncode(text);
   });
   const query = ep.params
-    .filter((s) => s.source === "query" && present(p[s.name]))
-    .map((s) => pctEncode(s.name) + "=" + pctEncode(wireText(p[s.name])))
+    .filter((s) => s.source === "query" && present(own(p, s.name)))
+    .map((s) => pctEncode(s.name) + "=" + pctEncode(wireText(own(p, s.name))))
     .join("&");
   const bodySpecs = ep.params.filter((s) => s.source === "body");
   let body: Uint8Array | null = null;
   let ctype: string | null = null;
   if (bodySpecs.length > 0 && ep.form) {
-    const fields = bodySpecs.filter((s) => present(p[s.name]));
-    body = ENCODER.encode(fields.map((s) => pctEncode(s.name) + "=" + pctEncode(wireText(p[s.name]))).join("&"));
+    const fields = bodySpecs.filter((s) => present(own(p, s.name)));
+    body = ENCODER.encode(fields.map((s) => pctEncode(s.name) + "=" + pctEncode(wireText(own(p, s.name)))).join("&"));
     ctype = "application/x-www-form-urlencoded";
   } else if (bodySpecs.length > 0) {
     const obj: Record<string, unknown> = {};
-    for (const s of bodySpecs) if (p[s.name] !== undefined) obj[s.name] = p[s.name];
+    for (const s of bodySpecs) if (own(p, s.name) !== undefined) obj[s.name] = own(p, s.name);
     body = ENCODER.encode(dumpsWire(obj));
     ctype = "application/json";
   }
