@@ -7,8 +7,10 @@ from __future__ import annotations
 import base64
 import datetime as dt
 import functools
+import sys
 import uuid
 from collections.abc import Iterable, Sequence
+from pathlib import Path
 from typing import Any
 
 from starlette.datastructures import QueryParams
@@ -16,9 +18,13 @@ from starlette.datastructures import QueryParams
 from lattice.api.codegen import _PRELUDE
 from lattice.tsgen.regex import fullmatch_source
 
+KIT_DIR = Path(__file__).resolve().parents[2] / "bench" / "api_kit"  # the prelude's platform_kit
+
 
 @functools.cache
 def prelude() -> dict[str, Any]:
+    if str(KIT_DIR) not in sys.path:
+        sys.path.append(str(KIT_DIR))
     ns: dict[str, Any] = {}
     exec(compile(_PRELUDE, "prelude", "exec"), ns)  # noqa: S102 - the reference itself
     return ns

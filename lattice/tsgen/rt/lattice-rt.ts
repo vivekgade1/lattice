@@ -1021,6 +1021,12 @@ export function decodeRow(v: JsonVal | undefined, cols: readonly Col[]): Record<
   return out;
 }
 
+/** A List: a JSON array of rows (no envelope). */
+export function decodeList(v: JsonVal | undefined, cols: readonly Col[]): Record<string, unknown>[] {
+  if (!Array.isArray(v)) throw new DecodeError("the body is not a list");
+  return v.map((r) => decodeRow(r, cols));
+}
+
 /** A Page envelope: `shape` is [page_shape key, JSON field]; counts are exact numbers. */
 export function decodePage(
   v: JsonVal | undefined,
@@ -1041,4 +1047,139 @@ export function decodePage(
     }
   }
   return out;
+}
+
+// ---- the call path (api.ts calls these) ---------------------------------------------------
+
+export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
+export type ValidationError = { kind: "validation"; status: 422; detail: FieldError[] };
+export type Unexpected = { kind: "unexpected"; status: number; reason: "network" | "status" | "decode"; body: string };
+export type CallOpts = {
+  baseUrl: string;
+  token?: string | (() => string | null);
+  fetch?: typeof fetch;
+  signal?: AbortSignal;
+  /** Test-only: send without validating locally (the L3 gate compares both answers). */
+  unchecked?: boolean;
+};
+export type Endpoint = {
+  method: string;
+  path: string;
+  params: readonly ParamSpec[];
+  form: boolean;
+  success: number;
+  errors: Readonly<Record<number, string>>;
+  numberInts: readonly string[];
+  decode: (v: JsonVal | undefined) => unknown;
+};
+export type Wire = {
+  url: string;
+  pathValues: Map<string, string>;
+  query: string;
+  body: Uint8Array | null;
+  ctype: string | null;
+};
+
+const present = (v: unknown) => v !== undefined && v !== null;
+
+/** The request exactly as it will be sent, and the path values the server will decode. */
+export function toWire(ep: Endpoint, p: Record<string, unknown>): Wire {
+  const pathValues = new Map<string, string>();
+  const url = ep.path.replace(/\{([^}]+)\}/g, (_m, name: string) => {
+    const text = present(p[name]) ? wireText(p[name]) : "";
+    pathValues.set(name, text.toWellFormed());
+    return pctEncode(text);
+  });
+  const query = ep.params
+    .filter((s) => s.source === "query" && present(p[s.name]))
+    .map((s) => pctEncode(s.name) + "=" + pctEncode(wireText(p[s.name])))
+    .join("&");
+  const bodySpecs = ep.params.filter((s) => s.source === "body");
+  let body: Uint8Array | null = null;
+  let ctype: string | null = null;
+  if (bodySpecs.length > 0 && ep.form) {
+    const fields = bodySpecs.filter((s) => present(p[s.name]));
+    body = ENCODER.encode(fields.map((s) => pctEncode(s.name) + "=" + pctEncode(wireText(p[s.name]))).join("&"));
+    ctype = "application/x-www-form-urlencoded";
+  } else if (bodySpecs.length > 0) {
+    const obj: Record<string, unknown> = {};
+    for (const s of bodySpecs) if (p[s.name] !== undefined) obj[s.name] = p[s.name];
+    body = ENCODER.encode(dumpsWire(obj));
+    ctype = "application/json";
+  }
+  return { url: query ? `${url}?${query}` : url, pathValues, query, body, ctype };
+}
+
+function validateWire(ep: Endpoint, w: Wire): FieldError[] {
+  const r = parseParams(ep.params, w.pathValues, parseQS(w.query), w.body ?? new Uint8Array(), ep.form, w.ctype);
+  return r.ok ? [] : r.detail;
+}
+
+/** The server's 422 detail for these params (empty when it would accept them). */
+export function validate(ep: Endpoint, p: Record<string, unknown>): FieldError[] {
+  return validateWire(ep, toWire(ep, p));
+}
+
+const unexpected = (status: number, reason: Unexpected["reason"], body: Uint8Array | string): { ok: false; error: Unexpected } => ({
+  ok: false,
+  error: { kind: "unexpected", status, reason, body: typeof body === "string" ? body : UTF8_REPLACE.decode(body) },
+});
+
+export async function call(ep: Endpoint, p: Record<string, unknown>, o: CallOpts): Promise<Result<unknown, unknown>> {
+  const w = toWire(ep, p);
+  if (!o.unchecked) {
+    const detail = validateWire(ep, w);
+    if (detail.length > 0) return { ok: false, error: { kind: "validation", status: 422, detail } };
+  }
+  const headers: Record<string, string> = {};
+  const token = typeof o.token === "function" ? o.token() : o.token;
+  if (token !== undefined && token !== null) headers["authorization"] = "Bearer " + token;
+  if (w.ctype !== null) headers["content-type"] = w.ctype;
+  let res: Response;
+  try {
+    res = await (o.fetch ?? fetch)(o.baseUrl.replace(/\/$/, "") + w.url, {
+      method: ep.method,
+      headers,
+      body: (w.body ?? undefined) as BodyInit | undefined, // Uint8Array<ArrayBufferLike> in TS 5.7+ libs
+      signal: o.signal,
+    });
+  } catch (e) {
+    return unexpected(0, "network", String(e));
+  }
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  if (res.status === ep.success) {
+    try {
+      return { ok: true, value: ep.decode(res.status === 204 ? undefined : decodeJson(bytes)) };
+    } catch (e) {
+      if (e instanceof DecodeError) return unexpected(res.status, "decode", bytes);
+      throw e;
+    }
+  }
+  const kind = ep.errors[res.status];
+  if (kind === undefined) return unexpected(res.status, "status", bytes);
+  try {
+    return { ok: false, error: { kind, status: res.status, detail: decodeErrorBody(res.status, bytes).detail } };
+  } catch (e) {
+    if (e instanceof DecodeError) return unexpected(res.status, "decode", bytes);
+    throw e;
+  }
+}
+
+/** A stable query key for params (bigint-safe, key order independent). */
+export function canonicalKey(v: unknown): string {
+  if (typeof v === "bigint") return v.toString() + "n";
+  if (v === undefined) return "u";
+  if (typeof v === "number" && !Number.isFinite(v)) return String(v);
+  if (v === null || typeof v !== "object") return JSON.stringify(v);
+  if (Array.isArray(v)) return "[" + v.map(canonicalKey).join(",") + "]";
+  const o = v as Record<string, unknown>;
+  return (
+    "{" +
+    Object.keys(o)
+      .filter((k) => o[k] !== undefined)
+      .sort()
+      .map((k) => JSON.stringify(k) + ":" + canonicalKey(o[k]))
+      .join(",") +
+    "}"
+  );
 }
