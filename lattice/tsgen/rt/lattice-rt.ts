@@ -735,3 +735,307 @@ export function uuidText(s: string): string | null {
   const h = s.replaceAll("-", "").toLowerCase();
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
+
+// ---- parameters (the prelude's _convert, _constrain, parse_params) ------------------------
+
+export type Scalar = "Int" | "Float" | "Str" | "Bool" | "Date" | "DateTime" | "Uuid";
+export type PyValue =
+  | { t: "unset" }
+  | { t: "none" }
+  | { t: "bool"; v: boolean }
+  | { t: "int"; v: bigint }
+  | { t: "float"; v: number }
+  | { t: "str"; v: string }
+  | { t: "date"; v: string }
+  | { t: "datetime"; v: string }
+  | { t: "uuid"; v: string };
+export type ParamSpec = {
+  name: string;
+  source: "path" | "query" | "body";
+  scalar: Scalar;
+  ge?: number;
+  le?: number;
+  min_len?: number;
+  max_len?: number;
+  one_of?: readonly string[];
+  default?: PyValue;
+  optional?: boolean;
+  nullable?: boolean;
+  pattern?: { py: string; js: string };
+  email?: boolean;
+};
+export type FieldError = { loc: string[]; msg: string };
+export type Parsed = { ok: true; values: Map<string, PyValue> } | { ok: false; detail: FieldError[] };
+
+export const EMAIL_MAX_LEN = 254;
+const TYPE_NAMES: Record<Scalar, string> = {
+  Int: "an integer",
+  Float: "a number",
+  Str: "a string",
+  Bool: "a boolean",
+  Date: "an ISO date (YYYY-MM-DD)",
+  DateTime: "an ISO date-time",
+  Uuid: "a UUID",
+};
+const OUT_OF_RANGE = "must be an integer between -9223372036854775808 and 9223372036854775807";
+const RE_INT = /^[+-]?[0-9]+$/;
+const RE_FLOAT = /^[+-]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?$/;
+const TRUE = new Set(["true", "1", "yes", "on"]);
+const FALSE = new Set(["false", "0", "no", "off"]);
+
+type Raw = string | JsonVal;
+type Problem = { problem: string };
+const inRange = (n: bigint): PyValue | Problem =>
+  n < INT_MIN || n > INT_MAX ? { problem: OUT_OF_RANGE } : { t: "int", v: n };
+
+function convert(spec: ParamSpec, raw: Raw, text: boolean): PyValue | Problem {
+  const bad: Problem = { problem: "must be " + TYPE_NAMES[spec.scalar] };
+  let str: string | null = typeof raw === "string" ? raw : null;
+  if (isJsonStr(raw)) {
+    if (raw.bad) {
+      if (spec.scalar === "Str") return { problem: "must be valid UTF-8 text" };
+      if (spec.scalar !== "DateTime") return bad;
+      // CPython's fromisoformat reads a lone surrogate at index 10 as the date-time separator
+      const cps = Array.from(raw.s);
+      if (cps.length <= 10 || cps[10] < "\ud800" || cps[10] > "\udfff") return bad;
+      cps[10] = "T";
+      str = cps.join("");
+      if (!str.isWellFormed()) return bad;
+    } else str = raw.s;
+  }
+  switch (spec.scalar) {
+    case "Int": {
+      if (text && str !== null) {
+        const t = pyStrip(str);
+        if (!RE_INT.test(t)) return bad;
+        if (t.replace(/^[+-]/, "").length > 4300) return { problem: OUT_OF_RANGE };
+        return inRange(BigInt(t.startsWith("+") ? t.slice(1) : t));
+      }
+      if (text) return bad;
+      if (typeof raw === "bigint") return inRange(raw);
+      if (typeof raw === "number") {
+        if (!Number.isFinite(raw) || !Number.isInteger(raw)) return bad;
+        return inRange(BigInt(raw));
+      }
+      return bad;
+    }
+    case "Float": {
+      let v: number;
+      if (text && str !== null) {
+        const t = pyStrip(str);
+        if (!RE_FLOAT.test(t)) return bad;
+        v = Number(t);
+      } else if (!text && typeof raw === "bigint") v = Number(raw);
+      else if (!text && typeof raw === "number") v = raw;
+      else return bad;
+      return Number.isFinite(v) ? { t: "float", v } : bad;
+    }
+    case "Str":
+      return str !== null ? { t: "str", v: str } : bad;
+    case "Bool":
+      if (text && str !== null) {
+        const l = str.toLowerCase();
+        return TRUE.has(l) ? { t: "bool", v: true } : FALSE.has(l) ? { t: "bool", v: false } : bad;
+      }
+      return !text && typeof raw === "boolean" ? { t: "bool", v: raw } : bad;
+    case "DateTime": {
+      const t = str === null ? null : parseDateTime(str);
+      return t === null ? bad : { t: "datetime", v: dateTimeText(t) };
+    }
+    case "Uuid": {
+      const u = str === null ? null : uuidText(str);
+      return u === null ? bad : { t: "uuid", v: u };
+    }
+    case "Date": {
+      const d = str === null ? null : parseISODate(str);
+      return d === null ? bad : { t: "date", v: d };
+    }
+  }
+}
+
+/** A parameter value (int or float) compared exactly with a float bound, as Python does. */
+function cmpNum(v: PyValue, bound: number): number {
+  if (v.t === "float") return v.v < bound ? -1 : v.v > bound ? 1 : 0;
+  if (v.t !== "int") return 0;
+  if (!Number.isFinite(bound)) return bound > 0 ? -1 : 1;
+  if (Number.isInteger(bound)) {
+    const b = BigInt(bound);
+    return v.v < b ? -1 : v.v > b ? 1 : 0;
+  }
+  return v.v <= BigInt(Math.floor(bound)) ? -1 : 1;
+}
+
+const PATTERNS = new Map<string, RegExp>();
+function fullMatch(js: string, s: string): boolean {
+  let re = PATTERNS.get(js);
+  if (re === undefined) PATTERNS.set(js, (re = new RegExp(js, "u")));
+  return re.test(s);
+}
+
+function constrain(spec: ParamSpec, value: PyValue): string | null {
+  if (spec.one_of !== undefined && !(value.t === "str" && spec.one_of.includes(value.v)))
+    return "must be one of " + spec.one_of.map(pyRepr).join(", ");
+  if (value.t === "int" || value.t === "float") {
+    if (spec.ge !== undefined && cmpNum(value, spec.ge) < 0) return "must be >= " + num(spec.ge);
+    if (spec.le !== undefined && cmpNum(value, spec.le) > 0) return "must be <= " + num(spec.le);
+  }
+  if (value.t === "str") {
+    const n = cpLen(value.v);
+    if (spec.min_len !== undefined && n < spec.min_len) return `must have at least ${spec.min_len} characters`;
+    if (spec.max_len !== undefined && n > spec.max_len) return `must have at most ${spec.max_len} characters`;
+    if (spec.email && n > EMAIL_MAX_LEN) return `must have at most ${EMAIL_MAX_LEN} characters`;
+    if (spec.pattern !== undefined && !fullMatch(spec.pattern.js, value.v))
+      return spec.email ? "must be an email address" : "must match the pattern " + pyRepr(spec.pattern.py);
+  }
+  return null;
+}
+
+function defaultValue(spec: ParamSpec): PyValue {
+  const d = spec.default!;
+  if (spec.scalar === "Uuid" && d.t === "str") {
+    const u = uuidText(d.v);
+    if (u !== null) return { t: "uuid", v: u };
+  }
+  return d;
+}
+
+/** The prelude's form_fields. */
+export function formFields(body: Uint8Array, ctype: string | null): Map<string, string> {
+  const media = pyStrip((ctype ?? "").split(";")[0]).toLowerCase();
+  return media === "application/x-www-form-urlencoded" ? parseQS(latin1(body)) : new Map();
+}
+
+const isBlank = (b: Uint8Array) => b.every((c) => c === 0x20 || (c >= 0x09 && c <= 0x0d));
+
+/** The prelude's parse_params: every parameter converted and validated, in order; else the
+ * 422 detail listing each problem in order. */
+export function parseParams(
+  specs: readonly ParamSpec[],
+  path: ReadonlyMap<string, string>,
+  query: ReadonlyMap<string, string>,
+  body: Uint8Array,
+  form: boolean,
+  ctype: string | null,
+): Parsed {
+  const detail: FieldError[] = [];
+  const values = new Map<string, PyValue>();
+  let data: ReadonlyMap<string, Raw> = new Map();
+  if (form) data = formFields(body, ctype);
+  else if (specs.some((s) => s.source === "body")) {
+    let parsed: JsonVal | undefined = { kind: "obj", keys: [], vals: new Map() };
+    if (!isBlank(body)) parsed = loadsJson(body);
+    if (!isJsonObj(parsed)) return { ok: false, detail: [{ loc: ["body"], msg: "the body must be a JSON object" }] };
+    data = parsed.vals;
+  }
+  for (const spec of specs) {
+    const source: ReadonlyMap<string, Raw> = spec.source === "path" ? path : spec.source === "query" ? query : data;
+    const loc = [spec.source, spec.name];
+    const present = source.has(spec.name);
+    const raw = source.get(spec.name);
+    if (spec.optional && present && raw === null) {
+      if (spec.nullable) values.set(spec.name, { t: "none" });
+      else detail.push({ loc, msg: "must not be null" });
+      continue;
+    }
+    if (!present || raw === null || raw === undefined) {
+      if (spec.default !== undefined) values.set(spec.name, defaultValue(spec));
+      else detail.push({ loc, msg: "field required" });
+      continue;
+    }
+    const value = convert(spec, raw, spec.source !== "body" || form);
+    if ("problem" in value) {
+      detail.push({ loc, msg: value.problem });
+      continue;
+    }
+    const problem = constrain(spec, value);
+    if (problem !== null) {
+      detail.push({ loc, msg: problem });
+      continue;
+    }
+    values.set(spec.name, value);
+  }
+  return detail.length > 0 ? { ok: false, detail } : { ok: true, values };
+}
+
+// ---- responses ----------------------------------------------------------------------------
+
+/** A response body (UTF-8 JSON, ints kept exact). */
+export function decodeJson(bytes: Uint8Array): JsonVal {
+  const v = loadsJson(bytes);
+  if (v === undefined) throw new DecodeError("the body is not JSON");
+  return v;
+}
+
+const isFieldErrors = (d: unknown): d is FieldError[] =>
+  Array.isArray(d) &&
+  d.every(
+    (e) =>
+      typeof e === "object" && e !== null && Array.isArray(e.loc) &&
+      e.loc.every((x: unknown) => typeof x === "string") && typeof e.msg === "string",
+  );
+
+/** An error body in either style: {"error": code, "detail"?} or {"detail": ...}. A 422's
+ * detail must be a list of {loc, msg}; any other status's a string or absent. */
+export function decodeErrorBody(status: number, body: Uint8Array): { code: string | null; detail: unknown } {
+  let o: unknown;
+  try {
+    o = JSON.parse(UTF8_REPLACE.decode(body));
+  } catch {
+    throw new DecodeError("the error body is not JSON");
+  }
+  if (typeof o !== "object" || o === null || Array.isArray(o)) throw new DecodeError("not an object");
+  const rec = o as Record<string, unknown>;
+  const code = typeof rec.error === "string" ? rec.error : null;
+  const detail = rec.detail ?? null;
+  if (status === 422 ? !isFieldErrors(detail) : !(detail === null || typeof detail === "string"))
+    throw new DecodeError(`unexpected ${status} detail`);
+  return { code, detail };
+}
+
+export type Col = readonly [name: string, scalar: Scalar, nullable: boolean];
+
+function decodeScalar(v: JsonVal | undefined, scalar: Scalar, nullable: boolean, where: string): unknown {
+  if (v === null) {
+    if (nullable) return null;
+    throw new DecodeError(`${where}: null`);
+  }
+  if (scalar === "Int" && typeof v === "bigint") return v;
+  if (scalar === "Float" && typeof v === "number") return v;
+  if (scalar === "Float" && typeof v === "bigint") return Number(v);
+  if (scalar === "Bool" && typeof v === "boolean") return v;
+  if ((scalar === "Str" || scalar === "Uuid" || scalar === "Date" || scalar === "DateTime") && isJsonStr(v) && !v.bad)
+    return v.s;
+  throw new DecodeError(`${where}: not ${scalar}`);
+}
+
+/** A row: exactly the declared columns, each of its declared type. */
+export function decodeRow(v: JsonVal | undefined, cols: readonly Col[]): Record<string, unknown> {
+  if (!isJsonObj(v)) throw new DecodeError("the row is not an object");
+  if (v.keys.length !== cols.length || cols.some(([n]) => !v.vals.has(n)))
+    throw new DecodeError(`columns ${v.keys.join(",")} are not ${cols.map((c) => c[0]).join(",")}`);
+  const out: Record<string, unknown> = {};
+  for (const [n, s, nullable] of cols) out[n] = decodeScalar(v.vals.get(n), s, nullable, n);
+  return out;
+}
+
+/** A Page envelope: `shape` is [page_shape key, JSON field]; counts are exact numbers. */
+export function decodePage(
+  v: JsonVal | undefined,
+  cols: readonly Col[],
+  shape: readonly (readonly [string, string])[],
+): Record<string, unknown> {
+  if (!isJsonObj(v) || v.keys.length !== shape.length) throw new DecodeError("not the page envelope");
+  const out: Record<string, unknown> = {};
+  for (const [key, field] of shape) {
+    const x = v.vals.get(field);
+    if (key === "items") {
+      if (!Array.isArray(x)) throw new DecodeError(`${field}: not a list`);
+      out[field] = x.map((r) => decodeRow(r, cols));
+    } else {
+      if (typeof x !== "bigint" || x < 0n || x > BigInt(Number.MAX_SAFE_INTEGER))
+        throw new DecodeError(`${field}: not a count`);
+      out[field] = Number(x);
+    }
+  }
+  return out;
+}

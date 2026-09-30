@@ -65,3 +65,28 @@ test("lone surrogates never parse (Review Focus 3)", () => {
   assert.equal(rt.parseISODate("2026-09-2\ud800"), null);
   assert.equal(rt.uuidText("0123456789abcdef0123456789abcde\ud800"), null);
 });
+
+import { replayParams } from "./replay.ts";
+
+test("params: Go corpus", () => {
+  const bad = replayParams(GO.params, TS.patterns);
+  assert.deepEqual(bad, [], bad.slice(0, 10).join("\n"));
+});
+
+test("params: JS-hazard corpus", () => {
+  const bad = replayParams(TS.params, TS.patterns);
+  assert.deepEqual(bad, [], bad.slice(0, 10).join("\n"));
+});
+
+test("error bodies", () => {
+  for (const c of GO.error_bodies) {
+    const body = new TextEncoder().encode(c.body);
+    const wantDetail = c.detail ?? (c.style === "fastapi" ? GO.phrases[String(c.status)] : null);
+    if (c.status === 422 && !Array.isArray(wantDetail)) {
+      assert.throws(() => rt.decodeErrorBody(c.status, body), rt.DecodeError);
+      continue;
+    }
+    const got = rt.decodeErrorBody(c.status, body);
+    assert.deepEqual(got, { code: c.style === "lattice" ? c.code : null, detail: wantDetail }, c.body);
+  }
+});
