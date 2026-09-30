@@ -2931,6 +2931,402 @@
    ]
   },
   {
+   "name": "datetime t=2026-01-29_24%2B05:60",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29_24%2B05:60",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-01-29T18:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-01-29T10%2B05:30:60",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29T10%2B05:30:60",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-01-29T04:29:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-01-29T10%2B24:00",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29T10%2B24:00",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=2026-01-29T10%2B23:59:59.999999",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29T10%2B23:59:59.999999",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-01-28T10:00:00.000001Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=2026-01-29T10-23:59:59.999999",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=2026-01-29T10-23:59:59.999999",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "2026-01-30T09:59:59.999999Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-12-28T23-00:00:00.123456",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-12-28T23-00:00:00.123456",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-12-28T23:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-12-28T23%2B00:00:00.5",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-12-28T23%2B00:00:00.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-12-28T23:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-12-28T23-00:00:01.5",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-12-28T23-00:00:01.5",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-12-28T23:00:01.500000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-12-28T23:59:59.123456-00:00:00.123456",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-12-28T23:59:59.123456-00:00:00.123456",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-12-28T23:59:59.123456Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-00-00x24",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-00-00x24",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-01-01T00:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-00-00x10",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-00-00x10",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=1900-01-00x24",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-01-00x24",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "values": {
+    "t": {
+     "t": "datetime",
+     "v": "1900-01-01T00:00:00.000000Z"
+    }
+   },
+   "order": [
+    "t"
+   ]
+  },
+  {
+   "name": "datetime t=1900-00-01x24",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-00-01x24",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=1900-00-00x24:00:01",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-00-00x24:00:01",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=1900-13-01x24",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-13-01x24",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
+   "name": "datetime t=1900-01-00x10",
+   "specs": [
+    {
+     "name": "t",
+     "source": "query",
+     "scalar": "DateTime"
+    }
+   ],
+   "path": {},
+   "query": "t=1900-01-00x10",
+   "body": "",
+   "form": false,
+   "ctype": null,
+   "rules": [
+    "P9"
+   ],
+   "status": 422,
+   "lattice": "{\"error\":\"validation\",\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}",
+   "fastapi": "{\"detail\":[{\"loc\":[\"query\",\"t\"],\"msg\":\"must be an ISO date-time\"}]}"
+  },
+  {
    "name": "date d=2026-09-28",
    "specs": [
     {

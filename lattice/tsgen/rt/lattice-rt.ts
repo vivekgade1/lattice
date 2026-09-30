@@ -661,8 +661,12 @@ function parseISOTime(b: Uint8Array): [number, number, number, number, number] |
   const sign = b[tz] === 0x2d ? -1 : 1;
   const rest = b.subarray(tz + 1);
   const [th, tm, ts, tus, trv] = parseHMSF(rest, rest.length);
-  if (th > 23 || tm > 59 || ts > 59 || trv !== 0) return null;
-  return [h, m, s, us, sign * ((th * 3600 + tm * 60 + ts) * 1_000_000 + tus)];
+  if (trv !== 0) return null;
+  // CPython bounds only the total offset (< 24h), not each field; a sub-second part is
+  // dropped when h, m and s are all zero.
+  const secs = th * 3600 + tm * 60 + ts;
+  if (secs >= 86400) return null;
+  return [h, m, s, us, sign * (secs * 1_000_000 + (secs === 0 ? 0 : tus))];
 }
 
 function makeDateTime(y: number, mo: number, d: number, h: number, mi: number, s: number, us: number): bigint {
@@ -688,7 +692,7 @@ export function parseDateTime(s: string): bigint | null {
     if (t === null) return null;
     [h, mi, sec, us, off] = t;
   }
-  if (h === 24 && mo >= 1 && mo <= 12) {
+  if (h === 24 && mo >= 0 && mo <= 12) {  // days_in_month(y, 0) is 0, as in CPython
     const dim = daysInMonth(y, mo);
     if (d <= dim) {
       if (mi !== 0 || sec !== 0 || us !== 0) return null;
