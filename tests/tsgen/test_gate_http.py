@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 
+import base64
 import json
+import math
 from pathlib import Path
+from typing import Any
 
 import pytest
 
+from lattice.api.ir import EndpointPlan
+from lattice.catalog import LIST_KIND
 from lattice.check.api_info import ParamSpec
 from lattice.tsgen import generate_ts
-from tests.tsgen.gate.apps import ADMIN_TOKENS, APP_NAMES, app, serve
+from lattice.tsgen.emit import page_num, page_shape
+from tests.tsgen.gate.apps import ADMIN_TOKENS, APP_NAMES, RESET_PATH, app, serve
 from tests.tsgen.gate.corpus import typed_corpus
 from tests.tsgen.node import run_node
 
@@ -24,10 +30,122 @@ def _run(name: str, tmp: Path, cases: list[dict], token: str | None) -> list[dic
     server = tmp / "server"
     server.mkdir()
     with serve(name, server) as base:
-        done = run_node([str(DRIVER), client.as_uri(), base, token or ""], cwd=tmp,
+        done = run_node([str(DRIVER), client.as_uri(), base, token or "", RESET_PATH], cwd=tmp,
                         stdin=json.dumps(cases, allow_nan=False))  # fmt: skip
     assert done.returncode == 0, done.stderr[-4000:]
     return json.loads(done.stdout)
+
+
+# ---- claim 3, lossless: the decoded value against Python's json.loads of the raw body --------
+
+_MISMATCH = object()
+
+
+def _int(raw: object) -> bool:
+    return isinstance(raw, int) and not isinstance(raw, bool)
+
+
+def _same_float(got: object, raw: object) -> bool:
+    """`got` is the client's number ({"$f": String(x)}); `raw` the server's JSON number."""
+    if not (isinstance(got, dict) and set(got) == {"$f"}) or not (_int(raw) or type(raw) is float):
+        return False
+    try:
+        want = float(raw)  # a Float column's value as a double (what the server holds)
+    except OverflowError:
+        return False
+    x = float(got["$f"])
+    return x == want and math.copysign(1, x) == math.copysign(1, want)
+
+
+def _same_scalar(got: object, raw: object, scalar: str) -> bool:
+    if raw is None:
+        return got is None
+    if scalar == "Int":
+        return _int(raw) and got == {"$int": str(raw)}
+    if scalar == "Float":
+        return _same_float(got, raw)
+    if scalar == "Bool":
+        return type(raw) is bool and got is raw
+    return type(raw) is str and type(got) is str and got == raw
+
+
+def _same_row(got: object, raw: object, cols: tuple[tuple[str, Any], ...]) -> bool:
+    names = [n for n, _s in cols]
+    return (
+        isinstance(got, dict) and isinstance(raw, dict)
+        and sorted(got) == sorted(raw) == sorted(names)
+        and all(_same_scalar(got[n], raw[n], s.value) for n, s in cols)
+    )  # fmt: skip
+
+
+def lossless(plan: EndpointPlan, got: object, body: bytes) -> bool:
+    """The decoded success value equals the server's body, read exactly (Python's json:
+    ints unbounded, floats as doubles): every Int a bigint of the same value, every Float the
+    same double (sign of zero included), every string, bool and null the same; rows,
+    lists and page envelopes with exactly the server's keys."""
+    if plan.success == "NoContent":
+        return got is None and body == b""
+    raw = json.loads(body)
+    cols = plan.schema.columns
+    if plan.success == "Page":
+        shape = page_shape(plan)
+        if not (isinstance(got, dict) and isinstance(raw, dict)):
+            return False
+        if sorted(got) != sorted(raw) or sorted(raw) != sorted(f for _k, f in shape):
+            return False
+        for key, field in shape:
+            g, r = got[field], raw[field]
+            if key == "items":
+                ok = isinstance(g, list) and isinstance(r, list) and len(g) == len(r)
+                ok = ok and all(_same_row(a, b, cols) for a, b in zip(g, r, strict=False))
+            elif page_num(plan, key) == "bigint":
+                ok = _int(r) and g == {"$int": str(r)}
+            else:
+                ok = _int(r) and g == {"$f": str(r)}
+            if not ok:
+                return False
+        return True
+    if plan.success == LIST_KIND:
+        return (
+            isinstance(got, list) and isinstance(raw, list) and len(got) == len(raw)
+            and all(_same_row(a, b, cols) for a, b in zip(got, raw, strict=False))
+        )  # fmt: skip
+    return _same_row(got, raw, cols)
+
+
+def check(name: str, cases: list[dict], results: list[dict]) -> tuple[list, dict[str, int]]:
+    """(mismatches, counts) of claims 2 and 3 over one app's results."""
+    plans = {p.name: p for p in app(name).plans}
+    bad: list = []
+    counts = {"cases": len(cases), "compared": 0}
+    for c, r in zip(cases, results, strict=True):
+        err = r.get("error") or {}
+        status = None if r["ok"] else err.get("status")
+        server_422 = not r["ok"] and status == 422
+        if bool(r["local"]) != server_422:
+            bad.append((c["name"], "claim 2", r["local"], err))
+        elif server_422 and r["local"] != err.get("detail"):
+            bad.append((c["name"], "claim 2 detail", r["local"], err.get("detail")))
+        unexpected = not r["ok"] and err.get("kind") == "unexpected"
+        if unexpected and (err.get("reason") == "decode" or err.get("status", 0) < 500):
+            bad.append((c["name"], "claim 3", err))
+        if r["ok"]:
+            counts["compared"] += 1
+            body = base64.b64decode(r["raw"])
+            if not lossless(plans[c["endpoint"]], r.get("value"), body):
+                bad.append((c["name"], "claim 3 lossless", r.get("value"), body[:300]))
+    return bad, counts
+
+
+def unadmitted(name: str, cases: list[dict], results: list[dict]) -> list[str]:
+    """Guarded endpoints with cases where every case was answered 401 or 403."""
+    guarded = {p.name for p in app(name).plans if p.auth != "Public"}
+    seen: dict[str, bool] = {}
+    for c, r in zip(cases, results, strict=True):
+        if c["endpoint"] in guarded:
+            status = None if r["ok"] else (r.get("error") or {}).get("status")
+            seen[c["endpoint"]] = seen.get(c["endpoint"], False) or status not in (401, 403)
+    return sorted(e for e, ok in seen.items() if not ok)
 
 
 def test_every_app_has_an_admin_token() -> None:
@@ -38,23 +156,8 @@ def test_every_app_has_an_admin_token() -> None:
 def test_http_differential(name: str, tmp_path: Path) -> None:
     cases = typed_corpus(app(name))
     results = _run(name, tmp_path, cases, ADMIN_TOKENS[name])
-    guarded = {p.name for p in app(name).plans if p.auth != "Public"}
-    bad = []
-    admitted = 0
-    for c, r in zip(cases, results, strict=True):
-        err = r.get("error") or {}
-        status = 200 if r["ok"] else err.get("status")
-        if status not in (401, 403) and (c["endpoint"] in guarded or not guarded):
-            admitted += 1  # on an authenticated endpoint, when the app has one
-        server_422 = not r["ok"] and status == 422
-        if bool(r["local"]) != server_422:
-            bad.append((c["name"], "claim 2", r["local"], err))
-        elif server_422 and r["local"] != err["detail"]:
-            bad.append((c["name"], "claim 2 detail", r["local"], err["detail"]))
-        unexpected = not r["ok"] and err.get("kind") == "unexpected"
-        if unexpected and (err["reason"] == "decode" or err["status"] < 500):
-            bad.append((c["name"], "claim 3", err))
-    assert admitted > 0, "the admin token was never admitted"
+    assert unadmitted(name, cases, results) == [], "the gate's caller is never admitted there"
+    bad, _counts = check(name, cases, results)
     assert not bad, bad[:20]
 
 

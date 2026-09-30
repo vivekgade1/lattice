@@ -100,51 +100,85 @@ def _free_port() -> int:
         return s.getsockname()[1]
 
 
+RESET_PATH = "/__lattice_gate_reset__"
+
+# The server the gate runs: the generated app, plus one test-only route in front of it
+# that restores the pristine seeded database (the generated app opens a fresh sqlite
+# connection per request -- platform_kit.get_db via codegen `connect()` -- and closes it
+# before answering, so replacing the file between requests is safe).
+_GATE_SERVER = f"""import os
+import shutil
+
+from app import app as generated
+
+
+async def app(scope, receive, send):
+    if scope["type"] == "http" and scope["path"] == {RESET_PATH!r}:
+        shutil.copyfile("pristine.db", "app.db.tmp")
+        os.replace("app.db.tmp", "app.db")
+        for extra in ("app.db-journal", "app.db-wal", "app.db-shm"):
+            if os.path.exists(extra):
+                os.remove(extra)
+        await send({{"type": "http.response.start", "status": 204, "headers": []}})
+        await send({{"type": "http.response.body", "body": b""}})
+        return
+    await generated(scope, receive, send)
+"""
+
+
 @contextlib.contextmanager
 def serve(name: str, workdir: Path) -> Iterator[str]:
     """The generated FastAPI app of `name`, on a fresh seeded app.db, over real HTTP
-    (uvicorn on an ephemeral port); yields its base URL."""
+    (uvicorn on an ephemeral port); yields its base URL.
+
+    A POST to RESET_PATH restores app.db from the pristine seed (`pristine.db`) and answers
+    204; the L3 driver sends it before each endpoint's cases, so every endpoint's answers
+    are decoded against the seed data rather than whatever earlier writes left."""
     if name == "template":
         from bench.template_app.seed import build_template_db
         from bench.template_profile import template_profile, template_program
 
         _res, code = compile_source_to_fastapi(template_program(), template_profile(),
                                                natives_module="bench.template_profile")  # fmt: skip
-        build_template_db(workdir / "app.db")
+        build_template_db(workdir / "pristine.db")
     else:
         source, _task = PROGRAMS[name]
         setup = setup_of(name)
         _res, code = compile_source_to_fastapi(source, setup.profile)
         if setup.natives_file is not None:  # imported by the generated app as `natives`
             shutil.copyfile(setup.natives_file, workdir / "natives.py")
-        setup.build(workdir / "app.db")
+        setup.build(workdir / "pristine.db")
     assert code is not None, name
+    shutil.copyfile(workdir / "pristine.db", workdir / "app.db")
     (workdir / "app.py").write_text(code)
+    (workdir / "gate_server.py").write_text(_GATE_SERVER)
     shutil.copyfile(KIT_PATH, workdir / "platform_kit.py")
     port = _free_port()
     env = {**os.environ, "PYTHONPATH": f"{workdir}{os.pathsep}{ROOT}"}
-    log = (workdir / "server.log").open("w")
-    proc = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "app:app", "--port", str(port), "--log-level", "warning"],
-        cwd=workdir, env=env, stdout=log, stderr=subprocess.STDOUT,
-    )  # fmt: skip
-    try:
-        deadline = time.monotonic() + 30
-        while time.monotonic() < deadline:
-            if proc.poll() is not None:
-                log_text = (workdir / "server.log").read_text()
-                raise RuntimeError(f"{name}: the app exited\n{log_text}")
-            with contextlib.suppress(OSError), socket.create_connection(("127.0.0.1", port), 0.2):
-                break
-            time.sleep(0.1)
-        else:
-            raise RuntimeError(f"{name}: the app did not start")
-        yield f"http://127.0.0.1:{port}"
-    finally:
-        proc.terminate()
+    command = [sys.executable, "-m", "uvicorn", "gate_server:app", "--port", str(port),
+               "--log-level", "warning"]  # fmt: skip
+    with (workdir / "server.log").open("w") as log:
+        proc = subprocess.Popen(command, cwd=workdir, env=env, stdout=log,
+                                stderr=subprocess.STDOUT)  # fmt: skip
         try:
-            proc.wait(10)
-        except subprocess.TimeoutExpired:
-            proc.kill()
-            proc.wait()
-        log.close()
+            deadline = time.monotonic() + 30
+            while time.monotonic() < deadline:
+                if proc.poll() is not None:
+                    log_text = (workdir / "server.log").read_text()
+                    raise RuntimeError(f"{name}: the app exited\n{log_text}")
+                with (
+                    contextlib.suppress(OSError),
+                    socket.create_connection(("127.0.0.1", port), 0.2),
+                ):
+                    break
+                time.sleep(0.1)
+            else:
+                raise RuntimeError(f"{name}: the app did not start")
+            yield f"http://127.0.0.1:{port}"
+        finally:
+            proc.terminate()
+            try:
+                proc.wait(10)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait()

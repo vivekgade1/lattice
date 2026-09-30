@@ -203,8 +203,10 @@ The following amendments to §4 and §5 are documented in the decision log and l
 
 1. **Auth runs before validation** (`lattice/api/codegen.py:1080-1086`): a server answers 401/403/inactive before any 422. Claim 2 therefore holds **for a caller the endpoint admits**; a local 422 predicts the server's answer once authentication passes. The L3 gate uses an admin token (the admin role is admitted everywhere, `codegen.py:867`).
 2. **R-a widens:** a path `Str` that is empty, `.`, `..` or contains `/` cannot be routed faithfully (URL normalisation by `fetch`, Starlette routing). The client sends it; the corpus excludes it; the decision-log row names all four.
-3. **Page envelope counts** (`limit`, `offset`, `total`) are `number`, decoded exactly (a value beyond 2^53 − 1 is a decode error, never rounded).
+3. **Page envelope counts:** `total` is a `number`, decoded exactly (a value beyond 2^53 − 1 is a decode error, never rounded); `limit` and `offset` follow amendment 9.
 4. **Hooks take `opts` as a required argument** (no provider/context).
 5. **CLI:** there is no `lattice codegen` command; the plan adds `python -m lattice.tsgen`.
 6. **"Required in CI"** becomes `LATTICE_REQUIRE_NODE=1` (no CI config exists).
 7. **Generation refusal code:** `L893`.
+8. **Every response column is `T | null`** (from the L3 gate, 2026-09-30): the lowered response schema does not carry nullability after `select`/`derive` (its `nullable` is empty after a projection), and the server answers null for such columns (realapps `read_item`: `"description": null`). A precise type needs the API IR to carry nullability (follow-up).
+9. **Page `limit` and `offset` are `bigint` unless their declared range fits ±(2^53 − 1)** (from the L3 gate, 2026-09-30): the server echoes the requested value (`offset: Int(ge=0)` can be 2^63 − 1). A `page()` literal or a parameter whose `ge`/`le` both fit is a `number`, decoded exactly; otherwise a `bigint`, lossless.
