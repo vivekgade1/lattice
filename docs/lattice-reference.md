@@ -2,6 +2,8 @@
 
 > One document to orient anyone (human or a fresh Claude session) on what Lattice is, what was built, what was measured, what was decided and why.
 >
+> **Update 2026-09-30:** option 1 is done. Its findings and everything built since this document was written are in `docs/handoff-2026-09-30.md`; read that next.
+>
 > Branch `lattice-design`, about 147 commits since the start of the project.
 >
 > The detailed sources are:
