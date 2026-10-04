@@ -35,6 +35,26 @@ candidate with the hidden oracle (:func:`bench.edit_slice.oracle.evaluate`):
   the system prompt, and nothing else (:func:`arm_prompt`, :mod:`bench.edit_slice.aids`);
   ``examples`` records the retrieved tickets.
 
+**Phase 1 (spec 2026-10-04-phase1-loop-experiment.md).** Two spec arms on the
+multi-vendor tickets (:data:`PHASE1_ARMS`: P, Q, S, S*), both Python edits:
+
+* **S.** The model first drafts the ticket's requirement as a spec delta
+  (:func:`bench.edit_slice.sdraft.draft_spec`: up to two validation repairs, counted in
+  ``spec_rounds``); the simulated approval (:func:`bench.edit_slice.sdraft.approve`) keeps
+  the drafted rules the ticket's reference satisfies. The code step is arm Q's prompt plus
+  the approved delta (:func:`bench.edit_slice.sdraft.code_prompt`); after the smoke run the
+  candidate is checked on layers A-D against the base spec plus the approved delta
+  (:func:`bench.edit_slice.sdraft.check_candidate`) and the findings are fed back
+  (:func:`bench.edit_slice.sdraft.spec_feedback`; problem ``check``). A draft that never
+  validates leaves an empty delta (``spec_failed``): the base spec's checks still run.
+* **S*.** No spec step: the owner's blind delta (:func:`bench.edit_slice.sdraft.owner_delta`)
+  is the approved one.
+
+Their records are :class:`SpecRunRecord` (the spec step's fields; tokens, cost and model
+time include the spec step's calls). ``arm_prompt("S", ...)`` is the spec step's draft
+prompt (the first call); ``system_chars`` / ``user_chars`` / ``prompt_tokens_est`` of an S
+or S* record are its code prompt's, ``spec_prompt_tokens_est`` the draft prompt's.
+
 Arm L's (and L+'s) checker feedback also shows each diagnostic's machine fix
 (``Diagnostic.fix``) when the checker offers one, as arm Q's hints carry theirs.
 
@@ -144,10 +164,15 @@ from bench.metrics import cost_usd
 from lattice.llm.cli_client import CliError, CliUsageLimitError
 from lattice.llm.client import Generation, GenerationRefused, Generator, ScriptedGenerator
 
-Arm = Literal["P", "L", "Q", "L+", "Q+"]
+Arm = Literal["P", "L", "Q", "L+", "Q+", "S", "S*"]
 ARMS: tuple[Arm, ...] = ("P", "L")  # rounds 1-4
 # round 5 (spec 2026-09-28): Q = P + pycheck; L+ / Q+ = L / Q + the context aids (§7)
 ROUND5_ARMS: tuple[Arm, ...] = ("P", "L", "Q", "L+", "Q+")
+# phase 1 (spec 2026-10-04): S = drafted + approved spec delta, checked on layers A-D;
+# S* = the owner's blind delta, checked the same way
+SPEC_ARMS: tuple[Arm, ...] = ("S", "S*")
+PHASE1_ARMS: tuple[Arm, ...] = ("P", "Q", "S", "S*")
+ALL_ARMS: tuple[Arm, ...] = (*ROUND5_ARMS, *SPEC_ARMS)
 MAX_REPAIRS = 2
 MAX_TOKENS = 16000  # the default output limit per model call (--max-tokens)
 MAX_CONSECUTIVE_CLI_ERRORS = 3  # this many CliError records in a row stop the run (exit 4)
@@ -388,6 +413,14 @@ def arm_prompt(arm: str, ticket_id: str, *, hints: bool = False) -> tuple[str, s
         system, user = l_prompt(ticket_id, hints=hints)
     elif base == "Q":
         system, user = q_prompt(ticket_id)
+    elif arm in SPEC_ARMS:
+        from bench.edit_slice import sdraft
+
+        # S's first call is its spec step; S*'s is the code prompt with the owner's delta
+        if arm == "S":
+            system, user = sdraft.draft_prompt(ticket_id)
+        else:
+            system, user = sdraft.code_prompt(ticket_id, sdraft.owner_delta(ticket_id))
     else:
         raise ValueError(f"unknown arm {arm!r}")
     if is_aided(arm):
@@ -478,6 +511,29 @@ class RunRecord:
 
     def to_json(self) -> str:
         return json.dumps(dataclasses.asdict(self))
+
+
+@dataclass
+class SpecRunRecord(RunRecord):
+    """A run of arm S or S*: a :class:`RunRecord` plus the spec step and the spec check.
+    ``round_findings`` holds each round's spec-check finding keys (None: not checked)."""
+
+    # arm S's draft: rules drafted (scenarios, invariants, programs, machines), rejected
+    # by the simulated approval ([kind, name, why]), model calls of the spec step (0 for
+    # S*), and whether the draft never validated (S then runs on the base spec only)
+    spec_drafted: int = 0
+    spec_rejected: int = 0
+    spec_rejected_rules: list[list[str]] = field(default_factory=list)
+    spec_rounds: int = 0
+    spec_failed: bool = False
+    # per repair round, the layers (A-D) of the spec-check findings fed back ([] when the
+    # repair was for something else: no files, a failed start or smoke run alone)
+    layers_fed_back: list[list[str]] = field(default_factory=list)
+    # spec-check findings on the final candidate (-1: it was never checked)
+    final_check_findings: int = -1
+    spec_prompt_tokens_est: int = 0  # the draft prompt (arm S)
+    approve_s: float = 0.0  # the simulated approval's checks
+    check_s: float = 0.0  # every round's spec check
 
 
 def _lines_diff(old: str, new: str) -> tuple[int, int]:
@@ -963,6 +1019,64 @@ def check_round(repo: str, files: Mapping[str, str], candidate: Candidate) -> No
         candidate.problem = "check"
 
 
+def spec_check_round(
+    ticket_id: str, files: Mapping[str, str], candidate: Candidate, delta: Any
+) -> list[str]:
+    """Arms S / S*'s step after the smoke run: layers A-D against the base spec plus
+    ``delta`` (:func:`bench.edit_slice.sdraft.check_candidate`). Findings are added to the
+    round's feedback (:func:`bench.edit_slice.sdraft.spec_feedback`); a round that passed
+    the smoke run but has findings is repaired as ``check``. Returns the findings' layers."""
+    from bench.edit_slice import sdraft
+
+    report = sdraft.check_candidate(ticket_id, files, delta)
+    candidate.findings = [f.key for f in report.findings]
+    if not report.findings:
+        return []
+    text = sdraft.spec_feedback(report)
+    candidate.feedback = f"{candidate.feedback}\n\n{text}" if candidate.feedback else text
+    if candidate.problem is None:
+        candidate.problem = "check"
+    return sdraft.finding_layers(report)
+
+
+def _spec_step(
+    arm: str,
+    ticket_id: str,
+    generator: Generator,
+    record: SpecRunRecord,
+    rep_dir: Path | None,
+) -> tuple[Any, list[Generation], list[GenerationRefused]]:
+    """(the approved delta, the spec step's generations, its refused calls). S*: the
+    owner's delta, no call."""
+    from bench.edit_slice import sdraft
+
+    if arm == "S*":
+        return sdraft.owner_delta(ticket_id), [], []
+    system, user = sdraft.draft_prompt(ticket_id)
+    record.spec_prompt_tokens_est = round((len(system) + len(user)) / CHARS_PER_TOKEN)
+    draft = sdraft.draft_spec(ticket_id, generator)
+    record.spec_rounds, record.spec_failed = draft.rounds, draft.failed
+    started = time.perf_counter()
+    approval = sdraft.approve(ticket_id, draft.delta)
+    record.approve_s = time.perf_counter() - started
+    record.spec_drafted = approval.drafted
+    record.spec_rejected = len(approval.rejected)
+    record.spec_rejected_rules = [list(r) for r in approval.rejected]
+    if rep_dir is not None:
+        for k, (text, feedback) in enumerate(zip(draft.texts, draft.feedback, strict=True), 1):
+            spec_dir = rep_dir / f"spec{k}"
+            spec_dir.mkdir(parents=True, exist_ok=True)
+            if text is not None:
+                (spec_dir / "response.md").write_text(text)
+            (spec_dir / "feedback.txt").write_text(feedback)
+        (rep_dir / "approved_spec.py").write_text(sdraft.render_delta(approval.approved))
+        (rep_dir / "approval.json").write_text(
+            json.dumps({"drafted": approval.drafted, "rejected": approval.rejected}, indent=2)
+            + "\n"
+        )
+    return approval.approved, draft.generations, draft.refused
+
+
 def repair_message(feedback: str) -> str:
     return f"{feedback}\n\nReturn the corrected files in the same format."
 
@@ -988,7 +1102,8 @@ def run_arm(
     and candidate files under it."""
     started = time.perf_counter()
     t = ticket(ticket_id)
-    record = RunRecord(
+    spec_arm = arm in SPEC_ARMS
+    record = (SpecRunRecord if spec_arm else RunRecord)(
         ticket_id,
         arm,
         model,
@@ -1007,9 +1122,21 @@ def run_arm(
         shutil.rmtree(rep_dir, ignore_errors=True)
         rep_dir.mkdir(parents=True)
         record.artefacts = str(rep_dir)
-    if arm not in ROUND5_ARMS:
+    if arm not in ALL_ARMS:
         raise ValueError(f"unknown arm {arm!r}")
-    system, user = arm_prompt(arm, ticket_id, hints=hints)
+    spec_generations: list[Generation] = []
+    spec_refused: list[GenerationRefused] = []
+    delta: Any = None  # S / S*: the delta the spec check adds to the base spec
+    if spec_arm:
+        from bench.edit_slice import sdraft
+
+        assert isinstance(record, SpecRunRecord)
+        delta, spec_generations, spec_refused = _spec_step(
+            arm, ticket_id, generator, record, rep_dir
+        )
+        system, user = sdraft.code_prompt(ticket_id, delta)
+    else:
+        system, user = arm_prompt(arm, ticket_id, hints=hints)
     state: _PythonArm | _LatticeArm = _LatticeArm(t) if language(arm) == "L" else _PythonArm(t)
     checked = base_arm(arm) == "Q"
     if is_aided(arm):
@@ -1028,12 +1155,12 @@ def run_arm(
             try:
                 generation = generator.generate(system, messages)
             except GenerationRefused as exc:
-                _account(record, generations, exc)
+                _account(record, [*spec_generations, *generations], exc, spec_refused)
                 record.failure, record.detail = "refused", str(exc)[:_DETAIL_LIMIT]
                 record.rounds = len(generations) + 1
                 record.round_problems.append("refused")
                 record.stop_reasons.append("refusal")
-                if checked:
+                if checked or spec_arm:
                     record.round_findings.append(None)
                 candidate.cleanup()
                 candidate = Candidate(problem="refused", feedback=str(exc))
@@ -1057,7 +1184,13 @@ def run_arm(
                 candidate.feedback = smoke.smoke_feedback(result) if candidate.problem else ""
                 if checked:
                     check_round(t.repo, state.candidate_files(), candidate)
-            if checked:
+            layers: list[str] = []
+            if spec_arm and candidate.factory is not None and candidate.problem != "start":
+                assert isinstance(record, SpecRunRecord)
+                check_started = time.perf_counter()
+                layers = spec_check_round(ticket_id, state.candidate_files(), candidate, delta)
+                record.check_s += time.perf_counter() - check_started
+            if checked or spec_arm:
                 found = candidate.findings
                 record.round_findings.append(None if found is None else list(found))
             record.round_problems.append(candidate.problem)
@@ -1076,15 +1209,19 @@ def run_arm(
             )
             if candidate.problem is None or attempt == max_repairs:
                 break
+            if isinstance(record, SpecRunRecord):
+                record.layers_fed_back.append(layers)
             messages.append({"role": "assistant", "content": generation.text})
             messages.append({"role": "user", "content": repair_message(candidate.feedback)})
         else:  # pragma: no cover
             raise AssertionError("unreachable")
         if candidate.problem != "refused":
-            _account(record, generations, None)
+            _account(record, [*spec_generations, *generations], None, spec_refused)
             record.rounds = len(generations)
             record.failure = candidate.problem
             record.detail = candidate.feedback[:_DETAIL_LIMIT]
+        if isinstance(record, SpecRunRecord) and candidate.findings is not None:
+            record.final_check_findings = len(candidate.findings)
         _score(record, ticket_id, candidate, *state.edited())
     finally:
         candidate.cleanup()
@@ -1132,16 +1269,19 @@ def _save_round(
 
 
 def _account(
-    record: RunRecord, generations: Sequence[Generation], refused: GenerationRefused | None
+    record: RunRecord,
+    generations: Sequence[Generation],
+    refused: GenerationRefused | None,
+    more_refused: Sequence[GenerationRefused] = (),
 ) -> None:
+    """Add the calls' tokens, cost and model time to ``record``: ``generations``, the
+    refused call ``refused`` and ``more_refused`` (arm S: a refused spec-step call)."""
     # (served model, usage, latency, transport-reported cost or None, its cost_basis)
     usages = [(g.model, g.usage, g.latency_s, g.cost_usd, g.cost_basis) for g in generations]
-    if refused is not None:
+    for exc in (*more_refused, *([refused] if refused is not None else [])):
         # a transport-reported cost of the refused call(s) (the CLI's total_cost_usd),
         # else derived from usage below
-        usages.append(
-            (refused.model, refused.usage, refused.latency_s, refused.cost_usd, refused.cost_basis)
-        )
+        usages.append((exc.model, exc.usage, exc.latency_s, exc.cost_usd, exc.cost_basis))
     bases = []
     for served, usage, latency, call_cost, basis in usages:
         record.input_tokens += usage.total_input_tokens
@@ -1323,7 +1463,13 @@ def dry_run(arm: Arm, ticket_id: str, *, partial: bool = False) -> RunRecord:
             detail=GAPS[ticket_id],
             dry_run=True,
         )
-    return run_arm(arm, ticket_id, ScriptedGenerator([answer]), model="reference", dry_run=True)
+    answers = [answer]
+    if arm == "S":  # the spec step's answer: the owner's blind delta, as a draft
+        from bench.edit_slice import sdraft
+
+        draft = sdraft.render_delta(sdraft.owner_delta(ticket_id))
+        answers.insert(0, f"```python\n{draft}```")
+    return run_arm(arm, ticket_id, ScriptedGenerator(answers), model="reference", dry_run=True)
 
 
 # ---- the cost estimate ----------------------------------------------------------------------
@@ -1428,14 +1574,14 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--arm",
         default="P,L",
-        help="comma-separated arms: P, L (rounds 1-4), Q, L+, Q+ (round 5)",
+        help="comma-separated arms: P, L (rounds 1-4), Q, L+, Q+ (round 5), S, S* (phase 1)",
     )
     p.add_argument(
         "--tickets",
         default="all",
         help=(
             "comma-separated ticket ids, all (the template's t1-t18), repos (t19-t24) "
-            "or round3 (all of t1-t24)"
+            "or round3 (all of t1-t24); option1, option1b, phase1 (t31-t44)"
         ),
     )
     p.add_argument("--reps", type=int, default=1)
@@ -1501,6 +1647,8 @@ def _tickets(spec: str) -> list[str]:
         return list(OPTION1)
     if spec == "option1b":
         return list(OPTION1B)
+    if spec == "phase1":
+        return [*OPTION1, *OPTION1B]
     ids = [s.strip() for s in spec.split(",") if s.strip()]
     for tid in ids:
         ticket(tid)
@@ -1591,7 +1739,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     tickets = _tickets(args.tickets)
     arms: list[Arm] = [a.strip() for a in args.arm.split(",") if a.strip()]  # type: ignore[misc]
     for arm in arms:
-        if arm not in ROUND5_ARMS:
+        if arm not in ALL_ARMS:
             raise SystemExit(f"unknown arm {arm!r}")
     if args.estimate:
         models = [m.strip() for m in args.estimate_models.split(",") if m.strip()]

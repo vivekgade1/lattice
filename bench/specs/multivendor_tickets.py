@@ -26,7 +26,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 
 from bench.specs.multivendor import order_read, product_read
-from lattice.spec import Accepted, Invariant, Scenario, Spec, Step, Unchecked
+from lattice.spec import Accepted, Invariant, Machine, Scenario, Spec, Step, Unchecked
 
 __all__ = ["BLIND_DELTAS", "DELTAS", "SpecDelta", "apply"]
 
@@ -34,13 +34,15 @@ __all__ = ["BLIND_DELTAS", "DELTAS", "SpecDelta", "apply"]
 @dataclass(frozen=True)
 class SpecDelta:
     """What a ticket adds to the spec: endpoint programs (name -> Lattice source),
-    invariants, scenarios and unchecked requirements."""
+    invariants, scenarios, unchecked requirements and (Phase 1, arm S's drafts) state
+    machines."""
 
     programs: Mapping[str, str] = field(default_factory=dict)
     invariants: tuple[Invariant, ...] = ()
     scenarios: tuple[Scenario, ...] = ()
     unchecked: tuple[Unchecked, ...] = ()
     approved: tuple[Accepted, ...] = ()
+    machines: tuple[Machine, ...] = ()
 
 
 def apply(spec: Spec, delta: SpecDelta) -> Spec:
@@ -49,6 +51,7 @@ def apply(spec: Spec, delta: SpecDelta) -> Spec:
     return replace(
         spec,
         programs=[*spec.programs.items(), *delta.programs.items()],
+        machines=(*spec.machines, *delta.machines),
         invariants=(*spec.invariants, *delta.invariants),
         scenarios=(*spec.scenarios, *delta.scenarios),
         unchecked=(*spec.unchecked, *delta.unchecked),

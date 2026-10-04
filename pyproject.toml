@@ -41,7 +41,10 @@ packages = ["lattice", "bench"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["live: calls the real Claude API (deselected by default)"]
+markers = [
+    "live: calls the real Claude API (deselected by default)",
+    "slow: minutes of checking (Phase 1 dry run coverage)",
+]
 addopts = "-m 'not live'"
 
 [tool.ruff]

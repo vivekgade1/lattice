@@ -59,7 +59,11 @@ checked arm.
   - Sonnet: P 84 × 0.10 + Q 84 × 0.10 + S 84 × 0.25 + S\* 84 × 0.15 ≈ **$50**.
   - Haiku: P 84 × 0.11 + S 84 × 0.28 ≈ **$33**.
   - **Total ≈ $85 list-price equivalent, plan-billed through the CLI.**
-  - Wall time: about 5–6 hours at 4 parallel runs.
+  - Prompt sizes (`python -m bench.edit_slice.sdraft --estimate`, chars / 3.5): the
+    draft prompt is about 4.9k tokens; the S/S\* code prompt is about 8.1k tokens, against
+    Q's 6.5k (+24%). The estimate above stands.
+  - **Wall time: about 8–10 hours at 4 parallel runs.** A checked round adds about 17s
+    of layers A–D; approval adds 5–35s.
 
 ## Measures
 
@@ -111,6 +115,13 @@ checked arm.
    (`sdraft.coverage`), not by the analysis.
 6. **Oracle review:** the analysis runs on the original outcomes and on the rescored
    ones, and both are reported.
+
+### Owner approvals, a stated deviation
+
+The owner's approvals for a ticket (`DELTAS[t].approved`) apply in **both S and S\***:
+the simulated owner states them, and a draft cannot write one. Only t33 has one: its
+text says "It is public, like GET /products". Without it, PY801 flags the correct t33
+answer in both arms. The approval matches only PY801 on `GET /products/top-sellers`.
 
 ## Threats
 
