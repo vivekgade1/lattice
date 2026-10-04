@@ -4,6 +4,14 @@ compiled to the checks the checker runs (direction draft §4)."""
 
 from __future__ import annotations
 
+from lattice.spec.check import (
+    CaseContext,
+    CheckError,
+    InvariantMonitor,
+    cases_for,
+    check,
+    spec_policy,
+)
 from lattice.spec.invariants import ALLOWED_FORMS, InvariantError, compile_invariant
 from lattice.spec.model import (
     Invariant,
@@ -15,21 +23,30 @@ from lattice.spec.model import (
     resolve_table,
     tables_of,
 )
+from lattice.spec.report import CheckFinding, Report
 from lattice.spec.validate import CODES, SpecProblem, validate
 
 __all__ = [
     "ALLOWED_FORMS",
     "CODES",
+    "CaseContext",
+    "CheckError",
+    "CheckFinding",
     "Invariant",
     "InvariantError",
+    "InvariantMonitor",
     "Machine",
+    "Report",
     "Scenario",
     "Spec",
     "SpecProblem",
     "Step",
     "Unchecked",
+    "cases_for",
+    "check",
     "compile_invariant",
     "resolve_table",
+    "spec_policy",
     "tables_of",
     "validate",
 ]
