@@ -160,7 +160,8 @@ class Report:
                 lines.extend("    " + x for x in _detail_lines(f))
         if self.accepted:
             lines.append("")
-            lines.append(f"accepted (the app's baseline, {len(self.accepted)}):")
+            n = len(self.accepted)
+            lines.append(f"accepted (approved by the spec or the app's baseline, {n}):")
             lines.extend(f"  {f.summary()}: {r}" for f, r in self.accepted)
         if self.stale:
             lines.append("")

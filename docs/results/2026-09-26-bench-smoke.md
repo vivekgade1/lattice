@@ -1391,3 +1391,51 @@ beyond about 30%, which falls short of the pre-registered bar. As with the confi
 run above, a real but modest effect did not clear the pre-registered threshold, and the
 tasks again hit a ceiling on correctness; no further Go benchmark investment is
 warranted on this evidence.
+
+## Roadmap Phase 0: spec v0 and the four-layer checker on Python (2026-10-04)
+
+Plan: `docs/superpowers/plans/2026-10-04-phase0-spec-checker.md` (branch `roadmap`).
+Built: the spec model (`lattice/spec`: machines, invariants compiled to SQL, scenarios,
+unchecked requirements, validation S001-S016), pycheck PY808 (state machines), nested
+response models in the language (`Nested`, L835; Go gated, TS supported), the check
+engine (layers A static, B endpoint answers vs the spec runtime, C invariants after
+every request, D scenarios) with its CLI, accepted baselines and spec-approved findings,
+and the multi-vendor spec plus spec deltas for t31-t44. No LLM calls; no cost.
+
+**Exit 1, the spec checks clean against the original app: PASS.** 0 findings on A-D,
+15 accepted as the app's baseline, each with its reason (upstream has no length/upper
+bounds: 8 PY803 + 5 layer-B cases; a negative `limit` accepted; the PY807 partial write
+in `POST /orders`). The check found one bug in the spec itself (a 255-character
+password bound, beyond bcrypt's 72 bytes, crashed the spec's own program) and one in
+the checker (a public table linked to an owned one was treated as owned).
+
+**Exit 2, every trap caught: PASS** (`python -m bench.specs.exit`,
+`bench/specs/phase0-exit.json`). All 14 references pass against spec + delta.
+
+| run | traps caught | any layer: A / B / C / D | only that layer: A / D |
+|---|---|---|---|
+| blind (deltas from ticket text only) | **44/50** | 12 / 4 / 1 / 41 | 3 / 27 |
+| after the six additions | 50/50 | 9 / 4 / 2 / 47 | 3 / 35 |
+
+The blind run (`phase0-exit-blind.json`, also before the order programs and the t33
+approval) is the honest number for "a spec written from the ticket". It missed six
+requirements the ticket texts state but its scenarios did not exercise: a delisted
+product's lines (t35), another buyer's non-cancellable order (t36), a product listed
+twice (t39), another buyer's non-pending order (t40), moved lines keeping their price
+(t42), names differing only in case (t43). Those were added afterwards, marked in
+`multivendor_tickets.py`. The t33 reference also failed blind on PY801: the ticket asks
+for a public aggregate over every buyer's orders, now stated as a spec approval.
+
+Observations:
+1. **Scenarios (D) carry most of the catching**: 27/44 blind traps were caught by D
+   alone. B (endpoint programs) adds little here because 10 of 14 tickets have no
+   program: Lattice still lacks per-row write loops (L841), list bodies, and non-literal
+   error details (L404), so their endpoints are checked by scenarios only.
+2. **Static checks (A) are the only catch for atomicity**: the three A-only traps are
+   all PY807 partial writes (t38, t39, t44): no single-client scenario sees them.
+3. **The blind miss rate (6/50) is a spec-authoring cost**: catching depends on the
+   spec stating the edge case. That is the lever Phase 1 measures.
+
+Order endpoints now with programs: GET /orders/me, GET /orders/{id} (nested items).
+Still unchecked by B, with the missing construct named in the spec: place_order,
+update_order_status, flash-sale, and the t36/t38/t40/t42/t44 endpoints.

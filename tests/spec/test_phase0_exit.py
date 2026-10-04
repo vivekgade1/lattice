@@ -3,7 +3,7 @@
 (1) The multi-vendor spec checks clean against the original app, with the app's accepted
 baseline; (2) every t31-t44 reference passes against its ticket's spec delta and every
 trap variant is caught by at least one layer: ``python -m bench.specs.exit`` runs those
-(minutes), and its recorded table (``bench/results/phase0-exit.json``) is checked here
+(minutes), and its recorded table (``bench/specs/phase0-exit.json``) is checked here
 against the current trap list.
 """
 
@@ -22,7 +22,7 @@ from lattice.spec import Accepted, CheckFinding, Report, check, spec_policy
 ROOT = Path(__file__).resolve().parents[2]
 APP_DIR = ROOT / "bench/import_repos/multivendor/app"
 PKG = "bench.import_repos.multivendor.app"
-TABLE = ROOT / "bench/results/phase0-exit.json"
+TABLE = ROOT / "bench/specs/phase0-exit.json"
 
 
 def _finding(layer: str, **kw: object) -> CheckFinding:
@@ -95,3 +95,23 @@ def test_exit_2_every_trap_is_caught_by_at_least_one_layer(table):
     missed = {r["name"]: r for r in table if r["name"] != "reference" and r["verdict"] != "fail"}
     assert not missed, json.dumps(missed, indent=2)
     assert all(r["layers"] for r in table if r["name"] != "reference")
+
+
+def test_findings_the_spec_approves_are_accepted_with_the_spec_s_reason():
+    from dataclasses import replace
+
+    from bench.edit_slice.repos import multivendor
+
+    approved = (Accepted("A:PY807:POST /orders:*", "the spec states it"),)
+    spec = replace(SPEC, approved=approved)
+    report = check(
+        spec,
+        make_app,
+        multivendor.db_factory,
+        layers="A",
+        app_dir=APP_DIR,
+        package=PKG,
+        baseline=[a for a in BASELINE if not a.pattern.startswith("A:PY807")],
+    )
+    assert report.verdict == "pass", report.render()
+    assert "the spec states it" in [r for _, r in report.accepted]

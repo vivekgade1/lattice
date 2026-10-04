@@ -1262,7 +1262,8 @@ def check(
     ``cases_for(spec, endpoint, ctx)``: layer B's case generator; ``extra_cases`` run
     too. ``rules``: verify's representation rules (default: 422 bodies compare by the
     fields they flag). ``natives``/``settings``: for the spec's programs. ``baseline``:
-    the app's accepted findings (:class:`Accepted`), reported but not failing. Raises
+    the app's accepted findings (:class:`Accepted`; with ``spec.approved``, the spec's
+    own), reported but not failing. Raises
     :class:`CheckError` when the check cannot run."""
     run = _layers(layers)
     problems = validate(spec)
@@ -1316,7 +1317,7 @@ def check(
         report.findings.extend(monitor.findings)
     order = {layer: i for i, layer in enumerate(LAYERS)}
     report.findings.sort(key=lambda f: order[f.layer])
-    report.apply_baseline(baseline)
+    report.apply_baseline((*spec.approved, *baseline))
     return report
 
 

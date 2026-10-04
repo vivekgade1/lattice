@@ -11,7 +11,13 @@ fresh seed database. Where a ticket leaves a status code or a detail open, the s
 asserts only what the ticket (or the endpoint it says to behave like) fixes.
 
 NESTED: endpoints answering an order "as GET /orders/{order_id} does" (OrderRead with
-nested items) get no program until nested responses land (W1-B): t36, t38, t40, t42, t44.
+nested items): t36, t38, t40, t42, t44. Nested responses (W1-B) can now say the answer,
+but each of these tickets still needs a construct Lattice lacks, so none has a program
+(each delta's `unchecked` names it): t36 restocks one product per line (update() of
+products joined to the lines is L841); t38 inserts one line per old line and its 409
+detail names the product (error details are literals, L404); t40, t42 and t44 take a
+list in the body (parameters are scalars). Their scenarios state them; the base spec's
+get_order program covers the GET /orders/{order_id} steps they use.
 """
 
 from __future__ import annotations
@@ -20,9 +26,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 
 from bench.specs.multivendor import order_read, product_read
-from lattice.spec import Invariant, Scenario, Spec, Step, Unchecked
+from lattice.spec import Accepted, Invariant, Scenario, Spec, Step, Unchecked
 
-__all__ = ["DELTAS", "SpecDelta", "apply"]
+__all__ = ["BLIND_DELTAS", "DELTAS", "SpecDelta", "apply"]
 
 
 @dataclass(frozen=True)
@@ -34,6 +40,7 @@ class SpecDelta:
     invariants: tuple[Invariant, ...] = ()
     scenarios: tuple[Scenario, ...] = ()
     unchecked: tuple[Unchecked, ...] = ()
+    approved: tuple[Accepted, ...] = ()
 
 
 def apply(spec: Spec, delta: SpecDelta) -> Spec:
@@ -45,6 +52,7 @@ def apply(spec: Spec, delta: SpecDelta) -> Spec:
         invariants=(*spec.invariants, *delta.invariants),
         scenarios=(*spec.scenarios, *delta.scenarios),
         unchecked=(*spec.unchecked, *delta.unchecked),
+        approved=(*spec.approved, *delta.approved),
     )
 
 
@@ -595,8 +603,11 @@ T36 = SpecDelta(
     ),
     unchecked=(
         Unchecked(
-            "t36: NESTED -- answers OrderRead; no program until nested responses (W1-B).",
-            ("Order", "OrderItem"),
+            "t36: no program -- the answer (OrderRead, nested items) is expressible, but "
+            "cancelling restocks each product by its line's quantity: update() of products "
+            "joined to the order's lines is L841 (update needs rows of one table), and "
+            "there is no per-row loop of writes. The ticket also leaves the 400 detail open.",
+            ("Order", "OrderItem", "Product.stock_quantity"),
         ),
     ),
 )
@@ -789,9 +800,12 @@ T38 = SpecDelta(
     ),
     unchecked=(
         Unchecked(
-            "t38: NESTED -- answers OrderRead; no program until nested responses (W1-B), "
-            "and one line per old line needs a loop over rows.",
-            ("Order", "OrderItem"),
+            "t38: no program -- the answer (OrderRead, nested items) is expressible, but a "
+            "reorder inserts one line per old line (insert() writes one row; no per-row "
+            "loop of writes), takes each product's stock by its line (update() of products "
+            "joined to the lines is L841), and its 409 detail names the product (error "
+            "details are literals, L404).",
+            ("Order", "OrderItem", "Product.stock_quantity"),
         ),
     ),
 )
@@ -1078,8 +1092,10 @@ T40 = SpecDelta(
     ),
     unchecked=(
         Unchecked(
-            "t40: NESTED -- answers OrderRead; no program until nested responses (W1-B), "
-            "and the body is a list of lines.",
+            "t40: no program -- the answer (OrderRead, nested items) is expressible, but "
+            "the body is a list of lines (Lattice parameters are scalars), each line is "
+            "its own insert and stock change (no per-row loop of writes; L841), and the "
+            "409 detail names the product (error details are literals, L404).",
             ("Order", "OrderItem"),
         ),
     ),
@@ -1305,8 +1321,10 @@ T42 = SpecDelta(
     ),
     unchecked=(
         Unchecked(
-            "t42: NESTED -- answers OrderRead; no program until nested responses (W1-B), "
-            "and the body is a list of item ids.",
+            "t42: no program -- the answer (OrderRead, nested items) is expressible, but "
+            "the body is a list of item ids (Lattice parameters are scalars), and the 400 "
+            "'Item <id> is not in this order' names the item (error details are "
+            "literals, L404).",
             ("Order", "OrderItem"),
         ),
     ),
@@ -1581,9 +1599,204 @@ T44 = SpecDelta(
     ),
     unchecked=(
         Unchecked(
-            "t44: NESTED -- answers OrderRead; no program until nested responses (W1-B), "
-            "and the body is a list of order ids.",
+            "t44: no program -- the answer (OrderRead, nested items) is expressible, but "
+            "the body is a list of order ids (Lattice parameters are scalars), and the "
+            "first listed order is the target (no list indexing).",
             ("Order", "OrderItem"),
+        ),
+    ),
+)
+
+# The deltas as written from the ticket texts, before any check ran (arm S* of Phase 1).
+BLIND_DELTAS: dict[str, SpecDelta] = {
+    "t31_vendor_sales": T31,
+    "t32_monthly_report": T32,
+    "t33_top_sellers": T33,
+    "t34_customer_spend": T34,
+    "t35_vendor_order_lines": T35,
+    "t36_cancel_order": T36,
+    "t37_product_buyers": T37,
+    "t38_reorder": T38,
+    "t39_bulk_price": T39,
+    "t40_edit_order_items": T40,
+    "t41_close_shop": T41,
+    "t42_split_order": T42,
+    "t43_vendor_onboarding": T43,
+    "t44_merge_orders": T44,
+}
+
+
+# ======================================================================================
+# Added after the first exit run (2026-10-04)
+# ======================================================================================
+#
+# Everything above was written from the ticket texts before any check ran: that run
+# caught 44 of the 50 trap variants (bench/specs/phase0-exit-blind.json). The
+# additions below close the six requirements those deltas left unstated. Each one is
+# stated by its ticket's text, but was written *after* seeing the misses, so the blind
+# number is the honest one for "a spec written from a ticket". The t33 approval states
+# the ticket's "It is public, like GET /products" for its aggregate over orders.
+
+T33 = replace(
+    T33,
+    approved=(
+        Accepted(
+            "A:PY801:GET /products/top-sellers:*",
+            "t33: 'It is public, like GET /products': units sold are counted over every "
+            "buyer's orders; only per-product totals are shown",
+        ),
+    ),
+)
+
+T35 = replace(
+    T35,
+    scenarios=(
+        *T35.scenarios,
+        # "every order line for the vendor's products": a delisted product is still hers
+        Scenario(
+            "t35_lines_of_a_delisted_product",
+            steps=(
+                Step("PATCH", "/products/2", "vicky", json={"is_active": False}),
+                _get(
+                    "/vendors/me/order-lines",
+                    "vicky",
+                    expect_body=[
+                        _pl(8, "pending", 2, "Soy candle", 1, 8.5, "2026-03-15T16:45:00"),
+                        _pl(7, "pending", 1, "Ceramic mug", 1, 12.0, "2026-03-10T09:00:00"),
+                        _pl(6, "delivered", 3, "Dot-grid notebook", 10, 5.0, "2026-03-01T00:00:00"),
+                        _pl(5, "confirmed", 1, "Ceramic mug", 1, 12.0, "2026-02-28T23:59:59"),
+                        _pl(5, "confirmed", 2, "Soy candle", 2, 8.5, "2026-02-28T23:59:59"),
+                        _pl(4, "cancelled", 2, "Soy candle", 3, 8.5, "2026-02-14T12:00:00"),
+                        _pl(2, "delivered", 3, "Dot-grid notebook", 4, 5.0, "2026-01-31T23:30:00"),
+                        _pl(1, "delivered", 1, "Ceramic mug", 2, 10.0, "2026-01-05T10:00:00"),
+                    ],
+                ),
+            ),
+        ),
+    ),
+)
+
+T36 = replace(
+    T36,
+    scenarios=(
+        *T36.scenarios,
+        # "A buyer can cancel their own order": another buyer's order is refused as
+        # GET /orders/{order_id} refuses it, whatever its status, and stays as it is
+        Scenario(
+            "t36_another_buyers_order",
+            steps=(
+                Step(
+                    "POST",
+                    "/orders/3/cancel",
+                    "carol",
+                    expect_status=403,
+                    expect_body=NO_ACCESS,
+                    expect_db=_db(_order(3, status="shipped"), _product(5, stock_quantity=15)),
+                ),
+            ),
+        ),
+    ),
+)
+
+T39 = replace(
+    T39,
+    scenarios=(
+        *T39.scenarios,
+        # "{"updated": <number of products changed>}": a product listed twice is one
+        Scenario(
+            "t39_a_product_listed_twice",
+            steps=(
+                Step(
+                    "POST",
+                    "/products/bulk-price",
+                    "vicky",
+                    json={
+                        "changes": [
+                            {"product_id": 1, "price": 13.0},
+                            {"product_id": 1, "price": 14.0},
+                        ]
+                    },
+                    expect_body={"updated": 1},
+                ),
+            ),
+        ),
+    ),
+)
+
+T40 = replace(
+    T40,
+    scenarios=(
+        *T40.scenarios,
+        # "Only the buyer who placed the order can change it (anyone else gets 403 ...)":
+        # also when the order is not pending (O3: dave's, shipped)
+        Scenario(
+            "t40_another_buyers_shipped_order",
+            steps=(
+                Step(
+                    "PATCH",
+                    "/orders/3/items",
+                    "carol",
+                    json={"items": [{"product_id": 1, "quantity": 1}]},
+                    expect_status=403,
+                    expect_body=NO_ACCESS,
+                    expect_db=_db(_order(3, status="shipped", total_amount=61.0)),
+                ),
+            ),
+        ),
+    ),
+)
+
+T42 = replace(
+    T42,
+    scenarios=(
+        *T42.scenarios,
+        # "the listed lines ... move": a moved line keeps its price, even after the
+        # product's price changed (victor raises P5 to 30.0 first)
+        Scenario(
+            "t42_moved_lines_keep_their_price",
+            steps=(
+                Step("PATCH", "/products/5", "victor", json={"price": 30.0}),
+                Step(
+                    "POST",
+                    "/orders/8/split",
+                    "carol",
+                    json={"item_ids": [13]},
+                    expect_status=201,
+                    expect_db=_db(
+                        _order(10, total_amount=50.0),
+                        {
+                            "order_items": {
+                                "where": {"id": 13},
+                                "equals": {"order_id": 10, "price_at_purchase": 25.0},
+                            }
+                        },
+                    ),
+                ),
+            ),
+        ),
+    ),
+)
+
+T43 = replace(
+    T43,
+    scenarios=(
+        *T43.scenarios,
+        # "Product names must be unique within the request": "Picket" and "picket" differ
+        Scenario(
+            "t43_names_differing_in_case",
+            steps=(
+                Step(
+                    "POST",
+                    "/vendors/onboard",
+                    "frank",
+                    json={
+                        "business_name": "Frank's Fences",
+                        "products": [PICKET, {**PICKET, "name": "picket"}],
+                    },
+                    expect_status=201,
+                    expect_db=_db({"products": {"where": {"vendor_id": 4}, "count": 2}}),
+                ),
+            ),
         ),
     ),
 )

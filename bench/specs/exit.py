@@ -90,7 +90,7 @@ def jobs() -> list[tuple[str, str]]:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="python -m bench.specs.exit")
     p.add_argument("--workers", type=int, default=8)
-    p.add_argument("--out", default="bench/results/phase0-exit.json")
+    p.add_argument("--out", default="bench/specs/phase0-exit.json")
     p.add_argument("--only", nargs="*", help="trap names or 'reference:<tid>'")
     args = p.parse_args(argv)
     todo = jobs()

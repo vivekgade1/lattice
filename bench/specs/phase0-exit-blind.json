@@ -1,0 +1,1124 @@
+[
+  {
+    "name": "reference",
+    "ticket": "t31_vendor_sales",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t32_monthly_report",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t33_top_sellers",
+    "verdict": "fail",
+    "counts": {
+      "A": 2,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [
+      "A"
+    ],
+    "findings": [
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads or writes Order rows, which belong to their owner (Order.user_id), with no signed-in caller at all",
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads OrderItem rows, which link Order rows, without checking that those Order rows are the caller's (Order.user_id)"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t34_customer_spend",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t35_vendor_order_lines",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t36_cancel_order",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t37_product_buyers",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t38_reorder",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t39_bulk_price",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t40_edit_order_items",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t41_close_shop",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t42_split_order",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t43_vendor_onboarding",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t44_merge_orders",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t31-counts-cancelled",
+    "ticket": "t31_vendor_sales",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/sales:t31_sales_all_time / step 1",
+      "D:GET /vendors/me/sales:t31_sales_in_a_period / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t31-current-price",
+    "ticket": "t31_vendor_sales",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/sales:t31_sales_all_time / step 1",
+      "D:GET /vendors/me/sales:t31_sales_in_a_period / step 4"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t31-end-exclusive",
+    "ticket": "t31_vendor_sales",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/sales:t31_sales_in_a_period / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t31-null-when-no-sales",
+    "ticket": "t31_vendor_sales",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/sales:t31_sales_all_time / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t31-orders-counts-lines",
+    "ticket": "t31_vendor_sales",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/sales:t31_sales_all_time / step 1",
+      "D:GET /vendors/me/sales:t31_sales_in_a_period / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t32-drops-empty-statuses",
+    "ticket": "t32_monthly_report",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /orders/report:t32_report_by_month / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t32-month-end-inclusive",
+    "ticket": "t32_monthly_report",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /orders/report:t32_report_by_month / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t32-revenue-counts-cancelled",
+    "ticket": "t32_monthly_report",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /orders/report:t32_report_by_month / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t32-shadowed-by-order-route",
+    "ticket": "t32_monthly_report",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY804:GET /orders/report:GET /orders/report (read_monthly_report) is declared after get_order (GET /orders/{order_id}), which matches its requests first",
+      "D:GET /orders/report:t32_report_by_month / step 1",
+      "D:GET /orders/report:t32_report_admins_only / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t33-counts-cancelled",
+    "ticket": "t33_top_sellers",
+    "verdict": "fail",
+    "counts": {
+      "A": 2,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads or writes Order rows, which belong to their owner (Order.user_id), with no signed-in caller at all",
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads OrderItem rows, which link Order rows, without checking that those Order rows are the caller's (Order.user_id)",
+      "D:GET /products/top-sellers:t33_top_sellers / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t33-drops-never-sold",
+    "ticket": "t33_top_sellers",
+    "verdict": "fail",
+    "counts": {
+      "A": 2,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads or writes Order rows, which belong to their owner (Order.user_id), with no signed-in caller at all",
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads OrderItem rows, which link Order rows, without checking that those Order rows are the caller's (Order.user_id)",
+      "D:GET /products/top-sellers:t33_top_sellers / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t33-lists-inactive",
+    "ticket": "t33_top_sellers",
+    "verdict": "fail",
+    "counts": {
+      "A": 2,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads or writes Order rows, which belong to their owner (Order.user_id), with no signed-in caller at all",
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads OrderItem rows, which link Order rows, without checking that those Order rows are the caller's (Order.user_id)",
+      "D:GET /products/top-sellers:t33_top_sellers / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t33-shadowed-by-product-route",
+    "ticket": "t33_top_sellers",
+    "verdict": "fail",
+    "counts": {
+      "A": 3,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY804:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) is declared after get_product (GET /products/{product_id}), which matches its requests first",
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads or writes Order rows, which belong to their owner (Order.user_id), with no signed-in caller at all",
+      "A:PY801:GET /products/top-sellers:GET /products/top-sellers (list_top_sellers) reads OrderItem rows, which link Order rows, without checking that those Order rows are the caller's (Order.user_id)",
+      "D:GET /products/top-sellers:t33_top_sellers / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t34-drops-buyers-without-orders",
+    "ticket": "t34_customer_spend",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "B",
+      "D"
+    ],
+    "findings": [
+      "B:GET /orders/customers:GET /orders/customers | admin | call",
+      "D:GET /orders/customers:t34_customer_spend / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t34-drops-inactive-buyers",
+    "ticket": "t34_customer_spend",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "B",
+      "D"
+    ],
+    "findings": [
+      "B:GET /orders/customers:GET /orders/customers | admin | call",
+      "D:GET /orders/customers:t34_customer_spend / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t34-includes-vendors",
+    "ticket": "t34_customer_spend",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "B",
+      "D"
+    ],
+    "findings": [
+      "B:GET /orders/customers:GET /orders/customers | admin | call",
+      "D:GET /orders/customers:t34_customer_spend / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t34-join-fan-out",
+    "ticket": "t34_customer_spend",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "B",
+      "D"
+    ],
+    "findings": [
+      "B:GET /orders/customers:GET /orders/customers | admin | call",
+      "D:GET /orders/customers:t34_customer_spend / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t35-drops-inactive-products",
+    "ticket": "t35_vendor_order_lines",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t35-oldest-first",
+    "ticket": "t35_vendor_order_lines",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/order-lines:t35_packing_list / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t35-whole-orders",
+    "ticket": "t35_vendor_order_lines",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/order-lines:t35_packing_list / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t36-any-status",
+    "ticket": "t36_cancel_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/8/cancel:t36_buyer_cancels_pending_order / step 3",
+      "D:POST /orders/3/cancel:t36_admin_cancels_any_order / step 2",
+      "D:POST /orders/1/cancel:t36_cancel_refused / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t36-no-ownership",
+    "ticket": "t36_cancel_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/8/cancel:t36_cancel_refused / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t36-no-stock-restore",
+    "ticket": "t36_cancel_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/8/cancel:t36_buyer_cancels_pending_order / step 1",
+      "D:POST /orders/5/cancel:t36_buyer_cancels_confirmed_order / step 1",
+      "D:POST /orders/7/cancel:t36_admin_cancels_any_order / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t36-status-before-ownership",
+    "ticket": "t36_cancel_order",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t37-counts-cancelled",
+    "ticket": "t37_product_buyers",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /products/2/buyers:t37_product_buyers / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t37-drops-inactive-buyers",
+    "ticket": "t37_product_buyers",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /products/3/buyers:t37_product_buyers / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t37-no-ownership-check",
+    "ticket": "t37_product_buyers",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /products/1/buyers:t37_product_buyers_access / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t37-one-row-per-line",
+    "ticket": "t37_product_buyers",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /products/1/buyers:t37_product_buyers / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t38-copies-old-prices",
+    "ticket": "t38_reorder",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/1/reorder:t38_reorder / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t38-no-ownership",
+    "ticket": "t38_reorder",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/1/reorder:t38_reorder_access / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t38-reuses-place-order",
+    "ticket": "t38_reorder",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [
+      "A"
+    ],
+    "findings": [
+      "A:PY807:POST /orders/{order_id}/reorder:POST /orders/{order_id}/reorder (reorder) commits (in reorder) at line 138 (place_order() (it commits)) and can still fail afterwards at line 148 (raise): a refused request leaves the earlier writes in the database"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t39-commits-each-item",
+    "ticket": "t39_bulk_price",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [
+      "A"
+    ],
+    "findings": [
+      "A:PY807:POST /products/bulk-price:POST /products/bulk-price (bulk_update_prices) commits (in bulk_update_prices) at line 87 (commit()) and can still fail afterwards on a later pass of the same loop at line 81 (raise): a refused request leaves the earlier writes in the database"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t39-counts-entries",
+    "ticket": "t39_bulk_price",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t39-no-ownership",
+    "ticket": "t39_bulk_price",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /products/bulk-price:t39_bulk_price_errors / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t40-ignores-held-stock",
+    "ticket": "t40_edit_order_items",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:PATCH /orders/7/items:t40_own_units_count_as_available / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t40-keeps-old-prices",
+    "ticket": "t40_edit_order_items",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:PATCH /orders/8/items:t40_lines_priced_now / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t40-status-before-ownership",
+    "ticket": "t40_edit_order_items",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t40-writes-before-checking",
+    "ticket": "t40_edit_order_items",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY807:PATCH /orders/{order_id}/items:PATCH /orders/{order_id}/items (edit_order_items) commits (in edit_order_items) at line 151 (commit()) and can still fail afterwards on a later pass of the same loop at line 149 (raise): a refused request leaves the earlier writes in the database",
+      "D:PATCH /orders/8/items:t40_edit_refused / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t41-counts-inactive-products",
+    "ticket": "t41_close_shop",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /vendors/me/close:t41_close_shop / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t41-deactivates-before-refusing",
+    "ticket": "t41_close_shop",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY807:POST /vendors/me/close:POST /vendors/me/close (close_own_shop) commits (in close_shop) at line 79 (commit()) and can still fail afterwards at line 81 (raise): a refused request leaves the earlier writes in the database",
+      "D:POST /vendors/me/close:t41_close_refused_while_fulfilling / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t41-restores-only-own-lines",
+    "ticket": "t41_close_shop",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /products/5:t41_close_shop / step 6"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t42-creates-before-validating",
+    "ticket": "t42_split_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY807:POST /orders/{order_id}/split:POST /orders/{order_id}/split (split_order) commits (in split_order) at line 140 (commit()) and can still fail afterwards at line 144 (raise): a refused request leaves the earlier writes in the database",
+      "D:POST /orders/8/split:t42_split_refused / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t42-current-prices",
+    "ticket": "t42_split_order",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t42-no-every-item-check",
+    "ticket": "t42_split_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/8/split:t42_split_refused / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t43-names-ignore-case",
+    "ticket": "t43_vendor_onboarding",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t43-registers-before-checking",
+    "ticket": "t43_vendor_onboarding",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY807:POST /vendors/onboard:POST /vendors/onboard (onboard_vendor) commits (in onboard_vendor) at line 66 (commit()) and can still fail afterwards at line 70 (raise): a refused request leaves the earlier writes in the database",
+      "D:POST /vendors/onboard:t43_onboard_refused / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t43-role-unchanged",
+    "ticket": "t43_vendor_onboarding",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /vendors/onboard:t43_onboard / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t44-keeps-other-totals",
+    "ticket": "t44_merge_orders",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 4,
+      "D": 2
+    },
+    "layers": [
+      "C",
+      "D"
+    ],
+    "findings": [
+      "C:POST /orders/merge:t44_merge_into_first / step 2",
+      "C:GET /orders/10:t44_merge_into_first / step 3",
+      "C:POST /orders/merge:t44_merge_order_of_ids / step 2",
+      "C:GET /orders/8:t44_merge_order_of_ids / step 3",
+      "D:GET /orders/10:t44_merge_into_first / step 3",
+      "D:GET /orders/8:t44_merge_order_of_ids / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t44-merges-as-it-validates",
+    "ticket": "t44_merge_orders",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [
+      "A"
+    ],
+    "findings": [
+      "A:PY807:POST /orders/merge:POST /orders/merge (merge_orders) commits (in merge_orders) at line 147 (commit()) and can still fail afterwards on a later pass of the same loop at line 137 (get_own_order() (it can raise)): a refused request leaves the earlier writes in the database"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t44-restores-stock",
+    "ticket": "t44_merge_orders",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/merge:t44_merge_into_first / step 2"
+    ],
+    "stale_baseline": []
+  }
+]

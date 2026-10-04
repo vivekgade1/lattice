@@ -42,7 +42,15 @@ every field is known (never for a new row's `created_at`).
 from __future__ import annotations
 
 from bench.imports.multivendor.profile import NATIVES
-from lattice.profile import ApiProfile, NativeSig, NativeToken, Profile, RoleColumn
+from lattice.profile import (
+    ApiProfile,
+    NativeSig,
+    NativeToken,
+    Nested,
+    Profile,
+    ResponseField,
+    RoleColumn,
+)
 from lattice.spec import Accepted, Invariant, Machine, Scenario, Spec, Step, Unchecked
 from lattice.typesys import Scalar, Schema
 
@@ -135,11 +143,20 @@ ORDER_ITEM = Schema.from_pairs(
 # Column bounds (price > 0, quantity > 0, stock >= 0) have no place in a Lattice Schema:
 # they are the invariants below and the parameter bounds of the programs.
 
-RESPONSES: dict[str, tuple[str, ...]] = {
+RESPONSES: dict[str, tuple[ResponseField, ...]] = {
     "UserRead": ("id", "full_name", "email", "role", "is_active", "created_at"),
-    # NESTED: `items` is a nested list of OrderItemRead (W1-B adds nested responses);
-    # kept as the import wrote it until then. No program here returns OrderRead.
-    "OrderRead": ("id", "user_id", "status", "total_amount", "created_at", "items"),
+    # REVIEW: `items` is a nested list of OrderItemRead (schemas/order.py: List[
+    # OrderItemRead]); the import wrote it as a plain column. Upstream loads the
+    # relationship Order.items (order_items.order_id, no order_by: SQLite reads it
+    # through ix_order_items_order_id, by id), Lattice orders it by OrderItem.id.
+    "OrderRead": (
+        "id",
+        "user_id",
+        "status",
+        "total_amount",
+        "created_at",
+        Nested("items", "OrderItemRead", table="OrderItem", via="order_id"),
+    ),
     # REVIEW: OrderItemRead was missing (schemas/order.py); added for nested `items`.
     "OrderItemRead": ("id", "product_id", "quantity", "price_at_purchase"),
     "ProductRead": (
@@ -217,9 +234,10 @@ PROFILE = profile()
 # - `Float` has no exclusive bound: upstream's `price > 0` is `Float(ge=0.000001, ...)`,
 #   with an upper bound of 1e9 that upstream does not have.
 #
-# NESTED: the order endpoints answer OrderRead, an order with its nested `items`; they get
-# programs once nested responses land (W1-B): POST /orders (place_order), GET /orders/me
-# (list_own_orders), GET /orders/{order_id} (get_order), PATCH /orders/{order_id}/status
+# NESTED: the order endpoints answer OrderRead, an order with its nested `items` (W1-B
+# nested responses). GET /orders/me (list_own_orders) and GET /orders/{order_id}
+# (get_order) have programs. The others have none (see unchecked for the missing
+# construct): POST /orders (place_order), PATCH /orders/{order_id}/status
 # (update_order_status), POST /orders/flash-sale-purchase (flash_sale_purchase).
 # POST /auth/login has no program: it reads a form body and issues a JWT (see unchecked).
 
@@ -416,11 +434,44 @@ def update_product(
     return updated
 """
 
+# get_order: anyone signed in; the admin (VIEW_ALL_ORDERS) reads any order, everyone else
+# only their own: 404 "Order not found" first, then 403 for another user's order
+# (owner_is lets Admin through; its L823 warning is the intended contract here).
+# list_own_orders: buyers and vendors (VIEW_OWN_ORDERS; the admin gets the permission
+# 403), by id (upstream has no ORDER BY; SQLite reads through ix_orders_user_id, by id),
+# capped at 100 (L831; upstream has no cap, see unchecked).
+ORDERS_PROGRAM = """# lattice: v1
+ORDER_READ = ["id", "user_id", "status", "total_amount", "created_at"]
+
+
+@endpoint("GET", "/orders/me", auth=Roles(Buyer, Vendor), response="OrderRead")
+def list_own_orders(user: CurrentUser) -> List:
+    orders = fetch(Order)
+    own = mine(orders, by=user)
+    ordered = sort(own, by=["id"])
+    shown = select(ordered, cols=ORDER_READ)
+    result = limit(shown, n=100)
+    return result
+
+
+@endpoint("GET", "/orders/{order_id}", auth=Authenticated, response="OrderRead")
+def get_order(order_id: Int, user: CurrentUser) -> One | NotFound | Forbidden:
+    orders = fetch(Order)
+    found = where(orders, col("id") == order_id)
+    order = one(found, else_=NotFound("Order not found"))
+    allowed = require(
+        order, owner_is(user), else_=Forbidden("You do not have access to this order")
+    )
+    shown = select(allowed, cols=ORDER_READ)
+    return shown
+"""
+
 PROGRAMS: dict[str, str] = {
     "auth": AUTH_PROGRAM,
     "users": USERS_PROGRAM,
     "vendors": VENDORS_PROGRAM,
     "products": PRODUCTS_PROGRAM,
+    "orders": ORDERS_PROGRAM,
 }
 
 # ---- state machine: Order.status (services/order_service.py VALID_TRANSITIONS) -------
@@ -865,10 +916,32 @@ UNCHECKED = (
         ("User",),
     ),
     Unchecked(
-        "NESTED: the order endpoints (place_order, list_own_orders, get_order, "
-        "update_order_status, flash_sale_purchase) answer OrderRead with nested items; "
-        "their programs wait for nested responses (W1-B). Their scenarios are given.",
-        ("Order", "OrderItem"),
+        "NESTED: the order endpoints answer OrderRead with nested items (W1-B). "
+        "list_own_orders and get_order have programs; place_order, update_order_status "
+        "and flash_sale_purchase have scenarios only. place_order: the body is a list of "
+        "lines (parameters are scalars) and each line is its own insert and stock "
+        "decrement (no per-row loop of writes; update() of products joined to the lines "
+        "is L841); its 409 detail names the product (error details are literals, L404).",
+        ("Order", "OrderItem", "Product.stock_quantity"),
+    ),
+    Unchecked(
+        "update_order_status: any vendor moves any buyer's order (UPDATE_ORDER_STATUS "
+        "has no ownership), but Order is owned by its buyer and only an Admin-only "
+        "endpoint may write rows the caller does not own (L802); its 400 detail 'Cannot "
+        "transition order from <old> to <new>' is formatted from both states (error "
+        "details are literals, L404). ORDER_MACHINE and the scenarios state it.",
+        ("Order.status",),
+    ),
+    Unchecked(
+        "flash_sale_purchase: its 409 detail 'Insufficient stock for product <id>' names "
+        "the product (error details are literals, L404), and an unknown product_id is an "
+        "unhandled ValueError upstream (500), which no program answers.",
+        ("Order", "OrderItem", "Product.stock_quantity"),
+    ),
+    Unchecked(
+        "GET /orders/me answers every order of the caller upstream; the program caps the "
+        "list at 100 (a List endpoint returns bounded rows, L831).",
+        ("list_own_orders",),
     ),
     Unchecked(
         "Products are publicly readable but only their vendor (Product.vendor_id -> "

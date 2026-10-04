@@ -137,8 +137,10 @@ def _user(value: Any) -> Any:
 class Spec:
     """An application spec: the profile (data, ownership, roles), endpoint `programs`
     (name -> Lattice source: the executable behaviour), state machines, invariants,
-    scenarios, unchecked requirements, and `users` (handle -> (login, password)) the
-    scenarios sign in as."""
+    scenarios, unchecked requirements, `users` (handle -> (login, password)) the
+    scenarios sign in as, and `approved`: checker findings the spec states as intended
+    (``lattice.spec.Accepted``, e.g. a public aggregate over owned rows), each with the
+    reason; the check reports them as accepted."""
 
     profile: Profile
     programs: Mapping[str, str] = field(default_factory=dict)
@@ -147,6 +149,7 @@ class Spec:
     scenarios: tuple[Scenario, ...] = ()
     unchecked: tuple[Unchecked, ...] = ()
     users: Mapping[str, tuple[str, str]] = field(default_factory=dict)
+    approved: tuple[Any, ...] = ()
     # program names given more than once (programs given as pairs); see validate S013
     duplicate_programs: tuple[str, ...] = field(default=(), init=False, repr=False)
 
@@ -156,7 +159,7 @@ class Spec:
         object.__setattr__(self, "duplicate_programs", duplicates)
         users = {handle: _user(login) for handle, login in dict(self.users).items()}
         object.__setattr__(self, "users", MappingProxyType(users))
-        for name in ("machines", "invariants", "scenarios", "unchecked"):
+        for name in ("machines", "invariants", "scenarios", "unchecked", "approved"):
             object.__setattr__(self, name, tuple(getattr(self, name)))
 
     def table(self, name: str) -> tuple[str, str, Schema] | None:
