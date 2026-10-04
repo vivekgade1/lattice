@@ -328,11 +328,12 @@ GO_PROGRAMS = list(_go_programs())
 
 def test_expected_programs_check_for_go():
     """Every task program and worked example checks for Go; the rejected ones use
-    natives (L890), or exact role sets (rolesets: L892, gated by design)."""
+    natives (L890), or exact role sets and nested response models (rolesets, nested:
+    L892, gated by design)."""
     rejected = set(PROGRAMS) - set(GO_PROGRAMS)
     assert rejected == {
         "realapps", "partb", "effects", "gaps", "mine", "round2", "solo", "solo_runtime",
-        "solo_answers", "t2", "n1b", "rolesets",
+        "solo_answers", "t2", "n1b", "rolesets", "nested",
     }  # fmt: skip
     assert "hardening" in GO_PROGRAMS  # Caller (plan 5a Task 12)
 

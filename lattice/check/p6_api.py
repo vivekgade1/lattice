@@ -40,6 +40,8 @@ from lattice.check.api_info import (
     auth_label,
     endpoint_decorator,
     endpoint_info,
+    nested_model_problem,
+    nested_parent_problem,
     parse_decl,
     path_params,
     route_shape,
@@ -58,7 +60,7 @@ from lattice.check.exprs import did_you_mean
 from lattice.check.fix_hints import PROFILE_FILE, owner_candidate
 from lattice.check.p4_types import cols_read, is_owner_is
 from lattice.diagnostics import Fix, fix_of
-from lattice.profile import AdminFlag, NoRoles
+from lattice.profile import AdminFlag, NoRoles, flat_fields, nested_fields
 from lattice.typesys import Scalar, TableT, generated_key, uuid_key, via_parent_key
 
 _WRITES = ("insert", "update", "delete")
@@ -1573,7 +1575,8 @@ class _Endpoint:
                 )
             return
         self._ownership(ret, t, name)
-        fields = self.api.responses.get(self.info.response or "")
+        model = self.api.responses.get(self.info.response or "")
+        fields = flat_fields(model) if model is not None else None
         if t.private and fields is not None and t.private.isdisjoint(fields):
             pass  # L834 reports them, as extra (private) columns, with the select line
         elif t.private:
@@ -1637,17 +1640,18 @@ class _Endpoint:
                 "or declare -> Page and return page(...)",
             )
 
-    # ---- L834: declared response models ------------------------------------------------
+    # ---- L834 / L835: declared response models and their nested fields ---------------
 
     def _response_model(self) -> None:
         """@endpoint(..., response="Model"): the returned columns are exactly the
-        model's fields (any order); for a Page, the columns of each item."""
+        model's column fields (any order); for a Page, the columns of each item. L835:
+        its Nested fields read public child rows of the returned rows (W1-B)."""
         name = self.info.response
         if name is None:
             return
         where = next(kw.value for kw in self.deco.keywords if kw.arg == "response")
-        fields = self.api.responses.get(name)
-        if fields is None:
+        model = self.api.responses.get(name)
+        if model is None:
             known = sorted(self.api.responses)
             self.ctx.error(
                 "L834",
@@ -1665,12 +1669,25 @@ class _Endpoint:
                 f'remove response="{name}"',
             )
             return
+        nested = nested_fields(model)
+        broken = False
+        for n in nested:
+            problem = nested_model_problem(self.api, n)
+            if problem is not None:
+                self.ctx.error("L835", where, *problem)
+                broken = True
+        fields = flat_fields(model)
         ret = self.fn.body[-1] if self.fn.body else None
         if not (isinstance(ret, ast.Return) and isinstance(ret.value, ast.Name)):
             return
         t = self._type(ret.value)
         if t is None:
             return
+        if not broken:
+            for n in nested:
+                problem = nested_parent_problem(self.api, n, t)
+                if problem is not None:
+                    self.ctx.error("L835", ret, *problem)
         returned = t.schema.names()
         missing = [f for f in fields if f not in returned]
         extra = [c for c in returned if c not in fields]

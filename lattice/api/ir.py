@@ -27,6 +27,7 @@ from lattice.api.backend import dialect_for
 from lattice.api.outbox import CREATE_SQL, OUTBOX_TABLE
 from lattice.api.sql import (
     CallerRef,
+    NestedRows,
     OwnerIs,
     ParamRef,
     Rel,
@@ -60,7 +61,7 @@ from lattice.catalog import (
     USER_PARAM,
 )
 from lattice.check import CheckedProgram
-from lattice.check.api_info import EndpointInfo, ParamSpec, user_table
+from lattice.check.api_info import EndpointInfo, ParamSpec, nested_parent_key, user_table
 from lattice.check.astutil import is_constant_expr, join_on_pairs, literal_value, steps_of
 from lattice.check.p4_types import is_owner_is, mentions_caller
 from lattice.check.t2 import CheckedProcedure
@@ -81,6 +82,8 @@ from lattice.profile import (
     NoRoles,
     RoleColumn,
     TokenColumn,
+    flat_fields,
+    nested_fields,
 )
 from lattice.runtime import LatticeInternalError
 from lattice.t2.compile import T2Code, compile_program
@@ -103,6 +106,7 @@ __all__ = [
     "CheckStep",
     "EndpointPlan",
     "ErrorSpec",
+    "NestedField",
     "ForEachStep",
     "PageArgs",
     "ParamSpec",
@@ -249,6 +253,18 @@ class PageArgs:
 
 
 @dataclass(frozen=True)
+class NestedField:
+    """A Nested response field (W1-B): JSON field `field`, at position `index` among
+    the response object's fields, holds the child rows -- read as the returned step's
+    column `field` (a JSON array, `NestedRows`) -- each an object of `schema`'s columns
+    in order."""
+
+    field: str
+    index: int
+    schema: Schema
+
+
+@dataclass(frozen=True)
 class EndpointPlan:
     name: str
     method: str
@@ -345,6 +361,18 @@ class EndpointPlan:
     # NativeContext: every profile native that reads settings -- (native, ((setting,
     # scalar), ...)) -- by name, so the natives of steps and procedures are bound too.
     native_settings: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = ()
+    # @endpoint(..., response="M") whose model has Nested fields (W1-B): `schema` holds
+    # its column fields; each nested list is a column of the returned step's rows.
+    nested: tuple[NestedField, ...] = ()
+
+    @property
+    def response_fields(self) -> tuple[tuple[str, Scalar | Schema], ...]:
+        """The response object's fields in order: (column, scalar), and for a Nested
+        field (field, the schema of its objects)."""
+        out: list[tuple[str, Scalar | Schema]] = list(self.schema.columns)
+        for n in self.nested:
+            out.insert(n.index, (n.field, n.schema))
+        return tuple(out)
 
     @property
     def t2_post_reads(self) -> tuple[str, ...]:
@@ -1358,6 +1386,18 @@ class _Endpoint:
             if isinstance(ev, _ForEach) and _computed(ev.args) and isinstance(ev.input, _RelVal):
                 # computed arguments ride on the input's own SELECT, like require flags
                 flags.setdefault(ev.input.rel, []).extend(_arg_columns(ev))
+        nested, nested_extra = self._nested()
+        ret_ev = next((ev for ev in self.events if isinstance(ev, _Return)), None)
+        if nested_extra and ret_ev is not None and isinstance(ret_ev.value, _RelVal):
+            # the nested lists ride on the returned rows' own SELECT, like require flags:
+            # the SELECT of the rows the returned value is a column subset of (a chain of
+            # select()s costs no statement of its own)
+            base = ret_ev.value.rel
+            while self.rels[base].op == "select" and self.rels[base].inputs[0] in self.rels:
+                base = self.rels[base].inputs[0]
+            if self.rels[base].op in ("rows", "user") or base in self.post:
+                base = ret_ev.value.rel
+            flags.setdefault(base, []).extend(nested_extra)
         steps: list[ApiStep] = []
         materialized: dict[str, tuple[str, tuple[str, ...]]] = {}
         step_flags: dict[str, set[str]] = {}  # ReadStep id -> require flags it computes
@@ -1499,6 +1539,21 @@ class _Endpoint:
                 case _Return():
                     returns = rows_of(ev.value, ev.span)
                     response = self._schema_of(ev.value)
+                    names = tuple(n for n, _ in nested_extra)
+                    if names and not set(names) <= step_flags.get(returns, set()):
+                        # rows read earlier (a write, a procedure's value): one SELECT
+                        # over them computes the nested lists
+                        rid = self._rel_of(ev.value)
+                        returns = "return#nested"
+                        self._resolve_rels(rid, rows_of, materialized, ev.span)
+                        sql = compile_select(
+                            self.rels,
+                            rid,
+                            materialized=materialized,
+                            extra=nested_extra,
+                            dialect=self.dialect,
+                        )
+                        steps.append(ReadStep(returns, sql, ev.span, response, names))
                     if isinstance(ev.value, _RelVal):
                         page = self.page_of.get(ev.value.rel)
                         if page is not None and page.total:
@@ -1509,7 +1564,7 @@ class _Endpoint:
         if returns is None:
             raise LatticeInternalError(f"endpoint '{self.info.name}' has no return")
         if self.info.response is not None:
-            response = _reorder(response, self.api.responses[self.info.response])
+            response = _reorder(response, flat_fields(self.api.responses[self.info.response]))
         users = self.api.tables.get(self.api.users_table)
         token_column, auth_native, token_lookup = "token", None, None
         runtime_unique = False
@@ -1593,7 +1648,42 @@ class _Endpoint:
                 else self.info.roles
             ),
             role_values=role_values,
+            nested=nested,
         )
+
+    def _nested(self) -> tuple[tuple[NestedField, ...], list[tuple[str, ast.expr]]]:
+        """The response model's Nested fields (W1-B): their plan descriptions, and the
+        extra columns (field, NestedRows) the returned rows' read computes them with.
+        The parent key is the checker's (L835): the first key of the returned rows'
+        table."""
+        model = self.api.responses.get(self.info.response or "")
+        if model is None or not nested_fields(model):
+            return (), []
+        ret = self.info.node.body[-1]
+        t = self.program.types.get(id(ret.value)) if isinstance(ret, ast.Return) else None
+        on = nested_parent_key(self.api, t.source) if isinstance(t, TableT) else None
+        if on is None:
+            raise LatticeInternalError(f"endpoint '{self.info.name}': no parent key to nest on")
+        plans: list[NestedField] = []
+        extra: list[tuple[str, ast.expr]] = []
+        for index, f in enumerate(model):
+            if isinstance(f, str):
+                continue
+            child = self.api.tables[f.table]
+            types = dict(child.columns)
+            fields = flat_fields(self.api.responses[f.model])
+            columns = tuple((c, types[c]) for c in fields)
+            plans.append(NestedField(f.field, index, Schema(columns)))
+            node = NestedRows(
+                self.api.table_names[f.table],
+                f.via,
+                on,
+                columns,
+                child.stored_spellings(),
+                child.keys[0] if child.keys else (),
+            )
+            extra.append((f.field, node))
+        return tuple(plans), extra
 
     def _t2_caller(self) -> tuple[tuple[str, str], ...]:
         """The users-table columns a procedure sees on the Caller (its public ones)."""

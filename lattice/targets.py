@@ -78,6 +78,9 @@ class Target:
     # auth=Roles(...) / auth=Authenticated and RoleColumn(values=...) (spec 2026-09-29
     # role sets): gated (L892) where the target's runtime does not implement them yet
     role_sets: bool = True
+    # Nested response models (W1-B, `lattice.profile.Nested`): gated (L892) where the
+    # target's runtime does not answer child rows yet
+    nested_responses: bool = True
 
 
 def _go() -> Target:
@@ -88,6 +91,7 @@ def _go() -> Target:
         t2_calls=frozenset(GO_T2_CALLS),
         t2_types=frozenset(GO_T2_TYPES),
         role_sets=False,
+        nested_responses=False,
     )
 
 

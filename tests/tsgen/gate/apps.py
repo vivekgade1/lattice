@@ -130,7 +130,7 @@ def _admin_tokens() -> dict[str, str]:
     from bench.api_datasets import TOKENS as DATASET_TOKENS
     from bench.template_app.seed import TEMPLATE_USERS
     from bench.template_profile import create_access_token
-    from tests.api import effects, hardening, loops, realapps, rolesets, solo, t2prog
+    from tests.api import effects, hardening, loops, nested, realapps, rolesets, solo, t2prog
 
     modules = {
         **dict.fromkeys(("realapps", "partb", "gaps", "mine", "round2", "n1b"), realapps.TOKENS),
@@ -149,6 +149,7 @@ def _admin_tokens() -> dict[str, str]:
     # rolesets: exact role sets (auth=Roles(...)) admit the admin only where listed, so
     # no one caller passes every endpoint: the admin, with ADMIN_REFUSED declared
     out["rolesets"] = rolesets.TOKENS["ada"]
+    out["nested"] = nested.TOKENS["ada"]  # the nested fixture's admin
     return out
 
 

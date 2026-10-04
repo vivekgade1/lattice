@@ -530,3 +530,42 @@ def test_page_number_mode(tmp_path: Path) -> None:
         "decode",
         "decode",
     ]
+
+
+NESTED_DRIFT = """
+import { readFileSync } from "node:fs";
+const dir = JSON.parse(readFileSync(0, "utf8"));
+const api = await import(dir + "/api.ts");
+const item = '{"id":1,"product_id":2,"quantity":3,"price_at_purchase":1.5,"kind":"gift"}';
+const order = (items) => `{"id":10,"status":"paid",${items}"total_amount":1.5}`;
+const bodies = [
+  order(`"items":[${item}],`),
+  order('"items":[],'),
+  order('"items":null,'),
+  order(""),
+  order(`"items":[${item.replace('"kind":"gift"', '"kind":1')}],`),
+  order(`"items":[${item.replace(',"kind":"gift"', '')}],`),
+];
+const headers = { "content-type": "application/json" };
+const out = [];
+for (const b of bodies) {
+  const fetch = async () => new Response(b, { status: 200, headers });
+  const opts = { baseUrl: "http://x", token: "t", fetch };
+  const r = await api.readOrder({ order_id: 10 }, opts);
+  const row = (i) => [typeof i.id, typeof i.price_at_purchase, i.kind];
+  out.push(r.ok ? r.value.items.map(row) : r.error.reason);
+}
+console.log(JSON.stringify(out));
+"""
+
+
+def test_nested_response_fields_are_typed_and_decoded(tmp_path: Path) -> None:
+    """A Nested field (W1-B) is a list of typed child rows, never null; a body whose
+    nested rows drift from the child model is a decode error."""
+    plans = plans_of("nested")
+    api_ts = generate_ts(plans)["api.ts"]
+    assert "  items: {\n    id: bigint | null;\n" in api_ts
+    assert '["items", "Rows", false, [["id", "Int", true], ' in api_ts
+    write(tmp_path, plans)
+    got = node_json(NESTED_DRIFT, tmp_path.as_uri(), cwd=tmp_path)
+    assert got == [[["bigint", "number", "gift"]], [], "decode", "decode", "decode", "decode"]

@@ -65,6 +65,7 @@ from tests.api import (
     loops,
     mine_owner,
     n1b,
+    nested,
     partb,
     realapps,
     rolesets,
@@ -1166,6 +1167,44 @@ PROGRAMS["rolesets"] = (
             ROLESETS_CASES + _probes(ROLESETS_CASES)),
 )  # fmt: skip
 
+# ---- nested response models (tests/api/nested.py, W1-B): One, Page, List, a One after a
+# write, and a Public One, each answering child rows read in the same statement
+_NE = nested
+
+
+def _necase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _NE.TOKENS[who], **kw)
+
+
+NESTED_CASES: tuple[HttpCase, ...] = (
+    _necase("one", "GET", "/orders/10", "ann", max_queries=2),
+    _necase("one no items", "GET", "/orders/12", "ann", max_queries=2),
+    _necase("one other's", "GET", "/orders/13", "ann", status=404),
+    _necase("one bob", "GET", "/orders/13", "bob", max_queries=2),
+    _necase("one admin", "GET", "/orders/13", "ada"),
+    _necase("one missing", "GET", "/orders/99", "ann", status=404),
+    _necase("one no token", "GET", "/orders/10", None, status=401),
+    _necase("page", "GET", "/orders", "ann", max_queries=2),
+    _necase("page 2", "GET", "/orders", "ann", query={"limit": 2, "offset": 2}),
+    _necase("page past the end", "GET", "/orders", "ann", query={"offset": 50}),
+    _necase("page admin", "GET", "/orders", "ada", query={"limit": 50}),
+    _necase("list", "GET", "/recent-orders", "ann", max_queries=2),
+    _necase("list bob", "GET", "/recent-orders", "bob"),
+    _necase("after update", "PATCH", "/orders/11", "ann", json={"status": "done"},
+            after_sql=_NE.ORDERS_AFTER),  # fmt: skip
+    _necase("update empty order", "PATCH", "/orders/12", "ann", json={"status": "x"}),
+    _necase("update other's", "PATCH", "/orders/13", "ann", json={"status": "x"}, status=404,
+            after_sql=_NE.ORDERS_AFTER),  # fmt: skip
+    _necase("product", "GET", "/products/1", None, max_queries=1),
+    _necase("product no images", "GET", "/products/3", None),
+    _necase("product missing", "GET", "/products/9", None, status=404),
+)
+PROGRAMS["nested"] = (
+    _NE.PROGRAM,
+    ApiTask("nested", "control", "nested response models",
+            NESTED_CASES + _probes(NESTED_CASES)),
+)  # fmt: skip
+
 # ---- N1b (tests/api/n1b.py): named column expressions, row values in insert/update/derive,
 # when(..., otherwise=None) -- on the gap-features profile and database
 _N1B = n1b
@@ -1287,6 +1326,7 @@ EXTRA_IDS = [
     "rolesets",
     "t2go",
     "edges",
+    "nested",
 ]
 
 
@@ -1321,6 +1361,7 @@ SETUPS = {
     ),
     "n1b": Setup(n1b.PROFILE, n1b.build_db, n1b.NATIVES, n1b.NATIVES_FILE),
     "rolesets": Setup(rolesets.PROFILE, rolesets.build_db),
+    "nested": Setup(nested.PROFILE, nested.build_db),
     "t2go": Setup(_T2.GO_PROFILE, _T2.build_db),
     "edges": Setup(_ED.PROFILE, _ED.build_db),
 }
@@ -2211,3 +2252,40 @@ def test_the_role_set_program_passes_its_cases(differential_runs):
         body = {c["name"]: c["body"] for c in captured}
         assert body["/me ada"]["admin"] is True and body["/me odd"]["admin"] is False
         assert [r["id"] for r in body["/items ada"]["items"]] == [1, 2, 3]
+
+
+def test_the_nested_program_answers_child_rows(differential_runs):
+    """Nested response models (W1-B): every response carries its child rows in key
+    order, [] for none, private columns never, stored spellings decoded, Float values
+    exact -- the same on both backends (compared above) -- and each read is one SQL
+    statement after authentication (the cases' max_queries)."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs["nested"]
+    want = {c.name: c.expect_status for c in NESTED_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want
+        bounded = {c.name for c in NESTED_CASES if c.max_queries is not None}
+        failed = [(c.name, c.reason) for c in results.cases if c.name in bounded and not c.passed]
+        assert len(bounded) == 6 and not failed, failed
+    item_101 = {"id": 101, "product_id": 1, "quantity": 2, "price_at_purchase": 10.0,
+                "kind": "standard"}  # fmt: skip
+    for captured in (rt_captured, gen_captured):
+        body = {c["name"]: c["body"] for c in captured}
+        one = body["one"]
+        assert list(one) == ["id", "status", "items", "total_amount"]
+        assert [i["id"] for i in one["items"]] == [101, 102, 103]
+        assert one["items"][0] == item_101 and one["items"][2]["kind"] == "gift"
+        assert body["one no items"]["items"] == []
+        assert body["one bob"]["items"][0]["price_at_purchase"] == 3.0833333333333335
+        assert [o["id"] for o in body["page"]["items"]] == [10, 11]
+        assert [len(o["items"]) for o in body["page 2"]["items"]] == [0]
+        assert body["page past the end"]["items"] == []
+        assert [o["id"] for o in body["list"]] == [12, 11, 10]
+        assert body["after update"]["status"] == "done"
+        assert [i["id"] for i in body["after update"]["items"]] == [104]
+        assert body["update empty order"]["items"] == []
+        images = body["product"]["images"]
+        assert images == [{"url": "lamp.png", "primary": True},
+                          {"url": "lamp-side.png", "primary": False}]  # fmt: skip
+        assert body["product no images"]["images"] == []
+        assert "cost" not in json.dumps(body)

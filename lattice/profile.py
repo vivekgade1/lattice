@@ -164,6 +164,42 @@ RoleSource = RoleColumn | AdminFlag | NoRoles
 
 
 @dataclass(frozen=True)
+class Nested:
+    """A response model field holding a list of child rows (W1-B nested responses):
+    ``Nested("items", "OrderItemRead", table="OrderItem", via="order_id")`` answers, in
+    field ``items`` of each returned row, the rows of table ``OrderItem`` whose ``via``
+    column equals the returned row's key (the first key of the table the returned rows
+    come from), each shaped by response model ``model``, ordered by the child table's
+    first key (else its insertion order); no children is ``[]``. The list is read in the
+    returned rows' own statement (a correlated sub-select), so a read stays ONE SQL
+    statement. The checker (L835) requires the model's fields to be public columns of
+    ``table``, and the child rows to be the parent's: ``table`` has no owner column of
+    its own, and its ``owner_via``, when set, is ``(via, <the parent table>)``."""
+
+    field: str
+    model: str
+    table: str
+    via: str
+
+
+ResponseField = str | Nested
+
+
+def flat_fields(fields: tuple[ResponseField, ...]) -> tuple[str, ...]:
+    """A response model's column fields (its Nested fields left out), in order."""
+    return tuple(f for f in fields if isinstance(f, str))
+
+
+def nested_fields(fields: tuple[ResponseField, ...]) -> tuple[Nested, ...]:
+    """A response model's Nested fields, in order."""
+    return tuple(f for f in fields if isinstance(f, Nested))
+
+
+def field_name(f: ResponseField) -> str:
+    return f.field if isinstance(f, Nested) else f
+
+
+@dataclass(frozen=True)
 class ApiProfile:
     """The API-profile environment: database tables, roles, and the users table."""
 
@@ -174,8 +210,9 @@ class ApiProfile:
     users_table: str = "Users"  # schema name of the users table (has id, role)
     # Page envelope: "items"/"total"/"limit"/"offset" -> JSON field name ("" = omitted).
     page_shape: Mapping[str, str] = field(default_factory=_default_page_shape)
-    # Response models: name -> the exact (ordered) fields a response object carries.
-    responses: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    # Response models: name -> the exact (ordered) fields a response object carries: a
+    # column name, or Nested(...) -- a list of child rows (W1-B).
+    responses: Mapping[str, tuple[ResponseField, ...]] = field(default_factory=dict)
     # Native functions callable as native.<name>(...).
     natives: Mapping[str, NativeSig] = field(default_factory=dict)
     auth: AuthScheme = field(default_factory=TokenColumn)
@@ -286,9 +323,17 @@ class ApiProfile:
         for name, fields in self.responses.items():
             if not isinstance(fields, tuple) or not fields:
                 raise ValueError(f"response model {name!r} needs a non-empty tuple of fields")
-            if not all(isinstance(f, str) and f for f in fields):
-                raise ValueError(f"response model {name!r} fields must be names")
-            if len(set(fields)) != len(fields):
+            if not all((isinstance(f, str) and f) or isinstance(f, Nested) for f in fields):
+                raise ValueError(f"response model {name!r} fields must be names or Nested(...)")
+            for n in nested_fields(fields):
+                parts = (n.field, n.model, n.table, n.via)
+                if not all(isinstance(x, str) and x for x in parts) or not n.field.isidentifier():
+                    raise ValueError(
+                        f"response model {name!r}: Nested(field, model, table=, via=) takes "
+                        "a field name (an identifier) and non-empty names"
+                    )
+            names = [field_name(f) for f in fields]
+            if len(set(names)) != len(names):
                 raise ValueError(f"response model {name!r} lists a field twice")
 
     def _validate_natives(self) -> None:

@@ -11,7 +11,7 @@ from lattice.catalog import API_ERRORS, LIST_KIND
 from lattice.targets import TS_REFUSAL
 from lattice.tsgen.regex import Untranslatable, fullmatch_source
 from lattice.tsgen.specs import BoundError, plan_specs, ts_checks
-from lattice.typesys import Schema
+from lattice.typesys import Scalar, Schema
 
 SAFE = 2**53 - 1
 KIND = {400: "bad_request", 401: "unauthorized", 403: "forbidden", 404: "not_found",
@@ -94,8 +94,10 @@ def check_names(plans: Sequence[EndpointPlan]) -> None:
         for spec in plan.params:
             if spec.source != "user":
                 check_identifier(plan, spec.name, "the parameter")
-        for column, _scalar in plan.schema.columns:
+        for column, t in plan.response_fields:
             check_identifier(plan, column, "the response column")
+            for child, _scalar in t.columns if isinstance(t, Schema) else ():
+                check_identifier(plan, child, "the nested response column")
         if plan.success == "Page":
             for _key, field in page_shape(plan):
                 check_identifier(plan, field, "the page field")
@@ -220,13 +222,27 @@ def param_field(d: dict[str, object], json_body: bool) -> str:
 # Promising non-null would make a valid answer a decode error.
 
 
-def row_type(schema: Schema) -> str:
-    fields = [f"  {n}: {TS_SCALAR[s.value]} | null;" for n, s in schema.columns]
-    return "{\n" + "\n".join(fields) + "\n}"
+# A Nested field (W1-B) is a list, never null; its rows' columns follow the rule above.
+Fields = Sequence[tuple[str, "Scalar | Schema"]]
 
 
-def cols_literal(schema: Schema) -> str:
-    cols = (f'[{json.dumps(n)}, "{s.value}", true]' for n, s in schema.columns)
+def row_type(fields: Fields, indent: str = "  ") -> str:
+    lines = [
+        f"{indent}{n}: {TS_SCALAR[t.value]} | null;"
+        if isinstance(t, Scalar)
+        else f"{indent}{n}: {row_type(t.columns, indent + '  ')}[];"
+        for n, t in fields
+    ]
+    return "{\n" + "\n".join(lines) + "\n" + indent[2:] + "}"
+
+
+def cols_literal(fields: Fields) -> str:
+    cols = (
+        f'[{json.dumps(n)}, "{t.value}", true]'
+        if isinstance(t, Scalar)
+        else f'[{json.dumps(n)}, "Rows", false, {cols_literal(t.columns)}]'
+        for n, t in fields
+    )
     return "[" + ", ".join(cols) + "]"
 
 
@@ -256,7 +272,7 @@ def _response(plan: EndpointPlan, row: str) -> tuple[str, str]:
         raise TsGenRefusal(plan, f"success kind {plan.success!r}")
     if plan.success == "NoContent":
         return "void", "() => undefined"
-    cols = cols_literal(plan.schema)
+    cols = cols_literal(plan.response_fields)
     if plan.success == "Page":
         shape = page_shape(plan)
         modes = {k: page_num(plan, k) for k, _f in shape if k != "items"}
@@ -277,14 +293,14 @@ def _endpoint(plan: EndpointPlan, models: dict[str, str]) -> str:
     specs = plan_specs(plan)
     name, fn = pascal(plan.name), camel(plan.name)
     if plan.response is not None:
-        row_ts = models.setdefault(plan.response, row_type(plan.schema))
-        if row_ts != row_type(plan.schema):
+        row_ts = models.setdefault(plan.response, row_type(plan.response_fields))
+        if row_ts != row_type(plan.response_fields):
             raise TsGenRefusal(
                 plan, f"model {plan.response} has another schema in an earlier endpoint"
             )
         row = plan.response
     else:
-        row = row_type(plan.schema)
+        row = row_type(plan.response_fields)
     resp, decode = _response(plan, row)
     statuses = error_statuses(plan)
     variants = (

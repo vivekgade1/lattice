@@ -29,9 +29,10 @@ from lattice.catalog import (
     UNSET_NAME,
 )
 from lattice.check.astutil import literal_value
+from lattice.check.exprs import did_you_mean
 from lattice.check.redos import redos_risk
 from lattice.diagnostics import Span, span_of
-from lattice.profile import ApiProfile
+from lattice.profile import ApiProfile, Nested, flat_fields, nested_fields
 from lattice.typesys import SCALAR_NAMES, Scalar, TableT, plain_columns
 
 
@@ -687,3 +688,115 @@ def endpoint_info(fn: ast.FunctionDef) -> EndpointInfo | None:
         body=decl.body,
         roles=tuple(sorted(set(roles))) if roles is not None else None,
     )
+
+
+# ---- nested response fields (W1-B) -------------------------------------------------------
+
+
+def nested_parent_key(api: ApiProfile, source: str | None) -> str | None:
+    """The column a Nested field's child rows are matched on: the first key of the table
+    the returned rows come from (`TableT.source`), when it is a one-column key."""
+    parent = api.tables.get(source) if source is not None else None
+    if parent is None or not parent.keys or len(parent.keys[0]) != 1:
+        return None
+    return parent.keys[0][0]
+
+
+def nested_model_problem(api: ApiProfile, n: Nested) -> Problem | None:
+    """What is wrong with a Nested field's child model, table and link column, before
+    any endpoint returns it (checker rule L835), else None."""
+    model = api.responses.get(n.model)
+    if model is None:
+        known = sorted(api.responses)
+        return (
+            f"nested field '{n.field}' names unknown response model '{n.model}'",
+            f"declare it in ApiProfile.responses, e.g. responses[{n.model!r}] = "
+            '("id", ...): ' + (did_you_mean(n.model, known) or "models: " + ", ".join(known)),
+        )
+    inner = nested_fields(model)
+    if inner:
+        return (
+            f"nested field '{n.field}': model '{n.model}' has a nested field itself "
+            f"('{inner[0].field}'); a response nests one level",
+            f"remove Nested({inner[0].field!r}, ...) from responses[{n.model!r}]",
+        )
+    child = api.tables.get(n.table)
+    if child is None:
+        known = sorted(api.tables)
+        return (
+            f"nested field '{n.field}' reads unknown table '{n.table}'",
+            did_you_mean(n.table, known) or "tables: " + ", ".join(known),
+        )
+    fields = flat_fields(model)
+    unknown = [f for f in fields if f not in child]
+    if unknown:
+        shown = ", ".join(f"'{f}'" for f in unknown)
+        return (
+            f"nested field '{n.field}': model '{n.model}' lists {shown}, not "
+            f"column(s) of {n.table}",
+            f"remove them from responses[{n.model!r}]; {n.table} has: " + ", ".join(child.names()),
+        )
+    private = [f for f in fields if f in child.private]
+    if private:
+        keep = ", ".join(repr(f) for f in fields if f not in child.private)
+        return (
+            f"nested field '{n.field}' would answer private column(s) of {n.table}: "
+            + ", ".join(private),
+            f"list only public columns: responses[{n.model!r}] = ({keep},)",
+        )
+    if n.via not in child:
+        return (
+            f"nested field '{n.field}': via='{n.via}' is not a column of {n.table}",
+            did_you_mean(n.via, list(child.names())) or "columns: " + ", ".join(child.names()),
+        )
+    if child.owner is not None:
+        return (
+            f"nested field '{n.field}': rows of {n.table} have their own owner column "
+            f"('{child.owner}'), so nesting them would skip owned()",
+            f"answer {n.table} from its own endpoint with owned(...), or declare it owned "
+            f"through the parent: owner_via=({n.via!r}, <parent table>) instead of "
+            f"owner={child.owner!r}",
+        )
+    return None
+
+
+def nested_parent_problem(api: ApiProfile, n: Nested, t: TableT) -> Problem | None:
+    """What is wrong with the rows an endpoint returns as the parents of Nested field
+    `n` (checker rule L835), else None: they must be rows of one table with a
+    one-column key, carry that key, and be what the child's foreign key references."""
+    if t.source is None:
+        return (
+            f"nested field '{n.field}' needs the returned rows to be rows of one table "
+            "(fetch, then where/sort/select/owned/one/page of it), not computed rows",
+            "return the parent table's rows (a select of them), and compute nothing new "
+            "in the returned value",
+        )
+    on = nested_parent_key(api, t.source)
+    if on is None:
+        return (
+            f"nested field '{n.field}': the parent table {t.source} has no one-column key "
+            "to match child rows on",
+            f"declare a one-column key first in {t.source}'s schema (keys=[('id',), ...])",
+        )
+    if on not in t.schema:
+        return (
+            f"nested field '{n.field}' is matched on the parent key '{on}', which the "
+            "returned rows do not carry",
+            f'keep "{on}" in the returned columns and in the response model\'s fields',
+        )
+    child = api.tables[n.table]
+    if child.owner_via is not None and child.owner_via != (n.via, t.source):
+        fk, parent = child.owner_via
+        return (
+            f"nested field '{n.field}': rows of {n.table} belong to {parent} through "
+            f"'{fk}', not to {t.source} through '{n.via}'",
+            f"nest them under rows of {parent} with via={fk!r}",
+        )
+    if child.get(n.via) is not api.tables[t.source].get(on):
+        a, b = child.get(n.via), api.tables[t.source].get(on)
+        return (
+            f"nested field '{n.field}': {n.table}.{n.via} ({a}) cannot reference "
+            f"{t.source}.{on} ({b})",
+            f"use a column of {n.table} holding {t.source}'s key as via=",
+        )
+    return None

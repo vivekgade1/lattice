@@ -17,6 +17,7 @@ from lattice.tsgen import generate_ts
 from lattice.tsgen.emit import page_num, page_shape
 from lattice.tsgen.pyref import answer, case
 from lattice.tsgen.specs import plan_specs
+from lattice.typesys import Schema
 from tests.tsgen.gate.apps import ADMIN_REFUSED, ADMIN_TOKENS, APP_NAMES, RESET_PATH, app, serve
 from tests.tsgen.gate.corpus import typed_corpus
 from tests.tsgen.node import node_json, run_node
@@ -71,12 +72,22 @@ def _same_scalar(got: object, raw: object, scalar: str) -> bool:
     return type(raw) is str and type(got) is str and got == raw
 
 
+def _same_field(got: object, raw: object, t: Any) -> bool:
+    """A column (`t` its Scalar), or a Nested field (`t` its rows' Schema, W1-B)."""
+    if isinstance(t, Schema):
+        return (
+            isinstance(got, list) and isinstance(raw, list) and len(got) == len(raw)
+            and all(_same_row(a, b, t.columns) for a, b in zip(got, raw, strict=False))
+        )  # fmt: skip
+    return _same_scalar(got, raw, t.value)
+
+
 def _same_row(got: object, raw: object, cols: tuple[tuple[str, Any], ...]) -> bool:
     names = [n for n, _s in cols]
     return (
         isinstance(got, dict) and isinstance(raw, dict)
         and sorted(got) == sorted(raw) == sorted(names)
-        and all(_same_scalar(got[n], raw[n], s.value) for n, s in cols)
+        and all(_same_field(got[n], raw[n], s) for n, s in cols)
     )  # fmt: skip
 
 
@@ -88,7 +99,7 @@ def lossless(plan: EndpointPlan, got: object, body: bytes) -> bool:
     if plan.success == "NoContent":
         return got is None and body == b""
     raw = json.loads(body)
-    cols = plan.schema.columns
+    cols = plan.response_fields
     if plan.success == "Page":
         shape = page_shape(plan)
         if not (isinstance(got, dict) and isinstance(raw, dict)):

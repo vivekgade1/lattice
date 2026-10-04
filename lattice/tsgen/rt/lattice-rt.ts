@@ -976,7 +976,10 @@ export function decodeErrorBody(status: number, body: Uint8Array): { code: strin
   return { code, detail };
 }
 
-export type Col = readonly [name: string, scalar: Scalar, nullable: boolean];
+/** A response column, or a Nested field (W1-B): a list of child rows of `cols`. */
+export type Col =
+  | readonly [name: string, scalar: Scalar, nullable: boolean]
+  | readonly [name: string, scalar: "Rows", nullable: false, cols: readonly Col[]];
 
 function decodeScalar(v: JsonVal | undefined, scalar: Scalar, nullable: boolean, where: string): unknown {
   if (v === null) {
@@ -998,7 +1001,15 @@ export function decodeRow(v: JsonVal | undefined, cols: readonly Col[]): Record<
   if (v.keys.length !== cols.length || cols.some(([n]) => !v.vals.has(n)))
     throw new DecodeError(`columns ${v.keys.join(",")} are not ${cols.map((c) => c[0]).join(",")}`);
   const out: Record<string, unknown> = {};
-  for (const [n, s, nullable] of cols) out[n] = decodeScalar(v.vals.get(n), s, nullable, n);
+  for (const c of cols) {
+    const x = v.vals.get(c[0]);
+    if (c[1] === "Rows") {
+      if (!Array.isArray(x)) throw new DecodeError(`${c[0]}: not a list`);
+      out[c[0]] = x.map((r) => decodeRow(r, c[3]));
+    } else {
+      out[c[0]] = decodeScalar(x, c[1], c[2], c[0]);
+    }
+  }
   return out;
 }
 

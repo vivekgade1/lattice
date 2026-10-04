@@ -113,6 +113,7 @@ from lattice.check.api_info import MISSING, UNSET, ParamSpec
 from lattice.profile import NativeSig, Profile
 from lattice.runtime import LatticeInternalError
 from lattice.t2 import support as t2_support
+from lattice.typesys import Scalar
 
 __all__ = ["compile_source_to_fastapi", "generate_fastapi"]
 
@@ -288,6 +289,11 @@ def _mod(a: object, b: object) -> object:
     if a is None or b is None or b == 0:
         return None
     return a % b  # type: ignore[operator]
+
+
+def _float_text(x: object) -> object:
+    """A REAL as exact text (a Nested response field's Float values)."""
+    return repr(x) if isinstance(x, float) else x
 
 
 # Uuid values are stored as canonical lowercase hyphenated text ("canonical") or 32 hex
@@ -627,6 +633,7 @@ def connect() -> sqlite3.Connection:
     conn.create_function("lattice_upper", 1, _upper, deterministic=True)
     conn.create_function("lattice_strip", 1, _strip, deterministic=True)
     conn.create_function("lattice_mod", 2, _mod, deterministic=True)
+    conn.create_function("lattice_float_text", 1, _float_text, deterministic=True)
     conn.create_function("lattice_to_uuid", 1, _to_uuid, deterministic=True)
     conn.create_function("lattice_to_datetime", 2, _to_datetime, deterministic=True)
     conn.create_function("lattice_datetime_add", 5, _datetime_add, deterministic=True)
@@ -1015,16 +1022,30 @@ def _finite(value: object) -> object:
     return value
 
 
-def _items(result: Result, columns: Sequence[tuple[str, str]]) -> list[dict[str, object]]:
+def _cell(v: object, t: Any) -> object:
+    """A response field's value: a column's (`t` its scalar name), or a Nested field's
+    list of child objects (`t` their (column, scalar) pairs; a JSON array whose Float
+    values are exact text)."""
+    if isinstance(t, str):
+        return _finite(_decode(v, t))
+    rows = json.loads(v) if isinstance(v, str) else []
+    return [
+        {c: _finite(_decode(float(r[c]) if s == "Float" and isinstance(r[c], str) else r[c], s))
+         for c, s in t}
+        for r in rows
+    ]  # fmt: skip
+
+
+def _items(result: Result, columns: Sequence[tuple[str, Any]]) -> list[dict[str, object]]:
     names = [c for c, _ in columns]
     return [
-        {c: _finite(_decode(v, t)) for (c, t), v in zip(columns, row, strict=True)}
+        {c: _cell(v, t) for (c, t), v in zip(columns, row, strict=True)}
         for row in project(result, names)
     ]
 
 
 def respond_one(
-    result: Result, columns: Sequence[tuple[str, str]], *, status: int, where: str
+    result: Result, columns: Sequence[tuple[str, Any]], *, status: int, where: str
 ) -> Response:
     """One / Created: the single returned row as an object."""
     items = _items(result, columns)
@@ -1039,7 +1060,7 @@ def respond_one(
 
 def respond_page(
     result: Result,
-    columns: Sequence[tuple[str, str]],
+    columns: Sequence[tuple[str, Any]],
     shape: Sequence[tuple[str, str]],
     limit: object,
     offset: object,
@@ -1052,7 +1073,7 @@ def respond_page(
     return JSONResponse({name: parts[key] for key, name in shape if name and key in parts})
 
 
-def respond_list(result: Result, columns: Sequence[tuple[str, str]]) -> Response:
+def respond_list(result: Result, columns: Sequence[tuple[str, Any]]) -> Response:
     """List: the returned (bounded) rows as a JSON array."""
     return JSONResponse(_items(result, columns))
 
@@ -1614,7 +1635,15 @@ class _EndpointGen:
         if plan.success == "NoContent":
             self.body.append("    return Response(status_code=204)")
             return
-        pairs = tuple(_Tuple((_py_str(c), _py_str(t.value))) for c, t in plan.schema.columns)
+
+        def typed(cols: Sequence[tuple[str, Scalar]]) -> _Tuple:
+            return _Tuple(tuple(_Tuple((_py_str(n), _py_str(s.value))) for n, s in cols))
+
+        # a Nested field (W1-B): (field, ((column, scalar), ...))
+        pairs = tuple(
+            _Tuple((_py_str(c), _py_str(t.value) if isinstance(t, Scalar) else typed(t.columns)))
+            for c, t in plan.response_fields
+        )
         columns = self.constant("RESPONSE", _Tuple(pairs))
         result = self.result(plan.returns)
         if plan.success == "Page":

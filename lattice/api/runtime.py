@@ -92,7 +92,7 @@ from lattice.check.api_info import MISSING, UNSET, ParamSpec, pattern_problem
 from lattice.profile import Profile
 from lattice.runtime import LatticeInternalError, LatticeRuntimeError
 from lattice.t2 import support as t2s
-from lattice.typesys import Scalar
+from lattice.typesys import Scalar, Schema
 
 __all__ = ["ApiRuntimeError", "build_app", "error_body", "on_connect", "serve_source"]
 
@@ -651,14 +651,10 @@ def _respond(
 ):
     if plan.success == "NoContent":
         return Response(status_code=204)
-    names = plan.schema.names()
-    types = dict(plan.schema.columns)
+    fields = plan.response_fields
     items = [
-        {
-            c: _wire(plan, decode(v, types[c], dialect), types[c])
-            for c, v in zip(names, row, strict=True)
-        }
-        for row in _project(results[plan.returns], names)
+        {c: _value(plan, dialect, v, t) for (c, t), v in zip(fields, row, strict=True)}
+        for row in _project(results[plan.returns], [c for c, _ in fields])
     ]
     if plan.success == LIST_KIND:  # a JSON array of the (bounded) rows
         return JSONResponse(items)
@@ -679,6 +675,27 @@ def _respond(
             "R310", plan.span, f"the response has {len(items)} rows; expected exactly one"
         )
     return JSONResponse(items[0], status_code=201 if plan.success == "Created" else 200)
+
+
+def _value(plan: EndpointPlan, dialect: Dialect, v: object, t: Scalar | Schema) -> object:
+    """A response field's value: a column's decoded value, or a Nested field's list of
+    child objects (a JSON array read in the same statement; Float values as exact text,
+    `float_text`)."""
+    if isinstance(t, Scalar):
+        return _wire(plan, decode(v, t, dialect), t)
+    rows = json.loads(v) if isinstance(v, str) else []
+    return [
+        {c: _wire(plan, decode(_json_cell(r[c], s), s, dialect), s) for c, s in t.columns}
+        for r in rows
+    ]
+
+
+def _json_cell(v: object, scalar: Scalar) -> object:
+    """A nested row's JSON value as the database row would hold it: a Float's exact text
+    back to a float."""
+    if scalar is Scalar.FLOAT and isinstance(v, str):
+        return float(v)
+    return v
 
 
 def _wire(plan: EndpointPlan, value: object, scalar: Scalar) -> object:

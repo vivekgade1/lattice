@@ -196,6 +196,13 @@ class Dialect(Protocol):
     def divide(self, a: str, b: str) -> str: ...  # true division, null on a zero divisor
     def modulo(self, a: str, b: str) -> str: ...  # floored modulo, null on a zero divisor
     def function(self, name: str, x: str, kw: Mapping[str, str]) -> str | None: ...
+    # a Nested response field (W1-B): the JSON array (text) of one object per row of
+    # `source` (aliased `alias`) matching `where`, in `order`; "[]" when none. `fields`
+    # are (JSON key, SQL value) pairs; a Float value passes through `float_text` first.
+    def json_rows(
+        self, fields: Sequence[tuple[str, str]], source: str, alias: str, where: str, order: str
+    ) -> str: ...
+    def float_text(self, expr: str) -> str: ...  # a Float exactly, as text (JSON-safe)
     def insert(self, table: str, cols: Sequence[str], vals: Sequence[str], ret: str) -> str: ...
     # insert_many: INSERT the rows a SELECT yields (in its order), RETURNING `ret`
     def insert_select(self, table: str, cols: Sequence[str], select: str, ret: str) -> str: ...
@@ -234,6 +241,17 @@ def _upper(x: object) -> object:
 
 def _strip(x: object) -> object:
     return x.strip() if isinstance(x, str) else x
+
+
+def float_text(x: object) -> object:
+    """A REAL as the exact text Python reads back (`float(text) == x`); anything else
+    unchanged. A Nested response field carries Float values this way, since SQLite's
+    JSON renders a REAL with 15 significant digits."""
+    return repr(x) if isinstance(x, float) else x
+
+
+def _sql_text(v: str) -> str:
+    return "'" + v.replace("'", "''") + "'"
 
 
 def _mod(a: object, b: object) -> object:
@@ -423,6 +441,20 @@ class SqliteDialect:
         build = _SQLITE_FN.get(name)
         return None if build is None else build(x, kw)
 
+    def json_rows(
+        self, fields: Sequence[tuple[str, str]], source: str, alias: str, where: str, order: str
+    ) -> str:
+        # json_object renders a REAL with 15 significant digits: Float values are
+        # passed as exact text (`float_text`) and decoded by the reader
+        obj = ", ".join(f"{_sql_text(k)}, {v}" for k, v in fields)
+        return (
+            f"(SELECT json_group_array(json_object({obj}) ORDER BY {order}) "
+            f"FROM {source} AS {alias} WHERE {where})"
+        )
+
+    def float_text(self, expr: str) -> str:
+        return f"lattice_float_text({expr})"
+
     def insert(self, table: str, cols: Sequence[str], vals: Sequence[str], ret: str) -> str:
         if cols:
             listed, values = ", ".join(cols), ", ".join(vals)
@@ -563,6 +595,7 @@ class SqliteDialect:
         conn.create_function("lattice_upper", 1, _upper, deterministic=True)
         conn.create_function("lattice_strip", 1, _strip, deterministic=True)
         conn.create_function("lattice_mod", 2, _mod, deterministic=True)
+        conn.create_function("lattice_float_text", 1, float_text, deterministic=True)
         us, ds = self.uuid_storage, self.datetime_storage
 
         def to_uuid(x: object) -> object:

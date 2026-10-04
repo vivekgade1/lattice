@@ -6,6 +6,8 @@ code target cannot run with v1.1 semantics.
 * L891 — a program of the tabular profile on a target without it.
 * L892 — also ``auth=Roles(...)`` / ``auth=Authenticated`` and ``RoleColumn(values=...)``
   on a target whose runtime does not check exact role sets yet (``Target.role_sets``).
+* L892 — also an endpoint whose response model has a Nested field (W1-B) on a target
+  whose runtime does not answer nested child rows yet (``Target.nested_responses``).
 * L892 — a T2 construct the target does not implement yet: a call (builtin, method or
   stdlib function) outside the target's `t2_calls`, a value of a kind outside its
   `t2_types`, `str()` / an f-string field of a container, the regular expressions Go
@@ -28,7 +30,7 @@ from lattice.check.t2 import types as T
 from lattice.diagnostics import Span
 from lattice.gogen.regex import regex_problem
 from lattice.gogen.types import is_container, kinds
-from lattice.profile import NativeToken, RoleColumn
+from lattice.profile import NativeToken, RoleColumn, nested_fields
 from lattice.targets import Target, supports_call, supports_type
 
 _HINT = "rewrite with a supported construct, or compile for target 'python'"
@@ -73,6 +75,8 @@ def run(module: ast.Module, ctx: CheckContext, t2: T2Program | None, target: Tar
                 )
     if api is not None and not target.role_sets:
         _role_sets(module, ctx, target)
+    if api is not None and not target.nested_responses:
+        _nested_responses(module, ctx, target)
     if t2 is not None:
         for proc in t2.procedures.values():
             for node in ast.walk(proc.node):
@@ -124,6 +128,30 @@ def _role_sets(module: ast.Module, ctx: CheckContext, target: Target) -> None:
                 auth,
                 f"auth={ast.unparse(auth)} is not available on target '{target.name}' yet",
                 hint,
+            )
+
+
+def _nested_responses(module: ast.Module, ctx: CheckContext, target: Target) -> None:
+    """L892 for a response model with Nested fields (W1-B) on a target whose runtime does
+    not read and answer child rows yet."""
+    api = ctx.profile.api
+    assert api is not None
+    for node in ast.walk(module):
+        if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                and node.func.id == "endpoint"):  # fmt: skip
+            continue
+        response = next((kw.value for kw in node.keywords if kw.arg == "response"), None)
+        if not (isinstance(response, ast.Constant) and isinstance(response.value, str)):
+            continue
+        nested = nested_fields(api.responses.get(response.value, ()))
+        if nested:
+            ctx.error(
+                "L892",
+                response,
+                f"response model '{response.value}' nests '{nested[0].field}' "
+                f"(Nested), which is not available on target '{target.name}' yet",
+                "answer the child rows from their own endpoint, or compile for target "
+                "'python'",
             )
 
 

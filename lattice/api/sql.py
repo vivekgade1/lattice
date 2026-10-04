@@ -126,6 +126,33 @@ class OwnerIs(ast.expr):
         self.via = via
 
 
+class NestedRows(ast.expr):
+    """A Nested response field (W1-B) lowered: the JSON array of the rows of SQL table
+    `table` whose column `via` equals the outer row's `on`, one object per row holding
+    `columns` (with their scalars; Float values as exact text, OneOf columns in
+    `stored` decoded), ordered by `order` (the child's key, else its insertion order).
+    Only a read's extra column (`ReadPipeline.extra`): the outer row is the read's."""
+
+    _fields = ()
+
+    def __init__(
+        self,
+        table: str,
+        via: str,
+        on: str,
+        columns: tuple[tuple[str, Scalar], ...],
+        stored: Stored = (),
+        order: tuple[str, ...] = (),
+    ) -> None:
+        super().__init__()
+        self.table = table
+        self.via = via
+        self.on = on
+        self.columns = columns
+        self.stored = stored
+        self.order = order
+
+
 @dataclass(frozen=True)
 class SqlQuery:
     """One parameterized statement.
@@ -353,6 +380,8 @@ class _Builder:
     sent: list[str] = field(default_factory=list)
     caller: list[str] = field(default_factory=list)
     recursive: bool = False  # some CTE refers to itself (traverse)
+    # the alias of the rows a read's extra columns are computed over (NestedRows)
+    outer: str | None = None
 
     def q(self, name: str) -> str:
         return self.d.quote(name)
@@ -791,6 +820,8 @@ class _Builder:
                 return self.owner_cond(owner, via)
             case CallerRef():
                 return self.caller_ref(node)
+            case NestedRows():
+                return self.nested(node)
             case RowsValue(step=step, columns=columns, column=column):
                 return f"(SELECT {self.q(column)} FROM {self.rows_cte(step, columns)})"
             case ast.BinOp(left=left, op=op, right=right):
@@ -803,6 +834,26 @@ class _Builder:
                 return f"(NOT {self.expr(operand)})"
             case _:
                 raise LatticeInternalError(f"cannot compile expression to SQL: {ast.dump(node)}")
+
+    def nested(self, n: NestedRows) -> str:
+        """A correlated sub-select: the outer row's child rows as one JSON array."""
+        if self.outer is None:
+            raise LatticeInternalError("a nested response field outside a read's columns")
+        q, child = self.q, "__child"
+        stored = dict(n.stored)
+        fields: list[tuple[str, str]] = []
+        for c, scalar in n.columns:
+            v = f"{child}.{q(c)}"
+            if c in stored:
+                v = stored_case(v, stored[c], encode=False)
+            if scalar is Scalar.FLOAT:
+                v = self.d.float_text(v)
+            fields.append((c, v))
+        order = ", ".join(f"{child}.{q(c)}" for c in n.order) or (
+            f"{child}.{self.d.natural_order()}"
+        )
+        where = f"{child}.{q(n.via)} = {self.outer}.{q(n.on)}"
+        return self.d.json_rows(fields, q(n.table), child, where, order)
 
     def _binop(self, a: str, op: ast.operator, b: str) -> str:
         match op:
@@ -869,6 +920,7 @@ def build_read(pipeline: ReadPipeline, dialect: Dialect) -> SqlQuery:
     source = b.cte(pipeline.target)
     cols = b.cols_of(pipeline.target)
     if pipeline.total_of is None:
+        b.outer = source
         listed = [b.q(c) for c in cols] + [f"{b.expr(e)} AS {b.q(n)}" for n, e in pipeline.extra]
         return b.query(f"SELECT {', '.join(listed)} FROM {source} ORDER BY {ORD}")
     # page(total=True): the page's rows next to the row count of the page's input, in
@@ -876,6 +928,7 @@ def build_read(pipeline: ReadPipeline, dialect: Dialect) -> SqlQuery:
     # an empty page (an offset past the end) still yields the total, on one
     # placeholder row whose __in_page is 0.
     counted = b.cte(pipeline.total_of)
+    b.outer = "f"
     listed = [f"f.{b.q(c)}" for c in cols] + [f"{b.expr(e)} AS {b.q(n)}" for n, e in pipeline.extra]
     listed += [f"(f.{ORD} IS NOT NULL) AS {IN_PAGE}", f"n.{TOTAL}"]
     count = f"(SELECT COUNT(*) AS {TOTAL} FROM {counted}) AS n"
