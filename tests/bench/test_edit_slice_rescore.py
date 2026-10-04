@@ -166,4 +166,15 @@ def test_arm_q_candidates_are_rebuilt_as_python(tmp_path):
     stale = dict(record, arm="Q", outcome="silent", failed_cases=["x"])
     new, note = rescore.rescore_record(stale, {"t14_email_change"})
     assert note == "silent -> correct" and new["arm"] == "Q"
-    assert rescore.PYTHON_ARMS == {"P", "Q", "Q+"}
+    assert rescore.PYTHON_ARMS == {"P", "Q", "Q+", "S", "S*"}
+
+
+def test_arm_s_and_s_star_candidates_are_rebuilt_as_python(tmp_path):
+    """Phase 1's arms S and S* edit the Python app too (checked against a spec)."""
+    answer = _p_answer("t14_email_change")
+    record = _run_record(tmp_path, "t14_email_change", answer)
+    for arm in ("S", "S*"):
+        assert arm in rescore.PYTHON_ARMS
+        stale = dict(record, arm=arm, outcome="silent", failed_cases=["x"])
+        new, note = rescore.rescore_record(stale, {"t14_email_change"})
+        assert note == "silent -> correct" and new["arm"] == arm

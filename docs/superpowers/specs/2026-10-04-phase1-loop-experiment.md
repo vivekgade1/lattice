@@ -94,6 +94,24 @@ checked arm.
   - an oracle defect is fixed and rescored without new model calls, and both verdicts
     are reported.
 
+### Decision rules, fixed with the analysis code (`bench/edit_slice/phase1_analysis.py`)
+
+1. **The correctness guard is strict:** S's correct rate must be ≥ P's, with no
+   tolerance. Option 1 allowed 10 points; Phase 1 does not.
+2. **The verdicts are CONFIRMED or NOT CONFIRMED,** and a failed verdict names every
+   failed condition. Sign tests are reported and never decide. There is no REFUTED.
+3. **The spec error rate is pooled:** Σ rejected / Σ drafted over all S runs of the
+   model, `spec_failed` runs included.
+   - If S drafted no rules at all, the rate is undefined and the spec bar counts as
+     failed.
+   - H4 applies the spec bar to Haiku's S runs.
+4. **Catches by layer** count every repair round's fed-back layers, each layer once per
+   round.
+5. **Spec coverage** is computed offline from the recorded approved drafts
+   (`sdraft.coverage`), not by the analysis.
+6. **Oracle review:** the analysis runs on the original outcomes and on the rescored
+   ones, and both are reported.
+
 ## Threats
 
 1. **Optimistic approval:** filtering drafted rules by the reference uses held-out
