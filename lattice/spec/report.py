@@ -16,8 +16,9 @@ would be silent.
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass, field
+from fnmatch import fnmatchcase
 from typing import Any, Literal
 
 Layer = Literal["A", "B", "C", "D"]
@@ -50,8 +51,16 @@ class CheckFinding:
     file: str | None = None
     line: int | None = None
 
+    @property
+    def key(self) -> str:
+        """What a baseline entry matches: ``A:<code>:<endpoint>:<message>`` for a layer
+        A finding, ``<layer>:<endpoint>:<case>`` otherwise."""
+        if self.layer == "A":
+            return f"A:{self.code}:{self.endpoint or ''}:{self.details.get('message', '')}"
+        return f"{self.layer}:{self.endpoint or ''}:{self.case or ''}"
+
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return asdict(self) | {"key": self.key}
 
     def summary(self) -> str:
         """One line: where, and for which request."""
@@ -62,6 +71,16 @@ class CheckFinding:
         who = f" as {req['user']}" if req.get("user") else ""
         call = f"{req.get('method', '')} {req.get('path', '')}".strip() or (self.endpoint or "")
         return f"[{self.layer} {self.verdict}] {call}{who} ({self.case})"
+
+
+@dataclass(frozen=True)
+class Accepted:
+    """A baseline entry: findings whose ``key`` matches ``pattern`` (fnmatch, case-
+    sensitive) are the app's known, accepted state, with ``reason``. They are reported
+    but do not fail the check; an entry that matches nothing is reported as stale."""
+
+    pattern: str
+    reason: str
 
 
 @dataclass
@@ -76,6 +95,22 @@ class Report:
     cases: dict[str, dict[str, Any]] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
     unchecked: list[str] = field(default_factory=list)
+    accepted: list[tuple[CheckFinding, str]] = field(default_factory=list)
+    stale: list[Accepted] = field(default_factory=list)
+
+    def apply_baseline(self, baseline: Sequence[Accepted]) -> None:
+        """Move the findings ``baseline`` matches to ``accepted``; record unused entries."""
+        used: set[int] = set()
+        kept: list[CheckFinding] = []
+        for f in self.findings:
+            hit = next((i for i, a in enumerate(baseline) if fnmatchcase(f.key, a.pattern)), None)
+            if hit is None:
+                kept.append(f)
+            else:
+                used.add(hit)
+                self.accepted.append((f, baseline[hit].reason))
+        self.findings = kept
+        self.stale = [a for i, a in enumerate(baseline) if i not in used]
 
     @property
     def verdict(self) -> str:
@@ -99,6 +134,8 @@ class Report:
             "cases": self.cases,
             "notes": self.notes,
             "unchecked": self.unchecked,
+            "accepted": [f.to_dict() | {"reason": r} for f, r in self.accepted],
+            "stale_baseline": [asdict(a) for a in self.stale],
         }
 
     def to_json(self, indent: int | None = 2) -> str:
@@ -121,6 +158,14 @@ class Report:
             for f in found:
                 lines.append("  " + f.summary())
                 lines.extend("    " + x for x in _detail_lines(f))
+        if self.accepted:
+            lines.append("")
+            lines.append(f"accepted (the app's baseline, {len(self.accepted)}):")
+            lines.extend(f"  {f.summary()}: {r}" for f, r in self.accepted)
+        if self.stale:
+            lines.append("")
+            lines.append("stale baseline entries (they match nothing; remove them):")
+            lines.extend(f"  - {a.pattern}" for a in self.stale)
         if self.unchecked:
             lines.append("")
             lines.append("not checked (stated in the spec, not checkable yet):")

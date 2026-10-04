@@ -43,7 +43,7 @@ from __future__ import annotations
 
 from bench.imports.multivendor.profile import NATIVES
 from lattice.profile import ApiProfile, NativeSig, NativeToken, Profile, RoleColumn
-from lattice.spec import Invariant, Machine, Scenario, Spec, Step, Unchecked
+from lattice.spec import Accepted, Invariant, Machine, Scenario, Spec, Step, Unchecked
 from lattice.typesys import Scalar, Schema
 
 __all__ = ["NATIVES", "ORDER_STATES", "PROFILE", "SPEC", "USERS", "order_read", "product_read"]
@@ -231,7 +231,7 @@ USER_READ = ["id", "full_name", "email", "role", "is_active", "created_at"]
 def register(
     full_name: Str(min_len=0, max_len=255),
     email: Email(max_len=255),
-    password: Str(min_len=0, max_len=255),
+    password: Str(min_len=0, max_len=72),
 ) -> Created | BadRequest:
     users = fetch(User)
     matching = where(users, col("email") == email)
@@ -914,6 +914,23 @@ UNCHECKED = (
         "PATCH /products/{id} with description null clears it upstream, the program "
         "refuses null; GET /products accepts a negative limit upstream (no lower bound).",
         ("update_own_profile", "update_product", "list_products"),
+    ),
+)
+
+# The original app's known state against this spec (lattice.spec.Accepted): reported by
+# the check, not failing it. Each entry is a real gap upstream has, stated by the spec.
+BASELINE = (
+    Accepted(
+        "A:PY803:*",
+        "upstream request models have no length or upper bounds; the spec's programs add "
+        "them (255 characters, 72 for passwords: bcrypt's limit, 1e9 for prices)",
+    ),
+    Accepted("B:*:*above_max_len", "the same missing upper bounds, seen in the answers"),
+    Accepted("B:GET /products:*limit below_min", "upstream accepts a negative limit"),
+    Accepted(
+        "A:PY807:POST /orders:*",
+        "upstream POST /orders commits each stock decrement before a later line can fail "
+        "(the UNCHECKED partial-write bug)",
     ),
 )
 

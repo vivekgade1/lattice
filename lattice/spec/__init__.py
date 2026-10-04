@@ -23,11 +23,12 @@ from lattice.spec.model import (
     resolve_table,
     tables_of,
 )
-from lattice.spec.report import CheckFinding, Report
+from lattice.spec.report import Accepted, CheckFinding, Report
 from lattice.spec.validate import CODES, SpecProblem, validate
 
 __all__ = [
     "ALLOWED_FORMS",
+    "Accepted",
     "CODES",
     "CaseContext",
     "CheckError",

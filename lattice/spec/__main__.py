@@ -45,6 +45,8 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--login", help="module:fn, (client, handle) -> bearer token")
     c.add_argument("--login-path", help="a form login route taking Spec.users' credentials")
     c.add_argument("--mint-token", help="module:fn, (user key) -> bearer token")
+    c.add_argument("--natives", help="module:NATIVES, the spec's natives {name: function}")
+    c.add_argument("--baseline", help="module:BASELINE, the app's accepted findings")
     c.add_argument("--json", action="store_true", help="print the report as JSON")
     return parser
 
@@ -67,6 +69,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             login=load(args.login) if args.login else None,
             login_path=args.login_path,
             mint_token=load(args.mint_token) if args.mint_token else None,
+            natives=load(args.natives) if args.natives else None,
+            baseline=load(args.baseline) if args.baseline else (),
         )
     except Exception as err:  # noqa: BLE001 -- any failure to run the check is exit 2
         print(f"error: {type(err).__name__}: {err}", file=sys.stderr)

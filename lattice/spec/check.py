@@ -56,7 +56,7 @@ from lattice.importer.verify import Case, CaseRecord, Rule, ValidationEnvelope, 
 from lattice.pycheck import CODES, Policy, derive_policy, run_pycheck
 from lattice.spec.invariants import InvariantError, compile_invariant
 from lattice.spec.model import Invariant, Scenario, Spec, Step, resolve_table, tables_of
-from lattice.spec.report import LAYERS, CheckFinding, Report
+from lattice.spec.report import LAYERS, Accepted, CheckFinding, Report
 from lattice.spec.validate import validate
 from lattice.typesys import Scalar, Schema
 
@@ -234,12 +234,18 @@ def spec_policy(
     merged_via = {t: v for t, v in base.owner_via.items() if t not in declared} | owner_via
     private = {t: c for t, c in base.private.items() if t not in declared}
     private |= {t: tuple(sorted(s.private)) for t, s in tables.items() if s.private}
+    # a table the spec declares with no owner is public: shared, never a link table
+    users = base.users_table
+    public = sorted(t for t in declared if t not in owners and t not in owner_via and t != users)
     shared = tuple(t for t in base.shared if t not in merged_owners and t not in merged_via)
+    shared += tuple(t for t in public if t not in shared)
+    links = {t: v for t, v in base.links.items() if t not in declared}
     updates: dict[str, Any] = {
         "owners": merged_owners,
         "owner_via": merged_via,
         "private": private,
         "shared": shared,
+        "links": links,
     }
     if "machines" in {f.name for f in fields(Policy)}:
         machines = dict(getattr(base, "machines", {}) or {})
@@ -1248,13 +1254,15 @@ def check(
     settings: Mapping[str, object] | None = None,
     hash_columns: Sequence[str] = ("hashed_password",),
     max_rows: int = 6,
+    baseline: Sequence[Accepted] = (),
 ) -> Report:
     """Check the app built by ``app_factory(db_path)`` against ``spec`` in ``layers``
     (letters of ABCD; see the module docstring). ``db_factory`` writes the seeded
     database. ``policy``: layer A's base policy (default: derived from the app).
     ``cases_for(spec, endpoint, ctx)``: layer B's case generator; ``extra_cases`` run
     too. ``rules``: verify's representation rules (default: 422 bodies compare by the
-    fields they flag). ``natives``/``settings``: for the spec's programs. Raises
+    fields they flag). ``natives``/``settings``: for the spec's programs. ``baseline``:
+    the app's accepted findings (:class:`Accepted`), reported but not failing. Raises
     :class:`CheckError` when the check cannot run."""
     run = _layers(layers)
     problems = validate(spec)
@@ -1308,6 +1316,7 @@ def check(
         report.findings.extend(monitor.findings)
     order = {layer: i for i, layer in enumerate(LAYERS)}
     report.findings.sort(key=lambda f: order[f.layer])
+    report.apply_baseline(baseline)
     return report
 
 
