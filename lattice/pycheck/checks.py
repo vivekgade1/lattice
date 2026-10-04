@@ -54,6 +54,23 @@ What each check cannot see is listed with it.
   ``except`` handler converts a failure that already happened and is not one. *Cannot
   see:* failures raised by the database or libraries, a helper deeper than
   :data:`HELPER_DEPTH`, a commit through a callable passed as a value.
+* **PY808 state machines** (only with ``policy.machines``, which come from a spec and
+  are never derived). In any package function, a write of a known state -- a string
+  literal or a package enum member, matched to the machine's states by name or value
+  case-insensitively -- to ``<row>.<column>`` (``row.status = X``,
+  ``row.sqlmodel_update({"status": X})``, ``setattr(row, "status", X)``) where the states
+  the row can be in are known from a dominating check in the same function (``if
+  row.status != A: raise``/``return``/``continue``, ``not in (A, B)``, the branch of
+  ``if row.status == A:``, ``assert``; ``and``/``or``/``not`` combine) and one of them,
+  other than the written state itself, has no edge to it. A check of the written state
+  against the app's own transition table (``if X not in TABLE[row.status]: raise``,
+  directly or through a name) is a full guard. ``<row>`` is a name holding a row of the
+  machine's table (typed, fetched, or the app's only table with that column). Anything
+  else is silent: no check, a value that is not a known state, a row rebound, handed to
+  a package function or changed in a loop since the check. *Cannot see:* checks in
+  another function (a helper that refuses the wrong states), writes in a helper
+  (``update(session, row, {"status": X})``), rows reached through attributes or
+  containers (``orders[0].status``), the initial state of a new row.
 """
 
 from __future__ import annotations
@@ -121,6 +138,7 @@ def all_findings(view: AppView, policy: Policy) -> list[Finding]:
         check_error_conventions,
         check_datetimes,
         check_partial_writes,
+        check_state_machines,
     ):
         check(ctx)
     seen: set[str] = set()
@@ -1687,3 +1705,331 @@ def check_partial_writes(ctx: _Ctx) -> None:
                     f"{route_key(route)}|{f.name}")  # fmt: skip
             break
 
+
+# ---- PY808 state machines ---------------------------------------------------------------------
+
+# name -> (the states the row it holds can be in, the line of the check that says so)
+_Known = dict[str, tuple[frozenset[str], int]]
+
+
+@dataclass(frozen=True)
+class _Machine:
+    table: str  # table class
+    column: str
+    edges: frozenset[tuple[str, str]]
+
+    @property
+    def states(self) -> frozenset[str]:
+        return frozenset(s for e in self.edges for s in e)
+
+    def legal(self, a: str, b: str) -> bool:
+        return a == b or (a, b) in self.edges
+
+
+def _machines(view: AppView, policy: Policy) -> dict[str, _Machine]:
+    """table class -> its machine (the policy may key a machine by class or SQL name)."""
+    out: dict[str, _Machine] = {}
+    by_sql = {t.table_name: t.name for t in view.tables.values()}
+    for key, (column, edges) in policy.machines.items():
+        table = key if key in view.tables else by_sql.get(key)
+        if table is not None and any(c.name == column for c in view.tables[table].columns):
+            out[table] = _Machine(table, column, frozenset(edges))
+    return out
+
+
+class _MachineScan:
+    """One function walked in statement order, tracking for each name holding a machine
+    table's row the states a dominating check leaves it in."""
+
+    def __init__(self, ctx: _Ctx, machines: dict[str, _Machine], mod: str,
+                 fn: FunctionNode, cls: str | None) -> None:  # fmt: skip
+        self.ctx, self.view, self.mod, self.fn = ctx, ctx.view, mod, fn
+        self.machines = machines
+        self.typed = _row_types(self.view, mod, fn)
+        self.dead = dead_lines(fn)
+        self.aliases: dict[str, str] = {}  # allowed = TRANSITIONS[order.status] -> "order"
+        self.local = self.view.local_classes(mod, fn, cls)
+
+    # -- reading the code --
+
+    def machine_of(self, row: ast.expr, column: str) -> tuple[str, _Machine] | None:
+        """(name, machine) when ``row.column`` is a machine's column of a named row: a
+        row of a known table, or (untyped) the app's only table with that column."""
+        if not isinstance(row, ast.Name):
+            return None
+        table = self.typed.get(row.id)
+        if table is None:
+            having = [t.name for t in self.view.tables.values()
+                      if any(c.name == column for c in t.columns)]  # fmt: skip
+            table = having[0] if len(having) == 1 else None
+        m = self.machines.get(table) if table is not None else None
+        return (row.id, m) if m is not None and m.column == column else None
+
+    def subject(self, e: ast.expr) -> tuple[str, _Machine] | None:
+        """``order.status`` (or ``order.status.value``) of a machine row."""
+        if (isinstance(e, ast.Attribute) and e.attr == "value"
+                and isinstance(e.value, ast.Attribute)):  # fmt: skip
+            e = e.value
+        return self.machine_of(e.value, e.attr) if isinstance(e, ast.Attribute) else None
+
+    def state(self, e: ast.expr, m: _Machine) -> str | None:
+        """The machine state a string literal or a package enum member spells (by name or
+        value, case-insensitively), or None."""
+        names: set[str] = set()
+        if isinstance(e, ast.Constant) and isinstance(e.value, str):
+            names = {e.value}
+        else:
+            if isinstance(e, ast.Attribute) and e.attr == "value":
+                e = e.value
+            if not isinstance(e, ast.Attribute):
+                return None
+            qual = self.view.resolve(self.mod, e.value)
+            if qual not in self.view.classes:
+                return None
+            for stmt in self.view.classes[qual][1].body:
+                if (isinstance(stmt, ast.Assign) and len(stmt.targets) == 1
+                        and isinstance(stmt.targets[0], ast.Name)
+                        and stmt.targets[0].id == e.attr):  # fmt: skip
+                    names = {e.attr}
+                    if isinstance(stmt.value, ast.Constant) and isinstance(stmt.value.value, str):
+                        names.add(stmt.value.value)
+        lowered = {n.lower() for n in names}
+        hits = {s for s in m.states if s.lower() in lowered}
+        return hits.pop() if len(hits) == 1 else None
+
+    def states(self, e: ast.expr, m: _Machine) -> frozenset[str] | None:
+        if not isinstance(e, ast.Tuple | ast.List | ast.Set):
+            return None
+        found = [self.state(x, m) for x in e.elts]
+        return None if None in found else frozenset(s for s in found if s is not None)
+
+    def transitions_of(self, e: ast.expr) -> tuple[str, _Machine] | None:
+        """The row whose allowed next states ``e`` holds: ``T[row.col]``,
+        ``T.get(row.col, ...)``, or a name assigned one."""
+        if isinstance(e, ast.Name) and e.id in self.aliases:
+            row = ast.Name(id=self.aliases[e.id])
+            for m in self.machines.values():
+                if (found := self.machine_of(row, m.column)) is not None:
+                    return found
+            return None
+        if isinstance(e, ast.Subscript):
+            return self.subject(e.slice)
+        if (isinstance(e, ast.Call) and isinstance(e.func, ast.Attribute)
+                and e.func.attr == "get" and e.args):  # fmt: skip
+            return self.subject(e.args[0])
+        return None
+
+    def constraint(self, test: ast.expr, truth: bool) -> dict[str, frozenset[str]]:
+        """name -> the states its row can be in when ``test`` evaluates to ``truth``."""
+        if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
+            return self.constraint(test.operand, not truth)
+        if isinstance(test, ast.BoolOp):
+            parts = [self.constraint(v, truth) for v in test.values]
+            if isinstance(test.op, ast.And) == truth:  # every operand holds
+                out: dict[str, frozenset[str]] = {}
+                for p in parts:
+                    for k, v in p.items():
+                        out[k] = out[k] & v if k in out else v
+                return out
+            common = set.intersection(*(set(p) for p in parts))  # some operand holds
+            return {k: frozenset().union(*(p[k] for p in parts)) for k in common}
+        if not (isinstance(test, ast.Compare) and len(test.ops) == 1):
+            return {}
+        op, left, right = test.ops[0], test.left, test.comparators[0]
+        if isinstance(op, ast.In | ast.NotIn):
+            positive = truth == isinstance(op, ast.In)
+            if (subj := self.subject(left)) is not None:
+                allowed = self.states(right, subj[1])
+                if allowed is None:
+                    return {}
+                return {subj[0]: allowed if positive else subj[1].states - allowed}
+            # S in TRANSITIONS[row.col]: the app allows S from the row's state -- a full
+            # guard; the machine's own sources of S stand in for the app's table
+            subj = self.transitions_of(right)
+            if subj is not None and positive:
+                name, m = subj
+                target = self.state(left, m)
+                if target is not None:
+                    return {name: frozenset(s for s in m.states if m.legal(s, target))}
+            return {}
+        if isinstance(op, ast.Eq | ast.NotEq | ast.Is | ast.IsNot):
+            positive = truth == isinstance(op, ast.Eq | ast.Is)
+            for a, b in ((left, right), (right, left)):
+                if (subj := self.subject(a)) is None:
+                    continue
+                s = self.state(b, subj[1])
+                if s is None:
+                    return {}
+                return {subj[0]: frozenset({s}) if positive else subj[1].states - {s}}
+        return {}
+
+    # -- the walk --
+
+    @staticmethod
+    def apply(known: _Known, c: dict[str, frozenset[str]], line: int) -> _Known:
+        out = dict(known)
+        for k, v in c.items():
+            old = out.get(k)
+            out[k] = (old[0] & v if old else v, line)
+        return out
+
+    @staticmethod
+    def join(*branches: _Known | None) -> _Known | None:
+        """Knowledge where branches meet (None: a branch that always leaves)."""
+        live = [b for b in branches if b is not None]
+        if not live:
+            return None
+        common = set.intersection(*(set(b) for b in live))
+        return {
+            k: (frozenset().union(*(b[k][0] for b in live)), max(b[k][1] for b in live))
+            for k in common
+        }
+
+    def touched(self, stmts: list[ast.stmt]) -> set[str]:
+        """Names ``stmts`` may rebind, or whose row they may change."""
+        out: set[str] = set()
+        for stmt in stmts:
+            for node in ast.walk(stmt):
+                if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store | ast.Del):
+                    out.add(node.id)
+                elif (isinstance(node, ast.Attribute) and isinstance(node.ctx, ast.Store)
+                        and isinstance(node.value, ast.Name)):  # fmt: skip
+                    out.add(node.value.id)
+                elif isinstance(node, ast.Call):
+                    out |= self.handed(node)
+        return out
+
+    def handed(self, call: ast.Call) -> set[str]:
+        """Names whose row a call may change: arguments of a package function, a row
+        whose own method is called, ``setattr``'s target."""
+        out: set[str] = set()
+        func = call.func
+        if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name) and (
+                func.value.id in self.typed or func.attr == "sqlmodel_update"):  # fmt: skip
+            out.add(func.value.id)
+        package = self.view.callee(self.mod, call, self.local) is not None
+        if package or (isinstance(func, ast.Name) and func.id == "setattr"):
+            args = [*call.args, *(k.value for k in call.keywords)]
+            out |= {a.id for a in args if isinstance(a, ast.Name)}
+        return out
+
+    def walk(self, stmts: list[ast.stmt], known: _Known) -> _Known | None:
+        """The knowledge after ``stmts``; None when they always leave (``raise``,
+        ``return``, ``continue``, ``break``)."""
+        cur: _Known | None = known
+        for stmt in stmts:
+            if cur is None:
+                return None
+            cur = self.step(stmt, cur)
+        return cur
+
+    def forget(self, known: _Known, stmts: list[ast.stmt]) -> _Known:
+        gone = self.touched(stmts)
+        return {k: v for k, v in known.items() if k not in gone}
+
+    def step(self, stmt: ast.stmt, known: _Known) -> _Known | None:
+        if isinstance(stmt, ast.Raise | ast.Return | ast.Continue | ast.Break):
+            return None
+        if isinstance(stmt, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+            return {k: v for k, v in known.items() if k != stmt.name}
+        if isinstance(stmt, ast.If):
+            known = self.forget(known, [ast.Expr(stmt.test)])
+            yes = self.apply(known, self.constraint(stmt.test, True), stmt.lineno)
+            no = self.apply(known, self.constraint(stmt.test, False), stmt.lineno)
+            return self.join(self.walk(stmt.body, yes), self.walk(stmt.orelse, no))
+        if isinstance(stmt, ast.For | ast.AsyncFor | ast.While):
+            inner = self.forget(known, [stmt])  # a later pass sees what this one changed
+            self.walk(stmt.body, inner)
+            self.walk(stmt.orelse, inner)
+            return inner
+        if isinstance(stmt, ast.With | ast.AsyncWith):
+            return self.walk(stmt.body, self.forget(known, [ast.Expr(i.context_expr)
+                                                            for i in stmt.items]))  # fmt: skip
+        if isinstance(stmt, ast.Try):
+            cleared = self.forget(known, stmt.body)  # a handler runs after any part of it
+            after = self.join(
+                self.walk([*stmt.body, *stmt.orelse], known),
+                *(self.walk(h.body, cleared) for h in stmt.handlers),
+            )
+            if stmt.finalbody:
+                done = self.walk(stmt.finalbody, after if after is not None else cleared)
+                return None if after is None else done
+            return after
+        if isinstance(stmt, ast.Assert):
+            return self.apply(known, self.constraint(stmt.test, True), stmt.lineno)
+        if isinstance(stmt, ast.Match):
+            return self.forget(known, [stmt])
+        # a simple statement: judge its writes, then forget what it may change
+        if stmt.lineno not in self.dead:
+            for name, m, value, node in self.writes(stmt):
+                self.judge(name, m, value, node, known)
+        if (isinstance(stmt, ast.Assign) and len(stmt.targets) == 1
+                and isinstance(stmt.targets[0], ast.Name)):  # fmt: skip
+            row = self.transitions_of(stmt.value)
+            if row is not None:
+                self.aliases[stmt.targets[0].id] = row[0]
+            else:
+                self.aliases.pop(stmt.targets[0].id, None)
+        return self.forget(known, [stmt])
+
+    def writes(self, stmt: ast.stmt) -> Iterator[tuple[str, _Machine, ast.expr, ast.AST]]:
+        """(row name, machine, written value, node) for each state write ``stmt`` makes
+        visibly: ``row.col = v``, ``row.sqlmodel_update({"col": v})``,
+        ``setattr(row, "col", v)``."""
+        if isinstance(stmt, ast.Assign):
+            for t in stmt.targets:
+                if isinstance(t, ast.Attribute) and (subj := self.machine_of(t.value, t.attr)):
+                    yield subj[0], subj[1], stmt.value, stmt
+        for node in ast.walk(stmt):
+            if not isinstance(node, ast.Call):
+                continue
+            func, args = node.func, node.args
+            if (isinstance(func, ast.Attribute) and func.attr == "sqlmodel_update"
+                    and args and isinstance(args[0], ast.Dict)):  # fmt: skip
+                for k, v in zip(args[0].keys, args[0].values, strict=False):
+                    if (isinstance(k, ast.Constant) and isinstance(k.value, str)
+                            and (subj := self.machine_of(func.value, k.value))):  # fmt: skip
+                        yield subj[0], subj[1], v, node
+            elif (isinstance(func, ast.Name) and func.id == "setattr" and len(args) == 3
+                    and isinstance(args[1], ast.Constant) and isinstance(args[1].value, str)
+                    and (subj := self.machine_of(args[0], args[1].value))):  # fmt: skip
+                yield subj[0], subj[1], args[2], node
+
+    def judge(self, name: str, m: _Machine, value: ast.expr, node: ast.AST,
+              known: _Known) -> None:  # fmt: skip
+        target = self.state(value, m)
+        if target is None or name not in known:
+            return
+        states, guard_line = known[name]
+        bad = sorted(s for s in states if not m.legal(s, target))
+        if not bad:
+            return
+        sources = sorted(s for s in m.states if s != target and m.legal(s, target))
+        line = node.lineno  # type: ignore[attr-defined]
+        col = f"{name}.{m.column}"
+        message = (
+            f"{self.fn.name} sets {col} to '{target}' where the check at line {guard_line} "
+            f"leaves it {' or '.join(repr(s) for s in sorted(states))}, and the "
+            f"{m.table}.{m.column} machine has no edge "
+            + ", ".join(f"'{s}' -> '{target}'" for s in bad)
+        )
+        allowed = (
+            f"one of {', '.join(repr(s) for s in sources)}"
+            if sources
+            else "never (no state moves to it)"
+        )
+        hint = (
+            f"refuse the request unless {col} allows '{target}': it may move there from "
+            f"{allowed} -- check `if {col} not in (...): raise HTTPException(...)` before "
+            "the write"
+        )
+        ctx_key = f"{self.view.file(self.mod)}:{self.fn.name}|{col}={target}"
+        self.ctx.add("PY808", self.mod, line, message, hint, ctx_key)
+
+
+def check_state_machines(ctx: _Ctx) -> None:
+    machines = _machines(ctx.view, ctx.policy)
+    if not machines:
+        return
+    for mod, fn, cls in ctx.view.functions():
+        _MachineScan(ctx, machines, mod, fn, cls).walk(fn.body, {})

@@ -114,6 +114,13 @@ def describe_policy(policy: Policy) -> str:
         "nothing it wrote in the database (commit once, after the last check; calling a "
         "helper that commits counts as committing)."
     )
+    for table, (column, edges) in policy.machines.items():
+        legal = ", ".join(f"{a} -> {b}" for a, b in sorted(edges)) or "none"
+        out.append(
+            f"- State machine: `{table}.{column}` changes only along its edges ({legal}). "
+            f"Before writing a new `{column}`, refuse the request unless the row's current "
+            "state has an edge to it."
+        )
     return "\n".join(out) + "\n"
 
 

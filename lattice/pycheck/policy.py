@@ -57,6 +57,11 @@ class Policy:
     # stored datetimes read back naive (SQLite)
     naive_datetimes: bool = True
     page_limit_max: int = 100
+    # table class (or SQL table name) -> (state column, legal (from, to) edges): the
+    # column's state machine. States are the stored strings; an enum member in code
+    # matches the state its name or value spells (case-insensitively). Never derived:
+    # machines come from a spec.
+    machines: Mapping[str, tuple[str, frozenset[tuple[str, str]]]] = field(default_factory=dict)
     # the keys of the original app's own findings: its accepted conventions
     baseline: frozenset[str] = frozenset()
 

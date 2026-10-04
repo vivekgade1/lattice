@@ -15,6 +15,7 @@ CODES: dict[str, str] = {
     "PY805": "error conventions: an HTTP error differs from the app's answer for the same case",
     "PY806": "datetimes: a naive and an aware datetime are compared",
     "PY807": "partial writes: a commit that a later failure of the same request can follow",
+    "PY808": "state machines: a state written from a guarded state with no edge to it",
 }
 
 
