@@ -1439,3 +1439,26 @@ Observations:
 Order endpoints now with programs: GET /orders/me, GET /orders/{id} (nested items).
 Still unchecked by B, with the missing construct named in the spec: place_order,
 update_order_status, flash-sale, and the t36/t38/t40/t42/t44 endpoints.
+
+## Roadmap Phase 2: importer frozen before the held-out run (2026-10-05)
+
+The importer, layer R and the exit script are frozen at commit **`1cda54a`**. This was
+recorded before any held-out app (H1 drf_blog_api, H2 project-management-api,
+H3 conduit-drf, reserve flask-realworld-example-app) was vendored.
+
+Dev-app gate at the freeze (`tests/importer/test_phase2_dev_apps.py`): per app, tables /
+routes verified, against the ≥ 90% bar.
+
+| app | framework | tables | routes | fidelity |
+|---|---|---|---|---|
+| template | FastAPI | 2/2 | 23/23 | pass |
+| taskflow | FastAPI | 2/2 | 10/10 | pass |
+| multivendor | FastAPI | 5/5 | 17/17 | pass |
+| snippets | Django + DRF | 2/2 | 9/9 | pass |
+| recipes | Django + DRF | 6/6 | 16/16 | pass |
+| microblog | Flask + Alchemical | 4/4 | 25/27 (2 OAuth2 routes need the network) | pass |
+| flasky | Flask + SQLAlchemy | 3/3 (2 outside the API) | 12/12 | pass |
+| justnotes | FastAPI | 6/6 | **22/30, below the bar** (7 routes call a local LLM server, 1 shadowed upstream) | pass |
+
+The held-out run's numbers will be **the** Phase 2 result. Fixes made after seeing them go
+into a separately labelled post-hoc run.
