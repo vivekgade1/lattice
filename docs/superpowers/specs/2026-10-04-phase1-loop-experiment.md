@@ -1,8 +1,7 @@
 # Phase 1: the spec loop on Python (pre-registration draft)
 
 > Roadmap: `docs/lattice-direction-executable-spec.md` §8, Phase 1. Branch `roadmap`.
-> Status: **DRAFT, awaiting the user's approval. No model call is made before it is
-> approved and committed.** All model calls go through the CLI (`--backend cli`),
+> Status: **APPROVED by the user (2026-10-04), frozen with this commit before any run.** All model calls go through the CLI (`--backend cli`),
 > plan-billed; no API key.
 
 ## Question
@@ -149,3 +148,18 @@ answer in both arms. The approval matches only PY801 on `GET /products/top-selle
 
 Then: the cost estimate re-done from prompt sizes, the user's approval, a commit of this
 spec, and the run.
+
+## Commands (frozen)
+
+The arms run in this order, one at a time, 4 workers each; `--resume` restarts after an
+interruption without repeating finished runs:
+
+```
+for (M, A) in (sonnet-5: P, Q, S, S*), (haiku-4-5: P, S):
+  uv run python -m bench.edit_slice.run --backend cli --model claude-M --arm A \
+    --tickets phase1 --reps 6 --workers 4 --resume \
+    --out bench/results/phase1_<M>_<A>.jsonl
+```
+
+Analysis: `python -m bench.edit_slice.phase1_analysis bench/results/phase1_*.jsonl`
+(and again on the rescored files after the oracle review). Data: only this run's.
