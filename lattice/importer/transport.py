@@ -13,10 +13,11 @@
   A Django front end wraps ``django.test.Client`` the same way (W2).
 * :class:`AuthDriver` -- how a case acting as a user is authenticated: a login (the app's
   own login route: :func:`form_login`, :func:`json_login`, :func:`session_login`; or any
-  :data:`Login`), else a token ``mint`` (handle -> token, no request); the token is sent
-  in the ``Authorization`` header with its ``scheme`` (``bearer`` / ``token`` / ``jwt``
-  spelled ``Bearer`` / ``Token`` / ``JWT``), or -- ``cookie`` set -- as that session
-  cookie, held in the client's cookie jar.
+  :data:`Login`; :func:`basic_login` for HTTP Basic credentials), else a token ``mint``
+  (handle -> token, no request); the token is sent in the ``Authorization`` header with
+  its ``scheme`` (``bearer`` / ``token`` / ``jwt`` spelled ``Bearer`` / ``Token`` /
+  ``JWT``; ``basic_token``: ``Basic base64(<token>:)``), or -- ``cookie`` set -- as that
+  session cookie, held in the client's cookie jar.
 * :class:`AppRuntime` -- everything the importer does to an original app that depends on
   its framework: the transport, the auth driver, the dispose hooks run after every app
   (before the database is read: ``app.state.engine.dispose()`` for FastAPI), the seed's
@@ -45,6 +46,9 @@ if TYPE_CHECKING:
     from lattice.importer.outside import OpenApiFacts
 
 Login = Callable[[Any, str], str]  # (client, user handle) -> token
+# the token sent as the HTTP Basic username with an empty password (Flask-HTTPAuth apps
+# whose verify_password takes ``email_or_token``, as flasky's)
+BASIC_TOKEN = "basic_token"
 AppFactory = Callable[[Path], Any]
 InsertHook = Callable[[Path, Any], None]  # (database path, suite.SeedPlan) -> None
 # an error site of a front end: an AST node -> (status, detail when literal), or None
@@ -241,6 +245,35 @@ def session_login(
     return login
 
 
+def basic_credentials(username: str, password: str) -> str:
+    """An HTTP Basic ``Authorization`` value: ``Basic base64(<username>:<password>)``."""
+    import base64
+
+    return "Basic " + base64.b64encode(f"{username}:{password}".encode()).decode()
+
+
+def basic_login(
+    path: str,
+    credentials: Mapping[str, tuple[str, str]],
+    *,
+    token_path: Sequence[str] = ("access_token",),
+) -> Login:
+    """A ``login`` posting no body, the credentials as HTTP Basic (Flask-HTTPAuth's
+    ``HTTPBasicAuth``); the token is at ``token_path`` in the answer."""
+
+    def login(client: Any, handle: str) -> str:
+        username, password = credentials[handle]
+        r = client.post(path, headers={"Authorization": basic_credentials(username, password)})
+        if r.status_code != 200:
+            raise RuntimeError(f"login as {handle!r} failed: {r.status_code} {r.text}")
+        value = r.json()
+        for key in token_path:
+            value = value[key]
+        return value
+
+    return login
+
+
 def scheme_header(scheme: str) -> str:
     """The ``Authorization`` header's spelling of a scheme: ``bearer`` -> ``Bearer``,
     ``token`` -> ``Token``, ``jwt`` -> ``JWT``."""
@@ -311,6 +344,19 @@ class AuthDriver:
                               password_field=password_field)  # fmt: skip
         return cls(scheme="session", login=login, cookie=cookie)
 
+    @classmethod
+    def basic(
+        cls,
+        path: str,
+        credentials: Mapping[str, tuple[str, str]],
+        *,
+        token_path: Sequence[str] = ("access_token",),
+        scheme: str = "bearer",
+    ) -> AuthDriver:
+        """Logged in with HTTP Basic credentials (:func:`basic_login`); the token then
+        sent with ``scheme`` (``basic_token``: as the Basic username, empty password)."""
+        return cls(scheme=scheme, login=basic_login(path, credentials, token_path=token_path))
+
     @property
     def can_login(self) -> bool:
         return self.login is not None or self.mint is not None
@@ -329,6 +375,8 @@ class AuthDriver:
         """The request headers carrying ``token`` ({} for none, or a session cookie)."""
         if token is None or self.cookie is not None:
             return {}
+        if self.scheme == BASIC_TOKEN:
+            return {self.header: basic_credentials(token, "")}
         return {self.header: f"{scheme_header(self.scheme)} {token}"}
 
     def present(self, transport: Transport, token: str | None) -> dict[str, str]:

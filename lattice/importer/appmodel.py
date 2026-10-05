@@ -8,7 +8,8 @@ Front ends fill it (``lattice.importer.frontends``); the FastAPI front end is to
 extractor, so every field added for other frameworks has a default that reproduces its
 output: ``framework`` / ``orm`` (``"fastapi"`` / ``"sqlmodel"``), ``auth`` (None: the
 dependencies say it), ``Route.guards`` (``()``), ``Route.view`` (None) and
-``RaiseSite.kind`` (``"HTTPException"``). ``to_json()`` serialises it."""
+``RaiseSite.kind`` (``"HTTPException"``), ``constraints`` and ``excluded_routes``
+(``()``). ``to_json()`` serialises it."""
 
 from __future__ import annotations
 
@@ -59,6 +60,20 @@ class TableModel:
 
 
 @dataclass(frozen=True)
+class TableConstraint:
+    """A table constraint no column's ``FieldSpec`` holds, for mining (Phase 2 plan §4):
+    ``kind`` ``check`` (a ``CheckConstraint``: its SQL ``expr``, the table's ``columns``
+    it names) or ``unique`` (a composite ``UniqueConstraint`` over ``columns``); ``table``
+    is the table's model name (``TableModel.name``)."""
+
+    table: str
+    kind: str
+    columns: tuple[str, ...]
+    expr: str | None = None
+    name: str | None = None
+
+
+@dataclass(frozen=True)
 class DataModel:
     """A pydantic / non-table SQLModel class of the package."""
 
@@ -73,7 +88,8 @@ class RaiseSite:
     """An error site of a route or a dependency: the answer it gives (``status``,
     ``detail`` when literal). ``kind``: ``HTTPException`` (``raise HTTPException(...)``,
     FastAPI's), ``abort`` (Flask's ``abort(...)``), ``drf`` (a DRF exception:
-    ``NotFound``, ``PermissionDenied``...) or ``return`` (``return ..., 4xx``)."""
+    ``NotFound``, ``PermissionDenied``...), ``return`` (``return ..., 4xx``) or
+    ``handler`` (an exception an error handler answers, e.g. Flask's ``errorhandler``)."""
 
     status: int | None
     detail: str | None
@@ -147,9 +163,11 @@ class OwnerUse:
 @dataclass(frozen=True)
 class Guard:
     """A check before a route's body refusing some callers (Django/DRF permission
-    classes, Flask decorators): ``kind`` ``authenticated``, ``role``, ``admin``,
-    ``object_owner`` or ``custom``; ``source`` the class or decorator it was read from;
-    its refusal (``status``, ``detail``); the ``roles`` a ``role`` guard lets through."""
+    classes, Flask decorators): ``kind`` ``authenticated``, ``active`` (refuses an
+    inactive user: ``AuthModel.active_column``), ``role``, ``admin``, ``object_owner`` or
+    ``custom``; ``source`` the class or decorator it was read from; its refusal
+    (``status``, ``detail``); the ``roles`` a ``role`` guard lets through (an
+    ``object_owner`` guard: the roles that bypass it)."""
 
     kind: str
     source: str
@@ -188,6 +206,19 @@ class Route:
     # the qualified handler ("module:function", "module:Class.method" for a class-based
     # view); None: ``module:name``
     view: str | None = None
+
+
+@dataclass(frozen=True)
+class ExcludedRoute:
+    """A route the front end found but sets apart: ``kind`` ``framework`` (the
+    framework's own: docs, static files, an index redirecting to them -- not in the
+    route denominator) or ``unreachable`` (one of ``RepoModel.routes`` that probes cannot
+    exercise, e.g. it calls a network service), with the ``reason``."""
+
+    method: str
+    path: str
+    kind: str
+    reason: str
 
 
 @dataclass(frozen=True)
@@ -261,10 +292,15 @@ class AuthModel:
     called with ``login_encoding`` ``form`` or ``json`` holding ``username_field`` /
     ``password_field``, answering the token at ``token_path``), the ``scheme`` the token
     is sent with (canonical lowercase, as ``transport.AuthDriver`` takes it: ``bearer`` /
-    ``token`` / ``jwt`` -- the ``Authorization: Bearer|Token|JWT <token>`` header -- or
-    ``session``: a cookie named ``cookie``), the password ``hasher`` and token ``minter``
-    ("module:function"), and the users table (class name) with its columns. None
-    anywhere: not known."""
+    ``token`` / ``jwt`` -- the ``Authorization: Bearer|Token|JWT <token>`` header --,
+    ``basic_token`` -- ``Authorization: Basic base64(<token>:)`` -- or ``session``: a
+    cookie named ``cookie``), the password ``hasher`` and token ``minter``
+    ("module:function"), and the users table (class name) with its columns. A
+    ``login_encoding`` of ``basic`` sends the credentials as HTTP Basic (no body), the
+    username being the users column ``username_field``. Roles kept as rows of a table
+    (``role_table``, referenced by ``role_column``) hold ``permissions`` (name, value):
+    ``role_permissions`` maps each role's Lattice name (``RoleScheme``) to the
+    permissions it holds. None anywhere: not known."""
 
     login_path: str | None = None
     login_encoding: str = "form"
@@ -281,6 +317,9 @@ class AuthModel:
     active_column: str | None = None
     admin_column: str | None = None
     role_column: str | None = None
+    role_table: str | None = None
+    permissions: tuple[tuple[str, int], ...] = ()
+    role_permissions: tuple[tuple[str, tuple[str, ...]], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -300,6 +339,10 @@ class RepoModel:
     framework: str = "fastapi"
     orm: str = "sqlmodel"
     auth: AuthModel | None = None  # None: the FastAPI front end's dependencies say it
+    # table constraints for mining (CheckConstraint, composite unique); () for SQLModel
+    constraints: tuple[TableConstraint, ...] = ()
+    # framework routes and routes probes cannot reach (see ExcludedRoute)
+    excluded_routes: tuple[ExcludedRoute, ...] = ()
 
     def to_dict(self) -> dict[str, object]:
         return dataclasses.asdict(self)

@@ -70,6 +70,9 @@ ADDED_DEFAULTS: dict[str, Any] = {
     "guards": [],
     "view": None,
     "kind": "HTTPException",
+    # W2-B (Flask + SQLAlchemy front end): RepoModel.constraints / .excluded_routes
+    "constraints": [],
+    "excluded_routes": [],
 }
 # report.json: volatile fields -> placeholder, and the sections the goldens ignore
 REPORT_PLACEHOLDERS = {("repo",): "<repo>", ("schema",): "<schema>",
