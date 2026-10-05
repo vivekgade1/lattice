@@ -124,7 +124,8 @@ class Evidence:
     @property
     def graph(self) -> CodeGraph:
         if self._graph is None:
-            self._graph = build_graph(self.ctx.root, self.result.model.app_package)
+            self._graph = build_graph(self.ctx.root, self.result.model.app_package,
+                                      hints=self.ctx.frontend.graph_hints)  # fmt: skip
         return self._graph
 
     def _dir(self) -> Path:
@@ -141,12 +142,13 @@ class Evidence:
             self._seed = Path(suite.db_factory("seed", self._dir() / "seed.db"))
         return self._seed
 
-    def openapi(self) -> OpenApiFacts:
-        if self._openapi is None:
-            from lattice.importer.outside import openapi_facts
-
+    def openapi(self) -> OpenApiFacts | None:
+        """The original's OpenAPI facts (the runtime's reader); None when its framework
+        has no OpenAPI document."""
+        read = self.ctx.runtime.openapi
+        if self._openapi is None and read is not None:
             app = self.ctx.app_factory(self._dir() / "openapi.db")
-            self._openapi = openapi_facts(app)
+            self._openapi = read(app)
         return self._openapi
 
     def db(self) -> DbFacts | None:
@@ -248,6 +250,8 @@ class Evidence:
 
     def s4(self, r: LiftResult) -> str:
         api = self.openapi()
+        if api is None:
+            return f"(no OpenAPI document: {self.ctx.runtime.framework} apps have none)"
         try:
             e = api.endpoint(r.route.method, r.route.path)
         except KeyError:
@@ -318,7 +322,8 @@ class Evidence:
         if suite is None or seed is None:
             return "(no request suite for this route: nothing to trace)"
         cases = [c for c in suite.cases if c.route == r.key][:MAX_TRACE_CASES]
-        traces = trace_suite(self.ctx.app_factory, {"seed": seed}, cases, login=suite.login)
+        traces = trace_suite(self.ctx.app_factory, {"seed": seed}, cases, login=suite.login,
+                             runtime=self.ctx.runtime)  # fmt: skip
         db = self.db()
         api = self.ctx.profile.api
         assert api is not None

@@ -31,18 +31,25 @@ recorded in :attr:`CodeGraph.overrides`, and a slice reaching ``a`` is flagged.
 :func:`route_slice` walks the graph from a route; :func:`slice_source` renders the
 slice's source in dependency order (models, variables, then functions callees first)
 for an LLM prompt.
+
+What is a route, a table, a ``depends`` edge, an override and a SQL write comes from the
+front end as :class:`GraphHints` (``build_graph(..., hints=)``); the default,
+:data:`FASTAPI_HINTS`, is FastAPI + SQLModel's: a decorator ``@x.get(...)`` (any HTTP
+method or ``api_route``) is a route, a ``table=True`` / ``__tablename__`` class a table,
+``Depends`` / ``Security`` a dependency, ``app.dependency_overrides`` an override, and
+``sqlmodel`` / ``sqlalchemy`` the SQL modules.
 """
 
 from __future__ import annotations
 
 import ast
 import builtins
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from lattice.importer.extract import Route
+from lattice.importer.appmodel import Route
 
 __all__ = [
     "CodeGraph",
@@ -163,9 +170,15 @@ class GraphBackend(Protocol):
 
 
 def build_graph(
-    repo_root: Path | str, package: str, backend: GraphBackend | None = None
+    repo_root: Path | str,
+    package: str,
+    backend: GraphBackend | None = None,
+    *,
+    hints: GraphHints | None = None,
 ) -> CodeGraph:
-    return (backend or PythonAstBackend()).build(Path(repo_root), package)
+    """The graph of ``package``; ``hints``: the front end's (default FastAPI's), for the
+    default backend."""
+    return (backend or PythonAstBackend(hints)).build(Path(repo_root), package)
 
 
 # ---- the Python ast backend ------------------------------------------------------------------
@@ -184,14 +197,18 @@ class _Module:
 class PythonAstBackend:
     """The ``ast`` backend: static resolution of imports, attributes and simple local
     types (parameter annotations, ``x = Cls(...)``, ``x = f(...)`` with a return
-    annotation, ``with Cls(...) as x``)."""
+    annotation, ``with Cls(...) as x``). ``hints``: the front end's (default FastAPI's)."""
+
+    def __init__(self, hints: GraphHints | None = None) -> None:
+        self.hints = hints if hints is not None else FASTAPI_HINTS
 
     def build(self, repo_root: Path, package: str) -> CodeGraph:
-        return _Builder(repo_root, package).build()
+        return _Builder(repo_root, package, self.hints).build()
 
 
 class _Builder:
-    def __init__(self, repo_root: Path, package: str) -> None:
+    def __init__(self, repo_root: Path, package: str, hints: GraphHints | None = None) -> None:
+        self.hints = hints if hints is not None else FASTAPI_HINTS
         self.package = package
         self.modules: dict[str, _Module] = {}
         pkg_dir = repo_root.joinpath(*package.split("."))
@@ -330,7 +347,7 @@ class _Builder:
                 if isinstance(node, ast.ClassDef):
                     self.g.symbols[qual] = Symbol(
                         qual, "class", mod, name, _first_line(node), node.end_lineno or 0,
-                        is_table=_is_table(node),
+                        is_table=self.hints.is_table(node),
                     )  # fmt: skip
                     for item in node.body:
                         if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
@@ -342,7 +359,7 @@ class _Builder:
                 elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                     self.g.symbols[qual] = Symbol(
                         qual, "function", mod, name, _first_line(node), node.end_lineno or 0,
-                        is_route=_is_route(node),
+                        is_route=self.hints.is_route(node),
                     )  # fmt: skip
         for mod, m in self.modules.items():
             for stmt in m.tree.body:
@@ -420,6 +437,7 @@ class _Analyzer:
     ) -> None:
         self.b = b
         self.g = b.g
+        self.hints = b.hints
         self.mod = mod
         self.qual = qual
         self.cls = cls
@@ -539,7 +557,7 @@ class _Analyzer:
             if arg.annotation is not None:
                 self.annotation(arg.annotation)
             if default is not None:
-                if _is_depends(default):
+                if self.hints.is_depends(default):
                     self.depends(default, arg.annotation)
                 else:
                     self.expr(default)
@@ -551,7 +569,7 @@ class _Analyzer:
             for kw in dec.keywords:
                 if kw.arg == "dependencies" and isinstance(kw.value, ast.List | ast.Tuple):
                     for d in kw.value.elts:
-                        if _is_depends(d):
+                        if self.hints.is_depends(d):
                             self.depends(d, None)
                 else:
                     self.expr(kw.value)
@@ -580,7 +598,7 @@ class _Analyzer:
 
     def annotation(self, ann: ast.expr) -> None:
         for node in ast.walk(ann):
-            if isinstance(node, ast.Call) and _is_depends(node):
+            if isinstance(node, ast.Call) and self.hints.is_depends(node):
                 self.depends(node, _annotated_type(ann))
             elif isinstance(node, ast.Name | ast.Attribute) and isinstance(node.ctx, ast.Load):
                 q = self.b.resolve(self.mod, node)
@@ -683,7 +701,7 @@ class _Analyzer:
         ``app.dependency_overrides[a] = b``."""
         if isinstance(target, ast.Subscript):
             base = target.value
-            if isinstance(base, ast.Attribute) and base.attr == "dependency_overrides":
+            if isinstance(base, ast.Attribute) and base.attr == self.hints.overrides_attr:
                 key = self.b.resolve(self.mod, target.slice)
                 val = self.b.resolve(self.mod, value)
                 if key is not None:
@@ -710,7 +728,7 @@ class _Analyzer:
             node = node.func.value
         if isinstance(node, ast.Call):
             q = self.b.resolve(self.mod, node.func)
-            if q and q.split(":", 1)[0].split(".")[0] in SQL_MODULES:
+            if q and q.split(":", 1)[0].split(".")[0] in self.hints.sql_modules:
                 short = q.rsplit(":", 1)[-1]
                 if short in WRITE_STATEMENTS:
                     return short
@@ -749,7 +767,7 @@ class _Analyzer:
         return None
 
     def attribute(self, node: ast.Attribute) -> None:
-        if node.attr == "dependency_overrides":
+        if node.attr == self.hints.overrides_attr:
             self.flag("dependency_overrides", node, ast.unparse(node))
         if not _rooted_in(node, self.locals):
             q = self.b.resolve(self.mod, node)
@@ -763,7 +781,7 @@ class _Analyzer:
 
     def call(self, node: ast.Call) -> None:
         func = node.func
-        if _is_depends(node):
+        if self.hints.is_depends(node):
             self.depends(node, None)
             return
         if isinstance(func, ast.Name):
@@ -1085,3 +1103,25 @@ def _imports(tree: ast.Module, mod: str, is_pkg: bool, known: set[str]) -> dict[
                 sub = f"{base}.{alias.name}"
                 out[local] = sub if sub in known else f"{base}:{alias.name}"
     return out
+
+
+# ---- front-end hints -------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class GraphHints:
+    """What the graph needs from a front end: ``is_route`` (a function definition is a
+    route), ``is_table`` (a class definition is an ORM table), ``is_depends`` (an
+    expression is a dependency declaration: a ``depends`` edge to its target),
+    ``overrides_attr`` (the attribute whose item assignment overrides a dependency;
+    None: none) and ``sql_modules`` (the modules whose ``insert``/``update``/``delete``
+    statements are SQL writes). The defaults are FastAPI + SQLModel's."""
+
+    is_route: Callable[[ast.FunctionDef | ast.AsyncFunctionDef], bool] = _is_route
+    is_table: Callable[[ast.ClassDef], bool] = _is_table
+    is_depends: Callable[[ast.expr], bool] = _is_depends
+    overrides_attr: str | None = "dependency_overrides"
+    sql_modules: tuple[str, ...] = SQL_MODULES
+
+
+FASTAPI_HINTS = GraphHints()

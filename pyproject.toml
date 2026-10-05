@@ -57,6 +57,7 @@ extend-exclude = [
     "tests/fixtures/normalise",
     "tests/fixtures/diag_hints",
     "tests/t2ir/golden",
+    "tests/importer/goldens",
 ]
 
 [tool.ruff.lint]

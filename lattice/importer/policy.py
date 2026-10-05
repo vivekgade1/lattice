@@ -24,11 +24,16 @@ like the original is a mismatch (``verify``: "declared but the import agrees").
 from __future__ import annotations
 
 import ast
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from lattice.importer.transport import is_http_exception_class
 from lattice.importer.verify import Case, Deviation
+
+# a front end's error class: a resolved exception class ("module:Name") that answers an
+# error (FastAPI's: HTTPException)
+ErrorClass = Callable[[str], bool]
 
 if TYPE_CHECKING:
     from lattice.importer.extract import RepoModel, _Index
@@ -80,6 +85,11 @@ NULL_REASON = (
 
 def _num(v: float) -> str:
     return str(int(v)) if float(v).is_integer() else str(v)
+
+
+def validation_status(api: ApiProfile) -> int:
+    """The status the import answers invalid input with (the profile's; 422 by default)."""
+    return api.validation_status
 
 
 def _validation(api: ApiProfile, entries: list[dict[str, Any]]) -> Any:
@@ -174,11 +184,14 @@ class TokenAnswers:
     unknown: tuple[int, str] | None = None
 
 
-def token_answers(model: RepoModel, index: _Index) -> TokenAnswers:
+def token_answers(
+    model: RepoModel, index: _Index, *, is_error: ErrorClass = is_http_exception_class
+) -> TokenAnswers:
     """The original's answers to the tokens naming no caller (see :class:`TokenAnswers`):
     the ``raise HTTPException`` in the handler of the ``try`` around the decode -- in the
     dependency, or in the decode helper it passes the token to -- or the guard on the
-    decoded payload; the guard on the claim; the guard on the caller's lookup."""
+    decoded payload; the guard on the claim; the guard on the caller's lookup.
+    ``is_error``: the front end's error class (default FastAPI's ``HTTPException``)."""
     dep = next((d for d in model.dependencies if d.kind == "current_user"), None)
     if dep is None:
         return TokenAnswers()
@@ -190,13 +203,13 @@ def token_answers(model: RepoModel, index: _Index) -> TokenAnswers:
         (a.arg for a in fn.args.args if a.arg == "token" or "token" in a.arg.lower()), None
     )
     bad = (
-        _handler_raise(fn, dep.module, index)
-        or _helper_raise(fn, dep.module, index, token)
-        or _decoded_raise(fn, dep.module, index, token)
+        _handler_raise(fn, dep.module, index, is_error=is_error)
+        or _helper_raise(fn, dep.module, index, token, is_error=is_error)
+        or _decoded_raise(fn, dep.module, index, token, is_error=is_error)
     )
-    unknown = _missing_user_raise(fn, dep.module, index)
+    unknown = _missing_user_raise(fn, dep.module, index, is_error=is_error)
     # no guard on the claim itself: the missing claim reaches the caller's lookup
-    claimless = _claim_raise(fn, dep.module, index) or unknown
+    claimless = _claim_raise(fn, dep.module, index, is_error=is_error) or unknown
     return TokenAnswers(bad, claimless, unknown)
 
 
@@ -214,14 +227,20 @@ def lattice_token_answers(api: ApiProfile) -> TokenAnswers:
     return TokenAnswers(invalid, invalid, unknown)  # type: ignore[arg-type]
 
 
-def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[TokenPolicy, ...]:
+def auth_policies(
+    model: RepoModel,
+    index: _Index,
+    api: ApiProfile,
+    *,
+    is_error: ErrorClass = is_http_exception_class,
+) -> tuple[TokenPolicy, ...]:
     """The token policies for routes behind the current-user dependency: each token
     naming no caller (:func:`token_answers`) the imported app answers otherwise than the
     original (:func:`lattice_token_answers`). The profile carries the original's
     answers (``NativeToken(invalid=, unknown=)``), so a policy remains only for what it
     cannot say (a claimless token answered unlike a bad one). A dependency of another
     shape yields no policy (those cases then fail verification)."""
-    original = token_answers(model, index)
+    original = token_answers(model, index, is_error=is_error)
     ours = lattice_token_answers(api)
     out: list[TokenPolicy] = []
     bad = original.invalid
@@ -266,7 +285,12 @@ def auth_policies(model: RepoModel, index: _Index, api: ApiProfile) -> tuple[Tok
 
 
 def _helper_raise(
-    fn: ast.AST, module: str, index: _Index, token: str | None
+    fn: ast.AST,
+    module: str,
+    index: _Index,
+    token: str | None,
+    *,
+    is_error: ErrorClass = is_http_exception_class,
 ) -> tuple[int, str] | None:
     """The decode helper's own raise: ``helper(token)`` a package function whose ``try``
     around the decode answers a bad token with ``raise HTTPException(...)``."""
@@ -282,7 +306,7 @@ def _helper_raise(
         if found is None or not isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
             continue
         hmod, helper = found
-        answer = _handler_raise(helper, hmod, index)
+        answer = _handler_raise(helper, hmod, index, is_error=is_error)
         if answer is not None:
             return answer
     return None
@@ -311,7 +335,13 @@ def _assigned(stmt: ast.stmt) -> tuple[str, ast.expr] | None:
 
 
 def _guard(
-    stmt: ast.stmt, var: str, module: str, index: _Index, fn: ast.AST
+    stmt: ast.stmt,
+    var: str,
+    module: str,
+    index: _Index,
+    fn: ast.AST,
+    *,
+    is_error: ErrorClass = is_http_exception_class,
 ) -> tuple[int, str] | None:
     """``if <var is None / not var> [or ...]: raise ...``: the raise's answer."""
     from lattice.importer.lifters.base import is_falsy_test
@@ -323,11 +353,16 @@ def _guard(
         test = test.values[0]  # `if user is None or not user.is_active`
     if not is_falsy_test(test, var):
         return None
-    return _raise_of(stmt.body[0], module, index, fn)
+    return _raise_of(stmt.body[0], module, index, fn, is_error=is_error)
 
 
 def _decoded_raise(
-    fn: ast.AST, module: str, index: _Index, token: str | None
+    fn: ast.AST,
+    module: str,
+    index: _Index,
+    token: str | None,
+    *,
+    is_error: ErrorClass = is_http_exception_class,
 ) -> tuple[int, str] | None:
     """``payload = <decode helper>(token); if payload is None: raise ...``."""
     if token is None:
@@ -338,11 +373,13 @@ def _decoded_raise(
             continue
         call = got[1]
         if any(isinstance(a, ast.Name) and a.id == token for a in call.args):
-            return _guard(nxt, got[0], module, index, fn)
+            return _guard(nxt, got[0], module, index, fn, is_error=is_error)
     return None
 
 
-def _claim_raise(fn: ast.AST, module: str, index: _Index) -> tuple[int, str] | None:
+def _claim_raise(
+    fn: ast.AST, module: str, index: _Index, *, is_error: ErrorClass = is_http_exception_class
+) -> tuple[int, str] | None:
     """``sub = payload.get("<claim>")`` (or ``payload["<claim>"]``) followed by
     ``if sub is None / not sub: raise ...``."""
     for stmt, nxt in _pairs(fn):
@@ -356,18 +393,23 @@ def _claim_raise(fn: ast.AST, module: str, index: _Index) -> tuple[int, str] | N
                 pass
             case _:
                 continue
-        found = _guard(nxt, got[0], module, index, fn)
+        found = _guard(nxt, got[0], module, index, fn, is_error=is_error)
         if found is not None:
             return found
     return None
 
 
 def _raise_of(
-    stmt: ast.stmt, module: str, index: _Index, fn: ast.AST | None = None
+    stmt: ast.stmt,
+    module: str,
+    index: _Index,
+    fn: ast.AST | None = None,
+    *,
+    is_error: ErrorClass = is_http_exception_class,
 ) -> tuple[int, str] | None:
     """(status, detail) of ``raise HTTPException(...)`` -- or of ``raise <name>`` where
     ``name`` is assigned an ``HTTPException(...)`` once in ``fn`` (FastAPI's
-    ``credentials_exception`` idiom)."""
+    ``credentials_exception`` idiom). ``is_error``: the front end's error class."""
     from lattice.importer.extract import _single_assignment
     from lattice.importer.lifters.base import status_of
 
@@ -379,7 +421,7 @@ def _raise_of(
     if not isinstance(exc, ast.Call):
         return None
     q = index.resolve(module, exc.func)
-    if q is None or not q.endswith(":HTTPException"):
+    if q is None or not is_error(q):
         return None
     kw: Mapping[str | None, ast.expr] = {k.arg: k.value for k in exc.keywords}
     args = exc.args
@@ -390,17 +432,24 @@ def _raise_of(
     return status, detail.value
 
 
-def _handler_raise(fn: ast.AST, module: str, index: _Index) -> tuple[int, str] | None:
+def _handler_raise(
+    fn: ast.AST, module: str, index: _Index, *, is_error: ErrorClass = is_http_exception_class
+) -> tuple[int, str] | None:
     for node in ast.walk(fn):
         if isinstance(node, ast.Try) and len(node.handlers) == 1:
             body = node.handlers[0].body
-            if len(body) == 1 and (r := _raise_of(body[0], module, index, fn)) is not None:
+            r = _raise_of(body[0], module, index, fn, is_error=is_error) if len(body) == 1 else None
+            if r is not None:
                 return r
     return None
 
 
 def _missing_user_raise(
-    fn: ast.FunctionDef | ast.AsyncFunctionDef, module: str, index: _Index
+    fn: ast.FunctionDef | ast.AsyncFunctionDef,
+    module: str,
+    index: _Index,
+    *,
+    is_error: ErrorClass = is_http_exception_class,
 ) -> tuple[int, str] | None:
     """The raise guarding the caller's lookup: ``user = session.get(M, id)`` -- or any
     call assigned to the name the dependency returns -- followed by ``if user is None /
@@ -418,7 +467,7 @@ def _missing_user_raise(
         is_get = isinstance(call.func, ast.Attribute) and call.func.attr == "get"
         if not ((is_get and len(call.args) == 2) or var in returned):
             continue
-        found = _guard(nxt, var, module, index, fn)
+        found = _guard(nxt, var, module, index, fn, is_error=is_error)
         if found is not None:
             return found
     return None

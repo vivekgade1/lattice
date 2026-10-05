@@ -32,6 +32,11 @@ generated profile declares the settings and where the original app keeps them
 (``SETTINGS_FROM_APP``); their values are read once from an original app the factory
 builds, and passed to the Lattice app at start-up -- exactly the configuration the
 original runs with, never a guessed default.
+
+The front end (``lattice.importer.frontends``; default FastAPI's) extracts the model and
+gives the :class:`~lattice.importer.transport.AppRuntime` the original runs under: its
+transport, auth driver, dispose hooks, seed hook and error sites. Nothing here imports a
+web framework.
 """
 
 from __future__ import annotations
@@ -47,19 +52,26 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Literal
 
-from fastapi.testclient import TestClient
-
 from lattice.api.ir import EndpointPlan, lower_api
 from lattice.api.runtime import build_app
 from lattice.check import check_source
 from lattice.diagnostics import Severity
 from lattice.importer.adapt import SuiteInputs, adapt
-from lattice.importer.extract import RepoModel, Route, _Index, extract, route_function
+from lattice.importer.extract import RepoModel, Route, _Index, route_function
+from lattice.importer.frontends import FrontEnd
+from lattice.importer.frontends.fastapi import FRONT_END as FASTAPI
 from lattice.importer.lifters import RouteLift, lift_route
 from lattice.importer.lifters.base import RouteSource
-from lattice.importer.policy import Policy, auth_policies, deviations_for, token_answers
+from lattice.importer.policy import (
+    Policy,
+    auth_policies,
+    deviations_for,
+    token_answers,
+    validation_status,
+)
 from lattice.importer.profile_gen import ProfileResult, Unclear, generate_profile
 from lattice.importer.suite import GeneratedSuite, generate_suite
+from lattice.importer.transport import AppRuntime
 from lattice.importer.verify import Deviation, Rule, ValidationEnvelope, VerifyResult, verify
 from lattice.profile import Profile
 
@@ -127,6 +139,9 @@ class VerifyContext:
     # tokens the original's login answered, per suite and user handle, with when (see
     # _login_tokens)
     _tokens: dict[tuple[int, str], tuple[str, float]] = field(default_factory=dict, repr=False)
+    # how the original runs (default FastAPI's), and the front end that read it
+    runtime: AppRuntime = field(default_factory=AppRuntime)
+    frontend: FrontEnd = FASTAPI
 
     def full_suite(self) -> GeneratedSuite | None:
         if self._full is None and self.inputs.routes:
@@ -228,21 +243,27 @@ def lift_repo(
     rules: Sequence[Rule] | None = None,
     hypothesis_bodies: int = 5,
     dialect: str | None = None,
+    frontend: FrontEnd | None = None,
+    runtime: AppRuntime | None = None,
 ) -> ImportResult:
     """Import the repository with the deterministic lifters only (see the module
     docstring). ``app_factory(db_path)`` builds the original app on a SQLite file;
     ``only`` limits the routes (by key: the route name, module-qualified when repeated).
     ``dialect``: the deployment's database dialect when the package does not name one
-    (its URL comes from the environment); what the package says always wins."""
+    (its URL comes from the environment); what the package says always wins.
+    ``frontend`` (default FastAPI's) extracts the model; ``runtime`` (default the front
+    end's) runs the original."""
     root = Path(repo_root).resolve()
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
-    model = extract(root, app_package)
+    fe = frontend if frontend is not None else FASTAPI
+    rt = runtime if runtime is not None else fe.runtime(root, app_package)
+    model = fe.extract(root, app_package)
     if model.dialect is None and dialect is not None:
         model = dataclasses.replace(model, dialect=dialect)
     index = _Index(root, app_package)
     try:
-        answers = token_answers(model, index)
+        answers = token_answers(model, index, is_error=rt.error_class)
     except Exception:  # noqa: BLE001 -- an unfamiliar auth shape: the default answers
         answers = None
     generated = generate_profile(model, answers)
@@ -252,10 +273,10 @@ def lift_repo(
     if api is None:
         raise ValueError("the generated profile has no API settings")
     natives: dict[str, Callable[..., Any]] = dict(module.NATIVES)
-    settings = app_settings(module, app_factory)
-    inputs = adapt(model, api, index, natives, settings)
+    settings = app_settings(module, app_factory, rt)
+    inputs = adapt(model, api, index, natives, settings, runtime=rt)
     try:
-        token_policies = auth_policies(model, index, api)
+        token_policies = auth_policies(model, index, api, is_error=rt.error_class)
     except Exception:  # noqa: BLE001 -- an unfamiliar auth shape: no policy (cases then fail)
         token_policies = ()
 
@@ -290,10 +311,12 @@ def lift_repo(
                 if r.key in inputs.routes:
                     inputs.skipped[r.key] = why
                     del inputs.routes[r.key]
-    rules = tuple(rules) if rules is not None else (ValidationEnvelope(),)
+    rules = (
+        tuple(rules) if rules is not None else (ValidationEnvelope(status=validation_status(api)),)
+    )
     ctx = VerifyContext(root, model, profile, natives, index, inputs, tuple(token_policies),
                         rules, app_factory, hypothesis_bodies, suite,
-                        settings=settings)  # fmt: skip
+                        settings=settings, runtime=rt, frontend=fe)  # fmt: skip
     for r in lifted_results:
         try:
             _verify_route(r, ctx, suite)
@@ -305,11 +328,13 @@ def lift_repo(
     return ImportResult(model, generated, results, programs, natives, profile, suite, ctx)
 
 
-def app_settings(module: ModuleType, app_factory: Callable[[Path], Any]) -> dict[str, Any]:
+def app_settings(
+    module: ModuleType, app_factory: Callable[[Path], Any], runtime: AppRuntime | None = None
+) -> dict[str, Any]:
     """The values of the generated profile's NativeContext settings, read from an
     original app built by ``app_factory`` (``SETTINGS_FROM_APP``); {} when the profile
     declares none or the app cannot be built (the routes needing them then fail to
-    start, with the reason)."""
+    start, with the reason). The app is disposed with ``runtime``'s hooks."""
     if not getattr(module, "SETTINGS_FROM_APP", None):
         return {}
     import tempfile
@@ -320,9 +345,7 @@ def app_settings(module: ModuleType, app_factory: Callable[[Path], Any]) -> dict
             values = dict(module.settings_from_app(app))
         except Exception:  # noqa: BLE001 -- an unfamiliar factory: no values, not a crash
             return {}
-        engine = getattr(getattr(app, "state", None), "engine", None)
-        if engine is not None:
-            engine.dispose()
+        (runtime if runtime is not None else AppRuntime()).close(app)
     return values
 
 
@@ -347,15 +370,9 @@ def _login_tokens(ctx: VerifyContext, suite: GeneratedSuite) -> Callable[[Any, s
         if cached is None or _clock() - cached[1] > LOGIN_TOKEN_REUSE_SECONDS:
             with tempfile.TemporaryDirectory(prefix="lattice-login-") as tmp:
                 db = Path(suite.db_factory("seed", Path(tmp) / "login.db"))
-                app = ctx.app_factory(db)
-                try:
-                    with TestClient(app) as original:
-                        cached = (login(original, handle), _clock())
-                        ctx._tokens[key] = cached
-                finally:
-                    engine = getattr(getattr(app, "state", None), "engine", None)
-                    if engine is not None:
-                        engine.dispose()
+                with ctx.runtime.serve(ctx.app_factory, db, raise_errors=True) as (_, original):
+                    cached = (login(original.client, handle), _clock())
+                    ctx._tokens[key] = cached
         return cached[0]
 
     return lattice_login
@@ -446,6 +463,7 @@ def _verify_route(
         # the app's own password-hash column (a new salted hash differs on each side)
         hash_columns=(inputs.auth.password_column,),
         branches={r.key: _functions(model, r.route)},
+        runtime=ctx.runtime,
     )
     r.verify = result
     problems = [f"{n}: {o.reason}" for n, o in result.mismatches.items()]

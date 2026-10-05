@@ -33,6 +33,7 @@ from typing import Any
 from sqlalchemy import Engine, event
 
 from lattice.importer.sql_lift import binding_key, shape
+from lattice.importer.transport import AppRuntime
 from lattice.importer.verify import AppFactory, Case, Login, run_suite
 
 __all__ = [
@@ -197,9 +198,10 @@ def trace_suite(
     login: Login | None = None,
     prefix: str = "",
     hash_columns: Sequence[str] = ("hashed_password",),
+    runtime: AppRuntime | None = None,
 ) -> dict[str, RequestTrace]:
-    """Run ``cases`` against the original app (as :func:`verify.run_suite` does) and
-    return each case's SQL trace."""
+    """Run ``cases`` against the original app (as :func:`verify.run_suite` does, under
+    ``runtime``: default FastAPI's) and return each case's SQL trace."""
     with SqlTracer() as tracer:
         records = run_suite(
             app_factory,
@@ -209,6 +211,7 @@ def trace_suite(
             prefix=prefix,
             hash_columns=hash_columns,
             tracer=tracer,  # type: ignore[arg-type]  # run_case only calls tracer.case()
+            runtime=runtime,
         )
     for name, record in records.items():
         if name in tracer.traces:

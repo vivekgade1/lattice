@@ -22,7 +22,11 @@ unverified, not accepted.
 * auth: the users table and its email / password-hash / active / admin columns, the
   login route, the native that hashes passwords (the one whose result the package
   stores in the password-hash column) and the one the login route mints tokens with
-  (taking the users key: ``Uuid`` or ``Int``).
+  (taking the users key: ``Uuid`` or ``Int``). A front end's ``AuthModel``
+  (``RepoModel.auth``) names the login route, its encoding and fields, and where the
+  token is in its answer; without one (FastAPI) they are read as above.
+* the seed's insert hook: the runtime's (``AppRuntime.seed_hook``; FastAPI's writes
+  through the original's SQLModel classes).
 
 Never a crash on an unfamiliar app: a table with a column type the suite cannot seed
 has no spec and the routes touching it are skipped with the reason; with no users
@@ -41,7 +45,7 @@ import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from lattice.importer.extract import (
     FieldSpec,
@@ -63,6 +67,9 @@ from lattice.importer.suite import (
     sqlmodel_insert_hook,
 )
 from lattice.profile import AdminFlag, ApiProfile, RoleColumn
+
+if TYPE_CHECKING:
+    from lattice.importer.transport import AppRuntime
 
 COLUMN_TYPES = {
     "Str": "str",
@@ -197,7 +204,7 @@ def _kind(model: RepoModel, route: Route, users: TableModel | None) -> str:
     sources = {p.source for p in route.params}
     path = "path" in sources
     body = "body" in sources
-    if "form" in sources:
+    if "form" in sources or _is_login(model, route):
         return "login"
     method = route.method
     users_response = users is not None and _returns_users(model, route, users)
@@ -218,6 +225,12 @@ def _kind(model: RepoModel, route: Route, users: TableModel | None) -> str:
     if method == "DELETE":
         return "delete" if path else "other"
     return "other"
+
+
+def _is_login(model: RepoModel, route: Route) -> bool:
+    """The front end's login route (its ``AuthModel``), when it names one."""
+    auth = model.auth
+    return auth is not None and auth.login_path == route.path and route.method == "POST"
 
 
 def _returns_users(model: RepoModel, route: Route, users: TableModel) -> bool:
@@ -341,6 +354,12 @@ def _errors(
     return tuple(out)
 
 
+def _login_encoding(model: RepoModel) -> str:
+    """How the login route takes credentials: the front end's ``AuthModel``, else an
+    OAuth2 password form (FastAPI)."""
+    return model.auth.login_encoding if model.auth is not None else "form"
+
+
 def route_spec(
     model: RepoModel, route: Route, api: ApiProfile, blocker: str | None = None
 ) -> RouteSpec:
@@ -372,7 +391,7 @@ def route_spec(
         auth=auth_kind(route.auth),  # type: ignore[arg-type]
         roles=auth_roles(route.auth),
         params=params,
-        body="form" if kind == "login" else "json",
+        body="form" if kind == "login" and _login_encoding(model) == "form" else "json",
         pagination=_pagination(route) if kind == "list" else None,
         errors=_errors(model, route, kind, params),
     )
@@ -508,6 +527,21 @@ def auth_spec(
         claim=decoder.claim if decoder is not None and decoder.claim else "sub",
         subject_column=decoder.lookup if decoder is not None else None,
         **_role_spec(model),
+        **_login_spec(model),
+    )
+
+
+def _login_spec(model: RepoModel) -> dict[str, object]:
+    """AuthSpec's login fields from the front end's ``AuthModel`` ({}: FastAPI's
+    defaults -- an OAuth2 password form answering ``access_token``)."""
+    auth = model.auth
+    if auth is None:
+        return {}
+    return dict(  # keywords, not string keys: see lattice.importer.suite on Hypothesis
+        login_encoding=auth.login_encoding,
+        username_field=auth.username_field,
+        password_field=auth.password_field,
+        token_field=".".join(auth.token_path),
     )
 
 
@@ -618,9 +652,12 @@ def adapt(
     index: _Index,
     natives: Mapping[str, Callable[..., Any]],
     settings: Mapping[str, Any] | None = None,
+    *,
+    runtime: AppRuntime | None = None,
 ) -> SuiteInputs:
     """Every route's :class:`RouteSpec` (or why not), the tables and the auth
-    (``settings``: the NativeContext values, for a token minter reading them)."""
+    (``settings``: the NativeContext values, for a token minter reading them).
+    ``runtime``: the front end's (default FastAPI's), for the seed's insert hook."""
     specs: list[TableSpec] = []
     unseedable: dict[str, str] = {}  # table class -> why it has no spec
     for t in model.tables:
@@ -651,7 +688,12 @@ def adapt(
             skipped[key] = f"the suite generator failed on the route: {type(err).__name__}: {err}"
     auth = auth_spec(model, api, index, natives, routes, settings)
     seeded = [t for t in model.tables if t.name not in unseedable]
-    return SuiteInputs(routes, skipped, tables, auth, keys, _insert_hook(seeded))
+    if runtime is None:
+        from lattice.importer.transport import AppRuntime
+
+        runtime = AppRuntime()
+    hook = runtime.seed_hook(seeded) if runtime.seed_hook is not None else None
+    return SuiteInputs(routes, skipped, tables, auth, keys, hook)
 
 
 __all__ = [

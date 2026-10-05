@@ -53,9 +53,18 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
+from lattice.importer.transport import (
+    AppRuntime,
+    ErrorSite,
+    Login,
+    http_exception_site,
+    is_http_exception,
+    status_of,
+)
+from lattice.importer.transport import form_login as form_login
+
 AppFactory = Callable[[Path], Any]
 DbFactory = Callable[[str, Path], Path]
-Login = Callable[[Any, str], str]
 Side = Literal["original", "lattice"]
 OutcomeKind = Literal["equal", "equal_under_rule", "deviation", "mismatch"]
 
@@ -223,24 +232,9 @@ def snapshot_tables(db_path: Path, tables: Sequence[str]) -> dict[str, list[dict
 # ----------------------------------------------------------------------------- runner --
 
 
-def form_login(
-    path: str,
-    credentials: Mapping[str, tuple[str, str]],
-    *,
-    username_field: str = "username",
-    password_field: str = "password",
-    token_field: str = "access_token",
-) -> Login:
-    """A ``login`` for an OAuth2 password form: handle -> (username, password)."""
-
-    def login(client: Any, handle: str) -> str:
-        username, password = credentials[handle]
-        r = client.post(path, data={username_field: username, password_field: password})
-        if r.status_code != 200:
-            raise RuntimeError(f"login as {handle!r} failed: {r.status_code} {r.text}")
-        return r.json()[token_field]
-
-    return login
+# ``form_login`` (an OAuth2 password form's ``Login``) lives in lattice.importer.transport
+# with the other logins; it is re-exported here, where it has always been imported from.
+DEFAULT_RUNTIME = AppRuntime()  # FastAPI's: TestClient, Bearer, app.state.engine.dispose()
 
 
 def _body(response: Any) -> Any:
@@ -261,43 +255,40 @@ def run_case(
     login: Login | None = None,
     prefix: str = "",
     tracer: BranchTracer | None = None,
+    runtime: AppRuntime | None = None,
 ) -> CaseRecord:
     """Issue ``case`` against ``app_factory(copy of db_path)``, logging in first when the
-    case acts as a user; record status, body and the case's tables, normalised."""
-    from fastapi.testclient import TestClient
+    case acts as a user; record status, body and the case's tables, normalised.
 
+    ``runtime`` (default FastAPI's, :data:`DEFAULT_RUNTIME`) serves the app: its
+    transport, its auth driver (``login`` -- ``login(client, handle)`` -> token -- wins
+    over the driver's own login or minter; the token goes in the driver's header scheme)
+    and its dispose hooks, run before the case's tables are read."""
+    rt = runtime if runtime is not None else DEFAULT_RUNTIME
     with tempfile.TemporaryDirectory(prefix="lattice-verify-") as tmp:
         case_db = Path(tmp) / "case.db"
         shutil.copyfile(db_path, case_db)
-        app = app_factory(case_db)
-        try:
-            with TestClient(app, raise_server_exceptions=False) as client:
-                headers = {}
-                token = case.token
-                if token is None and case.user is not None:
-                    if login is None:
-                        raise ValueError(f"case {case.name!r} acts as a user but no login")
-                    token = login(client, case.user)
-                if token is not None:
-                    headers["Authorization"] = f"Bearer {token}"
-                with tracer.case(case) if tracer else _nothing():
-                    response = client.request(
-                        case.method,
-                        prefix + case.path,
-                        params=case.params,
-                        json=case.json,
-                        data=case.form,
-                        headers=headers,
-                    )
-        finally:
-            engine = getattr(getattr(app, "state", None), "engine", None)
-            if engine is not None:
-                engine.dispose()
+        with rt.serve(app_factory, case_db) as (_, transport):
+            token = case.token
+            if token is None and case.user is not None:
+                if login is None and not rt.auth.can_login:
+                    raise ValueError(f"case {case.name!r} acts as a user but no login")
+                token = rt.auth.token(transport, case.user, login)
+            headers = rt.auth.present(transport, token)
+            with tracer.case(case) if tracer else _nothing():
+                answer = transport.request(
+                    case.method,
+                    prefix + case.path,
+                    params=case.params,
+                    json=case.json,
+                    form=case.form,
+                    headers=headers,
+                )
         raw_db = snapshot_tables(case_db, case.tables)
     n = norm.fresh()
-    body = n.value(_body(response))
+    body = n.value(answer.body)
     db = {t: [n.value(row) for row in rows] for t, rows in raw_db.items()}
-    return CaseRecord(case.name, case.method, case.path, response.status_code, body, db)
+    return CaseRecord(case.name, case.method, case.path, answer.status, body, db)
 
 
 @contextmanager
@@ -319,6 +310,7 @@ def run_suite(
     prefix: str = "",
     hash_columns: Sequence[str] = ("hashed_password",),
     tracer: BranchTracer | None = None,
+    runtime: AppRuntime | None = None,
 ) -> dict[str, CaseRecord]:
     """Every case on a fresh copy of its database variant; name -> record."""
     norms = {v: Normalizer(p, hash_columns) for v, p in dbs.items()}
@@ -326,9 +318,8 @@ def run_suite(
     for c in cases:
         if c.name in out:
             raise ValueError(f"duplicate case name {c.name!r}")
-        out[c.name] = run_case(
-            c, app_factory, dbs[c.db], norms[c.db], login=login, prefix=prefix, tracer=tracer
-        )
+        out[c.name] = run_case(c, app_factory, dbs[c.db], norms[c.db], login=login,
+                               prefix=prefix, tracer=tracer, runtime=runtime)  # fmt: skip
     return out
 
 
@@ -523,40 +514,29 @@ class RaiseSite:
         return f"{self.function} ({Path(self.file).name}:{self.line}) -> {self.status}"
 
 
-def _status_of(node: ast.expr | None) -> int | None:
-    if isinstance(node, ast.Constant) and isinstance(node.value, int):
-        return node.value
-    if isinstance(node, ast.Attribute):  # status.HTTP_403_FORBIDDEN
-        m = re.match(r"HTTP_(\d{3})_", node.attr)
-        return int(m.group(1)) if m else None
-    return None
+# FastAPI's error-site predicates (now in lattice.importer.transport), by their old names
+_status_of = status_of
+_is_http_exception = is_http_exception
 
 
-def _is_http_exception(node: ast.expr) -> bool:
-    name = node.attr if isinstance(node, ast.Attribute) else getattr(node, "id", None)
-    return isinstance(name, str) and name.endswith("HTTPException")
-
-
-def raise_sites(func: Callable[..., Any]) -> list[RaiseSite]:
-    """Every ``raise HTTPException(...)`` in ``func``'s own body, in source order."""
+def raise_sites(
+    func: Callable[..., Any], *, error_site: ErrorSite = http_exception_site
+) -> list[RaiseSite]:
+    """Every error site in ``func``'s own body, in source order: by default (FastAPI's)
+    every ``raise HTTPException(...)``; ``error_site`` is a front end's predicate (an
+    AST node -> its status and detail, or None)."""
     func = inspect.unwrap(func)
     code = func.__code__
     lines, first = inspect.getsourcelines(func)
     tree = ast.parse(textwrap.dedent("".join(lines)))
     sites = []
     for node in ast.walk(tree):
-        if not (isinstance(node, ast.Raise) and isinstance(node.exc, ast.Call)):
+        found = error_site(node)
+        if found is None:
             continue
-        call = node.exc
-        if not _is_http_exception(call.func):
-            continue
-        kw = {k.arg: k.value for k in call.keywords if k.arg}
-        status = _status_of(kw.get("status_code", call.args[0] if call.args else None))
-        det = kw.get("detail", call.args[1] if len(call.args) > 1 else None)
-        detail = det.value if isinstance(det, ast.Constant) and isinstance(det.value, str) else None
-        sites.append(
-            RaiseSite(func.__qualname__, code.co_filename, first + node.lineno - 1, status, detail)
-        )
+        status, detail = found
+        line = first + node.lineno - 1  # type: ignore[attr-defined]
+        sites.append(RaiseSite(func.__qualname__, code.co_filename, line, status, detail))
     return sorted(sites, key=lambda s: s.line)
 
 
@@ -564,11 +544,16 @@ class BranchTracer:
     """Records which case reaches which raise site, via a ``sys.monitoring`` tool
     (process-wide: every thread is traced)."""
 
-    def __init__(self, functions: Sequence[Callable[..., Any]]) -> None:
+    def __init__(
+        self,
+        functions: Sequence[Callable[..., Any]],
+        *,
+        error_site: ErrorSite = http_exception_site,
+    ) -> None:
         self.codes: dict[Any, dict[int, RaiseSite]] = {}
         for f in functions:
             code = inspect.unwrap(f).__code__
-            for s in raise_sites(f):
+            for s in raise_sites(f, error_site=error_site):
                 self.codes.setdefault(code, {})[s.line] = s
         self.hits: dict[RaiseSite, list[str]] = {
             s: [] for by_line in self.codes.values() for s in by_line.values()
@@ -740,6 +725,8 @@ def verify(
     hash_columns: Sequence[str] = ("hashed_password",),
     branches: Mapping[str, Sequence[Callable[..., Any]]] | None = None,
     lattice_login: Login | None = None,
+    runtime: AppRuntime | None = None,
+    lattice_runtime: AppRuntime | None = None,
 ) -> VerifyResult:
     """Run ``cases`` against both apps on identical seeded databases and classify each.
 
@@ -748,26 +735,29 @@ def verify(
     file. ``login(client, handle)`` returns a bearer token (``lattice_login`` for the
     import, default the same). ``deviations`` maps case names to :class:`Deviation`.
     ``branches`` maps route names to the original's functions whose raise sites must each
-    be reached by a case of that route."""
+    be reached by a case of that route. ``runtime`` serves the original (its transport,
+    auth, dispose hooks and error sites; default FastAPI's), ``lattice_runtime`` the
+    import (default FastAPI's: the Lattice runtime is an ASGI app)."""
     names = [c.name for c in cases]
     if len(set(names)) != len(names):
         raise ValueError("case names must be unique")
     functions = list(dict.fromkeys(f for fs in (branches or {}).values() for f in fs))
-    tracer = BranchTracer(functions)
+    rt = runtime if runtime is not None else DEFAULT_RUNTIME
+    tracer = BranchTracer(functions, error_site=rt.error_site)
     with tempfile.TemporaryDirectory(prefix="lattice-verify-dbs-") as tmp:
         dbs = build_dbs(db_factory, [c.db for c in cases], Path(tmp))
         common = {"prefix": prefix, "hash_columns": hash_columns}
         with tracer.active():
-            original = run_suite(
-                original_app_factory, dbs, cases, login=login, tracer=tracer, **common
-            )
-        lattice = run_suite(lattice_app_factory, dbs, cases, login=lattice_login or login, **common)
+            original = run_suite(original_app_factory, dbs, cases, login=login, tracer=tracer,
+                                 runtime=rt, **common)  # fmt: skip
+        lattice = run_suite(lattice_app_factory, dbs, cases, login=lattice_login or login,
+                            runtime=lattice_runtime, **common)  # fmt: skip
     outcomes = {n: classify(original[n], lattice[n], rules, deviations.get(n)) for n in names}
     route_of = {c.name: c.route for c in cases}
     unverified: list[tuple[str, RaiseSite]] = []
     for route, fs in (branches or {}).items():
         for f in fs:
-            for s in raise_sites(f):
+            for s in raise_sites(f, error_site=rt.error_site):
                 if not any(route_of[n] in (route, None) for n in tracer.hits[s]):
                     unverified.append((route, s))
     return VerifyResult(

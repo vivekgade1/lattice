@@ -17,6 +17,7 @@ from typing import Any
 import pytest
 
 import lattice.importer.lift as lift
+from lattice.importer.transport import AppRuntime
 from lattice.importer.verify import Normalizer
 from tests.importer.test_import_int_keys import FILES
 
@@ -79,8 +80,9 @@ def test_a_login_token_is_fetched_again_before_it_can_expire(monkeypatch) -> Non
     class App:
         state = SimpleNamespace()
 
-    ctx = SimpleNamespace(_tokens={}, app_factory=lambda db: App())
-    monkeypatch.setattr(lift, "TestClient", _NullClient, raising=False)
+    # the original is served by the context's runtime (W1-A: no module-level TestClient)
+    runtime = AppRuntime(transport=lambda app, **_: _NullClient(app))
+    ctx = SimpleNamespace(_tokens={}, app_factory=lambda db: App(), runtime=runtime)
     clock = [0.0]
     monkeypatch.setattr(lift, "_clock", lambda: clock[0])
     login = lift._login_tokens(ctx, suite)  # type: ignore[arg-type]
@@ -92,6 +94,8 @@ def test_a_login_token_is_fetched_again_before_it_can_expire(monkeypatch) -> Non
 
 
 class _NullClient:
+    client = None  # what the login is handed
+
     def __init__(self, app: Any) -> None:
         pass
 

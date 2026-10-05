@@ -61,7 +61,16 @@ APPS: dict[str, tuple[str, str]] = {
 
 # fields added to RepoModel / Case after W0, with the default that reproduces the W0
 # output: dropped (at any depth) where they hold it, so the goldens stay byte-identical
-ADDED_DEFAULTS: dict[str, Any] = {}
+ADDED_DEFAULTS: dict[str, Any] = {
+    # W1-A (lattice.importer.appmodel): RepoModel.framework / .orm / .auth,
+    # Route.guards / .view, RaiseSite.kind
+    "framework": "fastapi",
+    "orm": "sqlmodel",
+    "auth": None,
+    "guards": [],
+    "view": None,
+    "kind": "HTTPException",
+}
 # report.json: volatile fields -> placeholder, and the sections the goldens ignore
 REPORT_PLACEHOLDERS = {("repo",): "<repo>", ("schema",): "<schema>",
                        ("cost", "wall_s"): "<wall_s>"}  # fmt: skip

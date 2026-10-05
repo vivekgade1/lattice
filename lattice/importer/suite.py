@@ -29,6 +29,17 @@ every owned table spread over all of them; nullable columns both null and set. I
 written through the original app's own models when an ``insert_hook`` is given (see
 :func:`sqlmodel_insert_hook`), otherwise with plain SQL from the table specs in the given
 storage spellings (:func:`sql_seed`).
+
+**Hypothesis's local constants.** The generated bodies (``hypothesis_bodies``) come from
+Hypothesis, which now and then draws a value from its pool of *local constants*: every
+short (<= 20 characters) string literal, and every int with |value| >= 100 and every
+float, in the source of every non-test, non-site-packages module loaded in the process
+(docstrings and f-strings excepted). So the suite -- and the importer's golden outputs
+(tests/importer/test_frontend_goldens.py) -- change when a module the import loads gains
+or loses such a literal, even one unrelated to the suite. Code on the FastAPI import path
+therefore avoids new short literals (keyword ``dict(...)``, ``import X as X`` instead of
+``__all__``, spellings the pool already has); a module only another framework needs
+(``lattice.importer.wsgi``) is imported lazily.
 """
 
 from __future__ import annotations
@@ -43,6 +54,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal
 
+from lattice.importer.transport import json_login
 from lattice.importer.verify import Case, Login, form_login
 
 ColumnType = Literal["str", "int", "float", "bool", "uuid", "datetime", "email"]
@@ -93,7 +105,8 @@ class TableSpec:
 @dataclass(frozen=True)
 class AuthSpec:
     """How callers are users. ``login_path`` is a form login answering
-    ``{token_field: ...}``; ``mint_token(user_id)`` makes a bearer token without logging
+    ``{token_field: ...}`` (``login_encoding`` ``json``: a JSON login, its token at the
+    dotted ``token_field`` path); ``mint_token(user_id)`` makes a bearer token without logging
     in; ``hash_password`` hashes a seed password as the original stores it.
     ``mint_claims(claims)`` (when there is no ``mint_token``) signs arbitrary claims as
     the original's token decode expects them; ``claim`` is the claim naming the caller
@@ -108,6 +121,7 @@ class AuthSpec:
     username_field: str = "username"
     password_field: str = "password"
     token_field: str = "access_token"
+    login_encoding: str = "form"  # form | json (the front end's AuthModel)
     hash_password: Callable[[str], str] | None = None
     mint_token: Callable[[Any], str] | None = None
     mint_claims: Callable[[Mapping[str, Any]], str] | None = None
@@ -930,7 +944,15 @@ def generate_suite(
 
     credentials = {u.handle: (u.email, u.password) for u in plan.users}
     login = None
-    if auth.login_path is not None:
+    if auth.login_path is not None and auth.login_encoding == "json":
+        login = json_login(
+            auth.login_path,
+            credentials,
+            username_field=auth.username_field,
+            password_field=auth.password_field,
+            token_path=tuple(auth.token_field.split(".")),
+        )
+    elif auth.login_path is not None:
         login = form_login(
             auth.login_path,
             credentials,
