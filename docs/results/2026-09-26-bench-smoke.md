@@ -1643,3 +1643,42 @@ is about 50–70% of routes.
 The importer is frozen at `cad36e5` before the reserve app
 (flask-realworld-example-app, never opened) is vendored. Its one run is the Phase 2 exit
 attempt; anything after it is post-hoc.
+
+**Reserve result** (`bench/heldout/reserve/RESULTS.md`): one frozen run, no crash, 1.1 s.
+**Exit NOT met.**
+
+| | by the exit script | on review |
+|---|---|---|
+| tables verified | 1/5 (3 excluded as outside the API) | 0/8 |
+| routes verified | 0/19 | 0/19 |
+| fidelity | fail | — |
+
+- **No logged-in caller.** The importer found no login, so layer R ran with no
+  logged-in users. The app reads bodies through flask-apispec/webargs `{"user": {...}}`
+  envelopes, which the Flask front end does not read. It has no flask-jwt-extended
+  minter and doesn't handle the `Token` scheme.
+- **Vendoring confound.** A compatibility shim re-exported the JWT decorators from
+  a Lattice module, which hid them from the front end (it matches them by import
+  origin). As a result, the 12 login-required routes were predicted Public and refuted.
+  The reviewer judges the app would fail without the shim too, but that is unmeasured.
+- **"Verified" precision on review: 7 of 8.** The wrong item is `T1 Article`, "shared",
+  though only the author may edit or delete.
+- **"Outside the API" was wrong again.** 3 link tables were written through ORM
+  relationships the front end does not see. The completeness veto from post-hoc round 1
+  did not catch this, because relationship writes are not counted as unread evidence.
+- **Contamination check:** no identifiers of this app in the importer. H3 conduit
+  implements the same RealWorld spec family, and the post-hoc rounds were made after
+  seeing H3; it gave no visible benefit (0/19).
+
+### Phase 2 conclusion
+
+The exit was not met on four held-out apps across two frozen runs. Under sound
+verification, the importer verifies roughly half of an unseen app's rules after
+post-hoc fixes, and close to none on an app whose login it cannot find. The dev-app
+gate (7/8) measured fit to the apps it was built on.
+
+Two verifier soundness problems remain open:
+1. "Shared" T1 verdicts can rest on reads alone.
+2. Relationship writes escape the outside-API veto.
+
+These need fixing before any layer R number is trusted.
