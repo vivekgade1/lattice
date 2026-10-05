@@ -1,0 +1,5818 @@
+[
+  {
+    "name": "read_items.happy",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.other_user",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_1",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": 1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_1.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.window",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "skip": 2,
+      "limit": 3
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.window.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "skip": 2,
+      "limit": 3
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_0",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": 0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_0.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.skip_past_end",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "skip": 18
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.skip_past_end.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "skip": 18
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_huge",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": 1000000
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_huge.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 1000000
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.skip_negative",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "skip": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.skip_negative.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "skip": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_negative",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_negative.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_malformed",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": "many"
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.page.limit_malformed.admin",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": "many"
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.no_token",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.bad_token",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.inactive_token",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_items.unknown_user_token",
+    "method": "GET",
+    "path": "/api/v1/items/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_items"
+  },
+  {
+    "name": "read_item.happy",
+    "method": "GET",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.other_user_row",
+    "method": "GET",
+    "path": "/api/v1/items/58205028-f8b7-5098-a325-c15096305437",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.admin",
+    "method": "GET",
+    "path": "/api/v1/items/58205028-f8b7-5098-a325-c15096305437",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.other_user",
+    "method": "GET",
+    "path": "/api/v1/items/58205028-f8b7-5098-a325-c15096305437",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.missing_id",
+    "method": "GET",
+    "path": "/api/v1/items/00000000-0000-4000-8000-000000000000",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.malformed_id",
+    "method": "GET",
+    "path": "/api/v1/items/not-a-uuid",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.no_token",
+    "method": "GET",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.bad_token",
+    "method": "GET",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.inactive_token",
+    "method": "GET",
+    "path": "/api/v1/items/7f92c390-709b-5f1d-808a-39fe9a3f73d3",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "read_item.unknown_user_token",
+    "method": "GET",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_item"
+  },
+  {
+    "name": "create_item.happy",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.admin",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.boundary.title.min",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "b",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.boundary.title.below_min",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.boundary.title.max",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.boundary.title.above_max",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.boundary.description.max",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.boundary.description.above_max",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.missing.title",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.extra.unknown",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.extra.columns",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "id": "8e7e6961-1a46-5319-bbd4-618fddb34d99",
+      "created_at": "2030-01-01T00:00:00",
+      "owner_id": "b6e9fa46-fecd-55db-94db-05b78a45f284"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.no_token",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.bad_token",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.inactive_token",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.unknown_user_token",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.hyp.0",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.hyp.1",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "\u169b\u1684\u1693\u1690\u168b\u1692\u1684\u1680\u1691\u1684\u1682\u1691\u168f\u1685\u169c",
+      "description": null
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.hyp.2",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "\u0015\u00d3\u001e\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.hyp.3",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "\u00c0\u00e0\u00dd\ud983\udc8c\u0096\u00a1"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "create_item.hyp.4",
+    "method": "POST",
+    "path": "/api/v1/items/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "\u009c"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_item"
+  },
+  {
+    "name": "update_item.happy",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.other_user_row",
+    "method": "PUT",
+    "path": "/api/v1/items/58205028-f8b7-5098-a325-c15096305437",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.admin",
+    "method": "PUT",
+    "path": "/api/v1/items/58205028-f8b7-5098-a325-c15096305437",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.missing_id",
+    "method": "PUT",
+    "path": "/api/v1/items/00000000-0000-4000-8000-000000000000",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.malformed_id",
+    "method": "PUT",
+    "path": "/api/v1/items/not-a-uuid",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.boundary.title.min",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "b",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.boundary.title.below_min",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.boundary.title.max",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.boundary.title.above_max",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.boundary.description.max",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.boundary.description.above_max",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.extra.unknown",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.extra.columns",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "created_at": "2030-01-01T00:00:00",
+      "owner_id": "b6e9fa46-fecd-55db-94db-05b78a45f284"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.partial.title",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 1"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.partial.title_null",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": null
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.partial.description",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "Valid description 1"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.partial.description_null",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": null
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.partial.empty",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.no_token",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.bad_token",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.inactive_token",
+    "method": "PUT",
+    "path": "/api/v1/items/7f92c390-709b-5f1d-808a-39fe9a3f73d3",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.unknown_user_token",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.hyp.1",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": null,
+      "description": "\u00e5+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.hyp.2",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "\u00dd\ud983\udc8c\u0096\u00a1"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "update_item.hyp.4",
+    "method": "PUT",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": null,
+      "title": "d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_item"
+  },
+  {
+    "name": "delete_item.happy",
+    "method": "DELETE",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "delete_item.other_user_row",
+    "method": "DELETE",
+    "path": "/api/v1/items/58205028-f8b7-5098-a325-c15096305437",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "delete_item.admin",
+    "method": "DELETE",
+    "path": "/api/v1/items/58205028-f8b7-5098-a325-c15096305437",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "delete_item.missing_id",
+    "method": "DELETE",
+    "path": "/api/v1/items/00000000-0000-4000-8000-000000000000",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "delete_item.malformed_id",
+    "method": "DELETE",
+    "path": "/api/v1/items/not-a-uuid",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "delete_item.no_token",
+    "method": "DELETE",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "delete_item.bad_token",
+    "method": "DELETE",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "delete_item.inactive_token",
+    "method": "DELETE",
+    "path": "/api/v1/items/7f92c390-709b-5f1d-808a-39fe9a3f73d3",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "delete_item.unknown_user_token",
+    "method": "DELETE",
+    "path": "/api/v1/items/f1d68e01-19c5-5dee-913e-30a387e2cd7b",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "item"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_item"
+  },
+  {
+    "name": "login_access_token.happy",
+    "method": "POST",
+    "path": "/api/v1/login/access-token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com",
+      "password": "alice-pass-0031"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login_access_token"
+  },
+  {
+    "name": "login_access_token.missing.username",
+    "method": "POST",
+    "path": "/api/v1/login/access-token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "password": "alice-pass-0031"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login_access_token"
+  },
+  {
+    "name": "login_access_token.missing.password",
+    "method": "POST",
+    "path": "/api/v1/login/access-token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login_access_token"
+  },
+  {
+    "name": "login_access_token.admin",
+    "method": "POST",
+    "path": "/api/v1/login/access-token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "admin@example.com",
+      "password": "admin-pass-0031"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login_access_token"
+  },
+  {
+    "name": "login_access_token.unknown_user",
+    "method": "POST",
+    "path": "/api/v1/login/access-token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "nobody@example.com",
+      "password": "whatever123"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login_access_token"
+  },
+  {
+    "name": "login_access_token.error.400.bad_credentials",
+    "method": "POST",
+    "path": "/api/v1/login/access-token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com",
+      "password": "wrong-password"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login_access_token"
+  },
+  {
+    "name": "login_access_token.error.400.inactive_login",
+    "method": "POST",
+    "path": "/api/v1/login/access-token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "carol@example.com",
+      "password": "carol-pass-0031"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login_access_token"
+  },
+  {
+    "name": "test_token.happy",
+    "method": "POST",
+    "path": "/api/v1/login/test-token",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "test_token"
+  },
+  {
+    "name": "test_token.admin",
+    "method": "POST",
+    "path": "/api/v1/login/test-token",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "test_token"
+  },
+  {
+    "name": "test_token.other_user",
+    "method": "POST",
+    "path": "/api/v1/login/test-token",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "test_token"
+  },
+  {
+    "name": "test_token.no_token",
+    "method": "POST",
+    "path": "/api/v1/login/test-token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "test_token"
+  },
+  {
+    "name": "test_token.bad_token",
+    "method": "POST",
+    "path": "/api/v1/login/test-token",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "test_token"
+  },
+  {
+    "name": "test_token.inactive_token",
+    "method": "POST",
+    "path": "/api/v1/login/test-token",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "test_token"
+  },
+  {
+    "name": "test_token.unknown_user_token",
+    "method": "POST",
+    "path": "/api/v1/login/test-token",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "test_token"
+  },
+  {
+    "name": "recover_password.happy",
+    "method": "POST",
+    "path": "/api/v1/password-recovery/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password"
+  },
+  {
+    "name": "recover_password.missing_id",
+    "method": "POST",
+    "path": "/api/v1/password-recovery/00000000-0000-4000-8000-000000000000",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password"
+  },
+  {
+    "name": "recover_password.malformed_id",
+    "method": "POST",
+    "path": "/api/v1/password-recovery/%%",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password"
+  },
+  {
+    "name": "reset_password.happy",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "Valid token 0",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.boundary.new_password.min",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "Valid token 0",
+      "new_password": "bbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.boundary.new_password.below_min",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "Valid token 0",
+      "new_password": "bbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.boundary.new_password.max",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "Valid token 0",
+      "new_password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.boundary.new_password.above_max",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "Valid token 0",
+      "new_password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.missing.token",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.missing.new_password",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "Valid token 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.extra.unknown",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "Valid token 0",
+      "new_password": "Valid new password 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.extra.columns",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "Valid token 0",
+      "new_password": "Valid new password 0",
+      "email": "extra@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "extra",
+      "id": "8e7e6961-1a46-5319-bbd4-618fddb34d99",
+      "hashed_password": "extra",
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.hyp.0",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "",
+      "new_password": "00000000"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.hyp.1",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20",
+      "new_password": "\u0013v\u0013\ud806\udc48\u0015\u00e5h+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.hyp.2",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "new_password": "\udb44\udeabo\u00ddcp\u0086\u00ab\u00f6m",
+      "token": ""
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.hyp.3",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "new_password": "\ud8f9\udd21\u00ff\u008e\u00fbC\u00f8\udbbd\uddd3<\u00f0\udac2\ude8eGI",
+      "token": "\u0097\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "reset_password.hyp.4",
+    "method": "POST",
+    "path": "/api/v1/reset-password/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "token": "",
+      "new_password": "\u00cdc\u00ec\u00ef\u00be\uda88\ude72\u0095\u0005\u00d9\u009d\u009d\u0089@\u008c\u00ba\udb4e\udedd\ud979\udd3d\u00bc\u007f\u00ff\\\ud8fd\udea42"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "reset_password"
+  },
+  {
+    "name": "recover_password_html_content.happy",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "recover_password_html_content.admin",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/b6e9fa46-fecd-55db-94db-05b78a45f284",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "recover_password_html_content.missing_id",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/00000000-0000-4000-8000-000000000000",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "recover_password_html_content.malformed_id",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/%%",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "recover_password_html_content.no_token",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "recover_password_html_content.bad_token",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "recover_password_html_content.inactive_token",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/1c794b42-c0db-57f5-a57c-f1b5394751da",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "recover_password_html_content.unknown_user_token",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "recover_password_html_content.error.403.not_admin",
+    "method": "POST",
+    "path": "/api/v1/password-recovery-html-content/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "recover_password_html_content"
+  },
+  {
+    "name": "private_create_user.happy",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "Valid email 0",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0",
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.missing.email",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0",
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.missing.password",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "Valid email 0",
+      "full_name": "Valid full name 0",
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.missing.full_name",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "Valid email 0",
+      "password": "Valid password 0",
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.extra.unknown",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "Valid email 0",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0",
+      "is_verified": true,
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.extra.columns",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "Valid email 0",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0",
+      "is_verified": true,
+      "is_active": true,
+      "is_superuser": true,
+      "id": "8e7e6961-1a46-5319-bbd4-618fddb34d99",
+      "hashed_password": "extra",
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.hyp.0",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "",
+      "password": "",
+      "full_name": ""
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.hyp.1",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "\u00c0\u00e0\u00dd\ud983\udc8c\u0096\u00a1",
+      "password": "\ud8a8\ude23\u0013O\u00e5+\u00ce\u00c8kN",
+      "email": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.hyp.2",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "!\u00fe",
+      "password": "\r\u008e",
+      "email": "+\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.hyp.3",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fix the pattern",
+      "is_verified": true,
+      "password": "",
+      "full_name": "i\u0098\u00cd\udb73\uddf1\u00a6\uda88\ude72\u00c2\ud8b5\ude4b}\u00d9"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "private_create_user.hyp.4",
+    "method": "POST",
+    "path": "/api/v1/private/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "\udbb2\udf16",
+      "password": "\u00d5\u00980\u0091\u009dw\uda51\udc3e",
+      "email": "Ae\u0098n\u00f5"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "private_create_user"
+  },
+  {
+    "name": "read_users.happy",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.other_user",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.page.limit_1",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.page.window",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "skip": 2,
+      "limit": 3
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.page.limit_0",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.page.skip_past_end",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "skip": 14
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.page.limit_huge",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 1000000
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.page.skip_negative",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "skip": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.page.limit_negative",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.page.limit_malformed",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": "many"
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.no_token",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.bad_token",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.inactive_token",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.unknown_user_token",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "read_users.error.403.not_admin",
+    "method": "GET",
+    "path": "/api/v1/users/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_users"
+  },
+  {
+    "name": "users_create_user.happy",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.boundary.email.max",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.dddddddddddddddddddddddddddddddddddddddddddddddddd.example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.boundary.email.above_max",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddd.example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.boundary.full_name.max",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.boundary.full_name.above_max",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.boundary.password.min",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.boundary.password.below_min",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.boundary.password.max",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.boundary.password.above_max",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.missing.email",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.missing.password",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.extra.unknown",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.extra.columns",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0",
+      "id": "8e7e6961-1a46-5319-bbd4-618fddb34d99",
+      "hashed_password": "extra",
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.no_token",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.bad_token",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.inactive_token",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.unknown_user_token",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.error.400.unique",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "bob@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.error.403.not_admin",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.users.create.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.hyp.0",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "a@example.com",
+      "password": "00000000"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.hyp.1",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "x8@example.com",
+      "password": "\u0013\ud806\udc48\u0015\u00e5h+\udafb\uddeei~N"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.hyp.2",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "\u009c\u0097\ud94d\udc58\udac1\udecc*\u0091d\ud961\udcb5H\ud88c\udee8c\ud8f9\udd21\u008e\u00fb\ud8a7\udeaa\u00fe",
+      "email": "msreik@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.hyp.3",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "\u0098\u00e8\u00cdc\u00ec\u00ef\u00be\uda88\ude72\u00c2\ud8b5\ude4b}\u00d9",
+      "full_name": "execute",
+      "email": "li83@example.com",
+      "is_active": true,
+      "is_superuser": true
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "users_create_user.hyp.4",
+    "method": "POST",
+    "path": "/api/v1/users/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": null,
+      "is_active": true,
+      "email": "pb90@example.com",
+      "password": "\u0091}\u00cew\u0012\u00a3`\udbb2\udf16"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "users_create_user"
+  },
+  {
+    "name": "update_user_me.happy",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.admin",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.other_user",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.boundary.full_name.max",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.boundary.full_name.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.boundary.email.max",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.dddddddddddddddddddddddddddddddddddddddddddddddddd.example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.boundary.email.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddd.example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.extra.unknown",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.extra.columns",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "id": "8e7e6961-1a46-5319-bbd4-618fddb34d99",
+      "hashed_password": "extra",
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.partial.full_name",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 1"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.partial.full_name_null",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.partial.email",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user.me1@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.partial.email_null",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.partial.empty",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.no_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.bad_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.inactive_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.unknown_user_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.user.me@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.error.409.unique",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "bob@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.hyp.1",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "ex5ppdzbosreik@example.com",
+      "full_name": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.hyp.2",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": null,
+      "email": "gnpclz7@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_user_me.hyp.4",
+    "method": "PATCH",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": null,
+      "email": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user_me"
+  },
+  {
+    "name": "update_password_me.happy",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.admin",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.other_user",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.boundary.current_password.min",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "bbbbbbbb",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.boundary.current_password.below_min",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "bbbbbbb",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.boundary.current_password.max",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.boundary.current_password.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.boundary.new_password.min",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "bbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.boundary.new_password.below_min",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "bbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.boundary.new_password.max",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.boundary.new_password.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.missing.current_password",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.missing.new_password",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.extra.unknown",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.extra.columns",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0",
+      "email": "extra@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "extra",
+      "id": "8e7e6961-1a46-5319-bbd4-618fddb34d99",
+      "hashed_password": "extra",
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.partial.current_password",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 1"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.partial.new_password",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "new_password": "Valid new password 1"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.partial.empty",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.no_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.bad_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.inactive_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.unknown_user_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": {
+      "current_password": "Valid current password 0",
+      "new_password": "Valid new password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.hyp.0",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "00000000",
+      "new_password": "00000000"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.hyp.1",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "\u0287\u01dd\u026f\u0250 \u0287\u1d09s \u0279olop \u026fnsd\u1d09 \u026f\u01dd\u0279o\u02e5",
+      "new_password": "\ud8a8\ude23\u0013\ud806\udc48\u0015\u00e5h+\udafb\uddee\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.hyp.2",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "\u00c0\udb44\udeabo\u00ddcp\u0086\u00ab\u00a1",
+      "new_password": "\u009c\u0097\ud94d\udc58\udac1\udecc*\u0091d\ud961\udcb5H\ud88c\udee8c\ud8f9\udd21\u008e\u00fb\ud8a7\udeaa\u00fe"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.hyp.3",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "current_password": "\u00b2)\u0090G\ud828\ude80i\u0098\u00e8\u00cd\udb73\uddf1\u00a6\uda88\ude72\u00c2\ud8b5\ude4b}\u00d9",
+      "new_password": "\u0089C\ud9f3\ude4fg\u00baA\u00c4z\u00bc\u007f\u00ff\\\ud8fd\udea42"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "update_password_me.hyp.4",
+    "method": "PATCH",
+    "path": "/api/v1/users/me/password",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "new_password": "\u00d6M\u00e4\udb0e\udd32\u00cd\udbe4\udc38\u00db\u0083\u0014du\u00d7\u00e1S\u0085\u001f\uda3d\ude73\u00dd\u00aa\u00f8\udb3f\udd76\uda54\uded5N\ud995\ude9a[\u00c7\u0084\u0004\u00f2",
+      "current_password": "}\u00cew\u0012\u00a3`\udbb2\udf16\u00f0\u009em\u00d2z\u00a5\ud840\ude4a\u00da\uda42\ude09s\u0012\u00f2\u00f4\uda78\udd01\u00ee\udae4\udfec"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_password_me"
+  },
+  {
+    "name": "read_user_me.happy",
+    "method": "GET",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_me"
+  },
+  {
+    "name": "read_user_me.admin",
+    "method": "GET",
+    "path": "/api/v1/users/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_me"
+  },
+  {
+    "name": "read_user_me.other_user",
+    "method": "GET",
+    "path": "/api/v1/users/me",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_me"
+  },
+  {
+    "name": "read_user_me.no_token",
+    "method": "GET",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_me"
+  },
+  {
+    "name": "read_user_me.bad_token",
+    "method": "GET",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_me"
+  },
+  {
+    "name": "read_user_me.inactive_token",
+    "method": "GET",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_me"
+  },
+  {
+    "name": "read_user_me.unknown_user_token",
+    "method": "GET",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_me"
+  },
+  {
+    "name": "delete_user_me.happy",
+    "method": "DELETE",
+    "path": "/api/v1/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user_me"
+  },
+  {
+    "name": "delete_user_me.admin",
+    "method": "DELETE",
+    "path": "/api/v1/users/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user_me"
+  },
+  {
+    "name": "delete_user_me.no_token",
+    "method": "DELETE",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user_me"
+  },
+  {
+    "name": "delete_user_me.bad_token",
+    "method": "DELETE",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user_me"
+  },
+  {
+    "name": "delete_user_me.inactive_token",
+    "method": "DELETE",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user_me"
+  },
+  {
+    "name": "delete_user_me.unknown_user_token",
+    "method": "DELETE",
+    "path": "/api/v1/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user_me"
+  },
+  {
+    "name": "register_user.happy",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.boundary.email.max",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.dddddddddddddddddddddddddddddddddddddddddddddddddd.example.com",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.boundary.email.above_max",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddd.example.com",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.boundary.password.min",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "bbbbbbbb",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.boundary.password.below_min",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "bbbbbbb",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.boundary.password.max",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.boundary.password.above_max",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.boundary.full_name.max",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "Valid password 0",
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.boundary.full_name.above_max",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "Valid password 0",
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.missing.email",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.missing.password",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.extra.unknown",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.extra.columns",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register.user@example.com",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0",
+      "is_active": true,
+      "is_superuser": true,
+      "id": "8e7e6961-1a46-5319-bbd4-618fddb34d99",
+      "hashed_password": "extra",
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.error.400.unique",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "bob@example.com",
+      "password": "Valid password 0",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.hyp.0",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "a@example.com",
+      "password": "00000000"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.hyp.1",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "x8@example.com",
+      "password": "\u0013\ud806\udc48\u0015\u00e5h+\udafb\uddeei~N"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.hyp.2",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "\u009c\u0097\ud94d\udc58\udac1\udecc*\u0091d\ud961\udcb5H\ud88c\udee8c\ud8f9\udd21\u008e\u00fb\ud8a7\udeaa\u00fe",
+      "email": "msreik@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.hyp.3",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "li83@example.com",
+      "password": "\u0098\u00e8\u00cdc\u00ec\u00ef\u00be\uda88\ude72\u00c2\ud8b5\ude4b}\u00d9",
+      "full_name": "execute"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "register_user.hyp.4",
+    "method": "POST",
+    "path": "/api/v1/users/signup",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "\u00e7\u008e\u00d5\udb9e\udd70\udb8c\ude340\u008b\u0099",
+      "full_name": null,
+      "email": "odnf@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register_user"
+  },
+  {
+    "name": "read_user_by_id.happy",
+    "method": "GET",
+    "path": "/api/v1/users/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "read_user_by_id.admin",
+    "method": "GET",
+    "path": "/api/v1/users/b6e9fa46-fecd-55db-94db-05b78a45f284",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "read_user_by_id.other_user",
+    "method": "GET",
+    "path": "/api/v1/users/b6e9fa46-fecd-55db-94db-05b78a45f284",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "read_user_by_id.missing_id",
+    "method": "GET",
+    "path": "/api/v1/users/00000000-0000-4000-8000-000000000000",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "read_user_by_id.malformed_id",
+    "method": "GET",
+    "path": "/api/v1/users/not-a-uuid",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "read_user_by_id.no_token",
+    "method": "GET",
+    "path": "/api/v1/users/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "read_user_by_id.bad_token",
+    "method": "GET",
+    "path": "/api/v1/users/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "read_user_by_id.inactive_token",
+    "method": "GET",
+    "path": "/api/v1/users/1c794b42-c0db-57f5-a57c-f1b5394751da",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "read_user_by_id.unknown_user_token",
+    "method": "GET",
+    "path": "/api/v1/users/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_user_by_id"
+  },
+  {
+    "name": "update_user.happy",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.admin",
+    "method": "PATCH",
+    "path": "/api/v1/users/b6e9fa46-fecd-55db-94db-05b78a45f284",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.missing_id",
+    "method": "PATCH",
+    "path": "/api/v1/users/00000000-0000-4000-8000-000000000000",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.malformed_id",
+    "method": "PATCH",
+    "path": "/api/v1/users/not-a-uuid",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.boundary.email.max",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.dddddddddddddddddddddddddddddddddddddddddddddddddd.example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.boundary.email.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.ddddddddddddddddddddddddddddddddddddddddddddddddddd.example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.boundary.full_name.max",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.boundary.full_name.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.boundary.password.min",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.boundary.password.below_min",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.boundary.password.max",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.boundary.password.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.extra.unknown",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.extra.columns",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0",
+      "id": "8e7e6961-1a46-5319-bbd4-618fddb34d99",
+      "hashed_password": "extra",
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.email",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user1@example.com"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.email_null",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.is_active",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_active": true
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.is_active_null",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_active": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.is_superuser",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_superuser": true
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.is_superuser_null",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_superuser": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.full_name",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 1"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.full_name_null",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.password",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "Valid password 1"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.password_null",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "password": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.partial.empty",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.no_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.bad_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.inactive_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/1c794b42-c0db-57f5-a57c-f1b5394751da",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.unknown_user_token",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.error.409.unique",
+    "method": "PATCH",
+    "path": "/api/v1/users/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "bob@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.error.403.not_admin",
+    "method": "PATCH",
+    "path": "/api/v1/users/98cdcd56-16ce-5d7f-bbd6-ed8de0f7dd39",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.user@example.com",
+      "is_active": true,
+      "is_superuser": true,
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.hyp.1",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_active": null,
+      "full_name": "\u00e5+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.hyp.3",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_active": false,
+      "full_name": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "update_user.hyp.4",
+    "method": "PATCH",
+    "path": "/api/v1/users/969b075a-3384-5353-81a6-e635f35c8435",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "yul83@example.com",
+      "full_name": "\u00bf\udaf3\udf04d\u00aa\u001e\u001d",
+      "password": null,
+      "is_superuser": null
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_user"
+  },
+  {
+    "name": "delete_user.happy",
+    "method": "DELETE",
+    "path": "/api/v1/users/00000000-0000-4000-8000-000000000000",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user"
+  },
+  {
+    "name": "delete_user.malformed_id",
+    "method": "DELETE",
+    "path": "/api/v1/users/not-a-uuid",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user"
+  },
+  {
+    "name": "delete_user.no_token",
+    "method": "DELETE",
+    "path": "/api/v1/users/00000000-0000-4000-8000-000000000000",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user"
+  },
+  {
+    "name": "delete_user.bad_token",
+    "method": "DELETE",
+    "path": "/api/v1/users/00000000-0000-4000-8000-000000000000",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user"
+  },
+  {
+    "name": "delete_user.inactive_token",
+    "method": "DELETE",
+    "path": "/api/v1/users/00000000-0000-4000-8000-000000000000",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user"
+  },
+  {
+    "name": "delete_user.unknown_user_token",
+    "method": "DELETE",
+    "path": "/api/v1/users/00000000-0000-4000-8000-000000000000",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user"
+  },
+  {
+    "name": "delete_user.error.403.not_admin",
+    "method": "DELETE",
+    "path": "/api/v1/users/00000000-0000-4000-8000-000000000000",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_user"
+  },
+  {
+    "name": "test_email.happy",
+    "method": "POST",
+    "path": "/api/v1/utils/test-email/",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "test_email"
+  },
+  {
+    "name": "test_email.no_token",
+    "method": "POST",
+    "path": "/api/v1/utils/test-email/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "test_email"
+  },
+  {
+    "name": "test_email.bad_token",
+    "method": "POST",
+    "path": "/api/v1/utils/test-email/",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "test_email"
+  },
+  {
+    "name": "test_email.inactive_token",
+    "method": "POST",
+    "path": "/api/v1/utils/test-email/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"1c794b42-c0db-57f5-a57c-f1b5394751da\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "test_email"
+  },
+  {
+    "name": "test_email.unknown_user_token",
+    "method": "POST",
+    "path": "/api/v1/utils/test-email/",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"00000000-0000-4000-8000-000000000000\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "test_email"
+  },
+  {
+    "name": "test_email.error.403.not_admin",
+    "method": "POST",
+    "path": "/api/v1/utils/test-email/",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "test_email"
+  },
+  {
+    "name": "health_check.happy",
+    "method": "GET",
+    "path": "/api/v1/utils/health-check/",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "health_check"
+  }
+]

@@ -1,0 +1,1035 @@
+{
+  "schema": "<schema>",
+  "repo": "<repo>",
+  "package": "bench.template_app.app",
+  "app_factory": "bench.template_app:make_app",
+  "llm": false,
+  "method": null,
+  "model": null,
+  "coverage": {
+    "routes": 23,
+    "R0": 10,
+    "R1": 0,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "needs-llm": 13,
+    "verified": 10,
+    "lattice_pct": 43.5,
+    "carve_out_pct": 0.0,
+    "island_pct": 0.0,
+    "needs_llm_pct": 56.5,
+    "verified_pct": 43.5,
+    "complete": false,
+    "lines": {
+      "lattice": 165,
+      "needs_llm": 239
+    },
+    "ast_nodes": {
+      "lattice": 988,
+      "needs_llm": 1117
+    },
+    "tiers": {
+      "T0": 10,
+      "T1": 0,
+      "T2": 0,
+      "T3": 0,
+      "island": 0,
+      "needs-llm": 13
+    },
+    "carve_kinds": {
+      "procedure": 0,
+      "native": 0
+    }
+  },
+  "budget": null,
+  "cost": {
+    "usd": 0.0,
+    "notes_usd": 0.0,
+    "per_llm_verified_route_usd": null,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "llm_rounds": 0,
+    "wall_s": "<wall_s>"
+  },
+  "routes": [
+    {
+      "key": "read_items",
+      "name": "read_items",
+      "module": "bench.template_app.app.api.routes.items",
+      "router": "items",
+      "method": "GET",
+      "path": "/api/v1/items/",
+      "auth": "Customer",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "page_list"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 15,
+        "equal_under_rule": 2,
+        "deviation": 6,
+        "mismatch": 0
+      },
+      "deviations": [
+        {
+          "case": "read_items.page.limit_huge",
+          "id": "bounded-page-size",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        },
+        {
+          "case": "read_items.page.limit_huge.admin",
+          "id": "bounded-page-size",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        },
+        {
+          "case": "read_items.page.skip_negative",
+          "id": "non-negative-page-window",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        },
+        {
+          "case": "read_items.page.skip_negative.admin",
+          "id": "non-negative-page-window",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        },
+        {
+          "case": "read_items.page.limit_negative",
+          "id": "non-negative-page-window",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        },
+        {
+          "case": "read_items.page.limit_negative.admin",
+          "id": "non-negative-page-window",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        }
+      ],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 33,
+        "ast_nodes": 232
+      }
+    },
+    {
+      "key": "read_item",
+      "name": "read_item",
+      "module": "bench.template_app.app.api.routes.items",
+      "router": "items",
+      "method": "GET",
+      "path": "/api/v1/items/{id}",
+      "auth": "Customer",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "get_or_404",
+        "owner_check",
+        "returns"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 9,
+        "equal_under_rule": 1,
+        "deviation": 0,
+        "mismatch": 0
+      },
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 11,
+        "ast_nodes": 81
+      }
+    },
+    {
+      "key": "create_item",
+      "name": "create_item",
+      "module": "bench.template_app.app.api.routes.items",
+      "router": "items",
+      "method": "POST",
+      "path": "/api/v1/items/",
+      "auth": "Customer",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "create",
+        "returns"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 16,
+        "equal_under_rule": 4,
+        "deviation": 0,
+        "mismatch": 0
+      },
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 12,
+        "ast_nodes": 66
+      }
+    },
+    {
+      "key": "update_item",
+      "name": "update_item",
+      "module": "bench.template_app.app.api.routes.items",
+      "router": "items",
+      "method": "PUT",
+      "path": "/api/v1/items/{id}",
+      "auth": "Customer",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "get_or_404",
+        "owner_check",
+        "partial_update",
+        "returns"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 19,
+        "equal_under_rule": 4,
+        "deviation": 2,
+        "mismatch": 0
+      },
+      "deviations": [
+        {
+          "case": "update_item.partial.title_null",
+          "id": "null-into-required-column",
+          "kind": "policy",
+          "status": 422,
+          "reason": "An explicit null for a field the table stores as NOT NULL (the request model makes it Optional): the original writes it and fails with 500 (IntegrityError); Lattice refuses it with 422 and writes nothing."
+        },
+        {
+          "case": "update_item.hyp.1",
+          "id": "null-into-required-column",
+          "kind": "policy",
+          "status": 422,
+          "reason": "An explicit null for a field the table stores as NOT NULL (the request model makes it Optional): the original writes it and fails with 500 (IntegrityError); Lattice refuses it with 422 and writes nothing."
+        }
+      ],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 22,
+        "ast_nodes": 124
+      }
+    },
+    {
+      "key": "delete_item",
+      "name": "delete_item",
+      "module": "bench.template_app.app.api.routes.items",
+      "router": "items",
+      "method": "DELETE",
+      "path": "/api/v1/items/{id}",
+      "auth": "Customer",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "get_or_404",
+        "owner_check",
+        "delete"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 8,
+        "equal_under_rule": 1,
+        "deviation": 0,
+        "mismatch": 0
+      },
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 15,
+        "ast_nodes": 95
+      }
+    },
+    {
+      "key": "login_access_token",
+      "name": "login_access_token",
+      "module": "bench.template_app.app.api.routes.login",
+      "router": "login",
+      "method": "POST",
+      "path": "/api/v1/login/access-token",
+      "auth": "Public",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "login"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 5,
+        "equal_under_rule": 2,
+        "deviation": 0,
+        "mismatch": 0
+      },
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 20,
+        "ast_nodes": 104
+      }
+    },
+    {
+      "key": "test_token",
+      "name": "test_token",
+      "module": "bench.template_app.app.api.routes.login",
+      "router": "login",
+      "method": "POST",
+      "path": "/api/v1/login/test-token",
+      "auth": "Customer",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "me"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 7,
+        "equal_under_rule": 0,
+        "deviation": 0,
+        "mismatch": 0
+      },
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 6,
+        "ast_nodes": 21
+      }
+    },
+    {
+      "key": "recover_password",
+      "name": "recover_password",
+      "module": "bench.template_app.app.api.routes.login",
+      "router": "login",
+      "method": "POST",
+      "path": "/api/v1/password-recovery/{email}",
+      "auth": "Public",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 59, 63, 73",
+      "reason": "no lifter matches the statements at line 59, 63, 73",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 22,
+        "ast_nodes": 86
+      }
+    },
+    {
+      "key": "reset_password",
+      "name": "reset_password",
+      "module": "bench.template_app.app.api.routes.login",
+      "router": "login",
+      "method": "POST",
+      "path": "/api/v1/reset-password/",
+      "auth": "Public",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 83, 84, 86, 87, 92, 93, 98",
+      "reason": "no lifter matches the statements at line 83, 84, 86, 87, 92, 93, 98",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 21,
+        "ast_nodes": 116
+      }
+    },
+    {
+      "key": "recover_password_html_content",
+      "name": "recover_password_html_content",
+      "module": "bench.template_app.app.api.routes.login",
+      "router": "login",
+      "method": "POST",
+      "path": "/api/v1/password-recovery-html-content/{email}",
+      "auth": "Admin",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 110, 112, 117, 118, 122",
+      "reason": "no lifter matches the statements at line 110, 112, 117, 118, 122",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 24,
+        "ast_nodes": 98
+      }
+    },
+    {
+      "key": "private_create_user",
+      "name": "create_user",
+      "module": "bench.template_app.app.api.routes.private",
+      "router": "private",
+      "method": "POST",
+      "path": "/api/v1/private/users/",
+      "auth": "Public",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 30, 36, 37, 39",
+      "reason": "no lifter matches the statements at line 30, 36, 37, 39",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 16,
+        "ast_nodes": 62
+      }
+    },
+    {
+      "key": "read_users",
+      "name": "read_users",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "GET",
+      "path": "/api/v1/users/",
+      "auth": "Admin",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "admin_list"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 11,
+        "equal_under_rule": 1,
+        "deviation": 3,
+        "mismatch": 0
+      },
+      "deviations": [
+        {
+          "case": "read_users.page.limit_huge",
+          "id": "bounded-page-size",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        },
+        {
+          "case": "read_users.page.skip_negative",
+          "id": "non-negative-page-window",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        },
+        {
+          "case": "read_users.page.limit_negative",
+          "id": "non-negative-page-window",
+          "kind": "policy",
+          "status": 422,
+          "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row."
+        }
+      ],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 20,
+        "ast_nodes": 133
+      }
+    },
+    {
+      "key": "users_create_user",
+      "name": "create_user",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "POST",
+      "path": "/api/v1/users/",
+      "auth": "Admin",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 62, 63, 69, 70, 79",
+      "reason": "no lifter matches the statements at line 62, 63, 69, 70, 79",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 25,
+        "ast_nodes": 124
+      }
+    },
+    {
+      "key": "update_user_me",
+      "name": "update_user_me",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "PATCH",
+      "path": "/api/v1/users/me",
+      "auth": "Customer",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "unique_check",
+        "partial_update",
+        "me"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 17,
+        "equal_under_rule": 3,
+        "deviation": 2,
+        "mismatch": 0
+      },
+      "deviations": [
+        {
+          "case": "update_user_me.partial.email_null",
+          "id": "null-into-required-column",
+          "kind": "policy",
+          "status": 422,
+          "reason": "An explicit null for a field the table stores as NOT NULL (the request model makes it Optional): the original writes it and fails with 500 (IntegrityError); Lattice refuses it with 422 and writes nothing."
+        },
+        {
+          "case": "update_user_me.hyp.4",
+          "id": "null-into-required-column",
+          "kind": "policy",
+          "status": 422,
+          "reason": "An explicit null for a field the table stores as NOT NULL (the request model makes it Optional): the original writes it and fails with 500 (IntegrityError); Lattice refuses it with 422 and writes nothing."
+        }
+      ],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 20,
+        "ast_nodes": 111
+      }
+    },
+    {
+      "key": "update_password_me",
+      "name": "update_password_me",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "PATCH",
+      "path": "/api/v1/users/me/password",
+      "auth": "Customer",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 111, 112, 114, 118, 119, 120, 121, 122",
+      "reason": "no lifter matches the statements at line 111, 112, 114, 118, 119, 120, 121, 122",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 19,
+        "ast_nodes": 111
+      }
+    },
+    {
+      "key": "read_user_me",
+      "name": "read_user_me",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "GET",
+      "path": "/api/v1/users/me",
+      "auth": "Customer",
+      "status": "verified",
+      "rung": "R0",
+      "by": "lifter",
+      "lifters": [
+        "me"
+      ],
+      "lifter_reason": "",
+      "reason": "",
+      "gap": null,
+      "tally": {
+        "equal": 7,
+        "equal_under_rule": 0,
+        "deviation": 0,
+        "mismatch": 0
+      },
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "T0",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 6,
+        "ast_nodes": 21
+      }
+    },
+    {
+      "key": "delete_user_me",
+      "name": "delete_user_me",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "DELETE",
+      "path": "/api/v1/users/me",
+      "auth": "Customer",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 138, 142, 143, 144",
+      "reason": "no lifter matches the statements at line 138, 142, 143, 144",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 12,
+        "ast_nodes": 54
+      }
+    },
+    {
+      "key": "register_user",
+      "name": "register_user",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "POST",
+      "path": "/api/v1/users/signup",
+      "auth": "Public",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 152, 153, 158, 159, 160",
+      "reason": "no lifter matches the statements at line 152, 153, 158, 159, 160",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 14,
+        "ast_nodes": 75
+      }
+    },
+    {
+      "key": "read_user_by_id",
+      "name": "read_user_by_id",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "GET",
+      "path": "/api/v1/users/{user_id}",
+      "auth": "Customer",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 170, 171, 173, 178",
+      "reason": "no lifter matches the statements at line 170, 171, 173, 178",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 18,
+        "ast_nodes": 80
+      }
+    },
+    {
+      "key": "update_user",
+      "name": "update_user",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "PATCH",
+      "path": "/api/v1/users/{user_id}",
+      "auth": "Admin",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 204, 211",
+      "reason": "no lifter matches the statements at line 204, 211",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 30,
+        "ast_nodes": 121
+      }
+    },
+    {
+      "key": "delete_user",
+      "name": "delete_user",
+      "module": "bench.template_app.app.api.routes.users",
+      "router": "users",
+      "method": "DELETE",
+      "path": "/api/v1/users/{user_id}",
+      "auth": "Admin",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 225, 229, 230",
+      "reason": "no lifter matches the statements at line 225, 229, 230",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 19,
+        "ast_nodes": 121
+      }
+    },
+    {
+      "key": "test_email",
+      "name": "test_email",
+      "module": "bench.template_app.app.api.routes.utils",
+      "router": "utils",
+      "method": "POST",
+      "path": "/api/v1/utils/test-email/",
+      "auth": "Admin",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 21, 22, 27",
+      "reason": "no lifter matches the statements at line 21, 22, 27",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 16,
+        "ast_nodes": 57
+      }
+    },
+    {
+      "key": "health_check",
+      "name": "health_check",
+      "module": "bench.template_app.app.api.routes.utils",
+      "router": "utils",
+      "method": "GET",
+      "path": "/api/v1/utils/health-check/",
+      "auth": "Public",
+      "status": "needs-llm",
+      "rung": "needs-llm",
+      "by": null,
+      "lifters": [],
+      "lifter_reason": "no lifter matches the statements at line 32",
+      "reason": "no lifter matches the statements at line 32",
+      "gap": null,
+      "tally": null,
+      "deviations": [],
+      "rounds": 0,
+      "cost_usd": 0,
+      "attempts": [],
+      "natives": [],
+      "tier": "needs-llm",
+      "carve_kind": "none",
+      "procedure_count": 0,
+      "procedure_lines": 0,
+      "procedures": [],
+      "notes": [],
+      "original": {
+        "lines": 3,
+        "ast_nodes": 12
+      }
+    }
+  ],
+  "behaviour_changes": [
+    {
+      "route": "read_items",
+      "id": "bounded-page-size",
+      "kind": "policy",
+      "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row.",
+      "cases": [
+        "read_items.page.limit_huge",
+        "read_items.page.limit_huge.admin"
+      ]
+    },
+    {
+      "route": "read_items",
+      "id": "non-negative-page-window",
+      "kind": "policy",
+      "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row.",
+      "cases": [
+        "read_items.page.skip_negative",
+        "read_items.page.skip_negative.admin",
+        "read_items.page.limit_negative",
+        "read_items.page.limit_negative.admin"
+      ]
+    },
+    {
+      "route": "update_item",
+      "id": "null-into-required-column",
+      "kind": "policy",
+      "reason": "An explicit null for a field the table stores as NOT NULL (the request model makes it Optional): the original writes it and fails with 500 (IntegrityError); Lattice refuses it with 422 and writes nothing.",
+      "cases": [
+        "update_item.partial.title_null",
+        "update_item.hyp.1"
+      ]
+    },
+    {
+      "route": "read_users",
+      "id": "bounded-page-size",
+      "kind": "policy",
+      "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row.",
+      "cases": [
+        "read_users.page.limit_huge"
+      ]
+    },
+    {
+      "route": "read_users",
+      "id": "non-negative-page-window",
+      "kind": "policy",
+      "reason": "Lattice requires a bounded, non-negative page window (skip: Int(ge=0), limit: Int(ge=0, le=100)); the original passes any integer to SQL (SQLite reads LIMIT -1 as no limit and a negative OFFSET as 0), so it answers 200 with every row.",
+      "cases": [
+        "read_users.page.skip_negative",
+        "read_users.page.limit_negative"
+      ]
+    },
+    {
+      "route": "update_user_me",
+      "id": "null-into-required-column",
+      "kind": "policy",
+      "reason": "An explicit null for a field the table stores as NOT NULL (the request model makes it Optional): the original writes it and fails with 500 (IntegrityError); Lattice refuses it with 422 and writes nothing.",
+      "cases": [
+        "update_user_me.partial.email_null",
+        "update_user_me.hyp.4"
+      ]
+    }
+  ],
+  "islands": [],
+  "carve_out_natives": [],
+  "unclear": [],
+  "notes_disagreements": []
+}

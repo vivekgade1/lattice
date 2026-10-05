@@ -1,0 +1,2583 @@
+[
+  {
+    "name": "register.happy",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.boundary.full_name.min",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "bb",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.boundary.full_name.below_min",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "b",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.boundary.full_name.max",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.boundary.full_name.above_max",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.boundary.password.min",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.boundary.password.below_min",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.boundary.password.max",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.boundary.password.above_max",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "Valid full name 0",
+      "password": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.missing.email",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.missing.full_name",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.missing.password",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "Valid full name 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.extra.unknown",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.extra.columns",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0",
+      "id": 3,
+      "password_hash": "extra",
+      "is_active": true,
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.error.409.unique",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "bob@example.com",
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.0",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "a@example.com",
+      "full_name": "00",
+      "password": "00000000"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.1",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "h\udac5\udc91\udb44\udeabo\u00ddcp\u0086\u00ca\u00a1",
+      "full_name": "\u0013\ud806\udc48\udb57\udcf9+\u00ce\u00c8kN",
+      "email": "x8@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.2",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "\ud8f9\udd21\u00ff\u008e\u00fbC\u00f8\udbbd\uddd3<\u00f0\udac2\ude8eGI",
+      "email": "t@example.com",
+      "full_name": "\u0002\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.3",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "rxetkmo7fr@example.com",
+      "password": "\u00e7\u008e\u00d5\udb9e\udd70\udb8c\ude340\u008b\u0099",
+      "full_name": "\u0089C\u008c\u00ba\udb4e\udedd\ud979\udd3d\u00bc\u007f"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.4",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": ")`\u00fc",
+      "password": "\u0084\u00c6mqH|z\udb0c\ude02#\ud9be\udef6\u00da\uda42\ude09s\u0012\u00f2\u00f4\uda78\udd01\u00ee\udae4\udfec",
+      "email": "e@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "login.happy",
+    "method": "POST",
+    "path": "/api/v1/auth/token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com",
+      "password": "alice-pass-0031"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.missing.username",
+    "method": "POST",
+    "path": "/api/v1/auth/token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "password": "alice-pass-0031"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.missing.password",
+    "method": "POST",
+    "path": "/api/v1/auth/token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.admin",
+    "method": "POST",
+    "path": "/api/v1/auth/token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "admin@example.com",
+      "password": "admin-pass-0031"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.unknown_user",
+    "method": "POST",
+    "path": "/api/v1/auth/token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "nobody@example.com",
+      "password": "whatever123"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.error.401.bad_credentials",
+    "method": "POST",
+    "path": "/api/v1/auth/token",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com",
+      "password": "wrong-password"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "read_current_user.happy",
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_current_user"
+  },
+  {
+    "name": "read_current_user.admin",
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_current_user"
+  },
+  {
+    "name": "read_current_user.no_token",
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_current_user"
+  },
+  {
+    "name": "read_current_user.bad_token",
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_current_user"
+  },
+  {
+    "name": "read_current_user.inactive_token",
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_current_user"
+  },
+  {
+    "name": "read_current_user.unknown_user_token",
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_current_user"
+  },
+  {
+    "name": "read_current_user.claimless_token",
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_current_user"
+  },
+  {
+    "name": "create_task.happy",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.admin",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.boundary.title.min",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbb",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.boundary.title.below_min",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bb",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.boundary.title.max",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.boundary.title.above_max",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.boundary.description.max",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.boundary.description.above_max",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.boundary.status.not_a_choice",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "not-a-choice",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.boundary.priority.not_a_choice",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "not-a-choice",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.missing.title",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.extra.unknown",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.extra.columns",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00",
+      "id": 3,
+      "owner_id": 3,
+      "created_at": "2030-01-01T00:00:00",
+      "updated_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.no_token",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.bad_token",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.inactive_token",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.unknown_user_token",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.claimless_token",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.hyp.0",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "000"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.hyp.1",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": null,
+      "title": "\ud835\udd7f\ud835\udd8d\ud835\udd8a \ud835\udd96\ud835\udd9a\ud835\udd8e\ud835\udd88\ud835\udd90 \ud835\udd87\ud835\udd97\ud835\udd94\ud835\udd9c\ud835\udd93 \ud835\udd8b\ud835\udd94\ud835\udd9d \ud835\udd8f\ud835\udd9a\ud835\udd92\ud835\udd95\ud835\udd98 \ud835\udd94\ud835\udd9b\ud835\udd8a\ud835\udd97 \ud835\udd99\ud835\udd8d\ud835\udd8a \ud835\udd91\ud835\udd86\ud835\udd9f\ud835\udd9e \ud835\udd89\ud835\udd94\ud835\udd8c"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.hyp.2",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "\udb57\udcf9h+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.hyp.3",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "\u00c0\udb44\udeabo\u00bcp\u0096\u00a1"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "create_task.hyp.4",
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "\udbad\udd11\u00b2\uda04\udf67\u0017I",
+      "title": "\u009c\u0097\ud94d\udc58\u00bf\udaf3\udf04d\u00aa\u001e\u001d",
+      "due_date": null,
+      "priority": "medium"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_task"
+  },
+  {
+    "name": "read_tasks.happy",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.other_user",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.boundary.task_status.not_a_choice",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "task_status": "not-a-choice"
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.boundary.priority.not_a_choice",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "priority": "not-a-choice"
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_1",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": 1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_1.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.window",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "offset": 2,
+      "limit": 3
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.window.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "offset": 2,
+      "limit": 3
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_0",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": 0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_0.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.skip_past_end",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "offset": 18
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.skip_past_end.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "offset": 18
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_huge",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": 1000000
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_huge.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": 1000000
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.skip_negative",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "offset": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.skip_negative.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "offset": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_negative",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_negative.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_malformed",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "alice",
+    "token": null,
+    "params": {
+      "limit": "many"
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.page.limit_malformed.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": "admin",
+    "token": null,
+    "params": {
+      "limit": "many"
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.no_token",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.bad_token",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.inactive_token",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.unknown_user_token",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_tasks.claimless_token",
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_tasks"
+  },
+  {
+    "name": "read_task.happy",
+    "method": "GET",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.other_user_row",
+    "method": "GET",
+    "path": "/api/v1/tasks/3",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.admin",
+    "method": "GET",
+    "path": "/api/v1/tasks/3",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.other_user",
+    "method": "GET",
+    "path": "/api/v1/tasks/3",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.missing_id",
+    "method": "GET",
+    "path": "/api/v1/tasks/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.malformed_id",
+    "method": "GET",
+    "path": "/api/v1/tasks/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.no_token",
+    "method": "GET",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.bad_token",
+    "method": "GET",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.inactive_token",
+    "method": "GET",
+    "path": "/api/v1/tasks/4",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.unknown_user_token",
+    "method": "GET",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "read_task.claimless_token",
+    "method": "GET",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_task"
+  },
+  {
+    "name": "update_task.happy",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.other_user_row",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/3",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.admin",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/3",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.missing_id",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.malformed_id",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.boundary.title.min",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbb",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.boundary.title.below_min",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bb",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.boundary.title.max",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.boundary.title.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.boundary.description.max",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.boundary.description.above_max",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.boundary.status.not_a_choice",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "not-a-choice",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.boundary.priority.not_a_choice",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "not-a-choice",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.extra.unknown",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.extra.columns",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00",
+      "id": 3,
+      "owner_id": 3,
+      "created_at": "2030-01-01T00:00:00",
+      "updated_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.title",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 1"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.title_null",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": null
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.description",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "Valid description 1"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.description_null",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": null
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.status",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "in_progress"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.status_null",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": null
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.priority",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "priority": "medium"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.priority_null",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "priority": null
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.due_date",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.due_date_null",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "due_date": null
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.partial.empty",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.no_token",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.bad_token",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.inactive_token",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/4",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.unknown_user_token",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.claimless_token",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "description": "Valid description 0",
+      "status": "todo",
+      "priority": "low",
+      "due_date": "2026-06-01T12:00:00"
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.hyp.1",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "priority": "low",
+      "status": "done",
+      "due_date": null,
+      "description": null,
+      "title": null
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "update_task.hyp.2",
+    "method": "PATCH",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "done",
+      "due_date": null,
+      "description": "\u00bf\udaf3\udf04d\u00aa\u001e\u001d",
+      "priority": null,
+      "title": null
+    },
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_task"
+  },
+  {
+    "name": "delete_task.happy",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.other_user_row",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/3",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.admin",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/3",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.missing_id",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.malformed_id",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.no_token",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.bad_token",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.inactive_token",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/4",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.unknown_user_token",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  },
+  {
+    "name": "delete_task.claimless_token",
+    "method": "DELETE",
+    "path": "/api/v1/tasks/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tasks"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_task"
+  }
+]

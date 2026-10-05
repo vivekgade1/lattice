@@ -1,0 +1,3841 @@
+[
+  {
+    "name": "register.happy",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.register@example.com",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.missing.full_name",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.register@example.com",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.missing.email",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.missing.password",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.register@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.extra.unknown",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.register@example.com",
+      "password": "Valid password 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.extra.columns",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.register@example.com",
+      "password": "Valid password 0",
+      "id": 3,
+      "hashed_password": "extra",
+      "role": "extra",
+      "is_active": true,
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.error.400.unique",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "bob@example.com",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.0",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "",
+      "email": "a@example.com",
+      "password": ""
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.1",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "1e100",
+      "email": "vy9@example.com",
+      "full_name": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.2",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "\u00ce\u00c8kN",
+      "password": "",
+      "email": "losreik@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.3",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "\u00f0\udac2\ude8eGI",
+      "full_name": "\ud94d\udc58\u00bf\udaf3\udf04d\u00aa\u001e\u001d",
+      "email": "fuwv0v@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.4",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "s2hnsknf@example.com",
+      "full_name": "\u00cd\udb73\uddf1\u00a6\uda88\ude72\u00c2\ud8b5\ude4b}\u00d9",
+      "password": ""
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "login.happy",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com",
+      "password": "alice-pass-0031"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.missing.username",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "password": "alice-pass-0031"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.missing.password",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.admin",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "admin@example.com",
+      "password": "admin-pass-0031"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.unknown_user",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "nobody@example.com",
+      "password": "whatever123"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.error.401.bad_credentials",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com",
+      "password": "wrong-password"
+    },
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "list_own_orders.happy",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "list_own_orders.admin",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "list_own_orders.role.Buyer.bob",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "list_own_orders.role.Vendor.role_vendor",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "list_own_orders.no_token",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "list_own_orders.bad_token",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "list_own_orders.inactive_token",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "list_own_orders.unknown_user_token",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "list_own_orders.claimless_token",
+    "method": "GET",
+    "path": "/orders/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "list_own_orders"
+  },
+  {
+    "name": "get_order.happy",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.admin",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.other_user",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.role.Vendor.role_vendor",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.malformed_id",
+    "method": "GET",
+    "path": "/orders/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.no_token",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.bad_token",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.inactive_token",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.unknown_user_token",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "get_order.claimless_token",
+    "method": "GET",
+    "path": "/orders/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_order"
+  },
+  {
+    "name": "update_order_status.happy",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.role.Buyer.alice",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.role.Buyer.bob",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.role.Vendor.role_vendor",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.malformed_id",
+    "method": "PATCH",
+    "path": "/orders/not-an-int/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.boundary.status.not_a_choice",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "not-a-choice"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.missing.status",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.extra.unknown",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "pending",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.partial.status",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "confirmed"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.no_token",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.bad_token",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.inactive_token",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.unknown_user_token",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.claimless_token",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "status": "pending"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.hyp.1",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "delivered"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.hyp.2",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "shipped"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "update_order_status.hyp.3",
+    "method": "PATCH",
+    "path": "/orders/999999/status",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "status": "cancelled"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_order_status"
+  },
+  {
+    "name": "flash_sale_purchase.happy",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.admin",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.role.Buyer.bob",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.role.Vendor.role_vendor",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.boundary.quantity.min",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.boundary.quantity.below_min",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 0
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.missing.product_id",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.missing.quantity",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.extra.unknown",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2,
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.no_token",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.bad_token",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.inactive_token",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.unknown_user_token",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.claimless_token",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "product_id": 1,
+      "quantity": 2
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.hyp.0",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 0,
+      "quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.hyp.1",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "quantity": 24144,
+      "product_id": 65537
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.hyp.2",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "quantity": 7565,
+      "product_id": -362881
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.hyp.3",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": 338,
+      "quantity": 102
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "flash_sale_purchase.hyp.4",
+    "method": "POST",
+    "path": "/orders/flash-sale-purchase",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "product_id": -89625,
+      "quantity": 1922
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "flash_sale_purchase"
+  },
+  {
+    "name": "create_product.happy",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.admin",
+    "method": "POST",
+    "path": "/products",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.role.Buyer.alice",
+    "method": "POST",
+    "path": "/products",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.role.Buyer.bob",
+    "method": "POST",
+    "path": "/products",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.boundary.price.min",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 1.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.boundary.price.below_min",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 0.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.boundary.stock_quantity.min",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 0
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.boundary.stock_quantity.below_min",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": -1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.missing.name",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.missing.category",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.missing.price",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.missing.stock_quantity",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.extra.unknown",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1,
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.no_token",
+    "method": "POST",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.bad_token",
+    "method": "POST",
+    "path": "/products",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.inactive_token",
+    "method": "POST",
+    "path": "/products",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.unknown_user_token",
+    "method": "POST",
+    "path": "/products",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.claimless_token",
+    "method": "POST",
+    "path": "/products",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "stock_quantity": 1
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.hyp.0",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "",
+      "category": "",
+      "price": 1.0,
+      "stock_quantity": 0
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.hyp.1",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": null,
+      "price": 5.7070418203248264e+16,
+      "stock_quantity": 4348,
+      "name": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20",
+      "category": "\ud8a8\ude23\u0013O\u00e5+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.hyp.2",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "stock_quantity": 654352,
+      "price": 5.386158966827462e+16,
+      "category": "\r\u008e",
+      "name": "*\u0000\u0097\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.hyp.3",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "category": "\u0089@\u008c\u00ba\udb4e\udedd\ud979\udd3d\u00bc\u007f",
+      "stock_quantity": 2878,
+      "description": null,
+      "price": 1.70880528919474e+307,
+      "name": "\ud8c1\udfcbi\u0098\u00cd\udb73\uddf1\u00a6\uda88\ude72\u00c2\ud8b5\ude4b}\u00d9"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "create_product.hyp.4",
+    "method": "POST",
+    "path": "/products",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "price": 4.18661510825824e+307,
+      "category": "\u00a4p",
+      "name": "):\u009c\u0084m\u00d2z\u00a5\ud840\ude4a\u00da\uda42\ude09s\u0012\u00f2\u00f4\uda78\udd01\u00ee",
+      "stock_quantity": 577283
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_product"
+  },
+  {
+    "name": "list_products.happy",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.boundary.min_price.min",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "min_price": 0.0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.boundary.min_price.below_min",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "min_price": -1.0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.boundary.max_price.min",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "max_price": 0.0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.boundary.max_price.below_min",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "max_price": -1.0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.boundary.skip.min",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "skip": 0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.boundary.skip.below_min",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "skip": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.boundary.limit.max",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "limit": 100
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.boundary.limit.above_max",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "limit": 101
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.page.limit_1",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "limit": 1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.page.window",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "skip": 2,
+      "limit": 3
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.page.limit_0",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "limit": 0
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.page.skip_past_end",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "skip": 18
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.page.limit_huge",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "limit": 1000000
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.page.limit_negative",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "limit": -1
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "list_products.page.limit_malformed",
+    "method": "GET",
+    "path": "/products",
+    "user": null,
+    "token": null,
+    "params": {
+      "limit": "many"
+    },
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_products"
+  },
+  {
+    "name": "get_product.happy",
+    "method": "GET",
+    "path": "/products/1",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_product"
+  },
+  {
+    "name": "get_product.missing_id",
+    "method": "GET",
+    "path": "/products/999999",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_product"
+  },
+  {
+    "name": "get_product.malformed_id",
+    "method": "GET",
+    "path": "/products/not-an-int",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "products"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_product"
+  },
+  {
+    "name": "update_product.happy",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.admin",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.role.Buyer.alice",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.role.Buyer.bob",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.malformed_id",
+    "method": "PATCH",
+    "path": "/products/not-an-int",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.boundary.price.min",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 1.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.boundary.price.below_min",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 0.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.extra.unknown",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true,
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.name",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 1"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.name_null",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": null
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.description",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "Valid description 1"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.description_null",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": null
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.category",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "category": "Valid category 1"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.category_null",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "category": null
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.price",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "price": 2.0
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.price_null",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "price": null
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.is_active",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.is_active_null",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_active": null
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.partial.empty",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.no_token",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.bad_token",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.inactive_token",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.unknown_user_token",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.claimless_token",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "description": "Valid description 0",
+      "category": "Valid category 0",
+      "price": 2.0,
+      "is_active": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.hyp.1",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": null,
+      "category": null,
+      "is_active": false,
+      "name": null,
+      "price": 1.4435218842232751e+308
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.hyp.2",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_active": null,
+      "name": "",
+      "description": null
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "update_product.hyp.4",
+    "method": "PATCH",
+    "path": "/products/999999",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "description": "\ud8f9\udd21\u008e"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_product"
+  },
+  {
+    "name": "read_own_profile.happy",
+    "method": "GET",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "read_own_profile.admin",
+    "method": "GET",
+    "path": "/users/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "read_own_profile.role.Buyer.bob",
+    "method": "GET",
+    "path": "/users/me",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "read_own_profile.role.Vendor.role_vendor",
+    "method": "GET",
+    "path": "/users/me",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "read_own_profile.no_token",
+    "method": "GET",
+    "path": "/users/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "read_own_profile.bad_token",
+    "method": "GET",
+    "path": "/users/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "read_own_profile.inactive_token",
+    "method": "GET",
+    "path": "/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "read_own_profile.unknown_user_token",
+    "method": "GET",
+    "path": "/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "read_own_profile.claimless_token",
+    "method": "GET",
+    "path": "/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_profile"
+  },
+  {
+    "name": "update_own_profile.happy",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.admin",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.other_user",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.role.Vendor.role_vendor",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.extra.unknown",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.extra.columns",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com",
+      "id": 3,
+      "hashed_password": "extra",
+      "role": "extra",
+      "is_active": true,
+      "created_at": "2030-01-01T00:00:00"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.partial.full_name",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 1"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.partial.full_name_null",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": null
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.partial.email",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "fresh.update.own.profile1@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.partial.email_null",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": null
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.partial.empty",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.no_token",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.bad_token",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.inactive_token",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.unknown_user_token",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.claimless_token",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "full_name": "Valid full name 0",
+      "email": "fresh.update.own.profile@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.hyp.1",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "email": "ex5ppdzbosreik@example.com",
+      "full_name": null
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.hyp.2",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": null,
+      "email": "gnpclz7@example.com"
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "update_own_profile.hyp.4",
+    "method": "PATCH",
+    "path": "/users/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "full_name": null,
+      "email": null
+    },
+    "form": null,
+    "tables": [
+      "users"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_profile"
+  },
+  {
+    "name": "register_as_vendor.happy",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.admin",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.role.Buyer.bob",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.role.Vendor.role_vendor",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.missing.business_name",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.extra.unknown",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.no_token",
+    "method": "POST",
+    "path": "/vendors",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.bad_token",
+    "method": "POST",
+    "path": "/vendors",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.inactive_token",
+    "method": "POST",
+    "path": "/vendors",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.unknown_user_token",
+    "method": "POST",
+    "path": "/vendors",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.claimless_token",
+    "method": "POST",
+    "path": "/vendors",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.hyp.0",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": ""
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.hyp.1",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.hyp.2",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "\ud8a8\ude23\u0013O\u00e5+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.hyp.3",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "\u00c0\u00e0\u00dd\ud983\udc8c\u0096\u00a1"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "register_as_vendor.hyp.4",
+    "method": "POST",
+    "path": "/vendors",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "\uda1e\ude4c\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "register_as_vendor"
+  },
+  {
+    "name": "read_own_vendor_profile.happy",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "read_own_vendor_profile.admin",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "read_own_vendor_profile.role.Buyer.bob",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "read_own_vendor_profile.role.Vendor.role_vendor",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "read_own_vendor_profile.no_token",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "read_own_vendor_profile.bad_token",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "read_own_vendor_profile.inactive_token",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "read_own_vendor_profile.unknown_user_token",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "read_own_vendor_profile.claimless_token",
+    "method": "GET",
+    "path": "/vendors/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.happy",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.admin",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.other_user",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.role.Vendor.role_vendor",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.extra.unknown",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.partial.business_name",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 1"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.partial.business_name_null",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": null
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.partial.empty",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.no_token",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.bad_token",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.inactive_token",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.unknown_user_token",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.claimless_token",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "business_name": "Valid business name 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.hyp.2",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "\u00e5+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.hyp.3",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "\u00bcp\u0096\u00a1"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "update_own_vendor_profile.hyp.4",
+    "method": "PATCH",
+    "path": "/vendors/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "business_name": "\u00bf\udaf3\udf04d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_own_vendor_profile"
+  },
+  {
+    "name": "verify_vendor.happy",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.role.Buyer.alice",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.role.Buyer.bob",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.role.Vendor.role_vendor",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": "role_vendor",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.malformed_id",
+    "method": "PATCH",
+    "path": "/vendors/not-an-int/verify",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.missing.is_verified",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.extra.unknown",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_verified": true,
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.no_token",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.bad_token",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.inactive_token",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"4\"}>",
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.unknown_user_token",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"999999\"}>",
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.claimless_token",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "is_verified": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  },
+  {
+    "name": "verify_vendor.hyp.0",
+    "method": "PATCH",
+    "path": "/vendors/999999/verify",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_verified": false
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "verify_vendor"
+  }
+]

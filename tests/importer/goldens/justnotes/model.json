@@ -1,0 +1,4199 @@
+{
+  "app_package": "bench.import_repos.justnotes.app",
+  "tables": [
+    {
+      "name": "Note",
+      "table_name": "note",
+      "module": "bench.import_repos.justnotes.app.models.note",
+      "columns": [
+        {
+          "name": "title",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "text",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "isPublic",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "id",
+          "annotation": "int | None",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "createdAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "get_current_time()",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "updatedAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "get_current_time()",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "owner_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": "user.id",
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.justnotes.app.models.note:NoteBase",
+        "bench.import_repos.justnotes.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "NoteTagLink",
+      "table_name": "notetaglink",
+      "module": "bench.import_repos.justnotes.app.models.tag",
+      "columns": [
+        {
+          "name": "note_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": "note.id",
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "tag_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": "tag.id",
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.justnotes.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "Tag",
+      "table_name": "tag",
+      "module": "bench.import_repos.justnotes.app.models.tag",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "int | None",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "category",
+          "annotation": "str | None",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "owner_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": "user.id",
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "createdAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "get_current_time()",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.justnotes.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "NoteKeywordLink",
+      "table_name": "notekeywordlink",
+      "module": "bench.import_repos.justnotes.app.models.tag",
+      "columns": [
+        {
+          "name": "note_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": "note.id",
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "keyword_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": "keyword.id",
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.justnotes.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "Keyword",
+      "table_name": "keyword",
+      "module": "bench.import_repos.justnotes.app.models.tag",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "int | None",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "term",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "is_main_topic",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "False",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "owner_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": "user.id",
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "createdAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "get_current_time()",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.justnotes.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "User",
+      "table_name": "user",
+      "module": "bench.import_repos.justnotes.app.models.user",
+      "columns": [
+        {
+          "name": "username",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "password",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "id",
+          "annotation": "int | None",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "createdAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "get_current_time()",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "updatedAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "get_current_time()",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.justnotes.app.models.user:UserBase",
+        "bench.import_repos.justnotes.app._lattice_registry:TableBase"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "TableBase",
+      "module": "bench.import_repos.justnotes.app._lattice_registry",
+      "fields": [],
+      "bases": []
+    },
+    {
+      "name": "Token",
+      "module": "bench.import_repos.justnotes.app.api.auth",
+      "fields": [
+        {
+          "name": "access_token",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "token_type",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "UserLogin",
+      "module": "bench.import_repos.justnotes.app.api.auth",
+      "fields": [
+        {
+          "name": "username",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "password",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "TagCreate",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "fields": [
+        {
+          "name": "name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "category",
+          "annotation": "str | None",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "KeywordCreate",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "fields": [
+        {
+          "name": "term",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "is_main_topic",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "False",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "NoteBase",
+      "module": "bench.import_repos.justnotes.app.models.note",
+      "fields": [
+        {
+          "name": "title",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "text",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "isPublic",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "NoteResponse",
+      "module": "bench.import_repos.justnotes.app.models.note",
+      "fields": [
+        {
+          "name": "title",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "text",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "isPublic",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "createdAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "updatedAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "owner",
+          "annotation": "Optional[UserResponse]",
+          "type": "UserResponse",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.justnotes.app.models.note:NoteBase"
+      ]
+    },
+    {
+      "name": "UserBase",
+      "module": "bench.import_repos.justnotes.app.models.user",
+      "fields": [
+        {
+          "name": "username",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "password",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "UserResponse",
+      "module": "bench.import_repos.justnotes.app.models.user",
+      "fields": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "username",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "createdAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "updatedAt",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "get_user_crud",
+      "module": "bench.import_repos.justnotes.app.api.auth",
+      "kind": "repository",
+      "depends_on": [
+        "get_db_session"
+      ],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": "bench.import_repos.justnotes.app.database.user_crud:UserCRUD",
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_db_session",
+      "module": "bench.import_repos.justnotes.app.database.connection",
+      "kind": "session",
+      "depends_on": [],
+      "returns": "Session",
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_current_user",
+      "module": "bench.import_repos.justnotes.app.api.auth",
+      "kind": "current_user",
+      "depends_on": [
+        "oauth2_scheme",
+        "get_user_crud"
+      ],
+      "returns": "User",
+      "raises": [
+        {
+          "status": 401,
+          "detail": "Could not validate credentials",
+          "line": 79
+        },
+        {
+          "status": 401,
+          "detail": "Could not validate credentials",
+          "line": 87
+        },
+        {
+          "status": 401,
+          "detail": "User not found",
+          "line": 97
+        }
+      ],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "oauth2_scheme",
+      "module": "bench.import_repos.justnotes.app.api.auth",
+      "kind": "token",
+      "depends_on": [],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": "OAuth2PasswordBearer",
+      "reason": "",
+      "provides": null,
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_note_crud",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "kind": "repository",
+      "depends_on": [
+        "get_db_session"
+      ],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": "bench.import_repos.justnotes.app.database.note_crud:NoteCRUD",
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_tag_crud",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "kind": "repository",
+      "depends_on": [
+        "get_db_session"
+      ],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": "bench.import_repos.justnotes.app.database.tag_crud:TagCRUD",
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_note_crud",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "kind": "repository",
+      "depends_on": [
+        "get_db_session"
+      ],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": "bench.import_repos.justnotes.app.database.note_crud:NoteCRUD",
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_keyword_crud",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "kind": "repository",
+      "depends_on": [
+        "get_db_session"
+      ],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": "bench.import_repos.justnotes.app.database.keyword_crud:KeywordCRUD",
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_user_crud",
+      "module": "bench.import_repos.justnotes.app.api.users",
+      "kind": "repository",
+      "depends_on": [
+        "get_db_session"
+      ],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": "bench.import_repos.justnotes.app.database.user_crud:UserCRUD",
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_tag_crud",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "kind": "repository",
+      "depends_on": [
+        "get_db_session"
+      ],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": "bench.import_repos.justnotes.app.database.tag_crud:TagCRUD",
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "get_keyword_crud",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "kind": "repository",
+      "depends_on": [
+        "get_db_session"
+      ],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": "bench.import_repos.justnotes.app.database.keyword_crud:KeywordCRUD",
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    }
+  ],
+  "routes": [
+    {
+      "name": "register",
+      "module": "bench.import_repos.justnotes.app.api.auth",
+      "method": "POST",
+      "path": "/auth/register",
+      "params": [
+        {
+          "name": "user",
+          "annotation": "UserBase",
+          "type": "UserBase",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "UserCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_user_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "UserResponse",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_user_crud"
+      ],
+      "auth": "Public",
+      "auth_reason": "no auth dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.utils.auth:hash_password"
+      ],
+      "tables": [
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [
+        "UserBase"
+      ],
+      "line": 112,
+      "enclosing": null,
+      "returns": "User"
+    },
+    {
+      "name": "login",
+      "module": "bench.import_repos.justnotes.app.api.auth",
+      "method": "POST",
+      "path": "/auth/login",
+      "params": [
+        {
+          "name": "form_data",
+          "annotation": "OAuth2PasswordRequestForm",
+          "type": "OAuth2PasswordRequestForm",
+          "source": "form",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "UserCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_user_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "Token",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_user_crud"
+      ],
+      "auth": "Public",
+      "auth_reason": "no auth dependency",
+      "raises": [
+        {
+          "status": 401,
+          "detail": "Incorrect username or password",
+          "line": 153
+        }
+      ],
+      "calls": [
+        "bench.import_repos.justnotes.app.utils.jwt:create_access_token",
+        "bench.import_repos.justnotes.app.utils.auth:verify_password"
+      ],
+      "tables": [
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 133,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "read_users_me",
+      "module": "bench.import_repos.justnotes.app.api.auth",
+      "method": "GET",
+      "path": "/auth/me",
+      "params": [
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "UserResponse",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 167,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "health",
+      "module": "bench.import_repos.justnotes.app.api.health",
+      "method": "GET",
+      "path": "/health",
+      "params": [],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Public",
+      "auth_reason": "no auth dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 8,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_notes",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes",
+      "params": [
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 44
+        }
+      ],
+      "body_models": [],
+      "line": 56,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "create_notes",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "POST",
+      "path": "/notes/create",
+      "params": [
+        {
+          "name": "item",
+          "annotation": "NoteBase",
+          "type": "NoteBase",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 201,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "assign",
+          "line": 162
+        },
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 148
+        },
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 154
+        }
+      ],
+      "body_models": [
+        "NoteBase"
+      ],
+      "line": 76,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_public_notes",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/public",
+      "params": [
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_note_crud"
+      ],
+      "auth": "Public",
+      "auth_reason": "no auth dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 99,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_notes_summarize",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/{id}/summarize",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.api.notes:_check_note_access",
+        "bench.import_repos.justnotes.app.api.notes:_call_llm_api"
+      ],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 123
+        }
+      ],
+      "body_models": [],
+      "line": 179,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_notes_extend",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/{id}/extend",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.api.notes:_check_note_access",
+        "bench.import_repos.justnotes.app.api.notes:_call_llm_api"
+      ],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 123
+        }
+      ],
+      "body_models": [],
+      "line": 198,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_notes_translate",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/{id}/translate/{target_language}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "target_language",
+          "annotation": "str",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.api.notes:_check_note_access",
+        "bench.import_repos.justnotes.app.api.notes:_call_llm_api"
+      ],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 123
+        }
+      ],
+      "body_models": [],
+      "line": 218,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_notes_auto_tag",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/{id}/auto-tag",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.api.notes:_check_note_access",
+        "bench.import_repos.justnotes.app.api.notes:_call_llm_api"
+      ],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 123
+        }
+      ],
+      "body_models": [],
+      "line": 256,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_notes_keywords",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/{id}/keywords",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.api.notes:_check_note_access",
+        "bench.import_repos.justnotes.app.api.notes:_call_llm_api"
+      ],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 123
+        }
+      ],
+      "body_models": [],
+      "line": 300,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_notes_sentiment",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/{id}/sentiment",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.api.notes:_check_note_access",
+        "bench.import_repos.justnotes.app.api.notes:_call_llm_api"
+      ],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 123
+        }
+      ],
+      "body_models": [],
+      "line": 344,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_notes_related",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/{id}/related",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.api.notes:_check_note_access",
+        "bench.import_repos.justnotes.app.api.notes:_call_llm_api"
+      ],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 123
+        }
+      ],
+      "body_models": [],
+      "line": 394,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_note",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "GET",
+      "path": "/notes/{id}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "NoteResponse",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.justnotes.app.api.notes:_check_note_access"
+      ],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 123
+        }
+      ],
+      "body_models": [],
+      "line": 464,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "update_note",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "PUT",
+      "path": "/notes/{id}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "item",
+          "annotation": "NoteBase",
+          "type": "NoteBase",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 211
+        }
+      ],
+      "body_models": [
+        "NoteBase"
+      ],
+      "line": 507,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "delete_note",
+      "module": "bench.import_repos.justnotes.app.api.notes",
+      "method": "DELETE",
+      "path": "/notes/{id}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Note",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 261
+        }
+      ],
+      "body_models": [],
+      "line": 536,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_user_tags",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "GET",
+      "path": "/tags",
+      "params": [
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "TagCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_tag_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_tag_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Tag"
+      ],
+      "owner_uses": [
+        {
+          "table": "Tag",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 58
+        }
+      ],
+      "body_models": [],
+      "line": 67,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "create_tag",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "POST",
+      "path": "/tags",
+      "params": [
+        {
+          "name": "tag_data",
+          "annotation": "TagCreate",
+          "type": "TagCreate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "TagCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_tag_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 201,
+      "dependencies": [
+        "get_current_user",
+        "get_tag_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Tag"
+      ],
+      "owner_uses": [
+        {
+          "table": "Tag",
+          "column": "owner_id",
+          "how": "assign",
+          "line": 41
+        },
+        {
+          "table": "Tag",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 37
+        }
+      ],
+      "body_models": [
+        "TagCreate"
+      ],
+      "line": 93,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "delete_tag",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "DELETE",
+      "path": "/tags/{tag_id}",
+      "params": [
+        {
+          "name": "tag_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "TagCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_tag_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_tag_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Tag"
+      ],
+      "owner_uses": [
+        {
+          "table": "Tag",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 130
+        }
+      ],
+      "body_models": [],
+      "line": 119,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "add_tag_to_note",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "POST",
+      "path": "/notes/{note_id}/tags/{tag_id}",
+      "params": [
+        {
+          "name": "note_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "tag_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "tag_crud",
+          "annotation": "TagCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_tag_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "note_crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_tag_crud",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "Not authorized to modify this note",
+          "line": 168
+        }
+      ],
+      "calls": [],
+      "tables": [
+        "Note",
+        "NoteTagLink",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 167
+        }
+      ],
+      "body_models": [],
+      "line": 143,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "remove_tag_from_note",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "DELETE",
+      "path": "/notes/{note_id}/tags/{tag_id}",
+      "params": [
+        {
+          "name": "note_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "tag_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "tag_crud",
+          "annotation": "TagCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_tag_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "note_crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_tag_crud",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "Not authorized to modify this note",
+          "line": 202
+        }
+      ],
+      "calls": [],
+      "tables": [
+        "Note",
+        "NoteTagLink",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 201
+        }
+      ],
+      "body_models": [],
+      "line": 177,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_note_tags",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "GET",
+      "path": "/notes/{note_id}/tags",
+      "params": [
+        {
+          "name": "note_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "tag_crud",
+          "annotation": "TagCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_tag_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "note_crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_tag_crud",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "Not authorized to access this note",
+          "line": 234
+        }
+      ],
+      "calls": [],
+      "tables": [
+        "Note",
+        "NoteTagLink",
+        "Tag",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 233
+        }
+      ],
+      "body_models": [],
+      "line": 211,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_user_keywords",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "GET",
+      "path": "/keywords",
+      "params": [
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "KeywordCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_keyword_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_keyword_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Keyword"
+      ],
+      "owner_uses": [
+        {
+          "table": "Keyword",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 65
+        }
+      ],
+      "body_models": [],
+      "line": 251,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "create_keyword",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "POST",
+      "path": "/keywords",
+      "params": [
+        {
+          "name": "keyword_data",
+          "annotation": "KeywordCreate",
+          "type": "KeywordCreate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "KeywordCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_keyword_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 201,
+      "dependencies": [
+        "get_current_user",
+        "get_keyword_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Keyword"
+      ],
+      "owner_uses": [
+        {
+          "table": "Keyword",
+          "column": "owner_id",
+          "how": "assign",
+          "line": 45
+        },
+        {
+          "table": "Keyword",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 40
+        }
+      ],
+      "body_models": [
+        "KeywordCreate"
+      ],
+      "line": 278,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "delete_keyword",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "DELETE",
+      "path": "/keywords/{keyword_id}",
+      "params": [
+        {
+          "name": "keyword_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "KeywordCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_keyword_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_keyword_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "Keyword"
+      ],
+      "owner_uses": [
+        {
+          "table": "Keyword",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 142
+        }
+      ],
+      "body_models": [],
+      "line": 306,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "add_keyword_to_note",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "POST",
+      "path": "/notes/{note_id}/keywords/{keyword_id}",
+      "params": [
+        {
+          "name": "note_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "keyword_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "keyword_crud",
+          "annotation": "KeywordCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_keyword_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "note_crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_keyword_crud",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "Not authorized to modify this note",
+          "line": 355
+        }
+      ],
+      "calls": [],
+      "tables": [
+        "Note",
+        "NoteKeywordLink",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 354
+        }
+      ],
+      "body_models": [],
+      "line": 330,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "remove_keyword_from_note",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "DELETE",
+      "path": "/notes/{note_id}/keywords/{keyword_id}",
+      "params": [
+        {
+          "name": "note_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "keyword_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "keyword_crud",
+          "annotation": "KeywordCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_keyword_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "note_crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_keyword_crud",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "Not authorized to modify this note",
+          "line": 389
+        }
+      ],
+      "calls": [],
+      "tables": [
+        "Note",
+        "NoteKeywordLink",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 388
+        }
+      ],
+      "body_models": [],
+      "line": 364,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_note_keywords",
+      "module": "bench.import_repos.justnotes.app.api.tags",
+      "method": "GET",
+      "path": "/notes/{note_id}/keywords",
+      "params": [
+        {
+          "name": "note_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "keyword_crud",
+          "annotation": "KeywordCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_keyword_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "note_crud",
+          "annotation": "NoteCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_note_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_keyword_crud",
+        "get_note_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "Not authorized to access this note",
+          "line": 421
+        }
+      ],
+      "calls": [],
+      "tables": [
+        "Keyword",
+        "Note",
+        "NoteKeywordLink",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Note",
+          "column": "owner_id",
+          "how": "compare",
+          "line": 420
+        }
+      ],
+      "body_models": [],
+      "line": 398,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "list_users",
+      "module": "bench.import_repos.justnotes.app.api.users",
+      "method": "GET",
+      "path": "/user/list",
+      "params": [
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "crud",
+          "annotation": "UserCRUD",
+          "type": null,
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_user_crud",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_user_crud"
+      ],
+      "auth": "Customer",
+      "auth_reason": "current-user dependency",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 17,
+      "enclosing": null,
+      "returns": "User"
+    }
+  ],
+  "natives": [
+    {
+      "name": "hash_password",
+      "origin": "bench.import_repos.justnotes.app.utils.auth:hash_password",
+      "kind": "function",
+      "params": [
+        {
+          "name": "password",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [
+            "password"
+          ],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "str",
+      "result_type": "Str",
+      "nullable": false,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": true,
+      "reason": "",
+      "imports": [],
+      "decode_expr": null,
+      "token_param": null,
+      "claim": null,
+      "catches": [],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    },
+    {
+      "name": "create_access_token",
+      "origin": "bench.import_repos.justnotes.app.utils.jwt:create_access_token",
+      "kind": "function",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "dict",
+          "type": null,
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        },
+        {
+          "name": "expires_delta",
+          "annotation": "Optional[timedelta]",
+          "type": null,
+          "bound": "timedelta(minutes=settings.access_token_expire_minutes)",
+          "bound_imports": [
+            "from datetime import timedelta",
+            "from bench.import_repos.justnotes.app.config import settings"
+          ],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "",
+      "result_type": null,
+      "nullable": false,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": false,
+      "reason": "parameter data: dict is not a scalar; no return annotation",
+      "imports": [],
+      "decode_expr": null,
+      "token_param": null,
+      "claim": null,
+      "catches": [],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    },
+    {
+      "name": "verify_password",
+      "origin": "bench.import_repos.justnotes.app.utils.auth:verify_password",
+      "kind": "function",
+      "params": [
+        {
+          "name": "plain_password",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [
+            "password"
+          ],
+          "keyword_only": false,
+          "positional_only": false
+        },
+        {
+          "name": "hashed_password",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [
+            "password"
+          ],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "bool",
+      "result_type": "Bool",
+      "nullable": false,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": true,
+      "reason": "",
+      "imports": [],
+      "decode_expr": null,
+      "token_param": null,
+      "claim": null,
+      "catches": [],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    },
+    {
+      "name": "_check_note_access",
+      "origin": "bench.import_repos.justnotes.app.api.notes:_check_note_access",
+      "kind": "function",
+      "params": [
+        {
+          "name": "note",
+          "annotation": "",
+          "type": null,
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        },
+        {
+          "name": "current_user",
+          "annotation": "",
+          "type": null,
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "",
+      "result_type": null,
+      "nullable": false,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": false,
+      "reason": "parameter note: unannotated is not a scalar; parameter current_user: unannotated is not a scalar; no return annotation",
+      "imports": [],
+      "decode_expr": null,
+      "token_param": null,
+      "claim": null,
+      "catches": [],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    },
+    {
+      "name": "_call_llm_api",
+      "origin": "bench.import_repos.justnotes.app.api.notes:_call_llm_api",
+      "kind": "function",
+      "params": [
+        {
+          "name": "model",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [
+            "llm_model"
+          ],
+          "keyword_only": false,
+          "positional_only": false
+        },
+        {
+          "name": "prompt",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "dict",
+      "result_type": null,
+      "nullable": false,
+      "effect": true,
+      "effect_reason": "calls requests:post",
+      "adapter": null,
+      "expressible": false,
+      "reason": "result dict is not a scalar",
+      "imports": [],
+      "decode_expr": null,
+      "token_param": null,
+      "claim": null,
+      "catches": [],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    },
+    {
+      "name": "decode_token",
+      "origin": "bench.import_repos.justnotes.app.api.auth:get_current_user",
+      "kind": "token_decoder",
+      "params": [
+        {
+          "name": "token",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "str | None",
+      "result_type": "Str",
+      "nullable": true,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": true,
+      "reason": "",
+      "imports": [
+        "from bench.import_repos.justnotes.app.utils.jwt import verify_token"
+      ],
+      "decode_expr": "verify_token(token)",
+      "token_param": "token",
+      "claim": "sub",
+      "catches": [],
+      "lookup": "username",
+      "lookup_unique": "runtime",
+      "settings": []
+    }
+  ],
+  "database_url": "sqlite:///db.sqlite",
+  "dialect": "sqlite",
+  "exception_handlers": [],
+  "custom_serialization": [],
+  "role_scheme": null
+}

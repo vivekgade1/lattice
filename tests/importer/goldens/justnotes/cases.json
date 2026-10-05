@@ -1,0 +1,3836 @@
+[
+  {
+    "name": "register.happy",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "username": "Valid username 0",
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.missing.username",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "Valid password 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.missing.password",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "username": "Valid username 0"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.extra.unknown",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "username": "Valid username 0",
+      "password": "Valid password 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.extra.columns",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "username": "Valid username 0",
+      "password": "Valid password 0",
+      "id": 3,
+      "createdAt": 3,
+      "updatedAt": 3
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.0",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "username": "",
+      "password": ""
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.1",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "username": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20",
+      "password": "\ud8a8\ude23\u0013O\u00e5+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.2",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "password": "\u00e0\u00dd\ud983\udc8c\u0096\u00a1",
+      "username": ""
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.3",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "username": "\uda1e\ude4c\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d",
+      "password": "\r\u008e"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "register.hyp.4",
+    "method": "POST",
+    "path": "/auth/register",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "username": "",
+      "password": "\u00fe"
+    },
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "register"
+  },
+  {
+    "name": "login.happy",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com",
+      "password": "alice-pass-0031"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.missing.username",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "password": "alice-pass-0031"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.missing.password",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.admin",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "admin@example.com",
+      "password": "admin-pass-0031"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.unknown_user",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "nobody@example.com",
+      "password": "whatever123"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "login.error.401.bad_credentials",
+    "method": "POST",
+    "path": "/auth/login",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": {
+      "username": "alice@example.com",
+      "password": "wrong-password"
+    },
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "login"
+  },
+  {
+    "name": "read_users_me.happy",
+    "method": "GET",
+    "path": "/auth/me",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_users_me"
+  },
+  {
+    "name": "read_users_me.admin",
+    "method": "GET",
+    "path": "/auth/me",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_users_me"
+  },
+  {
+    "name": "read_users_me.no_token",
+    "method": "GET",
+    "path": "/auth/me",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_users_me"
+  },
+  {
+    "name": "read_users_me.bad_token",
+    "method": "GET",
+    "path": "/auth/me",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_users_me"
+  },
+  {
+    "name": "read_users_me.unknown_user_token",
+    "method": "GET",
+    "path": "/auth/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_users_me"
+  },
+  {
+    "name": "read_users_me.claimless_token",
+    "method": "GET",
+    "path": "/auth/me",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "read_users_me"
+  },
+  {
+    "name": "health.happy",
+    "method": "GET",
+    "path": "/health",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "health"
+  },
+  {
+    "name": "get_notes.happy",
+    "method": "GET",
+    "path": "/notes",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes"
+  },
+  {
+    "name": "get_notes.admin",
+    "method": "GET",
+    "path": "/notes",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes"
+  },
+  {
+    "name": "get_notes.no_token",
+    "method": "GET",
+    "path": "/notes",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes"
+  },
+  {
+    "name": "get_notes.bad_token",
+    "method": "GET",
+    "path": "/notes",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes"
+  },
+  {
+    "name": "get_notes.unknown_user_token",
+    "method": "GET",
+    "path": "/notes",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes"
+  },
+  {
+    "name": "get_notes.claimless_token",
+    "method": "GET",
+    "path": "/notes",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes"
+  },
+  {
+    "name": "create_notes.happy",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.admin",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.missing.title",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.missing.text",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.missing.isPublic",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.extra.unknown",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true,
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.no_token",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.bad_token",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.unknown_user_token",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.claimless_token",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.hyp.0",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "",
+      "text": "",
+      "isPublic": false
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.hyp.1",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20",
+      "isPublic": false,
+      "text": "\ud8a8\ude23\u0013O\u00e5+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.hyp.2",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "isPublic": false,
+      "text": "\u00a9E\u00ca\u00a1",
+      "title": "builtins:bool"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.hyp.3",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "text": "\r\u008e",
+      "title": "+\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d",
+      "isPublic": false
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "create_notes.hyp.4",
+    "method": "POST",
+    "path": "/notes/create",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "isPublic": true,
+      "title": "<\u00f0\udac2\ude8eGI",
+      "text": "\u0098\u00cd\udb73\uddf1\u00a6\uda88\ude72\u00c2\ud8b5\ude4b}\u00d9"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "create_notes"
+  },
+  {
+    "name": "get_public_notes.happy",
+    "method": "GET",
+    "path": "/notes/public",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_public_notes"
+  },
+  {
+    "name": "get_notes_summarize.happy",
+    "method": "GET",
+    "path": "/notes/999999/summarize",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_summarize"
+  },
+  {
+    "name": "get_notes_summarize.admin",
+    "method": "GET",
+    "path": "/notes/999999/summarize",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_summarize"
+  },
+  {
+    "name": "get_notes_summarize.other_user",
+    "method": "GET",
+    "path": "/notes/999999/summarize",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_summarize"
+  },
+  {
+    "name": "get_notes_summarize.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/summarize",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_summarize"
+  },
+  {
+    "name": "get_notes_summarize.no_token",
+    "method": "GET",
+    "path": "/notes/999999/summarize",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_summarize"
+  },
+  {
+    "name": "get_notes_summarize.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/summarize",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_summarize"
+  },
+  {
+    "name": "get_notes_summarize.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/summarize",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_summarize"
+  },
+  {
+    "name": "get_notes_summarize.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/summarize",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_summarize"
+  },
+  {
+    "name": "get_notes_extend.happy",
+    "method": "GET",
+    "path": "/notes/999999/extend",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_extend"
+  },
+  {
+    "name": "get_notes_extend.admin",
+    "method": "GET",
+    "path": "/notes/999999/extend",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_extend"
+  },
+  {
+    "name": "get_notes_extend.other_user",
+    "method": "GET",
+    "path": "/notes/999999/extend",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_extend"
+  },
+  {
+    "name": "get_notes_extend.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/extend",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_extend"
+  },
+  {
+    "name": "get_notes_extend.no_token",
+    "method": "GET",
+    "path": "/notes/999999/extend",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_extend"
+  },
+  {
+    "name": "get_notes_extend.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/extend",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_extend"
+  },
+  {
+    "name": "get_notes_extend.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/extend",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_extend"
+  },
+  {
+    "name": "get_notes_extend.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/extend",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_extend"
+  },
+  {
+    "name": "get_notes_translate.happy",
+    "method": "GET",
+    "path": "/notes/999999/translate/{target_language}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_translate"
+  },
+  {
+    "name": "get_notes_translate.admin",
+    "method": "GET",
+    "path": "/notes/999999/translate/{target_language}",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_translate"
+  },
+  {
+    "name": "get_notes_translate.other_user",
+    "method": "GET",
+    "path": "/notes/999999/translate/{target_language}",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_translate"
+  },
+  {
+    "name": "get_notes_translate.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/translate/{target_language}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_translate"
+  },
+  {
+    "name": "get_notes_translate.no_token",
+    "method": "GET",
+    "path": "/notes/999999/translate/{target_language}",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_translate"
+  },
+  {
+    "name": "get_notes_translate.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/translate/{target_language}",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_translate"
+  },
+  {
+    "name": "get_notes_translate.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/translate/{target_language}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_translate"
+  },
+  {
+    "name": "get_notes_translate.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/translate/{target_language}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_translate"
+  },
+  {
+    "name": "get_notes_auto_tag.happy",
+    "method": "GET",
+    "path": "/notes/999999/auto-tag",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_auto_tag"
+  },
+  {
+    "name": "get_notes_auto_tag.admin",
+    "method": "GET",
+    "path": "/notes/999999/auto-tag",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_auto_tag"
+  },
+  {
+    "name": "get_notes_auto_tag.other_user",
+    "method": "GET",
+    "path": "/notes/999999/auto-tag",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_auto_tag"
+  },
+  {
+    "name": "get_notes_auto_tag.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/auto-tag",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_auto_tag"
+  },
+  {
+    "name": "get_notes_auto_tag.no_token",
+    "method": "GET",
+    "path": "/notes/999999/auto-tag",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_auto_tag"
+  },
+  {
+    "name": "get_notes_auto_tag.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/auto-tag",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_auto_tag"
+  },
+  {
+    "name": "get_notes_auto_tag.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/auto-tag",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_auto_tag"
+  },
+  {
+    "name": "get_notes_auto_tag.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/auto-tag",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_auto_tag"
+  },
+  {
+    "name": "get_notes_keywords.happy",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_keywords"
+  },
+  {
+    "name": "get_notes_keywords.admin",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_keywords"
+  },
+  {
+    "name": "get_notes_keywords.other_user",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_keywords"
+  },
+  {
+    "name": "get_notes_keywords.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_keywords"
+  },
+  {
+    "name": "get_notes_keywords.no_token",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_keywords"
+  },
+  {
+    "name": "get_notes_keywords.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_keywords"
+  },
+  {
+    "name": "get_notes_keywords.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_keywords"
+  },
+  {
+    "name": "get_notes_keywords.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_keywords"
+  },
+  {
+    "name": "get_notes_sentiment.happy",
+    "method": "GET",
+    "path": "/notes/999999/sentiment",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_sentiment"
+  },
+  {
+    "name": "get_notes_sentiment.admin",
+    "method": "GET",
+    "path": "/notes/999999/sentiment",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_sentiment"
+  },
+  {
+    "name": "get_notes_sentiment.other_user",
+    "method": "GET",
+    "path": "/notes/999999/sentiment",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_sentiment"
+  },
+  {
+    "name": "get_notes_sentiment.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/sentiment",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_sentiment"
+  },
+  {
+    "name": "get_notes_sentiment.no_token",
+    "method": "GET",
+    "path": "/notes/999999/sentiment",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_sentiment"
+  },
+  {
+    "name": "get_notes_sentiment.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/sentiment",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_sentiment"
+  },
+  {
+    "name": "get_notes_sentiment.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/sentiment",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_sentiment"
+  },
+  {
+    "name": "get_notes_sentiment.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/sentiment",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_sentiment"
+  },
+  {
+    "name": "get_notes_related.happy",
+    "method": "GET",
+    "path": "/notes/999999/related",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_related"
+  },
+  {
+    "name": "get_notes_related.admin",
+    "method": "GET",
+    "path": "/notes/999999/related",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_related"
+  },
+  {
+    "name": "get_notes_related.other_user",
+    "method": "GET",
+    "path": "/notes/999999/related",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_related"
+  },
+  {
+    "name": "get_notes_related.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/related",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_related"
+  },
+  {
+    "name": "get_notes_related.no_token",
+    "method": "GET",
+    "path": "/notes/999999/related",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_related"
+  },
+  {
+    "name": "get_notes_related.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/related",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_related"
+  },
+  {
+    "name": "get_notes_related.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/related",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_related"
+  },
+  {
+    "name": "get_notes_related.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/related",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_notes_related"
+  },
+  {
+    "name": "get_note.happy",
+    "method": "GET",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note"
+  },
+  {
+    "name": "get_note.admin",
+    "method": "GET",
+    "path": "/notes/999999",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note"
+  },
+  {
+    "name": "get_note.other_user",
+    "method": "GET",
+    "path": "/notes/999999",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note"
+  },
+  {
+    "name": "get_note.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note"
+  },
+  {
+    "name": "get_note.no_token",
+    "method": "GET",
+    "path": "/notes/999999",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note"
+  },
+  {
+    "name": "get_note.bad_token",
+    "method": "GET",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note"
+  },
+  {
+    "name": "get_note.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note"
+  },
+  {
+    "name": "get_note.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note"
+  },
+  {
+    "name": "update_note.happy",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.admin",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.malformed_id",
+    "method": "PUT",
+    "path": "/notes/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.missing.title",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.missing.text",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.missing.isPublic",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.extra.unknown",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true,
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.partial.title",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 1"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.partial.text",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "text": "Valid text 1"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.partial.isPublic",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.partial.empty",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {},
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.no_token",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.bad_token",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.unknown_user_token",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.claimless_token",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "title": "Valid title 0",
+      "text": "Valid text 0",
+      "isPublic": true
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.hyp.0",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "",
+      "text": "",
+      "isPublic": false
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.hyp.1",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "title": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20",
+      "isPublic": false,
+      "text": "\ud8a8\ude23\u0013O\u00e5+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.hyp.2",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "isPublic": false,
+      "text": "\u00a9E\u00ca\u00a1",
+      "title": "builtins:bool"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.hyp.3",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "text": "\r\u008e",
+      "title": "+\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d",
+      "isPublic": false
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "update_note.hyp.4",
+    "method": "PUT",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "isPublic": true,
+      "title": "<\u00f0\udac2\ude8eGI",
+      "text": "\u0098\u00cd\udb73\uddf1\u00a6\uda88\ude72\u00c2\ud8b5\ude4b}\u00d9"
+    },
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "update_note"
+  },
+  {
+    "name": "delete_note.happy",
+    "method": "DELETE",
+    "path": "/notes/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_note"
+  },
+  {
+    "name": "delete_note.admin",
+    "method": "DELETE",
+    "path": "/notes/999999",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_note"
+  },
+  {
+    "name": "delete_note.malformed_id",
+    "method": "DELETE",
+    "path": "/notes/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_note"
+  },
+  {
+    "name": "delete_note.no_token",
+    "method": "DELETE",
+    "path": "/notes/999999",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_note"
+  },
+  {
+    "name": "delete_note.bad_token",
+    "method": "DELETE",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_note"
+  },
+  {
+    "name": "delete_note.unknown_user_token",
+    "method": "DELETE",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_note"
+  },
+  {
+    "name": "delete_note.claimless_token",
+    "method": "DELETE",
+    "path": "/notes/999999",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "delete_note"
+  },
+  {
+    "name": "get_user_tags.happy",
+    "method": "GET",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_tags"
+  },
+  {
+    "name": "get_user_tags.admin",
+    "method": "GET",
+    "path": "/tags",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_tags"
+  },
+  {
+    "name": "get_user_tags.no_token",
+    "method": "GET",
+    "path": "/tags",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_tags"
+  },
+  {
+    "name": "get_user_tags.bad_token",
+    "method": "GET",
+    "path": "/tags",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_tags"
+  },
+  {
+    "name": "get_user_tags.unknown_user_token",
+    "method": "GET",
+    "path": "/tags",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_tags"
+  },
+  {
+    "name": "get_user_tags.claimless_token",
+    "method": "GET",
+    "path": "/tags",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_tags"
+  },
+  {
+    "name": "create_tag.happy",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "category": "Valid category 0"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.admin",
+    "method": "POST",
+    "path": "/tags",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "category": "Valid category 0"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.missing.name",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "category": "Valid category 0"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.extra.unknown",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "category": "Valid category 0",
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.extra.columns",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "category": "Valid category 0",
+      "id": 3,
+      "owner_id": 3,
+      "createdAt": 3
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.no_token",
+    "method": "POST",
+    "path": "/tags",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "category": "Valid category 0"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.bad_token",
+    "method": "POST",
+    "path": "/tags",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "category": "Valid category 0"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.unknown_user_token",
+    "method": "POST",
+    "path": "/tags",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "category": "Valid category 0"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.claimless_token",
+    "method": "POST",
+    "path": "/tags",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "name": "Valid name 0",
+      "category": "Valid category 0"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.hyp.0",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": ""
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.hyp.1",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20",
+      "category": null
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.hyp.2",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "\udb57\udcf9+\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.hyp.3",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "name": "\u00c0\u00e0\u00dd\ud983\udc8c\u0096\u00a1"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "create_tag.hyp.4",
+    "method": "POST",
+    "path": "/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "category": null,
+      "name": "\u0000\u0097\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_tag"
+  },
+  {
+    "name": "delete_tag.happy",
+    "method": "DELETE",
+    "path": "/tags/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "delete_tag.other_user_row",
+    "method": "DELETE",
+    "path": "/tags/3",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "delete_tag.admin",
+    "method": "DELETE",
+    "path": "/tags/3",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "delete_tag.missing_id",
+    "method": "DELETE",
+    "path": "/tags/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "delete_tag.malformed_id",
+    "method": "DELETE",
+    "path": "/tags/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "delete_tag.no_token",
+    "method": "DELETE",
+    "path": "/tags/2",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "delete_tag.bad_token",
+    "method": "DELETE",
+    "path": "/tags/2",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "delete_tag.unknown_user_token",
+    "method": "DELETE",
+    "path": "/tags/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "delete_tag.claimless_token",
+    "method": "DELETE",
+    "path": "/tags/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "tag"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_tag"
+  },
+  {
+    "name": "add_tag_to_note.happy",
+    "method": "POST",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_tag_to_note"
+  },
+  {
+    "name": "add_tag_to_note.admin",
+    "method": "POST",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_tag_to_note"
+  },
+  {
+    "name": "add_tag_to_note.malformed_id",
+    "method": "POST",
+    "path": "/notes/not-an-int/tags/{tag_id}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_tag_to_note"
+  },
+  {
+    "name": "add_tag_to_note.no_token",
+    "method": "POST",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_tag_to_note"
+  },
+  {
+    "name": "add_tag_to_note.bad_token",
+    "method": "POST",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_tag_to_note"
+  },
+  {
+    "name": "add_tag_to_note.unknown_user_token",
+    "method": "POST",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_tag_to_note"
+  },
+  {
+    "name": "add_tag_to_note.claimless_token",
+    "method": "POST",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_tag_to_note"
+  },
+  {
+    "name": "remove_tag_from_note.happy",
+    "method": "DELETE",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_tag_from_note"
+  },
+  {
+    "name": "remove_tag_from_note.admin",
+    "method": "DELETE",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_tag_from_note"
+  },
+  {
+    "name": "remove_tag_from_note.malformed_id",
+    "method": "DELETE",
+    "path": "/notes/not-an-int/tags/{tag_id}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_tag_from_note"
+  },
+  {
+    "name": "remove_tag_from_note.no_token",
+    "method": "DELETE",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_tag_from_note"
+  },
+  {
+    "name": "remove_tag_from_note.bad_token",
+    "method": "DELETE",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_tag_from_note"
+  },
+  {
+    "name": "remove_tag_from_note.unknown_user_token",
+    "method": "DELETE",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_tag_from_note"
+  },
+  {
+    "name": "remove_tag_from_note.claimless_token",
+    "method": "DELETE",
+    "path": "/notes/999999/tags/{tag_id}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_tag_from_note"
+  },
+  {
+    "name": "get_note_tags.happy",
+    "method": "GET",
+    "path": "/notes/999999/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_tags"
+  },
+  {
+    "name": "get_note_tags.admin",
+    "method": "GET",
+    "path": "/notes/999999/tags",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_tags"
+  },
+  {
+    "name": "get_note_tags.other_user",
+    "method": "GET",
+    "path": "/notes/999999/tags",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_tags"
+  },
+  {
+    "name": "get_note_tags.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/tags",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_tags"
+  },
+  {
+    "name": "get_note_tags.no_token",
+    "method": "GET",
+    "path": "/notes/999999/tags",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_tags"
+  },
+  {
+    "name": "get_note_tags.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/tags",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_tags"
+  },
+  {
+    "name": "get_note_tags.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/tags",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_tags"
+  },
+  {
+    "name": "get_note_tags.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/tags",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_tags"
+  },
+  {
+    "name": "get_user_keywords.happy",
+    "method": "GET",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_keywords"
+  },
+  {
+    "name": "get_user_keywords.admin",
+    "method": "GET",
+    "path": "/keywords",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_keywords"
+  },
+  {
+    "name": "get_user_keywords.no_token",
+    "method": "GET",
+    "path": "/keywords",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_keywords"
+  },
+  {
+    "name": "get_user_keywords.bad_token",
+    "method": "GET",
+    "path": "/keywords",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_keywords"
+  },
+  {
+    "name": "get_user_keywords.unknown_user_token",
+    "method": "GET",
+    "path": "/keywords",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_keywords"
+  },
+  {
+    "name": "get_user_keywords.claimless_token",
+    "method": "GET",
+    "path": "/keywords",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "get_user_keywords"
+  },
+  {
+    "name": "create_keyword.happy",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "term": "Valid term 0",
+      "is_main_topic": true
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.admin",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": {
+      "term": "Valid term 0",
+      "is_main_topic": true
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.missing.term",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_main_topic": true
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.extra.unknown",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "term": "Valid term 0",
+      "is_main_topic": true,
+      "unexpected_field": "x"
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.extra.columns",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "term": "Valid term 0",
+      "is_main_topic": true,
+      "id": 3,
+      "owner_id": 3,
+      "createdAt": 3
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "columns the route does not take: ignored or refused, never written",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.no_token",
+    "method": "POST",
+    "path": "/keywords",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": {
+      "term": "Valid term 0",
+      "is_main_topic": true
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.bad_token",
+    "method": "POST",
+    "path": "/keywords",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": {
+      "term": "Valid term 0",
+      "is_main_topic": true
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.unknown_user_token",
+    "method": "POST",
+    "path": "/keywords",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": {
+      "term": "Valid term 0",
+      "is_main_topic": true
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.claimless_token",
+    "method": "POST",
+    "path": "/keywords",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": {
+      "term": "Valid term 0",
+      "is_main_topic": true
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.hyp.0",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "term": ""
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.hyp.1",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_main_topic": true,
+      "term": "\ud835\udc13\ud835\udc21\ud835\udc1e \ud835\udc2a\ud835\udc2e\ud835\udc22\ud835\udc1c\ud835\udc24 \ud835\udc1b\ud835\udc2b\ud835\udc28\ud835\udc30\ud835\udc27 \ud835\udc1f\ud835\udc28\ud835\udc31 \ud835\udc23\ud835\udc2e\ud835\udc26\ud835\udc29\ud835\udc2c \ud835\udc28\ud835\udc2f\ud835\udc1e\ud835\udc2b \ud835\udc2d\ud835\udc21\ud835\udc1e \ud835\udc25\ud835\udc1a\ud835\udc33\ud835\udc32 \ud835\udc1d\ud835\udc28\ud835\udc20"
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.hyp.2",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "term": "\u0015\u00d3\u001e\u00ce\u00c8kN"
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.hyp.3",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "term": "\u00c0\u00e0\u00dd\ud983\udc8c\u0096\u00a1"
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "create_keyword.hyp.4",
+    "method": "POST",
+    "path": "/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": {
+      "is_main_topic": true,
+      "term": "\u0000\u0097\udac1\udecc\udaf3\udf04d\u00aa\u001e\u001d"
+    },
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "create_keyword"
+  },
+  {
+    "name": "delete_keyword.happy",
+    "method": "DELETE",
+    "path": "/keywords/2",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "delete_keyword.other_user_row",
+    "method": "DELETE",
+    "path": "/keywords/3",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "delete_keyword.admin",
+    "method": "DELETE",
+    "path": "/keywords/3",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "delete_keyword.missing_id",
+    "method": "DELETE",
+    "path": "/keywords/999999",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "delete_keyword.malformed_id",
+    "method": "DELETE",
+    "path": "/keywords/not-an-int",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "delete_keyword.no_token",
+    "method": "DELETE",
+    "path": "/keywords/2",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "delete_keyword.bad_token",
+    "method": "DELETE",
+    "path": "/keywords/2",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "delete_keyword.unknown_user_token",
+    "method": "DELETE",
+    "path": "/keywords/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "delete_keyword.claimless_token",
+    "method": "DELETE",
+    "path": "/keywords/2",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "keyword"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "delete_keyword"
+  },
+  {
+    "name": "add_keyword_to_note.happy",
+    "method": "POST",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_keyword_to_note"
+  },
+  {
+    "name": "add_keyword_to_note.admin",
+    "method": "POST",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_keyword_to_note"
+  },
+  {
+    "name": "add_keyword_to_note.malformed_id",
+    "method": "POST",
+    "path": "/notes/not-an-int/keywords/{keyword_id}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_keyword_to_note"
+  },
+  {
+    "name": "add_keyword_to_note.no_token",
+    "method": "POST",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_keyword_to_note"
+  },
+  {
+    "name": "add_keyword_to_note.bad_token",
+    "method": "POST",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_keyword_to_note"
+  },
+  {
+    "name": "add_keyword_to_note.unknown_user_token",
+    "method": "POST",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_keyword_to_note"
+  },
+  {
+    "name": "add_keyword_to_note.claimless_token",
+    "method": "POST",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "add_keyword_to_note"
+  },
+  {
+    "name": "remove_keyword_from_note.happy",
+    "method": "DELETE",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_keyword_from_note"
+  },
+  {
+    "name": "remove_keyword_from_note.admin",
+    "method": "DELETE",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_keyword_from_note"
+  },
+  {
+    "name": "remove_keyword_from_note.malformed_id",
+    "method": "DELETE",
+    "path": "/notes/not-an-int/keywords/{keyword_id}",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_keyword_from_note"
+  },
+  {
+    "name": "remove_keyword_from_note.no_token",
+    "method": "DELETE",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_keyword_from_note"
+  },
+  {
+    "name": "remove_keyword_from_note.bad_token",
+    "method": "DELETE",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_keyword_from_note"
+  },
+  {
+    "name": "remove_keyword_from_note.unknown_user_token",
+    "method": "DELETE",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_keyword_from_note"
+  },
+  {
+    "name": "remove_keyword_from_note.claimless_token",
+    "method": "DELETE",
+    "path": "/notes/999999/keywords/{keyword_id}",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "remove_keyword_from_note"
+  },
+  {
+    "name": "get_note_keywords.happy",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_keywords"
+  },
+  {
+    "name": "get_note_keywords.admin",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_keywords"
+  },
+  {
+    "name": "get_note_keywords.other_user",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": "bob",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_keywords"
+  },
+  {
+    "name": "get_note_keywords.malformed_id",
+    "method": "GET",
+    "path": "/notes/not-an-int/keywords",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_keywords"
+  },
+  {
+    "name": "get_note_keywords.no_token",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_keywords"
+  },
+  {
+    "name": "get_note_keywords.bad_token",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_keywords"
+  },
+  {
+    "name": "get_note_keywords.unknown_user_token",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_keywords"
+  },
+  {
+    "name": "get_note_keywords.claimless_token",
+    "method": "GET",
+    "path": "/notes/999999/keywords",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [],
+    "note": "",
+    "db": "seed",
+    "route": "get_note_keywords"
+  },
+  {
+    "name": "list_users.happy",
+    "method": "GET",
+    "path": "/user/list",
+    "user": "alice",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_users"
+  },
+  {
+    "name": "list_users.admin",
+    "method": "GET",
+    "path": "/user/list",
+    "user": "admin",
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_users"
+  },
+  {
+    "name": "list_users.no_token",
+    "method": "GET",
+    "path": "/user/list",
+    "user": null,
+    "token": null,
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_users"
+  },
+  {
+    "name": "list_users.bad_token",
+    "method": "GET",
+    "path": "/user/list",
+    "user": null,
+    "token": "not-a-jwt",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_users"
+  },
+  {
+    "name": "list_users.unknown_user_token",
+    "method": "GET",
+    "path": "/user/list",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\",\"sub\":\"no-such-user\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_users"
+  },
+  {
+    "name": "list_users.claimless_token",
+    "method": "GET",
+    "path": "/user/list",
+    "user": null,
+    "token": "<jwt header={\"alg\":\"HS256\",\"typ\":\"JWT\"} claims={\"exp\":\"<future>\"}>",
+    "params": null,
+    "json": null,
+    "form": null,
+    "tables": [
+      "user"
+    ],
+    "note": "",
+    "db": "seed",
+    "route": "list_users"
+  }
+]

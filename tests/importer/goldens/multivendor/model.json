@@ -1,0 +1,3877 @@
+{
+  "app_package": "bench.import_repos.multivendor.app",
+  "tables": [
+    {
+      "name": "Order",
+      "table_name": "orders",
+      "module": "bench.import_repos.multivendor.app.models.order",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "Optional[int]",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "user_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": "users.id",
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "status",
+          "annotation": "OrderStatus",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "OrderStatus.PENDING",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [
+            "pending",
+            "confirmed",
+            "shipped",
+            "delivered",
+            "cancelled"
+          ],
+          "choice_names": [
+            "PENDING",
+            "CONFIRMED",
+            "SHIPPED",
+            "DELIVERED",
+            "CANCELLED"
+          ]
+        },
+        {
+          "name": "total_amount",
+          "annotation": "float",
+          "type": "Float",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "0",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "NaiveDatetime",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "datetime.utcnow()",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.multivendor.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "OrderItem",
+      "table_name": "order_items",
+      "module": "bench.import_repos.multivendor.app.models.order_item",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "Optional[int]",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "order_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": "orders.id",
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "product_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": "products.id",
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "quantity",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "price_at_purchase",
+          "annotation": "float",
+          "type": "Float",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.multivendor.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "Product",
+      "table_name": "products",
+      "module": "bench.import_repos.multivendor.app.models.product",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "Optional[int]",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "vendor_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": "vendors.id",
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "description",
+          "annotation": "Optional[str]",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "category",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "price",
+          "annotation": "float",
+          "type": "Float",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "stock_quantity",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "0",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "version",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "0",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "is_active",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "True",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.multivendor.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "User",
+      "table_name": "users",
+      "module": "bench.import_repos.multivendor.app.models.user",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "Optional[int]",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "full_name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "email",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": true,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "hashed_password",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "role",
+          "annotation": "Role",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "Role.BUYER",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [
+            "buyer",
+            "vendor",
+            "admin"
+          ],
+          "choice_names": [
+            "BUYER",
+            "VENDOR",
+            "ADMIN"
+          ]
+        },
+        {
+          "name": "is_active",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "True",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "NaiveDatetime",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "datetime.utcnow()",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.multivendor.app._lattice_registry:TableBase"
+      ]
+    },
+    {
+      "name": "Vendor",
+      "table_name": "vendors",
+      "module": "bench.import_repos.multivendor.app.models.vendor",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "Optional[int]",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "user_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": true,
+          "primary_key": false,
+          "foreign_key": "users.id",
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "business_name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "is_verified",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "False",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [
+        "bench.import_repos.multivendor.app._lattice_registry:TableBase"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "TableBase",
+      "module": "bench.import_repos.multivendor.app._lattice_registry",
+      "fields": [],
+      "bases": []
+    },
+    {
+      "name": "OrderItemCreate",
+      "module": "bench.import_repos.multivendor.app.schemas.order",
+      "fields": [
+        {
+          "name": "product_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "quantity",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": 0,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "OrderCreate",
+      "module": "bench.import_repos.multivendor.app.schemas.order",
+      "fields": [
+        {
+          "name": "items",
+          "annotation": "List[OrderItemCreate]",
+          "type": "List",
+          "item": "OrderItemCreate",
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": 1,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "OrderItemRead",
+      "module": "bench.import_repos.multivendor.app.schemas.order",
+      "fields": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "product_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "quantity",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "price_at_purchase",
+          "annotation": "float",
+          "type": "Float",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "OrderRead",
+      "module": "bench.import_repos.multivendor.app.schemas.order",
+      "fields": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "user_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "status",
+          "annotation": "OrderStatus",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [
+            "pending",
+            "confirmed",
+            "shipped",
+            "delivered",
+            "cancelled"
+          ],
+          "choice_names": [
+            "PENDING",
+            "CONFIRMED",
+            "SHIPPED",
+            "DELIVERED",
+            "CANCELLED"
+          ]
+        },
+        {
+          "name": "total_amount",
+          "annotation": "float",
+          "type": "Float",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "datetime",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "items",
+          "annotation": "List[OrderItemRead]",
+          "type": "List",
+          "item": "OrderItemRead",
+          "nullable": false,
+          "required": false,
+          "default": "[]",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "OrderStatusUpdate",
+      "module": "bench.import_repos.multivendor.app.schemas.order",
+      "fields": [
+        {
+          "name": "status",
+          "annotation": "OrderStatus",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [
+            "pending",
+            "confirmed",
+            "shipped",
+            "delivered",
+            "cancelled"
+          ],
+          "choice_names": [
+            "PENDING",
+            "CONFIRMED",
+            "SHIPPED",
+            "DELIVERED",
+            "CANCELLED"
+          ]
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "ProductCreate",
+      "module": "bench.import_repos.multivendor.app.schemas.product",
+      "fields": [
+        {
+          "name": "name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "description",
+          "annotation": "Optional[str]",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "category",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "price",
+          "annotation": "float",
+          "type": "Float",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": 0,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "stock_quantity",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": 0,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "ProductUpdate",
+      "module": "bench.import_repos.multivendor.app.schemas.product",
+      "fields": [
+        {
+          "name": "name",
+          "annotation": "Optional[str]",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "description",
+          "annotation": "Optional[str]",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "category",
+          "annotation": "Optional[str]",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "price",
+          "annotation": "Optional[float]",
+          "type": "Float",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": 0,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "is_active",
+          "annotation": "Optional[bool]",
+          "type": "Bool",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "ProductRead",
+      "module": "bench.import_repos.multivendor.app.schemas.product",
+      "fields": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "vendor_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "description",
+          "annotation": "Optional[str]",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "category",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "price",
+          "annotation": "float",
+          "type": "Float",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "stock_quantity",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "version",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "is_active",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "UserCreate",
+      "module": "bench.import_repos.multivendor.app.schemas.user",
+      "fields": [
+        {
+          "name": "full_name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "email",
+          "annotation": "EmailStr",
+          "type": "Email",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "password",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "UserUpdate",
+      "module": "bench.import_repos.multivendor.app.schemas.user",
+      "fields": [
+        {
+          "name": "full_name",
+          "annotation": "Optional[str]",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "email",
+          "annotation": "Optional[EmailStr]",
+          "type": "Email",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "UserRead",
+      "module": "bench.import_repos.multivendor.app.schemas.user",
+      "fields": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "full_name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "email",
+          "annotation": "EmailStr",
+          "type": "Email",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "role",
+          "annotation": "Role",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [
+            "buyer",
+            "vendor",
+            "admin"
+          ],
+          "choice_names": [
+            "BUYER",
+            "VENDOR",
+            "ADMIN"
+          ]
+        },
+        {
+          "name": "is_active",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "datetime",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "VendorCreate",
+      "module": "bench.import_repos.multivendor.app.schemas.vendor",
+      "fields": [
+        {
+          "name": "business_name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "VendorUpdate",
+      "module": "bench.import_repos.multivendor.app.schemas.vendor",
+      "fields": [
+        {
+          "name": "business_name",
+          "annotation": "Optional[str]",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": "None",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "VendorRead",
+      "module": "bench.import_repos.multivendor.app.schemas.vendor",
+      "fields": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "user_id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "business_name",
+          "annotation": "str",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "is_verified",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "VendorVerify",
+      "module": "bench.import_repos.multivendor.app.schemas.vendor",
+      "fields": [
+        {
+          "name": "is_verified",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "get_session",
+      "module": "bench.import_repos.multivendor.app.core.database",
+      "kind": "session",
+      "depends_on": [],
+      "returns": "Session",
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "require_permission(Permission.PLACE_ORDER)",
+      "module": "bench.import_repos.multivendor.app.routers.order_router",
+      "kind": "roles",
+      "depends_on": [
+        "get_current_user"
+      ],
+      "returns": "User",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "You do not have permission to perform this action.",
+          "line": 50
+        }
+      ],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": "role",
+      "roles_allowed": [
+        "buyer"
+      ],
+      "roles_status": 403,
+      "roles_detail": "You do not have permission to perform this action."
+    },
+    {
+      "name": "get_current_user",
+      "module": "bench.import_repos.multivendor.app.core.dependencies",
+      "kind": "current_user",
+      "depends_on": [
+        "oauth2_scheme",
+        "get_session"
+      ],
+      "returns": "User",
+      "raises": [
+        {
+          "status": 401,
+          "detail": "Could not validate credentials",
+          "line": 29
+        },
+        {
+          "status": 401,
+          "detail": "Could not validate credentials",
+          "line": 33
+        },
+        {
+          "status": 403,
+          "detail": "Inactive user",
+          "line": 36
+        },
+        {
+          "status": 401,
+          "detail": "Could not validate credentials",
+          "line": 25
+        }
+      ],
+      "active_column": "is_active",
+      "active_status": 403,
+      "active_detail": "Inactive user",
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "oauth2_scheme",
+      "module": "bench.import_repos.multivendor.app.core.dependencies",
+      "kind": "token",
+      "depends_on": [],
+      "returns": null,
+      "raises": [],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": "OAuth2PasswordBearer",
+      "reason": "",
+      "provides": null,
+      "role_column": null,
+      "roles_allowed": [],
+      "roles_status": null,
+      "roles_detail": null
+    },
+    {
+      "name": "require_permission(Permission.VIEW_OWN_ORDERS)",
+      "module": "bench.import_repos.multivendor.app.routers.order_router",
+      "kind": "roles",
+      "depends_on": [
+        "get_current_user"
+      ],
+      "returns": "User",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "You do not have permission to perform this action.",
+          "line": 50
+        }
+      ],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": "role",
+      "roles_allowed": [
+        "buyer",
+        "vendor"
+      ],
+      "roles_status": 403,
+      "roles_detail": "You do not have permission to perform this action."
+    },
+    {
+      "name": "require_permission(Permission.UPDATE_ORDER_STATUS)",
+      "module": "bench.import_repos.multivendor.app.routers.order_router",
+      "kind": "roles",
+      "depends_on": [
+        "get_current_user"
+      ],
+      "returns": "User",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "You do not have permission to perform this action.",
+          "line": 50
+        }
+      ],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": "role",
+      "roles_allowed": [
+        "vendor",
+        "admin"
+      ],
+      "roles_status": 403,
+      "roles_detail": "You do not have permission to perform this action."
+    },
+    {
+      "name": "require_permission(Permission.MANAGE_OWN_PRODUCTS)",
+      "module": "bench.import_repos.multivendor.app.routers.product_router",
+      "kind": "roles",
+      "depends_on": [
+        "get_current_user"
+      ],
+      "returns": "User",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "You do not have permission to perform this action.",
+          "line": 50
+        }
+      ],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": "role",
+      "roles_allowed": [
+        "vendor"
+      ],
+      "roles_status": 403,
+      "roles_detail": "You do not have permission to perform this action."
+    },
+    {
+      "name": "require_permission(Permission.VERIFY_VENDOR)",
+      "module": "bench.import_repos.multivendor.app.routers.vendor_router",
+      "kind": "roles",
+      "depends_on": [
+        "get_current_user"
+      ],
+      "returns": "User",
+      "raises": [
+        {
+          "status": 403,
+          "detail": "You do not have permission to perform this action.",
+          "line": 50
+        }
+      ],
+      "active_column": null,
+      "active_status": null,
+      "active_detail": null,
+      "admin_column": null,
+      "admin_status": null,
+      "admin_detail": null,
+      "scheme": null,
+      "reason": "",
+      "provides": null,
+      "role_column": "role",
+      "roles_allowed": [
+        "admin"
+      ],
+      "roles_status": 403,
+      "roles_detail": "You do not have permission to perform this action."
+    }
+  ],
+  "routes": [
+    {
+      "name": "register",
+      "module": "bench.import_repos.multivendor.app.routers.auth_router",
+      "method": "POST",
+      "path": "/auth/register",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "UserCreate",
+          "type": "UserCreate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "UserRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_session"
+      ],
+      "auth": "Public",
+      "auth_reason": "no auth dependency",
+      "raises": [
+        {
+          "status": 400,
+          "detail": null,
+          "line": 20
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.auth_service:register_user"
+      ],
+      "tables": [
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [
+        "UserCreate"
+      ],
+      "line": 16,
+      "enclosing": null,
+      "returns": "User"
+    },
+    {
+      "name": "login",
+      "module": "bench.import_repos.multivendor.app.routers.auth_router",
+      "method": "POST",
+      "path": "/auth/login",
+      "params": [
+        {
+          "name": "form_data",
+          "annotation": "OAuth2PasswordRequestForm",
+          "type": "OAuth2PasswordRequestForm",
+          "source": "form",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_session"
+      ],
+      "auth": "Public",
+      "auth_reason": "no auth dependency",
+      "raises": [
+        {
+          "status": 401,
+          "detail": null,
+          "line": 32
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.auth_service:authenticate_user"
+      ],
+      "tables": [
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 25,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "place_order",
+      "module": "bench.import_repos.multivendor.app.routers.order_router",
+      "method": "POST",
+      "path": "/orders",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "OrderCreate",
+          "type": "OrderCreate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "require_permission(Permission.PLACE_ORDER)",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "OrderRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "require_permission(Permission.PLACE_ORDER)",
+        "get_session"
+      ],
+      "auth": "Roles(Buyer)",
+      "auth_reason": "require_permission(Permission.PLACE_ORDER)",
+      "raises": [
+        {
+          "status": 409,
+          "detail": null,
+          "line": 27
+        },
+        {
+          "status": 409,
+          "detail": null,
+          "line": 29
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.core.dependencies:require_permission",
+        "bench.import_repos.multivendor.app.services.order_service:place_order"
+      ],
+      "tables": [
+        "Order",
+        "OrderItem",
+        "Product",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Order",
+          "column": "user_id",
+          "how": "assign",
+          "line": 23
+        }
+      ],
+      "body_models": [
+        "OrderCreate"
+      ],
+      "line": 19,
+      "enclosing": null,
+      "returns": "Order"
+    },
+    {
+      "name": "list_own_orders",
+      "module": "bench.import_repos.multivendor.app.routers.order_router",
+      "method": "GET",
+      "path": "/orders/me",
+      "params": [
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "require_permission(Permission.VIEW_OWN_ORDERS)",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "require_permission(Permission.VIEW_OWN_ORDERS)",
+        "get_session"
+      ],
+      "auth": "Roles(Buyer, Vendor)",
+      "auth_reason": "require_permission(Permission.VIEW_OWN_ORDERS)",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.order_service:list_own_orders",
+        "bench.import_repos.multivendor.app.core.dependencies:require_permission"
+      ],
+      "tables": [
+        "Order",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Order",
+          "column": "user_id",
+          "how": "compare",
+          "line": 13
+        }
+      ],
+      "body_models": [],
+      "line": 36,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_order",
+      "module": "bench.import_repos.multivendor.app.routers.order_router",
+      "method": "GET",
+      "path": "/orders/{order_id}",
+      "params": [
+        {
+          "name": "order_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "OrderRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_session"
+      ],
+      "auth": "Authenticated",
+      "auth_reason": "current-user dependency; any role",
+      "raises": [
+        {
+          "status": 404,
+          "detail": null,
+          "line": 56
+        },
+        {
+          "status": 403,
+          "detail": null,
+          "line": 58
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.order_service:get_own_order",
+        "bench.import_repos.multivendor.app.services.order_service:get_order"
+      ],
+      "tables": [
+        "Order",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Order",
+          "column": "user_id",
+          "how": "compare",
+          "line": 72
+        }
+      ],
+      "body_models": [],
+      "line": 44,
+      "enclosing": null,
+      "returns": "Order"
+    },
+    {
+      "name": "update_order_status",
+      "module": "bench.import_repos.multivendor.app.routers.order_router",
+      "method": "PATCH",
+      "path": "/orders/{order_id}/status",
+      "params": [
+        {
+          "name": "order_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "data",
+          "annotation": "OrderStatusUpdate",
+          "type": "OrderStatusUpdate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "require_permission(Permission.UPDATE_ORDER_STATUS)",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "OrderRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "require_permission(Permission.UPDATE_ORDER_STATUS)",
+        "get_session"
+      ],
+      "auth": "Roles(Admin, Vendor)",
+      "auth_reason": "require_permission(Permission.UPDATE_ORDER_STATUS)",
+      "raises": [
+        {
+          "status": 404,
+          "detail": null,
+          "line": 71
+        },
+        {
+          "status": 400,
+          "detail": null,
+          "line": 73
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.core.dependencies:require_permission",
+        "bench.import_repos.multivendor.app.services.order_service:transition_order_status"
+      ],
+      "tables": [
+        "Order",
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [
+        "OrderStatusUpdate"
+      ],
+      "line": 62,
+      "enclosing": null,
+      "returns": "Order"
+    },
+    {
+      "name": "flash_sale_purchase",
+      "module": "bench.import_repos.multivendor.app.routers.order_router",
+      "method": "POST",
+      "path": "/orders/flash-sale-purchase",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "OrderItemCreate",
+          "type": "OrderItemCreate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "require_permission(Permission.PLACE_ORDER)",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "OrderRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "require_permission(Permission.PLACE_ORDER)",
+        "get_session"
+      ],
+      "auth": "Roles(Buyer)",
+      "auth_reason": "require_permission(Permission.PLACE_ORDER)",
+      "raises": [
+        {
+          "status": 409,
+          "detail": null,
+          "line": 89
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.core.dependencies:require_permission",
+        "bench.import_repos.multivendor.app.services.order_service:purchase_single_item_pessimistic"
+      ],
+      "tables": [
+        "Order",
+        "OrderItem",
+        "Product",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Order",
+          "column": "user_id",
+          "how": "assign",
+          "line": 23
+        }
+      ],
+      "body_models": [
+        "OrderItemCreate"
+      ],
+      "line": 79,
+      "enclosing": null,
+      "returns": "Order"
+    },
+    {
+      "name": "create_product",
+      "module": "bench.import_repos.multivendor.app.routers.product_router",
+      "method": "POST",
+      "path": "/products",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "ProductCreate",
+          "type": "ProductCreate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "require_permission(Permission.MANAGE_OWN_PRODUCTS)",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "ProductRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "require_permission(Permission.MANAGE_OWN_PRODUCTS)",
+        "get_session"
+      ],
+      "auth": "Roles(Vendor)",
+      "auth_reason": "require_permission(Permission.MANAGE_OWN_PRODUCTS)",
+      "raises": [
+        {
+          "status": 403,
+          "detail": null,
+          "line": 26
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.core.dependencies:require_permission",
+        "bench.import_repos.multivendor.app.services.product_service:create_product"
+      ],
+      "tables": [
+        "Product",
+        "User",
+        "Vendor"
+      ],
+      "owner_uses": [
+        {
+          "table": "Vendor",
+          "column": "user_id",
+          "how": "compare",
+          "line": 12
+        }
+      ],
+      "body_models": [
+        "ProductCreate"
+      ],
+      "line": 18,
+      "enclosing": null,
+      "returns": "Product"
+    },
+    {
+      "name": "list_products",
+      "module": "bench.import_repos.multivendor.app.routers.product_router",
+      "method": "GET",
+      "path": "/products",
+      "params": [
+        {
+          "name": "category",
+          "annotation": "str | None",
+          "type": "Str",
+          "source": "query",
+          "default": "None",
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "min_price",
+          "annotation": "float | None",
+          "type": "Float",
+          "source": "query",
+          "default": "None",
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 0,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "max_price",
+          "annotation": "float | None",
+          "type": "Float",
+          "source": "query",
+          "default": "None",
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 0,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "skip",
+          "annotation": "int",
+          "type": "Int",
+          "source": "query",
+          "default": "0",
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 0,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "limit",
+          "annotation": "int",
+          "type": "Int",
+          "source": "query",
+          "default": "20",
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": 100,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_session"
+      ],
+      "auth": "Public",
+      "auth_reason": "no auth dependency",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.product_service:list_products"
+      ],
+      "tables": [
+        "Product"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 30,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "get_product",
+      "module": "bench.import_repos.multivendor.app.routers.product_router",
+      "method": "GET",
+      "path": "/products/{product_id}",
+      "params": [
+        {
+          "name": "product_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "ProductRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_session"
+      ],
+      "auth": "Public",
+      "auth_reason": "no auth dependency",
+      "raises": [
+        {
+          "status": 404,
+          "detail": null,
+          "line": 46
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.product_service:get_product"
+      ],
+      "tables": [
+        "Product"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 42,
+      "enclosing": null,
+      "returns": "Product"
+    },
+    {
+      "name": "update_product",
+      "module": "bench.import_repos.multivendor.app.routers.product_router",
+      "method": "PATCH",
+      "path": "/products/{product_id}",
+      "params": [
+        {
+          "name": "product_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "data",
+          "annotation": "ProductUpdate",
+          "type": "ProductUpdate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "require_permission(Permission.MANAGE_OWN_PRODUCTS)",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "ProductRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "require_permission(Permission.MANAGE_OWN_PRODUCTS)",
+        "get_session"
+      ],
+      "auth": "Roles(Vendor)",
+      "auth_reason": "require_permission(Permission.MANAGE_OWN_PRODUCTS)",
+      "raises": [
+        {
+          "status": 404,
+          "detail": null,
+          "line": 59
+        },
+        {
+          "status": 403,
+          "detail": null,
+          "line": 61
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.core.dependencies:require_permission",
+        "bench.import_repos.multivendor.app.services.product_service:update_own_product"
+      ],
+      "tables": [
+        "Product",
+        "User",
+        "Vendor"
+      ],
+      "owner_uses": [
+        {
+          "table": "Vendor",
+          "column": "user_id",
+          "how": "compare",
+          "line": 12
+        }
+      ],
+      "body_models": [
+        "ProductUpdate"
+      ],
+      "line": 50,
+      "enclosing": null,
+      "returns": "Product"
+    },
+    {
+      "name": "read_own_profile",
+      "module": "bench.import_repos.multivendor.app.routers.user_router",
+      "method": "GET",
+      "path": "/users/me",
+      "params": [
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "UserRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user"
+      ],
+      "auth": "Authenticated",
+      "auth_reason": "current-user dependency; any role",
+      "raises": [],
+      "calls": [],
+      "tables": [
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 16,
+      "enclosing": null,
+      "returns": null
+    },
+    {
+      "name": "update_own_profile",
+      "module": "bench.import_repos.multivendor.app.routers.user_router",
+      "method": "PATCH",
+      "path": "/users/me",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "UserUpdate",
+          "type": "UserUpdate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "UserRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_session"
+      ],
+      "auth": "Authenticated",
+      "auth_reason": "current-user dependency; any role",
+      "raises": [],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.user_service:update_own_profile"
+      ],
+      "tables": [
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [
+        "UserUpdate"
+      ],
+      "line": 21,
+      "enclosing": null,
+      "returns": "User"
+    },
+    {
+      "name": "register_as_vendor",
+      "module": "bench.import_repos.multivendor.app.routers.vendor_router",
+      "method": "POST",
+      "path": "/vendors",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "VendorCreate",
+          "type": "VendorCreate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "VendorRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_session"
+      ],
+      "auth": "Authenticated",
+      "auth_reason": "current-user dependency; any role",
+      "raises": [
+        {
+          "status": 400,
+          "detail": null,
+          "line": 26
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.vendor_service:register_vendor"
+      ],
+      "tables": [
+        "User",
+        "Vendor"
+      ],
+      "owner_uses": [
+        {
+          "table": "Vendor",
+          "column": "user_id",
+          "how": "compare",
+          "line": 12
+        },
+        {
+          "table": "Vendor",
+          "column": "user_id",
+          "how": "assign",
+          "line": 19
+        }
+      ],
+      "body_models": [
+        "VendorCreate"
+      ],
+      "line": 18,
+      "enclosing": null,
+      "returns": "Vendor"
+    },
+    {
+      "name": "read_own_vendor_profile",
+      "module": "bench.import_repos.multivendor.app.routers.vendor_router",
+      "method": "GET",
+      "path": "/vendors/me",
+      "params": [
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "VendorRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_session"
+      ],
+      "auth": "Authenticated",
+      "auth_reason": "current-user dependency; any role",
+      "raises": [
+        {
+          "status": 404,
+          "detail": null,
+          "line": 37
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.vendor_service:get_own_vendor_profile"
+      ],
+      "tables": [
+        "User",
+        "Vendor"
+      ],
+      "owner_uses": [
+        {
+          "table": "Vendor",
+          "column": "user_id",
+          "how": "compare",
+          "line": 12
+        }
+      ],
+      "body_models": [],
+      "line": 30,
+      "enclosing": null,
+      "returns": "Vendor"
+    },
+    {
+      "name": "update_own_vendor_profile",
+      "module": "bench.import_repos.multivendor.app.routers.vendor_router",
+      "method": "PATCH",
+      "path": "/vendors/me",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "VendorUpdate",
+          "type": "VendorUpdate",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_current_user",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "VendorRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "get_current_user",
+        "get_session"
+      ],
+      "auth": "Authenticated",
+      "auth_reason": "current-user dependency; any role",
+      "raises": [
+        {
+          "status": 404,
+          "detail": null,
+          "line": 49
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.services.vendor_service:update_own_vendor_profile"
+      ],
+      "tables": [
+        "User",
+        "Vendor"
+      ],
+      "owner_uses": [
+        {
+          "table": "Vendor",
+          "column": "user_id",
+          "how": "compare",
+          "line": 12
+        }
+      ],
+      "body_models": [
+        "VendorUpdate"
+      ],
+      "line": 41,
+      "enclosing": null,
+      "returns": "Vendor"
+    },
+    {
+      "name": "verify_vendor",
+      "module": "bench.import_repos.multivendor.app.routers.vendor_router",
+      "method": "PATCH",
+      "path": "/vendors/{vendor_id}/verify",
+      "params": [
+        {
+          "name": "vendor_id",
+          "annotation": "int",
+          "type": "Int",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "data",
+          "annotation": "VendorVerify",
+          "type": "VendorVerify",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "current_user",
+          "annotation": "User",
+          "type": "User",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "require_permission(Permission.VERIFY_VENDOR)",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "session",
+          "annotation": "Session",
+          "type": "Session",
+          "source": "dependency",
+          "default": null,
+          "required": true,
+          "dependency": "get_session",
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": "VendorRead",
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [
+        "require_permission(Permission.VERIFY_VENDOR)",
+        "get_session"
+      ],
+      "auth": "Roles(Admin)",
+      "auth_reason": "require_permission(Permission.VERIFY_VENDOR)",
+      "raises": [
+        {
+          "status": 404,
+          "detail": null,
+          "line": 62
+        }
+      ],
+      "calls": [
+        "bench.import_repos.multivendor.app.core.dependencies:require_permission",
+        "bench.import_repos.multivendor.app.services.vendor_service:verify_vendor"
+      ],
+      "tables": [
+        "User",
+        "Vendor"
+      ],
+      "owner_uses": [],
+      "body_models": [
+        "VendorVerify"
+      ],
+      "line": 53,
+      "enclosing": null,
+      "returns": "Vendor"
+    }
+  ],
+  "natives": [
+    {
+      "name": "hash_password",
+      "origin": "bench.import_repos.multivendor.app.core.security:hash_password",
+      "kind": "function",
+      "params": [
+        {
+          "name": "plain_password",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [
+            "password"
+          ],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "str",
+      "result_type": "Str",
+      "nullable": false,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": true,
+      "reason": "",
+      "imports": [],
+      "decode_expr": null,
+      "token_param": null,
+      "claim": null,
+      "catches": [],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    },
+    {
+      "name": "create_access_token",
+      "origin": "bench.import_repos.multivendor.app.core.security:create_access_token",
+      "kind": "function",
+      "params": [
+        {
+          "name": "data",
+          "annotation": "dict",
+          "type": null,
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "str",
+      "result_type": "Str",
+      "nullable": false,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": false,
+      "reason": "parameter data: dict is not a scalar",
+      "imports": [],
+      "decode_expr": null,
+      "token_param": null,
+      "claim": null,
+      "catches": [],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    },
+    {
+      "name": "verify_password",
+      "origin": "bench.import_repos.multivendor.app.core.security:verify_password",
+      "kind": "function",
+      "params": [
+        {
+          "name": "plain_password",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        },
+        {
+          "name": "hashed_password",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [
+            "hashed_password"
+          ],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "bool",
+      "result_type": "Bool",
+      "nullable": false,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": true,
+      "reason": "",
+      "imports": [],
+      "decode_expr": null,
+      "token_param": null,
+      "claim": null,
+      "catches": [],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    },
+    {
+      "name": "decode_token",
+      "origin": "bench.import_repos.multivendor.app.core.dependencies:get_current_user",
+      "kind": "token_decoder",
+      "params": [
+        {
+          "name": "token",
+          "annotation": "str",
+          "type": "Str",
+          "bound": null,
+          "bound_imports": [],
+          "passed_columns": [],
+          "keyword_only": false,
+          "positional_only": false
+        }
+      ],
+      "result_annotation": "Optional[int] | None",
+      "result_type": "Int",
+      "nullable": true,
+      "effect": false,
+      "effect_reason": "",
+      "adapter": null,
+      "expressible": true,
+      "reason": "",
+      "imports": [
+        "from bench.import_repos.multivendor.app.core.security import decode_access_token"
+      ],
+      "decode_expr": "decode_access_token(token)",
+      "token_param": "token",
+      "claim": "sub",
+      "catches": [
+        "ValueError"
+      ],
+      "lookup": null,
+      "lookup_unique": "declared",
+      "settings": []
+    }
+  ],
+  "database_url": null,
+  "dialect": null,
+  "exception_handlers": [],
+  "custom_serialization": [],
+  "role_scheme": {
+    "column": "role",
+    "roles": [
+      [
+        "buyer",
+        "BUYER",
+        "Buyer"
+      ],
+      [
+        "vendor",
+        "VENDOR",
+        "Vendor"
+      ],
+      [
+        "admin",
+        "ADMIN",
+        "Admin"
+      ]
+    ],
+    "admin": "Admin",
+    "status": 403,
+    "detail": "You do not have permission to perform this action."
+  }
+}
