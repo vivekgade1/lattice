@@ -9,6 +9,8 @@
         [--max-cost-usd X] [--max-route-cost-usd X]
         [--max-repo-rounds N] [--only KEY,...] [--corpus PATH | --no-corpus]
         [--notes-cache DIR] [--artefacts DIR] [--backend api|cli]
+        [--framework auto|fastapi|...] [--rules-only]
+    python -m lattice.importer review DIR list|show|accept|reject|edit|emit|status ...
 
 ``--app-factory mod:fn`` names a callable building the original app on a SQLite file
 (``fn(db_path) -> app``). ``--no-llm`` runs the deterministic lifters only (no API key);
@@ -27,6 +29,14 @@ medium effort leaves room for the answer, so fewer are cut off).
 ``--backend api|cli`` (default ``api``) picks the transport for all four generators: the
 Anthropic SDK, or the local ``claude -p``
 (:class:`lattice.llm.cli_client.ClaudeCliClient`) -- identical prompts either way.
+
+``--framework`` names the front end (``lattice.importer.frontends.select``); ``auto``
+(the default) takes the first that detects its framework in the package, else FastAPI's.
+``--rules-only`` (Phase 2 plan 2026-10-05, §5) lifts no behaviour and runs no LLM: it
+builds the candidate spec (``lattice.importer.emit_spec``), runs layer R of it on the
+original and writes the report with its ``rules`` section, ``candidate_spec.py`` and
+``proposals.json`` (empty: mining is not wired in yet). ``review DIR ...`` reviews such
+an import (:mod:`lattice.importer.review`).
 """
 
 from __future__ import annotations
@@ -100,6 +110,18 @@ def parser() -> argparse.ArgumentParser:
         "name one (its database URL comes from the environment)",
     )
     p.add_argument(
+        "--framework",
+        default="auto",
+        help="the front end: auto (detect; FastAPI when none does) or a registered name "
+        "(lattice.importer.frontends)",
+    )
+    p.add_argument(
+        "--rules-only",
+        action="store_true",
+        help="the rule layer only: candidate spec, layer R on the original, report, "
+        "candidate_spec.py and proposals.json; no behaviour lifting, no LLM",
+    )
+    p.add_argument(
         "--backend",
         choices=("cli",),
         default="cli",
@@ -110,16 +132,30 @@ def parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
-    """Run the import. ``generators`` (tests): ``(generator, strong_generator,
-    notes_generator)`` used instead of the Claude API."""
-    args = parser().parse_args(argv)
+    """Run the import (``review ...``: review one). ``generators`` (tests):
+    ``(generator, strong_generator, notes_generator)`` used instead of the Claude API."""
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv[:1] == ["review"]:
+        from lattice.importer.review import main as review_main
+
+        return review_main(argv[1:])
+    p = parser()
+    args = p.parse_args(argv)
     logging.getLogger("httpx2").setLevel(logging.WARNING)
     root = args.repo_root.resolve()
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
+    frontend = _frontend(p, args.framework, root, args.package)
     factory = resolve_factory(args.app_factory)
+    if args.rules_only:
+        return _rules_only(args, root, factory, frontend)
     result = lift_repo(
-        root, args.package, factory, hypothesis_bodies=args.hypothesis_bodies, dialect=args.dialect
+        root,
+        args.package,
+        factory,
+        hypothesis_bodies=args.hypothesis_bodies,
+        dialect=args.dialect,
+        frontend=frontend,
     )
     corpus = None
     if not args.no_corpus:
@@ -156,6 +192,52 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
         f"{out}: {cov['routes']} routes, {cov['verified']} verified "
         f"(R0 {cov['R0']}, R1 {cov['R1']}, R2 {cov['R2']}, R3 {cov['R3']}), "
         f"{cov['R4']} islands, {cov['needs-llm']} need the LLM; cost ${close.cost_usd:.4f}"
+    )
+    return 0
+
+
+def _frontend(p: argparse.ArgumentParser, framework: str, root: Path, package: str) -> Any:
+    """The front end ``--framework`` names; ``auto``: the first detecting the package,
+    else None (FastAPI's, the default)."""
+    from lattice.importer.frontends import select
+
+    try:
+        return select(None if framework == "auto" else framework, root, package)
+    except KeyError as err:
+        p.error(str(err.args[0]))
+    except LookupError:
+        return None
+
+
+def _rules_only(args: argparse.Namespace, root: Path, factory: Any, frontend: Any) -> int:
+    """The rule layer only (see the module docstring)."""
+    from lattice.importer.emit_spec import candidate_spec, import_rules, spec_source
+
+    result = lift_repo(root, args.package, factory, only=(), dialect=args.dialect,
+                       hypothesis_bodies=args.hypothesis_bodies, frontend=frontend)  # fmt: skip
+    close = no_llm(result)
+    spec, rules = import_rules(result, spec=candidate_spec(result))
+    verdicts = {item_id: v.verdict for item_id, v in rules.items.items()}
+    framework = result.context.frontend.name if result.context is not None else "fastapi"
+    extra = {
+        "candidate_spec.py": spec_source(spec, status=verdicts, package=args.package),
+        "proposals.json": "[]\n",
+    }
+    out = write_import(
+        close,
+        args.out,
+        repo_root=root,
+        package=args.package,
+        app_factory=args.app_factory,
+        rules={**rules.to_dict(), "framework": framework},
+        extra_files=extra,
+    )
+    s = rules.summary
+    items = ", ".join(f"{n} {v}" for v, n in s["items"].items())
+    print(
+        f"{out}: {len(rules.items)} rule items ({items}); tables verified "
+        f"{s['tables']['verified']}/{s['tables']['total']}, routes verified "
+        f"{s['routes']['verified']}/{s['routes']['total']}"
     )
     return 0
 

@@ -92,8 +92,10 @@ def test_the_report_json_schema(no_llm_run):
     assert set(report) == {
         "schema", "repo", "package", "app_factory", "llm", "method", "model", "coverage",
         "budget", "cost", "routes", "behaviour_changes", "islands", "carve_out_natives",
-        "unclear", "notes_disagreements",
+        "unclear", "notes_disagreements", "rules",
     }  # fmt: skip
+    # the rule layer (schema 2) runs in a --rules-only import; a behaviour import has none
+    assert report["rules"] is None and report["coverage"]["rules"] is None
     assert set(report["coverage"]) >= {
         "routes", "R0", "R1", "R2", "R3", "R4", "needs-llm", "verified", "lattice_pct",
         "carve_out_pct", "island_pct", "verified_pct", "complete", "lines", "ast_nodes",

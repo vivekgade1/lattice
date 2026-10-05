@@ -21,6 +21,14 @@ the island reason and gap, LLM rounds and cost; the coverage (routes, and the
 original's lines and AST nodes, by rung; the tier mix and the carve kinds); behaviour
 changes needing human acceptance; unclear profile decisions; notes-vs-
 behaviour disagreements; the budget; tokens, cost and wall time.
+
+Schema 2 adds ``rules`` (Phase 2 plan 2026-10-05, §1.3 and §5): layer R of the candidate
+spec on the original -- the summary, every rule item (verdict, probes, reason, the
+observed fact when refuted), the table and route verdicts, the probes and notes
+(``lattice.spec.probes.RuleResult.to_dict()``) -- and ``coverage.rules``, its summary.
+Both are None when the rule layer did not run. A ``--rules-only`` import also writes
+``candidate_spec.py`` (the candidate spec module, ``lattice.importer.emit_spec``) and
+``proposals.json`` (the mined proposals, each pending review: ``lattice.importer.review``).
 """
 
 from __future__ import annotations
@@ -39,7 +47,7 @@ from lattice.importer.llm_lift import CloseResult, RouteOutcome
 
 __all__ = ["SCHEMA", "load_report", "render_markdown", "report_data", "write_import"]
 
-SCHEMA = "lattice-import-report/1"
+SCHEMA = "lattice-import-report/2"
 RUNGS = ("R0", "R1", "R2", "R3", "R4", "needs-llm")
 TIERS = ("T0", "T1", "T2", "T3", "island", "needs-llm")
 KINDS = ("procedure", "native")  # R3 carve kinds
@@ -125,7 +133,10 @@ def report_data(
     repo_root: Path | str | None = None,
     package: str | None = None,
     app_factory: str | None = None,
+    rules: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
+    """The report's data; ``rules``: layer R's result (``RuleResult.to_dict()``), None
+    when the rule layer did not run."""
     routes = [_route(close, o) for o in close.outcomes]
     n = len(routes)
     count = {rung: sum(1 for r in routes if r["rung"] == rung) for rung in RUNGS}
@@ -170,6 +181,7 @@ def report_data(
             "ast_nodes": size["ast_nodes"],
             "tiers": {t: sum(1 for r in routes if r["tier"] == t) for t in TIERS},
             "carve_kinds": {k: sum(1 for r in routes if r["carve_kind"] == k) for k in KINDS},
+            "rules": dict(rules["summary"]) if rules is not None else None,
         },
         "budget": close.budget.to_dict() if close.budget is not None else None,
         "cost": {
@@ -199,6 +211,7 @@ def report_data(
             for u in close.result.unclear
         ],  # fmt: skip
         "notes_disagreements": [d.to_dict() for d in close.disagreements],
+        "rules": dict(rules) if rules is not None else None,
     }
 
 
@@ -291,7 +304,29 @@ def render_markdown(data: Mapping[str, Any]) -> str:
                 f"- `{d['route']}` {d['field']}: the notes say {d['notes']}; "
                 f"the code/behaviour says {d['behaviour']}"
             )
+    lines += _rules_markdown(data.get("rules"))
     return "\n".join(lines) + "\n"
+
+
+def _rules_markdown(rules: Mapping[str, Any] | None) -> list[str]:
+    if not rules:
+        return []
+    s = rules["summary"]
+    items = ", ".join(f"{v} {n}" for v, n in s["items"].items())
+    lines = [
+        "",
+        "## Rule layer (layer R on the original)",
+        "",
+        f"- tables verified: {s['tables']['verified']} of {s['tables']['total']}; routes "
+        f"verified: {s['routes']['verified']} of {s['routes']['total']}; items: {items}",
+        "",
+        "| item | verdict | reason |",
+        "|---|---|---|",
+    ]
+    for item_id, v in rules["items"].items():
+        if v["verdict"] != "verified":
+            lines.append(f"| {_cell(item_id)} | {v['verdict']} | {_cell(v['reason'][:200])} |")
+    return lines
 
 
 def natives_source(close: CloseResult) -> str:
@@ -363,14 +398,20 @@ def write_import(
     repo_root: Path | str | None = None,
     package: str | None = None,
     app_factory: str | None = None,
+    rules: Mapping[str, Any] | None = None,
+    extra_files: Mapping[str, str] | None = None,
 ) -> Path:
-    """Write ``lattice_import/`` at ``out`` (atomically; see the module docstring)."""
+    """Write ``lattice_import/`` at ``out`` (atomically; see the module docstring).
+    ``rules``: layer R's result for the report; ``extra_files``: more files (name ->
+    text) to write in the directory (a rules import's ``candidate_spec.py`` and
+    ``proposals.json``)."""
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.parent / f".{out.name}.tmp-{uuid.uuid4().hex[:8]}"
     tmp.mkdir()
     try:
-        data = report_data(close, repo_root=repo_root, package=package, app_factory=app_factory)
+        data = report_data(close, repo_root=repo_root, package=package, app_factory=app_factory,
+                           rules=rules)  # fmt: skip
         _check_consistent(close, data)
         (tmp / "profile.py").write_text(close.profile_source)
         (tmp / "natives.py").write_text(natives_source(close))
@@ -380,6 +421,8 @@ def write_import(
             (routes / f"{router}.lattice.py").write_text(source)
         (tmp / "report.json").write_text(json.dumps(data, indent=2, default=str) + "\n")
         (tmp / "report.md").write_text(render_markdown(data))
+        for name, text in (extra_files or {}).items():
+            (tmp / name).write_text(text)
     except BaseException:
         shutil.rmtree(tmp, ignore_errors=True)
         raise
