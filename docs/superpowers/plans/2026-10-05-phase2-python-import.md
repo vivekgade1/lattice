@@ -483,6 +483,23 @@ with every failure explained in the report.
 
 Then: a results-log entry, and the importer commit is frozen.
 
+### Measurement decisions after the dev-app gate (2026-10-05, before any held-out app is vendored)
+
+The Wave 3 gate left three dev apps short of 90%: justnotes, microblog and flasky. The
+orchestrator decided the following, and the user may override it:
+1. **Tables outside the API.** A table that no route reads or writes, after framework
+   exclusions, is listed in the report as `outside API` and left out of the table
+   denominator. Example: flasky's `roles` and `follows`. Probing cannot verify it, and the
+   rule layer is about API behaviour.
+2. **Importer gaps get fixed, not excused (W3b).** These are:
+   - link tables between users and users, with a composite key (microblog `followers`):
+     each side may own the link;
+   - conditional scope, "the owner, or anyone when `<column>` is true" (justnotes
+     `isPublic`), as `Contract.owner_scope = "owner_or_public(<column>)"`.
+3. **Network-bound routes stay in the route denominator** as `unreachable-by-probe`.
+   Example: justnotes' local LLM calls and microblog's OAuth2. An app below 90% for
+   that reason fails honestly.
+
 ## Wave 4: held-out run
 
 1. A fresh agent vendors H1–H3 (and the reserve, unopened) per W1-C, including
