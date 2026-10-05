@@ -36,7 +36,8 @@ from __future__ import annotations
 import random
 import sqlite3
 import uuid
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -862,8 +863,36 @@ def hypothesis_bodies_for(route: RouteSpec, n: int, seed: int) -> list[dict[str,
         if len(out) < n and body not in out:
             out.append(body)
 
-    collect()
+    with _no_local_constants():
+        collect()
     return out
+
+
+@contextmanager
+def _no_local_constants() -> Iterator[None]:
+    """Hypothesis (>= 6.13x) also draws literals mined from every loaded local module, so
+    its examples change whenever any code in the process changes. Turn that off while
+    drawing bodies: the suite then depends on ``seed`` and the route specs alone."""
+    try:
+        from hypothesis.internal.conjecture import providers
+    except ImportError:  # pragma: no cover -- an older hypothesis has no constant pool
+        yield
+        return
+    original = getattr(providers, "_get_local_constants", None)
+    if original is None:  # pragma: no cover
+        yield
+        return
+    empty = type(providers._local_constants)(
+        integers=type(providers._local_constants.integers)(),
+        floats=type(providers._local_constants.floats)(key=providers.float_to_int),
+        bytes=type(providers._local_constants.bytes)(),
+        strings=type(providers._local_constants.strings)(),
+    )
+    providers._get_local_constants = lambda: empty
+    try:
+        yield
+    finally:
+        providers._get_local_constants = original
 
 
 def generate_suite(

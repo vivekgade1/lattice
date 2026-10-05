@@ -245,3 +245,25 @@ def test_login_is_a_form_login_with_the_seed_credentials():
         "username": s.plan.user("alice").email,
         "password": s.plan.user("alice").password,
     }
+
+
+def test_hypothesis_bodies_do_not_depend_on_other_loaded_code(tmp_path, monkeypatch):
+    import importlib
+    import sys
+
+    from lattice.importer.suite import hypothesis_bodies_for
+
+    route = ROUTES[2]  # create_note: str, str and int fields
+    before = hypothesis_bodies_for(route, 60, 31)
+    # a newly loaded local module full of literals hypothesis would otherwise mine
+    (tmp_path / "noise_constants.py").write_text(
+        "WORDS = " + repr([f"noise-{i}" for i in range(200)]) + "\nN = (12345, 67890, -4242)\n"
+    )
+    monkeypatch.syspath_prepend(str(tmp_path))
+    importlib.import_module("noise_constants")
+    try:
+        after = hypothesis_bodies_for(route, 60, 31)
+        assert not [b for b in after if "noise-" in repr(b)]
+        assert after == before
+    finally:
+        sys.modules.pop("noise_constants", None)
