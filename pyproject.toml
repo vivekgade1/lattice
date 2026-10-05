@@ -31,6 +31,36 @@ template = [
 import_repos = [
     "python-jose>=3.5.0",
 ]
+# Phase 2 dev apps (bench/import_repos/{snippets,recipes,microblog,flasky}, plan
+# docs/superpowers/plans/2026-10-05-phase2-python-import.md W1-C) plus the libraries the
+# plan lists for the held-out apps (simplejwt, django-filter, flask-jwt-extended).
+# pygments: snippets; pillow: recipes' ImageField; flask-login, markdown, bleach: flasky;
+# alchemical, flask-marshmallow, marshmallow-sqlalchemy, flask-cors, flask-mail,
+# requests: microblog. marshmallow < 4 (and so flask-marshmallow < 1.5): marshmallow 4
+# passes data_key to @validates methods, which microblog's do not accept.
+phase2_apps = [
+    "alchemical>=1.0.3",
+    "apifairy>=1.5.1",
+    "bleach>=6.4.0",
+    "django>=6.1.1",
+    "django-filter>=26.2",
+    "djangorestframework>=3.18.1",
+    "djangorestframework-simplejwt>=5.5.1",
+    "flask>=3.1.3",
+    "flask-cors>=6.0.5",
+    "flask-httpauth>=4.8.1",
+    "flask-jwt-extended>=4.7.4",
+    "flask-login>=0.6.3",
+    "flask-mail>=0.10.0",
+    "flask-marshmallow>=1.3,<1.5",
+    "flask-sqlalchemy>=3.1.1",
+    "markdown>=3.11",
+    "marshmallow>=3.26,<4",
+    "marshmallow-sqlalchemy>=1.5.0",
+    "pillow>=12.3.0",
+    "pygments>=2.21.0",
+    "requests>=2.34.2",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -64,4 +94,4 @@ extend-exclude = [
 select = ["E", "F", "I", "B", "UP"]
 
 [tool.uv]
-default-groups = ["dev", "template", "import_repos"]
+default-groups = ["dev", "template", "import_repos", "phase2_apps"]
