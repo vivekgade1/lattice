@@ -60,8 +60,9 @@ EXPECTED_EXCLUSIONS = {
 }
 # the programs gated for Go by design (L892, docs/lattice-language-rules.md decision log):
 # exact role sets (auth=Roles(...) / Authenticated, RoleColumn(values=...)), nested
-# response models (Nested, W1-B)
-GATED_EXCLUSIONS = {"rolesets", "nested"}
+# response models (Nested, W1-B), non-FastAPI error conventions (error_body "drf" /
+# "json_key(...)", validation_status=400; W1-D)
+GATED_EXCLUSIONS = {"rolesets", "nested", "errors_drf", "errors_json_key", "errors_400"}
 GO_PIDS = sorted(set(PROGRAMS) - EXPECTED_EXCLUSIONS - GATED_EXCLUSIONS)
 
 

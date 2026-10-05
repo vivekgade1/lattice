@@ -57,6 +57,7 @@ from lattice.gogen.t2 import go_float, go_regex, go_string
 from lattice.gogen.types import GoTypes
 from lattice.runtime import LatticeInternalError
 from lattice.t2ir import nodes as n
+from lattice.targets import portable_error_style
 
 __all__ = ["emit_go_endpoints"]
 
@@ -714,6 +715,12 @@ def _settings(plans: Sequence[EndpointPlan]) -> str:
 
     if not plans:
         return "rt.Settings{}"
+    if not portable_error_style(one("error_body"), one("validation_status")):
+        # gated by the checker (L892, Target.error_styles): reaching one is internal
+        raise LatticeInternalError(
+            f"error_body {one('error_body')!r} / validation_status "
+            f"{one('validation_status')} is not available on Go (L892)"
+        )
     active = one("active_column")
     fields = [
         f"ErrorBody: {go_string(one('error_body'))}",

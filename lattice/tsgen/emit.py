@@ -8,7 +8,7 @@ from collections.abc import Sequence
 
 from lattice.api.ir import EndpointPlan, ErrorSpec, WriteStep
 from lattice.catalog import API_ERRORS, LIST_KIND
-from lattice.targets import TS_REFUSAL
+from lattice.targets import CLIENT_TARGETS, TS_REFUSAL, portable_error_style
 from lattice.tsgen.regex import Untranslatable, fullmatch_source
 from lattice.tsgen.specs import BoundError, plan_specs, ts_checks
 from lattice.typesys import Scalar, Schema
@@ -354,7 +354,24 @@ export type { CallOpts, FieldError, Result, Unexpected, ValidationError } from "
 """
 
 
+def check_error_style(plans: Sequence[EndpointPlan]) -> None:
+    """L893 for a non-FastAPI error convention (W1-D, `ClientTarget.error_styles`): the
+    client decodes only the "lattice" / "fastapi" bodies, with 422 validation."""
+    if CLIENT_TARGETS["ts"].error_styles:
+        return
+    for plan in plans:
+        if not portable_error_style(plan.error_body, plan.validation_status):
+            raise TsGenRefusal(
+                plan,
+                f"the profile's error convention (error_body={plan.error_body!r}, "
+                f"validation_status={plan.validation_status}) is not available on the "
+                'TypeScript client yet; use error_body="lattice" or "fastapi" with '
+                "validation_status=422, or compile without --target ts",
+            )
+
+
 def api_ts(plans: Sequence[EndpointPlan]) -> str:
+    check_error_style(plans)
     check_names(plans)
     models: dict[str, str] = {}
     bodies = [_endpoint(p, models) for p in plans]

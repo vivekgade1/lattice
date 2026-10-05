@@ -81,6 +81,20 @@ class Target:
     # Nested response models (W1-B, `lattice.profile.Nested`): gated (L892) where the
     # target's runtime does not answer child rows yet
     nested_responses: bool = True
+    # Non-FastAPI error conventions (W1-D): ApiProfile.error_body "drf" /
+    # "json_key(<key>)" and a validation_status other than 422: gated (L892) where the
+    # target's runtime answers only the "lattice" / "fastapi" bodies at 422
+    error_styles: bool = True
+
+
+# the error conventions every target carries (`Target.error_styles` gates the others)
+PORTABLE_ERROR_BODIES = ("lattice", "fastapi")
+PORTABLE_VALIDATION_STATUS = 422
+
+
+def portable_error_style(error_body: str, validation_status: int) -> bool:
+    """True for an error convention every target answers (no `error_styles` needed)."""
+    return error_body in PORTABLE_ERROR_BODIES and validation_status == PORTABLE_VALIDATION_STATUS
 
 
 def _go() -> Target:
@@ -92,6 +106,7 @@ def _go() -> Target:
         t2_types=frozenset(GO_T2_TYPES),
         role_sets=False,
         nested_responses=False,
+        error_styles=False,
     )
 
 
@@ -154,8 +169,11 @@ class ClientTarget:
 
     name: str
     param_features: frozenset[str]
+    # Non-FastAPI error conventions (W1-D, `Target.error_styles`): refused (L893) where
+    # the client decodes only the "lattice" / "fastapi" bodies and 422 validation
+    error_styles: bool = True
 
 
 CLIENT_TARGETS: Mapping[str, ClientTarget] = MappingProxyType(
-    {"ts": ClientTarget("ts", frozenset(PARAM_FEATURES))}
+    {"ts": ClientTarget("ts", frozenset(PARAM_FEATURES), error_styles=False)}
 )

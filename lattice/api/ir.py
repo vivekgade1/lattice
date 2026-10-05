@@ -321,6 +321,8 @@ class EndpointPlan:
     inactive_detail: str = "Inactive user"
     # ApiProfile.error_body and the automatic 401/403 detail texts.
     error_body: str = "lattice"
+    # ApiProfile.validation_status: the status of a validation error (W1-D).
+    validation_status: int = 422
     unauthorized_detail: str | None = None
     forbidden_detail: str | None = None
     # NativeToken.invalid / .unknown: (status, detail) for a token the auth native
@@ -1622,6 +1624,7 @@ class _Endpoint:
             inactive_status=getattr(self.api, "inactive_status", 400),
             inactive_detail=getattr(self.api, "inactive_detail", "Inactive user"),
             error_body=getattr(self.api, "error_body", "lattice"),
+            validation_status=getattr(self.api, "validation_status", 422),
             unauthorized_detail=getattr(self.api, "unauthorized_detail", None),
             forbidden_detail=getattr(self.api, "forbidden_detail", None),
             token_invalid=token_invalid,

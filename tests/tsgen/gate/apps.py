@@ -116,7 +116,12 @@ def app(name: str) -> App:
     return App(name, plans, reqs)
 
 
-APP_NAMES = sorted(PROGRAMS) + ["template"] + sorted(GATE_PROGRAMS)
+# Registry programs the TS client is gated for (L893, `ClientTarget.error_styles`;
+# docs/lattice-language-rules.md decision log): non-FastAPI error conventions (W1-D). The
+# client refuses them (tests/api/test_error_styles.py), so no client exists to run.
+TS_GATED = frozenset({"errors_drf", "errors_json_key", "errors_400"})
+TS_PROGRAMS = sorted(set(PROGRAMS) - TS_GATED)
+APP_NAMES = TS_PROGRAMS + ["template"] + sorted(GATE_PROGRAMS)
 
 
 # ---- L3: the generated FastAPI app over real HTTP -------------------------------------------
@@ -139,7 +144,7 @@ def _admin_tokens() -> dict[str, str]:
         "effects": effects.TOKENS,
         "hardening": hardening.TOKENS,
     }
-    out = {name: modules.get(name, DATASET_TOKENS)["admin"] for name in PROGRAMS}
+    out = {name: modules.get(name, DATASET_TOKENS)["admin"] for name in TS_PROGRAMS}
     out |= {name: DATASET_TOKENS["admin"] for name in GATE_PROGRAMS}
     # solo*: NoRoles (no admin role exists); alice is an active user every
     # Customer endpoint admits

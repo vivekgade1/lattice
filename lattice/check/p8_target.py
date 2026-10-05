@@ -8,6 +8,9 @@ code target cannot run with v1.1 semantics.
   on a target whose runtime does not check exact role sets yet (``Target.role_sets``).
 * L892 — also an endpoint whose response model has a Nested field (W1-B) on a target
   whose runtime does not answer nested child rows yet (``Target.nested_responses``).
+* L892 — also a profile whose error convention is not FastAPI's or Lattice's (W1-D:
+  ``error_body="drf"`` / ``"json_key(<key>)"``, ``validation_status=400``) on a target
+  whose runtime answers only those yet (``Target.error_styles``).
 * L892 — a T2 construct the target does not implement yet: a call (builtin, method or
   stdlib function) outside the target's `t2_calls`, a value of a kind outside its
   `t2_types`, `str()` / an f-string field of a container, the regular expressions Go
@@ -31,7 +34,7 @@ from lattice.diagnostics import Span
 from lattice.gogen.regex import regex_problem
 from lattice.gogen.types import is_container, kinds
 from lattice.profile import NativeToken, RoleColumn, nested_fields
-from lattice.targets import Target, supports_call, supports_type
+from lattice.targets import Target, portable_error_style, supports_call, supports_type
 
 _HINT = "rewrite with a supported construct, or compile for target 'python'"
 
@@ -77,6 +80,8 @@ def run(module: ast.Module, ctx: CheckContext, t2: T2Program | None, target: Tar
         _role_sets(module, ctx, target)
     if api is not None and not target.nested_responses:
         _nested_responses(module, ctx, target)
+    if api is not None and not target.error_styles:
+        _error_styles(module, ctx, target)
     if t2 is not None:
         for proc in t2.procedures.values():
             for node in ast.walk(proc.node):
@@ -153,6 +158,26 @@ def _nested_responses(module: ast.Module, ctx: CheckContext, target: Target) -> 
                 "answer the child rows from their own endpoint, or compile for target "
                 "'python'",
             )
+
+
+def _error_styles(module: ast.Module, ctx: CheckContext, target: Target) -> None:
+    """L892 for a non-FastAPI error convention (W1-D: error_body "drf" /
+    "json_key(<key>)", validation_status other than 422) on a target whose runtime
+    answers only the "lattice" / "fastapi" bodies at 422."""
+    api = ctx.profile.api
+    assert api is not None
+    style = getattr(api, "error_body", "lattice")
+    status = getattr(api, "validation_status", 422)
+    if portable_error_style(style, status):
+        return
+    ctx.error(
+        "L892",
+        module.body[0] if module.body else Span(1, 1),
+        f"the profile's error convention (error_body={style!r}, "
+        f"validation_status={status}) is not available on target '{target.name}' yet",
+        'use error_body="lattice" or "fastapi" with validation_status=422, or compile for '
+        "target 'python'",
+    )
 
 
 def _constructs(proc: CheckedProcedure, t2: T2Program, ctx: CheckContext, target: Target) -> None:

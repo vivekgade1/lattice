@@ -85,7 +85,7 @@ def _num(v: float) -> str:
 def _validation(api: ApiProfile, entries: list[dict[str, Any]]) -> Any:
     from lattice.api.runtime import error_body
 
-    return error_body(api.error_body, 422, "validation", entries)
+    return error_body(api.error_body, api.validation_status, "validation", entries)
 
 
 def deviations_for(
@@ -130,7 +130,11 @@ def deviations_for(
                 first = first or "bounded-page-size"
         if entries and first is not None:
             out[c.name] = Deviation(
-                first, "policy", PAGE_REASON.format(bounds=bounds), 422, _validation(api, entries)
+                first,
+                "policy",
+                PAGE_REASON.format(bounds=bounds),
+                api.validation_status,
+                _validation(api, entries),
             )
             continue
         body = c.json if isinstance(c.json, dict) else {}
@@ -141,7 +145,11 @@ def deviations_for(
         ]
         if null:
             out[c.name] = Deviation(
-                "null-into-required-column", "policy", NULL_REASON, 422, _validation(api, null)
+                "null-into-required-column",
+                "policy",
+                NULL_REASON,
+                api.validation_status,
+                _validation(api, null),
             )
     return out
 

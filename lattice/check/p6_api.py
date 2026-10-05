@@ -60,7 +60,7 @@ from lattice.check.exprs import did_you_mean
 from lattice.check.fix_hints import PROFILE_FILE, owner_candidate
 from lattice.check.p4_types import cols_read, is_owner_is
 from lattice.diagnostics import Fix, fix_of
-from lattice.profile import AdminFlag, NoRoles, flat_fields, nested_fields
+from lattice.profile import AdminFlag, NoRoles, error_style_problem, flat_fields, nested_fields
 from lattice.typesys import Scalar, TableT, generated_key, uuid_key, via_parent_key
 
 _WRITES = ("insert", "update", "delete")
@@ -136,6 +136,7 @@ class _Api:
                 self.module_consts.setdefault(stmt.targets[0].id, literal_value(stmt.value))
 
     def run(self) -> dict[str, EndpointInfo]:
+        self._error_style()
         self._unset_placement()
         self._sent_in_steps()
         infos: dict[str, EndpointInfo] = {}
@@ -159,6 +160,18 @@ class _Api:
             checked.check()
             infos.setdefault(fn.name, replace(info, page_total=checked.page_total()))
         return infos
+
+    def _error_style(self) -> None:
+        """L836: the profile's error convention (`error_body`, `validation_status`, W1-D)
+        is one the runtime and the generated app answer. ApiProfile refuses any other at
+        construction; this reports one that reaches the checker unvalidated (a profile
+        built another way, e.g. unpickled), at the program's first statement."""
+        problem = error_style_problem(
+            getattr(self.api, "error_body", "lattice"),
+            getattr(self.api, "validation_status", 422),
+        )
+        if problem is not None and self.module.body:
+            self.ctx.error("L836", self.module.body[0], *problem)
 
     def _unset_placement(self) -> None:
         """L404: `UNSET` is only an endpoint parameter's default (`p: Str = UNSET`)."""

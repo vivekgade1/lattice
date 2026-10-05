@@ -60,6 +60,7 @@ from lattice.llm.api_prompt import LATTICE_EXAMPLES
 from tests.api import (
     edges,
     effects,
+    errstyles,
     gaps,
     hardening,
     loops,
@@ -1205,6 +1206,47 @@ PROGRAMS["nested"] = (
             NESTED_CASES + _probes(NESTED_CASES)),
 )  # fmt: skip
 
+# ---- error conventions (tests/api/errstyles.py, W1-D): one program on three profiles --
+# error_body="drf" / "json_key(message)" / "lattice", each with validation_status=400.
+# Every error kind (401, 403, 404 declared and routed, 405, 400 declared, 409, validation
+# of the path, the query and the body), plus the probes' validation of every input rule.
+_ES = errstyles
+_ES_NOTES = _ES.NOTES_AFTER
+
+
+def _escase(name: str, method: str, path: str, who: str | None, **kw: Any) -> HttpCase:
+    return _case(name, method, path, None if who is None else _ES.TOKENS[who], **kw)
+
+
+ERRSTYLE_CASES: tuple[HttpCase, ...] = (
+    _escase("read", "GET", "/notes/1", "ann"),
+    _escase("read other's", "GET", "/notes/2", "ann", status=404),
+    _escase("read text id", "GET", "/notes/abc", "ann", status=400),
+    _escase("read no token", "GET", "/notes/1", None, status=401),
+    _escase("list", "GET", "/notes", "ann", query={"limit": 1, "offset": 1}),
+    _escase("list bad", "GET", "/notes", "ann", query={"limit": 0, "offset": -1}, status=400),
+    _escase("create", "POST", "/notes", "ann", json={"title": "new", "rank": 4},
+            status=201, after_sql=_ES_NOTES),  # fmt: skip
+    _escase("create refused", "POST", "/notes", "ann", json={"title": "nope"}, status=400,
+            after_sql=_ES_NOTES),  # fmt: skip
+    _escase("create taken", "POST", "/notes", "ann", json={"title": "bob's"}, status=409,
+            after_sql=_ES_NOTES),  # fmt: skip
+    _escase("create invalid", "POST", "/notes", "ann", json={"title": "", "rank": 99},
+            status=400, after_sql=_ES_NOTES),  # fmt: skip
+    _escase("create missing", "POST", "/notes", "ann", json={}, status=400),
+    _escase("create list body", "POST", "/notes", "ann", json=[1], status=400),
+    _escase("delete customer", "DELETE", "/notes/1", "ann", status=403, after_sql=_ES_NOTES),
+    _escase("delete", "DELETE", "/notes/3", "ada", status=204, after_sql=_ES_NOTES),
+    _escase("delete missing", "DELETE", "/notes/9", "ada", status=404),
+)
+ERRSTYLE_IDS = {"errors_drf": "drf", "errors_json_key": "json_key", "errors_400": "lattice_400"}
+for _pid, _style in ERRSTYLE_IDS.items():
+    PROGRAMS[_pid] = (
+        _ES.PROGRAM,
+        ApiTask(_pid, "control", f"error conventions ({_style})",
+                ERRSTYLE_CASES + _probes(ERRSTYLE_CASES)),
+    )  # fmt: skip
+
 # ---- N1b (tests/api/n1b.py): named column expressions, row values in insert/update/derive,
 # when(..., otherwise=None) -- on the gap-features profile and database
 _N1B = n1b
@@ -1327,6 +1369,9 @@ EXTRA_IDS = [
     "t2go",
     "edges",
     "nested",
+    "errors_drf",
+    "errors_json_key",
+    "errors_400",
 ]
 
 
@@ -1362,6 +1407,10 @@ SETUPS = {
     "n1b": Setup(n1b.PROFILE, n1b.build_db, n1b.NATIVES, n1b.NATIVES_FILE),
     "rolesets": Setup(rolesets.PROFILE, rolesets.build_db),
     "nested": Setup(nested.PROFILE, nested.build_db),
+    **{
+        pid: Setup(errstyles.PROFILES[style], errstyles.build_db)
+        for pid, style in ERRSTYLE_IDS.items()
+    },
     "t2go": Setup(_T2.GO_PROFILE, _T2.build_db),
     "edges": Setup(_ED.PROFILE, _ED.build_db),
 }
@@ -2289,3 +2338,37 @@ def test_the_nested_program_answers_child_rows(differential_runs):
                           {"url": "lamp-side.png", "primary": False}]  # fmt: skip
         assert body["product no images"]["images"] == []
         assert "cost" not in json.dumps(body)
+
+
+@pytest.mark.parametrize("pid", sorted(ERRSTYLE_IDS))
+def test_the_error_style_programs_answer_in_their_style(pid: str, differential_runs):
+    """W1-D: errors_drf / errors_json_key / errors_400 answer every case with the
+    expected status (400 validation) on both backends (compared above), in their body
+    shape."""
+    rt_results, rt_captured, gen_results, gen_captured = differential_runs[pid]
+    want = {c.name: c.expect_status for c in ERRSTYLE_CASES}
+    for results in (rt_results, gen_results):
+        got = {c.name: c.status for c in results.cases if c.name in want}
+        assert got == want
+    style = ERRSTYLE_IDS[pid]
+    missing = [{"loc": ["body", "title"], "msg": "field required"}]
+    for captured in (rt_captured, gen_captured):
+        body = {c["name"]: c["body"] for c in captured}
+        if style == "drf":
+            assert body["read other's"] == {"detail": "Note not found"}
+            assert body["read no token"] == {"detail": errstyles.UNAUTHORIZED}
+            assert body["delete customer"] == {"detail": "Forbidden"}
+            assert body["create missing"] == {"title": ["field required"]}
+            assert list(body["create invalid"]) == ["title", "rank"]
+            assert list(body["list bad"]) == ["limit", "offset"]
+            assert body["create list body"] == {
+                "non_field_errors": ["the body must be a JSON object"]
+            }
+        elif style == "json_key":
+            assert body["read other's"] == {"message": "Note not found"}
+            assert body["read no token"] == {"message": "Unauthorized"}
+            assert body["create taken"] == {"message": "Title taken"}
+            assert body["create missing"] == {"message": missing}
+        else:
+            assert body["read other's"] == {"error": "not_found", "detail": "Note not found"}
+            assert body["create missing"] == {"error": "validation", "detail": missing}

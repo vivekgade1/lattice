@@ -89,7 +89,7 @@ from lattice.catalog import (
 )
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, UNSET, ParamSpec, pattern_problem
-from lattice.profile import Profile
+from lattice.profile import Profile, json_key_of
 from lattice.runtime import LatticeInternalError, LatticeRuntimeError
 from lattice.t2 import support as t2s
 from lattice.typesys import Scalar, Schema
@@ -132,13 +132,33 @@ class _ErrorResponse(Exception):
 def error_body(style: str, status: int, code: str, detail: object = None) -> dict[str, object]:
     """The JSON body of an error response (`ApiProfile.error_body`): "lattice" is
     {"error": code} plus "detail" when there is one; "fastapi" is FastAPI's
-    {"detail": ...}, the HTTP status phrase when there is no detail."""
-    if style == "fastapi":
+    {"detail": ...}, the HTTP status phrase when there is no detail. "drf" is "fastapi",
+    except a validation error: {field: [msg, ...]} in parameter order, a problem without
+    a field (the body is not an object) under "non_field_errors". "json_key(<key>)" is
+    "fastapi" under <key>."""
+    if style == "drf" and code == "validation" and isinstance(detail, list):
+        return drf_fields(detail)
+    if style in ("fastapi", "drf"):
         return {"detail": HTTPStatus(status).phrase if detail is None else detail}
+    key = json_key_of(style)
+    if key is not None:
+        return {key: HTTPStatus(status).phrase if detail is None else detail}
     body: dict[str, object] = {"error": code}
     if detail is not None:
         body["detail"] = detail
     return body
+
+
+def drf_fields(detail: list[Any]) -> dict[str, object]:
+    """A validation detail ([{"loc": [source, name], "msg": ...}, ...]) as Django REST
+    framework's {name: [msg, ...]}; an entry without a name ({"loc": ["body"]}) goes
+    under "non_field_errors"."""
+    fields: dict[str, list[object]] = {}
+    for entry in detail:
+        loc = entry["loc"]
+        key = loc[-1] if len(loc) > 1 else "non_field_errors"
+        fields.setdefault(key, []).append(entry["msg"])
+    return dict(fields)
 
 
 def _json_error(style: str, status: int, code: str, detail: object = None) -> JSONResponse:
@@ -325,7 +345,7 @@ def _parse_params(
                 parsed = None
         if not isinstance(parsed, dict):
             detail.append({"loc": ["body"], "msg": "the body must be a JSON object"})
-            raise _ErrorResponse(422, "validation", detail)
+            raise _ErrorResponse(plan.validation_status, "validation", detail)
         data = parsed
     for spec in plan.params:
         if spec.source == "user":
@@ -354,7 +374,7 @@ def _parse_params(
             continue
         values[spec.name] = value
     if detail:
-        raise _ErrorResponse(422, "validation", detail)
+        raise _ErrorResponse(plan.validation_status, "validation", detail)
     return values
 
 

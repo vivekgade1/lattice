@@ -26,7 +26,7 @@ from lattice.tsgen.emit import (
 from lattice.tsgen.pyref import answer, case, prelude, to_param
 from lattice.tsgen.specs import plan_specs, spec_dict
 from tests.api.test_codegen_differential import PROGRAMS, setup_of
-from tests.tsgen.gate.apps import APP_NAMES, app
+from tests.tsgen.gate.apps import APP_NAMES, TS_PROGRAMS, app
 from tests.tsgen.node import node_json
 
 
@@ -43,7 +43,7 @@ def write(tmp: Path, plans: tuple[EndpointPlan, ...]) -> Path:
     return tmp
 
 
-@pytest.mark.parametrize("pid", sorted(PROGRAMS))
+@pytest.mark.parametrize("pid", TS_PROGRAMS)
 def test_emits_every_endpoint(pid: str) -> None:
     plans = plans_of(pid)
     api = generate_ts(plans)["api.ts"]
@@ -192,7 +192,7 @@ console.log(JSON.stringify(out));
 
 def test_every_program_api_ts_imports(tmp_path: Path) -> None:
     dirs, names = {}, {}
-    for pid in sorted(PROGRAMS):
+    for pid in TS_PROGRAMS:
         plans = plans_of(pid)
         (tmp_path / pid).mkdir()
         write(tmp_path / pid, plans)

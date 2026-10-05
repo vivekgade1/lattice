@@ -56,7 +56,9 @@ The profile-wide Part B settings (sub-project 1b) become prelude constants as we
 automatic 401/403 texts), `DATETIME_WIRE` (how responses spell a DateTime), and
 `ACTIVE_COLUMN`/`INACTIVE_STATUS`/`INACTIVE_DETAIL` (the active check in auth),
 `TOKEN_INVALID`/`TOKEN_UNKNOWN`/`TOKEN_DECODE` (NativeToken's answers to a token naming
-no caller). A write
+no caller). The "drf" and "json_key(<key>)" styles and a validation status other than
+422 (W1-D) replace the prelude's `error_body` and its validation raises (`_error_style`);
+the default styles leave the prelude as it is. A write
 with `unique_or=Conflict(...)` runs through `write(...)`, which answers the declared 409
 on a UNIQUE violation. Every error body, the precedence (401, then the inactive status,
 then 403, then 422 validation) and the Admin rule are the runtime's.
@@ -110,7 +112,7 @@ from lattice.api.sql import IS_ADMIN, NOW, USER_ID, SqlQuery, caller_bind, sent_
 from lattice.catalog import EMAIL_MAX_LEN, LIST_KIND, T2_EFFECT_PREFIX, USER_PARAM
 from lattice.check import CheckResult, check_source
 from lattice.check.api_info import MISSING, UNSET, ParamSpec
-from lattice.profile import NativeSig, Profile
+from lattice.profile import NativeSig, Profile, json_key_of
 from lattice.runtime import LatticeInternalError
 from lattice.t2 import support as t2_support
 from lattice.typesys import Scalar
@@ -1934,6 +1936,60 @@ _PROFILE_CONSTANTS = (
 )
 
 
+# The prelude's error_body for the "lattice" / "fastapi" styles; the other styles (W1-D)
+# replace it with their own (`_error_style`), so a default app's source is unchanged.
+_ERROR_BODY_DEF = """\
+def error_body(status: int, code: str, detail: object = None) -> dict[str, object]:
+    if ERROR_BODY == "fastapi":
+        return {"detail": HTTPStatus(status).phrase if detail is None else detail}
+    body: dict[str, object] = {"error": code}
+    if detail is not None:
+        body["detail"] = detail
+    return body
+"""
+# "drf": {"detail": ...}; a validation error {field: [msg, ...]} (runtime.drf_fields)
+_DRF_ERROR_BODY_DEF = """\
+def error_body(status: int, code: str, detail: object = None) -> dict[str, object]:
+    # Django REST framework's bodies (ERROR_BODY "drf"): {"detail": ...}, and for a
+    # validation error {field: [msg, ...]} ("non_field_errors": a problem of no field)
+    if code == "validation" and isinstance(detail, list):
+        fields: dict[str, list[object]] = {}
+        for entry in detail:
+            loc = entry["loc"]
+            key = loc[-1] if len(loc) > 1 else "non_field_errors"
+            fields.setdefault(key, []).append(entry["msg"])
+        return dict(fields)
+    return {"detail": HTTPStatus(status).phrase if detail is None else detail}
+"""
+# "json_key(<key>)": {<key>: ...}
+_KEY_ERROR_BODY_DEF = """\
+def error_body(status: int, code: str, detail: object = None) -> dict[str, object]:
+    # every error under one key (ERROR_BODY "json_key(<key>)")
+    return {%s: HTTPStatus(status).phrase if detail is None else detail}
+"""
+# the prelude's validation errors (parse_params): the status is ApiProfile.validation_status
+_VALIDATION_RAISE = 'raise ErrorResponse(422, "validation", detail)'
+
+
+def _error_style(prelude: str, style: str, validation_status: int) -> str:
+    """The prelude answering errors in `style` with validation errors at
+    `validation_status` (unchanged for the "lattice"/"fastapi" styles at 422)."""
+    if validation_status != 422:
+        if prelude.count(_VALIDATION_RAISE) != 2:
+            raise LatticeInternalError("the prelude's validation errors changed")
+        new = f'raise ErrorResponse({int(validation_status)}, "validation", detail)'
+        prelude = prelude.replace(_VALIDATION_RAISE, new)
+    key = json_key_of(style)
+    if style == "drf" or key is not None:
+        if prelude.count(_ERROR_BODY_DEF) != 1:
+            raise LatticeInternalError("the prelude's error_body changed")
+        new = _DRF_ERROR_BODY_DEF if key is None else _KEY_ERROR_BODY_DEF % _py_str(key)
+        prelude = prelude.replace(_ERROR_BODY_DEF, new)
+    elif style not in ("lattice", "fastapi"):
+        raise LatticeInternalError(f"unknown error body style {style!r}")
+    return prelude
+
+
 def _set_constant(prelude: str, name: str, value: str) -> str:
     """The prelude with module constant `name` (one `NAME[: type] = ...` line) set."""
     pattern = re.compile(rf"^({re.escape(name)}(?:: [^=]+)? = ).*$", re.MULTILINE)
@@ -2027,6 +2083,11 @@ def generate_fastapi(
             raise LatticeInternalError(f"plans disagree on {field}: {sorted(map(repr, values))}")
         if values:
             prelude = _set_constant(prelude, name, _literal(values.pop()))
+    statuses = {p.validation_status for p in plans}
+    if len(statuses) > 1:
+        raise LatticeInternalError(f"plans disagree on validation_status: {sorted(statuses)}")
+    if plans:
+        prelude = _error_style(prelude, plans[0].error_body, statuses.pop())
     decoders = {
         decode_sql(p, SQLITE)
         for p in plans

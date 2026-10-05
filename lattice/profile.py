@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import difflib
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
@@ -13,8 +15,13 @@ PAGE_SHAPE_KEYS = frozenset({"items", "total", "limit", "offset"})
 # Stored spellings of Uuid / DateTime values (lattice.api.backend implements them).
 UUID_STORAGES = ("canonical", "hex32")
 DATETIME_STORAGES = ("iso_z", "sql_space")
-# ApiProfile.error_body: the JSON shape of every error response.
-ERROR_BODIES = ("lattice", "fastapi")
+# ApiProfile.error_body: the JSON shape of every error response -- one of ERROR_BODIES,
+# or "json_key(<key>)" (JSON_KEY_STYLE): every error under <key>, an identifier.
+ERROR_BODIES = ("lattice", "fastapi", "drf")
+JSON_KEY_STYLE = re.compile(r"json_key\(([A-Za-z_][A-Za-z0-9_]*)\)")
+# ApiProfile.validation_status: the status of a validation error (FastAPI 422; Django
+# REST framework and Flask apps 400).
+VALIDATION_STATUSES = (400, 422)
 # ApiProfile.datetime_wire: how DateTime values are spelled in responses.
 DATETIME_WIRES = ("iso_z", "naive")
 # ApiProfile.inactive_status: the statuses an inactive caller may be answered with.
@@ -26,6 +33,50 @@ INACTIVE_STATUSES = (400, 401, 403)
 NULL_ORDERS = ("last", "smallest")
 # ApiProfile.settings: the scalar types a setting may have (a NativeContext value).
 SETTING_SCALARS = (Scalar.STR, Scalar.INT, Scalar.FLOAT, Scalar.BOOL)
+
+
+def json_key_of(style: str) -> str | None:
+    """The key of a "json_key(<key>)" error body style, else None."""
+    m = JSON_KEY_STYLE.fullmatch(style) if isinstance(style, str) else None
+    return m.group(1) if m else None
+
+
+_STYLES_HINT = (
+    'write error_body="lattice" (the default), error_body="fastapi", error_body="drf" or '
+    'error_body="json_key(error)"'
+)
+_STATUS_HINT = (
+    "write validation_status=400 (Django REST framework, Flask) or validation_status=422 "
+    "(FastAPI, the default)"
+)
+
+
+def error_style_problem(error_body: object, validation_status: object) -> tuple[str, str] | None:
+    """What is wrong with an error convention (`ApiProfile.error_body`,
+    `ApiProfile.validation_status`) as (message, exact fix hint), else None. The profile
+    refuses it at construction; the checker reports it as L836."""
+    if not isinstance(error_body, str):
+        return f"ApiProfile.error_body must be a text, not {error_body!r}", _STYLES_HINT
+    if error_body not in ERROR_BODIES and json_key_of(error_body) is None:
+        if error_body.startswith("json_key"):
+            inner = error_body[len("json_key") :].strip().removeprefix("(").removesuffix(")")
+            key = re.sub(r"\W", "_", inner.strip(), flags=re.ASCII) or "error"
+            key = "_" + key if key[0].isdigit() else key
+            return (
+                f"ApiProfile.error_body {error_body!r} is not json_key(<key>) with an "
+                "identifier key",
+                f'write error_body="json_key({key})"',
+            )
+        close = difflib.get_close_matches(error_body.lower(), ERROR_BODIES, n=1)
+        return (
+            "ApiProfile.error_body must be 'lattice', 'fastapi', 'drf' or 'json_key(<key>)', "
+            f"not {error_body!r}",
+            f'write error_body="{close[0]}"' if close else _STYLES_HINT,
+        )
+    status = validation_status
+    if isinstance(status, bool) or not isinstance(status, int) or status not in VALIDATION_STATUSES:
+        return f"ApiProfile.validation_status must be 400 or 422, not {status!r}", _STATUS_HINT
+    return None
 
 
 def _default_page_shape() -> Mapping[str, str]:
@@ -235,7 +286,10 @@ class ApiProfile:
     # B2: the error body shape (ERROR_BODIES). "lattice": {"error": code, "detail": ...}
     # (the automatic 401/403 carry a detail only when one is configured below);
     # "fastapi": FastAPI's {"detail": ...} for every error, the automatic 401/403
-    # saying the texts below (default: the HTTP status phrase).
+    # saying the texts below (default: the HTTP status phrase). W1-D: "drf": Django REST
+    # framework's {"detail": ...} (as "fastapi"), a validation error {field: [msgs]}
+    # ("non_field_errors" for a body that is not an object); "json_key(<key>)": every
+    # error {<key>: ...} (as "fastapi", under <key>). See also validation_status.
     error_body: str = "lattice"
     unauthorized_detail: str | None = None
     forbidden_detail: str | None = None
@@ -263,6 +317,9 @@ class ApiProfile:
     # (`lattice.api.runtime.build_app(..., settings=)`; a generated app reads its
     # natives module's `SETTINGS`), never part of the program.
     settings: Mapping[str, Scalar] = field(default_factory=dict)
+    # W1-D: the status of a validation error (VALIDATION_STATUSES): 422 as FastAPI
+    # answers; 400 as Django REST framework and Flask apps do. Its body is error_body's.
+    validation_status: int = 422
 
     def __post_init__(self) -> None:
         self._validate_page_shape()
@@ -278,8 +335,9 @@ class ApiProfile:
         if self.datetime_storage not in DATETIME_STORAGES:
             raise ValueError(f"ApiProfile.datetime_storage must be one of {DATETIME_STORAGES}")
         self._validate_active()
-        if self.error_body not in ERROR_BODIES:
-            raise ValueError(f"ApiProfile.error_body must be one of {ERROR_BODIES}")
+        problem = error_style_problem(self.error_body, self.validation_status)
+        if problem is not None:
+            raise ValueError("; ".join(problem))
         for name in ("unauthorized_detail", "forbidden_detail"):
             value = getattr(self, name)
             if value is not None and not (isinstance(value, str) and value):
