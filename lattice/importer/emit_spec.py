@@ -26,7 +26,15 @@ verified; layer R (:func:`import_rules`) probes it on the original:
 * ``owner_scope`` (owned tables only; None for an admin-only route -- ``Admin``,
   ``Roles(<admin>)`` -- which no non-admin reaches): ``owner`` when the route compares
   or sets an owner column of the table or of a table it is owned through, or has an
-  ``object_owner`` guard; else ``any`` (stated: the route reaches anyone's rows);
+  ``object_owner`` guard; else ``any`` (stated: the route reaches anyone's rows). Two
+  forms name a column (W3b): ``owner(<column>)`` on a link between users (two users
+  foreign keys as its whole key) when the route compares only the side that is not the
+  owner (microblog's ``/me/followers``: ``followed_id``), and
+  ``owner_or_public(<column>)`` when the route's owner check lets a row through on a
+  Bool column (``row.owner != caller and not row.<column>``, in the route or a package
+  function it calls: :func:`public_scopes`, JustNotes' ``isPublic``). On a link between
+  users a POST setting the owner side from the caller is a ``create`` (its 400/409 the
+  ``duplicate``), and a path id names the other user (``ref`` the users table);
 * ``params``: path and query parameters (named as on the wire: a ``Query(alias=...)``),
   and every body field (a list of models as ``name.0.field``, a list of values as
   ``name.0``), with type, required, bounds (``ge``/``gt``/``le``/``lt``,
@@ -101,6 +109,7 @@ __all__ = [
     "object_key",
     "probe_import",
     "proposal_record",
+    "public_scopes",
     "route_contract",
     "route_contracts",
     "spec_object_from",
@@ -324,10 +333,123 @@ def _admin_only(auth: str | None, api: ApiProfile) -> bool:
     return bool(m) and {r.strip() for r in m.group(1).split(",")} == {api.admin_role}
 
 
-def _owner_scope(route: Route, api: ApiProfile, table: str | None) -> str | None:
+def _users_link(model: RepoModel, api: ApiProfile, table: str | None) -> tuple[str, ...] | None:
+    """A link between users (Phase 2 W3b): the table's whole primary key is two users
+    foreign keys (microblog's ``followers``: ``follower_id``, ``followed_id``)."""
+    tables = _tables(model)
+    t, users = tables.get(table or ""), tables.get(api.users_table)
+    if t is None or users is None:
+        return None
+    fks = tuple(c.name for c in t.columns
+                if (c.foreign_key or "").split(".")[0] == users.table_name)  # fmt: skip
+    pk = {c.name for c in t.columns if c.primary_key}
+    return fks if len(fks) == 2 and pk == set(fks) else None
+
+
+def _owner_scope(
+    model: RepoModel,
+    route: Route,
+    api: ApiProfile,
+    table: str | None,
+    public: Mapping[str, tuple[str, str]] | None = None,
+) -> str | None:
+    """The route's owner scope (see the module docstring), with the two forms naming a
+    column: ``owner(<column>)`` on a link between users when the route compares only
+    the other side (``/me/followers``: ``followed_id``), ``owner_or_public(<column>)``
+    when the route's own check lets a row through on a Bool column (``public``:
+    :func:`public_scopes`)."""
     if not _owned(api, table):
         return None
-    return "owner" if _owner_checked(route, api, table) else "any"
+    if not _owner_checked(route, api, table):
+        return "any"
+    schema = api.tables[table]  # type: ignore[index]
+    link = _users_link(model, api, table)
+    compared = {u.column for u in route.owner_uses if u.table == table}
+    if link is not None and schema.owner not in compared and len(compared) == 1:
+        side = next(iter(compared))
+        if side in link:
+            return f"owner({side})"
+    found = (public or {}).get(f"{route.method} {route.path}")
+    if found is not None and found[0] == table:
+        return f"owner_or_public({found[1]})"
+    return "owner"
+
+
+def public_scopes(root: Path | str, package: str, model: RepoModel) -> dict[str, tuple[str, str]]:
+    """Routes whose owner check lets anyone through on a Bool column of the row
+    (``METHOD /path`` -> (table, column)): the route function, or a package function it
+    calls (transitively, as JustNotes' ``_check_note_access``), tests ``row.<owner> !=
+    <caller> and not row.<column>`` (or ``row.<owner> == <caller> or row.<column>``),
+    where ``<owner>`` is a column the route compares to the caller (its owner evidence)
+    and ``<column>`` a Bool column of that table. Read from the AST, as the front ends
+    read routes; the app model is not changed (the FastAPI goldens pin it)."""
+    import ast
+
+    from lattice.importer.extract import _Index, route_function
+
+    try:
+        index = _Index(Path(root), package)
+    except (FileNotFoundError, SyntaxError):
+        return {}
+    tables = _tables(model)
+
+    def attr(node: ast.AST) -> tuple[str, str] | None:
+        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name):
+            return node.value.id, node.attr
+        return None
+
+    def check(node: ast.BoolOp, owners: Mapping[str, str]) -> tuple[str, str] | None:
+        want_op = ast.NotEq if isinstance(node.op, ast.And) else ast.Eq
+        compared: dict[str, str] = {}  # row variable -> its owner column's table
+        flags: list[tuple[str, str]] = []
+        for v in node.values:
+            if isinstance(v, ast.Compare) and len(v.ops) == 1 and isinstance(v.ops[0], want_op):
+                for side in (v.left, v.comparators[0]):
+                    a = attr(side)
+                    if a is not None and a[1] in owners:
+                        compared[a[0]] = owners[a[1]]
+            flag = v.operand if isinstance(v, ast.UnaryOp) and isinstance(v.op, ast.Not) else v
+            if isinstance(v, ast.UnaryOp) != isinstance(node.op, ast.And):
+                continue  # "and not row.c" / "or row.c"
+            a = attr(flag)
+            if a is not None:
+                flags.append(a)
+        for var, column in flags:
+            table = compared.get(var)
+            t = tables.get(table or "")
+            col = next((c for c in t.columns if c.name == column), None) if t else None
+            if col is not None and col.type == "Bool":
+                return table, column  # type: ignore[return-value]
+        return None
+
+    out: dict[str, tuple[str, str]] = {}
+    for r in model.routes:
+        owners = {u.column: u.table for u in r.owner_uses if u.how == "compare"}
+        fn = route_function(index, r) if owners else None
+        if fn is None:
+            continue
+        seen: set[int] = set()
+        todo: list[tuple[str, ast.AST]] = [(r.view.split(":", 1)[0] if r.view else r.module, fn)]
+        found = None
+        while todo and found is None and len(seen) < 40:
+            mod, node = todo.pop()
+            if id(node) in seen:
+                continue
+            seen.add(id(node))
+            for sub in ast.walk(node):
+                if isinstance(sub, ast.BoolOp):
+                    found = check(sub, owners)
+                    if found is not None:
+                        break
+                elif isinstance(sub, ast.Call):
+                    callee = index.node(index.resolve(mod, sub.func))
+                    if callee is not None and isinstance(
+                        callee[1], ast.FunctionDef | ast.AsyncFunctionDef
+                    ):
+                        todo.append(callee)
+        if found is not None:
+            out[f"{r.method} {r.path}"] = found
+    return out
 
 
 def _scalar(type_name: str | None) -> Scalar | None:
@@ -460,6 +582,8 @@ def _params(
             ref = None
             if p.source == "path":
                 ref = _ref_by_name(model, api, p.name) or _ref_by_segment(model, api, route, p.name)
+                if ref is None and _users_link(model, api, table) is not None:
+                    ref = api.users_table  # a link's other user: /me/following/{id}
                 if ref is None and len(path_params) == 1 and table in api.tables:
                     ref = table if kind in ("read", "update", "delete") else None
             numeric = scalar in (Scalar.INT, Scalar.FLOAT)
@@ -527,12 +651,16 @@ def _errors(
     api: ApiProfile,
     table: str | None,
     params: Sequence[ContractParam],
+    kind: str | None = None,
 ) -> tuple[ContractError, ...]:
     out: list[ContractError] = []
     path = any(p.source == "path" for p in params)
     login = _is_login(model, route)
     checked = _owner_checked(route, api, table)
     unique = _unique_columns(model, table) & {p.name for p in params if p.source == "body"}
+    # a create on a link between users: the link's key is the duplicate (a second follow)
+    if kind == "create" and _users_link(model, api, table) is not None:
+        unique = unique | {"(link)"}
     for i, r in enumerate(route.raises):
         example = None
         if login and i == 0:
@@ -554,12 +682,26 @@ def _errors(
     return tuple(out)
 
 
-def route_contract(model: RepoModel, route: Route, api: ApiProfile) -> Contract:
-    """The candidate contract of one route (see the module docstring)."""
+def route_contract(
+    model: RepoModel,
+    route: Route,
+    api: ApiProfile,
+    public: Mapping[str, tuple[str, str]] | None = None,
+) -> Contract:
+    """The candidate contract of one route (see the module docstring). ``public``: the
+    routes whose owner check admits a public row (:func:`public_scopes`)."""
     table = _table(model, route, api)
     kind = _kind(model, route)
     if kind == "create" and _acts_on_one(model, route, table):
         kind = "update"  # a POST on one row (an upload, an action), not a new row
+    link = _users_link(model, api, table)
+    if (
+        kind == "action"
+        and route.method == "POST"
+        and link is not None
+        and any(u.table == table and u.how == "assign" for u in route.owner_uses)
+    ):
+        kind = "create"  # a link between users the route adds: /me/following/{id}
     params = _params(model, route, api, table, kind)
     holes = [p for p in params if p.source == "path"]
     if kind == "read" and table and holes and all(p.ref not in (None, table) for p in holes):
@@ -572,18 +714,22 @@ def route_contract(model: RepoModel, route: Route, api: ApiProfile) -> Contract:
         table=table if table in api.tables else None,
         kind=kind,
         # an admin-only route has no ownership scope (R2 n/a: no non-admin reaches it)
-        owner_scope=None if _admin_only(auth, api) else _owner_scope(route, api, table),
+        owner_scope=None
+        if _admin_only(auth, api)
+        else _owner_scope(model, route, api, table, public),
         params=params,
-        errors=_errors(model, route, api, table, params),
+        errors=_errors(model, route, api, table, params, kind),
         response=route.response_model if route.response_model in api.responses else None,
     )
 
 
-def route_contracts(model: RepoModel, api: ApiProfile) -> list[Contract]:
+def route_contracts(
+    model: RepoModel, api: ApiProfile, public: Mapping[str, tuple[str, str]] | None = None
+) -> list[Contract]:
     """A contract per route, in the model's order (an endpoint given twice: the first)."""
     out: dict[str, Contract] = {}
     for route in model.routes:
-        c = route_contract(model, route, api)
+        c = route_contract(model, route, api, public)
         out.setdefault(c.endpoint, c)
     return list(out.values())
 
@@ -622,10 +768,12 @@ def build_spec(
     users: Mapping[str, tuple[str, str]] | None = None,
     programs: Mapping[str, str] | None = None,
     proposals: Iterable[ProposalLike] = (),
+    public: Mapping[str, tuple[str, str]] | None = None,
 ) -> Spec:
     """The candidate spec: ``profile``, ``programs`` (router -> verified Lattice source),
-    ``users`` (handle -> (login, password)), a contract per route of ``model`` and the
-    accepted ``proposals``."""
+    ``users`` (handle -> (login, password)), a contract per route of ``model`` (``public``:
+    the routes admitting a public row, :func:`public_scopes`) and the accepted
+    ``proposals``."""
     api = profile.api
     if api is None:
         raise ValueError("the profile has no API profile")
@@ -633,7 +781,7 @@ def build_spec(
         profile,
         programs=dict(programs or {}),
         users=dict(users or {}),
-        contracts=tuple(route_contracts(model, api)),
+        contracts=tuple(route_contracts(model, api, public)),
     )
     return _accepted(spec, proposals)
 
@@ -644,17 +792,26 @@ def _users(result: ImportResult) -> dict[str, tuple[str, str]]:
     return dict(suite.credentials) if suite is not None else {}
 
 
+def _public(result: ImportResult) -> dict[str, tuple[str, str]]:
+    root = getattr(result.context, "root", None)
+    if root is None:
+        return {}
+    return public_scopes(root, result.model.app_package, result.model)
+
+
 def candidate_spec(
     result: ImportResult,
     *,
     proposals: Iterable[ProposalLike] = (),
     users: Mapping[str, tuple[str, str]] | None = None,
 ) -> Spec:
-    """:func:`build_spec` of an import: its model, profile, verified programs and the
-    seed's users (``users``, else the request suite's credentials)."""
+    """:func:`build_spec` of an import: its model, profile, verified programs, the
+    seed's users (``users``, else the request suite's credentials) and the routes whose
+    owner check admits a public row (:func:`public_scopes`, read from the package)."""
     return build_spec(result.model, result.lattice_profile,
                       users=_users(result) if users is None else users,
-                      programs=result.programs, proposals=proposals)  # fmt: skip
+                      programs=result.programs, proposals=proposals,
+                      public=_public(result))  # fmt: skip
 
 
 def probe_import(result: ImportResult, spec: Spec, *, layers: str = "R",

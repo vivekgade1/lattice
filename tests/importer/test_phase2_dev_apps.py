@@ -7,7 +7,9 @@ Per app the gate asserts:
 
 * at least 90% of its tables AND at least 90% of its routes have a verified rule layer
   (``verified`` or ``verified (corrected)`` -- unexercised and unreachable items never
-  count; the bar and the verdict rules are not weakened for any app);
+  count; the bar and the verdict rules are not weakened for any app). A table outside
+  the API -- no route reads or writes it, by the front end's evidence -- is listed and
+  left out of the table denominator (plan 2026-10-05, measurement decision 1);
 * its fidelity suite passes (the corrected spec validates, layer R of it on seed variant
   2 has no finding, the recorded scenarios replay with the rule oracle predicting every
   step);
@@ -34,35 +36,20 @@ from bench.phase2_exit import APPS, agreement, recompute
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# apps short of the gate for a reason of the app's own (see the module docstring)
+# apps short of the gate for a reason of the app's own (see the module docstring). W3b
+# (plan 2026-10-05, measurement decisions): microblog's users-to-users link and JustNotes'
+# owner-or-public notes are imported (their xfails are gone with them); flasky's `roles`
+# and `follows` are outside the API (no route reads or writes them: listed, not counted)
 SHORT: dict[str, str] = {
     "justnotes": (
-        "routes: 7 of 30 routes call a local LLM server (requests.post to localhost:1234; "
-        "not part of the vendored app) and GET /notes/{note_id}/keywords is shadowed by "
-        "GET /notes/{id}/keywords (the same path, matched first): 8 routes are "
-        "unreachable-by-probe, so at most 22/30 (73%) can verify; besides, a note is "
-        "readable by others when isPublic, a conditional owner scope a contract cannot "
-        "state (R2 of GET /notes/{id} and GET /notes/{note_id}/tags: 'owner' is refuted by "
-        "a public note, 'any' by a private one; 20/30 routes verify). Tables: 5 of 6 -- "
-        "Note's T1 falls with that conditional scope (a public note of another user is "
-        "readable)"
-    ),
-    "microblog": (
-        "tables: 3 of 4 (75%) -- `followers` links users to users: two users foreign keys "
-        "(/me/following compares follower_id, /me/followers followed_id; User.follow "
-        "inserts follower_id = the caller) and a composite key, no one-column key. The "
-        "profile gives no owner candidate for two users foreign keys (T1 unclear), and "
-        "the probes find rows by a one-column key, so even with follower_id as owner its "
-        "routes could not be probed (tried: 4 routes' R2 then went unexercised). This is "
-        "the importer's limit, not the app's. Routes pass (25/27: the two OAuth2 routes "
-        "need the network)"
-    ),
-    "flasky": (
-        "tables: 3 of 5 -- the API blueprint reads or writes no `roles` row (roles are "
-        "only read inside permission checks) and no `follows` row (only the timeline "
-        "query joins it; following happens in the HTML blueprint, not vendored), so T1 is "
-        "unreached for Role and unclear for Follow (two users foreign keys). Routes pass "
-        "(12/12)"
+        "routes: 22/30 (73.3%) -- 8 routes are unreachable-by-probe and stay in the "
+        "denominator (plan 2026-10-05, measurement decision 3): 7 call a local LLM server "
+        "(requests.post to localhost:1234, not part of the vendored app: GET "
+        "/notes/{id}/summarize, /extend, /translate/{target_language}, /auto-tag, "
+        "/keywords, /sentiment, /related) and GET /notes/{note_id}/keywords is shadowed by "
+        "GET /notes/{id}/keywords (the same path, matched first, so no request reaches "
+        "it); every other route verifies, so 22/30 is the ceiling. Tables 6/6, fidelity "
+        "passes"
     ),
 }
 

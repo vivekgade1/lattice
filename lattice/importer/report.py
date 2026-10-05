@@ -319,6 +319,13 @@ def _rules_markdown(rules: Mapping[str, Any] | None) -> list[str]:
         "",
         f"- tables verified: {s['tables']['verified']} of {s['tables']['total']}; routes "
         f"verified: {s['routes']['verified']} of {s['routes']['total']}; items: {items}",
+    ]
+    outside = dict(rules.get("outside_api") or {})
+    if outside:
+        listed = "; ".join(f"{t} ({why})" for t, why in outside.items())
+        lines.append(f"- outside the API (no route reads or writes them; listed, not in the "
+                     f"table count): {listed}")  # fmt: skip
+    lines += [
         "",
         "| item | verdict | reason |",
         "|---|---|---|",

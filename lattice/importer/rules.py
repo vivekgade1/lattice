@@ -43,7 +43,11 @@ and writes it (:func:`write_rules`):
    ``unreachable-by-probe`` with the reason, and they stay in the denominator. So are
    the unexercised items of a multipart upload route (:func:`upload_routes`). The T1
    item of a table whose owner the profile left unclear is ``unclear``
-   (:func:`mark_unclear`), not the ``shared`` the profile's silence predicts.
+   (:func:`mark_unclear`), not the ``shared`` the profile's silence predicts. A table
+   no route reads or writes by the front end's evidence (:func:`outside_api`: route
+   tables, owner evidence, returned rows -- never the probes) is ``outside API``
+   (:func:`mark_outside`): its items unexercised with that reason, the table listed
+   and left out of the table denominator.
 4. **Corrections** (:func:`correct`): a refuted item whose observed fact the spec can
    state becomes a corrected item -- R1: the auth the observed callers spell; R2: the
    other owner scope; R3: the observed status (and detail); an unstated 5xx: a stated
@@ -90,6 +94,7 @@ from lattice.importer.suite import AuthSpec, SeedPlan, TableSpec, seed_plan, sql
 from lattice.importer.transport import AppRuntime, AuthDriver, form_login, json_login
 from lattice.spec import Contract, ContractError, Spec
 from lattice.spec.probes import (
+    OUTSIDE_API,
     VERIFIED_CORRECTED,
     ItemVerdict,
     RuleResult,
@@ -110,9 +115,11 @@ __all__ = [
     "correct",
     "find_factory",
     "import_rules",
+    "mark_outside",
     "mark_unclear",
     "mark_uploads",
     "network_routes",
+    "outside_api",
     "shadowed_routes",
     "summary_line",
     "upload_routes",
@@ -693,7 +700,9 @@ def correct(spec: Spec, rules: RuleResult) -> tuple[Spec, list[Correction]]:
             if auth is not None and auth != c.auth:
                 contracts[subject] = replace(c, auth=auth)
                 out.append(Correction(item_id, item_id, f"auth {c.auth} -> {auth}"))
-        elif kind == "R2" and c is not None:
+        elif kind == "R2" and c is not None and c.owner_scope in (None, "owner", "any"):
+            # a scope naming a column (owner(<c>), owner_or_public(<c>)) is not corrected:
+            # no single observed fact restates its condition
             scope = "owner" if obs.get("scope") == "owner" else "any"
             if scope != (c.owner_scope or "owner"):
                 contracts[subject] = replace(c, owner_scope=scope)
@@ -771,6 +780,8 @@ class RulesImport:
     timing: dict[str, float] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
     variant2: dict[str, Any] = field(default_factory=dict)
+    # tables no route reads or writes (outside_api): listed, not in the denominator
+    outside: dict[str, str] = field(default_factory=dict)
 
     def rules_dict(self) -> dict[str, Any]:
         data = self.rules.to_dict()
@@ -794,6 +805,12 @@ class RulesImport:
             ),  # fmt: skip
             timing={k: round(v, 3) for k, v in self.timing.items()},
             variant2=self.variant2,
+            # the tables left outside the API (one the probes reached stays in: a note)
+            outside_api={
+                t: why
+                for t, why in self.outside.items()
+                if self.rules.tables.get(t, {}).get("verdict") == OUTSIDE_API
+            },
             seed={
                 "variants": {
                     k: {"seed": s, "rows_per_table": n, "key_shift": d}
@@ -925,6 +942,8 @@ def import_rules(
         unclear = {t: why for t, d in result.profile.ownership.items() if d == "unclear"
                    for why in [result.profile.ownership_reasons.get(t, "")]}  # fmt: skip
         mark_unclear(spec, rules, unclear)
+        outside = outside_api(result.model)
+        mark_outside(spec, rules, outside)
         uploads = upload_routes(result.model)
         mark_uploads(rules, uploads)
         timing["probe"] = clock() - t1
@@ -948,6 +967,7 @@ def import_rules(
         again = run_probes(replace(fixed, users=seeder.credentials("variant2")), sessions,
                            seeder.make_db, **args("variant2"))  # fmt: skip
         mark_unclear(fixed, again, unclear)
+        mark_outside(fixed, again, outside)
         mark_uploads(again, uploads)
         variant2 = variant2_record(again)
         timing["variant2"] = clock() - t4
@@ -965,6 +985,7 @@ def import_rules(
             mining,
             timing,
             variant2=variant2,
+            outside=outside,
         )
     finally:
         seeder.close()
@@ -1001,6 +1022,59 @@ def mark_uploads(rules: RuleResult, uploads: Mapping[str, str]) -> None:
         ):
             v.reason = (f"unreachable-by-probe: a multipart file upload ({field_}); probes send "
                         f"JSON -- {v.reason}")  # fmt: skip
+
+
+def outside_api(model: RepoModel) -> dict[str, str]:
+    """The tables no route reads or writes (table class name -> why), by the front
+    end's evidence alone -- the tables a route references (``Route.tables``: its queries,
+    inserts and deletes, its ORM helpers'), compares or sets an owner column of
+    (``owner_uses``) or returns rows of -- never by what the probes reached. Framework
+    routes are not in ``model.routes``; routes probes cannot call (the network) still
+    count. The users table is never outside (logging in reads it). Such a table is
+    ``outside API`` (plan 2026-10-05, measurement decision 1: flasky's ``roles``, read
+    only inside permission checks, and ``follows``, written only by the HTML pages)."""
+    users = model.auth.users_table if model.auth is not None else None
+    reached: set[str] = set()
+    for r in model.routes:
+        reached |= set(r.tables) | {u.table for u in r.owner_uses}
+        if r.returns:
+            reached.add(r.returns)
+    out = {}
+    for t in model.tables:
+        if t.name in reached or t.name == users or _is_users(model, t):
+            continue
+        out[t.name] = f"no route reads or writes {t.name} ({t.table_name})"
+    return out
+
+
+def _is_users(model: RepoModel, table: Any) -> bool:
+    """The users table of a FastAPI app (no AuthModel): the one other tables' owner
+    foreign keys point at, as the dependencies' ``current_user`` returns it."""
+    returns = {d.returns for d in model.dependencies if d.kind in ("current_user", "active_user")}
+    return table.name in returns
+
+
+def mark_outside(spec: Spec, rules: RuleResult, outside: Mapping[str, str]) -> None:
+    """The items of a table outside the API (:func:`outside_api`) are unexercised with
+    the reason ``outside API: <why>`` (an ``unclear`` T1 too: no route needs its owner);
+    the table's verdict is then ``outside API`` and it leaves the table denominator. A
+    table some probe reached after all (an item verified or refuted) stays in, noted:
+    the evidence may miss a route, and probes only ever keep a table in."""
+    changed = False
+    for table, why in outside.items():
+        found = [v for v in rules.items.values() if v.item.subject == table]
+        reached = [v.item.id for v in found if v.verdict not in ("unexercised", "unclear")]
+        if reached:
+            rules.notes.append(f"{table}: no route reads or writes it by the front end's "
+                               f"evidence, but the probes reached it ({', '.join(reached)}); "
+                               "it stays in the table denominator")  # fmt: skip
+            continue
+        for v in found:
+            rules.items[v.item.id] = ItemVerdict(v.item, "unexercised", f"{OUTSIDE_API}: {why}",
+                                                 v.probes)  # fmt: skip
+            changed = True
+    if changed or outside:
+        summarise(spec, rules)
 
 
 def mark_unclear(spec: Spec, rules: RuleResult, owners: Mapping[str, str]) -> None:

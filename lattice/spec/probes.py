@@ -43,6 +43,16 @@ and the database before and after recorded. Each bears on one or more items:
   another user (and also without that field: an app refusing unknown fields says
   nothing then). ``owner_scope="any"``: another user's row is reached (not 403/404),
   and a list holds another user's row (never probed as if scoped to the caller).
+  ``owner_or_public(<c>)``: another user's row whose ``<c>`` is false gets the not-owned
+  answer and one whose ``<c>`` is true is reached, on a read; a write gets the not-owned
+  answer on both (a public row first); a list holds the caller's rows and rows whose
+  ``<c>`` is true only. A link between users (an owned table whose key is two columns,
+  no one-column key: microblog's followers), found by its whole key, with the
+  caller's side the scope's column (``owner(<c>)``) or else the owner: a list answers
+  only links on the caller's side, or the users those links name on the other side; a
+  create adds links on the caller's side only; a delete or update, called on a link of
+  the caller's own and on another user's link to the caller that the caller does not
+  mirror, touches links on the caller's side only; T5 repeats the caller's own link.
   A request may change its caller's own users row (a last-seen stamp); any other
   change counts as a write. Keys compare in one spelling (a UUID stored as 32 hex
   digits equals its dashed answer).
@@ -60,8 +70,10 @@ and the database before and after recorded. Each bears on one or more items:
 * T5: a second create with the same key (the owner column: as a user who already owns
   a row; else key columns the route takes, from a seeded row) gets a non-2xx and adds
   no row. A 5xx still verifies the key, with a note (an app-baseline finding).
-* R3: each stated error is triggered -- ``not_found`` by a missing id, ``not_owned`` by
-  the R2 probes, ``unauthenticated`` / ``inactive`` / ``forbidden`` by the R1 probes,
+* R3: each stated error is triggered -- ``not_found`` by a missing id (the addressed
+  row's, else a route's one path parameter naming a row: a link route's other user),
+  ``not_owned`` by the R2 probes, ``unauthenticated`` / ``inactive`` / ``forbidden`` by
+  the R1 probes,
   ``invalid`` by a body one step past a bound (or an unlisted value, or a required
   field missing), ``duplicate`` by the T5 probe, ``other`` by its ``example`` -- and
   answered with its status (and detail, when stated; a detail in an answer that is no
@@ -120,6 +132,7 @@ from lattice.spec.model import (
     ContractParam,
     Spec,
     resolve_table,
+    scope_parts,
     tables_of,
 )
 from lattice.spec.validate import auth_roles
@@ -131,6 +144,10 @@ VERDICTS: tuple[str, ...] = ("verified", "refuted", "unexercised", "unclear")
 # variant (the importer's corrections, lattice.importer.rules): it counts as verified
 VERIFIED_CORRECTED = "verified (corrected)"
 UNREACHABLE = "unreachable-by-probe"
+# a table no route reads or writes (the importer's front-end evidence, never the probes):
+# its T1 item is unexercised with a reason starting so, and the table's verdict is this,
+# left out of the table denominator (plan 2026-10-05, measurement decision 1)
+OUTSIDE_API = "outside API"
 
 
 def is_verified(verdict: str) -> bool:
@@ -287,6 +304,39 @@ def owner_scope(spec: Spec, c: Contract) -> str | None:
     return None if admin_only else "owner"
 
 
+def _link(schema: Schema) -> tuple[str, str] | None:
+    """A link table's key: two columns, the table having no one-column key (microblog's
+    followers: ``(follower_id, followed_id)``); None otherwise."""
+    if _key_column(schema) is not None:
+        return None
+    return next(((k[0], k[1]) for k in schema.keys if len(k) == 2), None)
+
+
+def _link_sides(schema: Schema, scope: str | None) -> tuple[str, str] | None:
+    """(the caller's side, the other side) of a route on an owned link table: the
+    scope's column (``owner(<column>)``), else the owner column; None when the table is
+    no link or that column is not one of its key's."""
+    pair = _link(schema)
+    if pair is None or not schema.owner:
+        return None
+    form, col = scope_parts(scope)
+    side = col if form == "owner" and col else schema.owner
+    if side not in pair:
+        return None
+    return side, pair[1] if pair[0] == side else pair[0]
+
+
+def _public_columns(spec: Spec, routes: Sequence[Contract]) -> dict[str, str]:
+    """Table -> the column an ``owner_or_public(<column>)`` route states for it."""
+    out: dict[str, str] = {}
+    for c in routes:
+        form, col = scope_parts(c.owner_scope)
+        found = _schema(spec, c.table)
+        if form == "owner_or_public" and col and found is not None:
+            out.setdefault(found[0], col)
+    return out
+
+
 def _error_id(c: Contract, e: ContractError) -> str:
     if e.status is None:
         return f"R3 {c.endpoint} ?"
@@ -322,11 +372,25 @@ def rule_items(spec: Spec) -> list[RuleItem]:
     assert api is not None, "a spec with rule items has an API profile"
     tables, _ = tables_of(spec.profile)
     routes = route_contracts(spec)
+    public = _public_columns(spec, routes)
     items: list[RuleItem] = []
     for name, schema in tables.items():
+        pair = _link(schema) if _link_sides(schema, None) is not None else None
         if name == api.users_table:
             predicted: dict[str, Any] = {"ownership": "users"}
             sentence = f"{name} is the users table: every role logs in; 'me' is the caller"
+        elif schema.owner and pair is not None:
+            predicted = {"ownership": "owner", "column": schema.owner, "link": list(pair)}
+            sentence = (
+                f"a {name} row links two users ({', '.join(pair)}): only the user in "
+                f"{schema.owner} creates or deletes it; each side reads its own links"
+            )
+        elif schema.owner and name in public:
+            predicted = {"ownership": "owner", "column": schema.owner, "public": public[name]}
+            sentence = (
+                f"a {name} row belongs to the user in {schema.owner}; others read it only when "
+                f"{public[name]} is true, and never write it"
+            )
         elif schema.owner:
             predicted = {"ownership": "owner", "column": schema.owner}
             sentence = f"a {name} row belongs to the user in {schema.owner}; others cannot reach it"
@@ -406,14 +470,22 @@ def rule_items(spec: Spec) -> list[RuleItem]:
         )
         scope = owner_scope(spec, c)
         if scope is not None:
+            form, col = scope_parts(scope)
+            if form == "owner" and col:
+                r2_sentence = f"{ep} acts only on the {c.table} rows whose {col} is the caller"
+            elif form == "owner_or_public":
+                r2_sentence = (f"{ep} reads the caller's own {c.table} rows and others' whose "
+                               f"{col} is true; it writes the caller's own only")  # fmt: skip
+            elif form == "owner":
+                r2_sentence = f"{ep} acts on the caller's own {c.table} rows only"
+            else:
+                r2_sentence = f"{ep} acts on any user's {c.table} rows"
             items.append(
                 RuleItem(
                     f"R2 {ep}",
                     "R2",
                     ep,
-                    f"{ep} acts on the caller's own {c.table} rows only"
-                    if scope == "owner"
-                    else f"{ep} acts on any user's {c.table} rows",
+                    r2_sentence,
                     {"scope": scope, "table": c.table},
                     "the route's ownership scope is unknown" if scope == "unknown" else None,
                 )
@@ -1062,12 +1134,23 @@ def _not_owned_errors(c: Contract) -> list[tuple[str, ContractError]]:
 
 
 def _ownership(b: _Probes, r: _Route) -> None:
-    """R2 and T1 (owner / owner_via) probes through one route."""
+    """R2 and T1 (owner / owner_via) probes through one route. ``owner_or_public(<c>)``:
+    a read of another user's row answers when its ``<c>`` is true and is refused when
+    false; a write is refused either way (a public row first). A route on a link table
+    between users: :func:`_link_ownership`."""
     c, ctx = r.c, b.ctx
-    if r.table is None or r.scope not in ("owner", "any") or c.kind is None:
+    form, col = scope_parts(r.scope)
+    if r.table is None or form not in ("owner", "any", "owner_or_public") or c.kind is None:
         return
+    sides = _link_sides(r.table[2], r.scope) if form == "owner" else None
+    if sides is not None:
+        _link_ownership(b, r, *sides)
+        return
+    owned = form in ("owner", "owner_or_public")
+    public = col if form == "owner_or_public" else None
+    reading = c.method == "GET" or c.kind in ("read", "list")
     table = r.table[0]
-    t1 = f"T1 {table}" if r.scope == "owner" else None
+    t1 = f"T1 {table}" if owned else None
     r2 = f"R2 {c.endpoint}"
     attackers = sorted(ctx.non_admin(c), key=lambda x: not ctx.owns(x.handle, table))[:2]
     key = ctx.key_of(table)
@@ -1075,31 +1158,40 @@ def _ownership(b: _Probes, r: _Route) -> None:
     if c.kind in ("read", "update", "delete", "action") and r.addr is not None and key:
         # an action on one row (tagging a note) acts on the caller's own rows only too
         for a in attackers:
-            victim = next(
-                (row[key] for row in rows if ctx.owner(table, row) not in (None, a.key)),
-                None,
-            )
-            if victim is None:
-                continue
-            req = _build(r, ctx, target=victim, full=c.kind == "update")
-            if r.scope == "owner":
-                stated = _not_owned_errors(c)
-                b.add(
-                    r,
-                    a,
-                    f"another user's {table} {victim}",
-                    [t1 or "", r2, *(i for i, _ in stated)],
-                    req,
-                    "not_owned",
-                    statuses=[e.status for _, e in stated if e.status] or list(NOT_OWNED),
-                    details={i: [e.status, e.detail] for i, e in stated},
-                )
+            others = [row for row in rows if ctx.owner(table, row) not in (None, a.key)]
+            if public is None:
+                victims = [(row[key], "", "not_owned" if owned else "reaches")
+                           for row in others[:1]]  # fmt: skip
             else:
-                b.add(r, a, f"another user's {table} {victim}", [r2], req, "reaches")
-        if c.kind == "action" and r.scope == "owner":
+                shown = next((row[key] for row in others if row.get(public)), None)
+                hidden = next((row[key] for row in others if not row.get(public)), None)
+                victims = [(hidden, "private ", "not_owned"),
+                           (shown, "public ", "reaches" if reading else "not_owned")]  # fmt: skip
+                if not reading:  # a public row first: being public never opens a write
+                    victims.reverse()
+            for victim, label, expect in victims:
+                if victim is None:
+                    continue
+                req = _build(r, ctx, target=victim, full=c.kind == "update")
+                what = f"another user's {label}{table} {victim}"
+                if expect == "not_owned":
+                    stated = _not_owned_errors(c)
+                    b.add(
+                        r,
+                        a,
+                        what,
+                        [t1 or "", r2, *(i for i, _ in stated)],
+                        req,
+                        "not_owned",
+                        statuses=[e.status for _, e in stated if e.status] or list(NOT_OWNED),
+                        details={i: [e.status, e.detail] for i, e in stated},
+                    )
+                else:
+                    b.add(r, a, what, [t1 or "", r2], req, "reaches")
+        if c.kind == "action" and owned:
             _child_stamps(b, r, table, attackers)
         return
-    if c.kind in ("list", "read") and r.scope == "any":
+    if c.kind in ("list", "read") and form == "any":
         # stated: the route shows anyone's rows -- a non-admin's answer holding a row
         # another user owns confirms it (never probed as if scoped to the caller)
         for a in attackers:
@@ -1121,13 +1213,14 @@ def _ownership(b: _Probes, r: _Route) -> None:
                 b.add(
                     r,
                     a,
-                    f"own {table} rows only",
+                    f"own {table} rows only" + (f" (or {public})" if public else ""),
                     [t1 or "", r2],
                     _build(r, ctx, target=_targets(r, ctx, a, 1)[0]),
                     "owned_rows",
                     table=table,
                     caller=a.key,
                     owns=bool(ctx.owns(a.handle, table)),
+                    public=public,
                 )
         return
     if c.kind in ("update", "delete"):
@@ -1144,7 +1237,7 @@ def _ownership(b: _Probes, r: _Route) -> None:
                     caller=a.key,
                 )
         return
-    if c.kind == "create" and r.scope == "owner":
+    if c.kind == "create" and owned:
         schema = r.table[2]
         stamp = schema.owner
         keyed = any(stamp and stamp in k for k in schema.keys)
@@ -1179,6 +1272,71 @@ def _ownership(b: _Probes, r: _Route) -> None:
                 caller=a.key,
                 children=[ch.split(" ", 1)[1] for ch in children],
             )
+
+
+def _user_hole(r: _Route, ctx: ProbeContext) -> str | None:
+    """The path parameter naming another user on a link route (``/me/following/{id}``):
+    the one whose ``ref`` is the users table, else the route's only path parameter
+    when it names no table."""
+    users = resolve_table(ctx.spec.profile, ctx.api.users_table)
+    for name, p in r.path_params.items():
+        found = resolve_table(ctx.spec.profile, p.ref) if p.ref else None
+        if found is not None and users is not None and found[0] == users[0]:
+            return name
+    if len(r.path_params) == 1:
+        name, p = next(iter(r.path_params.items()))
+        return name if p.ref is None else None
+    return None
+
+
+def _user_keys(ctx: ProbeContext) -> list[Any]:
+    key = ctx.key_of(ctx.api.users_table)
+    return [row[key] for row in ctx.rows(ctx.api.users_table)] if key else []
+
+
+def _link_ownership(b: _Probes, r: _Route, side: str, other: str) -> None:
+    """R2 and T1 probes through a route on a link table between users, found by its
+    whole key: the caller's ``side`` column, the ``other`` side's. A list holds only the
+    users (or links) on the caller's side; a create adds links on the caller's side
+    only; a delete (or update) removes or changes only the caller's side's links --
+    probed on a link of the caller's own and on one of another user to the caller that
+    the caller does not mirror (``/me/following/{id}`` must not touch ``id``'s link to
+    the caller)."""
+    c, ctx = r.c, b.ctx
+    assert r.table is not None
+    table = r.table[0]
+    t1, r2 = f"T1 {table}", f"R2 {c.endpoint}"
+    links = {(_k(row[side]), _k(row[other])) for row in ctx.rows(table)}
+    attackers = ctx.non_admin(c)[:2]
+    hole = _user_hole(r, ctx)
+    if c.kind in ("list", "read") and hole is None:
+        for a in attackers:
+            b.add(r, a, f"own {table} links only ({side} is the caller)", [t1, r2],
+                  _build(r, ctx), "link_rows", table=table, side=side, other=other,
+                  caller=a.key)  # fmt: skip
+        return
+    if hole is None:
+        return
+    users = _user_keys(ctx)
+    for a in attackers:
+        me = _k(a.key)
+        if c.kind == "create":
+            fresh = [u for u in users if _k(u) != me and (me, _k(u)) not in links]
+            fresh.sort(key=lambda u: (_k(u), me) in links)  # untouched pairs first
+            if fresh:
+                b.add(r, a, f"links it adds are its own ({side} is the caller)", [t1, r2],
+                      _build(r, ctx, set_={hole: fresh[0]}), "stamps", table=table,
+                      caller=a.key, column=side)  # fmt: skip
+            continue
+        own = [u for u in users if (me, _k(u)) in links]
+        theirs = [u for u in users if (_k(u), me) in links and (me, _k(u)) not in links]
+        for label, target in (("own side", own), ("other side", theirs)):
+            if not target:
+                continue
+            pair = (a.key, target[0]) if label == "own side" else (target[0], a.key)
+            b.add(r, a, f"{label}: {table} link ({side}={pair[0]}, {other}={pair[1]})",
+                  [t1, r2], _build(r, ctx, set_={hole: target[0]}, full=True), "writes_own",
+                  table=table, caller=a.key, link=[side, other])  # fmt: skip
 
 
 def _child_stamps(b: _Probes, r: _Route, table: str, callers: Sequence[Caller]) -> None:
@@ -1344,6 +1502,21 @@ def _keys_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
             made = False
             for r in creates:
                 dup = [i for i, e in _error_ids(r.c) if e.when == "duplicate"]
+                sides = _link_sides(schema, r.c.owner_scope)
+                hole = _user_hole(r, ctx) if sides is not None else None
+                if sides is not None and hole is not None and set(key) == set(sides):
+                    # a link again: the caller's own link to a user, named in the path
+                    side, other = sides
+                    for a in ctx.non_admin(r.c):
+                        linked = next((row[other] for row in ctx.rows(name)
+                                       if _k(row[side]) == _k(a.key)), None)  # fmt: skip
+                        if linked is not None:
+                            b.add(r, a, f"repeat its {name} link to {linked}", [item, *dup],
+                                  _build(r, ctx, set_={hole: linked}), "duplicate", table=name,
+                                  errors={i: _status_detail(r.c, i) for i in dup})  # fmt: skip
+                            made = True
+                            break
+                    continue
                 if schema.owner and set(key) == {schema.owner}:
                     owners = [x for x in ctx.allowed(r.c) if ctx.owns(x.handle, name)]
                     if owners:
@@ -1406,10 +1579,16 @@ def _error_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
                 # as the admin when the route admits one: past every role and owner check
                 admin = next((x for x in ctx.allowed(c) if x.role == ctx.api.admin_role), None)
                 caller = admin or caller
-                if r.addr is None:
+                # the addressed row's id, else the one path parameter naming a table's row
+                # (a link route's other user: /me/following/{id})
+                hole = r.addr
+                if hole is None and len(r.path_params) == 1:
+                    only, p = next(iter(r.path_params.items()))
+                    hole = only if p.ref is not None else None
+                if hole is None:
                     reasons[item] = "unreachable-by-probe: the route addresses no row by id"
                     continue
-                p = r.path_params[r.addr]
+                p = r.path_params[hole]
                 missing = (
                     MISSING_INT
                     if p.scalar is Scalar.INT
@@ -1420,7 +1599,7 @@ def _error_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
                     caller,
                     "missing id",
                     [item],
-                    _build(r, ctx, set_={r.addr: missing}),
+                    _build(r, ctx, set_={hole: missing}),
                     "error",
                     status=e.status,
                     detail=e.detail,
@@ -1677,6 +1856,84 @@ def _refused(
     return True if owns_target else None
 
 
+def _link_rows(body: Any, status: int, ctx: ProbeContext, a: Mapping[str, Any]) -> Outcome:
+    """A list through a link table between users, as the caller: the links it answers
+    (objects holding both key columns) are on the caller's side; else the users it
+    answers are those the caller's links name on the other side (microblog's
+    ``/me/following`` answers the followed users)."""
+    table, side, other, me = a["table"], a["side"], a["other"], _k(a["caller"])
+    if not _ok(status):
+        return Outcome(False, f"the caller's own {table} links answered {status}",
+                       {"status": status})  # fmt: skip
+    links: list[Mapping[str, Any]] = []
+
+    def walk(v: Any) -> None:
+        if isinstance(v, Mapping):
+            if side in v and other in v:
+                links.append(v)
+            for x in v.values():
+                walk(x)
+        elif isinstance(v, list):
+            for x in v:
+                walk(x)
+
+    walk(body)
+    if links:
+        foreign = sorted({str((x[side], x[other])) for x in links if _k(x[side]) != me})
+        if foreign:
+            return Outcome(False, f"answered {table} links of other users {foreign[:5]}",
+                           {"other_users_rows": foreign})  # fmt: skip
+        return Outcome(True, f"only the caller's {table} links ({len(links)})")
+    users = resolve_table(ctx.spec.profile, ctx.api.users_table)
+    ukey = _key_column(users[2]) if users is not None else None
+    if users is None or ukey is None:
+        return Outcome(None, "the users table has no key to find its rows by")
+    known = {_k(row[ukey]) for row in ctx.rows(ctx.api.users_table)}
+    shown = {_k(row[ukey]) for row in _rows_in(body, users[2], ukey) if _k(row[ukey]) in known}
+    allowed = {_k(row[other]) for row in ctx.rows(table) if _k(row[side]) == me}
+    foreign = sorted(shown - allowed, key=str)
+    if foreign:
+        return Outcome(
+            False,
+            f"answered users {foreign[:5]} that no {table} link of the caller ({side}) names",
+            {"other_users_rows": foreign},
+        )
+    if not shown:
+        return Outcome(None, "no user in the answer")
+    return Outcome(True, f"only users the caller's {table} links name ({len(shown)})")
+
+
+def _link_writes(
+    before: Mapping[str, list[dict[str, Any]]],
+    after: Mapping[str, list[dict[str, Any]]],
+    sql: str,
+    a: Mapping[str, Any],
+) -> Outcome:
+    """A write through a link table between users: every link it removed, added or
+    changed (rows found by their whole key) is on the caller's side."""
+    side, other = a["link"]
+
+    def ident(row: Mapping[str, Any]) -> tuple:
+        return tuple(sorted((k, str(v)) for k, v in row.items()))
+
+    old = {ident(r): r for r in before.get(sql, [])}
+    new = {ident(r): r for r in after.get(sql, [])}
+    touched = [r for k, r in old.items() if k not in new] + [
+        r for k, r in new.items() if k not in old
+    ]
+    foreign = sorted({(r.get(side), r.get(other)) for r in touched
+                      if _k(r.get(side)) != _k(a["caller"])}, key=str)  # fmt: skip
+    if foreign:
+        return Outcome(
+            False,
+            f"changed {sql} links of other users {foreign[:5]} ({side}, {other})",
+            {"other_users_rows": [list(f) for f in foreign]},
+        )
+    if not touched:
+        return Outcome(None, "nothing changed")
+    return Outcome(True, f"changed only the caller's {sql} links ({len(touched)})")
+
+
 def _judge(
     p: Probe,
     answer: Answer,
@@ -1752,21 +2009,31 @@ def _judge(
             )
         seeded = {_k(r[key]): r for r in ctx.rows(table)}
         rows = [r for r in _rows_in(body, found[2], key) if _k(r[key]) in seeded]
+        public = a.get("public")  # owner_or_public: another user's row shows when true
         foreign = sorted(
-            {_k(r[key]) for r in rows if ctx.owner(table, seeded[_k(r[key])]) != a["caller"]},
+            {
+                _k(r[key])
+                for r in rows
+                if ctx.owner(table, seeded[_k(r[key])]) != a["caller"]
+                and not (public and seeded[_k(r[key])].get(public))
+            },
             key=str,
         )
         if foreign:
             return all_items(
                 Outcome(
                     False,
-                    f"answered other users' {table} rows {foreign}",
+                    f"answered other users' {table} rows {foreign}"
+                    + (f" whose {public} is false" if public else ""),
                     {"other_users_rows": foreign},
                 )
             )
         if not rows:  # an empty answer shows nothing about filtering
             return all_items(Outcome(None, "no row of the table in the answer"))
-        return all_items(Outcome(True, f"only the caller's {table} rows ({len(rows)})"))
+        mine = f"the caller's {table} rows" + (f" or whose {public} is true" if public else "")
+        return all_items(Outcome(True, f"only {mine} ({len(rows)})"))
+    if p.expect == "link_rows":
+        return all_items(_link_rows(body, status, ctx, a))
     if p.expect == "others_rows":
         table = a["table"]
         found = resolve_table(spec.profile, table)
@@ -1792,6 +2059,8 @@ def _judge(
         found = resolve_table(spec.profile, table)
         assert found is not None
         key = _key_column(found[2]) or ""
+        if not key and a.get("link"):  # a link table: its rows by their whole key
+            return all_items(_link_writes(before, after, found[1], a))
         if not key:  # a link table (a composite key): its rows cannot be told apart here
             return all_items(Outcome(None, f"{table} has no one-column key to find its rows by"))
         sql = found[1]
@@ -1829,7 +2098,10 @@ def _judge(
 
             old = {ident(r) for r in before.get(found[1], [])}
             new = [r for r in after.get(found[1], []) if ident(r) not in old]
-            owners = sorted({str(ctx.owner(table, r, after)) for r in new})
+            column = a.get("column") if table == a["table"] else None
+            # a link's side named by the route's scope (owner(<column>)), else the owner
+            owners = sorted({str(r.get(column) if column else ctx.owner(table, r, after))
+                             for r in new})  # fmt: skip
             items = [i for i in p.items if i == f"T1 {table}"]
             if table == a["table"]:
                 items += [i for i in p.items if i.startswith("R2 ")]
@@ -1956,8 +2228,13 @@ class RuleResult:
     @property
     def summary(self) -> dict[str, Any]:
         def count(group: Mapping[str, Mapping[str, Any]]) -> dict[str, int]:
-            n = sum(is_verified(v["verdict"]) for v in group.values())
-            return {"verified": n, "total": len(group)}
+            # a table outside the API is listed, not counted (plan 2026-10-05, decision 1)
+            inside = [v for v in group.values() if v["verdict"] != OUTSIDE_API]
+            n = sum(is_verified(v["verdict"]) for v in inside)
+            out = {"verified": n, "total": len(inside)}
+            if len(inside) < len(group):
+                out["outside_api"] = len(group) - len(inside)
+            return out
 
         verdicts = {v: sum(i.verdict == v for i in self.items.values()) for v in VERDICTS}
         corrected = sum(i.verdict == VERIFIED_CORRECTED for i in self.items.values())
@@ -2399,7 +2676,9 @@ def summarise(spec: Spec, result: RuleResult) -> None:
             continue
         t1 = next((v for v in found if v.item.kind == "T1"), None)
         bad = [v.item.id for v in found if v.verdict in ("refuted", "unclear")]
-        if t1 is not None and t1.verdict == "unexercised":
+        if t1 is not None and t1.verdict == "unexercised" and t1.reason.startswith(OUTSIDE_API):
+            verdict, reason = OUTSIDE_API, t1.reason
+        elif t1 is not None and t1.verdict == "unexercised":
             verdict, reason = "unverified", "unreached"
         elif bad:
             verdict, reason = "unverified", "items " + ", ".join(bad)
@@ -2447,6 +2726,7 @@ __all__ = [
     "Session",
     "SessionFactory",
     "VERDICTS",
+    "OUTSIDE_API",
     "VERIFIED_CORRECTED",
     "allowed_roles",
     "asgi_sessions",

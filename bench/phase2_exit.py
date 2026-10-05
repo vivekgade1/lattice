@@ -19,7 +19,9 @@ process (Django keeps one project per process):
 Writes ``<out>/<app>.json`` per app and ``<out>/summary.md`` (a Markdown table, plus the
 pooled figures), and prints the table. "Verified" counts ``verified`` and ``verified
 (corrected)`` items; ``unexercised`` (unreachable-by-probe included) and ``unclear`` do
-not. The gate (≥ 90% of tables and of routes per app) is reported, not enforced here:
+not. A table outside the API (no route reads or writes it, by the front end's evidence)
+is listed (``outside_api``) and left out of the table denominator. The gate (≥ 90% of
+tables and of routes per app) is reported, not enforced here:
 ``tests/importer/test_phase2_dev_apps.py`` enforces it.
 """
 
@@ -50,6 +52,10 @@ APPS: dict[str, str] = {
 }
 GATE = 0.9
 VERIFIED = ("verified", "verified (corrected)")
+# a table no route reads or writes, by the front end's evidence (plan 2026-10-05,
+# measurement decision 1): its T1 item is unexercised with a reason starting so; the
+# table is listed with this verdict and left out of the denominator
+OUTSIDE_API = "outside API"
 TIMEOUT = 900
 
 
@@ -61,7 +67,9 @@ def recompute(items: Mapping[str, Mapping[str, Any]]) -> dict[str, dict[str, dic
 
     A table (the subject of T items) is verified when its T1 is verified, no item of it is
     refuted or unclear, and every T2-T5 item is verified or unexercised; a T1 no probe
-    reached makes it ``unverified`` (``unreached``). A route (the subject of R items) is
+    reached makes it ``unverified`` (``unreached``), unless its reason says the table is
+    ``outside API`` (no route reads or writes it): then that is its verdict, and
+    :func:`_count` leaves it out of the total. A route (the subject of R items) is
     verified when its R1 is verified, its R2 (if any) verified, and no R3 item refuted or
     unclear."""
     by: dict[str, list[Mapping[str, Any]]] = {}
@@ -74,7 +82,10 @@ def recompute(items: Mapping[str, Mapping[str, Any]]) -> dict[str, dict[str, dic
         if kinds <= {"T1", "T2", "T3", "T4", "T5"}:
             t1 = next((r for r in found if r["kind"] == "T1"), None)
             bad = [r["id"] for r in found if r["verdict"] in ("refuted", "unclear")]
-            if t1 is not None and t1["verdict"] == "unexercised":
+            if (t1 is not None and t1["verdict"] == "unexercised"
+                    and t1["reason"].startswith(OUTSIDE_API)):  # fmt: skip
+                verdict, reason = OUTSIDE_API, t1["reason"]
+            elif t1 is not None and t1["verdict"] == "unexercised":
                 verdict, reason = "unverified", "unreached"
             elif bad:
                 verdict, reason = "unverified", "items " + ", ".join(bad)
@@ -101,9 +112,14 @@ def recompute(items: Mapping[str, Mapping[str, Any]]) -> dict[str, dict[str, dic
 
 
 def _count(group: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
-    n = sum(v["verdict"] == "verified" for v in group.values())
-    total = len(group)
-    return {"verified": n, "total": total, "pct": round(100 * n / total, 1) if total else 0.0}
+    """Verified of the total; an ``outside API`` table is listed but not counted."""
+    inside = [v for v in group.values() if v["verdict"] != OUTSIDE_API]
+    n = sum(v["verdict"] == "verified" for v in inside)
+    total = len(inside)
+    out = {"verified": n, "total": total, "pct": round(100 * n / total, 1) if total else 0.0}
+    if total < len(group):
+        out["outside_api"] = len(group) - total
+    return out
 
 
 def agreement(rules: Mapping[str, Any]) -> list[str]:
@@ -202,7 +218,12 @@ def measure(app: str, work: Path) -> dict[str, Any]:
         "tables": tables,
         "routes": routes,
         "unverified_tables": {
-            k: v["reason"] for k, v in mine["tables"].items() if v["verdict"] != "verified"
+            k: v["reason"]
+            for k, v in mine["tables"].items()
+            if v["verdict"] not in ("verified", OUTSIDE_API)
+        },  # fmt: skip
+        "outside_api": {
+            k: v["reason"] for k, v in mine["tables"].items() if v["verdict"] == OUTSIDE_API
         },  # fmt: skip
         "unverified_routes": {
             k: v["reason"] for k, v in mine["routes"].items() if v["verdict"] != "verified"
@@ -231,14 +252,14 @@ def measure(app: str, work: Path) -> dict[str, Any]:
 
 def markdown(results: Sequence[Mapping[str, Any]]) -> str:
     lines = [
-        "| app | framework | tables verified | routes verified | corrected | unreachable "
-        "routes | baseline | fidelity | recompute | import (s) |",
-        "|---|---|---|---|---|---|---|---|---|---|",
+        "| app | framework | tables verified | outside API | routes verified | corrected | "
+        "unreachable routes | baseline | fidelity | recompute | import (s) |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     pooled = {"tables": [0, 0], "routes": [0, 0]}
     for r in results:
         if "error" in r:
-            lines.append(f"| {r['app']} | error | | | | | | | | {r['import_s']} |")
+            lines.append(f"| {r['app']} | error | | | | | | | | | {r['import_s']} |")
             continue
         for g in pooled:
             pooled[g][0] += r[g]["verified"]
@@ -246,6 +267,7 @@ def markdown(results: Sequence[Mapping[str, Any]]) -> str:
         t, ro, f = r["tables"], r["routes"], r["fidelity"]
         lines.append(
             f"| {r['app']} | {r['framework']} | {t['verified']}/{t['total']} ({t['pct']}%) | "
+            f"{t.get('outside_api', 0)} | "
             f"{ro['verified']}/{ro['total']} ({ro['pct']}%) | {r['corrected']} | "
             f"{len(r['unreachable_routes'])} | {len(r['baseline'])} | "
             f"{'pass' if f['passed'] else 'fail'} | {'agrees' if r['agrees'] else 'DISAGREES'} | "

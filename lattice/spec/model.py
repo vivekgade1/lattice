@@ -28,6 +28,7 @@ allowed: the rule item it decides is then `unclear`.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
@@ -130,6 +131,30 @@ class Unchecked:
 
 CONTRACT_KINDS = ("read", "list", "create", "update", "delete", "action")
 OWNER_SCOPES = ("owner", "any", "unknown")
+# the owner scopes naming a column (Phase 2 W3b): "owner(<column>)" -- the rows whose
+# <column> is the caller (a link between users read from its other side) -- and
+# "owner_or_public(<column>)" -- the owner's rows, and anyone's whose Bool <column> is
+# true for reading (writes stay the owner's)
+COLUMN_SCOPES = ("owner", "owner_or_public")
+_COLUMN_SCOPE = re.compile(r"^(owner|owner_or_public)\(([A-Za-z_][A-Za-z0-9_]*)\)$")
+
+
+def scope_parts(scope: str | None) -> tuple[str | None, str | None]:
+    """An owner scope as (form, column): "owner" -> ("owner", None), "owner(c)" ->
+    ("owner", "c"), "owner_or_public(c)" -> ("owner_or_public", "c"), "any" -> ("any",
+    None); anything else (malformed) as it is, with no column."""
+    if scope is None:
+        return None, None
+    m = _COLUMN_SCOPE.match(scope)
+    return (m.group(1), m.group(2)) if m else (scope, None)
+
+
+def valid_scope(scope: str) -> bool:
+    """Whether ``scope`` is an owner scope: OWNER_SCOPES, or a COLUMN_SCOPES form with
+    its column."""
+    return scope in OWNER_SCOPES or _COLUMN_SCOPE.match(scope) is not None
+
+
 PARAM_SOURCES = ("path", "query", "body", "form")
 ERROR_TRIGGERS = (
     "unauthenticated",
@@ -205,10 +230,14 @@ class Contract:
     role, as `@endpoint(auth=<role>)`), "Roles(A, B)" (exactly those roles; a tuple of
     role names is accepted), or None (unknown). `table`: the table the route reads or
     writes (schema or SQL name). `kind`: CONTRACT_KINDS. `owner_scope`: "owner" (the
-    route acts on the caller's rows of an owned table only), "any" (on anyone's rows,
-    stated), "unknown", or None (the table's ownership decides: "owner" for an owned
-    table unless the route is admin-only, else not applicable). `response`: a response
-    model of the profile."""
+    route acts on the caller's rows of an owned table only), "owner(<column>)" (on the
+    rows whose <column> -- a users key, not the owner column -- is the caller: a link
+    between users read from its other side, microblog's followers by `followed_id`),
+    "owner_or_public(<column>)" (reads the caller's own rows and anyone's whose Bool
+    <column> is true; writes the caller's own only: JustNotes' `isPublic`), "any" (on
+    anyone's rows, stated), "unknown", or None (the table's ownership decides: "owner"
+    for an owned table unless the route is admin-only, else not applicable).
+    `response`: a response model of the profile."""
 
     method: str
     path: str

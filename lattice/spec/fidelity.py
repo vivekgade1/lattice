@@ -122,6 +122,7 @@ def predict(
 ) -> set[str]:
     """The status classes the spec's rule layer allows for ``step`` (see the module
     docstring); a framework route the import set apart (``framework``): any."""
+    from lattice.spec.model import scope_parts
     from lattice.spec.probes import allowed_roles, owner_scope, route_contracts
 
     api = spec.profile.api
@@ -141,7 +142,7 @@ def predict(
     if caller is not None and roles is not None and caller.role not in roles:
         return {"forbidden"}
     out = {"ok"}
-    if owner_scope(spec, c) == "owner":
+    if scope_parts(owner_scope(spec, c))[0] in ("owner", "owner_or_public"):
         out.add("not_owned")  # another user's row: the not-owned answer (403 or 404)
     for e in c.errors:
         out |= _class_of_error(e.status, e.when)

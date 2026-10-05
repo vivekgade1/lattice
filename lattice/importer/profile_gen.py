@@ -341,6 +341,11 @@ class _Generator:
                 "without an owner check",
             )
             return
+        link = self._link_owner(table, fks)
+        if link is not None:
+            plan.owner, reason = link
+            self._decide(plan, OWNED, reason)
+            return
         if len(fks) > 1:
             reason = (
                 f"{table.name} has {len(fks)} foreign keys to the users table; "
@@ -381,6 +386,32 @@ class _Generator:
             f"its one users foreign key, which {', '.join(evidence)} filter, check or set "
             "from the caller",
         )
+
+    def _link_owner(self, table: TableModel, fks: list[str]) -> tuple[str, str] | None:
+        """A link between users (Phase 2 W3b): two users foreign keys making up the
+        table's whole primary key (microblog's ``followers``), every route's owner
+        evidence on the table naming one of them, and the routes setting exactly one from
+        the caller (``follow`` inserts ``follower_id``). That side writes the links, so it
+        owns them -- (owner, reason); routes reading the other side state it per route
+        (a contract's ``owner(<column>)``). None otherwise (the owner stays unclear)."""
+        pk = {c.name for c in table.columns if c.primary_key}
+        if len(fks) != 2 or pk != set(fks):
+            return None
+        uses = [(r.name, u) for r in self.m.routes for u in r.owner_uses if u.table == table.name]
+        if not uses or any(u.column not in fks for _, u in uses):
+            return None
+        assigned = sorted({u.column for _, u in uses if u.how == "assign"})
+        if len(assigned) != 1:
+            return None
+        side = assigned[0]
+        other = next(f for f in fks if f != side)
+        writers = sorted({name for name, u in uses if u.how == "assign"})
+        reason = (
+            f"a link between users ({', '.join(fks)}, its key): {', '.join(writers)} set "
+            f"{side} from the caller, so that side owns a link; routes reading the {other} "
+            "side state it on their contracts"
+        )
+        return side, reason
 
     def owner_via(self, plan: _TablePlan, by_table_name: dict[str, _TablePlan]) -> None:
         """``owner_via`` (foreign key, parent): the one foreign key to an owned parent (by

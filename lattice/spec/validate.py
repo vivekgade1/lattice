@@ -38,7 +38,8 @@ they name is S002 / S003, like everywhere else:
 
 - S017: a malformed contract: its method is not GET/POST/PUT/PATCH/DELETE, its path
   does not start with "/", its `kind` is not one of CONTRACT_KINDS, or its
-  `owner_scope` is not one of OWNER_SCOPES.
+  `owner_scope` is not one of OWNER_SCOPES, `owner(<column>)` or
+  `owner_or_public(<column>)`.
 - S018: two contracts for the same endpoint (method and path).
 - S019: a contract's auth names a role the profile does not have (`Roles(...)` or a
   bare role name; the keywords are Public, Authenticated, Admin).
@@ -50,8 +51,10 @@ they name is S002 / S003, like everywhere else:
   a trigger (`when`) outside ERROR_TRIGGERS, or an `example` with keys other than
   user/path/params/json/form.
 - S022: a contract's response model is not one of the profile's responses.
-- S023: a contract's owner scope ("owner" / "any") needs a table that is owned
-  (`owner` or `owner_via`); it names no table, or a table nobody owns.
+- S023: a contract's owner scope ("owner", "any", "owner(<column>)",
+  "owner_or_public(<column>)") needs a table that is owned (`owner` or `owner_via`):
+  it names no table, or a table nobody owns. A scope's column must be the table's: a
+  Bool column for `owner_or_public`, one of the users key's type for `owner`.
 """
 
 from __future__ import annotations
@@ -77,7 +80,9 @@ from lattice.spec.model import (
     Spec,
     Step,
     resolve_table,
+    scope_parts,
     tables_of,
+    valid_scope,
 )
 from lattice.typesys import Scalar, Schema
 
@@ -460,8 +465,12 @@ def _contract(spec: Spec, c: Contract, where: str) -> list[SpecProblem]:
         bad(f"path {c.path!r}", 'a path starts with "/"')
     if c.kind is not None and c.kind not in CONTRACT_KINDS:
         bad(f"kind {c.kind!r}", f"use one of {', '.join(CONTRACT_KINDS)}")
-    if c.owner_scope is not None and c.owner_scope not in OWNER_SCOPES:
-        bad(f"owner_scope {c.owner_scope!r}", f"use one of {', '.join(OWNER_SCOPES)} or None")
+    if c.owner_scope is not None and not valid_scope(c.owner_scope):
+        bad(
+            f"owner_scope {c.owner_scope!r}",
+            f"use one of {', '.join(OWNER_SCOPES)}, owner(<column>), "
+            "owner_or_public(<column>) or None",
+        )
     if c.auth is not None:
         roles = auth_roles(c.auth)
         unknown = [r for r in roles or () if r not in api.roles or r == "Public"]
@@ -479,14 +488,18 @@ def _contract(spec: Spec, c: Contract, where: str) -> list[SpecProblem]:
             problems.append(_unknown_table(c.table, where, spec))
         else:
             schema = found[2]
-    if c.owner_scope in ("owner", "any") and (
-        c.table is None or (schema is not None and not (schema.owner or schema.owner_via))
+    form, column = scope_parts(c.owner_scope)
+    owned = schema is not None and bool(schema.owner or schema.owner_via)
+    if form in ("owner", "any", "owner_or_public") and (
+        c.table is None or (schema is not None and not owned)
     ):
         bad(
             f"owner_scope {c.owner_scope!r} on {c.table or 'no table'}",
             "an owner scope needs a table with owner= or owner_via=; leave it None",
             "S023",
         )
+    elif column is not None and schema is not None:
+        problems += _scope_column(spec, c, schema, form, column, where)
     if c.response is not None and c.response not in api.responses:
         bad(
             f"response {c.response!r} is not a response model of the profile",
@@ -496,6 +509,32 @@ def _contract(spec: Spec, c: Contract, where: str) -> list[SpecProblem]:
     problems += _contract_params(spec, c, where)
     problems += _contract_errors(c, where)
     return problems
+
+
+def _scope_column(
+    spec: Spec, c: Contract, schema: Schema, form: str | None, column: str, where: str
+) -> list[SpecProblem]:
+    """S023 for a scope naming a column: ``owner_or_public(<column>)`` needs a Bool
+    column of the table; ``owner(<column>)`` a column holding a user key (of the users
+    table's key type)."""
+    api = spec.profile.api
+    assert api is not None
+    types = dict(schema.columns)
+    scope = f"owner_scope {c.owner_scope!r}"
+    if column not in types:
+        return [SpecProblem("S023", f"{where}: {scope}: {c.table} has no column {column!r}",
+                            f"columns: {', '.join(schema.names())}")]  # fmt: skip
+    if form == "owner_or_public" and types[column] is not Scalar.BOOL:
+        return [SpecProblem("S023", f"{where}: {scope}: {column} is {types[column].value}, "
+                            "not Bool", "name a Bool column")]  # fmt: skip
+    if form == "owner":
+        users = resolve_table(spec.profile, api.users_table)
+        key = next((k[0] for k in users[2].keys if len(k) == 1), "id") if users else "id"
+        want = dict(users[2].columns).get(key) if users else None
+        if want is None or types[column] is not want:
+            return [SpecProblem("S023", f"{where}: {scope}: {column} does not hold a user key",
+                                "a column of the users key's type")]  # fmt: skip
+    return []
 
 
 def _column_ref(spec: Spec, ref: str, where: str) -> list[SpecProblem]:
