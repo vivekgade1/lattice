@@ -172,10 +172,16 @@ def db_factory(variant: str, path: Path) -> Path:
 # after round 3: cases whose error *body* the ticket never states are compared on status
 # and database effects only (t32 says only "an invalid month is a 422"; t36 never gives
 # the message for an order that can no longer be cancelled) ...
+# ... and after the Phase 1 oracle review (2026-10-05, results log "Phase 1"): t36 and t38
+# state no message for a caller who may not act or for an unknown order either.
 STATUS_ONLY: frozenset[str] = frozenset({
     "t32.month_13", "t32.month_zero", "t32.one_digit_month", "t32.not_a_month",
     "t32.month_missing",
     "t36.own_shipped", "t36.own_delivered", "t36.own_already_cancelled",
+    "t36.another_buyers_pending", "t36.another_buyers_shipped", "t36.vendor_someone_elses",
+    "t36.unknown_order",
+    "t38.another_buyers_order", "t38.unknown_order", "t38.vendor_forbidden",
+    "t38.admin_forbidden",
 })  # fmt: skip
 # ... and a case the ticket text does not determine is dropped: "admins can cancel any
 # order" also reads as "whatever its status". Corrected after the atomicity pilot (results
