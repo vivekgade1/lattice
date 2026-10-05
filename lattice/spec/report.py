@@ -1,4 +1,7 @@
-"""The check report: findings of the four layers, the cases run, and the verdict.
+"""The check report: findings of the layers, the cases run, and the verdict; with layer
+R, every rule item's verdict (``rules``: per item its verdict, probes, reason and the
+observed fact when refuted; the table and route verdicts; a refuted item is also a
+finding, with the refuting probe's request, answer and database difference).
 
 The JSON shape follows the Studio data contracts (docs/design/lattice-visualization-
 figma-spec.md §10): a layer A finding carries pycheck's ``code``, ``file``, ``line``,
@@ -21,13 +24,14 @@ from dataclasses import asdict, dataclass, field
 from fnmatch import fnmatchcase
 from typing import Any, Literal
 
-Layer = Literal["A", "B", "C", "D"]
-LAYERS: tuple[str, ...] = ("A", "B", "C", "D")
+Layer = Literal["A", "B", "C", "D", "R"]
+LAYERS: tuple[str, ...] = ("A", "B", "C", "D", "R")
 LAYER_NAMES = {
     "A": "static checks on the app's code",
     "B": "endpoint answers against the spec programs",
     "C": "invariants after every request",
     "D": "scenarios",
+    "R": "rule items probed on the app",
 }
 
 
@@ -88,7 +92,8 @@ class Report:
     """The result of :func:`lattice.spec.check.check`. ``verdict`` is ``pass`` when no
     layer found anything. ``cases`` maps each case run (layers B and D) to ``{layer,
     endpoint, verdict, reason, request}``; ``notes`` say what was skipped or could not
-    run; ``unchecked`` lists the spec's requirements no layer checks."""
+    run; ``unchecked`` lists the spec's requirements no layer checks. ``rules`` (layer R
+    only): every rule item's verdict (:class:`lattice.spec.probes.RuleResult`)."""
 
     layers: str
     findings: list[CheckFinding] = field(default_factory=list)
@@ -97,6 +102,7 @@ class Report:
     unchecked: list[str] = field(default_factory=list)
     accepted: list[tuple[CheckFinding, str]] = field(default_factory=list)
     stale: list[Accepted] = field(default_factory=list)
+    rules: Any = None
 
     def apply_baseline(self, baseline: Sequence[Accepted]) -> None:
         """Move the findings ``baseline`` matches to ``accepted``; record unused entries."""
@@ -126,7 +132,7 @@ class Report:
         }
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        out = {
             "verdict": self.verdict,
             "layers": self.layers,
             "counts": self.counts,
@@ -137,6 +143,9 @@ class Report:
             "accepted": [f.to_dict() | {"reason": r} for f, r in self.accepted],
             "stale_baseline": [asdict(a) for a in self.stale],
         }
+        if self.rules is not None:
+            out["rules"] = self.rules.to_dict()
+        return out
 
     def to_json(self, indent: int | None = 2) -> str:
         return json.dumps(self.to_dict(), indent=indent, default=str)
@@ -167,6 +176,9 @@ class Report:
             lines.append("")
             lines.append("stale baseline entries (they match nothing; remove them):")
             lines.extend(f"  - {a.pattern}" for a in self.stale)
+        if self.rules is not None:
+            lines.append("")
+            lines.extend(_rule_lines(self.rules))
         if self.unchecked:
             lines.append("")
             lines.append("not checked (stated in the spec, not checkable yet):")
@@ -183,9 +195,38 @@ def _short(value: Any, limit: int = 160) -> str:
     return text if len(text) <= limit else text[: limit - 3] + "..."
 
 
+def _rule_lines(rules: Any) -> list[str]:
+    """Layer R: the counts, then every item not verified, with its reason."""
+    s = rules.summary
+    counts = ", ".join(f"{v} {k}" for k, v in s["items"].items())
+    lines = [
+        f"rule items ({counts}); tables verified {s['tables']['verified']}/"
+        f"{s['tables']['total']}, routes verified {s['routes']['verified']}/"
+        f"{s['routes']['total']}:"
+    ]
+    for item_id, v in rules.items.items():
+        if v.verdict != "verified":
+            lines.append(f"  {v.verdict:11} {item_id}: {v.reason}")
+    return lines
+
+
 def _detail_lines(f: CheckFinding) -> list[str]:
     d = f.details
     out: list[str] = []
+    if f.layer == "R":
+        out.append(str(d.get("reason", "")))
+        if d.get("observed") is not None:
+            out.append(
+                f"observed: {_short(d['observed'])} (predicted {_short(d.get('predicted'))})"
+            )
+        actual = d.get("actual") or {}
+        if actual.get("status") is not None:
+            out.append(f"answered {actual['status']} {_short(actual.get('body'))}")
+        for table, diff in f.db_diff.items():
+            parts = [f"{k} {_short(v)}" for k, v in diff.items() if v]
+            if parts:
+                out.append(f"db {table}: " + "; ".join(parts))
+        return out
     if f.layer == "A":
         if d.get("message"):
             out.append(str(d["message"]))

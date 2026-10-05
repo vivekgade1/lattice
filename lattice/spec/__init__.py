@@ -14,6 +14,9 @@ from lattice.spec.check import (
 )
 from lattice.spec.invariants import ALLOWED_FORMS, InvariantError, compile_invariant
 from lattice.spec.model import (
+    Contract,
+    ContractError,
+    ContractParam,
     Invariant,
     Machine,
     Scenario,
@@ -33,6 +36,9 @@ __all__ = [
     "CaseContext",
     "CheckError",
     "CheckFinding",
+    "Contract",
+    "ContractError",
+    "ContractParam",
     "Invariant",
     "InvariantError",
     "InvariantMonitor",

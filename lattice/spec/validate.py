@@ -30,19 +30,56 @@ Codes:
   function name.
 - S015: a `Spec.users` entry is not handle -> (login, password), two texts.
 - S016: an unchecked requirement concerns something the spec does not name: not a
-  table, a `Table.column`, a program or an endpoint.
+  table, a `Table.column`, a program or an endpoint (a program's or a contract's,
+  "METHOD /path").
+
+Contracts (`Spec.contracts`, `lattice.spec.model.Contract`); an unknown table or column
+they name is S002 / S003, like everywhere else:
+
+- S017: a malformed contract: its method is not GET/POST/PUT/PATCH/DELETE, its path
+  does not start with "/", its `kind` is not one of CONTRACT_KINDS, or its
+  `owner_scope` is not one of OWNER_SCOPES.
+- S018: two contracts for the same endpoint (method and path).
+- S019: a contract's auth names a role the profile does not have (`Roles(...)` or a
+  bare role name; the keywords are Public, Authenticated, Admin).
+- S020: a malformed contract parameter: its source is not path/query/body/form, a path
+  parameter the path has no `{hole}` for, a name given twice, a bound of the wrong kind
+  (`min_len`/`max_len` on a non-Str, `ge`/`gt`/`le`/`lt` on a non-number), an empty
+  `one_of`.
+- S021: a malformed contract error: a status outside 100-599 (None is allowed: unknown),
+  a trigger (`when`) outside ERROR_TRIGGERS, or an `example` with keys other than
+  user/path/params/json/form.
+- S022: a contract's response model is not one of the profile's responses.
+- S023: a contract's owner scope ("owner" / "any") needs a table that is owned
+  (`owner` or `owner_via`); it names no table, or a table nobody owns.
 """
 
 from __future__ import annotations
 
 import ast
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
 from lattice.spec.invariants import InvariantError, compile_invariant
-from lattice.spec.model import Machine, Scenario, Spec, Step, resolve_table, tables_of
-from lattice.typesys import Schema
+from lattice.spec.model import (
+    AUTH_KEYWORDS,
+    CONTRACT_KINDS,
+    ERROR_TRIGGERS,
+    EXAMPLE_KEYS,
+    OWNER_SCOPES,
+    PARAM_SOURCES,
+    Contract,
+    ContractParam,
+    Machine,
+    Scenario,
+    Spec,
+    Step,
+    resolve_table,
+    tables_of,
+)
+from lattice.typesys import Scalar, Schema
 
 CODES: Mapping[str, str] = {
     "S001": "the profile has no API profile",
@@ -61,6 +98,13 @@ CODES: Mapping[str, str] = {
     "S014": "endpoint defined by two programs",
     "S015": "malformed user credentials",
     "S016": "unchecked requirement concerns nothing known",
+    "S017": "malformed contract",
+    "S018": "endpoint given two contracts",
+    "S019": "contract auth names an unknown role",
+    "S020": "malformed contract parameter",
+    "S021": "malformed contract error",
+    "S022": "unknown contract response model",
+    "S023": "contract owner scope on a table nobody owns",
 }
 HTTP_METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
 EXPECT_DB_KEYS = frozenset({"where", "count", "equals"})
@@ -81,7 +125,7 @@ class SpecProblem:
 
 def validate(spec: Spec) -> list[SpecProblem]:
     """Every problem of `spec`, in the order: users, programs, machines, invariants,
-    scenarios, unchecked requirements. Empty when the spec is consistent."""
+    scenarios, contracts, unchecked requirements. Empty when the spec is consistent."""
     if spec.profile.api is None:
         return [
             SpecProblem(
@@ -96,6 +140,7 @@ def validate(spec: Spec) -> list[SpecProblem]:
     problems += _machines(spec)
     problems += _invariants(spec)
     problems += _scenarios(spec)
+    problems += _contracts(spec)
     problems += _unchecked(spec)
     return problems
 
@@ -368,6 +413,164 @@ def _expect_db(spec: Spec, where: str, expect: Any) -> list[SpecProblem]:
     return problems
 
 
+# ---- contracts ---------------------------------------------------------------------------
+
+ROLES_RE = re.compile(r"^Roles\((.*)\)$")
+
+
+def auth_roles(auth: str) -> tuple[str, ...] | None:
+    """The role names a contract auth string names: those of "Roles(A, B)", or a bare
+    role name; None for a keyword (Public, Authenticated, Admin)."""
+    if auth in AUTH_KEYWORDS:
+        return None
+    m = ROLES_RE.match(auth)
+    if m:
+        return tuple(r.strip() for r in m.group(1).split(",") if r.strip())
+    return (auth,)
+
+
+def _contracts(spec: Spec) -> list[SpecProblem]:
+    problems: list[SpecProblem] = []
+    seen: set[str] = set()
+    for contract in spec.contracts:
+        where = f"contract {contract.endpoint}"
+        if contract.endpoint in seen:
+            problems.append(
+                SpecProblem(
+                    "S018", f"{where}: a second contract", "give each endpoint one contract"
+                )
+            )
+            continue
+        seen.add(contract.endpoint)
+        problems += _contract(spec, contract, where)
+    return problems
+
+
+def _contract(spec: Spec, c: Contract, where: str) -> list[SpecProblem]:
+    api = spec.profile.api
+    assert api is not None
+    problems: list[SpecProblem] = []
+
+    def bad(message: str, hint: str, code: str = "S017") -> None:
+        problems.append(SpecProblem(code, f"{where}: {message}", hint))
+
+    if c.method not in HTTP_METHODS:
+        bad(f"method {c.method!r}", f"use one of {', '.join(HTTP_METHODS)}")
+    if not (isinstance(c.path, str) and c.path.startswith("/")):
+        bad(f"path {c.path!r}", 'a path starts with "/"')
+    if c.kind is not None and c.kind not in CONTRACT_KINDS:
+        bad(f"kind {c.kind!r}", f"use one of {', '.join(CONTRACT_KINDS)}")
+    if c.owner_scope is not None and c.owner_scope not in OWNER_SCOPES:
+        bad(f"owner_scope {c.owner_scope!r}", f"use one of {', '.join(OWNER_SCOPES)} or None")
+    if c.auth is not None:
+        roles = auth_roles(c.auth)
+        unknown = [r for r in roles or () if r not in api.roles or r == "Public"]
+        if roles is not None and (unknown or not roles):
+            known = ", ".join(sorted(r for r in api.roles if r != "Public"))
+            bad(
+                f"auth {c.auth!r} names unknown roles {unknown}",
+                f"Public, Authenticated, Admin, a role or Roles(...) of: {known}",
+                "S019",
+            )
+    schema: Schema | None = None
+    if c.table is not None:
+        found = resolve_table(spec.profile, c.table)
+        if found is None:
+            problems.append(_unknown_table(c.table, where, spec))
+        else:
+            schema = found[2]
+    if c.owner_scope in ("owner", "any") and (
+        c.table is None or (schema is not None and not (schema.owner or schema.owner_via))
+    ):
+        bad(
+            f"owner_scope {c.owner_scope!r} on {c.table or 'no table'}",
+            "an owner scope needs a table with owner= or owner_via=; leave it None",
+            "S023",
+        )
+    if c.response is not None and c.response not in api.responses:
+        bad(
+            f"response {c.response!r} is not a response model of the profile",
+            f"models: {', '.join(sorted(api.responses))}",
+            "S022",
+        )
+    problems += _contract_params(spec, c, where)
+    problems += _contract_errors(c, where)
+    return problems
+
+
+def _column_ref(spec: Spec, ref: str, where: str) -> list[SpecProblem]:
+    table, _, column = ref.partition(".")
+    found = resolve_table(spec.profile, table)
+    if found is None:
+        return [_unknown_table(table, where, spec)]
+    name, _, schema = found
+    if not column or column not in schema:
+        return [_unknown_column(name, column, schema, where)]
+    return []
+
+
+def _contract_params(spec: Spec, c: Contract, where: str) -> list[SpecProblem]:
+    problems: list[SpecProblem] = []
+    holes = set(re.findall(r"\{([^}]+)\}", c.path)) if isinstance(c.path, str) else set()
+    names: set[tuple[str, str]] = set()
+    numeric = (Scalar.INT, Scalar.FLOAT)
+
+    def bad(p: ContractParam, message: str, hint: str) -> None:
+        problems.append(SpecProblem("S020", f"{where} parameter {p.name!r}: {message}", hint))
+
+    for p in c.params:
+        if p.source not in PARAM_SOURCES:
+            bad(p, f"source {p.source!r}", f"use one of {', '.join(PARAM_SOURCES)}")
+        if p.source == "path" and p.name not in holes:
+            bad(p, "the path has no hole for it", f"write {{{p.name}}} in the path")
+        if (p.source, p.name) in names:
+            bad(p, "given twice", "give each parameter once")
+        names.add((p.source, p.name))
+        if (p.min_len is not None or p.max_len is not None) and p.scalar is not Scalar.STR:
+            bad(p, "a length bound on a non-Str parameter", "use ge/gt/le/lt for numbers")
+        bounds = (p.ge, p.gt, p.le, p.lt)
+        if any(b is not None for b in bounds) and p.scalar not in numeric:
+            bad(p, "a numeric bound on a non-number parameter", "use min_len/max_len for text")
+        if p.one_of is not None and not p.one_of:
+            bad(p, "an empty one_of", "list the accepted values")
+        if p.column is not None:
+            problems += _column_ref(spec, p.column, f"{where} parameter {p.name!r} column")
+        if p.ref is not None and resolve_table(spec.profile, p.ref) is None:
+            problems.append(_unknown_table(p.ref, f"{where} parameter {p.name!r} ref", spec))
+    return problems
+
+
+def _contract_errors(c: Contract, where: str) -> list[SpecProblem]:
+    problems: list[SpecProblem] = []
+    for e in c.errors:
+        status = e.status
+        if status is not None and (
+            isinstance(status, bool) or not isinstance(status, int) or not 100 <= status <= 599
+        ):
+            problems.append(
+                SpecProblem("S021", f"{where}: error status {status!r}", "an HTTP status, 100-599")
+            )
+        if e.when not in ERROR_TRIGGERS:
+            problems.append(
+                SpecProblem(
+                    "S021",
+                    f"{where}: error trigger {e.when!r}",
+                    f"one of {', '.join(ERROR_TRIGGERS)}",
+                )
+            )
+        if e.example is not None and (
+            not isinstance(e.example, Mapping) or not set(e.example) <= EXAMPLE_KEYS
+        ):
+            problems.append(
+                SpecProblem(
+                    "S021",
+                    f"{where}: error example {e.example!r}",
+                    f"an example has keys of {', '.join(sorted(EXAMPLE_KEYS))}",
+                )
+            )
+    return problems
+
+
 # ---- unchecked requirements --------------------------------------------------------------
 
 
@@ -376,6 +579,8 @@ def _unchecked(spec: Spec) -> list[SpecProblem]:
     known = set(tables) | set(sql_names.values()) | set(spec.programs)
     known |= {f"{t}.{c}" for t, schema in tables.items() for c in schema.names()}
     known |= {f for source in spec.programs.values() for f, _, _ in _endpoints(source)}
+    known |= {f"{m} {p}" for source in spec.programs.values() for _, m, p in _endpoints(source)}
+    known |= {c.endpoint for c in spec.contracts}
     return [
         SpecProblem(
             "S016",

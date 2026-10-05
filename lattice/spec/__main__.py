@@ -41,7 +41,9 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--db", required=True, help="module:build_db, (path) or (variant, path)")
     c.add_argument("--app-dir", help="the app package's directory (layer A)")
     c.add_argument("--package", help="the app package, dotted (layer A)")
-    c.add_argument("--layers", default="ABCD", help="letters of ABCD (default all)")
+    c.add_argument(
+        "--layers", default="ABCD", help="letters of ABCDR (default ABCD; R: the rule layer)"
+    )
     c.add_argument("--login", help="module:fn, (client, handle) -> bearer token")
     c.add_argument("--login-path", help="a form login route taking Spec.users' credentials")
     c.add_argument("--mint-token", help="module:fn, (user key) -> bearer token")

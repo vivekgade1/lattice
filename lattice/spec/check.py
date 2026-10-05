@@ -23,6 +23,11 @@
   steps in order (callers logged in through ``login(client, handle)``), each step's
   ``expect_status``, ``expect_body`` (a subset match for objects) and ``expect_db``
   checked. A scenario stops at its first failing step.
+* **R** -- the rule layer (plan 2026-10-05 phase 2, §1): every rule item of the spec's
+  profile and route contracts (:mod:`lattice.spec.probes`) probed on the app, each probe
+  a request on a fresh copy of the seed. Every item gets a verdict (``report.rules``); a
+  refuted item is a finding (key ``R:<endpoint>:<item id> | <probe>``). With C, the
+  invariants run after every probe too. Not in the default layers.
 
 Callers: ``login(client, handle)`` answers a bearer token for a handle of
 ``Spec.users`` (or ``login_path``: a form login with ``Spec.users``' credentials).
@@ -111,7 +116,7 @@ def as_db_factory(db_factory: Callable[..., Any]) -> Callable[[str, Path], Path]
 def _layers(layers: str) -> str:
     wanted = layers.upper()
     if not wanted or any(x not in LAYERS for x in wanted):
-        raise CheckError(f"layers must be letters of ABCD, not {layers!r}")
+        raise CheckError(f"layers must be letters of {''.join(LAYERS)}, not {layers!r}")
     return "".join(x for x in LAYERS if x in wanted)
 
 
@@ -1232,6 +1237,89 @@ def _run_scenario(
             _dispose(app)
 
 
+# ---- layer R --------------------------------------------------------------------------------
+
+
+def _layer_r(
+    spec: Spec,
+    report: Report,
+    app_factory: AppFactory,
+    make_db: Callable[[str, Path], Path],
+    monitor: InvariantMonitor | None,
+    *,
+    login: Login | None,
+    mint_token: Callable[[Any], str] | None,
+    sessions: Any,
+    scheme: str,
+    only: Sequence[str] | None,
+) -> None:
+    from lattice.spec.probes import asgi_sessions, run_probes
+
+    on_probe = None
+    if sessions is None:
+        factory = app_factory
+        if monitor is not None:
+            factory = monitor.wrap(app_factory)
+
+            def on_probe(probe: Any) -> None:
+                monitor.label = f"R | {probe.name}"
+                monitor.requests[monitor.label] = probe.request()
+                monitor.endpoints[monitor.label] = probe.route
+
+        sessions = asgi_sessions(factory)
+    elif monitor is not None:
+        report.notes.append("layer C does not watch layer R's probes through a given transport")
+    try:
+        result = run_probes(
+            spec,
+            sessions,
+            make_db,
+            login=login,
+            mint_token=mint_token,
+            scheme=scheme,
+            only=only,
+            on_probe=on_probe,
+        )
+    except CheckError:
+        raise
+    except Exception as err:  # noqa: BLE001 -- the app could not run the probes: loud
+        report.findings.append(
+            CheckFinding(
+                layer="R",
+                verdict="loud",
+                rule="the app answers the rule probes",
+                details={"error": f"{type(err).__name__}: {err}"},
+            )
+        )
+        return
+    report.rules = result
+    report.notes.extend(result.notes)
+    for item_id, v in result.items.items():
+        if v.verdict != "refuted":
+            continue
+        record = result.probes.get(v.witness or "", {})
+        status = record.get("status")
+        endpoint = record.get("route") or (v.item.subject if " /" in v.item.subject else None)
+        report.findings.append(
+            CheckFinding(
+                layer="R",
+                verdict="loud" if isinstance(status, int) and status >= 500 else "silent",
+                rule=v.item.sentence,
+                endpoint=endpoint,
+                case=f"{item_id} | {v.witness}" if v.witness else item_id,
+                request=record.get("request"),
+                details={
+                    "item": item_id,
+                    "reason": v.reason,
+                    "predicted": dict(v.item.predicted),
+                    "observed": v.observed,
+                    "actual": {"status": status, "body": record.get("body")},
+                },
+                db_diff=record.get("db_diff") or {},
+            )
+        )
+
+
 # ---- the engine -----------------------------------------------------------------------------
 
 
@@ -1255,9 +1343,15 @@ def check(
     hash_columns: Sequence[str] = ("hashed_password",),
     max_rows: int = 6,
     baseline: Sequence[Accepted] = (),
+    sessions: Any = None,
+    scheme: str = "Bearer",
+    rule_items: Sequence[str] | None = None,
 ) -> Report:
     """Check the app built by ``app_factory(db_path)`` against ``spec`` in ``layers``
-    (letters of ABCD; see the module docstring). ``db_factory`` writes the seeded
+    (letters of ABCDR; see the module docstring). Layer R: ``sessions`` is the probes'
+    transport (:data:`lattice.spec.probes.SessionFactory`; default the ASGI TestClient
+    over ``app_factory``), ``scheme`` the Authorization scheme, ``rule_items`` the item id
+    prefixes to probe (default all). ``db_factory`` writes the seeded
     database. ``policy``: layer A's base policy (default: derived from the app).
     ``cases_for(spec, endpoint, ctx)``: layer B's case generator; ``extra_cases`` run
     too. ``rules``: verify's representation rules (default: 422 bodies compare by the
@@ -1289,7 +1383,7 @@ def check(
             except Exception as err:
                 raise CheckError(f"the db factory failed: {type(err).__name__}: {err}") from err
             monitor.set_seed(seed_db)
-        if "B" not in run and "D" not in run:
+        if "B" not in run and "D" not in run and "R" not in run:
             report.notes.append("layer C ran on the seed only: run it with B or D")
     if "B" in run:
         _layer_b(
@@ -1313,6 +1407,19 @@ def check(
             report.notes.append("layer D: the spec has no scenarios")
         for scenario in spec.scenarios:
             _run_scenario(spec, scenario, report, app_factory, make_db, monitor, login)
+    if "R" in run:
+        _layer_r(
+            spec,
+            report,
+            app_factory,
+            make_db,
+            monitor,
+            login=login,
+            mint_token=mint_token,
+            sessions=sessions,
+            scheme=scheme,
+            only=rule_items,
+        )
     if monitor is not None:
         report.findings.extend(monitor.findings)
     order = {layer: i for i, layer in enumerate(LAYERS)}

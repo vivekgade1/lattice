@@ -16,6 +16,14 @@ Additions to the plan's interface (no deviation from it):
 - `Spec.programs` may also be given as a sequence of (name, source) pairs; a name given
   twice is kept once (the last) and reported by `validate` (S013).
 - `Step` fields after `path` have defaults (`expect_status=200`).
+
+Contracts (Phase 2 plan 2026-10-05, §2.4): `Contract` is a route's rule layer with no
+code generation -- its auth, the table it reads or writes, its kind, its ownership
+scope, its parameters (`ContractParam`) and its error answers (`ContractError`). The
+rule oracle (`lattice.spec.probes`) turns contracts and the profile into probes with
+predicted answers; layer R of `lattice.spec.check` runs them. No target compiles a
+contract (docs/lattice-language-rules.md §6). An unknown (None / "unknown") field is
+allowed: the rule item it decides is then `unclear`.
 """
 
 from __future__ import annotations
@@ -26,7 +34,7 @@ from types import MappingProxyType
 from typing import Any
 
 from lattice.profile import Profile
-from lattice.typesys import Schema
+from lattice.typesys import Scalar, Schema
 
 
 def _strings(value: str | Iterable[str]) -> tuple[str, ...]:
@@ -120,6 +128,110 @@ class Unchecked:
         object.__setattr__(self, "concerns", _strings(self.concerns))
 
 
+CONTRACT_KINDS = ("read", "list", "create", "update", "delete", "action")
+OWNER_SCOPES = ("owner", "any", "unknown")
+PARAM_SOURCES = ("path", "query", "body", "form")
+ERROR_TRIGGERS = (
+    "unauthenticated",
+    "forbidden",
+    "inactive",
+    "not_found",
+    "not_owned",
+    "invalid",
+    "duplicate",
+    "other",
+)
+EXAMPLE_KEYS = frozenset({"user", "path", "params", "json", "form"})
+AUTH_KEYWORDS = ("Public", "Authenticated", "Admin")
+
+
+@dataclass(frozen=True)
+class ContractParam:
+    """One parameter of a contract route. `name` is a dotted path into a nested JSON
+    body ("items.0.quantity": key `items`, its first element, key `quantity`). Bounds:
+    numeric `ge`/`gt`/`le`/`lt`, text `min_len`/`max_len`; `one_of` the accepted wire
+    values. `column` ("Table.column") is where the value is stored: its bounds and
+    one_of are that column's table items (T3, T4). `ref` names the table whose key the
+    value is (probes take a seeded row's key). `example`: a valid value (None: one is
+    generated)."""
+
+    name: str
+    source: str = "body"
+    scalar: Scalar = Scalar.STR
+    required: bool = True
+    ge: float | None = None
+    gt: float | None = None
+    le: float | None = None
+    lt: float | None = None
+    min_len: int | None = None
+    max_len: int | None = None
+    one_of: tuple[str, ...] | None = None
+    column: str | None = None
+    ref: str | None = None
+    example: Any = field(default=None, hash=False)
+
+    def __post_init__(self) -> None:
+        if self.one_of is not None:
+            object.__setattr__(self, "one_of", _strings(self.one_of))
+
+
+@dataclass(frozen=True)
+class ContractError:
+    """An error answer of a contract route: `status` (None: unknown -- the item is
+    unclear), `detail` when the code has a literal one, and `when`, what triggers it
+    (ERROR_TRIGGERS). `example` is a request that triggers it -- any of `user` (a
+    handle), `path`, `params`, `json`, `form` -- for a trigger the probes cannot make
+    on their own (`other`)."""
+
+    status: int | None
+    detail: str | None = None
+    when: str = "other"
+    example: Mapping[str, Any] | None = field(default=None, hash=False)
+
+
+def _auth(value: Any) -> str | None:
+    """None, a keyword, a role name, or "Roles(A, B)"; a sequence of roles becomes
+    "Roles(A, B)"."""
+    if value is None or isinstance(value, str):
+        return value
+    return f"Roles({', '.join(value)})"
+
+
+@dataclass(frozen=True)
+class Contract:
+    """A route's rule layer (the contract-only route of the direction draft §6.1).
+
+    `auth`: "Public", "Authenticated", "Admin", a role name (that role or the admin
+    role, as `@endpoint(auth=<role>)`), "Roles(A, B)" (exactly those roles; a tuple of
+    role names is accepted), or None (unknown). `table`: the table the route reads or
+    writes (schema or SQL name). `kind`: CONTRACT_KINDS. `owner_scope`: "owner" (the
+    route acts on the caller's rows of an owned table only), "any" (on anyone's rows,
+    stated), "unknown", or None (the table's ownership decides: "owner" for an owned
+    table unless the route is admin-only, else not applicable). `response`: a response
+    model of the profile."""
+
+    method: str
+    path: str
+    auth: str | None
+    table: str | None = None
+    kind: str | None = None
+    owner_scope: str | None = None
+    params: tuple[ContractParam, ...] = ()
+    errors: tuple[ContractError, ...] = ()
+    response: str | None = None
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "method", str(self.method).upper())
+        object.__setattr__(self, "auth", _auth(self.auth))
+        object.__setattr__(self, "params", tuple(self.params))
+        object.__setattr__(self, "errors", tuple(self.errors))
+
+    @property
+    def endpoint(self) -> str:
+        """``METHOD /path``."""
+        return f"{self.method} {self.path}"
+
+
 def _programs(value: Mapping[str, str] | Iterable[tuple[str, str]]) -> tuple[dict, tuple]:
     pairs = list(value.items()) if isinstance(value, Mapping) else [tuple(p) for p in value]
     names = [name for name, _ in pairs]
@@ -140,7 +252,8 @@ class Spec:
     scenarios, unchecked requirements, `users` (handle -> (login, password)) the
     scenarios sign in as, and `approved`: checker findings the spec states as intended
     (``lattice.spec.Accepted``, e.g. a public aggregate over owned rows), each with the
-    reason; the check reports them as accepted."""
+    reason; the check reports them as accepted. `contracts`: the rule layer of routes
+    (`Contract`), which layer R probes."""
 
     profile: Profile
     programs: Mapping[str, str] = field(default_factory=dict)
@@ -150,6 +263,7 @@ class Spec:
     unchecked: tuple[Unchecked, ...] = ()
     users: Mapping[str, tuple[str, str]] = field(default_factory=dict)
     approved: tuple[Any, ...] = ()
+    contracts: tuple[Contract, ...] = ()
     # program names given more than once (programs given as pairs); see validate S013
     duplicate_programs: tuple[str, ...] = field(default=(), init=False, repr=False)
 
@@ -159,7 +273,7 @@ class Spec:
         object.__setattr__(self, "duplicate_programs", duplicates)
         users = {handle: _user(login) for handle, login in dict(self.users).items()}
         object.__setattr__(self, "users", MappingProxyType(users))
-        for name in ("machines", "invariants", "scenarios", "unchecked", "approved"):
+        for name in ("machines", "invariants", "scenarios", "unchecked", "approved", "contracts"):
             object.__setattr__(self, name, tuple(getattr(self, name)))
 
     def table(self, name: str) -> tuple[str, str, Schema] | None:
