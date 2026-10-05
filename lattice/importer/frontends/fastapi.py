@@ -1954,7 +1954,11 @@ def _mentions(expr: ast.expr, claim: str, names: set[str]) -> bool:
 def route_function(
     index: _Index, route: Route
 ) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
-    """The route's function: top-level, or nested in its enclosing app factory."""
+    """The route's function: top-level, or nested in its enclosing app factory; for a
+    class-based view (``Route.view`` ``module:Class.method``), the method as the class or
+    its package base classes define it (None when it comes from a library)."""
+    if route.view is not None:
+        return view_function(index, route.view)
     m = index.modules.get(route.module)
     if m is None:
         return None
@@ -1971,6 +1975,41 @@ def route_function(
             and node.lineno == route.line
         ):
             return node
+    return None
+
+
+def view_function(index: _Index, view: str) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+    """``module:function`` or ``module:Class.method`` as the package defines it: a method
+    is looked up in the class, then in its package base classes (depth first, as Python's
+    MRO does for single inheritance)."""
+    if ":" not in view:
+        return None
+    module, name = view.split(":", 1)
+    if "." not in name:
+        found = index.node(view)
+        fn = found[1] if found else None
+        return fn if isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef) else None
+    cls_name, method = name.rsplit(".", 1)
+    return _method(index, f"{module}:{cls_name}", method, set())
+
+
+def _method(
+    index: _Index, qual: str, method: str, seen: set[str]
+) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+    found = index.node(index.chase(qual))
+    if found is None or qual in seen or not isinstance(found[1], ast.ClassDef):
+        return None
+    seen.add(qual)
+    mod, cls = found
+    for stmt in cls.body:
+        if isinstance(stmt, ast.FunctionDef | ast.AsyncFunctionDef) and stmt.name == method:
+            return stmt
+    for base in cls.bases:
+        base_qual = index.resolve(mod, base)
+        if base_qual is not None and ":" in base_qual:
+            fn = _method(index, base_qual, method, seen)
+            if fn is not None:
+                return fn
     return None
 
 

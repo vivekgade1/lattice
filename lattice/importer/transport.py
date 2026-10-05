@@ -10,14 +10,15 @@
   - :class:`WsgiTransport`: ``httpx.Client`` over ``httpx.WSGITransport`` (Flask; an
     unhandled error a 500 unless ``raise_errors``), base URL ``http://testserver``.
 
-  A Django front end wraps ``django.test.Client`` the same way (W2).
+  The Django front end serves its WSGI application through :class:`WsgiTransport` too.
 * :class:`AuthDriver` -- how a case acting as a user is authenticated: a login (the app's
   own login route: :func:`form_login`, :func:`json_login`, :func:`session_login`; or any
-  :data:`Login`; :func:`basic_login` for HTTP Basic credentials), else a token ``mint``
-  (handle -> token, no request); the token is sent in the ``Authorization`` header with
-  its ``scheme`` (``bearer`` / ``token`` / ``jwt`` spelled ``Bearer`` / ``Token`` /
-  ``JWT``; ``basic_token``: ``Basic base64(<token>:)``), or -- ``cookie`` set -- as that
-  session cookie, held in the client's cookie jar.
+  :data:`Login`; :func:`basic_token_login` posts HTTP Basic credentials to a login
+  route; :func:`basic_login` is stateless HTTP Basic), else a token ``mint`` (handle ->
+  token, no request); the token is sent in the ``Authorization`` header with its
+  ``scheme`` (``bearer`` / ``token`` / ``jwt`` / ``basic`` spelled ``Bearer`` / ``Token``
+  / ``JWT`` / ``Basic``; ``basic_token``: ``Basic base64(<token>:)``), or -- ``cookie``
+  set -- as that session cookie, held in the client's cookie jar.
 * :class:`AppRuntime` -- everything the importer does to an original app that depends on
   its framework: the transport, the auth driver, the dispose hooks run after every app
   (before the database is read: ``app.state.engine.dispose()`` for FastAPI), the seed's
@@ -42,7 +43,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
-    from lattice.importer.appmodel import TableModel
+    from lattice.importer.appmodel import AuthModel, TableModel
     from lattice.importer.outside import OpenApiFacts
 
 Login = Callable[[Any, str], str]  # (client, user handle) -> token
@@ -252,7 +253,7 @@ def basic_credentials(username: str, password: str) -> str:
     return "Basic " + base64.b64encode(f"{username}:{password}".encode()).decode()
 
 
-def basic_login(
+def basic_token_login(
     path: str,
     credentials: Mapping[str, tuple[str, str]],
     *,
@@ -270,6 +271,18 @@ def basic_login(
         for key in token_path:
             value = value[key]
         return value
+
+    return login
+
+
+def basic_login(credentials: Mapping[str, tuple[str, str]]) -> Login:
+    """A ``login`` for HTTP Basic auth: no request, the token is ``base64(user:password)``
+    (sent as ``Authorization: Basic <token>``)."""
+    import base64
+
+    def login(client: Any, handle: str) -> str:
+        username, password = credentials[handle]
+        return base64.b64encode(f"{username}:{password}".encode()).decode()
 
     return login
 
@@ -345,7 +358,7 @@ class AuthDriver:
         return cls(scheme="session", login=login, cookie=cookie)
 
     @classmethod
-    def basic(
+    def basic_route(
         cls,
         path: str,
         credentials: Mapping[str, tuple[str, str]],
@@ -353,9 +366,42 @@ class AuthDriver:
         token_path: Sequence[str] = ("access_token",),
         scheme: str = "bearer",
     ) -> AuthDriver:
-        """Logged in with HTTP Basic credentials (:func:`basic_login`); the token then
+        """Logged in with HTTP Basic credentials (:func:`basic_token_login`); the token then
         sent with ``scheme`` (``basic_token``: as the Basic username, empty password)."""
-        return cls(scheme=scheme, login=basic_login(path, credentials, token_path=token_path))
+        return cls(scheme=scheme, login=basic_token_login(path, credentials, token_path=token_path))
+
+    @classmethod
+    def basic(cls, credentials: Mapping[str, tuple[str, str]]) -> AuthDriver:
+        """HTTP Basic: every request carries ``Authorization: Basic base64(user:pw)``."""
+        return cls(scheme="basic", login=basic_login(credentials))
+
+    @classmethod
+    def from_model(
+        cls, auth: AuthModel | None, credentials: Mapping[str, tuple[str, str]]
+    ) -> AuthDriver:
+        """The driver a front end's ``AuthModel`` describes, logging in with
+        ``credentials`` (handle -> (login name, password)): Basic; a session login route;
+        a JSON or form login route answering the token at ``token_path``; else the
+        scheme alone (a caller's :data:`Login` or a minter supplies tokens). None:
+        FastAPI's default driver."""
+        if auth is None:
+            return cls()
+        fields = {"username_field": auth.username_field, "password_field": auth.password_field}
+        if auth.scheme == "basic":
+            return cls.basic(credentials)
+        if auth.login_path is None:
+            return cls(scheme=auth.scheme, cookie=auth.cookie)
+        if auth.login_encoding == "basic":
+            return cls.basic_route(auth.login_path, credentials, token_path=auth.token_path,
+                                   scheme=auth.scheme)  # fmt: skip
+        if auth.scheme == "session" and auth.cookie is not None:
+            return cls.session(auth.login_path, credentials, auth.cookie,
+                               as_json=auth.login_encoding == "json", **fields)  # fmt: skip
+        if auth.login_encoding == "json":
+            return cls.json(auth.login_path, credentials, token_path=auth.token_path,
+                            scheme=auth.scheme, **fields)  # fmt: skip
+        return cls.form(auth.login_path, credentials, token_field=".".join(auth.token_path),
+                        scheme=auth.scheme, **fields)  # fmt: skip
 
     @property
     def can_login(self) -> bool:

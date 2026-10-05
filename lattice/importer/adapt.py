@@ -24,7 +24,10 @@ unverified, not accepted.
   stores in the password-hash column) and the one the login route mints tokens with
   (taking the users key: ``Uuid`` or ``Int``). A front end's ``AuthModel``
   (``RepoModel.auth``) names the login route, its encoding and fields, and where the
-  token is in its answer; without one (FastAPI) they are read as above.
+  token is in its answer; and, where the code has no dependency saying them, the users
+  table, its login-name / password / admin / active columns and the password hasher
+  (``module:function``, imported). Without one (FastAPI) they are read as above. With
+  one, a form parameter does not make a route the login (only ``login_path`` does).
 * the seed's insert hook: the runtime's (``AppRuntime.seed_hook``; FastAPI's writes
   through the original's SQLModel classes).
 
@@ -165,10 +168,13 @@ def table_spec(t: TableModel, api: ApiProfile) -> TableSpec:
 
 def users_model(model: RepoModel, api: ApiProfile) -> TableModel | None:
     """The users table: the profile's, else the one the current-user dependencies return
-    (the profile leaves ``users_table`` unset when it has no auth for it)."""
+    (the profile leaves ``users_table`` unset when it has no auth for it), else the front
+    end's ``AuthModel.users_table``."""
     tables = {t.name: t for t in model.tables}
     if api.users_table in tables:
         return tables[api.users_table]
+    if model.auth is not None and model.auth.users_table in tables:
+        return tables[model.auth.users_table]
     found = {d.returns for d in model.dependencies if d.kind == "current_user" and d.returns}
     return tables.get(found.pop()) if len(found) == 1 else None
 
@@ -204,7 +210,9 @@ def _kind(model: RepoModel, route: Route, users: TableModel | None) -> str:
     sources = {p.source for p in route.params}
     path = "path" in sources
     body = "body" in sources
-    if "form" in sources or _is_login(model, route):
+    # a form parameter is FastAPI's OAuth2 password form; with a front end's AuthModel
+    # only its login route is (a form there is an upload or an HTML form)
+    if ("form" in sources and model.auth is None) or _is_login(model, route):
         return "login"
     method = route.method
     users_response = users is not None and _returns_users(model, route, users)
@@ -473,7 +481,11 @@ def auth_spec(
         # has no users rows
         return AuthSpec(users_table="", active_column=None, admin_column=None)
     key = next((c for c in users.columns if c.primary_key), None)
+    declared = model.auth  # the front end's AuthModel (None: read from the code, FastAPI)
+    names = {c.name for c in users.columns}
     email = next((c.name for c in users.columns if c.type == "Email" and c.unique), None)
+    if declared is not None and declared.email_column in names:
+        email = declared.email_column
     if email is None:
         # the login name column: a unique text column, else the one named like it
         texts = [c for c in users.columns if c.type in ("Str", "Email") and not c.primary_key]
@@ -483,10 +495,17 @@ def auth_spec(
     schema = api.tables.get(users.name)
     private = list(schema.private) if schema is not None else []
     password = private[0] if len(private) == 1 else None
+    if password is None and declared is not None and declared.password_column in names:
+        password = declared.password_column
     if password is None:
         hashed = [c.name for c in users.columns if c.type == "Str" and PASSWORD_HINT in c.name]
         password = hashed[0] if len(hashed) == 1 else "hashed_password"
     admin = next((d.admin_column for d in model.dependencies if d.kind == "admin"), None)
+    if admin is None and declared is not None and declared.admin_column in names:
+        admin = declared.admin_column
+    active = api.active_column
+    if active is None and declared is not None and declared.active_column in names:
+        active = declared.active_column
     login = next(
         (
             r
@@ -507,6 +526,9 @@ def auth_spec(
                 mint = natives.get(name)
                 break
     hasher = _hash_native(index, model, password)
+    hash_password = natives.get(hasher) if hasher else None
+    if hash_password is None and declared is not None and declared.hasher is not None:
+        hash_password = _import_function(declared.hasher)
     decoder = next(
         (n for n in model.natives if n.kind == "token_decoder" and n.expressible), None
     )
@@ -517,11 +539,11 @@ def auth_spec(
         users_table=users.table_name,
         email_column=email,
         password_column=password,
-        active_column=api.active_column,
+        active_column=active,
         admin_column=admin,
         key_type=COLUMN_TYPES.get(key.type or "", "uuid") if key is not None else "uuid",  # type: ignore[arg-type]
         login_path=login.path if login is not None else None,
-        hash_password=natives.get(hasher) if hasher else None,
+        hash_password=hash_password,
         mint_token=mint,
         mint_claims=minter,
         claim=decoder.claim if decoder is not None and decoder.claim else "sub",
@@ -529,6 +551,18 @@ def auth_spec(
         **_role_spec(model),
         **_login_spec(model),
     )
+
+
+def _import_function(qual: str) -> Callable[..., Any] | None:
+    """``module:function`` (or ``module:Class.attr``) imported; None when it cannot be."""
+    module, _, path = qual.partition(":")
+    try:
+        value: Any = importlib.import_module(module)
+        for part in path.split(".") if path else ():
+            value = getattr(value, part)
+    except (ImportError, AttributeError):
+        return None
+    return value if callable(value) else None
 
 
 def _login_spec(model: RepoModel) -> dict[str, object]:

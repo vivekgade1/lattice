@@ -48,11 +48,15 @@ def test_basic_token_scheme_and_basic_login():
 
             return R()
 
-    login = transport.basic_login("/login", {"u": ("name", "pw")}, token_path=("data", "token"))
+    login = transport.basic_token_login(
+        "/login", {"u": ("name", "pw")}, token_path=("data", "token")
+    )
     assert login(Client(), "u") == "T"
     basic = base64.b64encode(b"name:pw").decode()
     assert seen["call"] == ("/login", {"Authorization": f"Basic {basic}"})
-    built = transport.AuthDriver.basic("/login", {}, token_path=("token",), scheme="basic_token")
+    built = transport.AuthDriver.basic_route(
+        "/login", {}, token_path=("token",), scheme="basic_token"
+    )
     assert (built.scheme, built.can_login) == ("basic_token", True)
 
 

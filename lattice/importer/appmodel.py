@@ -9,13 +9,24 @@ extractor, so every field added for other frameworks has a default that reproduc
 output: ``framework`` / ``orm`` (``"fastapi"`` / ``"sqlmodel"``), ``auth`` (None: the
 dependencies say it), ``Route.guards`` (``()``), ``Route.view`` (None) and
 ``RaiseSite.kind`` (``"HTTPException"``), ``constraints`` and ``excluded_routes``
-(``()``). ``to_json()`` serialises it."""
+(``()``). ``to_json()`` serialises it.
+
+Fields only the Django / Flask front ends fill (``FieldSpec.write_only``,
+``TableModel.unique_together`` / ``through`` / ``checks``) are marked
+:data:`OMIT_DEFAULT`: ``to_dict()`` leaves them out while they hold their default, so a
+FastAPI model's JSON is unchanged. What the Django front end leaves out of the model
+(framework tables and routes) it reports as :class:`Excluded` items beside it."""
 
 from __future__ import annotations
 
 import dataclasses
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
+
+# metadata of a field added for the Phase 2 front ends: ``to_dict()`` leaves it out
+# while it holds its default, so a FastAPI model serialises as before (the W0 goldens)
+OMIT_DEFAULT = {"omit_default": True}
 
 
 @dataclass(frozen=True)
@@ -48,6 +59,9 @@ class FieldSpec:
     # table column of an Enum type by member name); () for a Literal or an explicit
     # ``sa_type`` / ``sa_column``
     choice_names: tuple[str, ...] = ()
+    # a request field the app takes but never answers (DRF's ``write_only``): a
+    # private-column candidate
+    write_only: bool = field(default=False, metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)
@@ -57,6 +71,12 @@ class TableModel:
     module: str
     columns: tuple[FieldSpec, ...]
     bases: tuple[str, ...]  # package base classes (qualified "module:Name")
+    # composite unique keys (column names), e.g. Django's unique_together
+    unique_together: tuple[tuple[str, ...], ...] = field(default=(), metadata=OMIT_DEFAULT)
+    # a many-to-many link table: the "Model.field" it is the through table of
+    through: str | None = field(default=None, metadata=OMIT_DEFAULT)
+    # CHECK constraints, as source text (for invariant mining)
+    checks: tuple[str, ...] = field(default=(), metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)
@@ -300,7 +320,13 @@ class AuthModel:
     username being the users column ``username_field``. Roles kept as rows of a table
     (``role_table``, referenced by ``role_column``) hold ``permissions`` (name, value):
     ``role_permissions`` maps each role's Lattice name (``RoleScheme``) to the
-    permissions it holds. None anywhere: not known."""
+    permissions it holds. None anywhere: not known.
+
+    ``scheme`` may also be ``basic`` (``Authorization: Basic <base64 user:password>``, no
+    login route). The answers the app gives to callers its auth refuses, each (status,
+    detail): ``unauthenticated_answer`` no credentials, ``invalid_answer`` a bad token or
+    bad credentials, ``unknown_answer`` a well-formed token naming no user (None: as
+    ``invalid_answer``), ``inactive_answer`` an inactive user's valid token."""
 
     login_path: str | None = None
     login_encoding: str = "form"
@@ -320,6 +346,40 @@ class AuthModel:
     role_table: str | None = None
     permissions: tuple[tuple[str, int], ...] = ()
     role_permissions: tuple[tuple[str, tuple[str, ...]], ...] = ()
+    unauthenticated_answer: tuple[int, str] | None = None
+    invalid_answer: tuple[int, str] | None = None
+    unknown_answer: tuple[int, str] | None = None
+    inactive_answer: tuple[int, str] | None = None
+
+
+@dataclass(frozen=True)
+class Excluded:
+    """Something of the app a front end leaves out of the model, and why (``what``:
+    ``table`` or ``route``): framework tables (Django's ``auth_permission``...),
+    framework routes (admin, DRF's API root and ``api-auth`` pages), DRF's format-suffix
+    duplicates of a route (folded into it)."""
+
+    what: str
+    name: str
+    reason: str
+
+
+def _plain(value: Any) -> Any:
+    """``dataclasses.asdict``, leaving out the :data:`OMIT_DEFAULT` fields still at their
+    default."""
+    if dataclasses.is_dataclass(value) and not isinstance(value, type):
+        out: dict[str, Any] = {}
+        for f in dataclasses.fields(value):
+            v = getattr(value, f.name)
+            if f.metadata.get("omit_default") and v == f.default:
+                continue
+            out[f.name] = _plain(v)
+        return out
+    if isinstance(value, tuple | list):
+        return type(value)(_plain(v) for v in value)
+    if isinstance(value, dict):
+        return {_plain(k): _plain(v) for k, v in value.items()}
+    return value
 
 
 @dataclass(frozen=True)
@@ -345,7 +405,7 @@ class RepoModel:
     excluded_routes: tuple[ExcludedRoute, ...] = ()
 
     def to_dict(self) -> dict[str, object]:
-        return dataclasses.asdict(self)
+        return _plain(self)
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict(), indent=2, sort_keys=False)

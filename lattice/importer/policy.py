@@ -191,10 +191,18 @@ def token_answers(
     the ``raise HTTPException`` in the handler of the ``try`` around the decode -- in the
     dependency, or in the decode helper it passes the token to -- or the guard on the
     decoded payload; the guard on the claim; the guard on the caller's lookup.
-    ``is_error``: the front end's error class (default FastAPI's ``HTTPException``)."""
+    ``is_error``: the front end's error class (default FastAPI's ``HTTPException``).
+
+    Without a current-user dependency (a framework's own auth, e.g. DRF's authentication
+    classes), the answers the front end's ``AuthModel`` records."""
     dep = next((d for d in model.dependencies if d.kind == "current_user"), None)
     if dep is None:
-        return TokenAnswers()
+        auth = model.auth
+        if auth is None or auth.invalid_answer is None:
+            return TokenAnswers()
+        invalid = tuple(auth.invalid_answer)
+        unknown = tuple(auth.unknown_answer) if auth.unknown_answer is not None else invalid
+        return TokenAnswers(invalid, invalid, unknown)  # type: ignore[arg-type]
     found = index.node(f"{dep.module}:{dep.name}")
     if found is None or not isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
         return TokenAnswers()

@@ -1869,7 +1869,7 @@ def auth_driver(auth: AuthModel, credentials: Mapping[str, tuple[str, str]]) -> 
     if auth.login_path is None:
         return AuthDriver(scheme=auth.scheme)
     if auth.login_encoding == "basic":
-        return AuthDriver.basic(
+        return AuthDriver.basic_route(
             auth.login_path, credentials, token_path=auth.token_path, scheme=auth.scheme
         )
     if auth.login_encoding == "json":

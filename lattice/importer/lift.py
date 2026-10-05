@@ -214,7 +214,9 @@ def check_program(
 
 
 def _functions(model: RepoModel, route: Route) -> list[Callable[..., Any]]:
-    """The original's functions behind a route: the route and its user dependencies."""
+    """The original's functions behind a route: the route (its ``view`` when the front end
+    names one: ``module:function`` or a class-based view's ``module:Class.method``) and
+    its user dependencies."""
     deps = {d.name: d for d in model.dependencies}
     names: list[str] = []
     todo = list(route.dependencies)
@@ -228,7 +230,14 @@ def _functions(model: RepoModel, route: Route) -> list[Callable[..., Any]]:
             continue
         names.append(name)
         todo += list(d.depends_on)
-    out = [getattr(importlib.import_module(route.module), route.name)]
+    if route.view is not None:
+        module, path = route.view.split(":", 1)
+        handler: Any = importlib.import_module(module)
+        for part in path.split("."):
+            handler = getattr(handler, part)
+        out = [handler]
+    else:
+        out = [getattr(importlib.import_module(route.module), route.name)]
     for name in sorted(names, key=lambda n: deps[n].kind != "current_user"):
         out.append(getattr(importlib.import_module(deps[name].module), name))
     return out
