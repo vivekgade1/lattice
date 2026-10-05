@@ -133,6 +133,9 @@ class _Generator:
     # -- decisions --
 
     def users_table(self) -> str | None:
+        fe = self.m.auth
+        if fe is not None and fe.users_table in self.tables:
+            return fe.users_table  # a front end's AuthModel names it
         found = sorted(
             {d.returns for d in self.m.dependencies if d.kind == "current_user" and d.returns}
         )
@@ -170,7 +173,8 @@ class _Generator:
                 if inner is not None:
                     responses.setdefault(item, tuple(f.name for f in inner.fields))
                 continue
-            responses.setdefault(name, tuple(f.name for f in model.fields))
+            if model.fields:  # an empty schema (APIFairy's EmptySchema) states no fields
+                responses.setdefault(name, tuple(f.name for f in model.fields))
         return responses, envelopes
 
     def page_shape(self, envelopes: list[DataModel]) -> dict[str, str] | None:
@@ -319,6 +323,16 @@ class _Generator:
         if not fks:
             return
         unchecked = self._unchecked(table, (table.name,))
+        compared = any(
+            u.table == table.name and u.how == "compare"
+            for r in self.m.routes
+            for u in r.owner_uses
+        )
+        if unchecked and self.m.auth is not None and compared:
+            # a Django / Flask app: reads open to any user beside owner-checked writes
+            # (DRF's IsOwnerOrReadOnly, an author check before an edit) -- the table is
+            # owned, those reads reach anyone's rows (their contracts' owner_scope="any")
+            unchecked = []
         if unchecked:
             self._decide(
                 plan,
@@ -359,9 +373,7 @@ class _Generator:
             self.note("owner", table.name, reason, (fk,))
             self._decide(plan, UNCLEAR, reason)
             return
-        evidence = sorted(
-            {r.name for r in touching for u in r.owner_uses if u.table == table.name}
-        )
+        evidence = sorted({r.name for r in touching for u in r.owner_uses if u.table == table.name})
         plan.owner = fk
         self._decide(
             plan,
@@ -404,8 +416,7 @@ class _Generator:
             (fk, parent)
             for fk, parent in candidates
             if any(
-                table.name in r.tables
-                and any(u.table == parent.table.name for u in r.owner_uses)
+                table.name in r.tables and any(u.table == parent.table.name for u in r.owner_uses)
                 for r in self.m.routes
             )
         ]
@@ -561,6 +572,10 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
     private = {c for p in plans for c in p.private}
     natives = g.natives(private)
     active, admin = g.auth_deps()
+    fe = model.auth  # a Django / Flask front end's AuthModel (None: FastAPI's dependencies)
+    if fe is not None and users is not None:
+        natives = [*natives, _frontend_decoder(g, model, users)]
+        active, admin = _frontend_deps(model, fe)
 
     for route in model.routes:
         if route.auth == "unclear":
@@ -796,6 +811,9 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
         # keyed by the column's value as the profile reads it: an enum column stored by
         # member name is decoded to its value first (one_of_stored)
         values = {value: name for value, _, name in scheme.roles}
+        if fe is not None and fe.role_table is not None:
+            # roles kept as rows of a table: the users column holds the row's key
+            values = {stored: name for _, stored, name in scheme.roles}
         api.append(f"roles_from=RoleColumn({scheme.column!r}, values={values!r})")
     elif admin is not None and admin.admin_column:
         api.append(f"roles_from=AdminFlag({admin.admin_column!r}, {CUSTOMER!r})")
@@ -812,7 +830,9 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
             api.append(f"inactive_status={active.active_status!r}")
         if active.active_detail:
             api.append(f"inactive_detail={active.active_detail!r}")
-    if not model.exception_handlers:
+    if fe is not None:
+        api += _frontend_errors(model, fe, scheme)
+    elif not model.exception_handlers:
         api.append("error_body='fastapi'")
         if unauthorized is not None:
             api.append(f"unauthorized_detail={unauthorized!r}")
@@ -844,6 +864,99 @@ def generate_profile(model: RepoModel, answers: TokenAnswers | None = None) -> P
         {p.table.name: p.ownership for p in decided},  # type: ignore[misc]
         {p.table.name: p.ownership_reason for p in decided},
     )
+
+
+# ---- Django / Flask front ends (an AuthModel instead of FastAPI dependencies) ----------------
+
+ERROR_STYLES = {"django": "drf", "flask": "json_key(message)"}
+
+
+def _frontend_decoder(g: _Generator, model: RepoModel, users: str) -> tuple[NativeCandidate, str]:
+    """The token decoder of a front end's auth: the app's own (DRF authentication,
+    Flask-HTTPAuth, a session...) is not lifted, so the profile's ``NativeToken`` names
+    a native that refuses to run (``lattice.importer.app_auth.not_lifted``): serving a
+    program on this profile fails loudly, never silently. Layer R probes the original
+    app, so the rule layer does not need it."""
+    from lattice.importer.appmodel import NativeParam
+
+    fe = model.auth
+    assert fe is not None
+    key = next((c for c in g.tables[users].columns if c.primary_key), None)
+    key_type = key.type if key is not None and key.type in KEY_CONVERT else "Int"
+    g.note(
+        "auth",
+        users,
+        f"the app's own auth ({model.framework}, {fe.scheme}) is not lifted: the profile's "
+        "NativeToken names caller_key, which refuses to run (lattice.importer.app_auth)",
+    )
+    decoder = NativeCandidate(
+        "caller_key",
+        "lattice.importer.app_auth:not_lifted",
+        "token_decoder",
+        (NativeParam("token", "str", "Str"),),
+        PY_TYPE[key_type],
+        key_type,
+        nullable=True,
+        imports=("from lattice.importer.app_auth import not_lifted",),
+        decode_expr=f"not_lifted({model.framework!r}, {fe.scheme!r}, token)",
+        token_param="token",
+        claim="sub",
+    )
+    return decoder, f"NativeSig((Scalar.STR,), Scalar.{SCALAR_ATTR[key_type]}, nullable=True)"
+
+
+def _frontend_deps(model: RepoModel, fe: object) -> tuple[Dependency | None, Dependency | None]:
+    """The active check and the admin flag a front end's AuthModel states, in the shape
+    of FastAPI's dependencies (so the profile settings render alike)."""
+    active_answer = fe.inactive_answer  # type: ignore[attr-defined]
+    guard = next(
+        (g for r in model.routes for g in r.guards if g.kind == "active" and g.status), None
+    )
+    status, detail = active_answer if active_answer else (None, None)
+    if guard is not None and (status is None or not detail):
+        status, detail = guard.status, guard.detail
+    active = None
+    if fe.active_column:  # type: ignore[attr-defined]
+        active = Dependency(
+            "auth", model.app_package, "active_user",
+            active_column=fe.active_column,  # type: ignore[attr-defined]
+            active_status=status if status in (400, 401, 403) else None,
+            active_detail=detail or None,
+        )  # fmt: skip
+    admin = None
+    if fe.admin_column and model.role_scheme is None:  # type: ignore[attr-defined]
+        admin = Dependency("auth", model.app_package, "admin",
+                           admin_column=fe.admin_column,  # type: ignore[attr-defined]
+                           admin_detail=_forbidden_detail(model))  # fmt: skip
+    return active, admin
+
+
+def _forbidden_detail(model: RepoModel) -> str | None:
+    """The detail most role / admin / owner guards refuse with (DRF's "You do not have
+    permission to perform this action.")."""
+    from collections import Counter
+
+    found = Counter(
+        g.detail
+        for r in model.routes
+        for g in r.guards
+        if g.kind in ("role", "admin", "object_owner", "custom") and g.status == 403 and g.detail
+    )
+    return found.most_common(1)[0][0] if found else None
+
+
+def _frontend_errors(model: RepoModel, fe: object, scheme: object) -> list[str]:
+    """A front end's error convention: DRF's bodies (``drf``) or Flask's error handlers'
+    ``message`` key, 400 validation errors, and the auth answers' details."""
+    out = [f"error_body={ERROR_STYLES.get(model.framework, 'fastapi')!r}",
+           "validation_status=400"]  # fmt: skip
+    unauth = fe.unauthenticated_answer  # type: ignore[attr-defined]
+    if unauth and unauth[0] == 401 and unauth[1]:
+        out.append(f"unauthorized_detail={unauth[1]!r}")
+    forbidden = _forbidden_detail(model) or getattr(scheme, "detail", None)
+    if forbidden:
+        out.append(f"forbidden_detail={forbidden!r}")
+    return out
 
 
 AUTH_SETTINGS = (

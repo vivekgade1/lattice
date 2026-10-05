@@ -87,7 +87,10 @@ def test_contract_fields_from_the_app_model(spec):
     assert get_order.params == (ContractParam("order_id", "path", Scalar.INT, ref="Order"),)
     assert c["GET /products"].kind == "list" and c["GET /products"].auth == "Public"
     assert c["GET /users/me"].table == "User" and c["GET /users/me"].owner_scope is None
-    assert c["PATCH /vendors/{vendor_id}/verify"].owner_scope == "any"  # no owner evidence
+    # W3: an admin-only route (Roles(Admin)) has no ownership scope -- no non-admin
+    # reaches it, so R2 is n/a (W2-D stated "any": no owner evidence)
+    verify = c["PATCH /vendors/{vendor_id}/verify"]
+    assert (verify.auth, verify.owner_scope) == ("Roles(Admin)", None)
     register = c["POST /vendors"]
     assert (register.kind, register.owner_scope) == ("create", "owner")
 

@@ -31,12 +31,14 @@ Anthropic SDK, or the local ``claude -p``
 (:class:`lattice.llm.cli_client.ClaudeCliClient`) -- identical prompts either way.
 
 ``--framework`` names the front end (``lattice.importer.frontends.select``); ``auto``
-(the default) takes the first that detects its framework in the package, else FastAPI's.
-``--rules-only`` (Phase 2 plan 2026-10-05, §5) lifts no behaviour and runs no LLM: it
-builds the candidate spec (``lattice.importer.emit_spec``), runs layer R of it on the
-original and writes the report with its ``rules`` section, ``candidate_spec.py`` and
-``proposals.json`` (empty: mining is not wired in yet). ``review DIR ...`` reviews such
-an import (:mod:`lattice.importer.review`).
+(the default) takes the first that detects its framework in the package (FastAPI,
+Django + DRF, Flask + SQLAlchemy), else FastAPI's. ``--rules-only`` (Phase 2 plan
+2026-10-05, §5; W3) lifts no behaviour and runs no LLM: the rules-first import of
+:mod:`lattice.importer.rules` -- the candidate spec, layer R on the original through the
+front end's runtime, the corrections, mining -- written as the report with its ``rules``
+section, ``candidate_spec.py`` and ``proposals.json``; ``--app-factory`` may be left out
+there (the nearest ``make_app`` of the package or a parent). ``review DIR ...`` reviews
+such an import (:mod:`lattice.importer.review`).
 """
 
 from __future__ import annotations
@@ -83,7 +85,12 @@ def parser() -> argparse.ArgumentParser:
     )
     p.add_argument("repo_root", type=Path)
     p.add_argument("--package", required=True, help="the app package, dotted (e.g. app)")
-    p.add_argument("--app-factory", required=True, help="module:function(db_path) -> app")
+    p.add_argument(
+        "--app-factory",
+        default=None,
+        help="module:function(db_path) -> app (required, except with --rules-only: the "
+        "nearest make_app of the package or a parent)",
+    )
     p.add_argument("--out", type=Path, default=Path("lattice_import"))
     p.add_argument("--no-llm", action="store_true", help="deterministic lifters only")
     p.add_argument("--method", choices=sorted(METHODS), default=DEFAULT_METHOD)
@@ -145,10 +152,12 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
     root = args.repo_root.resolve()
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
+    if args.rules_only:
+        return _rules_only(p, args, root)
+    if args.app_factory is None:
+        p.error("--app-factory is required (except with --rules-only)")
     frontend = _frontend(p, args.framework, root, args.package)
     factory = resolve_factory(args.app_factory)
-    if args.rules_only:
-        return _rules_only(args, root, factory, frontend)
     result = lift_repo(
         root,
         args.package,
@@ -209,36 +218,17 @@ def _frontend(p: argparse.ArgumentParser, framework: str, root: Path, package: s
         return None
 
 
-def _rules_only(args: argparse.Namespace, root: Path, factory: Any, frontend: Any) -> int:
-    """The rule layer only (see the module docstring)."""
-    from lattice.importer.emit_spec import candidate_spec, import_rules, spec_source
+def _rules_only(p: argparse.ArgumentParser, args: argparse.Namespace, root: Path) -> int:
+    """The rule layer only (:mod:`lattice.importer.rules`)."""
+    from lattice.importer.rules import import_rules, summary_line, write_rules
 
-    result = lift_repo(root, args.package, factory, only=(), dialect=args.dialect,
-                       hypothesis_bodies=args.hypothesis_bodies, frontend=frontend)  # fmt: skip
-    close = no_llm(result)
-    spec, rules = import_rules(result, spec=candidate_spec(result))
-    verdicts = {item_id: v.verdict for item_id, v in rules.items.items()}
-    framework = result.context.frontend.name if result.context is not None else "fastapi"
-    extra = {
-        "candidate_spec.py": spec_source(spec, status=verdicts, package=args.package),
-        "proposals.json": "[]\n",
-    }
-    out = write_import(
-        close,
-        args.out,
-        repo_root=root,
-        package=args.package,
-        app_factory=args.app_factory,
-        rules={**rules.to_dict(), "framework": framework},
-        extra_files=extra,
-    )
-    s = rules.summary
-    items = ", ".join(f"{n} {v}" for v, n in s["items"].items())
-    print(
-        f"{out}: {len(rules.items)} rule items ({items}); tables verified "
-        f"{s['tables']['verified']}/{s['tables']['total']}, routes verified "
-        f"{s['routes']['verified']}/{s['routes']['total']}"
-    )
+    framework = None if args.framework == "auto" else args.framework
+    if framework is not None:
+        _frontend(p, framework, root, args.package)  # an unknown name: a usage error
+    imported = import_rules(root, args.package, framework=framework,
+                            app_factory=args.app_factory, dialect=args.dialect)  # fmt: skip
+    out = write_rules(imported, args.out, package=args.package)
+    print(summary_line(out, imported))
     return 0
 
 

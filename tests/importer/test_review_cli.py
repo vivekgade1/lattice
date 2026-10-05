@@ -77,10 +77,26 @@ def imported(tmp_path_factory) -> Path:
     return out
 
 
+REFUTED = {
+    # W3 fixed the importer's refutations of these two (a 403 carrying the forbidden
+    # detail is a refusal; an owner_scope="any" list is not probed as scoped), so the
+    # review workflow's refuted items are crafted here, as W2-D's import refuted them
+    "R2 GET /products": ({"other_users_rows": [1, 3, 5, 7]},
+                         "answered other users' Product rows [1, 3, 5, 7]"),
+    "R1 POST /products": ({"allowed": ["Admin", "Buyer", "Vendor"]},
+                          "callers answered against the auth: Admin admitted, Buyer admitted"),
+}  # fmt: skip
+
+
 @pytest.fixture
 def d(imported, tmp_path) -> Path:
     target = tmp_path / "imp"
     shutil.copytree(imported, target)
+    report = json.loads((target / "report.json").read_text())
+    for item_id, (observed, reason) in REFUTED.items():
+        record = report["rules"]["items"][item_id]
+        record.update(verdict="refuted", observed=observed, reason=reason)
+    (target / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     return target
 
 

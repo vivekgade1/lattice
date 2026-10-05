@@ -37,6 +37,14 @@ those tokens on both sides; ``mint_token(user_key)``, when given, adds the
 
 ``db_factory`` writes the seeded database: ``db_factory(path)`` or, like the importer's,
 ``db_factory(variant, path)``.
+
+``runtime`` (``lattice.importer.transport.AppRuntime``; Phase 2 W3) serves a Django or
+Flask app: B, D and R then open the app through its transport, log callers in through
+its auth driver (``runtime.auth.token``, the ``login`` given winning), send tokens as
+its scheme says (``runtime.auth.present`` / ``headers``) and dispose of every app with
+its hooks (``runtime.close``). Without one, everything is as before: FastAPI's
+TestClient, a bearer header, the engine's dispose. Layer C watches B and D only for an
+ASGI app.
 """
 
 from __future__ import annotations
@@ -50,7 +58,7 @@ import tempfile
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, fields, replace
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from lattice.api.ir import EndpointPlan, lower_api
 from lattice.api.runtime import build_app
@@ -66,6 +74,8 @@ from lattice.spec.validate import validate
 from lattice.typesys import Scalar, Schema
 
 AppFactory = Callable[[Path], Any]
+if TYPE_CHECKING:
+    from lattice.importer.transport import AppRuntime
 Login = Callable[[Any, str], str]
 HEADER = "# lattice: v1\n"
 MISSING_INT = 999_999
@@ -210,6 +220,19 @@ def _dispose(app: Any) -> None:
     engine = getattr(getattr(app, "state", None), "engine", None)
     if engine is not None and hasattr(engine, "dispose"):
         engine.dispose()
+
+
+def _asgi(runtime: AppRuntime | None) -> bool:
+    """Whether the app is served as ASGI (layer C's probe wraps an ASGI app only)."""
+    return runtime is None or runtime.framework == "fastapi"
+
+
+def _close(runtime: AppRuntime | None, app: Any) -> None:
+    """Dispose of an app: the runtime's hooks, else FastAPI's engine (the default)."""
+    if runtime is None:
+        _dispose(app)
+    else:
+        runtime.close(app)
 
 
 # ---- layer A -------------------------------------------------------------------------------
@@ -843,13 +866,23 @@ def _tokens(
     make_db: Callable[[str, Path], Path],
     login: Login,
     tmp: Path,
+    runtime: AppRuntime | None = None,
 ) -> tuple[dict[str, str], list[str]]:
-    """Each handle's token, from the app's own login on a scratch copy of the seed."""
+    """Each handle's token, from the app's own login on a scratch copy of the seed
+    (through ``runtime``'s transport and auth driver when given)."""
     from fastapi.testclient import TestClient
 
     tokens: dict[str, str] = {}
     notes: list[str] = []
     db = make_db("seed", tmp / "login.db")
+    if runtime is not None:
+        with runtime.serve(app_factory, db) as (_, transport):
+            for h in handles:
+                try:
+                    tokens[h] = runtime.auth.token(transport, h, login)
+                except Exception as err:  # noqa: BLE001 -- that caller is left out, noted
+                    notes.append(f"layer B: cannot log in as {h!r} ({err}); no cases as {h}")
+        return tokens, notes
     app = app_factory(db)
     try:
         with TestClient(app, raise_server_exceptions=False) as client:
@@ -879,6 +912,7 @@ def _layer_b(
     settings: Mapping[str, object] | None,
     hash_columns: Sequence[str],
     max_rows: int,
+    runtime: AppRuntime | None = None,
 ) -> None:
     plans = spec_plans(spec)
     if not plans and not extra_cases:
@@ -896,7 +930,7 @@ def _layer_b(
         if handles and login is None:
             report.notes.append("layer B: no login given; cases run without callers")
         elif handles:
-            tokens, notes = _tokens(handles, app_factory, make_db, login, tmp)  # type: ignore[arg-type]
+            tokens, notes = _tokens(handles, app_factory, make_db, login, tmp, runtime)  # type: ignore[arg-type]
             report.notes.extend(notes)
         ctx = CaseContext(seed, tuple(tokens), tables, mint_token, max_rows)
         cases: list[Case] = []
@@ -929,7 +963,7 @@ def _layer_b(
             return build_app(plans, path, natives=natives, settings=settings)
 
         app_side = app_factory
-        if monitor is not None:
+        if monitor is not None and _asgi(runtime):
             for c in cases:
                 monitor.requests[c.name] = _request(c)
                 monitor.endpoints[c.name] = endpoint_of[c.name]
@@ -944,6 +978,7 @@ def _layer_b(
                 {},
                 login=token_login,
                 hash_columns=hash_columns,
+                **({} if runtime is None else {"runtime": runtime}),
             )
         except Exception as err:  # noqa: BLE001 -- the app could not run the suite: loud
             report.findings.append(
@@ -1124,7 +1159,11 @@ def _run_scenario(
     make_db: Callable[[str, Path], Path],
     monitor: InvariantMonitor | None,
     login: Login | None,
+    runtime: AppRuntime | None = None,
 ) -> None:
+    """One scenario on a fresh seeded database (see the module docstring). ``runtime``:
+    the app's transport, auth driver and dispose hooks (default: FastAPI's TestClient,
+    a bearer header, the engine's dispose)."""
     from fastapi.testclient import TestClient
 
     rule = f"scenario: {scenario.name}"
@@ -1148,7 +1187,8 @@ def _run_scenario(
             _insert_given(spec, db, scenario.given)
             if monitor is not None:
                 monitor.check(db, f"{scenario.name} / given")
-        factory = monitor.wrap(app_factory) if monitor is not None else app_factory
+        watch = monitor is not None and _asgi(runtime)
+        factory = monitor.wrap(app_factory) if watch else app_factory  # type: ignore[union-attr]
         try:
             app = factory(db)
         except Exception as err:  # noqa: BLE001 -- an app that does not start is loud
@@ -1157,7 +1197,12 @@ def _run_scenario(
             )
             return
         try:
-            with TestClient(app, raise_server_exceptions=False) as client:
+            serving = (
+                TestClient(app, raise_server_exceptions=False)
+                if runtime is None
+                else runtime.open(app)
+            )
+            with serving as client:
                 tokens: dict[str, str] = {}
                 for i, step in enumerate(scenario.steps, 1):
                     label = f"{scenario.name} / step {i}"
@@ -1167,9 +1212,13 @@ def _run_scenario(
                             if monitor is not None:
                                 monitor.label = f"{scenario.name} / login as {step.user}"
                             try:
-                                if login is None:
+                                if runtime is not None:
+                                    tokens[step.user] = runtime.auth.token(client, step.user,
+                                                                           login)  # fmt: skip
+                                elif login is None:
                                     raise RuntimeError("no login given")
-                                tokens[step.user] = login(client, step.user)
+                                else:
+                                    tokens[step.user] = login(client, step.user)
                             except Exception as err:  # noqa: BLE001 -- loud: cannot run
                                 fail(
                                     label,
@@ -1185,7 +1234,10 @@ def _run_scenario(
                                     "request": _step_request(step),
                                 }
                                 return
-                        headers["Authorization"] = f"Bearer {tokens[step.user]}"
+                        if runtime is not None:
+                            headers = dict(runtime.auth.present(client, tokens[step.user]))
+                        else:
+                            headers["Authorization"] = f"Bearer {tokens[step.user]}"
                     if monitor is not None:
                         monitor.label = label
                         monitor.requests[label] = _step_request(step)
@@ -1234,7 +1286,7 @@ def _run_scenario(
                         )
                         return
         finally:
-            _dispose(app)
+            _close(runtime, app)
 
 
 # ---- layer R --------------------------------------------------------------------------------
@@ -1252,10 +1304,25 @@ def _layer_r(
     sessions: Any,
     scheme: str,
     only: Sequence[str] | None,
+    runtime: AppRuntime | None = None,
+    options: Mapping[str, Any] | None = None,
 ) -> None:
     from lattice.spec.probes import asgi_sessions, run_probes
 
     on_probe = None
+    options = dict(options or {})
+    if sessions is None and runtime is not None:
+        from contextlib import contextmanager
+
+        @contextmanager
+        def served(db: Path) -> Iterator[Any]:
+            with runtime.serve(app_factory, db) as (_, transport):
+                yield transport
+
+        sessions = served
+        options.setdefault("auth_headers", runtime.auth.headers)
+        if monitor is not None:
+            report.notes.append("layer C does not watch layer R's probes through a runtime")
     if sessions is None:
         factory = app_factory
         if monitor is not None:
@@ -1279,6 +1346,7 @@ def _layer_r(
             scheme=scheme,
             only=only,
             on_probe=on_probe,
+            **options,
         )
     except CheckError:
         raise
@@ -1346,12 +1414,18 @@ def check(
     sessions: Any = None,
     scheme: str = "Bearer",
     rule_items: Sequence[str] | None = None,
+    runtime: AppRuntime | None = None,
+    probe_options: Mapping[str, Any] | None = None,
 ) -> Report:
     """Check the app built by ``app_factory(db_path)`` against ``spec`` in ``layers``
     (letters of ABCDR; see the module docstring). Layer R: ``sessions`` is the probes'
     transport (:data:`lattice.spec.probes.SessionFactory`; default the ASGI TestClient
     over ``app_factory``), ``scheme`` the Authorization scheme, ``rule_items`` the item id
-    prefixes to probe (default all). ``db_factory`` writes the seeded
+    prefixes to probe (default all), ``probe_options`` more of
+    :func:`lattice.spec.probes.run_probes`' options (refusals, login route...).
+    ``runtime`` (``lattice.importer.transport.AppRuntime``; default FastAPI's
+    TestClient, a bearer header and the engine's dispose): how B, D and R serve the app
+    and act as its users -- a Django or Flask app's. ``db_factory`` writes the seeded
     database. ``policy``: layer A's base policy (default: derived from the app).
     ``cases_for(spec, endpoint, ctx)``: layer B's case generator; ``extra_cases`` run
     too. ``rules``: verify's representation rules (default: 422 bodies compare by the
@@ -1401,12 +1475,13 @@ def check(
             settings=settings,
             hash_columns=hash_columns,
             max_rows=max_rows,
+            runtime=runtime,
         )
     if "D" in run:
         if not spec.scenarios:
             report.notes.append("layer D: the spec has no scenarios")
         for scenario in spec.scenarios:
-            _run_scenario(spec, scenario, report, app_factory, make_db, monitor, login)
+            _run_scenario(spec, scenario, report, app_factory, make_db, monitor, login, runtime)
     if "R" in run:
         _layer_r(
             spec,
@@ -1419,6 +1494,8 @@ def check(
             sessions=sessions,
             scheme=scheme,
             only=rule_items,
+            runtime=runtime,
+            options=probe_options,
         )
     if monitor is not None:
         report.findings.extend(monitor.findings)

@@ -21,19 +21,34 @@ answers are layer B's).
 users row by its login), each on a fresh copy of the seeded database, with the answer
 and the database before and after recorded. Each bears on one or more items:
 
-* R1: anonymously, with a malformed token, as an inactive user (a minted token), and
-  as one user of every role, on up to two targets (the caller's own rows first). A
-  401, or a 403 that is not a stated non-auth error and (when the profile states its
-  ``forbidden_detail``) carries that or the inactive detail, is a refusal. A caller is
-  refused when all its probes are. The set of callers not refused must equal the auth's.
+* R1: anonymously, with a malformed token, as an inactive user (a minted token, or one
+  it got logging in while active), and as one user of every role, on up to two
+  targets (the caller's own rows first). An *auth answer* -- the profile's forbidden,
+  unauthorized and inactive answers, its token auth's invalid / unknown answers, and
+  the ``refusals`` a front end recorded (DRF's 403 "credentials were not provided") --
+  is a refusal, even on a route stating an error of that status (unless it states that
+  very detail as a non-auth error: then only a probe on the caller's own row tells);
+  otherwise a 401 the route does not state, or a 403 when the profile names no
+  forbidden detail and the target is the caller's own. A caller is refused when all
+  its probes are. The set of callers not refused must equal the auth's. On a Public
+  route the malformed-token and inactive callers decide nothing (an app may refuse bad
+  credentials on every request, as DRF does: the auth layer's choice, not the
+  route's). On a login route taking HTTP Basic credentials (``login_route``) callers
+  present their login and password.
 * R2 and T1 (owner / owner_via): a non-admin reads, updates or deletes another user's
   row and gets the not-owned answer (the stated ``not_owned`` error, else 403 or 404)
   with the database unchanged; a list (or a read without an id) holds only the caller's
   rows; an update without an id changes only the caller's rows; a create as the caller
   stores the caller as the owner of every new owned row, even when the body names
-  another user. ``owner_scope="any"``: another user's row is reached (not 403/404).
-* T1 shared: a non-admin reads a row with a 2xx. T1 users: every handle with a token
-  logged in, and a "me" route (a users-table read without an id) returns the caller.
+  another user (and also without that field: an app refusing unknown fields says
+  nothing then). ``owner_scope="any"``: another user's row is reached (not 403/404),
+  and a list holds another user's row (never probed as if scoped to the caller).
+  A request may change its caller's own users row (a last-seen stamp); any other
+  change counts as a write. Keys compare in one spelling (a UUID stored as 32 hex
+  digits equals its dashed answer).
+* T1 shared: a non-admin reads a row with a 2xx. T1 users: every role a caller can
+  have logged in, and a "me" route (a users-table read without an id) returns the
+  caller (its key, else its login, in the answer).
 * T2: no recorded body has the column in a row of the table, and some 2xx body returns
   a row of the table.
 * T3: per write route with the parameter, the boundary value gets a 2xx and one step
@@ -49,8 +64,14 @@ and the database before and after recorded. Each bears on one or more items:
   the R2 probes, ``unauthenticated`` / ``inactive`` / ``forbidden`` by the R1 probes,
   ``invalid`` by a body one step past a bound (or an unlisted value, or a required
   field missing), ``duplicate`` by the T5 probe, ``other`` by its ``example`` -- and
-  answered with its status (and detail, when stated). No probe of the route may answer
-  a 5xx no error states.
+  answered with its status (and detail, when stated; a detail in an answer that is no
+  JSON, an HTML page, is unreachable-by-probe). No probe of the route may answer a 5xx
+  no error states; a route with optional query parameters is also called with every
+  one of them, for that check.
+* Routes in ``unreachable`` (they need the network, or an earlier route shadows them)
+  are never called: their items are unexercised, ``unreachable-by-probe`` with the
+  reason. A T3 bound no valid value reaches (an email address over 254 characters) is
+  unreachable-by-probe too.
 
 **Verdicts** (per item): ``verified`` -- at least one probe confirms it, none
 contradicts it; ``refuted`` -- some probe contradicts it (``observed`` holds the fact
@@ -72,6 +93,7 @@ from __future__ import annotations
 import re
 import shutil
 import tempfile
+import uuid
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass, field
@@ -105,6 +127,17 @@ from lattice.typesys import Scalar, Schema
 
 Verdict = Literal["verified", "refuted", "unexercised", "unclear"]
 VERDICTS: tuple[str, ...] = ("verified", "refuted", "unexercised", "unclear")
+# a refuted item whose observed fact, as a corrected item, was verified on a second seed
+# variant (the importer's corrections, lattice.importer.rules): it counts as verified
+VERIFIED_CORRECTED = "verified (corrected)"
+UNREACHABLE = "unreachable-by-probe"
+
+
+def is_verified(verdict: str) -> bool:
+    """Whether a verdict counts as verified: ``verified`` or ``verified (corrected)``."""
+    return verdict in ("verified", VERIFIED_CORRECTED)
+
+
 AUTH_TRIGGERS = ("unauthenticated", "forbidden", "inactive")
 NOT_OWNED = (403, 404)
 FLOAT_STEP = 0.01
@@ -247,7 +280,11 @@ def owner_scope(spec: Spec, c: Contract) -> str | None:
     found = _schema(spec, c.table)
     if found is None or not (found[2].owner or found[2].owner_via):
         return None
-    return None if c.auth == "Admin" else "owner"
+    api = spec.profile.api
+    admitted = allowed_roles(c.auth, api) if api is not None else None
+    admin_only = c.auth == "Admin" or (admitted is not None and api is not None
+                                        and admitted <= {api.admin_role})  # fmt: skip
+    return None if admin_only else "owner"
 
 
 def _error_id(c: Contract, e: ContractError) -> str:
@@ -509,7 +546,8 @@ def route_contracts(spec: Spec) -> list[Contract]:
 class Probe:
     """One request and the items it bears on. ``expect`` names the judgement (see
     :func:`_judge`), ``args`` its parameters. ``user`` is a handle; ``token`` a raw
-    token (overrides ``user``)."""
+    token (overrides ``user``); ``headers`` the request's auth headers as they are
+    (overrides both: a login route's HTTP Basic credentials)."""
 
     name: str
     route: str
@@ -523,6 +561,7 @@ class Probe:
     json: Any = field(default=None, hash=False)
     form: Mapping[str, Any] | None = field(default=None, hash=False)
     args: Mapping[str, Any] = field(default_factory=dict, hash=False)
+    headers: Mapping[str, str] | None = field(default=None, hash=False)
 
     def request(self) -> dict[str, Any]:
         return {
@@ -549,7 +588,9 @@ class Caller:
 @dataclass
 class ProbeContext:
     """The seed's rows (SQL table -> rows), the callers, their tokens, the inactive
-    caller's (minted) token."""
+    caller's (minted) token; ``refusals``: the (status, detail) answers that refuse a
+    caller besides the profile's (a front end's recorded auth answers); ``login_route``:
+    the (method, path) of a login route taking HTTP Basic credentials."""
 
     spec: Spec
     seed: Mapping[str, list[dict[str, Any]]]
@@ -557,6 +598,8 @@ class ProbeContext:
     tokens: dict[str, str]
     inactive: Caller | None = None
     inactive_token: str | None = None
+    refusals: tuple[tuple[int, str | None], ...] = ()
+    login_route: tuple[str, str] | None = None
 
     @property
     def api(self) -> ApiProfile:
@@ -665,7 +708,9 @@ def _valid(p: ContractParam, ctx: ProbeContext) -> Any:
     if s is Scalar.UUID:
         return VALID_UUID
     if s is Scalar.DATETIME:
-        return "2026-06-01T12:00:00Z"
+        # as the app spells them: naive (pydantic's wire for a naive column) or UTC
+        naive = ctx.spec.profile.api is not None and ctx.api.datetime_wire == "naive"
+        return "2026-06-01T12:00:00" if naive else "2026-06-01T12:00:00Z"
     if s is Scalar.DATE:
         return "2026-06-01"
     if "email" in p.name.lower():
@@ -682,7 +727,11 @@ def _edges(p: ContractParam, op: str, bound: float) -> tuple[Any, Any]:
     """(the boundary value, one step beyond) for one bound."""
     if op in ("min_len", "max_len"):
         n = int(bound)
-        return "b" * n, "b" * max(n - 1 if op == "min_len" else n + 1, 0)
+        beyond = max(n - 1 if op == "min_len" else n + 1, 0)
+        if "email" in p.name.lower() and n > len(EMAIL_DOMAIN):
+            # an address of that length: the bound, not the format, decides
+            return _address(n), _address(beyond)
+        return "b" * n, "b" * beyond
     step: float = 1 if p.scalar is Scalar.INT else FLOAT_STEP
     cast = int if p.scalar is Scalar.INT else float
     if op == "ge":
@@ -692,6 +741,24 @@ def _edges(p: ContractParam, op: str, bound: float) -> tuple[Any, Any]:
     if op == "le":
         return cast(bound), cast(bound + step)
     return cast(bound - step), cast(bound)  # lt
+
+
+EMAIL_DOMAIN = "@example.com"
+
+
+def _address(n: int) -> str:
+    """An email address of ``n`` characters (a local part of at most 64, domain
+    labels of at most 63)."""
+    rest = n - len(EMAIL_DOMAIN)
+    if rest <= 64:
+        return "b" * max(rest, 0) + EMAIL_DOMAIN
+    left = n - 65 - len(".com")  # after "<64 b>@", before ".com"
+    labels = []
+    while left > 0:
+        size = min(left, 62 if left > 63 else left)
+        labels.append("c" * size)
+        left -= size + (1 if left > size else 0)
+    return "b" * 64 + "@" + ".".join(labels) + ".com"
 
 
 def replace_param(p: ContractParam, **changes: Any) -> ContractParam:
@@ -755,7 +822,8 @@ def _route(spec: Spec, c: Contract) -> _Route:
             ref = _schema(spec, p.ref)
             if ref is not None and ref[0] == found[0]:
                 addr = name
-    if addr is None and len(path_params) == 1 and found is not None:
+    only = next(iter(path_params.values()), None)
+    if addr is None and len(path_params) == 1 and found is not None and only.ref is None:  # type: ignore[union-attr]
         addr = next(iter(path_params))
     return _Route(c, found, owner_scope(spec, c), path_params, addr)
 
@@ -836,6 +904,7 @@ class _Probes:
         expect: str,
         *,
         token: str | None = None,
+        headers: Mapping[str, str] | None = None,
         **args: Any,
     ) -> None:
         items = tuple(i for i in dict.fromkeys(items) if i in self.items)
@@ -861,6 +930,7 @@ class _Probes:
                 json=req.json,
                 form=req.form,
                 args=args,
+                headers=headers,
             )
         )
 
@@ -884,12 +954,25 @@ def _auth_errors(c: Contract, when: str) -> list[str]:
     return [i for i, e in _error_ids(c) if e.when == when]
 
 
+def _basic(login: str, password: str) -> dict[str, str]:
+    import base64
+
+    raw = base64.b64encode(f"{login}:{password}".encode()).decode()
+    return {"Authorization": f"Basic {raw}"}
+
+
 def _r1(b: _Probes, r: _Route) -> None:
+    """R1 probes. On a Public route, a malformed token's and the inactive caller's
+    refusals decide nothing (``credential`` probes): an app may refuse bad credentials
+    on every request (DRF does) -- the auth layer's choice, not the route's rule. On the
+    login route taking HTTP Basic credentials (``ProbeContext.login_route``), callers
+    present their login and password instead of a token."""
     c, ctx, api = r.c, b.ctx, b.ctx.api
     if c.auth is None:
         return
     roles = allowed_roles(c.auth, api)
     public = roles is None
+    basic = ctx.login_route == (c.method, c.path)
     item = f"R1 {c.endpoint}"
     req = _build(r, ctx, target=_targets(r, ctx, None, 1)[0])
     deny = _auth_errors(c, "unauthenticated")
@@ -902,10 +985,15 @@ def _r1(b: _Probes, r: _Route) -> None:
         req,
         "auth",
         token=BAD_TOKEN,
+        headers=_basic("nobody@example.com", "not-a-valid-password") if basic else None,
         caller="malformed token",
         allowed=public,
+        credential=public,
     )
-    if ctx.inactive_token is not None:
+    inactive_headers = None
+    if basic and ctx.inactive is not None and ctx.inactive.handle in ctx.spec.users:
+        inactive_headers = _basic(*ctx.spec.users[ctx.inactive.handle])
+    if ctx.inactive_token is not None or inactive_headers is not None:
         b.add(
             r,
             "inactive",
@@ -913,9 +1001,11 @@ def _r1(b: _Probes, r: _Route) -> None:
             [item, *_auth_errors(c, "inactive")],
             req,
             "auth",
-            token=ctx.inactive_token,
+            token=ctx.inactive_token or BAD_TOKEN,
+            headers=inactive_headers,
             caller="inactive",
             allowed=public,
+            credential=public,
         )
     for role in sorted(x for x in api.roles if x != "Public"):
         caller = next((x for x in ctx.with_token() if x.role == role), None)
@@ -923,6 +1013,7 @@ def _r1(b: _Probes, r: _Route) -> None:
             continue
         ok = public or role in roles  # type: ignore[operator]
         extra = [] if ok else _auth_errors(c, "forbidden")
+        headers = _basic(*ctx.spec.users[caller.handle]) if basic else None
         for i, target in enumerate(_targets(r, ctx, caller)):
             owns = (
                 r.table is not None
@@ -936,11 +1027,34 @@ def _r1(b: _Probes, r: _Route) -> None:
                 [item, *extra],
                 _build(r, ctx, target=target),
                 "auth",
+                headers=headers,
                 caller=role,
                 allowed=ok,
                 owns_target=owns or r.addr is None,
                 target_index=i,
             )
+
+
+def _others(r: _Route, ctx: ProbeContext, caller: Caller) -> dict[str, Any]:
+    """Path parameters naming a parent row the caller has no part in: another user
+    (``/users/{id}/posts``), or a row another user owns."""
+    out: dict[str, Any] = {}
+    users = ctx.api.users_table
+    for name, p in r.path_params.items():
+        if name == r.addr or p.ref is None:
+            continue
+        key = ctx.key_of(p.ref)
+        if key is None:
+            continue
+        found = resolve_table(ctx.spec.profile, p.ref)
+        if found is not None and found[0] == users:
+            other = next((x.key for x in ctx.callers.values() if x.key != caller.key), None)
+        else:
+            other = next((row[key] for row in ctx.rows(p.ref)
+                          if ctx.owner(p.ref, row) not in (None, caller.key)), None)  # fmt: skip
+        if other is not None:
+            out[name] = other
+    return out
 
 
 def _not_owned_errors(c: Contract) -> list[tuple[str, ContractError]]:
@@ -958,7 +1072,8 @@ def _ownership(b: _Probes, r: _Route) -> None:
     attackers = sorted(ctx.non_admin(c), key=lambda x: not ctx.owns(x.handle, table))[:2]
     key = ctx.key_of(table)
     rows = ctx.rows(table)
-    if c.kind in ("read", "update", "delete") and r.addr is not None and key:
+    if c.kind in ("read", "update", "delete", "action") and r.addr is not None and key:
+        # an action on one row (tagging a note) acts on the caller's own rows only too
         for a in attackers:
             victim = next(
                 (row[key] for row in rows if ctx.owner(table, row) not in (None, a.key)),
@@ -981,6 +1096,24 @@ def _ownership(b: _Probes, r: _Route) -> None:
                 )
             else:
                 b.add(r, a, f"another user's {table} {victim}", [r2], req, "reaches")
+        if c.kind == "action" and r.scope == "owner":
+            _child_stamps(b, r, table, attackers)
+        return
+    if c.kind in ("list", "read") and r.scope == "any":
+        # stated: the route shows anyone's rows -- a non-admin's answer holding a row
+        # another user owns confirms it (never probed as if scoped to the caller)
+        for a in attackers:
+            if c.kind == "list":
+                b.add(
+                    r,
+                    a,
+                    f"other users' {table} rows",
+                    [r2],
+                    _build(r, ctx, target=_targets(r, ctx, a, 1)[0], set_=_others(r, ctx, a)),
+                    "others_rows",
+                    table=table,
+                    caller=a.key,
+                )
         return
     if c.kind in ("list", "read"):
         for a in attackers:
@@ -1015,7 +1148,8 @@ def _ownership(b: _Probes, r: _Route) -> None:
         schema = r.table[2]
         stamp = schema.owner
         keyed = any(stamp and stamp in k for k in schema.keys)
-        pool = sorted(ctx.non_admin(c), key=lambda x: bool(keyed and ctx.owns(x.handle, table)))
+        # a caller owning no row first: a table with one row per user refuses a second
+        pool = sorted(ctx.non_admin(c), key=lambda x: (not keyed, bool(ctx.owns(x.handle, table))))
         if not pool:
             return
         a = pool[0]
@@ -1026,17 +1160,43 @@ def _ownership(b: _Probes, r: _Route) -> None:
             for name, s in tables_of(b.spec.profile)[0].items()
             if s.owner_via and s.owner_via[1] == table
         ]
-        b.add(
-            r,
-            a,
-            f"create stamps the caller as owner of {table}",
-            [t1 or "", r2, *children],
-            _build(r, ctx, extra=extra),
-            "stamps",
-            table=table,
-            caller=a.key,
-            children=[ch.split(" ", 1)[1] for ch in children],
-        )
+        # with the body naming another user as owner, and without (an app refusing
+        # unknown fields answers the first 400: it then says nothing)
+        basic = ctx.login_route == (c.method, c.path) and a.handle in ctx.spec.users
+        for what, more in (("", extra), (" (body names no owner)", None)):
+            if what and extra is None:
+                continue
+            b.add(
+                r,
+                a,
+                f"create stamps the caller as owner of {table}{what}",
+                [t1 or "", r2, *children],
+                _build(r, ctx, extra=more),
+                "stamps",
+                # a login route taking HTTP Basic credentials: the caller's own
+                headers=_basic(*ctx.spec.users[a.handle]) if basic else None,
+                table=table,
+                caller=a.key,
+                children=[ch.split(" ", 1)[1] for ch in children],
+            )
+
+
+def _child_stamps(b: _Probes, r: _Route, table: str, callers: Sequence[Caller]) -> None:
+    """An action on the caller's own row that adds rows of a table owned through it (a
+    note's tag links): the new rows' owner is the caller."""
+    ctx = b.ctx
+    children = [f"T1 {name}" for name, s in tables_of(b.spec.profile)[0].items()
+                if s.owner_via and s.owner_via[1] == table]  # fmt: skip
+    if not children:
+        return
+    for a in callers:
+        own = ctx.owns(a.handle, table)
+        if own:
+            b.add(r, a, f"rows it adds through its own {table} {own[0]} are its own",
+                  children, _build(r, ctx, target=own[0]), "stamps", table=table,
+                  caller=a.key, children=[ch.split(" ", 1)[1] for ch in children],
+                  children_only=True)  # fmt: skip
+            return
 
 
 def _shared_and_users(b: _Probes, routes: Sequence[_Route]) -> None:
@@ -1057,6 +1217,7 @@ def _shared_and_users(b: _Probes, routes: Sequence[_Route]) -> None:
                             "is_caller",
                             caller=caller.key,
                             key=ctx.key_of(name),
+                            login=ctx.spec.users.get(caller.handle, (None,))[0],
                         )
         elif not schema.owner and not schema.owner_via:
             for r in routes:
@@ -1098,8 +1259,13 @@ def _params_on(r: _Route, column: str) -> list[ContractParam]:
     return [p for p in r.c.params if p.column == column and p.source != "path"]
 
 
-def _bounds_probes(b: _Probes, routes: Sequence[_Route]) -> None:
+MAX_EMAIL = 254  # the longest email address (RFC 5321's path limit), as validators check
+
+
+def _bounds_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
+    """T3 and T4 probes; returns the reason of each bound no valid value can reach."""
     ctx = b.ctx
+    reasons: dict[str, str] = {}
     for r in routes:
         if r.c.auth is None:
             continue
@@ -1114,6 +1280,12 @@ def _bounds_probes(b: _Probes, routes: Sequence[_Route]) -> None:
                 continue
             for op, bound in _bounds(p):
                 item = f"T3 {col[0]}.{col[1]} {op} {_num(bound)}"
+                if op == "max_len" and "email" in p.name.lower() and bound > MAX_EMAIL:
+                    reasons[item] = (
+                        f"{UNREACHABLE}: an email address has at most {MAX_EMAIL} characters, "
+                        f"so no valid value reaches the bound {_num(bound)}"
+                    )
+                    continue
                 inside, beyond = _edges(p, op, bound)
                 b.add(
                     r,
@@ -1152,6 +1324,7 @@ def _bounds_probes(b: _Probes, routes: Sequence[_Route]) -> None:
                     "invalid",
                     errors={i: _status_detail(r.c, i) for i in invalid},
                 )
+    return reasons
 
 
 def _status_detail(c: Contract, item_id: str) -> tuple[int | None, str | None]:
@@ -1230,6 +1403,9 @@ def _error_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
             if e.status is None:
                 continue
             if e.when == "not_found":
+                # as the admin when the route admits one: past every role and owner check
+                admin = next((x for x in ctx.allowed(c) if x.role == ctx.api.admin_role), None)
+                caller = admin or caller
                 if r.addr is None:
                     reasons[item] = "unreachable-by-probe: the route addresses no row by id"
                     continue
@@ -1300,18 +1476,37 @@ def _invalid_request(r: _Route, ctx: ProbeContext) -> _Req | None:
     return None
 
 
+def _optional_probes(b: _Probes, routes: Sequence[_Route]) -> None:
+    """A route with optional query parameters, called with every one of them (a valid
+    value each), as a caller it admits: only its 5xx item judges it (a filter the app
+    fails on, as recipe-app-api's ``?tags=``)."""
+    ctx = b.ctx
+    for r in routes:
+        optional = [p for p in r.c.params if p.source == "query" and not p.required]
+        if not optional or r.c.auth is None:
+            continue
+        caller = _writer(r, ctx)
+        if caller is None and r.c.auth != "Public":
+            continue
+        values = {p.name: _valid(p, ctx) for p in optional}
+        b.add(r, caller, "every optional query parameter", [f"R3 {r.c.endpoint} 5xx"],
+              _build(r, ctx, target=_target_for(r, ctx, caller), set_=values), "any")  # fmt: skip
+
+
 def build_probes(
-    spec: Spec, ctx: ProbeContext, items: Mapping[str, RuleItem]
+    spec: Spec, ctx: ProbeContext, items: Mapping[str, RuleItem], skip: Sequence[str] = ()
 ) -> tuple[list[Probe], dict[str, str]]:
-    """The probes bearing on ``items``, and the reason of each item no probe can reach."""
-    routes = [_route(spec, c) for c in route_contracts(spec)]
+    """The probes bearing on ``items`` (none through the routes in ``skip``), and the
+    reason of each item no probe can reach."""
+    routes = [_route(spec, c) for c in route_contracts(spec) if c.endpoint not in skip]
     b = _Probes(spec, ctx, items)
     for r in routes:
         _r1(b, r)
         _ownership(b, r)
     _shared_and_users(b, routes)
-    _bounds_probes(b, routes)
-    reasons = _keys_probes(b, routes)
+    _optional_probes(b, routes)
+    reasons = _bounds_probes(b, routes)
+    reasons |= _keys_probes(b, routes)
     reasons |= _error_probes(b, routes)
     return b.out, reasons
 
@@ -1330,8 +1525,36 @@ class Outcome:
     refused: bool | None = None
 
 
-def _detail(body: Any) -> Any:
-    return body.get("detail") if isinstance(body, Mapping) else None
+def _error_key(api: ApiProfile | None) -> str:
+    """The key an error body holds its detail under: ``json_key(<key>)``'s key, else
+    ``detail``."""
+    from lattice.profile import json_key_of
+
+    key = json_key_of(api.error_body) if api is not None else None
+    return key or "detail"
+
+
+def _detail(body: Any, api: ApiProfile | None = None) -> Any:
+    return body.get(_error_key(api)) if isinstance(body, Mapping) else None
+
+
+def _readable(body: Any) -> bool:
+    """Whether an answer's body could carry a detail: JSON (an object, a list, a
+    scalar, or none at all), not a text page."""
+    return not isinstance(body, str)
+
+
+def _k(value: Any) -> Any:
+    """A key value in one spelling: a UUID (32 hex digits as SQLAlchemy stores it, or
+    dashed as an answer spells it) as its canonical text; anything else as it is."""
+    if isinstance(value, str) and len(value) in (32, 36):
+        try:
+            return str(uuid.UUID(value))
+        except ValueError:
+            return value
+    if isinstance(value, uuid.UUID):
+        return str(value)
+    return value
 
 
 def _ok(status: int) -> bool:
@@ -1340,6 +1563,28 @@ def _ok(status: int) -> bool:
 
 def _changed(before: Mapping[str, list], after: Mapping[str, list], tables: Sequence[str]) -> bool:
     return any(before.get(t) != after.get(t) for t in tables)
+
+
+def _changed_besides(
+    before: Mapping[str, list], after: Mapping[str, list], ctx: ProbeContext, caller: Any
+) -> bool:
+    """Whether a request changed the database, besides its caller's own users row (an
+    app may stamp a caller's last-seen time on every authenticated request)."""
+    found = resolve_table(ctx.spec.profile, ctx.api.users_table)
+    users = found[1] if found is not None else None
+    key = _key_column(found[2]) if found is not None else None
+    for t in before:
+        if before.get(t) == after.get(t):
+            continue
+        if t != users or caller is None or key is None:
+            return True
+        old = {_k(r.get(key)): r for r in before.get(t, [])}
+        new = {_k(r.get(key)): r for r in after.get(t, [])}
+        if set(old) != set(new):
+            return True
+        if any(old[k] != new[k] for k in old if k != _k(caller)):
+            return True
+    return False
 
 
 def _rows_in(body: Any, schema: Schema, key: str) -> list[Mapping[str, Any]]:
@@ -1351,8 +1596,14 @@ def _rows_in(body: Any, schema: Schema, key: str) -> list[Mapping[str, Any]]:
     def walk(v: Any) -> None:
         if isinstance(v, Mapping):
             keys = set(v)
-            if key in keys and len(keys & cols) >= 2 and len(keys & cols) >= 0.75 * len(keys):
+            # mostly its columns (a DRF serializer adds hyperlinks: url, highlight...)
+            if key in keys and len(keys & cols) >= 2 and len(keys & cols) >= 0.5 * len(keys):
                 out.append(v)
+            elif key not in keys and len(keys & cols) >= 2 and isinstance(v.get("url"), str):
+                # a row named by its own URL (flasky's "url": "/api/v1/posts/7")
+                m = re.search(r"/(\d+)/?$", v["url"])
+                if m:
+                    out.append({**v, key: int(m.group(1))})
             for x in v.values():
                 walk(x)
         elif isinstance(v, list):
@@ -1363,8 +1614,53 @@ def _rows_in(body: Any, schema: Schema, key: str) -> list[Mapping[str, Any]]:
     return out
 
 
-def _refused(answer: Answer, c: Contract, api: ApiProfile, owns_target: bool) -> bool | None:
-    detail = _detail(answer.body)
+def _auth_answers(
+    api: ApiProfile, refusals: Sequence[tuple[int, str | None]] = ()
+) -> set[tuple[int | None, str]]:
+    """The (status, detail) answers that refuse a caller, status None meaning any: the
+    profile's automatic 401/403 details, its inactive answer, its token auth's invalid /
+    unknown answers, and ``refusals`` (a front end's recorded auth answers)."""
+    from lattice.profile import NativeToken
+
+    out: set[tuple[int | None, str]] = set()
+    for detail in (api.forbidden_detail, api.unauthorized_detail):
+        if detail:
+            out.add((None, detail))
+    if api.active_column:
+        out.add((api.inactive_status, api.inactive_detail))
+    if isinstance(api.auth, NativeToken):
+        for answer in (api.auth.invalid, api.auth.unknown):
+            if answer is not None:
+                out.add((answer[0], answer[1]))
+    for status, detail in refusals:
+        if detail:
+            out.add((status, detail))
+    return out
+
+
+def _refused(
+    answer: Answer,
+    c: Contract,
+    api: ApiProfile,
+    owns_target: bool,
+    *,
+    refusals: Sequence[tuple[int, str | None]] = (),
+) -> bool | None:
+    """Whether an answer refuses the caller (None: cannot tell). An auth answer (see
+    :func:`_auth_answers`) is a refusal, though the route also states an error of that
+    status -- unless it states one with that very detail as a non-auth error, when only
+    a probe on the caller's own row tells. Otherwise a 401 the route does not state is a
+    refusal; a 403 one only when the profile names no forbidden detail and the target
+    is the caller's own."""
+    detail = _detail(answer.body, api)
+    if detail is not None:
+        for status, text in _auth_answers(api, refusals):
+            if text == detail and status in (None, answer.status) and answer.status >= 400:
+                same = any(
+                    e.when not in AUTH_TRIGGERS and e.status == answer.status and e.detail == detail
+                    for e in c.errors
+                )
+                return (True if owns_target else None) if same else True
     stated = [
         e
         for e in c.errors
@@ -1375,9 +1671,6 @@ def _refused(answer: Answer, c: Contract, api: ApiProfile, owns_target: bool) ->
     if answer.status not in (401, 403) or stated:
         return False
     if answer.status == 401:
-        return True
-    auth_details = {api.forbidden_detail, api.inactive_detail, api.unauthorized_detail} - {None}
-    if detail in auth_details:
         return True
     if api.forbidden_detail is not None:
         return False  # a 403 of another kind: past the role check (data-dependent)
@@ -1394,16 +1687,25 @@ def _judge(
 ) -> dict[str, Outcome]:
     spec, api, a = ctx.spec, ctx.api, p.args
     status, body = answer.status, answer.body
-    every = list(before)
-    unchanged = not _changed(before, after, every)
+    caller = ctx.callers.get(p.user or "") if p.token is None else None
+    unchanged = not _changed_besides(before, after, ctx, caller.key if caller else None)
     out: dict[str, Outcome] = {}
 
     def all_items(o: Outcome) -> dict[str, Outcome]:
         return {i: o for i in p.items}
 
     def stated_error(want: int | None, detail: str | None) -> Outcome:
-        """An R3 error item: the stated status, and detail when stated."""
-        got = _detail(body)
+        """An R3 error item: the stated status, and detail when stated. A stated
+        detail in an answer that is no JSON (an HTML page) cannot be read: the status
+        still contradicts, a matching one is unreachable-by-probe."""
+        got = _detail(body, api)
+        if detail is not None and status == want and not _readable(body):
+            return Outcome(
+                None,
+                f"{UNREACHABLE}: the route answers {status} with a page that is not JSON; "
+                "its detail cannot be read",
+                {"status": status},
+            )
         ok = status == want and (detail is None or got == detail)
         reason = f"answered {status} {got!r}; stated {want} {detail!r}"
         return Outcome(ok, reason, {"status": status, "detail": got})
@@ -1414,7 +1716,10 @@ def _judge(
                 out[item] = stated_error(want, detail)
 
     if p.expect == "auth":
-        refused = _refused(answer, contract, api, a.get("owns_target", True))
+        refused = _refused(answer, contract, api, a.get("owns_target", True),
+                           refusals=ctx.refusals)  # fmt: skip
+        if a.get("credential") and refused:
+            refused = None  # a Public route's bad credentials: the auth layer's refusal
         r1 = next(i for i in p.items if i.startswith("R1 "))
         out[r1] = Outcome(None, "", {"status": status}, refused)
         for item in p.items:
@@ -1438,15 +1743,18 @@ def _judge(
         table = a["table"]
         found = resolve_table(spec.profile, table)
         assert found is not None
-        key = _key_column(found[2]) or "id"
+        key = _key_column(found[2]) or ""
+        if not key:  # a link table (a composite key): its rows cannot be told apart here
+            return all_items(Outcome(None, f"{table} has no one-column key to find its rows by"))
         if not _ok(status):
             return all_items(
                 Outcome(False, f"the caller's own rows answered {status}", {"status": status})
             )
-        seeded = {r[key]: r for r in ctx.rows(table)}
-        rows = [r for r in _rows_in(body, found[2], key) if r[key] in seeded]
+        seeded = {_k(r[key]): r for r in ctx.rows(table)}
+        rows = [r for r in _rows_in(body, found[2], key) if _k(r[key]) in seeded]
         foreign = sorted(
-            {r[key] for r in rows if ctx.owner(table, seeded[r[key]]) != a["caller"]}, key=str
+            {_k(r[key]) for r in rows if ctx.owner(table, seeded[_k(r[key])]) != a["caller"]},
+            key=str,
         )
         if foreign:
             return all_items(
@@ -1459,18 +1767,42 @@ def _judge(
         if not rows:  # an empty answer shows nothing about filtering
             return all_items(Outcome(None, "no row of the table in the answer"))
         return all_items(Outcome(True, f"only the caller's {table} rows ({len(rows)})"))
+    if p.expect == "others_rows":
+        table = a["table"]
+        found = resolve_table(spec.profile, table)
+        assert found is not None
+        key = _key_column(found[2]) or ""
+        if not key:  # a link table (a composite key): its rows cannot be told apart here
+            return all_items(Outcome(None, f"{table} has no one-column key to find its rows by"))
+        if not _ok(status):
+            return all_items(Outcome(False, f"the list answered {status}", {"status": status}))
+        seeded = {_k(r[key]): r for r in ctx.rows(table)}
+        rows = [r for r in _rows_in(body, found[2], key) if _k(r[key]) in seeded]
+        foreign = sorted(
+            {_k(r[key]) for r in rows if ctx.owner(table, seeded[_k(r[key])]) != a["caller"]},
+            key=str,
+        )
+        if foreign:
+            return all_items(Outcome(True, f"answered other users' {table} rows {foreign[:5]}"))
+        if not rows:
+            return all_items(Outcome(None, "no row of the table in the answer"))
+        return all_items(Outcome(False, f"only the caller's own {table} rows", {"scope": "owner"}))
     if p.expect == "writes_own":
         table = a["table"]
         found = resolve_table(spec.profile, table)
         assert found is not None
-        key = _key_column(found[2]) or "id"
+        key = _key_column(found[2]) or ""
+        if not key:  # a link table (a composite key): its rows cannot be told apart here
+            return all_items(Outcome(None, f"{table} has no one-column key to find its rows by"))
         sql = found[1]
         diff = db_diff(before, after, {sql: key}).get(sql, {})
         touched = [ch["key"][key] for ch in diff.get("changed", [])] + [
             r[key] for r in diff.get("removed", [])
         ]
-        seeded = {r[key]: r for r in ctx.rows(table)}
-        foreign = [k for k in touched if k in seeded and ctx.owner(table, seeded[k]) != a["caller"]]
+        seeded = {_k(r[key]): r for r in ctx.rows(table)}
+        foreign = [
+            k for k in touched if _k(k) in seeded and ctx.owner(table, seeded[_k(k)]) != a["caller"]
+        ]
         if foreign:
             return all_items(
                 Outcome(
@@ -1485,12 +1817,18 @@ def _judge(
     if p.expect == "stamps":
         if not _ok(status):
             return all_items(Outcome(None, f"the create answered {status}"))
-        for table in [a["table"], *a.get("children", [])]:
+        tables = [] if a.get("children_only") else [a["table"]]
+        for table in [*tables, *a.get("children", [])]:
             found = resolve_table(spec.profile, table)
             assert found is not None
-            key = _key_column(found[2]) or "id"
-            old = {r.get(key) for r in before.get(found[1], [])}
-            new = [r for r in after.get(found[1], []) if r.get(key) not in old]
+            key = _key_column(found[2])
+
+            def ident(row: Mapping[str, Any], key: str | None = key) -> Any:
+                # a row by its key; a link table's (a composite key) by all of it
+                return row.get(key) if key else tuple(sorted(row.items()))
+
+            old = {ident(r) for r in before.get(found[1], [])}
+            new = [r for r in after.get(found[1], []) if ident(r) not in old]
             owners = sorted({str(ctx.owner(table, r, after)) for r in new})
             items = [i for i in p.items if i == f"T1 {table}"]
             if table == a["table"]:
@@ -1510,7 +1848,14 @@ def _judge(
         return out
     if p.expect == "is_caller":
         got = body.get(a["key"]) if isinstance(body, Mapping) else None
-        ok = _ok(status) and got == a["caller"]
+        ok = _ok(status) and _k(got) == _k(a["caller"])
+        if _ok(status) and isinstance(body, Mapping) and a["key"] not in body and a.get("login"):
+            # an answer without the key (a serializer of email and name): the caller's
+            # login value names it
+            got = a["login"] if a["login"] in body.values() else None
+            ok = got is not None
+            return all_items(Outcome(ok, f"answered {status} with the login {got!r}",
+                                     {"status": status, "login": got}))  # fmt: skip
         return all_items(
             Outcome(
                 ok, f"answered {status} with {a['key']}={got!r}", {"status": status, a["key"]: got}
@@ -1560,6 +1905,8 @@ def _judge(
         return out
     if p.expect == "error":
         return all_items(stated_error(a["status"], a.get("detail")))
+    if p.expect == "any":
+        return {}  # only the route's 5xx item reads it (after every probe ran)
     raise ValueError(f"unknown probe judgement {p.expect!r}")
 
 
@@ -1609,10 +1956,13 @@ class RuleResult:
     @property
     def summary(self) -> dict[str, Any]:
         def count(group: Mapping[str, Mapping[str, Any]]) -> dict[str, int]:
-            n = sum(v["verdict"] == "verified" for v in group.values())
+            n = sum(is_verified(v["verdict"]) for v in group.values())
             return {"verified": n, "total": len(group)}
 
         verdicts = {v: sum(i.verdict == v for i in self.items.values()) for v in VERDICTS}
+        corrected = sum(i.verdict == VERIFIED_CORRECTED for i in self.items.values())
+        if corrected:
+            verdicts[VERIFIED_CORRECTED] = corrected
         return {"items": verdicts, "tables": count(self.tables), "routes": count(self.routes)}
 
     def to_dict(self) -> dict[str, Any]:
@@ -1626,31 +1976,74 @@ class RuleResult:
         }
 
 
+def _reachable_roles(api: ApiProfile) -> set[str]:
+    """The roles a caller can have: ``NoRoles``' one, ``AdminFlag``'s two, a
+    ``RoleColumn``'s named values (and the admin role), else every non-Public role."""
+    src = api.roles_from
+    if isinstance(src, NoRoles):
+        return {src.role}
+    if isinstance(src, AdminFlag):
+        return {src.role, api.admin_role}
+    if isinstance(src, RoleColumn) and src.values:
+        return {name for _, name in src.values}
+    return {r for r in api.roles if r != "Public"}
+
+
+def _set_active(spec: Spec, db: Path, key: Any, value: bool) -> None:
+    """Set a users row's active column (the inactive caller is logged in while active)."""
+    import sqlite3
+
+    api = spec.profile.api
+    found = resolve_table(spec.profile, api.users_table) if api is not None else None
+    if api is None or found is None or not api.active_column:
+        return
+    key_col = _key_column(found[2]) or "id"
+    con = sqlite3.connect(db)
+    try:
+        con.execute(
+            f'UPDATE "{found[1]}" SET "{api.active_column}" = ? WHERE "{key_col}" = ?',
+            (int(value), key),
+        )
+        con.commit()
+    finally:
+        con.close()
+
+
 def _tokens(
     spec: Spec,
     sessions: SessionFactory,
     seed_db: Path,
-    tmp: Path,
     callers: Mapping[str, Caller],
     login: Login | None,
     notes: list[str],
+    *,
+    inactive_login: bool = False,
 ) -> dict[str, str]:
+    """Every active handle's token, logged in on the seed database itself, so a token
+    the app keeps as a row (DRF's ``Token``, a tokens table) is in every probe's copy.
+    ``inactive_login``: the inactive users too, each made active for its login only (a
+    token the app minted for it while active; refused once it is inactive again)."""
     tokens: dict[str, str] = {}
     if login is None:
         if spec.users:
             notes.append("layer R: no login given; probes run without callers")
         return tokens
-    db = tmp / "login.db"
-    shutil.copyfile(seed_db, db)
-    with sessions(db) as session:
-        client = getattr(session, "client", session)
-        for handle, caller in callers.items():
-            if not caller.active:
-                continue
-            try:
-                tokens[handle] = login(client, handle)
-            except Exception as err:  # noqa: BLE001 -- that caller is left out, noted
-                notes.append(f"layer R: cannot log in as {handle!r} ({err})")
+    asleep = [c for c in callers.values() if not c.active and inactive_login]
+    for c in asleep:
+        _set_active(spec, seed_db, c.key, True)
+    try:
+        with sessions(seed_db) as session:
+            client = getattr(session, "client", session)
+            for handle, caller in callers.items():
+                if not caller.active and caller not in asleep:
+                    continue
+                try:
+                    tokens[handle] = login(client, handle)
+                except Exception as err:  # noqa: BLE001 -- that caller is left out, noted
+                    notes.append(f"layer R: cannot log in as {handle!r} ({err})")
+    finally:
+        for c in asleep:
+            _set_active(spec, seed_db, c.key, False)
     return tokens
 
 
@@ -1668,48 +2061,99 @@ def run_probes(
     scheme: str = "Bearer",
     only: Sequence[str] | None = None,
     on_probe: Callable[[Probe], None] | None = None,
+    refusals: Sequence[tuple[int, str | None]] = (),
+    login_route: tuple[str, str] | None = None,
+    auth_headers: Callable[[str], Mapping[str, str]] | None = None,
+    observe: Callable[[Probe, Path, Path, Answer], None] | None = None,
+    variant: str = "seed",
+    inactive_login: bool = False,
+    unreachable: Mapping[str, str] | None = None,
+    auth_present: Callable[[Any, str], Mapping[str, str]] | None = None,
 ) -> RuleResult:
     """Every rule item of ``spec`` (those whose id starts with one of ``only``, when
     given), probed on the app ``sessions`` opens; ``make_db(variant, path)`` writes the
-    seeded database. ``login(client, handle)`` answers a handle's token (the session's
-    ``client``); ``mint_token(user key)`` a token for the inactive user (without it,
-    no inactive probe); ``scheme`` the Authorization scheme. ``on_probe`` is called
-    before each probe runs (layer C labels its requests with it)."""
+    seeded database (``variant``: which one). ``login(client, handle)`` answers a
+    handle's token (the session's ``client``); ``mint_token(user key)`` a token for the
+    inactive user (without it, no inactive probe); ``scheme`` the Authorization scheme,
+    or ``auth_headers(token)`` the headers carrying a token (an app runtime's).
+    ``on_probe`` is called before each probe runs (layer C labels its requests with
+    it), ``observe(probe, seed_db, db_after, answer)`` after it (the database files
+    still there: mining records them). ``refusals``: answers (status, detail) that
+    refuse a caller besides the profile's; ``login_route``: (method, path) of a login
+    route taking HTTP Basic credentials (see :func:`_r1`); ``auth_present(session,
+    token)`` attaches a token to a session and answers the headers still to send (a
+    session cookie goes in the session's cookie jar). ``inactive_login``: the
+    inactive caller's token comes from logging it in while active (see
+    :func:`_tokens`), else from ``mint_token``. ``unreachable``: routes (``METHOD
+    /path``) no probe may call, with the reason (a route that needs the network): their
+    items are unexercised, ``unreachable-by-probe`` with that reason."""
     all_items = rule_items(spec)
     items = {i.id: i for i in all_items if _selected(i.id, only)}
     result = RuleResult()
     contracts = {c.endpoint: c for c in route_contracts(spec)}
     with tempfile.TemporaryDirectory(prefix="lattice-check-r-") as name:
         tmp = Path(name)
-        seed_db = Path(make_db("seed", tmp / "seed.db"))
+        seed_db = Path(make_db(variant, tmp / "seed.db"))
         _, sql_names = tables_of(spec.profile)
         seed_all = _read_tables(seed_db)
         tables = [t for t in dict.fromkeys(sql_names.values()) if t in seed_all]
-        seed = {t: seed_all[t] for t in tables}
-        callers = _callers(spec, seed)
-        tokens = _tokens(spec, sessions, seed_db, tmp, callers, login, result.notes)
+        callers = _callers(spec, {t: seed_all[t] for t in tables})
+        tokens = _tokens(spec, sessions, seed_db, callers, login, result.notes,
+                         inactive_login=inactive_login)  # fmt: skip
         inactive = next((c for c in callers.values() if not c.active), None)
         inactive_token = None
-        if inactive is not None and mint_token is not None:
-            inactive_token = mint_token(inactive.key)
+        if inactive is not None and inactive.handle in tokens:
+            inactive_token = tokens.pop(inactive.handle)
+        elif inactive is not None and mint_token is not None:
+            with sessions(seed_db):  # minted where the app keeps its tokens, if it does
+                inactive_token = mint_token(inactive.key)
         elif inactive is not None:
             result.notes.append("layer R: no mint_token; the inactive-caller probes are skipped")
-        ctx = ProbeContext(spec, seed, callers, tokens, inactive, inactive_token)
-        probes, reasons = build_probes(spec, ctx, items)
+        seed_all = _read_tables(seed_db)  # with what logging in wrote (tokens, last login)
+        seed = {t: seed_all[t] for t in tables}
+        ctx = ProbeContext(spec, seed, callers, tokens, inactive, inactive_token,
+                           tuple(refusals), login_route)  # fmt: skip
+        skipped = dict(unreachable or {})
+        probes, reasons = build_probes(spec, ctx, items, skip=tuple(skipped))
+        for item_id, item in items.items():
+            if item.subject in skipped:
+                reasons[item_id] = f"{UNREACHABLE}: {skipped[item.subject]}"
         outcomes: dict[str, list[tuple[Probe, Outcome]]] = {i: [] for i in items}
+        users_item = f"T1 {ctx.api.users_table}"
+        if users_item in outcomes and login is not None:
+            # T1 users: logging in as every role works (the "me" probes add theirs)
+            roles = _reachable_roles(ctx.api)
+            logged = {c.role for c in ctx.with_token()}
+            missing = sorted(roles - logged, key=str)
+            login_probe = Probe("(login) every role", "(login)", (users_item,), "POST",
+                                "(login)", "login")  # fmt: skip
+            outcomes[users_item].append((login_probe, Outcome(
+                not missing,
+                f"no caller of {missing} could log in" if missing
+                else f"every role logs in ({', '.join(sorted(logged, key=str))})",
+                {"missing": missing} if missing else None,
+            )))  # fmt: skip
         answers: dict[str, tuple[Answer, dict[str, list]]] = {}
         for k, probe in enumerate(probes):
             if on_probe is not None:
                 on_probe(probe)
             db = tmp / f"probe-{k}.db"
             shutil.copyfile(seed_db, db)
-            headers = {}
+            headers: dict[str, str] = {}
             token = probe.token
             if token is None and probe.user is not None:
                 token = tokens.get(probe.user)
-            if token is not None:
+            if probe.headers is not None:
+                headers = dict(probe.headers)
+            elif token is not None and auth_present is not None:
+                pass  # presented on the session below (a session cookie)
+            elif token is not None and auth_headers is not None:
+                headers = dict(auth_headers(token))
+            elif token is not None:
                 headers["Authorization"] = f"{scheme} {token}"
             with sessions(db) as session:
+                if probe.headers is None and token is not None and auth_present is not None:
+                    headers = dict(auth_present(session, token))
                 answer = session.request(
                     probe.method,
                     probe.path,
@@ -1719,6 +2163,8 @@ def run_probes(
                     headers=headers,
                 )
             after = {t: rows for t, rows in _read_tables(db).items() if t in tables}
+            if observe is not None:
+                observe(probe, seed_db, db, answer)
             db.unlink(missing_ok=True)
             answers[probe.name] = (answer, after)
             diff = db_diff(seed, after, _keys(spec))
@@ -1738,7 +2184,7 @@ def run_probes(
         result.items[item_id] = _verdict(item, outcomes[item_id], reasons.get(item_id))
     _post_hoc(spec, result, items, probes, answers, ctx)
     _route_5xx(result, items, probes, answers, contracts)
-    _summaries(spec, result, contracts)
+    summarise(spec, result)
     return result
 
 
@@ -1758,6 +2204,8 @@ def _verdict(
     if item.unclear:
         return ItemVerdict(item, "unclear", item.unclear)
     if item.kind == "R1":
+        if not found and reason:
+            return ItemVerdict(item, "unexercised", reason)
         return _r1_verdict(item, found)
     names = [p.name for p, _ in found]
     bad = [(p, o) for p, o in found if o.ok is False]
@@ -1768,6 +2216,9 @@ def _verdict(
     if good:
         notes = sorted({o.reason for _, o in good if "app-baseline" in o.reason})
         return ItemVerdict(item, "verified", good[0][1].reason, names, notes=notes)
+    unreachable = [o.reason for _, o in found if o.reason.startswith(UNREACHABLE)]
+    if found and len(unreachable) == len(found):
+        reason = reason or unreachable[0]
     why = reason or (
         "no probe reached it"
         if not found
@@ -1932,8 +2383,12 @@ def _route_5xx(
             result.items[item_id] = ItemVerdict(item, "unexercised", "no probe of the route ran")
 
 
-def _summaries(spec: Spec, result: RuleResult, contracts: Mapping[str, Contract]) -> None:
-    """Table (§1.1) and route (§1.2) verdicts over the items run."""
+def summarise(spec: Spec, result: RuleResult) -> None:
+    """Table (§1.1) and route (§1.2) verdicts over the items run (again after the
+    importer's corrections: ``verified (corrected)`` counts as verified)."""
+    contracts = {c.endpoint: c for c in route_contracts(spec)}
+    result.tables.clear()
+    result.routes.clear()
     by_subject: dict[str, list[ItemVerdict]] = {}
     for v in result.items.values():
         by_subject.setdefault(v.item.subject, []).append(v)
@@ -1948,7 +2403,7 @@ def _summaries(spec: Spec, result: RuleResult, contracts: Mapping[str, Contract]
             verdict, reason = "unverified", "unreached"
         elif bad:
             verdict, reason = "unverified", "items " + ", ".join(bad)
-        elif t1 is not None and t1.verdict != "verified":
+        elif t1 is not None and not is_verified(t1.verdict):
             verdict, reason = "unverified", f"T1 {t1.verdict}"
         else:
             verdict, reason = "verified", ""
@@ -1967,9 +2422,9 @@ def _summaries(spec: Spec, result: RuleResult, contracts: Mapping[str, Contract]
             v.item.id for v in found if v.item.kind == "R3" and v.verdict in ("refuted", "unclear")
         ]
         reasons = []
-        if r1 is not None and r1.verdict != "verified":
+        if r1 is not None and not is_verified(r1.verdict):
             reasons.append(f"R1 {r1.verdict}")
-        if r2 is not None and r2.verdict != "verified":
+        if r2 is not None and not is_verified(r2.verdict):
             reasons.append(f"R2 {r2.verdict}")
         if r3_bad:
             reasons.append("items " + ", ".join(r3_bad))
@@ -1992,8 +2447,11 @@ __all__ = [
     "Session",
     "SessionFactory",
     "VERDICTS",
+    "VERIFIED_CORRECTED",
     "allowed_roles",
     "asgi_sessions",
+    "is_verified",
+    "summarise",
     "build_probes",
     "dispose",
     "owner_scope",

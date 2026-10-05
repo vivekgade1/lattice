@@ -56,20 +56,36 @@ def front_ends() -> tuple[FrontEnd, ...]:
     return tuple(_REGISTRY.values())
 
 
+def _load_others() -> None:
+    """Register the Django + DRF and Flask + SQLAlchemy front ends. They are imported only
+    when FastAPI's is not the one wanted, so a FastAPI import loads neither (their
+    literals would join the request suite's Hypothesis pool: see ``suite``)."""
+    from lattice.importer.frontends import django_drf, flask_app  # noqa: F401 -- register
+
+
 def select(
     framework: str | None = None, root: Path | str | None = None, package: str | None = None
 ) -> FrontEnd:
     """The front end named ``framework``; None: the first that detects its framework in
-    ``package`` under ``root``. A KeyError for an unknown name, a LookupError when none
-    detects the package."""
+    ``package`` under ``root`` (FastAPI's first, then Django's and Flask's). A KeyError
+    for an unknown name, a LookupError when none detects the package."""
     known = {fe.name: fe for fe in front_ends()}
     if framework is not None:
+        if framework not in known:
+            _load_others()
+            known = {fe.name: fe for fe in front_ends()}
         if framework not in known:
             raise KeyError(f"no front end {framework!r} (known: {', '.join(sorted(known))})")
         return known[framework]
     if root is None or package is None:
         raise ValueError(f"detecting the framework needs a root and a package: {root}, {package}")
-    for fe in known.values():
-        if fe.detect(Path(root), package):
-            return fe
+    tried: set[str] = set()
+    for load in (None, _load_others):
+        if load is not None:
+            load()
+        for fe in front_ends():
+            if fe.name not in tried:
+                tried.add(fe.name)
+                if fe.detect(Path(root), package):
+                    return fe
     raise LookupError(f"no front end recognises {package!r} under {root}")

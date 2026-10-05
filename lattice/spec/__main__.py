@@ -7,6 +7,21 @@
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
 path)``). Exit code: 0 pass, 1 fail, 2 the check could not run.
+
+::
+
+    python -m lattice.spec fidelity --spec DIR/candidate_spec.py --package P \
+        [--root .] [--framework auto] [--app mod:fn] --scenarios mod:SCENARIOS \
+        --seed mod [--json]
+
+replays an app's recorded fidelity scenarios through the app's runtime (the front end
+``--framework`` names, or detects: FastAPI, Django + DRF, Flask), checking each step's
+answer and the spec's rule-oracle prediction (``lattice.spec.fidelity``). ``--spec``
+is a spec module file (as ``python -m lattice.importer review DIR emit`` writes it) or
+``module:SPEC``; ``--seed`` the app's seed module (``build_seed_db``,
+``login_headers``, optional ``raw_credentials_headers`` and ``USER_IDS``); ``--app``
+defaults to the nearest ``make_app`` of the package. Exit code: 0 pass, 1 fail, 2 the
+suite could not run.
 """
 
 from __future__ import annotations
@@ -50,11 +65,92 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--natives", help="module:NATIVES, the spec's natives {name: function}")
     c.add_argument("--baseline", help="module:BASELINE, the app's accepted findings")
     c.add_argument("--json", action="store_true", help="print the report as JSON")
+    f = sub.add_parser("fidelity", help="replay an app's fidelity scenarios through its runtime")
+    f.add_argument("--spec", required=True, help="a spec module file, or module:SPEC")
+    f.add_argument("--package", required=True, help="the app package, dotted")
+    f.add_argument("--root", default=".", help="the directory the package is under")
+    f.add_argument("--framework", default="auto", help="auto, fastapi, django or flask")
+    f.add_argument("--app", default=None, help="module:factory (default: the nearest make_app)")
+    f.add_argument("--scenarios", required=True, help="module:SCENARIOS")
+    f.add_argument("--seed", required=True, help="the app's seed module")
+    f.add_argument(
+        "--import",
+        dest="import_dir",
+        default=None,
+        help="the import directory: its report's framework routes are set apart",
+    )
+    f.add_argument("--json", action="store_true", help="print the report as JSON")
     return parser
+
+
+def _framework_routes(import_dir: str | None) -> list[tuple[str, str]]:
+    """The framework routes an import's report lists (methods, path)."""
+    import json
+    from pathlib import Path
+
+    if import_dir is None:
+        return []
+    rules = json.loads((Path(import_dir) / "report.json").read_text()).get("rules") or {}
+    return [
+        (e.get("method") or "*", e["path"])
+        for e in rules.get("excluded_routes", ())
+        if e.get("kind") == "framework"
+    ]
+
+
+def fidelity(args: argparse.Namespace) -> int:
+    """The ``fidelity`` subcommand (see the module docstring)."""
+    import json
+    from pathlib import Path
+
+    from lattice.importer.frontends import select
+    from lattice.importer.rules import find_factory
+    from lattice.spec.fidelity import run_fidelity
+
+    try:
+        root = Path(args.root).resolve()
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        if args.spec.endswith(".py"):
+            from lattice.importer.emit_spec import load_spec
+
+            spec = load_spec(args.spec).spec
+        else:
+            spec = load(args.spec)
+            spec = spec() if not isinstance(spec, Spec) and callable(spec) else spec
+        fe = select(None if args.framework == "auto" else args.framework, root, args.package)
+        factory, _ = find_factory(args.package, args.app)
+        seed = importlib.import_module(args.seed)
+        report = run_fidelity(
+            spec,
+            load(args.scenarios),
+            factory,
+            seed.build_seed_db,
+            seed.login_headers,
+            runtime=fe.runtime(root, args.package),
+            raw_headers=getattr(seed, "raw_credentials_headers", None),
+            user_ids=getattr(seed, "USER_IDS", None),
+            framework=_framework_routes(args.import_dir),
+        )
+    except Exception as err:  # noqa: BLE001 -- any failure to run the suite is exit 2
+        print(f"error: {type(err).__name__}: {err}", file=sys.stderr)
+        return 2
+    data = report.to_dict()
+    if args.json:
+        print(json.dumps(data, default=str))
+    else:
+        print(f"fidelity: {'pass' if report.passed else 'fail'} -- {data['steps']} steps of "
+              f"{data['scenarios']} scenarios; answers {data['answers_ok']}, rule oracle "
+              f"{data['oracle_ok']}")  # fmt: skip
+        for s in data["failed"]:
+            print(f"  {s['scenario']} / step {s['step']}: {'; '.join(s['problems'])}")
+    return 0 if report.passed else 1
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    if args.command == "fidelity":
+        return fidelity(args)
     try:
         spec = load(args.spec)
         if not isinstance(spec, Spec) and callable(spec):

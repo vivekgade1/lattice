@@ -392,6 +392,8 @@ class _Extractor:
         self.app = app
         self.db_path = db_path
         self.index = _Index(root, package)
+        # "<Schema>(partial)" -> the schema class; "<view>(json)" -> the JSON keys it reads
+        self.partials: dict[str, Any] = {}
         self.orm: OrmTables = read_tables(package)
         self.errors = error_sites(self.index)
         self.modules = {m.__name__: m for m in package_modules(package)}
@@ -1257,9 +1259,20 @@ class _RouteReader:
         if spec.get("body"):
             schema = spec["body"][0]
             body_models = (type(schema).__name__,)
+            if getattr(schema, "partial", False) is True:
+                # Schema(partial=True): every field optional (an edit route's body)
+                body_models = (f"{type(schema).__name__}(partial)",)
+                ex.partials[body_models[0]] = type(schema)
             params.append(RouteParam("body", body_models[0], body_models[0], "body"))
         elif self._reads_json(mod, fn):
-            params.append(RouteParam("body", "json", None, "body"))
+            keys = self._json_keys(mod, fn)
+            name = f"{fn.name}(json)"  # type: ignore[attr-defined]
+            if keys:
+                # the keys the view (or a package function handed the JSON) reads
+                ex.partials[name] = keys  # type: ignore[assignment]
+                params.append(RouteParam("body", name, name, "body"))
+            else:
+                params.append(RouteParam("body", "json", None, "body"))
         response = spec.get("response")
         status = spec.get("status_code") if response is not None else None
         if status is None:
@@ -1430,9 +1443,67 @@ class _RouteReader:
                     return OwnerUse(table, col, "compare", e.lineno)
         return None
 
+    def _caller_method(
+        self, mod: str, call: ast.Call, callers: set[str]
+    ) -> tuple[str, ast.AST] | None:
+        """The users model's method a call on the caller runs (``user.follow(x)``,
+        ``user.generate_auth_token()``)."""
+        ex = self.ex
+        func = call.func
+        if not (isinstance(func, ast.Attribute) and ex.is_caller(mod, func.value, callers)):
+            return None
+        cls = ex.orm.classes.get(ex.users or "")
+        if cls is None:
+            return None
+        return ex.def_of(f"{cls.__module__}:{cls.__name__}.{func.attr}")
+
+    def _core_table(self, mod: str, expr: ast.expr) -> str | None:
+        """The model name of a module-level ``sa.Table`` an expression names (a link
+        table without a class: microblog's ``followers``)."""
+        ex = self.ex
+        try:
+            value = ex.evaluate(mod, expr)
+        except Exception:  # noqa: BLE001 -- not evaluable: not a table
+            return None
+        name = getattr(value, "name", None) if type(value).__name__ == "Table" else None
+        return next((t.name for t in ex.orm.tables if t.table_name == name), None) if name else None
+
+    def _core_writes(self, mod: str, node: ast.Call, callers: set[str]) -> list[OwnerUse]:
+        """``T.insert().values(<col>=<caller id>)`` (assign) and ``T.delete().where(T.c.<col>
+        == <caller id>)`` / ``T.update()...`` (compare) on a core table."""
+        ex = self.ex
+        out: list[OwnerUse] = []
+        func = node.func
+        if not isinstance(func, ast.Attribute) or func.attr not in ("values", "where"):
+            return out
+        inner = func.value
+        if not (isinstance(inner, ast.Call) and isinstance(inner.func, ast.Attribute)
+                and inner.func.attr in ("insert", "delete", "update")):  # fmt: skip
+            return out
+        table = self._core_table(mod, inner.func.value)
+        if table is None:
+            return out
+        if func.attr == "values":
+            for k in node.keywords:
+                if k.arg and ex.is_caller_id(mod, k.value, callers):
+                    col = self._owner_column(table, k.arg)
+                    if col is not None:
+                        out.append(OwnerUse(table, col, "assign", node.lineno))
+            return out
+        for e in node.args:
+            for cmp in (n for n in ast.walk(e) if isinstance(n, ast.Compare)):
+                left, right = cmp.left, cmp.comparators[0]
+                for a, b in ((left, right), (right, left)):
+                    if isinstance(a, ast.Attribute) and ex.is_caller_id(mod, b, callers):
+                        col = self._owner_column(table, a.attr)
+                        if col is not None:
+                            out.append(OwnerUse(table, col, "compare", node.lineno))
+        return out
+
     def _owner_uses(
-        self, mod: str, fn: ast.AST, callers: set[str], rows: dict[str, str], locals_: set[str]
-    ) -> list[OwnerUse]:
+        self, mod: str, fn: ast.AST, callers: set[str], rows: dict[str, str], locals_: set[str],
+        depth: int = 0,
+    ) -> list[OwnerUse]:  # fmt: skip
         ex = self.ex
         out: list[OwnerUse] = []
 
@@ -1466,7 +1537,9 @@ class _RouteReader:
             )
             if users_pk and ex.users and any(ex.is_caller(mod, w, callers) for w in written):
                 add(OwnerUse(ex.users, users_pk, "compare", node.lineno))  # type: ignore[attr-defined]
-            if isinstance(node, ast.Compare):
+            if isinstance(node, ast.Compare) and depth == 0:
+                # (inside the caller's own methods only writes count: a comparison there
+                # may be one arm of a filter -- "mine or followed" -- not a scope)
                 add(self._owner_compare(mod, node, callers, rows, locals_))
             elif isinstance(node, ast.Assign):
                 for t in node.targets:
@@ -1480,6 +1553,13 @@ class _RouteReader:
                         if col is not None:
                             add(OwnerUse(rows[t.value.id], col, "assign", node.lineno))
             elif isinstance(node, ast.Call):
+                for use in self._core_writes(mod, node, callers):
+                    add(use)
+                method = self._caller_method(mod, node, callers) if depth < 2 else None
+                if method is not None:  # what the caller's own method does as ``self``
+                    cmod, cnode = method
+                    for use in self._owner_uses(cmod, cnode, {"self"}, {}, set(), depth + 1):
+                        add(use)
                 kw = [k for k in node.keywords if k.arg]
                 table = ex.table_class(mod, node.func, locals_)
                 if table is not None:  # Row(owner=caller)
@@ -1572,6 +1652,60 @@ class _RouteReader:
                     ),
                 )
         return list(out.values())
+
+    def _json_keys(self, mod: str, fn: ast.AST) -> dict[str, bool]:
+        """The keys of the request's JSON body a view reads (key -> required): from
+        ``request.json.get("k")`` / ``request.json["k"]`` in the view, and in a package
+        function the view hands ``request.json`` (flasky's ``Post.from_json``). A key
+        read with a default (``.get("k", x)``) is optional."""
+        ex = self.ex
+
+        def is_json(m: str, e: ast.expr) -> bool:
+            if isinstance(e, ast.Call):
+                e = e.func
+            return (
+                isinstance(e, ast.Attribute)
+                and e.attr in ("json", "get_json")
+                and ex.resolve(m, e.value) == "flask:request"
+            )
+
+        def reads(node: ast.AST, holder: Any) -> dict[str, bool]:
+            out: dict[str, bool] = {}
+            for sub in ast.walk(node):
+                if (
+                    isinstance(sub, ast.Call)
+                    and isinstance(sub.func, ast.Attribute)
+                    and sub.func.attr == "get"
+                    and sub.args
+                    and holder(sub.func.value)
+                ):
+                    key = _str(sub.args[0])
+                    if key is not None:
+                        out[key] = out.get(key, False) or len(sub.args) < 2
+                elif isinstance(sub, ast.Subscript) and holder(sub.value):
+                    key = _str(sub.slice) if isinstance(sub.slice, ast.expr) else None
+                    if key is not None:
+                        out[key] = True
+            return out
+
+        found = reads(fn, lambda e: is_json(mod, e))
+        for sub in _walk_own(fn):
+            if not isinstance(sub, ast.Call):
+                continue
+            at = next((i for i, a in enumerate(sub.args) if is_json(mod, a)), None)
+            target = ex.def_of(ex.resolve(mod, sub.func))
+            if at is None or target is None:
+                continue
+            m, node = target
+            args = [a.arg for a in node.args.args]  # type: ignore[attr-defined]
+            if args and args[0] in ("self", "cls") and isinstance(sub.func, ast.Attribute):
+                args = args[1:]
+            if at < len(args):
+                name = args[at]
+                for key, req in reads(node, lambda e, n=name: isinstance(e, ast.Name)
+                                      and e.id == n).items():  # fmt: skip
+                    found[key] = found.get(key, False) or req
+        return found
 
     def _reads_json(self, mod: str, fn: ast.AST) -> bool:
         for sub in _walk_own(fn):
@@ -1839,6 +1973,14 @@ def extract(repo_root: Path, app_package: str, app_factory: str | None = None) -
                 "ALCHEMICAL_DATABASE_URL"
             )
             models = _schemas(ex)
+            for name, cls in ex.partials.items():
+                if isinstance(cls, dict):  # a view's JSON keys: text fields
+                    fields = tuple(FieldSpec(k, "json", "Str", required=req)
+                                   for k, req in cls.items())  # fmt: skip
+                    models.append(DataModel(name, ex.package, fields, ()))
+                    continue
+                fields = tuple(dataclasses.replace(f, required=False) for f in _schema_fields(cls))
+                models.append(DataModel(name, cls.__module__, fields, ()))
         finally:
             ex.close()
     return RepoModel(

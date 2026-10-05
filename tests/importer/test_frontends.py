@@ -88,7 +88,20 @@ def test_the_registry_selects_the_fastapi_front_end():
     model = fe.extract(REPO_ROOT, TEMPLATE)
     assert model == shim.extract(REPO_ROOT, TEMPLATE)
     with pytest.raises(KeyError, match="no front end"):
-        frontends.select("django")
+        frontends.select("no-such-framework")
+
+
+def test_the_django_and_flask_front_ends_are_built_in():
+    """W3: ``select`` knows Django and Flask by name without the caller importing them,
+    and ``auto`` detects them (FastAPI stays first: a FastAPI app never loads them)."""
+    assert frontends.select("django").name == "django"
+    assert frontends.select("flask").name == "flask"
+    assert frontends.select(None, REPO_ROOT, "bench.import_repos.snippets").name == "django"
+    assert frontends.select(None, REPO_ROOT, "bench.import_repos.recipes").name == "django"
+    assert frontends.select(None, REPO_ROOT, "bench.import_repos.microblog").name == "flask"
+    assert frontends.select(None, REPO_ROOT, "bench.import_repos.flasky").name == "flask"
+    assert frontends.select(None, REPO_ROOT, TEMPLATE).name == "fastapi"
+    assert [fe.name for fe in frontends.front_ends()][0] == "fastapi"
 
 
 def test_auto_selection_without_a_match_says_so(tmp_path):

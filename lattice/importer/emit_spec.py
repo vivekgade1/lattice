@@ -14,17 +14,26 @@ verified; layer R (:func:`import_rules`) probes it on the original:
   (unknown, so R1 is ``unclear``);
 * ``table``: the table the route returns rows of, else the one it compares or sets an
   owner column of, else the one table it touches besides the users table (the users
-  table when that is all it touches); ``kind``: the login route ``action``; GET with a
-  path id or one response model ``read``, else ``list``; POST with a body ``create``,
-  else ``action``; PUT/PATCH ``update``; DELETE ``delete``;
-* ``owner_scope`` (owned tables only): ``owner`` when the route compares or sets an
-  owner column of the table or of a table it is owned through, or has an
+  table when that is all it touches; a route touching none: the table its response
+  model is named after, ``UserPublic`` -> ``User``); ``kind``: the login route
+  ``action`` (``create`` when it writes the caller's own row: microblog's tokens); GET
+  with a path id or one response model ``read`` (``list`` under a parent row --
+  ``/users/{id}/posts`` -- or for a page envelope, a ``Paginated...`` or ``List...``
+  model), else ``list``; POST with a body ``create`` (``update`` when it addresses one
+  row of its own table by its key and the path names no other table after it --
+  ``/recipes/{pk}/upload-image/``), else ``action``; PUT/PATCH ``update``; DELETE
+  ``delete``;
+* ``owner_scope`` (owned tables only; None for an admin-only route -- ``Admin``,
+  ``Roles(<admin>)`` -- which no non-admin reaches): ``owner`` when the route compares
+  or sets an owner column of the table or of a table it is owned through, or has an
   ``object_owner`` guard; else ``any`` (stated: the route reaches anyone's rows);
-* ``params``: path and query parameters, and every body field (a list of models as
-  ``name.0.field``), with type, required, bounds (``ge``/``gt``/``le``/``lt``,
+* ``params``: path and query parameters (named as on the wire: a ``Query(alias=...)``),
+  and every body field (a list of models as ``name.0.field``, a list of values as
+  ``name.0``), with type, required, bounds (``ge``/``gt``/``le``/``lt``,
   ``min_len``/``max_len``) and ``one_of``; a bounded field names the column it is
   stored in (the route's table, else the one table of the route with that column), a
-  path id or ``<table>_id`` field the table whose key it is (``ref``);
+  path id or ``<table>_id`` field the table whose key it is (``ref``; a generic ``id``
+  / ``pk`` the table the path segment before it names);
 * ``errors``: one per distinct raise site (status, literal detail): ``not_found`` (404
   with a path id), ``not_owned`` (403/404 where the route checks ownership, with a path
   id), ``duplicate`` (400/409 when a body field writes a unique column), ``other``
@@ -196,6 +205,24 @@ def _table(model: RepoModel, route: Route, api: ApiProfile) -> str | None:
         return users
     if not touched and _is_login(model, route):
         return users
+    if not touched and route.response_model is not None:
+        return _response_table(model, route.response_model)
+    return None
+
+
+def _response_table(model: RepoModel, name: str) -> str | None:
+    """The table a response model returns rows of: the table itself, a model sharing
+    its bases, or one named after it (``UserPublic`` -> ``User``)."""
+    tables = _tables(model)
+    if name in tables:
+        return name
+    m = next((d for d in model.models if d.name == name), None)
+    for t in model.tables:
+        if m is not None and set(m.bases) & set(t.bases):
+            return t.name
+        rest = name[len(t.name) :]
+        if name.startswith(t.name) and rest[:1].isupper():
+            return t.name
     return None
 
 
@@ -210,10 +237,14 @@ def _is_login(model: RepoModel, route: Route) -> bool:
 def _kind(model: RepoModel, route: Route) -> str:
     sources = {p.source for p in route.params}
     if _is_login(model, route):
-        return "action"
+        # a login writing the caller's own row of a table (microblog's tokens): a create
+        stamps = any(u.how == "assign" for u in route.owner_uses)
+        return "create" if stamps else "action"
     match route.method:
         case "GET":
-            many = route.response_model is None or route.response_model.lower().startswith("list")
+            name = (route.response_model or "").lower()
+            many = route.response_model is None or name.startswith(("list", "paginated", "page"))
+            many = many or _envelope(model, route.response_model)
             return "read" if "path" in sources or not many else "list"
         case "POST":
             return "create" if sources & {"body", "form"} else "action"
@@ -222,6 +253,43 @@ def _kind(model: RepoModel, route: Route) -> str:
         case "DELETE":
             return "delete"
     return "action"
+
+
+def _acts_on_one(model: RepoModel, route: Route, table: str | None) -> bool:
+    """A POST addressing one row of its own table: its one path parameter is the
+    table's key (``pk``, ``id``, ``<table>_id``) and the path does not go on to name
+    another table's rows (``/recipes/{pk}/upload-image/``, not ``/posts/{id}/comments/``)."""
+    holes = [p for p in route.params if p.source == "path"]
+    if table is None or len(holes) != 1:
+        return False
+    name = holes[0].name
+    if name not in ("pk", "id") and _ref_by_name_model(model, name) != table:
+        return False
+    after = route.path.split("{" + name + "}", 1)[-1].strip("/").split("/")[0]
+    if not after:
+        return False
+    word = after.replace("-", "").replace("_", "").lower()
+    spellings = set()
+    for t in model.tables:
+        for s in (t.name.lower(), t.table_name.replace("_", "").lower()):
+            spellings |= {s, s + "s", s.removesuffix("s")}
+    return word not in spellings
+
+
+def _ref_by_name_model(model: RepoModel, name: str) -> str | None:
+    if not name.endswith("_id"):
+        return None
+    stem = name[: -len("_id")].replace("_", "").lower()
+    return next((t.name for t in model.tables if t.name.lower() == stem), None)
+
+
+def _envelope(model: RepoModel, name: str | None) -> bool:
+    """Whether a response model is a page envelope: one list of rows and counts."""
+    m = next((d for d in model.models if d.name == name), None)
+    if m is None:
+        return False
+    lists = [f for f in m.fields if f.type == "List"]
+    return len(lists) == 1 and all(f.type in ("List", "Int") for f in m.fields)
 
 
 def _owned(api: ApiProfile, table: str | None) -> bool:
@@ -248,6 +316,14 @@ def _owner_checked(route: Route, api: ApiProfile, table: str | None) -> bool:
     )
 
 
+def _admin_only(auth: str | None, api: ApiProfile) -> bool:
+    """Whether only the admin role passes ``auth`` (``Admin``, ``Roles(<admin>)``)."""
+    if auth == "Admin":
+        return True
+    m = re.fullmatch(r"Roles\((.*)\)", auth or "")
+    return bool(m) and {r.strip() for r in m.group(1).split(",")} == {api.admin_role}
+
+
 def _owner_scope(route: Route, api: ApiProfile, table: str | None) -> str | None:
     if not _owned(api, table):
         return None
@@ -272,6 +348,22 @@ def _ref_by_name(model: RepoModel, api: ApiProfile, name: str) -> str | None:
         spellings |= {s.removesuffix("s") for s in list(spellings)}
         if stem in spellings and t.name in api.tables:
             return t.name
+    return None
+
+
+def _ref_by_segment(model: RepoModel, api: ApiProfile, route: Route, hole: str) -> str | None:
+    """The table a generic path parameter (``id``, ``pk``) keys: the one the path segment
+    before it names (``/users/{id}/posts`` -> the users table)."""
+    if hole not in ("id", "pk"):
+        return None
+    before = route.path.split("{" + hole + "}", 1)[0].strip("/").split("/")
+    word = before[-1].replace("-", "").replace("_", "").lower() if before and before[-1] else ""
+    if not word:
+        return None
+    for t in model.tables:
+        names = {t.name.lower(), t.table_name.replace("_", "").lower()}
+        if word in names | {n + "s" for n in names} | {n.removesuffix("s") for n in names}:
+            return t.name if t.name in api.tables else None
     return None
 
 
@@ -316,6 +408,15 @@ def _body_params(
             out += _body_params(model, route, api, table, f.item, f"{name}.0.", source,
                                 seen | {model_name})  # fmt: skip
             continue
+        if f.type in ("List", "Tuple") and _scalar(f.item) is not None:
+            # a list of values (DRF's many-related keys): one element, a row's key when
+            # the field names a table
+            ref = _ref_by_name(model, api, f.name) or _ref_by_name(
+                model, api, f.name.removesuffix("s") + "_id"
+            )
+            out.append(ContractParam(f"{name}.0", source, _scalar(f.item),  # type: ignore[arg-type]
+                                     required=f.required, ref=ref))  # fmt: skip
+            continue
         if f.type in data:
             out += _body_params(model, route, api, table, f.type, f"{name}.", source,
                                 seen | {model_name})  # fmt: skip
@@ -358,14 +459,14 @@ def _params(
                 continue
             ref = None
             if p.source == "path":
-                ref = _ref_by_name(model, api, p.name)
+                ref = _ref_by_name(model, api, p.name) or _ref_by_segment(model, api, route, p.name)
                 if ref is None and len(path_params) == 1 and table in api.tables:
                     ref = table if kind in ("read", "update", "delete") else None
             numeric = scalar in (Scalar.INT, Scalar.FLOAT)
             text = scalar is Scalar.STR
             out.append(
                 ContractParam(
-                    p.name,
+                    _wire_name(p),
                     p.source,
                     scalar,
                     required=p.required,
@@ -395,6 +496,16 @@ def _params(
     for param in out:
         unique.setdefault(f"{param.source} {param.name}", param)
     return tuple(unique.values())
+
+
+ALIAS = re.compile(r"""\balias\s*=\s*['"]([^'"]+)['"]""")
+
+
+def _wire_name(p: Any) -> str:
+    """A query or path parameter's name on the wire: its ``alias`` (``Query(alias=
+    "status")``), else its name."""
+    m = ALIAS.search(f"{p.annotation} {p.default or ''}")
+    return m.group(1) if m else p.name
 
 
 def _login_example(model: RepoModel, params: Sequence[ContractParam]) -> dict[str, Any]:
@@ -447,14 +558,21 @@ def route_contract(model: RepoModel, route: Route, api: ApiProfile) -> Contract:
     """The candidate contract of one route (see the module docstring)."""
     table = _table(model, route, api)
     kind = _kind(model, route)
+    if kind == "create" and _acts_on_one(model, route, table):
+        kind = "update"  # a POST on one row (an upload, an action), not a new row
     params = _params(model, route, api, table, kind)
+    holes = [p for p in params if p.source == "path"]
+    if kind == "read" and table and holes and all(p.ref not in (None, table) for p in holes):
+        kind = "list"  # rows of the table under a parent row: /users/{id}/posts
+    auth = _auth(route, api)
     return Contract(
         route.method,
         route.path,
-        auth=_auth(route, api),
+        auth=auth,
         table=table if table in api.tables else None,
         kind=kind,
-        owner_scope=_owner_scope(route, api, table),
+        # an admin-only route has no ownership scope (R2 n/a: no non-admin reaches it)
+        owner_scope=None if _admin_only(auth, api) else _owner_scope(route, api, table),
         params=params,
         errors=_errors(model, route, api, table, params),
         response=route.response_model if route.response_model in api.responses else None,
@@ -526,10 +644,16 @@ def _users(result: ImportResult) -> dict[str, tuple[str, str]]:
     return dict(suite.credentials) if suite is not None else {}
 
 
-def candidate_spec(result: ImportResult, *, proposals: Iterable[ProposalLike] = ()) -> Spec:
+def candidate_spec(
+    result: ImportResult,
+    *,
+    proposals: Iterable[ProposalLike] = (),
+    users: Mapping[str, tuple[str, str]] | None = None,
+) -> Spec:
     """:func:`build_spec` of an import: its model, profile, verified programs and the
-    seed's users."""
-    return build_spec(result.model, result.lattice_profile, users=_users(result),
+    seed's users (``users``, else the request suite's credentials)."""
+    return build_spec(result.model, result.lattice_profile,
+                      users=_users(result) if users is None else users,
                       programs=result.programs, proposals=proposals)  # fmt: skip
 
 
