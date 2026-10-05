@@ -406,6 +406,17 @@ hold before the next starts.
   p < 0.05, with a correctness guard), and the spec error rate stays under a bar fixed
   before the run.
 
+### Status update (2026-10-05)
+
+- **Phase 0: done.**
+- **Phase 1: run.**
+  - The loop works when the spec states the rule.
+  - The model's own drafts are the weak point.
+- **Phase 2:** built, but its held-out exit was missed twice.
+  - Import continues as **rules-first assist**, without the 90% gate.
+- **Next:** spec authoring, per `docs/superpowers/plans/2026-10-05-pivot-spec-authoring.md`.
+  - Phases 3–5 come after it.
+
 ### Phase 2: import for Python projects
 
 - **Front ends:** Django (+ DRF) and Flask, besides FastAPI. Plus SQLAlchemy and Django ORM.
