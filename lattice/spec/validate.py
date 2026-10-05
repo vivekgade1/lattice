@@ -51,7 +51,7 @@ they name is S002 / S003, like everywhere else:
   a trigger (`when`) outside ERROR_TRIGGERS, or an `example` with keys other than
   user/path/params/json/form.
 - S022: a contract's response model is not one of the profile's responses.
-- S023: a contract's owner scope ("owner", "any", "owner(<column>)",
+- S023: a contract's owner scope ("owner", "owner_or_admin", "any", "owner(<column>)",
   "owner_or_public(<column>)") needs a table that is owned (`owner` or `owner_via`):
   it names no table, or a table nobody owns. A scope's column must be the table's: a
   Bool column for `owner_or_public`, one of the users key's type for `owner`.
@@ -490,7 +490,7 @@ def _contract(spec: Spec, c: Contract, where: str) -> list[SpecProblem]:
             schema = found[2]
     form, column = scope_parts(c.owner_scope)
     owned = schema is not None and bool(schema.owner or schema.owner_via)
-    if form in ("owner", "any", "owner_or_public") and (
+    if form in ("owner", "owner_or_admin", "any", "owner_or_public") and (
         c.table is None or (schema is not None and not owned)
     ):
         bad(

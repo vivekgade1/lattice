@@ -84,6 +84,9 @@ class ColumnSpec:
     ge: float | None = None
     le: float | None = None
     choices: tuple[str | int, ...] = ()  # an enum column's allowed values
+    # how the app stores each of ``choices`` (SQLAlchemy's Enum: the member name), when
+    # it differs; () when values are stored as they are. The raw-SQL seed writes these
+    stored: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -388,6 +391,49 @@ def _stored(value: Any, uuid_storage: str, datetime_storage: str) -> Any:
     return value
 
 
+@dataclass(frozen=True)
+class FkOrder:
+    """The order to insert tables in (every table after the tables its foreign keys
+    reference), the ``deferred`` foreign keys (table, column) breaking a cycle -- each
+    nullable: inserted NULL, set once every row is in -- and the ``cycle`` no nullable
+    foreign key breaks (its tables, sorted; None when there is none): those follow in
+    declaration order, and the caller reports it."""
+
+    order: list[str]
+    deferred: list[tuple[str, str]]
+    cycle: list[str] | None = None
+
+
+def fk_order(tables: Sequence[TableSpec]) -> FkOrder:
+    """:class:`FkOrder` of ``tables`` (a self-reference never blocks; a foreign key to a
+    table not among ``tables`` is ignored). Stable: declaration order among tables free
+    to go."""
+    names = [t.name for t in tables]
+    edges: dict[str, dict[str, tuple[str, bool]]] = {n: {} for n in names}  # t -> col -> dep
+    for t in tables:
+        for c in t.columns:
+            target = c.foreign_key.split(".")[0] if c.foreign_key else None
+            if target in edges and target != t.name:
+                edges[t.name][c.name] = (target, c.nullable)  # type: ignore[index]
+    order: list[str] = []
+    deferred: list[tuple[str, str]] = []
+    left = list(names)
+    while left:
+        free = [n for n in left if all(dep in order for dep, _ in edges[n].values())]
+        if free:
+            order.append(free[0])
+            left.remove(free[0])
+            continue
+        # a cycle: drop one nullable foreign key among the tables left (the first one)
+        cut = next(((n, col) for n in left for col, (dep, null) in edges[n].items()
+                    if null and dep in left), None)  # fmt: skip
+        if cut is None:
+            return FkOrder(order + left, deferred, sorted(left))
+        deferred.append(cut)
+        del edges[cut[0]][cut[1]]
+    return FkOrder(order, deferred)
+
+
 _SQL_TYPE = {"int": "INTEGER", "bool": "BOOLEAN", "float": "REAL"}
 
 
@@ -422,10 +468,22 @@ def sql_seed(
             names = [c.name for c in t.columns]
             marks = ", ".join("?" for _ in names)
             quoted = ", ".join(f'"{n}"' for n in names)
+            # an enum column in the app's stored spelling (a value the plan holds as
+            # one of ``choices``; one already stored as spelled stays as it is)
+            spell = {c.name: dict(zip(c.choices, c.stored, strict=True))
+                     for c in t.columns
+                     if c.stored and len(c.stored) == len(c.choices)}  # fmt: skip
             conn.executemany(
                 f'INSERT INTO "{t.name}" ({quoted}) VALUES ({marks})',
                 [
-                    tuple(_stored(r[n], uuid_storage, datetime_storage) for n in names)
+                    tuple(
+                        _stored(
+                            spell[n].get(r[n], r[n]) if n in spell else r[n],
+                            uuid_storage,
+                            datetime_storage,
+                        )
+                        for n in names
+                    )  # fmt: skip
                     for r in plan.rows[t.name]
                 ],
             )

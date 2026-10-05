@@ -32,7 +32,9 @@ verified; layer R (:func:`import_rules`) probes it on the original:
   owner (microblog's ``/me/followers``: ``followed_id``), and
   ``owner_or_public(<column>)`` when the route's owner check lets a row through on a
   Bool column (``row.owner != caller and not row.<column>``, in the route or a package
-  function it calls: :func:`public_scopes`, JustNotes' ``isPublic``). On a link between
+  function it calls: :func:`public_scopes`, JustNotes' ``isPublic``). ``owner_or_admin``
+  when an ``object_owner`` guard is bypassed by the admin role alone (DRF's
+  ``request.user.is_staff or obj.user == request.user``). On a link between
   users a POST setting the owner side from the caller is a ``create`` (its 400/409 the
   ``duplicate``), and a path id names the other user (``ref`` the users table);
 * ``params``: path and query parameters (named as on the wire: a ``Query(alias=...)``),
@@ -372,6 +374,9 @@ def _owner_scope(
     found = (public or {}).get(f"{route.method} {route.path}")
     if found is not None and found[0] == table:
         return f"owner_or_public({found[1]})"
+    admins = {api.admin_role, "Admin"}
+    if any(g.kind == "object_owner" and g.roles and set(g.roles) <= admins for g in route.guards):
+        return "owner_or_admin"  # the admin role bypasses the owner check
     return "owner"
 
 
@@ -600,6 +605,8 @@ def _params(
                     max_len=p.max_length if text else None,
                     one_of=_one_of(p.choices),
                     ref=ref,
+                    # a row looked up by another column than its key (DRF's lookup_field)
+                    column=f"{ref}.{p.lookup}" if p.lookup and ref else None,
                 )
             )
         elif p.source == "body" and p.type:

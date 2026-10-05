@@ -324,26 +324,65 @@ def seed_hook(tables_: Any) -> Any:
     SQL column, which is each field's ``attname``). The connection is closed after."""
     from django.apps import apps
 
+    from lattice.importer.suite import ColumnSpec, TableSpec, fk_order
+
     by_table = {m._meta.db_table: m for m in apps.get_models(include_auto_created=True)}
     names = [t.table_name for t in tables_]
     if any(n not in by_table for n in names):
         return None
+    # foreign-key order (a custom users model -- AUTH_USER_MODEL -- of an app listed after
+    # the apps referencing it goes first); a cycle broken at a nullable foreign key,
+    # whose values are set once every row is in
+    specs = []
+    for name in names:
+        cols = []
+        for f in by_table[name]._meta.concrete_fields:
+            fk = None
+            if f.is_relation and (f.many_to_one or f.one_to_one):
+                fk = f"{f.target_field.model._meta.db_table}.{f.target_field.column}"
+            cols.append(ColumnSpec(f.column, "str", nullable=bool(f.null),
+                                   primary_key=bool(f.primary_key), foreign_key=fk))  # fmt: skip
+        specs.append(TableSpec(name, tuple(cols)))
+    order = fk_order(specs)
+    notes: list[str] = []
+    if order.cycle:
+        notes.append(f"seed: a foreign-key cycle among {', '.join(order.cycle)} with no "
+                     "nullable foreign key to break it: those tables are inserted with "
+                     "the foreign-key checks off")  # fmt: skip
 
     def hook(path: Path, plan: Any) -> None:
         from django.db import connections
 
         use_database(path)
+        later: list[tuple[Any, Any, str, Any]] = []  # (model, key, attname, value)
+        deferred = set(order.deferred)
+        loose = set(order.cycle or ())
         try:
-            for name in names:
+            for name in order.order:
                 model = by_table[name]
                 attnames = {f.column: f.attname for f in model._meta.concrete_fields}
-                rows = plan.rows.get(name, [])
-                model.objects.bulk_create(
-                    [model(**{attnames.get(k, k): val for k, val in row.items()}) for row in rows]
-                )
+                pk = model._meta.pk.attname
+                objs = []
+                for row in plan.rows.get(name, []):
+                    values = {attnames.get(k, k): val for k, val in row.items()}
+                    for table, col in deferred:
+                        att = attnames.get(col, col)
+                        if table == name and values.get(att) is not None:
+                            later.append((model, values.get(pk), att, values[att]))
+                            values[att] = None
+                    objs.append(model(**values))
+                if name in loose:
+                    conn = connections["default"]
+                    with conn.constraint_checks_disabled():
+                        model.objects.bulk_create(objs)
+                else:
+                    model.objects.bulk_create(objs)
+            for model, key, att, value in later:
+                model.objects.filter(pk=key).update(**{att: value})
         finally:
             connections.close_all()
 
+    hook.notes = notes  # type: ignore[attr-defined]
     return hook
 
 

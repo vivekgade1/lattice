@@ -150,6 +150,20 @@ UNREACHABLE = "unreachable-by-probe"
 OUTSIDE_API = "outside API"
 
 
+class VerdictInvariantError(RuntimeError):
+    """An internal error: an item is ``verified`` while one of its recorded probes
+    contradicts its prediction (:func:`summarise`'s self-check). A verdict path broke
+    the rule "verified: some probe confirms it, none contradicts it"."""
+
+
+# the R1 callers that are no user of a role: their answers alone never verify an R1
+# item (the prediction is about which roles are admitted)
+NON_ROLE_CALLERS = ("anonymous", "malformed token", "inactive")
+# a body or form parameter carrying credentials (a password, a refresh token): probes
+# invent its value, so the route's answer is about the credentials, not the caller
+SECRET_PARAM = re.compile(r"(^|_)(password|passwd|pwd|secret|otp|refresh|token)($|_)", re.I)
+
+
 def is_verified(verdict: str) -> bool:
     """Whether a verdict counts as verified: ``verified`` or ``verified (corrected)``."""
     return verdict in ("verified", VERIFIED_CORRECTED)
@@ -478,6 +492,9 @@ def rule_items(spec: Spec) -> list[RuleItem]:
                                f"{col} is true; it writes the caller's own only")  # fmt: skip
             elif form == "owner":
                 r2_sentence = f"{ep} acts on the caller's own {c.table} rows only"
+            elif form == "owner_or_admin":
+                r2_sentence = (f"{ep} acts on the caller's own {c.table} rows only; the admin "
+                               "role on anyone's")  # fmt: skip
             else:
                 r2_sentence = f"{ep} acts on any user's {c.table} rows"
             items.append(
@@ -634,6 +651,8 @@ class Probe:
     form: Mapping[str, Any] | None = field(default=None, hash=False)
     args: Mapping[str, Any] = field(default_factory=dict, hash=False)
     headers: Mapping[str, str] | None = field(default=None, hash=False)
+    # cookies sent besides (a caller's refresh-token cookie its login set)
+    cookies: Mapping[str, str] | None = field(default=None, hash=False)
 
     def request(self) -> dict[str, Any]:
         return {
@@ -672,6 +691,13 @@ class ProbeContext:
     inactive_token: str | None = None
     refusals: tuple[tuple[int, str | None], ...] = ()
     login_route: tuple[str, str] | None = None
+    # a login route taking JSON credentials: (method, path, username field, password
+    # field); its R1 probes present each caller's own credentials
+    json_login: tuple[str, str, str, str] | None = None
+    # handle -> the string fields its login answered (``refresh``, ``access_token``...),
+    # and the cookies the login set: a caller's own credentials to present
+    answers: dict[str, dict[str, str]] = field(default_factory=dict)
+    cookies: dict[str, dict[str, str]] = field(default_factory=dict)
 
     @property
     def api(self) -> ApiProfile:
@@ -900,6 +926,20 @@ def _route(spec: Spec, c: Contract) -> _Route:
     return _Route(c, found, owner_scope(spec, c), path_params, addr)
 
 
+def _lookup_value(r: _Route, ctx: ProbeContext, p: ContractParam, target: Any) -> Any:
+    """The path value addressing the row whose key is ``target``: the key itself, or --
+    for a parameter stating another column of the addressed table (``column``: DRF's
+    ``lookup_field``, a slug) -- that row's value of it."""
+    if not p.column or r.table is None:
+        return target
+    found = _column(ctx.spec, p.column)
+    key = ctx.key_of(r.table[0])
+    if found is None or found[0] != r.table[0] or key is None or found[1] == key:
+        return target
+    row = next((x for x in ctx.rows(r.table[0]) if _k(x.get(key)) == _k(target)), None)
+    return row.get(found[1], target) if row is not None else target
+
+
 @dataclass(frozen=True)
 class _Req:
     path: str
@@ -928,7 +968,7 @@ def _build(
         if name in values:
             v = values[name]
         elif name == r.addr and target is not None:
-            v = target
+            v = _lookup_value(r, ctx, p, target)
         else:
             v = _valid(p, ctx)
         path = path.replace("{" + name + "}", str(v))
@@ -977,6 +1017,7 @@ class _Probes:
         *,
         token: str | None = None,
         headers: Mapping[str, str] | None = None,
+        cookies: Mapping[str, str] | None = None,
         **args: Any,
     ) -> None:
         items = tuple(i for i in dict.fromkeys(items) if i in self.items)
@@ -1003,6 +1044,7 @@ class _Probes:
                 form=req.form,
                 args=args,
                 headers=headers,
+                cookies=cookies,
             )
         )
 
@@ -1033,12 +1075,35 @@ def _basic(login: str, password: str) -> dict[str, str]:
     return {"Authorization": f"Basic {raw}"}
 
 
+IDENT_PARAM = re.compile(r"(^|_)(email|username|user|login|identifier|phone)($|_)", re.I)
+
+
+def takes_credentials(c: Contract) -> bool:
+    """Whether the route's body is credentials (a login: a user's email or username and
+    a password; a token refresh: a refresh token): its required body and form
+    parameters are all identifiers or secrets, one at least a secret. Probes invent
+    their values, so the route answers the credentials, not the caller."""
+    body = [p for p in c.params if p.source in ("body", "form") and p.required]
+    return (
+        bool(body)
+        and any(SECRET_PARAM.search(p.name) for p in body)
+        and all(SECRET_PARAM.search(p.name) or IDENT_PARAM.search(p.name) for p in body)
+    )
+
+
 def _r1(b: _Probes, r: _Route) -> None:
     """R1 probes. On a Public route, a malformed token's and the inactive caller's
     refusals decide nothing (``credential`` probes): an app may refuse bad credentials
     on every request (DRF does) -- the auth layer's choice, not the route's rule. On the
     login route taking HTTP Basic credentials (``ProbeContext.login_route``), callers
-    present their login and password instead of a token."""
+    present their login and password instead of a token. A route whose body is
+    credentials (:func:`takes_credentials`: a login, a token refresh) answers the
+    probes' invented credentials, so each caller presents its own instead (anonymous:
+    an active user's, still with no token): its login and password, and what its login
+    answered (``ProbeContext.answers``: a refresh token, by the parameter's name; the
+    cookies the login set). On such a route, and on the JSON login route
+    (``ProbeContext.json_login``), only an admission decides: a refusal may answer
+    credentials the probe could not present."""
     c, ctx, api = r.c, b.ctx, b.ctx.api
     if c.auth is None:
         return
@@ -1048,7 +1113,41 @@ def _r1(b: _Probes, r: _Route) -> None:
     item = f"R1 {c.endpoint}"
     req = _build(r, ctx, target=_targets(r, ctx, None, 1)[0])
     deny = _auth_errors(c, "unauthenticated")
-    b.add(r, None, "anonymous", [item, *deny], req, "auth", caller="anonymous", allowed=public)
+    invented = takes_credentials(c)
+    json_login = ctx.json_login is not None and ctx.json_login[:2] == (c.method, c.path)
+
+    owned = invented or json_login  # a credential route: only an admission decides
+
+    def present(base: _Req, handle: str | None) -> tuple[_Req, dict[str, str] | None]:
+        """The request with the handle's own credentials in its body, and its cookies."""
+        if not owned or handle is None or handle not in ctx.spec.users:
+            return base, None
+        login, password = ctx.spec.users[handle]
+        got = ctx.answers.get(handle, {})
+        values: dict[str, Any] = {}
+        if json_login:
+            _, _, user_field, password_field = ctx.json_login  # type: ignore[misc]
+            values |= {user_field: login, password_field: password}
+        for p in c.params:
+            if p.source not in ("body", "form") or p.name in values:
+                continue
+            if p.name in got:
+                values[p.name] = got[p.name]
+            elif re.search(r"pass|pwd", p.name, re.I):
+                values[p.name] = password
+            elif IDENT_PARAM.search(p.name):
+                values[p.name] = login
+        form = {**(base.form or {}), **{k: v for k, v in values.items() if k in (base.form or {})}}
+        body = {**(base.json if isinstance(base.json, Mapping) else {}),
+                **{k: v for k, v in values.items() if k not in form}}  # fmt: skip
+        req = _Req(base.path, base.params, body if body else base.json, form or base.form)
+        return req, dict(ctx.cookies.get(handle, {})) or None
+
+    someone = next((x.handle for x in ctx.callers.values() if x.active and x.handle in ctx.tokens
+                    and x.role != api.admin_role), None)  # fmt: skip
+    anon, anon_cookies = present(req, someone)
+    b.add(r, None, "anonymous", [item, *deny], anon, "auth", caller="anonymous", allowed=public,
+          credential=owned, cookies=anon_cookies)  # fmt: skip
     b.add(
         r,
         "malformed token",
@@ -1060,7 +1159,7 @@ def _r1(b: _Probes, r: _Route) -> None:
         headers=_basic("nobody@example.com", "not-a-valid-password") if basic else None,
         caller="malformed token",
         allowed=public,
-        credential=public,
+        credential=public or owned,
     )
     inactive_headers = None
     if basic and ctx.inactive is not None and ctx.inactive.handle in ctx.spec.users:
@@ -1077,34 +1176,62 @@ def _r1(b: _Probes, r: _Route) -> None:
             headers=inactive_headers,
             caller="inactive",
             allowed=public,
-            credential=public,
+            credential=public or owned,
         )
     for role in sorted(x for x in api.roles if x != "Public"):
-        caller = next((x for x in ctx.with_token() if x.role == role), None)
-        if caller is None:
-            continue
-        ok = public or role in roles  # type: ignore[operator]
-        extra = [] if ok else _auth_errors(c, "forbidden")
-        headers = _basic(*ctx.spec.users[caller.handle]) if basic else None
-        for i, target in enumerate(_targets(r, ctx, caller)):
-            owns = (
-                r.table is not None
-                and r.addr is not None
-                and target in ctx.owns(caller.handle, r.table[0])
-            )
-            b.add(
-                r,
-                caller,
-                f"as {role}" + (f" target {target}" if target is not None else ""),
-                [item, *extra],
-                _build(r, ctx, target=target),
-                "auth",
-                headers=headers,
-                caller=role,
-                allowed=ok,
-                owns_target=owns or r.addr is None,
-                target_index=i,
-            )
+        # two callers of each role (the second on one target): callers of one role that
+        # answer differently show a distinction the profile's roles miss (_r1_verdict)
+        of_role = [x for x in ctx.with_token() if x.role == role][:2]
+        for nth, caller in enumerate(of_role):
+            _r1_caller(b, r, item, role, caller, roles, public, basic, present, 1 if nth else 2)
+
+
+def _r1_caller(
+    b: _Probes,
+    r: _Route,
+    item: str,
+    role: str,
+    caller: Caller,
+    roles: set[str] | None,
+    public: bool,
+    basic: bool,
+    present: Callable[[_Req, str | None], tuple[_Req, dict[str, str] | None]],
+    n: int,
+) -> None:
+    """One role caller's R1 probes, on up to ``n`` targets (its own rows first)."""
+    c, ctx = r.c, b.ctx
+    owned = takes_credentials(c) or (
+        ctx.json_login is not None and ctx.json_login[:2] == (c.method, c.path)
+    )
+    ok = public or role in roles  # type: ignore[operator]
+    extra = [] if ok else _auth_errors(c, "forbidden")
+    headers = _basic(*ctx.spec.users[caller.handle]) if basic else None
+    for i, target in enumerate(_targets(r, ctx, caller, n)):
+        owns = (
+            r.table is not None
+            and r.addr is not None
+            and target in ctx.owns(caller.handle, r.table[0])
+        )
+        mine, cookies = present(_build(r, ctx, target=target), caller.handle)
+        b.add(
+            r,
+            caller,
+            f"as {role}" + (f" target {target}" if target is not None else ""),
+            [item, *extra],
+            mine,
+            "auth",
+            headers=headers,
+            cookies=cookies,
+            caller=role,
+            handle=caller.handle,
+            allowed=ok,
+            owns_target=owns or r.addr is None,
+            # the request every caller of the role sends alike (no row addressed): its
+            # answers compare across callers (_split_roles)
+            same_request=r.addr is None,
+            target_index=i,
+            credential=owned,
+        )
 
 
 def _others(r: _Route, ctx: ProbeContext, caller: Caller) -> dict[str, Any]:
@@ -1136,17 +1263,21 @@ def _not_owned_errors(c: Contract) -> list[tuple[str, ContractError]]:
 def _ownership(b: _Probes, r: _Route) -> None:
     """R2 and T1 (owner / owner_via) probes through one route. ``owner_or_public(<c>)``:
     a read of another user's row answers when its ``<c>`` is true and is refused when
-    false; a write is refused either way (a public row first). A route on a link table
-    between users: :func:`_link_ownership`."""
+    false; a write is refused either way (a public row first). ``owner_or_admin``: as
+    ``owner`` for non-admins, and the admin reaches another user's row (a list: holds
+    one). A route on a link table between users: :func:`_link_ownership`."""
     c, ctx = r.c, b.ctx
     form, col = scope_parts(r.scope)
-    if r.table is None or form not in ("owner", "any", "owner_or_public") or c.kind is None:
+    scopes = ("owner", "any", "owner_or_public", "owner_or_admin")
+    if r.table is None or form not in scopes or c.kind is None:
         return
     sides = _link_sides(r.table[2], r.scope) if form == "owner" else None
     if sides is not None:
         _link_ownership(b, r, *sides)
         return
-    owned = form in ("owner", "owner_or_public")
+    if form == "owner_or_admin":
+        _admin_reaches(b, r)
+    owned = form in ("owner", "owner_or_public", "owner_or_admin")
     public = col if form == "owner_or_public" else None
     reading = c.method == "GET" or c.kind in ("read", "list")
     table = r.table[0]
@@ -1272,6 +1403,28 @@ def _ownership(b: _Probes, r: _Route) -> None:
                 caller=a.key,
                 children=[ch.split(" ", 1)[1] for ch in children],
             )
+
+
+def _admin_reaches(b: _Probes, r: _Route) -> None:
+    """``owner_or_admin``'s admin half: the admin reaches another user's row (not the
+    not-owned answer), and a list as the admin holds another user's row."""
+    c, ctx = r.c, b.ctx
+    table = r.table[0]  # type: ignore[index]
+    admin = next((x for x in ctx.allowed(c) if x.role == ctx.api.admin_role), None)
+    key = ctx.key_of(table)
+    if admin is None or not key:
+        return
+    r2 = f"R2 {c.endpoint}"
+    if c.kind in ("read", "update", "delete", "action") and r.addr is not None:
+        victim = next((row[key] for row in ctx.rows(table)
+                       if ctx.owner(table, row) not in (None, admin.key)), None)  # fmt: skip
+        if victim is not None:
+            b.add(r, admin, f"another user's {table} {victim}", [r2],
+                  _build(r, ctx, target=victim, full=c.kind == "update"), "reaches")  # fmt: skip
+    elif c.kind == "list":
+        b.add(r, admin, f"other users' {table} rows", [r2],
+              _build(r, ctx, target=_targets(r, ctx, admin, 1)[0], set_=_others(r, ctx, admin)),
+              "others_rows", table=table, caller=admin.key)  # fmt: skip
 
 
 def _user_hole(r: _Route, ctx: ProbeContext) -> str | None:
@@ -1824,13 +1977,20 @@ def _refused(
     owns_target: bool,
     *,
     refusals: Sequence[tuple[int, str | None]] = (),
+    no_credential: bool = False,
 ) -> bool | None:
-    """Whether an answer refuses the caller (None: cannot tell). An auth answer (see
-    :func:`_auth_answers`) is a refusal, though the route also states an error of that
-    status -- unless it states one with that very detail as a non-auth error, when only
-    a probe on the caller's own row tells. Otherwise a 401 the route does not state is a
-    refusal; a 403 one only when the profile names no forbidden detail and the target
-    is the caller's own."""
+    """Whether an answer refuses the caller (None: cannot tell). A 401 or 403 to a
+    request carrying ``no_credential`` of an active user (anonymous, a malformed token,
+    the inactive user's) is a refusal, whatever the route states: such a request cannot
+    get past authentication to any data-dependent answer (a stated 401 is the
+    decorator's, or the auth layer's). An auth answer (see :func:`_auth_answers`) is a refusal,
+    though the route also states an error of that status -- unless it states one with
+    that very detail as a non-auth error, when only a probe on the caller's own row
+    tells. Otherwise a 401 the route does not state is a refusal; a 403 one only when
+    the profile names no forbidden detail and the target is the caller's own; a 401 the
+    route states as a non-auth error cannot be told apart (it never admits)."""
+    if no_credential and answer.status in (401, 403):
+        return True
     detail = _detail(answer.body, api)
     if detail is not None:
         for status, text in _auth_answers(api, refusals):
@@ -1847,6 +2007,10 @@ def _refused(
         and e.status == answer.status
         and (e.detail is None or e.detail == detail)
     ]
+    if answer.status == 401 and stated:
+        # a 401 never admits a caller: the route's own 401 (bad credentials it was sent,
+        # a token it revokes) cannot be told from a refusal
+        return None
     if answer.status not in (401, 403) or stated:
         return False
     if answer.status == 401:
@@ -1854,6 +2018,14 @@ def _refused(
     if api.forbidden_detail is not None:
         return False  # a 403 of another kind: past the role check (data-dependent)
     return True if owns_target else None
+
+
+def _shut_out(answer: Answer, p: Probe) -> bool:
+    """Whether the app refused the probe's caller before its rule: a 401 (the request's
+    credentials were not accepted, or there were none), or a 403 to a request carrying
+    no credentials at all."""
+    anonymous = p.user is None and p.token is None and p.headers is None
+    return answer.status == 401 or (anonymous and answer.status == 403)
 
 
 def _link_rows(body: Any, status: int, ctx: ProbeContext, a: Mapping[str, Any]) -> Outcome:
@@ -1972,9 +2144,24 @@ def _judge(
             if item in p.items:
                 out[item] = stated_error(want, detail)
 
+    if p.expect not in ("auth", "any", "login") and _shut_out(answer, p):
+        # the app refused the request's caller (a 401; a 403 to a request carrying no
+        # credentials): it never reached the rule the probe is about, so it bears on no
+        # item -- except an error stated with that very status (so no correction comes
+        # from it: H2's 404 -> 401 "corrections" were probes made without a caller)
+        why = f"the caller was refused ({status}); the probe never reached the rule"
+        refused_out: dict[str, Outcome] = {}
+        for item in p.items:
+            want, detail = None, None
+            if item.startswith("R3 ") and not item.endswith(" 5xx"):
+                want, detail = _status_detail(contract, item)
+            refused_out[item] = (stated_error(want, detail) if want == status
+                                 else Outcome(None, why, {"status": status}))  # fmt: skip
+        return refused_out
     if p.expect == "auth":
         refused = _refused(answer, contract, api, a.get("owns_target", True),
-                           refusals=ctx.refusals)  # fmt: skip
+                           refusals=ctx.refusals,
+                           no_credential=a.get("caller") in NON_ROLE_CALLERS)  # fmt: skip
         if a.get("credential") and refused:
             refused = None  # a Public route's bad credentials: the auth layer's refusal
         r1 = next(i for i in p.items if i.startswith("R1 "))
@@ -2217,13 +2404,16 @@ class ItemVerdict:
 class RuleResult:
     """Layer R's result: ``items`` (id -> ItemVerdict), ``probes`` (name -> its
     request, route, items, status, body and database difference), the ``tables`` and
-    ``routes`` verdicts (§1.1, §1.2), and notes."""
+    ``routes`` verdicts (§1.1, §1.2), and notes. ``contradicted``: item id -> the probes
+    whose answer contradicted the item's prediction, recorded as they were judged
+    (before any later verdict path ran): :func:`summarise`'s self-check reads it."""
 
     items: dict[str, ItemVerdict] = field(default_factory=dict)
     probes: dict[str, dict[str, Any]] = field(default_factory=dict)
     tables: dict[str, dict[str, Any]] = field(default_factory=dict)
     routes: dict[str, dict[str, Any]] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
+    contradicted: dict[str, list[str]] = field(default_factory=dict)
 
     @property
     def summary(self) -> dict[str, Any]:
@@ -2286,6 +2476,56 @@ def _set_active(spec: Spec, db: Path, key: Any, value: bool) -> None:
         con.close()
 
 
+class _Recorder:
+    """A client recording the answers of the requests a login makes through it (the
+    rest delegated), so a caller's own credentials -- what its login answered: a
+    refresh token, a cookie -- can be presented later."""
+
+    def __init__(self, client: Any) -> None:
+        self._client = client
+        self.answers: list[Any] = []
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._client, name)
+
+    def _record(self, method: str, *args: Any, **kw: Any) -> Any:
+        r = getattr(self._client, method)(*args, **kw)
+        self.answers.append(r)
+        return r
+
+    def post(self, *args: Any, **kw: Any) -> Any:
+        return self._record("post", *args, **kw)
+
+    def request(self, *args: Any, **kw: Any) -> Any:
+        return self._record("request", *args, **kw)
+
+    def take(self) -> tuple[dict[str, str], dict[str, str]]:
+        """The string fields of the last answer's JSON object (one level of nesting
+        flattened) and the cookies it set; then forget the answers."""
+        fields: dict[str, str] = {}
+        cookies: dict[str, str] = {}
+        last = self.answers[-1] if self.answers else None
+        self.answers = []
+        if last is None:
+            return fields, cookies
+        try:
+            body = last.json()
+        except Exception:  # noqa: BLE001 -- not JSON: no fields
+            body = None
+        for k, v in body.items() if isinstance(body, Mapping) else ():
+            if isinstance(v, str):
+                fields.setdefault(k, v)
+            elif isinstance(v, Mapping):
+                for k2, v2 in v.items():
+                    if isinstance(v2, str):
+                        fields.setdefault(k2, v2)
+        try:
+            cookies = {k: v for k, v in dict(last.cookies).items() if isinstance(v, str)}
+        except Exception:  # noqa: BLE001 -- a response without a cookie jar
+            cookies = {}
+        return fields, cookies
+
+
 def _tokens(
     spec: Spec,
     sessions: SessionFactory,
@@ -2295,11 +2535,14 @@ def _tokens(
     notes: list[str],
     *,
     inactive_login: bool = False,
+    answers: dict[str, dict[str, str]] | None = None,
+    cookies: dict[str, dict[str, str]] | None = None,
 ) -> dict[str, str]:
     """Every active handle's token, logged in on the seed database itself, so a token
     the app keeps as a row (DRF's ``Token``, a tokens table) is in every probe's copy.
     ``inactive_login``: the inactive users too, each made active for its login only (a
-    token the app minted for it while active; refused once it is inactive again)."""
+    token the app minted for it while active; refused once it is inactive again).
+    ``answers`` / ``cookies`` receive what each login answered (see :class:`_Recorder`)."""
     tokens: dict[str, str] = {}
     if login is None:
         if spec.users:
@@ -2311,13 +2554,21 @@ def _tokens(
     try:
         with sessions(seed_db) as session:
             client = getattr(session, "client", session)
+            rec = _Recorder(client) if client is not None else None
             for handle, caller in callers.items():
                 if not caller.active and caller not in asleep:
                     continue
                 try:
-                    tokens[handle] = login(client, handle)
+                    tokens[handle] = login(rec if rec is not None else client, handle)
                 except Exception as err:  # noqa: BLE001 -- that caller is left out, noted
                     notes.append(f"layer R: cannot log in as {handle!r} ({err})")
+                    continue
+                if rec is not None:
+                    fields, set_cookies = rec.take()
+                    if answers is not None and fields:
+                        answers[handle] = fields
+                    if cookies is not None and set_cookies:
+                        cookies[handle] = set_cookies
     finally:
         for c in asleep:
             _set_active(spec, seed_db, c.key, False)
@@ -2346,6 +2597,7 @@ def run_probes(
     inactive_login: bool = False,
     unreachable: Mapping[str, str] | None = None,
     auth_present: Callable[[Any, str], Mapping[str, str]] | None = None,
+    json_login: tuple[str, str, str, str] | None = None,
 ) -> RuleResult:
     """Every rule item of ``spec`` (those whose id starts with one of ``only``, when
     given), probed on the app ``sessions`` opens; ``make_db(variant, path)`` writes the
@@ -2363,7 +2615,9 @@ def run_probes(
     inactive caller's token comes from logging it in while active (see
     :func:`_tokens`), else from ``mint_token``. ``unreachable``: routes (``METHOD
     /path``) no probe may call, with the reason (a route that needs the network): their
-    items are unexercised, ``unreachable-by-probe`` with that reason."""
+    items are unexercised, ``unreachable-by-probe`` with that reason. ``json_login``:
+    (method, path, username field, password field) of a login route taking JSON
+    credentials (see :func:`_r1`)."""
     all_items = rule_items(spec)
     items = {i.id: i for i in all_items if _selected(i.id, only)}
     result = RuleResult()
@@ -2375,8 +2629,11 @@ def run_probes(
         seed_all = _read_tables(seed_db)
         tables = [t for t in dict.fromkeys(sql_names.values()) if t in seed_all]
         callers = _callers(spec, {t: seed_all[t] for t in tables})
+        answers: dict[str, dict[str, str]] = {}
+        cookies: dict[str, dict[str, str]] = {}
         tokens = _tokens(spec, sessions, seed_db, callers, login, result.notes,
-                         inactive_login=inactive_login)  # fmt: skip
+                         inactive_login=inactive_login, answers=answers,
+                         cookies=cookies)  # fmt: skip
         inactive = next((c for c in callers.values() if not c.active), None)
         inactive_token = None
         if inactive is not None and inactive.handle in tokens:
@@ -2389,7 +2646,8 @@ def run_probes(
         seed_all = _read_tables(seed_db)  # with what logging in wrote (tokens, last login)
         seed = {t: seed_all[t] for t in tables}
         ctx = ProbeContext(spec, seed, callers, tokens, inactive, inactive_token,
-                           tuple(refusals), login_route)  # fmt: skip
+                           tuple(refusals), login_route, json_login, answers,
+                           cookies)  # fmt: skip
         skipped = dict(unreachable or {})
         probes, reasons = build_probes(spec, ctx, items, skip=tuple(skipped))
         for item_id, item in items.items():
@@ -2428,6 +2686,9 @@ def run_probes(
                 headers = dict(auth_headers(token))
             elif token is not None:
                 headers["Authorization"] = f"{scheme} {token}"
+            if probe.cookies:
+                headers = {**headers, "Cookie": "; ".join(f"{k}={v}" for k, v in
+                                                          probe.cookies.items())}  # fmt: skip
             with sessions(db) as session:
                 if probe.headers is None and token is not None and auth_present is not None:
                     headers = dict(auth_present(session, token))
@@ -2453,12 +2714,18 @@ def run_probes(
                 "body": answer.body,
                 "db_diff": diff,
             }
+            if probe.args.get("credential"):
+                # its refusal decides nothing (bad credentials; invented ones)
+                result.probes[probe.name]["credential"] = True
             judged = _judge(probe, answer, seed, after, ctx, contracts[probe.route])
             for item_id, outcome in judged.items():
                 if item_id in outcomes:
                     outcomes[item_id].append((probe, outcome))
     for item_id, item in items.items():
         result.items[item_id] = _verdict(item, outcomes[item_id], reasons.get(item_id))
+        against = _contradicting(item, outcomes[item_id])
+        if against:
+            result.contradicted[item_id] = against
     _post_hoc(spec, result, items, probes, answers, ctx)
     _route_5xx(result, items, probes, answers, contracts)
     summarise(spec, result)
@@ -2504,14 +2771,84 @@ def _verdict(
     return ItemVerdict(item, "unexercised", why, names)
 
 
+def _contradicting(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> list[str]:
+    """The probes whose answer contradicts the item's prediction, as judged: an R1
+    caller decided against its prediction (refused although admitted, or admitted
+    although refused: every probe of it saying so), else an outcome ``ok`` False."""
+    if item.kind != "R1":
+        return [p.name for p, o in found if o.ok is False]
+    split = _split_roles(found)
+    if split:  # every decided probe of a split role contradicts one prediction or another
+        return [p.name for p, _ in found if p.args.get("caller") in split]
+    by_caller: dict[str, list[tuple[Probe, Outcome]]] = {}
+    for p, o in found:
+        by_caller.setdefault(p.args["caller"], []).append((p, o))
+    out: list[str] = []
+    for results in by_caller.values():
+        flags = [o.refused for _, o in results]
+        refused = (False if any(f is False for f in flags)
+                   else True if flags and all(f is True for f in flags) else None)  # fmt: skip
+        if refused is not None and refused == results[0][0].args["allowed"]:
+            out += [p.name for p, o in results if o.refused is refused]
+    return out
+
+
+def _split_roles(found: Sequence[tuple[Probe, Outcome]]) -> dict[str, dict[str, bool]]:
+    """Roles whose callers answered differently: role -> handle -> refused -- one
+    admitted, another refused. The profile's roles then miss a distinction (an enum
+    column it does not model), so no auth spells the route. Read from the status alone
+    (the refusal rules leave a 403 of unknown detail undecided or "past the role
+    check"): 401/403 refused; on a request every caller sends alike (no row addressed)
+    any other answer is past the auth check, so admitted; on a row of the caller's own,
+    a 2xx admits. (A row the profile names no owner of is not "no one's": the app may
+    check an owner the profile does not know, so another user's row never counts.)"""
+    per: dict[str, dict[str, bool]] = {}
+    for p, o in found:
+        handle = p.args.get("handle")
+        status = (o.observed or {}).get("status") if isinstance(o.observed, Mapping) else None
+        if handle is None or p.args.get("credential") or not isinstance(status, int):
+            continue
+        refused = status in (401, 403)
+        if p.args.get("same_request"):
+            pass
+        elif not p.args.get("owns_target", True):
+            continue
+        elif not (refused or _ok(status)):
+            continue
+        status = 403 if refused else 200
+        mine = per.setdefault(p.args["caller"], {})
+        mine[handle] = mine.get(handle, True) and not _ok(status)  # any admission admits
+    return {role: hs for role, hs in per.items() if len(set(hs.values())) > 1}
+
+
 def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemVerdict:
     names = [p.name for p, _ in found]
+    split = _split_roles(found)
+    if split:
+        said = "; ".join(
+            f"{role}: "
+            + ", ".join(
+                f"{h} {'refused' if x else 'admitted'}" for h, x in sorted(hs.items())
+            )  # fmt: skip
+            for role, hs in sorted(split.items())
+        )
+        witness = next(p.name for p, _ in found if p.args.get("caller") in split)
+        return ItemVerdict(
+            item,
+            "refuted",
+            f"callers of one role answered differently ({said}): the profile's roles miss a "
+            "distinction the route makes",
+            names,
+            {"split_roles": sorted(split)},
+            witness=witness,
+        )
     by_caller: dict[str, list[tuple[Probe, Outcome]]] = {}
     for p, o in found:
         by_caller.setdefault(p.args["caller"], []).append((p, o))
     admitted: list[str] = []
     wrong: list[tuple[str, Probe]] = []
     decided = 0
+    decided_callers: list[str] = []
     for caller, results in by_caller.items():
         flags = [o.refused for _, o in results]
         if any(f is False for f in flags):
@@ -2521,6 +2858,7 @@ def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemV
         else:
             continue
         decided += 1
+        decided_callers.append(caller)
         allowed = results[0][0].args["allowed"]
         if not refused:
             admitted.append(caller)
@@ -2528,6 +2866,7 @@ def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemV
             witness = next(p for p, o in results if o.refused is refused)
             wrong.append((caller, witness))
     observed = {"allowed": sorted(admitted)}
+    roles_decided = [c for c in by_caller if c not in NON_ROLE_CALLERS and c in decided_callers]
     if wrong:
         callers = ", ".join(
             f"{c} {'refused' if p.args['allowed'] else 'admitted'}" for c, p in wrong
@@ -2540,9 +2879,19 @@ def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemV
             observed,
             witness=wrong[0][1].name,
         )
-    if decided:
+    if not any(c not in NON_ROLE_CALLERS for c in by_caller):
+        # the prediction is about which roles are admitted: anonymous, a malformed token
+        # and the inactive user alone never verify it
+        return ItemVerdict(
+            item,
+            "unexercised",
+            "no callers: no user of any role was logged in, so no probe shows who is "
+            "admitted" + (f" ({decided} non-role callers as predicted)" if decided else ""),
+            names,
+        )
+    if roles_decided:
         return ItemVerdict(item, "verified", f"{decided} callers as predicted", names)
-    return ItemVerdict(item, "unexercised", "no caller's refusal could be told apart", names)
+    return ItemVerdict(item, "unexercised", "no role caller's refusal could be told apart", names)
 
 
 def _post_hoc(
@@ -2660,9 +3009,52 @@ def _route_5xx(
             result.items[item_id] = ItemVerdict(item, "unexercised", "no probe of the route ran")
 
 
+def _raw_contradictions(v: ItemVerdict, probes: Mapping[str, Mapping[str, Any]]) -> list[str]:
+    """An R1 item's probes whose recorded answer contradicts it, read from the answers
+    themselves (none of the refusal rules): the anonymous probe -- no user, no token,
+    no invented credentials -- answered 401/403 on a route predicted to admit anyone,
+    or 2xx on one predicted to admit only some roles."""
+    if v.item.kind != "R1" or "allowed" not in v.item.predicted:
+        return []
+    anyone = v.item.predicted["allowed"] == "anyone"
+    out = []
+    for name in v.probes:
+        rec = probes.get(name)
+        if rec is None or rec.get("credential") or name.split(" | ")[1:2] != ["no caller"]:
+            continue
+        req = rec.get("request") or {}
+        if req.get("user") is not None or req.get("token") is not None:
+            continue
+        status = rec.get("status")
+        if not isinstance(status, int):
+            continue
+        if (anyone and status in (401, 403)) or (not anyone and 200 <= status < 300):
+            out.append(name)
+    return out
+
+
+def check_verdicts(result: RuleResult) -> None:
+    """The self-check: no item is ``verified`` while one of its recorded probes
+    contradicts its prediction -- as judged (``RuleResult.contradicted``) or, for R1,
+    as the anonymous answer itself shows (:func:`_raw_contradictions`). One that is
+    raises :class:`VerdictInvariantError`: an internal error of a verdict path."""
+    bad = []
+    for item_id, v in result.items.items():
+        if v.verdict != "verified":
+            continue
+        against = list(result.contradicted.get(item_id, ())) + _raw_contradictions(v, result.probes)
+        if against:
+            bad.append(f"{item_id}: verified although {', '.join(dict.fromkeys(against))} "
+                       "contradict it")  # fmt: skip
+    if bad:
+        raise VerdictInvariantError("; ".join(bad))
+
+
 def summarise(spec: Spec, result: RuleResult) -> None:
     """Table (§1.1) and route (§1.2) verdicts over the items run (again after the
-    importer's corrections: ``verified (corrected)`` counts as verified)."""
+    importer's corrections: ``verified (corrected)`` counts as verified), after the
+    self-check (:func:`check_verdicts`)."""
+    check_verdicts(result)
     contracts = {c.endpoint: c for c in route_contracts(spec)}
     result.tables.clear()
     result.routes.clear()
@@ -2728,7 +3120,10 @@ __all__ = [
     "VERDICTS",
     "OUTSIDE_API",
     "VERIFIED_CORRECTED",
+    "VerdictInvariantError",
     "allowed_roles",
+    "check_verdicts",
+    "takes_credentials",
     "asgi_sessions",
     "is_verified",
     "summarise",

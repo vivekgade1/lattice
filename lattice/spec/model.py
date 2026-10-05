@@ -130,7 +130,10 @@ class Unchecked:
 
 
 CONTRACT_KINDS = ("read", "list", "create", "update", "delete", "action")
-OWNER_SCOPES = ("owner", "any", "unknown")
+# "owner_or_admin": the caller's own rows, and -- as the admin role -- anyone's (an
+# owner-or-staff object permission: DRF's `request.user.is_staff or obj.user ==
+# request.user`; post-hoc round 2026-10-05)
+OWNER_SCOPES = ("owner", "owner_or_admin", "any", "unknown")
 # the owner scopes naming a column (Phase 2 W3b): "owner(<column>)" -- the rows whose
 # <column> is the caller (a link between users read from its other side) -- and
 # "owner_or_public(<column>)" -- the owner's rows, and anyone's whose Bool <column> is
@@ -234,8 +237,10 @@ class Contract:
     rows whose <column> -- a users key, not the owner column -- is the caller: a link
     between users read from its other side, microblog's followers by `followed_id`),
     "owner_or_public(<column>)" (reads the caller's own rows and anyone's whose Bool
-    <column> is true; writes the caller's own only: JustNotes' `isPublic`), "any" (on
-    anyone's rows, stated), "unknown", or None (the table's ownership decides: "owner"
+    <column> is true; writes the caller's own only: JustNotes' `isPublic`),
+    "owner_or_admin" (a non-admin acts on its own rows only, the admin role on anyone's:
+    an owner-or-staff object permission), "any" (on anyone's rows, stated), "unknown",
+    or None (the table's ownership decides: "owner"
     for an owned table unless the route is admin-only, else not applicable).
     `response`: a response model of the profile."""
 

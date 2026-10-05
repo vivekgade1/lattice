@@ -311,7 +311,10 @@ def test_a_basic_credential_login_route_is_called_with_each_users_credentials():
                  errors=(ContractError(401, "Invalid credentials"),))
     )  # fmt: skip
     plain = _run(spec, refusals=((403, NOT_PROVIDED),))
-    assert plain.items["R1 POST /token"].verdict == "refuted"
+    # without the login route, a caller's token gets the stated 401 "Invalid
+    # credentials": that never admits it, nor tells a refusal apart (post-hoc 2026-10-05:
+    # it was "refuted" on an anonymous 401 counted as admitted)
+    assert plain.items["R1 POST /token"].verdict == "unexercised"
     refusals = ((403, NOT_PROVIDED), (403, "Invalid token."), (401, "Invalid credentials"))
     result = _run(spec, refusals=refusals, login_route=("POST", "/token"))
     item = result.items["R1 POST /token"]

@@ -83,7 +83,7 @@ import shutil
 import sqlite3
 import tempfile
 import time
-from collections.abc import Callable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -120,6 +120,7 @@ __all__ = [
     "mark_uploads",
     "network_routes",
     "outside_api",
+    "outside_gaps",
     "shadowed_routes",
     "summary_line",
     "upload_routes",
@@ -647,14 +648,18 @@ def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
 
 def auth_for(allowed: Sequence[str], api: Any) -> str | None:
     """The auth whose admitted callers are ``allowed`` (role names, ``anonymous``):
-    Public, Authenticated, Admin or Roles(...); None when no auth says it."""
+    Public, Authenticated, Admin or Roles(...); None when no auth says it. Every role a
+    caller can hold admitted is ``Authenticated`` (a profile with ``NoRoles``: its one
+    role)."""
+    from lattice.spec.probes import _reachable_roles
+
     if "anonymous" in allowed:
         return "Public"
     roles = {r for r in api.roles if r != "Public"}
     got = {a for a in allowed if a in roles}
     if not got:
         return None
-    if got == roles:
+    if got == roles or got == _reachable_roles(api):
         return "Authenticated"
     if got == {api.admin_role}:
         return "Admin"
@@ -681,10 +686,17 @@ def _contract(spec: Spec, endpoint: str) -> Contract | None:
     return next((c for c in spec.contracts if c.endpoint == endpoint), None)
 
 
-def correct(spec: Spec, rules: RuleResult) -> tuple[Spec, list[Correction]]:
+def correct(
+    spec: Spec, rules: RuleResult, *, owner_or_admin: Collection[str] = ()
+) -> tuple[Spec, list[Correction]]:
     """The spec with every correctable refuted item corrected (see the module
-    docstring), and the corrections."""
-    from lattice.spec.probes import _error_ids
+    docstring), and the corrections. ``owner_or_admin``: the routes (``METHOD /path``)
+    whose object permission lets the owner or the admin through (the front end's
+    evidence, :func:`owner_or_admin_routes`): an R1 refutation there observing the
+    admin alone admitted is the owner check refusing non-admins another user's row, so
+    it proposes ``owner_scope="owner_or_admin"`` (auth unchanged), never auth Admin --
+    and nothing when the table has no known owner."""
+    from lattice.spec.probes import _error_ids, _schema
 
     api = spec.profile.api
     contracts = {c.endpoint: c for c in spec.contracts}
@@ -697,6 +709,14 @@ def correct(spec: Spec, rules: RuleResult) -> tuple[Spec, list[Correction]]:
         c = contracts.get(subject)
         if kind == "R1" and c is not None:
             auth = auth_for(obs.get("allowed", ()), api)
+            if auth == "Admin" and subject in owner_or_admin and c.auth != "Admin":
+                found = _schema(spec, c.table)
+                if found is not None and (found[2].owner or found[2].owner_via):
+                    contracts[subject] = replace(c, owner_scope="owner_or_admin")
+                    out.append(Correction(item_id, item_id, "owner_scope -> owner_or_admin "
+                                          "(not auth Admin: an owner-or-admin object "
+                                          "permission)"))  # fmt: skip
+                continue
             if auth is not None and auth != c.auth:
                 contracts[subject] = replace(c, auth=auth)
                 out.append(Correction(item_id, item_id, f"auth {c.auth} -> {auth}"))
@@ -943,12 +963,19 @@ def import_rules(
                    for why in [result.profile.ownership_reasons.get(t, "")]}  # fmt: skip
         mark_unclear(spec, rules, unclear)
         outside = outside_api(result.model)
+        notes = list(getattr(ctx.inputs.insert_hook, "notes", ()))
+        gaps = outside_gaps(result.model)
+        if gaps:
+            notes.append("no table is set outside the API: the front end did not read every "
+                         "route's handler (" + "; ".join(gaps) + ")")  # fmt: skip
         mark_outside(spec, rules, outside)
         uploads = upload_routes(result.model)
         mark_uploads(rules, uploads)
         timing["probe"] = clock() - t1
         t2 = clock()
-        fixed, corrections = correct(spec, rules)
+        fixed, corrections = correct(
+            spec, rules, owner_or_admin=owner_or_admin_routes(result.model)
+        )
         baseline = _reprobe(fixed, corrections, rules, sessions, seeder, args("variant2"))
         timing["correct"] = clock() - t2
         mining = None
@@ -984,6 +1011,7 @@ def import_rules(
             factory_name,
             mining,
             timing,
+            notes=notes,
             variant2=variant2,
             outside=outside,
         )
@@ -1033,6 +1061,8 @@ def outside_api(model: RepoModel) -> dict[str, str]:
     count. The users table is never outside (logging in reads it). Such a table is
     ``outside API`` (plan 2026-10-05, measurement decision 1: flasky's ``roles``, read
     only inside permission checks, and ``follows``, written only by the HTML pages)."""
+    if outside_gaps(model):
+        return {}  # incomplete evidence: no table may be excluded (outside_gaps says why)
     users = model.auth.users_table if model.auth is not None else None
     reached: set[str] = set()
     for r in model.routes:
@@ -1045,6 +1075,23 @@ def outside_api(model: RepoModel) -> dict[str, str]:
             continue
         out[t.name] = f"no route reads or writes {t.name} ({t.table_name})"
     return out
+
+
+def owner_or_admin_routes(model: RepoModel) -> set[str]:
+    """Routes (``METHOD /path``) with an owner check the admin role bypasses (a guard
+    ``object_owner`` naming the admin among the roles that bypass it: DRF's
+    ``request.user.is_staff or obj.user == request.user``)."""
+    admin = model.role_scheme.admin if model.role_scheme is not None else None
+    names = {admin or "Admin", "Admin"}
+    return {f"{r.method} {r.path}" for r in model.routes for g in r.guards
+            if g.kind == "object_owner" and names & set(g.roles)}  # fmt: skip
+
+
+def outside_gaps(model: RepoModel) -> list[str]:
+    """Why the front end's evidence of what the routes read and write is incomplete:
+    one entry per route whose handler it did not read (``Route.unread``). Any entry
+    vetoes every "outside API" exclusion (:func:`outside_api`)."""
+    return [f"{r.method} {r.path}: {r.unread}" for r in model.routes if r.unread]
 
 
 def _is_users(model: RepoModel, table: Any) -> bool:

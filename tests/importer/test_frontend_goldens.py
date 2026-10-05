@@ -73,6 +73,9 @@ ADDED_DEFAULTS: dict[str, Any] = {
     # W2-B (Flask + SQLAlchemy front end): RepoModel.constraints / .excluded_routes
     "constraints": [],
     "excluded_routes": [],
+    # post-hoc round 2026-10-05: Route.unread (a handler the front end did not read; it
+    # vetoes "outside API" exclusions), omitted from to_dict() at its default
+    "unread": None,
 }
 # report.json: volatile fields -> placeholder, and the sections the goldens ignore
 REPORT_PLACEHOLDERS = {("repo",): "<repo>", ("schema",): "<schema>",

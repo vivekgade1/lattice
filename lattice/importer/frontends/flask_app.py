@@ -1689,6 +1689,18 @@ class _RouteReader:
             return out
 
         found = reads(fn, lambda e: is_json(mod, e))
+        # a local holding the body (``data = request.get_json()``; ``data["email"]``)
+        held = {
+            t.id
+            for sub in _walk_own(fn)
+            if isinstance(sub, ast.Assign) and is_json(mod, sub.value)
+            for t in sub.targets
+            if isinstance(t, ast.Name)
+        }
+        if held:
+            local = reads(fn, lambda e: isinstance(e, ast.Name) and e.id in held)
+            for key, req in local.items():
+                found[key] = found.get(key, False) or req
         for sub in _walk_own(fn):
             if not isinstance(sub, ast.Call):
                 continue
@@ -1884,17 +1896,30 @@ def _auth_model(ex: _Extractor, routes: list[Route], guards: _Guards) -> AuthMod
             login = r
             break
     token_path: tuple[str, ...] = ("access_token",)
+    encoding = "basic" if login is not None else "form"
+    password_field = "password"
     if login is not None:
         key = _token_key(ex, login)
         if key is not None:
             token_path = (key,)
+    else:
+        found = _json_login(ex, routes)
+        if found is not None:
+            login, username_field, password_field, token_path = found
+            encoding = "json"
     hasher = None
+    setter = None
     if users_cls is not None:
         m = ex.index.modules.get(users_cls.__module__)
         for local, qual in m.imports.items() if m else ():
             if local in HASHERS or qual.rsplit(":", 1)[-1] in HASHERS:
                 hasher = qual
                 break
+        column = next((c for c in cols if "password" in c.lower()), None)
+        if hasher is None and column is not None and m is not None:
+            setter = _password_setter(m.defs.get(users_cls.__name__), column)
+            if setter is not None:
+                setter = f"{users_cls.__module__}:{users_cls.__qualname__}.{setter}"
     perms = tuple(guards.permissions.items())
     grants = (
         tuple((c.role, tuple(guards.role_permissions.get(c.role, ()))) for c in ex.callers)
@@ -1903,9 +1928,9 @@ def _auth_model(ex: _Extractor, routes: list[Route], guards: _Guards) -> AuthMod
     )
     return AuthModel(
         login_path=login.path if login is not None else None,
-        login_encoding="basic" if login is not None else "form",
+        login_encoding=encoding,
         username_field=username_field,
-        password_field="password",
+        password_field=password_field,
         token_path=token_path,
         scheme=scheme,
         users_table=ex.users,
@@ -1918,7 +1943,59 @@ def _auth_model(ex: _Extractor, routes: list[Route], guards: _Guards) -> AuthMod
         role_table=ex.role_table,
         permissions=perms,
         role_permissions=grants,
+        password_setter=setter,
     )
+
+
+def _password_setter(cls: ast.AST | None, column: str) -> str | None:
+    """The users class's method setting ``column`` from its one argument besides
+    ``self`` (``def set_password(self, password): self.password_hash = hash(password)``):
+    its name; None when it has none."""
+    if not isinstance(cls, ast.ClassDef):
+        return None
+    for fn in cls.body:
+        if not isinstance(fn, ast.FunctionDef) or len(fn.args.args) != 2:
+            continue
+        arg = fn.args.args[1].arg
+        for sub in ast.walk(fn):
+            if (
+                isinstance(sub, ast.Assign)
+                and any(isinstance(t, ast.Attribute) and t.attr == column
+                        and isinstance(t.value, ast.Name) and t.value.id == "self"
+                        for t in sub.targets)  # fmt: skip
+                and any(isinstance(n, ast.Name) and n.id == arg for n in ast.walk(sub.value))
+            ):
+                return fn.name
+    return None
+
+
+LOGIN_IDENT = re.compile(r"(^|_)(email|username|login)($|_)", re.I)
+
+
+def _json_login(
+    ex: _Extractor, routes: list[Route]
+) -> tuple[Route, str, str, tuple[str, ...]] | None:
+    """A JSON login route: a ``POST`` no auth guard protects, whose JSON body holds a
+    users identifier (an email, a username, a login) and a password, answering a token
+    (a key ending in ``token`` of a dict it returns: :func:`_token_key`). (route,
+    username field, password field, token path); None when there is none."""
+    for r in routes:
+        if r.method != "POST" or any(g.kind in ("authenticated", "role", "admin")
+                                     for g in r.guards):  # fmt: skip
+            continue
+        keys: dict[str, bool] = {}
+        for p in r.params:
+            held = ex.partials.get(p.type or "") if p.source == "body" else None
+            if isinstance(held, dict):
+                keys.update(held)
+        password = next((k for k in keys if re.search(r"pass(word)?|pwd", k, re.I)), None)
+        ident = next((k for k in keys if k != password and LOGIN_IDENT.search(k)), None)
+        if password is None or ident is None:
+            continue
+        key = _token_key(ex, r)
+        if key is not None:
+            return r, ident, password, (key,)
+    return None
 
 
 def _token_key(ex: _Extractor, route: Route) -> str | None:

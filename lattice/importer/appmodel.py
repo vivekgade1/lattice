@@ -167,6 +167,9 @@ class RouteParam:
     le: int | float | None = None
     min_length: int | None = None
     max_length: int | None = None
+    # a path parameter looking its row up by a column that is not the key (DRF's
+    # ``lookup_field = "slug"``): that column's name
+    lookup: str | None = field(default=None, metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)
@@ -226,6 +229,10 @@ class Route:
     # the qualified handler ("module:function", "module:Class.method" for a class-based
     # view); None: ``module:name``
     view: str | None = None
+    # why the front end's evidence of the tables the route reads or writes is incomplete
+    # (its handler calls code the front end did not read); None: complete. A table is
+    # set outside the API only when no route has a reason here
+    unread: str | None = field(default=None, metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)
@@ -350,6 +357,10 @@ class AuthModel:
     invalid_answer: tuple[int, str] | None = None
     unknown_answer: tuple[int, str] | None = None
     inactive_answer: tuple[int, str] | None = None
+    # the users model's own method setting the password column from a plain password
+    # ("module:Class.method", e.g. ``User.set_password``): the seed hashes through it
+    # when no ``hasher`` function is known
+    password_setter: str | None = None
 
 
 @dataclass(frozen=True)

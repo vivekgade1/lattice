@@ -1,0 +1,252 @@
+{
+  "app": "conduit",
+  "package": "bench.import_repos.conduit",
+  "framework": "django",
+  "tables": {
+    "verified": 4,
+    "total": 6,
+    "pct": 66.7
+  },
+  "routes": {
+    "verified": 25,
+    "total": 26,
+    "pct": 96.2
+  },
+  "unverified_tables": {
+    "User_favorites": "items T1 User_favorites",
+    "Topic_tags": "unreached"
+  },
+  "outside_api": {},
+  "unverified_routes": {
+    "PUT /api/user/{username}/": "R1 unclear"
+  },
+  "items": {
+    "verified": 55,
+    "refuted": 0,
+    "unexercised": 8,
+    "unclear": 2,
+    "verified (corrected)": 5
+  },
+  "corrected": 5,
+  "unreachable_routes": [],
+  "unreachable_items": 0,
+  "excluded_framework_routes": 2,
+  "baseline": [
+    {
+      "item": "R3 POST /api/topics/ 5xx",
+      "endpoint": "POST /api/topics/",
+      "status": 500,
+      "request": {
+        "method": "POST",
+        "path": "/api/topics/",
+        "user": "admin",
+        "token": null,
+        "params": null,
+        "json": null,
+        "form": null
+      },
+      "body": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Server Error (500)</title>\n</head>\n<body>\n  <h1>Server Error (500)</h1><p></p>\n</body>\n</html>\n",
+      "reason": "upstream defect: the original app answers 500 to this request (an unhandled error); recorded, not fixed by the import"
+    },
+    {
+      "item": "R3 PUT /api/topic/{pk}/ 5xx",
+      "endpoint": "PUT /api/topic/{pk}/",
+      "status": 500,
+      "request": {
+        "method": "PUT",
+        "path": "/api/topic/1/",
+        "user": "admin",
+        "token": null,
+        "params": null,
+        "json": null,
+        "form": null
+      },
+      "body": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Server Error (500)</title>\n</head>\n<body>\n  <h1>Server Error (500)</h1><p></p>\n</body>\n</html>\n",
+      "reason": "upstream defect: the original app answers 500 to this request (an unhandled error); recorded, not fixed by the import"
+    },
+    {
+      "item": "R3 GET /api/profile/{username}/ 5xx",
+      "endpoint": "GET /api/profile/{username}/",
+      "status": 500,
+      "request": {
+        "method": "GET",
+        "path": "/api/profile/valid username/",
+        "user": "admin",
+        "token": null,
+        "params": null,
+        "json": null,
+        "form": null
+      },
+      "body": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Server Error (500)</title>\n</head>\n<body>\n  <h1>Server Error (500)</h1><p></p>\n</body>\n</html>\n",
+      "reason": "upstream defect: the original app answers 500 to this request (an unhandled error); recorded, not fixed by the import"
+    },
+    {
+      "item": "R3 GET /api/profile/{username}/favorites/ 5xx",
+      "endpoint": "GET /api/profile/{username}/favorites/",
+      "status": 500,
+      "request": {
+        "method": "GET",
+        "path": "/api/profile/valid username/favorites/",
+        "user": "admin",
+        "token": null,
+        "params": null,
+        "json": null,
+        "form": null
+      },
+      "body": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Server Error (500)</title>\n</head>\n<body>\n  <h1>Server Error (500)</h1><p></p>\n</body>\n</html>\n",
+      "reason": "upstream defect: the original app answers 500 to this request (an unhandled error); recorded, not fixed by the import"
+    },
+    {
+      "item": "R3 DELETE /api/topic/{_id}/comment/{pk}/ 5xx",
+      "endpoint": "DELETE /api/topic/{_id}/comment/{pk}/",
+      "status": 500,
+      "request": {
+        "method": "DELETE",
+        "path": "/api/topic/1/comment/1/",
+        "user": "admin",
+        "token": null,
+        "params": null,
+        "json": null,
+        "form": null
+      },
+      "body": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Server Error (500)</title>\n</head>\n<body>\n  <h1>Server Error (500)</h1><p></p>\n</body>\n</html>\n",
+      "reason": "upstream defect: the original app answers 500 to this request (an unhandled error); recorded, not fixed by the import"
+    }
+  ],
+  "mining": {
+    "proposed": 8,
+    "refuted": 4,
+    "uncompiled": 0,
+    "snapshots": 12,
+    "runs": 182,
+    "app_rows": 8
+  },
+  "agrees": true,
+  "disagreements": [],
+  "fidelity": {
+    "variant2_clean": true,
+    "variant2_findings": [],
+    "scenarios": {
+      "passed": false,
+      "scenarios": 21,
+      "steps": 80,
+      "answers_ok": 80,
+      "oracle_ok": 76,
+      "failed": [
+        {
+          "scenario": "login needs the e-mail and password of an active user",
+          "step": 2,
+          "request": {
+            "method": "POST",
+            "path": "/api/token/",
+            "user": null,
+            "params": null,
+            "json": {
+              "email": "alice@example.com",
+              "password": "wrong"
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "login needs the e-mail and password of an active user",
+          "step": 3,
+          "request": {
+            "method": "POST",
+            "path": "/api/token/",
+            "user": null,
+            "params": null,
+            "json": {
+              "email": "carol@example.com",
+              "password": "carolpass1"
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "login needs the e-mail and password of an active user",
+          "step": 4,
+          "request": {
+            "method": "POST",
+            "path": "/api/token/",
+            "user": null,
+            "params": null,
+            "json": {
+              "email": "alice@example.com"
+            }
+          },
+          "status": 400,
+          "expected": 400,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 400"
+          ]
+        },
+        {
+          "scenario": "login needs the e-mail and password of an active user",
+          "step": 5,
+          "request": {
+            "method": "POST",
+            "path": "/api/token/refresh/",
+            "user": null,
+            "params": null,
+            "json": {
+              "refresh": "not-a-token"
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        }
+      ]
+    },
+    "spec_valid": true,
+    "passed": false
+  },
+  "gate": {
+    "tables": false,
+    "routes": true
+  },
+  "import_s": 1.77,
+  "stage_s": {
+    "extract": 0.433,
+    "probe": 0.475,
+    "correct": 0.092,
+    "mine": 0.181,
+    "variant2": 0.348,
+    "total": 1.544
+  },
+  "llm": {
+    "tokens": 0,
+    "cost_usd": 0.0
+  }
+}

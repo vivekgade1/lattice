@@ -132,6 +132,7 @@ ADMIN_ATTRS = frozenset({"is_staff", "is_superuser", "is_admin"})
 GETTEXT = frozenset({"_", "gettext", "gettext_lazy", "ugettext", "ugettext_lazy", "pgettext"})
 FILTER_CALLS = frozenset({"filter", "get", "exclude", "get_object_or_404"})
 SERIALIZER_HOOKS = ("validate", "create", "update")
+FUNCTION_DEFS = (ast.FunctionDef, ast.AsyncFunctionDef)
 FRAMEWORK_VIEW_MODULES = (
     ("django.contrib.admin", "Django admin"),
     ("django.contrib.auth.views", "DRF browsable-API session login page (api-auth)"),
@@ -397,20 +398,31 @@ class _Extractor:
         qs_model = _queryset_model(cls)
         serializer = self._serializer(v, viewset_action or action, method)
         ser_model = _serializer_model(serializer)
-        model = qs_model or ser_model
         perms = list(v.initkwargs.get("permission_classes", getattr(cls, "permission_classes", ())))
+        perms = self._live_permissions(v, viewset_action or action, method, perms)
         fns = self._functions(cls, own_handler, action, method, serializer, perms)
+        # the models the package code the route runs reads or writes (Model.objects,
+        # get_object_or_404, a model serializer, related managers, module helpers): a
+        # plain ViewSet / APIView method names its model nowhere else
+        orm, link_tables, unread = self._orm(fns)
+        model = qs_model or ser_model or (orm[0] if orm else None)
         get_object = self._own(cls, "get_object")
-        fetches = action in OBJECT_ACTIONS or (
-            own_handler is not None and _calls_self(own_handler[1], "get_object")
-        )
+        if own_handler is not None:
+            # a handler of its own fetches through get_object (or super()'s action), or
+            # checks the object permissions on a row it fetched itself
+            fetched = _calls_self(own_handler[1], "get_object") or (
+                action in OBJECT_ACTIONS and _calls(own_handler[1], action)
+            )
+            fetches = fetched or _calls_self(own_handler[1], "check_object_permissions")
+        else:
+            fetched = fetches = action in OBJECT_ACTIONS
         if get_object is not None:  # an override: what it does
             object_checked = fetches and _calls(
                 get_object[1], "check_object_permissions", "get_object"
             )
-            implicit_404 = fetches and _calls(get_object[1], "get_object_or_404", "get_object")
+            implicit_404 = fetched and _calls(get_object[1], "get_object_or_404", "get_object")
         else:
-            object_checked = implicit_404 = fetches
+            object_checked, implicit_404 = fetches, fetched
         uses_queryset = action in QUERYSET_ACTIONS or (
             own_handler is not None
             and _calls_self(own_handler[1], "get_object", "get_queryset", "filter_queryset")
@@ -437,7 +449,7 @@ class _Extractor:
             owner += self._save_owner(cls, "perform_update", ser_model or model)
         if own_handler is not None:
             owner += self._calls_owner(own_handler, ser_model or model)
-        params = self._path_params(v, cls, qs_model)
+        params = self._path_params(v, cls, qs_model or model)
         params += self._query_params(cls, own_handler, action)
         body_models: tuple[str, ...] = ()
         if method in WRITE_METHODS and serializer is not None:
@@ -457,6 +469,7 @@ class _Extractor:
         tables = [self.tables[m] for m in (qs_model, ser_model) if m in self.tables]
         if method in WRITE_METHODS and serializer is not None and ser_model is not None:
             tables += self._link_tables(serializer, ser_model)
+        tables += [self.tables[m] for m in orm if m in self.tables] + link_tables
         returns = None
         out_model = (
             _serializer_model(self._serializer(v, viewset_action or action, "GET")) or ser_model
@@ -488,7 +501,123 @@ class _Extractor:
             returns=returns,
             guards=tuple(guards),
             view=f"{cls.__module__}:{cls.__qualname__}.{handler_name}",
+            unread=unread,
         )
+
+    def _live_permissions(self, v: _View, action: str | None, method: str,
+                          default: list[Any]) -> list[Any]:  # fmt: skip
+        """The permission classes a view's own ``get_permissions`` gives for ``action``
+        (one adding ``IsAdminOrOwner`` for ``destroy`` only), evaluated on the live view;
+        ``default`` when it has none or it needs more than the action and the method."""
+        if self._own(v.cls, "get_permissions") is None:
+            return default
+        from types import SimpleNamespace
+
+        try:
+            view = v.cls(**v.initkwargs)
+            view.action = action
+            view.action_map = v.actions or {}
+            view.request = SimpleNamespace(method=method, user=None, query_params={}, data={})
+            view.args, view.kwargs, view.format_kwarg = (), {}, None
+            found = [type(p) for p in view.get_permissions()]
+        except Exception:  # noqa: BLE001 -- a get_permissions needing a real request
+            return default
+        return found or default
+
+    def _orm(
+        self, fns: list[tuple[str, ast.FunctionDef]]
+    ) -> tuple[list[Any], list[str], str | None]:
+        """The models the functions (and the package's module functions they call,
+        followed) read or write -- ``get_object_or_404(M)`` targets first, then
+        ``M.objects``, ``M(...)``, a model serializer ``S(...)`` (its ``Meta.model``), a
+        related manager (``topic.tags.add``, ``topic.comments.all``) -- the link tables
+        of many-to-many managers they touch, and why the evidence is incomplete: a call
+        of package code that is not followed (a method of a package class)."""
+        from rest_framework import serializers as drf_serializers
+
+        model_serializer = drf_serializers.ModelSerializer
+        base_serializer = drf_serializers.BaseSerializer
+
+        first: list[Any] = []
+        found: list[Any] = []
+        links: list[str] = []
+        unread: list[str] = []
+        accessors = self._accessors()
+        seen: set[int] = set()
+        todo = list(fns)
+        while todo:
+            mod, fn = todo.pop(0)
+            if id(fn) in seen:
+                continue
+            seen.add(id(fn))
+            g = vars(sys.modules[mod]) if mod in sys.modules else {}
+            for node in ast.walk(fn):
+                if isinstance(node, ast.Attribute) and node.attr == "objects":
+                    m = _live(node.value, g)
+                    if m in self.tables:
+                        found.append(m)
+                if not isinstance(node, ast.Call):
+                    continue
+                f = node.func
+                if _name(f) in ("get_object_or_404", "get_list_or_404") and node.args:
+                    m = _live(node.args[0], g)
+                    m = getattr(m, "model", m)  # a queryset or manager names its model
+                    if m in self.tables:
+                        first.append(m)
+                # a related manager: <x>.<accessor>.<method>(...)
+                if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Attribute):
+                    for m, through in accessors.get(f.value.attr, ()):
+                        found.append(m)
+                        if through is not None and through in self.tables:
+                            links.append(self.tables[through])
+                target = _live(f, g)
+                if target in self.tables:
+                    found.append(target)
+                elif isinstance(target, type) and issubclass(target, model_serializer):
+                    m = getattr(getattr(target, "Meta", None), "model", None)
+                    if m in self.tables:
+                        found.append(m)
+                        if any(k.arg == "data" for k in node.keywords):
+                            links += self._link_tables(target, m)
+                elif isinstance(target, type) and issubclass(target, base_serializer):
+                    # a package serializer: its own create / update / save run on .save()
+                    for hook in ("create", "update", "save"):
+                        own = self._own(target, hook)
+                        if own is not None:
+                            todo.append(own)
+                elif callable(target) and django_orm.in_package(
+                    getattr(target, "__module__", "") or "", self.package
+                ):
+                    qual = f"{target.__module__}:{getattr(target, '__qualname__', '')}"
+                    hit = self.index.node(qual) if inspect.isfunction(target) else None
+                    if hit is not None and isinstance(hit[1], FUNCTION_DEFS):
+                        todo.append(hit)  # type: ignore[arg-type]
+                    elif not isinstance(target, type) or not _known_class(target):
+                        unread.append(f"calls {qual}, which the front end does not follow")
+        models = list(dict.fromkeys([*first, *found]))
+        reason = "; ".join(dict.fromkeys(unread)) or None
+        return models, list(dict.fromkeys(links)), reason
+
+    def _accessors(self) -> dict[str, list[tuple[Any, Any]]]:
+        """Related-manager names -> (the model it reaches, the many-to-many link model
+        or None), over every model: forward and reverse many-to-many, reverse foreign
+        keys."""
+        if getattr(self, "_accessor_map", None) is not None:
+            return self._accessor_map
+        out: dict[str, list[tuple[Any, Any]]] = {}
+        for model in self.tables:
+            for f in model._meta.get_fields():
+                if f.many_to_many and not f.auto_created:
+                    out.setdefault(f.name, []).append((f.related_model, f.remote_field.through))
+                elif f.auto_created and f.is_relation and (f.many_to_many or f.one_to_many):
+                    name = f.get_accessor_name()
+                    through = getattr(f, "through", None) if f.many_to_many else None
+                    if through is None and f.many_to_many:
+                        through = f.remote_field.through
+                    if name:
+                        out.setdefault(name, []).append((f.related_model, through))
+        self._accessor_map = out
+        return out
 
     # -- the package's code of a view --
 
@@ -651,7 +780,11 @@ class _Extractor:
                 cols = _object_owner_columns(own[1])
                 columns = [c for c in (self._column(model, a) for a, _ in cols) if c]
                 if columns:
-                    guards.append(Guard("object_owner", source, 403, detail, line=own[1].lineno))
+                    # `request.user.is_staff or obj.user == request.user`: the admin
+                    # bypasses the owner check (owner-or-admin)
+                    bypass = ("Admin",) if set(_user_attrs(own[1])) & ADMIN_ATTRS else ()
+                    guards.append(Guard("object_owner", source, 403, detail, bypass,
+                                        own[1].lineno))  # fmt: skip
                     owner += [OwnerUse(self.tables[model], c, "compare", ln)
                               for c, (_, ln) in zip(columns, cols, strict=False)]  # fmt: skip
                 else:
@@ -682,28 +815,38 @@ class _Extractor:
         return self._saves(own[1], model) if own is not None else []
 
     def _calls_owner(self, own: tuple[str, ast.FunctionDef], model: Any) -> list[OwnerUse]:
-        return self._filters(own[1], model, "compare") + self._saves(own[1], model)
+        scope = vars(sys.modules[own[0]]) if own[0] in sys.modules else {}
+        return self._filters(own[1], model, "compare", scope) + self._saves(own[1], model, scope)
 
-    def _filters(self, fn: ast.AST, model: Any, how: str) -> list[OwnerUse]:
+    def _filters(self, fn: ast.AST, model: Any, how: str,
+                 scope: dict[str, Any] | None = None) -> list[OwnerUse]:  # fmt: skip
+        """``.filter(<fk>=request.user)`` and the like, on the call's own model when it
+        names one (``Comment.objects.filter``, ``get_object_or_404(Comment, ...)``),
+        else on ``model``."""
         out = []
         for node in ast.walk(fn):
             if isinstance(node, ast.Call) and _name(node.func) in FILTER_CALLS:
+                target = _call_model(node, scope or {}, self.tables) or model
                 for kw in node.keywords:
                     if kw.arg and _is_caller(kw.value):
-                        col = self._column(model, kw.arg.split("__", 1)[0])
+                        col = self._column(target, kw.arg.split("__", 1)[0])
                         if col is not None:
-                            out.append(OwnerUse(self.tables[model], col, how, node.lineno))
+                            out.append(OwnerUse(self.tables[target], col, how, node.lineno))
         return out
 
-    def _saves(self, fn: ast.AST, model: Any) -> list[OwnerUse]:
+    def _saves(self, fn: ast.AST, model: Any,
+               scope: dict[str, Any] | None = None) -> list[OwnerUse]:  # fmt: skip
+        """``.save(<fk>=request.user)`` / ``.create(...)``, on the call's own model when
+        it names one (``Comment.objects.create``), else on ``model``."""
         out = []
         for node in ast.walk(fn):
             if isinstance(node, ast.Call) and _name(node.func) in ("save", "create"):
+                target = _call_model(node, scope or {}, self.tables) or model
                 for kw in node.keywords:
                     if kw.arg and _is_caller(kw.value):
-                        col = self._column(model, kw.arg)
+                        col = self._column(target, kw.arg)
                         if col is not None:
-                            out.append(OwnerUse(self.tables[model], col, "assign", node.lineno))
+                            out.append(OwnerUse(self.tables[target], col, "assign", node.lineno))
         return out
 
     # -- parameters and bodies --
@@ -712,6 +855,7 @@ class _Extractor:
         lookup = {getattr(cls, "lookup_url_kwarg", None) or getattr(cls, "lookup_field", "pk")}
         out = []
         for name, typ in v.params.items():
+            column = None
             if model is not None and name in lookup | {"pk"}:
                 field_name = getattr(cls, "lookup_field", "pk") or "pk"
                 try:
@@ -719,9 +863,11 @@ class _Extractor:
                         model._meta.pk if field_name == "pk" else model._meta.get_field(field_name)
                     )
                     typ = django_orm.field_type(field) or typ
+                    if field is not model._meta.pk:
+                        column = field.column  # rows looked up by another column
                 except Exception:  # noqa: BLE001 -- a lookup that is not a field
                     pass
-            out.append(RouteParam(name, typ or "str", typ, "path"))
+            out.append(RouteParam(name, typ or "str", typ, "path", lookup=column))
         return out
 
     def _query_params(self, cls: Any, own_handler: Any, action: str | None) -> list[RouteParam]:
@@ -883,6 +1029,53 @@ def _is_caller(expr: ast.expr) -> bool:
         and isinstance(base.value, ast.Name)
         and base.value.id == "self"
     )
+
+
+def _live(expr: ast.expr | None, scope: dict[str, Any]) -> Any:
+    """The live object a name or a dotted name of modules and classes denotes in a
+    module's globals (``Topic``, ``models.Topic``); None otherwise."""
+    import builtins
+
+    if isinstance(expr, ast.Name):
+        return scope.get(expr.id, getattr(builtins, expr.id, None))
+    if isinstance(expr, ast.Attribute):
+        base = _live(expr.value, scope)
+        if base is None or not (isinstance(base, type) or inspect.ismodule(base)):
+            return None
+        try:
+            return inspect.getattr_static(base, expr.attr, None) and getattr(base, expr.attr)
+        except Exception:  # noqa: BLE001 -- a descriptor needing an instance
+            return None
+    return None
+
+
+def _call_model(node: ast.Call, scope: dict[str, Any], tables: dict[Any, str]) -> Any:
+    """The model a call names itself: ``M.objects.<...>.<method>(...)`` or
+    ``get_object_or_404(M, ...)``; None when it names none (``serializer.save``)."""
+    if _name(node.func) in ("get_object_or_404", "get_list_or_404") and node.args:
+        m = _live(node.args[0], scope)
+        m = getattr(m, "model", m)
+        return m if m in tables else None
+    f = node.func
+    while isinstance(f, ast.Attribute):
+        if f.attr == "objects":
+            m = _live(f.value, scope)
+            return m if m in tables else None
+        f = f.value
+    return None
+
+
+def _known_class(cls: type) -> bool:
+    """A package class whose construction reads or writes no table by itself: a
+    serializer, permission, pagination, exception, response or view."""
+    from rest_framework.pagination import BasePagination
+    from rest_framework.permissions import BasePermission
+    from rest_framework.response import Response
+    from rest_framework.serializers import BaseSerializer
+    from rest_framework.views import APIView
+
+    return issubclass(cls, (BaseSerializer, BasePermission, BasePagination, BaseException,
+                            Response, APIView))  # fmt: skip
 
 
 def _self_calls(fn: ast.AST) -> list[str]:

@@ -150,6 +150,7 @@ def table_spec(t: TableModel, api: ApiProfile) -> TableSpec:
                 unique=c.unique,
                 foreign_key=c.foreign_key,
                 choices=c.choices,
+                stored=tuple(c.choice_names) if c.choice_names else (),
                 **_bounds(c),
             )
         )
@@ -529,6 +530,8 @@ def auth_spec(
     hash_password = natives.get(hasher) if hasher else None
     if hash_password is None and declared is not None and declared.hasher is not None:
         hash_password = _import_function(declared.hasher)
+    if hash_password is None and declared is not None and declared.password_setter is not None:
+        hash_password = _setter_hasher(declared.password_setter, password)
     decoder = next(
         (n for n in model.natives if n.kind == "token_decoder" and n.expressible), None
     )
@@ -551,6 +554,24 @@ def auth_spec(
         **_role_spec(model),
         **_login_spec(model),
     )
+
+
+def _setter_hasher(qual: str, column: str) -> Callable[[str], Any] | None:
+    """A hasher through the users model's own password setter (``module:Class.method``):
+    a fresh instance (an ORM-mapped one through its mapper) has the method called with
+    the plain password; the hash is what it set in ``column``."""
+    cls_qual, _, method = qual.rpartition(".")
+    cls = _import_function(cls_qual)
+    if not isinstance(cls, type) or not callable(getattr(cls, method, None)):
+        return None
+
+    def hash_password(password: str) -> Any:
+        mapper = getattr(cls, "__mapper__", None)
+        user = mapper.class_manager.new_instance() if mapper is not None else cls.__new__(cls)
+        getattr(user, method)(password)
+        return getattr(user, column)
+
+    return hash_password
 
 
 def _import_function(qual: str) -> Callable[..., Any] | None:

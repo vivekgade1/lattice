@@ -1,0 +1,938 @@
+[
+  {
+    "id": "inv-bcd7676b6a",
+    "kind": "invariant",
+    "sentence": "Blog's visits is at most 9223372036854775807.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "blog_visits_le_9223372036854775807",
+      "sentence": "Blog's visits is at most 9223372036854775807.",
+      "expr": "Blog.visits <= 9223372036854775807"
+    },
+    "expr": "Blog.visits <= 9223372036854775807",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "lee7zgs03l",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.046584",
+          "create": "2026-10-05 16:38:09.046719",
+          "updated": "2026-10-05 16:38:09.046722",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "m5pskwlojq",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.051560",
+          "create": "2026-10-05 16:38:09.051630",
+          "updated": "2026-10-05 16:38:09.051633",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 3
+        },
+        {
+          "id": 9,
+          "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "slug": "wvxipsx12j",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.270605",
+          "create": "2026-10-05 16:38:09.270686",
+          "updated": "2026-10-05 16:38:09.270689",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "sswphk37tc",
+          "body": "valid body",
+          "image": "",
+          "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "publish": "2026-10-05 16:38:09.275419",
+          "create": "2026-10-05 16:38:09.275479",
+          "updated": "2026-10-05 16:38:09.275481",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "uij3ft6udc",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.280309",
+          "create": "2026-10-05 16:38:09.280370",
+          "updated": "2026-10-05 16:38:09.280373",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        }
+      ],
+      "runs": [
+        "R-0092",
+        "R-0094",
+        "R-0219",
+        "R-0221",
+        "R-0223"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "d"
+          },
+          "form": null,
+          "status": 201
+        }
+      ],
+      "app_rows": 6
+    },
+    "support": 6,
+    "source": "static: BlogDetailUpdateDeleteSerializer.visits le=9223372036854775807",
+    "status": "pending"
+  },
+  {
+    "id": "inv-4e87bcf105",
+    "kind": "invariant",
+    "sentence": "Blog's visits is at least 0.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "blog_visits_ge_0",
+      "sentence": "Blog's visits is at least 0.",
+      "expr": "Blog.visits >= 0"
+    },
+    "expr": "Blog.visits >= 0",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "lee7zgs03l",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.046584",
+          "create": "2026-10-05 16:38:09.046719",
+          "updated": "2026-10-05 16:38:09.046722",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "m5pskwlojq",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.051560",
+          "create": "2026-10-05 16:38:09.051630",
+          "updated": "2026-10-05 16:38:09.051633",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 3
+        },
+        {
+          "id": 9,
+          "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "slug": "wvxipsx12j",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.270605",
+          "create": "2026-10-05 16:38:09.270686",
+          "updated": "2026-10-05 16:38:09.270689",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "sswphk37tc",
+          "body": "valid body",
+          "image": "",
+          "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "publish": "2026-10-05 16:38:09.275419",
+          "create": "2026-10-05 16:38:09.275479",
+          "updated": "2026-10-05 16:38:09.275481",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "uij3ft6udc",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.280309",
+          "create": "2026-10-05 16:38:09.280370",
+          "updated": "2026-10-05 16:38:09.280373",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        }
+      ],
+      "runs": [
+        "R-0092",
+        "R-0094",
+        "R-0219",
+        "R-0221",
+        "R-0223"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "d"
+          },
+          "form": null,
+          "status": 201
+        }
+      ],
+      "app_rows": 6
+    },
+    "support": 6,
+    "source": "static: Blog.visits ge=0; static: BlogDetailUpdateDeleteSerializer.visits ge=0; observed: Blog.visits >= 0 on the rows the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-588c5f5687",
+    "kind": "invariant",
+    "sentence": "Comment's object_id is at least 0.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "comment_object_id_ge_0",
+      "sentence": "Comment's object_id is at least 0.",
+      "expr": "Comment.object_id >= 0"
+    },
+    "expr": "Comment.object_id >= 0",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: Comment.object_id ge=0",
+    "status": "pending"
+  },
+  {
+    "id": "inv-2cca582189",
+    "kind": "invariant",
+    "sentence": "No two Blog rows share slug.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_blog_per_slug",
+      "sentence": "No two Blog rows share slug.",
+      "expr": "count(Blog, by=\"slug\") <= 1"
+    },
+    "expr": "count(Blog, by=\"slug\") <= 1",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "lee7zgs03l",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.046584",
+          "create": "2026-10-05 16:38:09.046719",
+          "updated": "2026-10-05 16:38:09.046722",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "m5pskwlojq",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.051560",
+          "create": "2026-10-05 16:38:09.051630",
+          "updated": "2026-10-05 16:38:09.051633",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 3
+        },
+        {
+          "id": 9,
+          "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "slug": "wvxipsx12j",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.270605",
+          "create": "2026-10-05 16:38:09.270686",
+          "updated": "2026-10-05 16:38:09.270689",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "sswphk37tc",
+          "body": "valid body",
+          "image": "",
+          "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "publish": "2026-10-05 16:38:09.275419",
+          "create": "2026-10-05 16:38:09.275479",
+          "updated": "2026-10-05 16:38:09.275481",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "uij3ft6udc",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.280309",
+          "create": "2026-10-05 16:38:09.280370",
+          "updated": "2026-10-05 16:38:09.280373",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        }
+      ],
+      "runs": [
+        "R-0092",
+        "R-0094",
+        "R-0219",
+        "R-0221",
+        "R-0223"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "d"
+          },
+          "form": null,
+          "status": 201
+        }
+      ],
+      "app_rows": 6
+    },
+    "support": 6,
+    "source": "static: Blog.slug unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-f5bcb31478",
+    "kind": "invariant",
+    "sentence": "No two Category rows share slug.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_category_per_slug",
+      "sentence": "No two Category rows share slug.",
+      "expr": "count(Category, by=\"slug\") <= 1"
+    },
+    "expr": "count(Category, by=\"slug\") <= 1",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: Category.slug unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-ac2fa38417",
+    "kind": "invariant",
+    "sentence": "No two User rows share phone.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_user_per_phone",
+      "sentence": "No two User rows share phone.",
+      "expr": "count(User, by=\"phone\") <= 1"
+    },
+    "expr": "count(User, by=\"phone\") <= 1",
+    "evidence": {
+      "rows": [
+        {
+          "id": 2,
+          "password": "md5$ikh5Tkw5D1YgvElmnR7znb$92d92d57c5a230eebb234ec58f3e19e3",
+          "last_login": "2026-01-01 11:00:00",
+          "is_superuser": 0,
+          "phone": "alice@example.com",
+          "first_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_name": "Last Name 02",
+          "author": 0,
+          "special_user": "2026-01-01 11:00:00",
+          "is_staff": 0,
+          "is_admin": 0,
+          "date_joined": "2026-01-01 11:00:00",
+          "two_step_password": 0
+        },
+        {
+          "id": 2,
+          "password": "md5$ikh5Tkw5D1YgvElmnR7znb$92d92d57c5a230eebb234ec58f3e19e3",
+          "last_login": "2026-01-01 11:00:00",
+          "is_superuser": 0,
+          "phone": "alice@example.com",
+          "first_name": "First Name 02",
+          "last_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "author": 0,
+          "special_user": "2026-01-01 11:00:00",
+          "is_staff": 0,
+          "is_admin": 0,
+          "date_joined": "2026-01-01 11:00:00",
+          "two_step_password": 0
+        }
+      ],
+      "runs": [
+        "R-0199",
+        "R-0201"
+      ],
+      "requests": [
+        {
+          "method": "PUT",
+          "path": "/account/api/profile/",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "first_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/account/api/profile/",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "last_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 2
+    },
+    "support": 1,
+    "source": "static: User.phone unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-34c955df8b",
+    "kind": "invariant",
+    "sentence": "Blog's image is always set.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "blog_image_set",
+      "sentence": "Blog's image is always set.",
+      "expr": "not is_null(Blog.image)"
+    },
+    "expr": "not is_null(Blog.image)",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "lee7zgs03l",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.046584",
+          "create": "2026-10-05 16:38:09.046719",
+          "updated": "2026-10-05 16:38:09.046722",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "m5pskwlojq",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.051560",
+          "create": "2026-10-05 16:38:09.051630",
+          "updated": "2026-10-05 16:38:09.051633",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 3
+        },
+        {
+          "id": 9,
+          "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "slug": "wvxipsx12j",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.270605",
+          "create": "2026-10-05 16:38:09.270686",
+          "updated": "2026-10-05 16:38:09.270689",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "sswphk37tc",
+          "body": "valid body",
+          "image": "",
+          "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "publish": "2026-10-05 16:38:09.275419",
+          "create": "2026-10-05 16:38:09.275479",
+          "updated": "2026-10-05 16:38:09.275481",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "uij3ft6udc",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 16:38:09.280309",
+          "create": "2026-10-05 16:38:09.280370",
+          "updated": "2026-10-05 16:38:09.280373",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        }
+      ],
+      "runs": [
+        "R-0092",
+        "R-0094",
+        "R-0219",
+        "R-0221",
+        "R-0223"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "d"
+          },
+          "form": null,
+          "status": 201
+        }
+      ],
+      "app_rows": 6
+    },
+    "support": 6,
+    "source": "observed: Blog.image (nullable in the schema) set on every row the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "unc-6f338c601a",
+    "kind": "unchecked",
+    "sentence": "No two Blog_category rows share (blog_id, category_id).",
+    "spec_object": {
+      "type": "Unchecked",
+      "text": "No two Blog_category rows share (blog_id, category_id).",
+      "concerns": [
+        "Blog_category"
+      ]
+    },
+    "expr": null,
+    "evidence": {
+      "quote": "No two Blog_category rows share (blog_id, category_id)."
+    },
+    "support": 0,
+    "source": "static: unique constraint at front end: unique together",
+    "status": "pending"
+  },
+  {
+    "id": "unc-0b128d0ef3",
+    "kind": "unchecked",
+    "sentence": "No two Blog_likes rows share (blog_id, user_id).",
+    "spec_object": {
+      "type": "Unchecked",
+      "text": "No two Blog_likes rows share (blog_id, user_id).",
+      "concerns": [
+        "Blog_likes"
+      ]
+    },
+    "expr": null,
+    "evidence": {
+      "quote": "No two Blog_likes rows share (blog_id, user_id)."
+    },
+    "support": 0,
+    "source": "static: unique constraint at front end: unique together",
+    "status": "pending"
+  }
+]
