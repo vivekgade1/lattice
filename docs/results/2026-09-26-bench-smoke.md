@@ -1606,3 +1606,40 @@ serious finding is that the verifier can report "verified" when its own probes c
 it. That has to be fixed before any number from layer R is trusted. Per the plan, fixes
 from here on are a separately labelled post-hoc run, and a fresh held-out app is needed
 for the exit to count.
+
+### Phase 2 post-hoc soundness rounds (2026-10-05). POST-HOC: these do not count for the exit
+
+Round 1 (`79991f1`) and round 2 (`cad36e5`) made "verified" something a probe has to earn:
+- R1 needs decided callers;
+- an ambiguous 403 is no evidence;
+- refusals and "reaches" need a witness (the same request from another caller) or a
+  control (the same request with plain valid values);
+- error envelopes inside a 2xx, and writes with no database effect, count as nothing;
+- `check_verdicts` raises on any "verified" item without a decisive probe.
+
+The importer also changed: foreign-key seed order, JSON logins, stored enum spellings,
+valid slugs, emails and URLs, and following DRF ORM calls. It gained the
+`owner_or_admin` scope.
+
+| app (POST-HOC) | frozen run | round 1 | round 2 |
+|---|---|---|---|
+| H1 drf_blog | crash | tables 1/6, routes 17/30 | tables 2/6, routes 15/30 |
+| H2 projmgmt | tables 1/3, routes 23/23 (overstated) | 2/3, 20/23 | 2/3, 16/23 |
+| H3 conduit | tables 1/1, routes 24/26 (overstated) | 4/6, 25/26 | 3/6, 18/26 |
+
+A spot check of 30 random "verified" items across the three apps found all 30 right.
+A full read of every verified R1, R2 and T item found no wrong verdict. Most of the
+random sample were weak R3 "no unstated 5xx" items.
+
+The dev-app gate still passes: 7 of 8 apps. multivendor dropped from 17/17 to 16/17
+routes, because no witness exists for the R2 check on `PATCH /products/{id}`.
+
+Lesson: the frozen run's high numbers on H2 and H3 came from an unsound verifier.
+Under sound rules, the honest share of an unseen app's rules this importer verifies
+is about 50–70% of routes.
+
+## Roadmap Phase 2: second held-out run (reserve app), importer frozen at `cad36e5`
+
+The importer is frozen at `cad36e5` before the reserve app
+(flask-realworld-example-app, never opened) is vendored. Its one run is the Phase 2 exit
+attempt; anything after it is post-hoc.
