@@ -242,9 +242,14 @@ def _pattern_piece(pattern: Any) -> tuple[str, dict[str, str | None]]:
         text = str(pattern)
 
         def route_param(m: re.Match[str]) -> str:
+            from lattice.importer.formats import of_converter
+
             conv = pattern.converters.get(m.group(2))
             kind = type(conv).__name__ if conv is not None else ""
-            params[m.group(2)] = {"IntConverter": "Int", "UUIDConverter": "Uuid"}.get(kind, "Str")
+            typ = {"IntConverter": "Int", "UUIDConverter": "Uuid"}.get(kind, "Str")
+            fmt = of_converter(conv)
+            # a converter's format rides on the type ("Str/slug"): _path_params splits it
+            params[m.group(2)] = f"{typ}/{fmt}" if fmt else typ
             return "{" + m.group(2) + "}"
 
         return _ROUTE_PARAM.sub(route_param, text), params
@@ -852,9 +857,12 @@ class _Extractor:
     # -- parameters and bodies --
 
     def _path_params(self, v: _View, cls: Any, model: Any) -> list[RouteParam]:
+        from lattice.importer.formats import of_django_field
+
         lookup = {getattr(cls, "lookup_url_kwarg", None) or getattr(cls, "lookup_field", "pk")}
         out = []
-        for name, typ in v.params.items():
+        for name, spelled in v.params.items():
+            typ, _, fmt = (spelled or "").partition("/")  # "Str/slug": a converter's format
             column = None
             if model is not None and name in lookup | {"pk"}:
                 field_name = getattr(cls, "lookup_field", "pk") or "pk"
@@ -865,9 +873,11 @@ class _Extractor:
                     typ = django_orm.field_type(field) or typ
                     if field is not model._meta.pk:
                         column = field.column  # rows looked up by another column
+                        fmt = of_django_field(field) or fmt
                 except Exception:  # noqa: BLE001 -- a lookup that is not a field
                     pass
-            out.append(RouteParam(name, typ or "str", typ, "path", lookup=column))
+            out.append(RouteParam(name, typ or "str", typ or None, "path", lookup=column,
+                                  format=fmt or None))  # fmt: skip
         return out
 
     def _query_params(self, cls: Any, own_handler: Any, action: str | None) -> list[RouteParam]:
@@ -938,6 +948,8 @@ class _Extractor:
             bounds.setdefault("le", top)
             bounds.setdefault("ge", -top)
         default = None if f.default is F.empty else repr(f.default)
+        from lattice.importer.formats import of_drf_field
+
         return FieldSpec(
             name=name,
             annotation=type(f).__name__,
@@ -948,6 +960,8 @@ class _Extractor:
             default=default,
             choices=choices,
             write_only=bool(f.write_only),
+            # a slug, a URL, an IP address, an email: the values it takes
+            format=None if choices or item else of_drf_field(f),
             **bounds,
         )
 

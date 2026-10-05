@@ -2,11 +2,12 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from drf_toy.blog.views import CommentList, StatsView, TagViewSet, TopicViewSet
+from drf_toy.blog.views import CommentList, PageViewSet, StatsView, TagViewSet, TopicViewSet
 
 router = DefaultRouter()
 router.register("topics", TopicViewSet, basename="topic")
 router.register("tags", TagViewSet, basename="tag")
+router.register("pages", PageViewSet, basename="page")
 
 urlpatterns = [
     path("api/", include(router.urls)),

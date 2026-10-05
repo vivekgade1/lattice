@@ -89,8 +89,34 @@ and the database before and after recorded. Each bears on one or more items:
 contradicts it; ``refuted`` -- some probe contradicts it (``observed`` holds the fact
 seen, the correction to propose); ``unexercised`` -- no probe could reach it (no route
 does, or ``unreachable-by-probe`` with the reason); ``unclear`` -- the spec gives no
-candidate (an unknown auth, owner scope or error status). A probe whose answer neither
-confirms nor contradicts an item (a create that fails, say) counts for neither.
+candidate (an unknown auth, owner scope or error status), or an R1 caller's answers
+may be a role refusal the other callers of its role do not get. A probe whose answer
+neither confirms nor contradicts an item (a create that fails, say) counts for neither.
+
+**Evidence** (post-hoc round 2, 2026-10-05): an answer with more than one explanation
+is no evidence -- its outcome is *undecided*, the reason saying why, and every probe's
+record holds its ``bearing`` on each item (``decisive``, what it ``says``, ``why``); a
+``verified`` item names its ``decisive`` probes, and :func:`check_verdicts` refuses one
+without. Probes are judged once all have run (:class:`_Evidence`), so an outcome may
+rest on another probe's answer:
+
+* *reached* takes a 2xx that is no error envelope (``{"code": 404, ...}`` answered 200,
+  :func:`_envelope`), and a write (a delete, or an update with a body) the database
+  effect it predicts;
+* R1: a 403 on a row that is not the caller's own is a role refusal or an ownership
+  refusal alike (undecided) -- a *missing row* tells them apart (a 403 there, while
+  another caller gets past it); a 404 or a 5xx to a request addressing a row, or a 405,
+  admits no one; every role a probed caller holds must be decided;
+* R2 / T1: another user's row refused (403/404) is the owner check's only when the
+  caller gets past the route's check elsewhere and the row's owner gets past it with
+  the very same request (a *witness*); a list or a write showing only the caller's own
+  rows is owner scoping only when another caller's answer to the same request differs;
+  ``owner_or_admin`` needs both halves;
+* T3 / T4 / T5: a boundary value, a listed value or a second create refused counts only
+  when the same request with plain valid values (a *control*; for T5, a new key) gets
+  through -- or, refused as invalid, the control got past validation;
+* R3 5xx: only probes past the auth check show the handler raised no 5xx; T4: a value
+  only the import's own seed holds is no evidence.
 
 **Transport.** Probes run through a *session factory*: ``sessions(db_path)`` is a
 context manager opening the app on that database file, yielding an object with
@@ -716,10 +742,14 @@ class ProbeContext:
         return _key_column(found[2]) if found else None
 
     def owns(self, handle: str, table: str) -> list[Any]:
-        """Keys of the rows of ``table`` the handle's user owns."""
+        """Keys of the rows of ``table`` the handle's user owns (a users row: its own)."""
         caller, key = self.callers.get(handle), self.key_of(table)
         if caller is None or key is None:
             return []
+        found = resolve_table(self.spec.profile, table)
+        users = resolve_table(self.spec.profile, self.api.users_table)
+        if found is not None and users is not None and found[0] == users[0]:
+            return [r[key] for r in self.rows(table) if _k(r[key]) == _k(caller.key)]
         return [r[key] for r in self.rows(table) if self.owner(table, r) == caller.key]
 
     def with_token(self) -> list[Caller]:
@@ -821,15 +851,35 @@ def _valid(p: ContractParam, ctx: ProbeContext) -> Any:
     return text
 
 
+URL_SHAPE = re.compile(r"^https?://", re.I)
+FIXED_SHAPES = (
+    re.compile(r"^\d{1,3}(\.\d{1,3}){3}$"),  # an IPv4 address
+    re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I),
+)
+
+
+def _sized(p: ContractParam, n: int) -> str | None:
+    """A text of ``n`` characters in the parameter's format (its example's: a URL, an
+    email address); None when the format admits no such length (an IP address)."""
+    example = p.example if isinstance(p.example, str) else ""
+    if "email" in p.name.lower() or (example and "@" in example and " " not in example):
+        # an address of that length: the bound, not the format, decides
+        return _address(n) if n > len(EMAIL_DOMAIN) else "b" * n
+    if URL_SHAPE.match(example):
+        base = "https://example.com/"
+        return base + "b" * (n - len(base)) if n > len(base) else None
+    if any(shape.match(example) for shape in FIXED_SHAPES):
+        return None
+    return "b" * n
+
+
 def _edges(p: ContractParam, op: str, bound: float) -> tuple[Any, Any]:
-    """(the boundary value, one step beyond) for one bound."""
+    """(the boundary value, one step beyond) for one bound; None for a length the
+    parameter's format cannot have."""
     if op in ("min_len", "max_len"):
         n = int(bound)
         beyond = max(n - 1 if op == "min_len" else n + 1, 0)
-        if "email" in p.name.lower() and n > len(EMAIL_DOMAIN):
-            # an address of that length: the bound, not the format, decides
-            return _address(n), _address(beyond)
-        return "b" * n, "b" * beyond
+        return _sized(p, n), _sized(p, beyond)
     step: float = 1 if p.scalar is Scalar.INT else FLOAT_STEP
     cast = int if p.scalar is Scalar.INT else float
     if op == "ge":
@@ -929,15 +979,65 @@ def _route(spec: Spec, c: Contract) -> _Route:
 def _lookup_value(r: _Route, ctx: ProbeContext, p: ContractParam, target: Any) -> Any:
     """The path value addressing the row whose key is ``target``: the key itself, or --
     for a parameter stating another column of the addressed table (``column``: DRF's
-    ``lookup_field``, a slug) -- that row's value of it."""
-    if not p.column or r.table is None:
+    ``lookup_field``, a slug), or named as one (``/users/{email}``) -- that row's value
+    of it."""
+    if r.table is None:
         return target
-    found = _column(ctx.spec, p.column)
     key = ctx.key_of(r.table[0])
-    if found is None or found[0] != r.table[0] or key is None or found[1] == key:
+    if p.column:
+        found = _column(ctx.spec, p.column)
+        if found is None or found[0] != r.table[0] or key is None or found[1] == key:
+            return target
+        col = found[1]
+    elif key is not None and p.name != key and p.name in r.table[2].names():
+        col = p.name
+    else:
         return target
     row = next((x for x in ctx.rows(r.table[0]) if _k(x.get(key)) == _k(target)), None)
-    return row.get(found[1], target) if row is not None else target
+    return row.get(col, target) if row is not None else target
+
+
+def _id_column(table: str) -> list[str]:
+    """The columns that name a row of ``table`` by key, by convention (``topic_id``,
+    ``order_item_id``)."""
+    snake = re.sub(r"(?<!^)(?=[A-Z])", "_", table).lower()
+    return list(dict.fromkeys([f"{snake}_id", f"{table.lower()}_id"]))
+
+
+def _consistent(r: _Route, ctx: ProbeContext, target: Any) -> dict[str, Any]:
+    """Values of the route's other path holes that go with the addressed row ``target``:
+    its own column named as the hole (or as the hole's table's key: ``topic_id`` for
+    ``/topics/{topic}/comments/{pk}``), else a row linking the two (``/notes/{note_id}
+    /tags/{tag_id}``: a tag linked to the note). A request whose holes disagree (a
+    comment under another topic) is answered "not found" for that reason alone."""
+    if r.addr is None or r.table is None:
+        return {}
+    key = ctx.key_of(r.table[0])
+    row = next((x for x in ctx.rows(r.table[0]) if key and _k(x.get(key)) == _k(target)), None)
+    if row is None:
+        return {}
+    tables, _ = tables_of(ctx.spec.profile)
+    mine = [r.addr, *_id_column(r.table[0])]
+    out: dict[str, Any] = {}
+    for name, p in r.path_params.items():
+        if name == r.addr:
+            continue
+        found = resolve_table(ctx.spec.profile, p.ref) if p.ref else None
+        cols = [name, *(_id_column(found[0]) if found is not None else [])]
+        col = next((c for c in cols if c in row and row[c] is not None), None)
+        if col is not None:
+            out[name] = row[col]
+            continue
+        if r.c.kind not in ("read", "update", "delete"):
+            continue  # a link to add (an action, a create): not one that exists
+        for t in tables:
+            link = next((x for x in ctx.rows(t)
+                         for a in mine if a in x and _k(x[a]) == _k(target)
+                         and any(c in x for c in cols)), None)  # fmt: skip
+            if link is not None:
+                out[name] = link[next(c for c in cols if c in link)]
+                break
+    return out
 
 
 @dataclass(frozen=True)
@@ -957,16 +1057,22 @@ def _build(
     drop: str | None = None,
     extra: Mapping[str, Any] | None = None,
     full: bool = False,
+    fields: Mapping[str, Any] | None = None,
 ) -> _Req:
     """The route's request: path holes filled (``target`` for the addressed one), every
     required parameter valid (``full``: every optional one too, so an update writes),
-    ``set_`` overriding values, ``drop`` left out, ``extra`` added to a JSON object
-    body."""
-    values = dict(set_ or {})
+    ``set_`` overriding values (a path hole's too), ``fields`` overriding a query, body
+    or form parameter's only (a body field named as a path hole -- ``slug`` on ``PUT
+    /pages/{slug}`` -- leaves the path alone), ``drop`` left out, ``extra`` added to a
+    JSON object body."""
+    holes = dict(set_ or {})  # path holes
+    values = {**holes, **(fields or {})}  # query, body and form parameters
+    # the other holes as the addressed row goes with them (its parent, a linked row)
+    holes = {**_consistent(r, ctx, target), **holes} if target is not None else holes
     path = r.c.path
     for name, p in r.path_params.items():
-        if name in values:
-            v = values[name]
+        if name in holes:
+            v = holes[name]
         elif name == r.addr and target is not None:
             v = _lookup_value(r, ctx, p, target)
         else:
@@ -1019,10 +1125,11 @@ class _Probes:
         headers: Mapping[str, str] | None = None,
         cookies: Mapping[str, str] | None = None,
         **args: Any,
-    ) -> None:
+    ) -> str | None:
+        """Add the probe (none when it bears on no selected item); its name."""
         items = tuple(i for i in dict.fromkeys(items) if i in self.items)
         if not items:
-            return
+            return None
         label = who.handle if isinstance(who, Caller) else (who or "no caller")
         base = f"{r.c.endpoint} | {label} | {what}"
         name, k = base, 2
@@ -1047,6 +1154,7 @@ class _Probes:
                 cookies=cookies,
             )
         )
+        return name
 
 
 def _targets(r: _Route, ctx: ProbeContext, caller: Caller | None, n: int = 2) -> list[Any]:
@@ -1146,8 +1254,9 @@ def _r1(b: _Probes, r: _Route) -> None:
     someone = next((x.handle for x in ctx.callers.values() if x.active and x.handle in ctx.tokens
                     and x.role != api.admin_role), None)  # fmt: skip
     anon, anon_cookies = present(req, someone)
+    addressed = r.addr is not None
     b.add(r, None, "anonymous", [item, *deny], anon, "auth", caller="anonymous", allowed=public,
-          credential=owned, cookies=anon_cookies)  # fmt: skip
+          credential=owned, cookies=anon_cookies, addressed=addressed)  # fmt: skip
     b.add(
         r,
         "malformed token",
@@ -1160,6 +1269,7 @@ def _r1(b: _Probes, r: _Route) -> None:
         caller="malformed token",
         allowed=public,
         credential=public or owned,
+        addressed=addressed,
     )
     inactive_headers = None
     if basic and ctx.inactive is not None and ctx.inactive.handle in ctx.spec.users:
@@ -1177,6 +1287,7 @@ def _r1(b: _Probes, r: _Route) -> None:
             caller="inactive",
             allowed=public,
             credential=public or owned,
+            addressed=addressed,
         )
     for role in sorted(x for x in api.roles if x != "Public"):
         # two callers of each role (the second on one target): callers of one role that
@@ -1198,7 +1309,10 @@ def _r1_caller(
     present: Callable[[_Req, str | None], tuple[_Req, dict[str, str] | None]],
     n: int,
 ) -> None:
-    """One role caller's R1 probes, on up to ``n`` targets (its own rows first)."""
+    """One role caller's R1 probes, on up to ``n`` targets (its own rows first), with
+    every parameter an update takes (so an admitted update shows its write); and, on a
+    route addressing a row, one on a missing row: no row to own, so a 403 there -- while
+    another caller gets past it -- is the role's refusal (:func:`_resolve_r1`)."""
     c, ctx = r.c, b.ctx
     owned = takes_credentials(c) or (
         ctx.json_login is not None and ctx.json_login[:2] == (c.method, c.path)
@@ -1206,13 +1320,15 @@ def _r1_caller(
     ok = public or role in roles  # type: ignore[operator]
     extra = [] if ok else _auth_errors(c, "forbidden")
     headers = _basic(*ctx.spec.users[caller.handle]) if basic else None
+    table = r.table[0] if r.table is not None else None
     for i, target in enumerate(_targets(r, ctx, caller, n)):
-        owns = (
-            r.table is not None
-            and r.addr is not None
-            and target in ctx.owns(caller.handle, r.table[0])
-        )
-        mine, cookies = present(_build(r, ctx, target=target), caller.handle)
+        owns = table is not None and r.addr is not None and target in ctx.owns(caller.handle, table)
+        # every parameter of an update (its write then shows) -- not on a credential
+        # route: an optional secret invented there is answered, not the caller
+        full = c.kind == "update" and not owned
+        mine, cookies = present(_build(r, ctx, target=target, full=full,
+                                       fields=_changing(r, ctx, target) if full else None),
+                                caller.handle)  # fmt: skip
         b.add(
             r,
             caller,
@@ -1231,7 +1347,71 @@ def _r1_caller(
             same_request=r.addr is None,
             target_index=i,
             credential=owned,
+            addressed=r.addr is not None,
+            table=table,
+            target=target if r.addr is not None else None,
+            owner_known=_owner_known(ctx, table),
         )
+    if r.addr is not None and not owned and not basic:
+        missing = _missing_value(r.path_params[r.addr])
+        req, cookies = present(_build(r, ctx, set_={r.addr: missing}, full=c.kind == "update"),
+                               caller.handle)  # fmt: skip
+        b.add(r, caller, f"as {role} on a missing row", [item, *extra], req, "auth",
+              cookies=cookies, caller=role, handle=caller.handle, allowed=ok, owns_target=True,
+              addressed=True, missing_row=True, credential=False)  # fmt: skip
+
+
+def _changing(r: _Route, ctx: ProbeContext, target: Any) -> dict[str, Any]:
+    """Body values an update of the row ``target`` sends that differ from what the row
+    holds (a flag flipped, a number moved within its bounds, another listed value): an
+    update that got through then shows its write."""
+    if r.c.kind != "update" or r.table is None or target is None:
+        return {}
+    key = ctx.key_of(r.table[0])
+    row = next((x for x in ctx.rows(r.table[0]) if key and _k(x.get(key)) == _k(target)), None)
+    if row is None:
+        return {}
+    out: dict[str, Any] = {}
+    schema = r.table[2]
+    for p in r.c.params:
+        if p.source not in ("body", "form"):
+            continue
+        col = p.name.rsplit(".", 1)[-1]
+        if col not in row:
+            continue
+        v, now = _valid(p, ctx), row[col]
+        if p.one_of:
+            # the row's value as listed (an enum stored by its member's name)
+            listed = dict(schema.one_of).get(col, ())
+            spelled = dict(schema.one_of_stored).get(col, ())
+            if now in spelled and len(listed) == len(spelled):
+                now = listed[spelled.index(now)]
+        if isinstance(v, bool) and bool(now) == v:
+            out[p.name] = not v
+        elif p.one_of and str(now) == str(v):
+            out[p.name] = next((x for x in p.one_of if x != str(now)), v)
+        elif isinstance(v, int | float) and not isinstance(v, bool) and now == v:
+            up = v + 1
+            out[p.name] = up if p.le is None or up <= p.le else v - 1
+        elif isinstance(v, str) and now == v and p.example is None:
+            out[p.name] = (v + " x")[: p.max_len] if p.max_len else v + " x"
+    return out
+
+
+def _owner_known(ctx: ProbeContext, table: str | None) -> bool:
+    """Whether the profile names who owns a row of ``table`` (an owner column, an owner
+    through a parent; a users row is its user's)."""
+    found = resolve_table(ctx.spec.profile, table) if table else None
+    users = resolve_table(ctx.spec.profile, ctx.api.users_table)
+    if found is None:
+        return False
+    return bool(found[2].owner or found[2].owner_via) or (users is not None
+                                                          and found[0] == users[0])  # fmt: skip
+
+
+def _missing_value(p: ContractParam) -> Any:
+    """A value of the path parameter no seeded row has."""
+    return MISSING_INT if p.scalar is Scalar.INT else "00000000-0000-4000-8000-000000000000"
 
 
 def _others(r: _Route, ctx: ProbeContext, caller: Caller) -> dict[str, Any]:
@@ -1303,8 +1483,13 @@ def _ownership(b: _Probes, r: _Route) -> None:
             for victim, label, expect in victims:
                 if victim is None:
                     continue
-                req = _build(r, ctx, target=victim, full=c.kind == "update")
+                req = _build(
+                    r, ctx, target=victim, full=c.kind == "update", fields=_changing(r, ctx, victim)
+                )
                 what = f"another user's {label}{table} {victim}"
+                # the same request as the row's owner: the row is reachable there
+                witness = _witness(b, r, _row_owner(ctx, r, table, victim, a), what,
+                                   [t1 or "", r2], req)  # fmt: skip
                 if expect == "not_owned":
                     stated = _not_owned_errors(c)
                     b.add(
@@ -1316,9 +1501,13 @@ def _ownership(b: _Probes, r: _Route) -> None:
                         "not_owned",
                         statuses=[e.status for _, e in stated if e.status] or list(NOT_OWNED),
                         details={i: [e.status, e.detail] for i, e in stated},
+                        witness=witness,
+                        table=table,
+                        target=victim,
                     )
                 else:
-                    b.add(r, a, what, [t1 or "", r2], req, "reaches")
+                    b.add(r, a, what, [t1 or "", r2], req, "reaches", witness=witness,
+                          table=table, target=victim)  # fmt: skip
         if c.kind == "action" and owned:
             _child_stamps(b, r, table, attackers)
         return
@@ -1327,46 +1516,42 @@ def _ownership(b: _Probes, r: _Route) -> None:
         # another user owns confirms it (never probed as if scoped to the caller)
         for a in attackers:
             if c.kind == "list":
-                b.add(
-                    r,
-                    a,
-                    f"other users' {table} rows",
-                    [r2],
-                    _build(r, ctx, target=_targets(r, ctx, a, 1)[0], set_=_others(r, ctx, a)),
-                    "others_rows",
-                    table=table,
-                    caller=a.key,
-                )
+                req = _build(r, ctx, target=_targets(r, ctx, a, 1)[0], set_=_others(r, ctx, a))
+                what = f"other users' {table} rows"
+                witness = _witness(b, r, _other_caller(ctx, c, a), what, [r2], req)
+                b.add(r, a, what, [r2], req, "others_rows", table=table, caller=a.key,
+                      witness=witness)  # fmt: skip
         return
     if c.kind in ("list", "read"):
         for a in attackers:
             if ctx.owns(a.handle, table) or c.kind == "list":
+                req = _build(r, ctx, target=_targets(r, ctx, a, 1)[0])
+                what = f"own {table} rows only" + (f" (or {public})" if public else "")
+                # the same request as another caller: a different answer shows the
+                # caller, not the request, selects the rows
+                witness = _witness(b, r, _other_caller(ctx, c, a), what, [t1 or "", r2], req)
                 b.add(
                     r,
                     a,
-                    f"own {table} rows only" + (f" (or {public})" if public else ""),
+                    what,
                     [t1 or "", r2],
-                    _build(r, ctx, target=_targets(r, ctx, a, 1)[0]),
+                    req,
                     "owned_rows",
                     table=table,
                     caller=a.key,
                     owns=bool(ctx.owns(a.handle, table)),
                     public=public,
+                    witness=witness,
                 )
         return
     if c.kind in ("update", "delete"):
         for a in attackers:
             if ctx.owns(a.handle, table):
-                b.add(
-                    r,
-                    a,
-                    f"writes own {table} rows only",
-                    [t1 or "", r2],
-                    _build(r, ctx, full=True),
-                    "writes_own",
-                    table=table,
-                    caller=a.key,
-                )
+                req = _build(r, ctx, full=True)
+                what = f"writes own {table} rows only"
+                witness = _witness(b, r, _other_caller(ctx, c, a), what, [t1 or "", r2], req)
+                b.add(r, a, what, [t1 or "", r2], req, "writes_own", table=table,
+                      caller=a.key, witness=witness)  # fmt: skip
         return
     if c.kind == "create" and owned:
         schema = r.table[2]
@@ -1419,12 +1604,45 @@ def _admin_reaches(b: _Probes, r: _Route) -> None:
         victim = next((row[key] for row in ctx.rows(table)
                        if ctx.owner(table, row) not in (None, admin.key)), None)  # fmt: skip
         if victim is not None:
-            b.add(r, admin, f"another user's {table} {victim}", [r2],
-                  _build(r, ctx, target=victim, full=c.kind == "update"), "reaches")  # fmt: skip
+            req = _build(
+                r, ctx, target=victim, full=c.kind == "update", fields=_changing(r, ctx, victim)
+            )
+            what = f"another user's {table} {victim}"
+            witness = _witness(b, r, _row_owner(ctx, r, table, victim, admin), what, [r2], req)
+            b.add(r, admin, what, [r2], req, "reaches", witness=witness, table=table,
+                  target=victim, admin_half=True)  # fmt: skip
     elif c.kind == "list":
-        b.add(r, admin, f"other users' {table} rows", [r2],
-              _build(r, ctx, target=_targets(r, ctx, admin, 1)[0], set_=_others(r, ctx, admin)),
-              "others_rows", table=table, caller=admin.key)  # fmt: skip
+        req = _build(r, ctx, target=_targets(r, ctx, admin, 1)[0], set_=_others(r, ctx, admin))
+        what = f"other users' {table} rows"
+        witness = _witness(b, r, _other_caller(ctx, c, admin), what, [r2], req)
+        b.add(r, admin, what, [r2], req, "others_rows", table=table, caller=admin.key,
+              witness=witness, admin_half=True)  # fmt: skip
+
+
+def _row_owner(ctx: ProbeContext, r: _Route, table: str, key: Any, not_: Caller
+               ) -> Caller | None:  # fmt: skip
+    """The caller (with a token, whom the route admits) owning the row ``key`` of
+    ``table``, else the admin; never ``not_``."""
+    col = ctx.key_of(table) or ""
+    found = next((row for row in ctx.rows(table) if _k(row.get(col)) == _k(key)), None)
+    owner = ctx.owner(table, found) if found is not None else None
+    allowed = [x for x in ctx.allowed(r.c) if x.handle != not_.handle]
+    return next((x for x in allowed if owner is not None and _k(x.key) == _k(owner)),
+                next((x for x in allowed if x.role == ctx.api.admin_role), None))  # fmt: skip
+
+
+def _other_caller(ctx: ProbeContext, c: Contract, a: Caller) -> Caller | None:
+    """Another caller the route admits (a non-admin first)."""
+    return next((x for x in ctx.allowed(c) if x.handle != a.handle), None)
+
+
+def _witness(b: _Probes, r: _Route, who: Caller | None, what: str, items: Sequence[str],
+             req: _Req) -> str | None:  # fmt: skip
+    """The same request as ``who`` (a witness: judged on no item; the probes it backs
+    read its answer, :class:`_Evidence`); its name, or None."""
+    if who is None:
+        return None
+    return b.add(r, who, f"witness: {what}", items, req, "witness")
 
 
 def _user_hole(r: _Route, ctx: ProbeContext) -> str | None:
@@ -1464,9 +1682,10 @@ def _link_ownership(b: _Probes, r: _Route, side: str, other: str) -> None:
     hole = _user_hole(r, ctx)
     if c.kind in ("list", "read") and hole is None:
         for a in attackers:
-            b.add(r, a, f"own {table} links only ({side} is the caller)", [t1, r2],
-                  _build(r, ctx), "link_rows", table=table, side=side, other=other,
-                  caller=a.key)  # fmt: skip
+            what = f"own {table} links only ({side} is the caller)"
+            witness = _witness(b, r, _other_caller(ctx, c, a), what, [t1, r2], _build(r, ctx))
+            b.add(r, a, what, [t1, r2], _build(r, ctx), "link_rows", table=table, side=side,
+                  other=other, caller=a.key, witness=witness)  # fmt: skip
         return
     if hole is None:
         return
@@ -1487,9 +1706,11 @@ def _link_ownership(b: _Probes, r: _Route, side: str, other: str) -> None:
             if not target:
                 continue
             pair = (a.key, target[0]) if label == "own side" else (target[0], a.key)
-            b.add(r, a, f"{label}: {table} link ({side}={pair[0]}, {other}={pair[1]})",
-                  [t1, r2], _build(r, ctx, set_={hole: target[0]}, full=True), "writes_own",
-                  table=table, caller=a.key, link=[side, other])  # fmt: skip
+            what = f"{label}: {table} link ({side}={pair[0]}, {other}={pair[1]})"
+            req = _build(r, ctx, set_={hole: target[0]}, full=True)
+            witness = _witness(b, r, _other_caller(ctx, c, a), what, [t1, r2], req)
+            b.add(r, a, what, [t1, r2], req, "writes_own", table=table, caller=a.key,
+                  link=[side, other], witness=witness)  # fmt: skip
 
 
 def _child_stamps(b: _Probes, r: _Route, table: str, callers: Sequence[Caller]) -> None:
@@ -1585,6 +1806,17 @@ def _bounds_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
             continue
         target = _target_for(r, ctx, caller)
         invalid = [i for i, e in _error_ids(r.c) if e.when == "invalid"]
+        # the same request with every value plain and valid: a boundary value's or a
+        # listed value's refusal decides only when this one gets through (the request
+        # may be refused for a reason of its own: the router, a role, another field)
+        mine = [f"T3 {col[0]}.{col[1]} {op} {_num(bound)}" for p in r.c.params
+                if p.source != "path" and (col := _column(b.spec, p.column) if p.column else None)
+                for op, bound in _bounds(p)]  # fmt: skip
+        mine += [f"T4 {col[0]}.{col[1]}" for p in r.c.params
+                 if p.source != "path" and p.one_of
+                 and (col := _column(b.spec, p.column) if p.column else None)]  # fmt: skip
+        control = b.add(r, caller, "control: plain valid values", mine,
+                        _build(r, ctx, target=target), "control") if mine else None  # fmt: skip
         for p in r.c.params:
             col = _column(b.spec, p.column) if p.column else None
             if col is None or p.source == "path":
@@ -1598,22 +1830,30 @@ def _bounds_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
                     )
                     continue
                 inside, beyond = _edges(p, op, bound)
-                b.add(
+                if inside is None or beyond is None:
+                    reasons[item] = (
+                        f"{UNREACHABLE}: no value of {p.name}'s format ({p.example!r}) has "
+                        f"{_num(bound if inside is None else bound + 1)} characters"
+                    )
+                    continue
+                boundary = b.add(
                     r,
                     caller,
                     f"{p.name} {op} boundary {inside!r}",
                     [item],
-                    _build(r, ctx, target=target, set_={p.name: inside}),
+                    _build(r, ctx, target=target, fields={p.name: inside}),
                     "ok2xx",
+                    control=control,
                 )
                 b.add(
                     r,
                     caller,
                     f"{p.name} {op} beyond {beyond!r}",
                     [item, *invalid],
-                    _build(r, ctx, target=target, set_={p.name: beyond}),
+                    _build(r, ctx, target=target, fields={p.name: beyond}),
                     "invalid",
                     errors={i: _status_detail(r.c, i) for i in invalid},
+                    control=boundary,
                 )
             if p.one_of:
                 item = f"T4 {col[0]}.{col[1]}"
@@ -1623,17 +1863,19 @@ def _bounds_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
                         caller,
                         f"{p.name} {v!r} accepted",
                         [item],
-                        _build(r, ctx, target=target, set_={p.name: v}),
+                        _build(r, ctx, target=target, fields={p.name: v}),
                         "accepted",
+                        control=control,
                     )
                 b.add(
                     r,
                     caller,
                     f"{p.name} unlisted",
                     [item, *invalid],
-                    _build(r, ctx, target=target, set_={p.name: UNLISTED}),
+                    _build(r, ctx, target=target, fields={p.name: UNLISTED}),
                     "invalid",
                     errors={i: _status_detail(r.c, i) for i in invalid},
+                    control=control,
                 )
     return reasons
 
@@ -1664,15 +1906,30 @@ def _keys_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
                         linked = next((row[other] for row in ctx.rows(name)
                                        if _k(row[side]) == _k(a.key)), None)  # fmt: skip
                         if linked is not None:
+                            # the control: a link to a user it has none to yet
+                            mine = {_k(row[other]) for row in ctx.rows(name)
+                                    if _k(row[side]) == _k(a.key)}  # fmt: skip
+                            mine.add(_k(a.key))
+                            fresh = next((u for u in _user_keys(ctx) if _k(u) not in mine), None)
+                            control = None if fresh is None else b.add(
+                                r, a, f"control: a new {name} link to {fresh}", [item],
+                                _build(r, ctx, set_={hole: fresh}), "control")  # fmt: skip
                             b.add(r, a, f"repeat its {name} link to {linked}", [item, *dup],
                                   _build(r, ctx, set_={hole: linked}), "duplicate", table=name,
-                                  errors={i: _status_detail(r.c, i) for i in dup})  # fmt: skip
+                                  errors={i: _status_detail(r.c, i) for i in dup},
+                                  control=control)  # fmt: skip
                             made = True
                             break
                     continue
                 if schema.owner and set(key) == {schema.owner}:
                     owners = [x for x in ctx.allowed(r.c) if ctx.owns(x.handle, name)]
                     if owners:
+                        # the control: the same create by a caller owning no row yet
+                        free = next((x for x in ctx.allowed(r.c) if not ctx.owns(x.handle, name)),
+                                    None)  # fmt: skip
+                        control = None if free is None else b.add(
+                            r, free, f"control: a first {name} for {free.handle}", [item],
+                            _build(r, ctx), "control")  # fmt: skip
                         b.add(
                             r,
                             owners[0],
@@ -1682,6 +1939,7 @@ def _keys_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
                             "duplicate",
                             table=name,
                             errors={i: _status_detail(r.c, i) for i in dup},
+                            control=control,
                         )
                         made = True
                     continue
@@ -1696,15 +1954,21 @@ def _keys_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
                 caller = _writer(r, ctx)
                 if set(key) <= set(by_col) and rows and (caller or r.c.auth == "Public"):
                     values = {by_col[k].name: rows[0][k] for k in key}
+                    # the control: the same create with a key no row has
+                    fresh = _fresh_key(ctx, name, key, by_col)
+                    control = None if fresh is None else b.add(
+                        r, caller, f"control: a new {name} ({', '.join(key)})", [item],
+                        _build(r, ctx, **_by_source(r, fresh)), "control")  # fmt: skip
                     b.add(
                         r,
                         caller,
                         f"repeat {name} ({', '.join(key)})",
                         [item, *dup],
-                        _build(r, ctx, set_=values),
+                        _build(r, ctx, **_by_source(r, values)),
                         "duplicate",
                         table=name,
                         errors={i: _status_detail(r.c, i) for i in dup},
+                        control=control,
                     )
                     made = True
             if not made:
@@ -1715,6 +1979,65 @@ def _keys_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
                     else f"no route creates {name} rows"
                 )
     return reasons
+
+
+def _by_source(r: _Route, values: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
+    """``_build``'s overrides for parameter values by name: a path parameter's to the
+    path (``set_``), any other's to its parameter alone (``fields``)."""
+    path = {p.name for p in r.c.params if p.source == "path"} | set(r.path_params)
+    named = {p.name: p.source for p in r.c.params}
+    return {
+        "set_": {k: v for k, v in values.items() if named.get(k, "path") == "path" and k in path},
+        "fields": {k: v for k, v in values.items() if named.get(k) not in (None, "path")},
+    }
+
+
+def _fresh(p: ContractParam, ctx: ProbeContext) -> Any:
+    """A valid value of the parameter that differs from its plain one (a key no seeded
+    row holds, in the parameter's format)."""
+    v = _valid(p, ctx)
+    if isinstance(v, bool):
+        return v
+    if isinstance(v, int):
+        return v + 7_000_000 if p.le is None else max(min(v + 7_000_000, int(p.le)), v)
+    if isinstance(v, float):
+        return v + 7_000.5 if p.le is None else max(min(v + 7_000.5, float(p.le)), v)
+    if not isinstance(v, str):
+        return v
+    if "@" in v:
+        return "fresh." + v
+    if URL_SHAPE.match(v):
+        return v.rstrip("/") + "/fresh"
+    if FIXED_SHAPES[0].match(v):
+        return "192.0.2.77"
+    if FIXED_SHAPES[1].match(v):
+        return "11111111-2222-4333-8444-555555555555"
+    text = "fresh-" + re.sub(r"\s+", "-", v)
+    return text[: p.max_len] if p.max_len is not None else text
+
+
+def _fresh_key(
+    ctx: ProbeContext, table: str, key: Sequence[str], by_col: Mapping[str, ContractParam]
+) -> dict[str, Any] | None:
+    """Values of the key's parameters that no row of ``table`` holds together: a row's
+    key for a parameter naming a table (``ref``), a listed value, else a fresh one."""
+    import itertools
+
+    taken = {tuple(_k(r.get(k)) for k in key) for r in ctx.rows(table)}
+    options: list[list[Any]] = []
+    for col in key:
+        p = by_col[col]
+        if p.ref is not None:
+            rk = ctx.key_of(p.ref)
+            options.append([row[rk] for row in ctx.rows(p.ref)] if rk else [])
+        elif p.one_of:
+            options.append(list(p.one_of))
+        else:
+            options.append([_fresh(p, ctx)])
+    for combo in itertools.islice(itertools.product(*options), 1000):
+        if tuple(_k(v) for v in combo) not in taken:
+            return {by_col[col].name: v for col, v in zip(key, combo, strict=True)}
+    return None
 
 
 def _error_probes(b: _Probes, routes: Sequence[_Route]) -> dict[str, str]:
@@ -1797,11 +2120,11 @@ def _invalid_request(r: _Route, ctx: ProbeContext) -> _Req | None:
         if p.source == "path":
             continue
         if p.one_of:
-            return _build(r, ctx, target=target, set_={p.name: UNLISTED})
+            return _build(r, ctx, target=target, fields={p.name: UNLISTED})
         bounds = _bounds(p)
         if bounds:
             op, bound = bounds[0]
-            return _build(r, ctx, target=target, set_={p.name: _edges(p, op, bound)[1]})
+            return _build(r, ctx, target=target, fields={p.name: _edges(p, op, bound)[1]})
     required = [p for p in r.c.params if p.source in ("body", "form") and p.required]
     if required:
         return _build(r, ctx, target=target, drop=required[0].name)
@@ -1849,12 +2172,17 @@ def build_probes(
 @dataclass(frozen=True)
 class Outcome:
     """A probe's bearing on one item: ``ok`` True (confirms), False (contradicts), None
-    (neither); for R1, ``refused`` (None: cannot tell)."""
+    (neither); for R1, ``refused`` (None: cannot tell). An outcome is *decisive* when it
+    confirms or contradicts (R1: when it tells refused from admitted); ``reason`` says
+    why, and for one that is not, why the answer has more than one explanation."""
 
     ok: bool | None
     reason: str = ""
     observed: Any = None
     refused: bool | None = None
+
+    def decisive(self, kind: str) -> bool:
+        return (self.refused if kind == "R1" else self.ok) is not None
 
 
 def _error_key(api: ApiProfile | None) -> str:
@@ -1868,6 +2196,102 @@ def _error_key(api: ApiProfile | None) -> str:
 
 def _detail(body: Any, api: ApiProfile | None = None) -> Any:
     return body.get(_error_key(api)) if isinstance(body, Mapping) else None
+
+
+# keys an error envelope states its code under (an app answering every request 200 and
+# putting the error in the body: conduit's ``{"code": 404, "msg": ...}``)
+ENVELOPE_CODES = ("code", "status", "status_code", "statusCode", "error_code")
+
+
+def _envelope(
+    answer: Answer,
+    api: ApiProfile | None,
+    c: Contract | None = None,
+    refusals: Sequence[tuple[int, str | None]] = (),
+) -> int | None:
+    """The error a 2xx answer's JSON body states -- an *error envelope*: its code (a
+    4xx/5xx under ``code``, ``status``...), else 0 (``success: false``, a non-empty
+    ``error``, or the profile's error body holding an error answer the profile or the
+    route states); None for a 2xx that states no error, and for any other status."""
+    body = answer.body
+    if not _ok(answer.status) or not isinstance(body, Mapping):
+        return None
+    for k in ENVELOPE_CODES:
+        v = body.get(k)
+        if isinstance(v, str) and v.strip().isdigit():
+            v = int(v.strip())
+        if isinstance(v, int) and not isinstance(v, bool) and 400 <= v < 600:
+            return v
+    if body.get("success") is False or body.get("ok") is False:
+        return 0
+    err = body.get("error")
+    if isinstance(err, str | Mapping | list) and err:
+        return 0
+    if api is not None:
+        key = _error_key(api)
+        detail = body.get(key)
+        if isinstance(detail, str) and set(body) <= {key, *ENVELOPE_CODES}:
+            known = {text for _, text in _auth_answers(api, refusals)}
+            known |= {e.detail for e in (c.errors if c is not None else ()) if e.detail}
+            if detail in known:
+                return 0
+    return None
+
+
+def _reached(
+    answer: Answer,
+    api: ApiProfile | None,
+    c: Contract | None = None,
+    refusals: Sequence[tuple[int, str | None]] = (),
+) -> bool:
+    """A 2xx that is no error envelope (:func:`_envelope`): the request got through."""
+    return _ok(answer.status) and _envelope(answer, api, c, refusals) is None
+
+
+def _effective_status(
+    answer: Answer,
+    api: ApiProfile | None,
+    c: Contract | None = None,
+    refusals: Sequence[tuple[int, str | None]] = (),
+) -> int | None:
+    """The status an answer means: an error envelope's code (None: it states none),
+    else the HTTP status."""
+    code = _envelope(answer, api, c, refusals)
+    if code is None:
+        return answer.status
+    return code or None
+
+
+def _row_effect(
+    before: Mapping[str, list[dict[str, Any]]],
+    after: Mapping[str, list[dict[str, Any]]],
+    ctx: ProbeContext,
+    table: str | None,
+    target: Any,
+    kind: str | None,
+) -> bool | None:
+    """Whether a write to the row ``target`` of ``table`` shows its effect: a delete
+    removed it, an update changed it. None: no such prediction (another kind, no key,
+    a row the seed does not have)."""
+    if table is None or target is None or kind not in ("update", "delete"):
+        return None
+    found = resolve_table(ctx.spec.profile, table)
+    key = _key_column(found[2]) if found is not None else None
+    if found is None or key is None:
+        return None
+    old = next((r for r in before.get(found[1], []) if _k(r.get(key)) == _k(target)), None)
+    if old is None:
+        return None
+    new = next((r for r in after.get(found[1], []) if _k(r.get(key)) == _k(target)), None)
+    return new is None if kind == "delete" else new != old
+
+
+def _past_auth(answer: Answer) -> bool:
+    """Whether the request got past the auth check to the route's handler: no refusal
+    (401/403), no 405 and no 404 page that is not JSON (the router's)."""
+    if answer.status in (401, 403, 405):
+        return False
+    return not (answer.status == 404 and not _readable(answer.body))
 
 
 def _readable(body: Any) -> bool:
@@ -1978,46 +2402,84 @@ def _refused(
     *,
     refusals: Sequence[tuple[int, str | None]] = (),
     no_credential: bool = False,
+    addressed: bool = True,
 ) -> bool | None:
-    """Whether an answer refuses the caller (None: cannot tell). A 401 or 403 to a
-    request carrying ``no_credential`` of an active user (anonymous, a malformed token,
-    the inactive user's) is a refusal, whatever the route states: such a request cannot
-    get past authentication to any data-dependent answer (a stated 401 is the
-    decorator's, or the auth layer's). An auth answer (see :func:`_auth_answers`) is a refusal,
-    though the route also states an error of that status -- unless it states one with
-    that very detail as a non-auth error, when only a probe on the caller's own row
-    tells. Otherwise a 401 the route does not state is a refusal; a 403 one only when
-    the profile names no forbidden detail and the target is the caller's own; a 401 the
-    route states as a non-auth error cannot be told apart (it never admits)."""
-    if no_credential and answer.status in (401, 403):
+    """Whether an answer refuses the caller (None: cannot tell -- the answer has more
+    than one explanation). ``owns_target``: the request addresses no row, or the
+    caller's own (``addressed``: it addresses a row at all).
+
+    * A 401 or 403 to a request carrying ``no_credential`` of an active user (anonymous,
+      a malformed token, the inactive user's) is a refusal, whatever the route states:
+      such a request cannot get past authentication to any data-dependent answer.
+    * A 2xx admits -- unless its body is an error envelope (:func:`_envelope`).
+    * Never decides: a 5xx (a crash, before or past the check), a 405 (the router's),
+      and a 404 to a request addressing a row (the router's -- a path value it does not
+      match -- or a row hidden from the caller, by its role or its owner) or one that is
+      no JSON (a router's page).
+    * An authentication answer (see :func:`_auth_answers`: no or bad credentials, an
+      inactive user) is a refusal on any row -- no ownership explains it -- though the
+      route also states an error of that status, unless it states one with that very
+      detail as a non-auth error, when only a probe on the caller's own row tells.
+    * A 403 on a row that is not the caller's own (another user's, or one whose owner
+      the profile does not know) is undecided, whatever its detail: an owner check
+      answers it as a role check does (DRF's ``IsAdminOrOwner`` and ``IsAdminUser``
+      answer the same detail). :func:`_resolve_r1` may decide it from the caller's
+      answer on a missing row.
+    * Otherwise a 401 the route does not state is a refusal; a 401 the route states as
+      a non-auth error cannot be told apart (it never admits); a 403 on the caller's own
+      row (or no row) is a refusal when the profile names no forbidden detail -- with
+      one named, a 403 of another detail may be a role check's own message or a rule
+      past it: undecided. A 403 the route states as a non-auth error admits when it is
+      told from the role check's (the stated error's detail, or the profile's forbidden
+      detail being another). Any other 4xx admits (past the check: the role check runs
+      before the request is read)."""
+    status = answer.status
+    if no_credential and status in (401, 403):
         return True
+    if _ok(status):
+        return None if _envelope(answer, api, c, refusals) is not None else False
+    if status >= 500 or status == 405:
+        return None
+    if status == 404 and (addressed or not _readable(answer.body)):
+        return None
     detail = _detail(answer.body, api)
     if detail is not None:
-        for status, text in _auth_answers(api, refusals):
-            if text == detail and status in (None, answer.status) and answer.status >= 400:
+        for want, text in _auth_answers(api, refusals):
+            if text == detail and want in (None, status) and status >= 400:
+                if status == 403 and not owns_target and text == api.forbidden_detail:
+                    return None  # the authorization answer: an owner check answers it too
+                # an authentication answer (no or bad credentials, an inactive user):
+                # no ownership explains it
                 same = any(
-                    e.when not in AUTH_TRIGGERS and e.status == answer.status and e.detail == detail
+                    e.when not in AUTH_TRIGGERS and e.status == status and e.detail == detail
                     for e in c.errors
                 )
                 return (True if owns_target else None) if same else True
+    if status == 403 and not owns_target:
+        return None
     stated = [
         e
         for e in c.errors
         if e.when not in AUTH_TRIGGERS
-        and e.status == answer.status
+        and e.status == status
         and (e.detail is None or e.detail == detail)
     ]
-    if answer.status == 401 and stated:
+    if status == 401 and stated:
         # a 401 never admits a caller: the route's own 401 (bad credentials it was sent,
         # a token it revokes) cannot be told from a refusal
         return None
-    if answer.status not in (401, 403) or stated:
+    if status == 403 and stated:
+        # the route's own 403 -- told from the role check's by a detail of its own, or by
+        # the profile's naming the role check's (this answer's detail is another)
+        known = api.forbidden_detail is not None or any(e.detail is not None for e in stated)
+        return False if known else None
+    if status not in (401, 403) or stated:
         return False
-    if answer.status == 401:
+    if status == 401:
         return True
     if api.forbidden_detail is not None:
-        return False  # a 403 of another kind: past the role check (data-dependent)
-    return True if owns_target else None
+        return None  # a 403 of another detail: a role check's own message, or a rule past it
+    return True
 
 
 def _shut_out(answer: Answer, p: Probe) -> bool:
@@ -2106,6 +2568,144 @@ def _link_writes(
     return Outcome(True, f"changed only the caller's {sql} links ({len(touched)})")
 
 
+@dataclass
+class _Evidence:
+    """Every probe's answer and the database after it: the outcomes resting on another
+    probe's answer read it here -- a *witness* (the same request as another caller: the
+    row's owner reaches it; another caller's list differs) or a *control* (the same
+    request with plain valid values gets through)."""
+
+    ctx: ProbeContext
+    contracts: Mapping[str, Contract]
+    runs: Mapping[str, tuple[Probe, Answer, Mapping[str, list[dict[str, Any]]]]]
+    _through: dict[tuple[str, str], bool] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        for p, _, _ in self.runs.values():
+            if p.user is None or p.token is not None or p.args.get("credential"):
+                continue
+            if self.past_check(p.name) and not p.args.get("missing_row"):
+                self._through[(p.route, p.user)] = True
+
+    def past_check(self, name: str | None) -> bool:
+        """Whether that probe's request got past the route's auth check: through, or
+        refused by a 4xx that is no refusal of the caller, the row or the route (not
+        401, 403, 404, 405) -- the request was read (the role check runs first)."""
+        run = self.runs.get(name or "")
+        if run is None:
+            return False
+        if self.reached(name):
+            return True
+        p, answer, _ = run
+        meant = _effective_status(answer, self.ctx.api, self.contracts.get(p.route),
+                                  self.ctx.refusals)  # fmt: skip
+        return meant is not None and 400 <= meant < 500 and meant not in (401, 403, 404, 405)
+
+    def reached(self, name: str | None) -> bool | None:
+        """Whether that probe's request got through (a 2xx, no error envelope); None: no
+        such probe."""
+        run = self.runs.get(name or "")
+        if run is None:
+            return None
+        p, answer, _ = run
+        return _reached(answer, self.ctx.api, self.contracts.get(p.route), self.ctx.refusals)
+
+    def past_validation(self, name: str | None) -> bool:
+        """Whether that probe's request got past the request's validation: through, or
+        refused by a 4xx that is not the validation status nor a refusal of the caller,
+        a row or the route (401, 403, 404, 405) -- a rule of the app's (a 409, a
+        transition it refuses)."""
+        run = self.runs.get(name or "")
+        if run is None:
+            return False
+        if self.reached(name):
+            return True
+        p, answer, _ = run
+        meant = _effective_status(answer, self.ctx.api, self.contracts.get(p.route),
+                                  self.ctx.refusals)  # fmt: skip
+        return (meant is not None and 400 <= meant < 500 and meant not in (401, 403, 404, 405)
+                and meant != self.ctx.api.validation_status)  # fmt: skip
+
+    def answered(self, name: str | None) -> str:
+        run = self.runs.get(name or "")
+        return "no answer" if run is None else str(run[1].status)
+
+    def admitted(self, p: Probe) -> bool:
+        """Whether the probe's caller got past the route's check by some request (not
+        one on a missing row)."""
+        return p.user is not None and self._through.get((p.route, p.user), False)
+
+    def shown(self, name: str | None, table: str) -> Any:
+        """What a list answered (the seeded rows of ``table`` in it, by key; a table
+        without a one-column key: the body); None when it did not get through."""
+        run = self.runs.get(name or "")
+        if run is None or not self.reached(name):
+            return None
+        found = resolve_table(self.ctx.spec.profile, table)
+        key = _key_column(found[2]) if found is not None else None
+        if found is None or key is None:
+            import json
+
+            return json.dumps(run[1].body, sort_keys=True, default=str)
+        seeded = {_k(r[key]) for r in self.ctx.rows(table)}
+        return frozenset(_k(r[key]) for r in _rows_in(run[1].body, found[2], key)
+                         if _k(r[key]) in seeded)  # fmt: skip
+
+    def touched(self, name: str | None, table: str) -> frozenset | None:
+        """The rows of ``table`` a request changed, added or removed (whole rows)."""
+        run = self.runs.get(name or "")
+        if run is None:
+            return None
+        found = resolve_table(self.ctx.spec.profile, table)
+        if found is None:
+            return None
+
+        def ident(row: Mapping[str, Any]) -> tuple:
+            return tuple(sorted((k, str(v)) for k, v in row.items()))
+
+        old = {ident(r) for r in self.ctx.seed.get(found[1], [])}
+        new = {ident(r) for r in run[2].get(found[1], [])}
+        return frozenset(old ^ new)
+
+
+def _witnessed(p: Probe, ev: _Evidence | None) -> str:
+    """Why another user's row refusing the probe's caller (403/404) is not yet an
+    ownership refusal ("" when it is): the caller got past the route's check by some
+    request (so its role is admitted), and the row's owner (else the admin) got past it
+    by this very request (so the row is there, and the refusal is the caller's: the
+    same request answered differently)."""
+    if ev is None:
+        return "no other answer to compare"
+    if not ev.admitted(p):
+        return ("the caller got past the route's check by no request: its role's refusal "
+                "is not ruled out")  # fmt: skip
+    witness = p.args.get("witness")
+    if witness is None:
+        return "no caller owning the row (or the admin) to reach it by the same request"
+    if not ev.past_check(witness):
+        return (f"the same request as the row's owner answered {ev.answered(witness)}: the "
+                "row is not reachable there")  # fmt: skip
+    return ""
+
+
+def _differs(p: Probe, ev: _Evidence | None, table: str, mine: Any) -> str:
+    """Why an answer holding only the caller's own rows (or touching only them) is not
+    yet owner scoping ("" when it is): another caller's answer to the same request
+    differs, so the caller -- not the request -- selects the rows."""
+    if ev is None:
+        return "no other answer to compare"
+    witness = p.args.get("witness")
+    if witness is None:
+        return "no other caller to send the same request"
+    theirs = ev.touched(witness, table) if p.expect == "writes_own" else ev.shown(witness, table)
+    if theirs is None:
+        return f"the same request as another caller answered {ev.answered(witness)}"
+    if theirs == mine:
+        return ("another caller's answer to the same request is the same: the request, not "
+                "the caller, may select the rows")  # fmt: skip
+    return ""
+
+
 def _judge(
     p: Probe,
     answer: Answer,
@@ -2113,11 +2713,18 @@ def _judge(
     after: Mapping[str, list[dict[str, Any]]],
     ctx: ProbeContext,
     contract: Contract,
+    ev: _Evidence | None = None,
 ) -> dict[str, Outcome]:
+    """The probe's outcome on each item it bears on. An answer with more than one
+    explanation decides nothing (``ok`` None, the reason saying why); ``ev`` holds the
+    other probes' answers a witness or a control reads."""
     spec, api, a = ctx.spec, ctx.api, p.args
     status, body = answer.status, answer.body
     caller = ctx.callers.get(p.user or "") if p.token is None else None
     unchanged = not _changed_besides(before, after, ctx, caller.key if caller else None)
+    through = _reached(answer, api, contract, ctx.refusals)
+    meant = _effective_status(answer, api, contract, ctx.refusals)
+    envelope = "" if through or not _ok(status) else f" (an error envelope: {body!r:.80})"
     out: dict[str, Outcome] = {}
 
     def all_items(o: Outcome) -> dict[str, Outcome]:
@@ -2144,7 +2751,25 @@ def _judge(
             if item in p.items:
                 out[item] = stated_error(want, detail)
 
-    if p.expect not in ("auth", "any", "login") and _shut_out(answer, p):
+    def control_through(name: str | None, what: str) -> str:
+        """ "" when the control probe got through -- or, for an answer that is the
+        validation status, got past validation (refused by a rule of the app's: then
+        only the value differs, and it is what failed validation); else why the answer
+        decides nothing."""
+        if ev is None:
+            return "no control to compare"
+        if name is None:
+            return f"no {what} to compare"
+        if ev.reached(name):
+            return ""
+        if meant == api.validation_status and ev.past_validation(name):
+            return ""
+        return (f"the {what} answered {ev.answered(name)} too: the request is refused for "
+                "a reason of its own")  # fmt: skip
+
+    if p.expect in ("witness", "control", "any"):
+        return {}  # read by the probes it backs (and the route's 5xx item)
+    if p.expect not in ("auth", "login") and _shut_out(answer, p):
         # the app refused the request's caller (a 401; a 403 to a request carrying no
         # credentials): it never reached the rule the probe is about, so it bears on no
         # item -- except an error stated with that very status (so no correction comes
@@ -2160,29 +2785,104 @@ def _judge(
         return refused_out
     if p.expect == "auth":
         refused = _refused(answer, contract, api, a.get("owns_target", True),
-                           refusals=ctx.refusals,
+                           refusals=ctx.refusals, addressed=a.get("addressed", True),
                            no_credential=a.get("caller") in NON_ROLE_CALLERS)  # fmt: skip
-        if a.get("credential") and refused:
-            refused = None  # a Public route's bad credentials: the auth layer's refusal
+        why = ""
+        authorization = (status == 403 and api.forbidden_detail is not None
+                         and _detail(body, api) == api.forbidden_detail
+                         and a.get("caller") not in NON_ROLE_CALLERS)  # fmt: skip
+        if a.get("credential") and refused and not authorization:
+            # a Public route's bad credentials, or credentials the probe invented: the
+            # answer is about them -- unless it is the role check's own (the profile's
+            # forbidden detail, to a caller of a role): credentials never answer that
+            refused = None
+            why = "a refusal of the credentials sent (invented, or bad on purpose)"
+        if refused is False and a.get("missing_row"):
+            refused = None  # there is no row: only a refusal tells something here
+            why = "a request on a missing row decides only a refusal"
+        writes = contract.kind == "delete" or bool(p.json or p.form)
+        if refused is False and _ok(status) and writes and not a.get("credential"):
+            # the addressed row written -- or, the route's table being another than it
+            # writes (a link it removes), anything written besides the caller's own row
+            effect = _row_effect(before, after, ctx, a.get("table"), a.get("target"),
+                                 contract.kind)  # fmt: skip
+            if effect is False and not unchanged:
+                effect = True
+            if effect is False:
+                refused = None
+                why = f"answered {status} but the row was not written: no sign it got through"
+        if refused is None and not why:
+            why = _undecided(answer, a, envelope)
+        observed = {"status": status, **({"undecided": why} if refused is None else {})}
+        detail = _detail(body, api)
+        if (
+            refused is None
+            and status == 403
+            and not a.get("owns_target", True)
+            and a.get("owner_known")
+            and api.forbidden_detail is not None
+            and detail is not None
+            and a.get("handle")
+            and all(text != detail for _, text in _auth_answers(api, ctx.refusals))
+        ):
+            # another detail than the role refusal's, on another user's row: the owner
+            # check's -- decided with the caller's missing-row answer (_resolve_r1)
+            observed["owner_refusal"] = True  # fmt: skip
         r1 = next(i for i in p.items if i.startswith("R1 "))
-        out[r1] = Outcome(None, "", {"status": status}, refused)
+        said = {True: "refused", False: "admitted", None: "undecided"}[refused]
+        out[r1] = Outcome(None, f"{said} ({status})" + (f": {why}" if why else ""), observed,
+                          refused)  # fmt: skip
         for item in p.items:
-            if item != r1:
+            if item == r1:
+                continue
+            if refused is True:
                 out[item] = stated_error(*_status_detail(contract, item))
+            else:
+                out[item] = Outcome(None, f"the caller was not refused for certain ({status})",
+                                    {"status": status})  # fmt: skip
         return out
+    reading = contract.method == "GET" or contract.kind in ("read", "list")
     if p.expect == "not_owned":
-        ok = status in a["statuses"] and unchanged
-        reason = (
-            f"another user's row answered {status}"
-            + ("" if unchanged else " and changed the database")
-            + f"; expected {' or '.join(map(str, a['statuses']))}, nothing written"
-        )
-        out = all_items(Outcome(ok, reason, {"status": status, "db_changed": not unchanged}))
+        statuses = a["statuses"]
+        if not unchanged:
+            o = Outcome(False, f"another user's row answered {status} and changed the database",
+                        {"status": status, "db_changed": True})  # fmt: skip
+        elif through and reading:
+            o = Outcome(False, f"another user's row answered {status}: reached",
+                        {"status": status, "db_changed": False})  # fmt: skip
+        elif through:
+            o = Outcome(None, f"answered {status} to a write of another user's row, writing "
+                        "nothing: an owner-scoped no-op, or a refusal answered 2xx")  # fmt: skip
+        elif meant in statuses:
+            why = _witnessed(p, ev)
+            reason = f"another user's row answered {meant}{envelope}, nothing written"
+            o = Outcome(None if why else True, reason + (f"; not decisive: {why}" if why else ""),
+                        {"status": status})  # fmt: skip
+        else:
+            o = Outcome(None, f"another user's row answered {status}{envelope}: neither the "
+                        f"not-owned answer ({' or '.join(map(str, statuses))}) nor a reach",
+                        {"status": status})  # fmt: skip
+        out = all_items(o)
         errors(a.get("details", {}))
         return out
     if p.expect == "reaches":
-        ok = status not in NOT_OWNED
-        return all_items(Outcome(ok, f"another user's row answered {status}", {"status": status}))
+        if through:
+            writes = contract.kind == "delete" or bool(p.json or p.form)
+            effect = _row_effect(before, after, ctx, a.get("table"), a.get("target"),
+                                 contract.kind) if writes else None  # fmt: skip
+            if effect is False:
+                return all_items(Outcome(None, f"another user's row answered {status} but was "
+                                         "not written: no sign it got through"))  # fmt: skip
+            return all_items(Outcome(True, f"another user's row answered {status}",
+                                     {"status": status}))  # fmt: skip
+        if meant in NOT_OWNED:
+            why = _witnessed(p, ev)
+            reason = f"another user's row answered {meant}{envelope}"
+            return all_items(Outcome(None if why else False,
+                                     reason + (f"; not decisive: {why}" if why else ""),
+                                     {"status": status}))  # fmt: skip
+        return all_items(Outcome(None, f"another user's row answered {status}{envelope}: "
+                                 "neither a reach nor a refusal", {"status": status}))  # fmt: skip
     if p.expect == "owned_rows":
         table = a["table"]
         found = resolve_table(spec.profile, table)
@@ -2190,10 +2890,9 @@ def _judge(
         key = _key_column(found[2]) or ""
         if not key:  # a link table (a composite key): its rows cannot be told apart here
             return all_items(Outcome(None, f"{table} has no one-column key to find its rows by"))
-        if not _ok(status):
-            return all_items(
-                Outcome(False, f"the caller's own rows answered {status}", {"status": status})
-            )
+        if not through:
+            return all_items(Outcome(None, f"the caller's own rows answered {status}{envelope}: "
+                                     "nothing shown", {"status": status}))  # fmt: skip
         seeded = {_k(r[key]): r for r in ctx.rows(table)}
         rows = [r for r in _rows_in(body, found[2], key) if _k(r[key]) in seeded]
         public = a.get("public")  # owner_or_public: another user's row shows when true
@@ -2218,9 +2917,19 @@ def _judge(
         if not rows:  # an empty answer shows nothing about filtering
             return all_items(Outcome(None, "no row of the table in the answer"))
         mine = f"the caller's {table} rows" + (f" or whose {public} is true" if public else "")
-        return all_items(Outcome(True, f"only {mine} ({len(rows)})"))
+        why = _differs(p, ev, table, frozenset(_k(r[key]) for r in rows))
+        return all_items(Outcome(None if why else True, f"only {mine} ({len(rows)})"
+                                 + (f"; not decisive: {why}" if why else "")))  # fmt: skip
     if p.expect == "link_rows":
-        return all_items(_link_rows(body, status, ctx, a))
+        o = _link_rows(body, status, ctx, a)
+        if not through:
+            o = Outcome(None, f"the caller's own links answered {status}{envelope}: nothing shown",
+                        {"status": status})  # fmt: skip
+        elif o.ok:
+            why = _differs(p, ev, a["table"], ev.shown(p.name, a["table"]) if ev else None)
+            if why:
+                o = Outcome(None, f"{o.reason}; not decisive: {why}")
+        return all_items(o)
     if p.expect == "others_rows":
         table = a["table"]
         found = resolve_table(spec.profile, table)
@@ -2228,8 +2937,9 @@ def _judge(
         key = _key_column(found[2]) or ""
         if not key:  # a link table (a composite key): its rows cannot be told apart here
             return all_items(Outcome(None, f"{table} has no one-column key to find its rows by"))
-        if not _ok(status):
-            return all_items(Outcome(False, f"the list answered {status}", {"status": status}))
+        if not through:
+            return all_items(Outcome(None, f"the list answered {status}{envelope}: nothing shown",
+                                     {"status": status}))  # fmt: skip
         seeded = {_k(r[key]): r for r in ctx.rows(table)}
         rows = [r for r in _rows_in(body, found[2], key) if _k(r[key]) in seeded]
         foreign = sorted(
@@ -2240,39 +2950,46 @@ def _judge(
             return all_items(Outcome(True, f"answered other users' {table} rows {foreign[:5]}"))
         if not rows:
             return all_items(Outcome(None, "no row of the table in the answer"))
-        return all_items(Outcome(False, f"only the caller's own {table} rows", {"scope": "owner"}))
+        why = _differs(p, ev, table, frozenset(_k(r[key]) for r in rows))
+        return all_items(Outcome(None if why else False, f"only the caller's own {table} rows"
+                                 + (f"; not decisive: {why}" if why else ""),
+                                 None if why else {"scope": "owner"}))  # fmt: skip
     if p.expect == "writes_own":
         table = a["table"]
         found = resolve_table(spec.profile, table)
         assert found is not None
         key = _key_column(found[2]) or ""
         if not key and a.get("link"):  # a link table: its rows by their whole key
-            return all_items(_link_writes(before, after, found[1], a))
-        if not key:  # a link table (a composite key): its rows cannot be told apart here
+            o = _link_writes(before, after, found[1], a)
+        elif not key:  # a link table (a composite key): its rows cannot be told apart here
             return all_items(Outcome(None, f"{table} has no one-column key to find its rows by"))
-        sql = found[1]
-        diff = db_diff(before, after, {sql: key}).get(sql, {})
-        touched = [ch["key"][key] for ch in diff.get("changed", [])] + [
-            r[key] for r in diff.get("removed", [])
-        ]
-        seeded = {_k(r[key]): r for r in ctx.rows(table)}
-        foreign = [
-            k for k in touched if _k(k) in seeded and ctx.owner(table, seeded[_k(k)]) != a["caller"]
-        ]
-        if foreign:
-            return all_items(
-                Outcome(
-                    False,
-                    f"changed other users' {table} rows {foreign}",
-                    {"other_users_rows": foreign},
-                )
-            )
-        if not touched:
-            return all_items(Outcome(None, "nothing changed"))
-        return all_items(Outcome(True, f"changed only the caller's {table} rows"))
+        else:
+            sql = found[1]
+            diff = db_diff(before, after, {sql: key}).get(sql, {})
+            touched = [ch["key"][key] for ch in diff.get("changed", [])] + [
+                r[key] for r in diff.get("removed", [])
+            ]
+            seeded = {_k(r[key]): r for r in ctx.rows(table)}
+            foreign = [
+                k
+                for k in touched
+                if _k(k) in seeded and ctx.owner(table, seeded[_k(k)]) != a["caller"]
+            ]
+            if foreign:
+                o = Outcome(False, f"changed other users' {table} rows {foreign}",
+                            {"other_users_rows": foreign})  # fmt: skip
+            elif not touched:
+                o = Outcome(None, "nothing changed")
+            else:
+                o = Outcome(True, f"changed only the caller's {table} rows")
+        if o.ok:
+            why = _differs(p, ev, table, ev.touched(p.name, table) if ev else None)
+            if why:
+                o = Outcome(None, f"{o.reason}; not decisive: {why}")
+        return all_items(o)
     if p.expect == "stamps":
-        if not _ok(status):
-            return all_items(Outcome(None, f"the create answered {status}"))
+        if not through:
+            return all_items(Outcome(None, f"the create answered {status}{envelope}"))
         tables = [] if a.get("children_only") else [a["table"]]
         for table in [*tables, *a.get("children", [])]:
             found = resolve_table(spec.profile, table)
@@ -2293,9 +3010,8 @@ def _judge(
             if table == a["table"]:
                 items += [i for i in p.items if i.startswith("R2 ")]
             if not new:
-                o = Outcome(
-                    None if table != a["table"] else False, f"a 2xx create added no {table} row"
-                )
+                # a 2xx adding no row (an upsert, a row written elsewhere) shows no owner
+                o = Outcome(None, f"a {status} create added no {table} row")
             elif owners == [str(a["caller"])]:
                 o = Outcome(True, f"new {table} rows owned by the caller")
             else:
@@ -2306,9 +3022,12 @@ def _judge(
                 out[i] = o
         return out
     if p.expect == "is_caller":
+        if not through:
+            return all_items(Outcome(None, f"answered {status}{envelope}: no caller shown",
+                                     {"status": status}))  # fmt: skip
         got = body.get(a["key"]) if isinstance(body, Mapping) else None
-        ok = _ok(status) and _k(got) == _k(a["caller"])
-        if _ok(status) and isinstance(body, Mapping) and a["key"] not in body and a.get("login"):
+        ok = _k(got) == _k(a["caller"])
+        if isinstance(body, Mapping) and a["key"] not in body and a.get("login"):
             # an answer without the key (a serializer of email and name): the caller's
             # login value names it
             got = a["login"] if a["login"] in body.values() else None
@@ -2321,28 +3040,52 @@ def _judge(
             )
         )
     if p.expect == "ok":
-        return all_items(Outcome(_ok(status), f"answered {status}", {"status": status}))
+        if through:
+            return all_items(Outcome(True, f"answered {status}", {"status": status}))
+        return all_items(Outcome(None, f"answered {status}{envelope}: a refusal of the caller, "
+                                 "the row or the request -- not told apart",
+                                 {"status": status}))  # fmt: skip
     if p.expect == "ok2xx":
-        return all_items(
-            Outcome(
-                _ok(status),
-                f"the boundary value answered {status}",
-                {"status": status, "accepted": True},
-            )
-        )
+        if through:
+            return all_items(Outcome(True, f"the boundary value answered {status}",
+                                     {"status": status, "accepted": True}))  # fmt: skip
+        why = control_through(a.get("control"), "same request with plain valid values")
+        return all_items(Outcome(None if why else False,
+                                 f"the boundary value answered {status}{envelope}"
+                                 + (f"; not decisive: {why}" if why else ""),
+                                 {"status": status, "accepted": False}))  # fmt: skip
     if p.expect == "accepted":
-        vstatus = api.validation_status
-        return all_items(
-            Outcome(status != vstatus, f"a listed value answered {status}", {"status": status})
-        )
+        if through:
+            return all_items(Outcome(True, f"a listed value answered {status}", {"status": status}))
+        if meant == api.validation_status:
+            why = control_through(a.get("control"), "same request with plain valid values")
+            return all_items(Outcome(None if why else False, f"a listed value answered {meant}"
+                                     + (f"; not decisive: {why}" if why else ""),
+                                     {"status": status}))  # fmt: skip
+        if ev is not None and ev.past_validation(p.name):
+            # refused by a rule of the app's (a transition it refuses), after validation:
+            # the value itself was taken
+            return all_items(Outcome(True, f"a listed value answered {meant}: past validation "
+                                     f"({api.validation_status})", {"status": status}))  # fmt: skip
+        return all_items(Outcome(None, f"a listed value answered {status}{envelope}: a refusal "
+                                 "of the caller, the row or the route -- before validation, "
+                                 "maybe", {"status": status}))  # fmt: skip
     if p.expect == "invalid":
-        ok = 400 <= status < 500 and unchanged
-        reason = f"answered {status}" + ("" if unchanged else " and wrote to the database")
-        o = Outcome(
-            ok,
-            reason + "; expected a 4xx, nothing written",
-            {"status": status, "accepted": _ok(status), "db_changed": not unchanged},
-        )
+        if not unchanged:
+            o = Outcome(False, f"answered {status} and wrote to the database; expected a 4xx, "
+                        "nothing written", {"status": status, "accepted": _ok(status),
+                                            "db_changed": True})  # fmt: skip
+        elif through:
+            o = Outcome(False, f"answered {status}; expected a 4xx, nothing written",
+                        {"status": status, "accepted": True, "db_changed": False})  # fmt: skip
+        elif meant is not None and 400 <= meant < 500:
+            why = control_through(a.get("control"), "same request with a valid value")
+            o = Outcome(None if why else True, f"answered {meant}{envelope}, nothing written"
+                        + (f"; not decisive: {why}" if why else ""),
+                        {"status": status, "accepted": False, "db_changed": False})  # fmt: skip
+        else:
+            o = Outcome(None, f"answered {status}{envelope}: neither a 4xx nor an acceptance",
+                        {"status": status})  # fmt: skip
         out = all_items(o)
         errors(a.get("errors", {}))
         return out
@@ -2350,23 +3093,44 @@ def _judge(
         found = resolve_table(spec.profile, a["table"])
         assert found is not None
         added = len(after.get(found[1], [])) - len(before.get(found[1], []))
-        ok = not _ok(status) and added <= 0
         note = "a 5xx: the key holds, the 500 is an app-baseline finding" if status >= 500 else ""
-        out = all_items(
-            Outcome(
-                ok,
-                f"a second create answered {status}, added {added} rows"
-                + (f" ({note})" if note else ""),
-                {"status": status, "rows_added": added},
-            )
-        )
+        reason = (f"a second create answered {status}{envelope}, added {added} rows"
+                  + (f" ({note})" if note else ""))  # fmt: skip
+        observed = {"status": status, "rows_added": added}
+        if added > 0 or through:
+            # a row added, or the second create accepted (a 2xx that is no error
+            # envelope): the stated refusal did not happen
+            o = Outcome(False, reason, observed)
+        else:
+            why = control_through(a.get("control"), "same create with a new key")
+            o = Outcome(None if why else True, reason + (f"; not decisive: {why}" if why else ""),
+                        observed)  # fmt: skip
+        out = all_items(o)
         errors(a.get("errors", {}))
         return out
     if p.expect == "error":
         return all_items(stated_error(a["status"], a.get("detail")))
-    if p.expect == "any":
-        return {}  # only the route's 5xx item reads it (after every probe ran)
     raise ValueError(f"unknown probe judgement {p.expect!r}")
+
+
+def _undecided(answer: Answer, a: Mapping[str, Any], envelope: str) -> str:
+    """Why an R1 answer tells neither refused nor admitted."""
+    status = answer.status
+    if _ok(status):
+        return f"a 2xx error envelope{envelope}"
+    if status >= 500:
+        return "a crash: before or past the auth check, not told apart"
+    if status == 405:
+        return "the router's 405"
+    if status == 404:
+        return ("a 404 to a request addressing a row: the router's (a path value it does not "
+                "match), or a row hidden from the caller")  # fmt: skip
+    if status == 403 and not a.get("owns_target", True):
+        return ("a 403 on a row that is not the caller's own: an ownership refusal and a role "
+                "refusal answer alike")  # fmt: skip
+    if status == 403:
+        return "a 403 of another detail than the profile's forbidden one: a role check or a rule"
+    return f"a {status} the route states as an error of its own"
 
 
 # ---- running -----------------------------------------------------------------------------
@@ -2384,6 +3148,9 @@ class ItemVerdict:
     observed: Any = None
     notes: list[str] = field(default_factory=list)
     witness: str | None = None  # the probe that refuted it
+    # the probes whose outcome decides the item the way the verdict says (verified: the
+    # confirming ones); a verified item without one is an internal error (check_verdicts)
+    decisive: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -2395,6 +3162,7 @@ class ItemVerdict:
             "verdict": self.verdict,
             "reason": self.reason,
             "probes": list(self.probes),
+            "decisive": list(self.decisive),
             "observed": self.observed,
             "notes": list(self.notes),
         }
@@ -2717,11 +3485,21 @@ def run_probes(
             if probe.args.get("credential"):
                 # its refusal decides nothing (bad credentials; invented ones)
                 result.probes[probe.name]["credential"] = True
-            judged = _judge(probe, answer, seed, after, ctx, contracts[probe.route])
+            if probe.expect in ("witness", "control"):
+                result.probes[probe.name]["role"] = probe.expect
+        # judged once every probe ran: a witness's or a control's answer is read by the
+        # probes it backs
+        ev = _Evidence(ctx, contracts, {p.name: (p, *answers[p.name]) for p in probes})
+        for probe in probes:
+            answer, after = answers[probe.name]
+            judged = _judge(probe, answer, seed, after, ctx, contracts[probe.route], ev)
             for item_id, outcome in judged.items():
                 if item_id in outcomes:
                     outcomes[item_id].append((probe, outcome))
     for item_id, item in items.items():
+        if item.kind == "R1":
+            outcomes[item_id] = _resolve_r1(outcomes[item_id])
+        _record_bearing(result, item, outcomes[item_id])
         result.items[item_id] = _verdict(item, outcomes[item_id], reasons.get(item_id))
         against = _contradicting(item, outcomes[item_id])
         if against:
@@ -2730,6 +3508,25 @@ def run_probes(
     _route_5xx(result, items, probes, answers, contracts)
     summarise(spec, result)
     return result
+
+
+def _record_bearing(result: RuleResult, item: RuleItem,
+                    found: Sequence[tuple[Probe, Outcome]]) -> None:  # fmt: skip
+    """Each probe's bearing on the item, in its record: ``decisive`` (it confirms or
+    contradicts; R1: tells refused from admitted), what it ``says`` and ``why``."""
+    for p, o in found:
+        record = result.probes.get(p.name)
+        if record is None:
+            continue
+        if item.kind == "R1":
+            says = {True: "refused", False: "admitted", None: "undecided"}[o.refused]
+        else:
+            says = {True: "confirms", False: "contradicts", None: "neither"}[o.ok]
+        record.setdefault("bearing", {})[item.id] = {
+            "decisive": o.decisive(item.kind),
+            "says": says,
+            "why": o.reason or says,
+        }
 
 
 def _keys(spec: Spec) -> dict[str, str]:
@@ -2745,6 +3542,10 @@ def _keys(spec: Spec) -> dict[str, str]:
 def _verdict(
     item: RuleItem, found: Sequence[tuple[Probe, Outcome]], reason: str | None
 ) -> ItemVerdict:
+    """An item's verdict from its probes' outcomes: refuted by a contradicting one,
+    verified by a confirming one (``decisive``: the confirming probes), else
+    unexercised with the reason -- an outcome deciding nothing (an answer with more than
+    one explanation) counts for neither."""
     if item.unclear:
         return ItemVerdict(item, "unclear", item.unclear)
     if item.kind == "R1":
@@ -2755,39 +3556,96 @@ def _verdict(
     bad = [(p, o) for p, o in found if o.ok is False]
     if bad:
         p, o = bad[0]
-        return ItemVerdict(item, "refuted", o.reason, names, o.observed, witness=p.name)
+        return ItemVerdict(item, "refuted", o.reason, names, o.observed, witness=p.name,
+                           decisive=[q.name for q, _ in bad])  # fmt: skip
     good = [(p, o) for p, o in found if o.ok]
+    if good and item.predicted.get("scope") == "owner_or_admin":
+        # two claims: non-admins act on their own rows only, and the admin on anyone's --
+        # each needs a probe of its own confirming it
+        halves = {bool(p.args.get("admin_half")) for p, _ in good}
+        if halves != {True, False}:
+            undecided = "the admin's" if True not in halves else "the non-admins'"
+            why = "; ".join(dict.fromkeys(o.reason for p, o in found if o.ok is None))
+            return ItemVerdict(item, "unexercised", f"{undecided} half of owner_or_admin is "
+                               f"undecided: {why or 'no probe'}", names)  # fmt: skip
     if good:
         notes = sorted({o.reason for _, o in good if "app-baseline" in o.reason})
-        return ItemVerdict(item, "verified", good[0][1].reason, names, notes=notes)
+        return ItemVerdict(item, "verified", good[0][1].reason, names, notes=notes,
+                           decisive=[p.name for p, _ in good])  # fmt: skip
     unreachable = [o.reason for _, o in found if o.reason.startswith(UNREACHABLE)]
     if found and len(unreachable) == len(found):
         reason = reason or unreachable[0]
     why = reason or (
         "no probe reached it"
         if not found
-        else "no probe confirmed or contradicted it: " + "; ".join(o.reason for _, o in found)
+        else "no probe confirmed or contradicted it: "
+        + "; ".join(dict.fromkeys(o.reason for _, o in found))
     )
     return ItemVerdict(item, "unexercised", why, names)
+
+
+def _resolve_r1(found: Sequence[tuple[Probe, Outcome]]) -> list[tuple[Probe, Outcome]]:
+    """R1 outcomes resting on other callers' answers: a refusal on a missing row (no
+    row to own) is the role's only when some other caller got past it on a missing row
+    too (a 404, a 400...); when every caller is refused there, the row's absence may be
+    the reason (an app answering "not found or not yours" with a 403)."""
+    past: set[str] = set()
+    for p, o in found:
+        status = o.observed.get("status") if isinstance(o.observed, Mapping) else None
+        if p.args.get("missing_row") and isinstance(status, int) and status < 500 \
+                and status not in (401, 403):  # fmt: skip
+            past.add(p.args.get("handle") or "")
+    out: list[tuple[Probe, Outcome]] = []
+    for p, o in found:
+        if (isinstance(o.observed, Mapping) and o.observed.get("owner_refusal")
+                and p.args.get("handle") in past):  # fmt: skip
+            # a 403 on another user's row (an owner the profile knows) with another
+            # detail than the role refusal's, from a caller that gets past the check on
+            # a missing row: the owner check refused it, past the role check
+            o = Outcome(None, "admitted (403): the owner check's refusal -- another detail "
+                        "than the role refusal's, on another user's row, and the caller gets "
+                        "past the check on a missing row", {"status": 403}, False)  # fmt: skip
+        if p.args.get("missing_row") and o.refused is True:
+            if not past - {p.args.get("handle")}:
+                o = Outcome(None, f"undecided ({o.observed.get('status')}): every caller is "
+                            "refused on a missing row -- the row's absence may be why",
+                            {**o.observed, "undecided": "every caller refused on a missing row"},
+                            None)  # fmt: skip
+        out.append((p, o))
+    return out
+
+
+def replace_outcome(o: Outcome, **changes: Any) -> Outcome:
+    from dataclasses import replace
+
+    return replace(o, **changes)
+
+
+def _caller_flag(results: Sequence[tuple[Probe, Outcome]]) -> bool | None:
+    """One caller's (or role's) R1 decision from its probes' decisive outcomes: any
+    admission admits; else any refusal refuses; else None (nothing decides)."""
+    flags = [o.refused for _, o in results if o.refused is not None]
+    if any(f is False for f in flags):
+        return False
+    return True if flags else None
 
 
 def _contradicting(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> list[str]:
     """The probes whose answer contradicts the item's prediction, as judged: an R1
     caller decided against its prediction (refused although admitted, or admitted
-    although refused: every probe of it saying so), else an outcome ``ok`` False."""
+    although refused: its probes saying so), else an outcome ``ok`` False."""
     if item.kind != "R1":
         return [p.name for p, o in found if o.ok is False]
     split = _split_roles(found)
     if split:  # every decided probe of a split role contradicts one prediction or another
-        return [p.name for p, _ in found if p.args.get("caller") in split]
+        return [p.name for p, o in found
+                if p.args.get("caller") in split and o.refused is not None]  # fmt: skip
     by_caller: dict[str, list[tuple[Probe, Outcome]]] = {}
     for p, o in found:
         by_caller.setdefault(p.args["caller"], []).append((p, o))
     out: list[str] = []
     for results in by_caller.values():
-        flags = [o.refused for _, o in results]
-        refused = (False if any(f is False for f in flags)
-                   else True if flags and all(f is True for f in flags) else None)  # fmt: skip
+        refused = _caller_flag(results)
         if refused is not None and refused == results[0][0].args["allowed"]:
             out += [p.name for p, o in results if o.refused is refused]
     return out
@@ -2795,33 +3653,40 @@ def _contradicting(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> li
 
 def _split_roles(found: Sequence[tuple[Probe, Outcome]]) -> dict[str, dict[str, bool]]:
     """Roles whose callers answered differently: role -> handle -> refused -- one
-    admitted, another refused. The profile's roles then miss a distinction (an enum
-    column it does not model), so no auth spells the route. Read from the status alone
-    (the refusal rules leave a 403 of unknown detail undecided or "past the role
-    check"): 401/403 refused; on a request every caller sends alike (no row addressed)
-    any other answer is past the auth check, so admitted; on a row of the caller's own,
-    a 2xx admits. (A row the profile names no owner of is not "no one's": the app may
-    check an owner the profile does not know, so another user's row never counts.)"""
-    per: dict[str, dict[str, bool]] = {}
+    admitted, another refused, each decided by its own decisive outcomes (an answer with
+    more than one explanation decides no caller). The profile's roles then miss a
+    distinction (an enum column it does not model), so no auth spells the route. On the
+    request every caller sends alike (no row addressed) the answers compare by status
+    alone: a 401/403 to one caller and a 2xx or another 4xx to another caller of the
+    role, for the very same request, is a distinction between them whatever the 403's
+    detail."""
+    per: dict[str, dict[str, list[tuple[Probe, Outcome]]]] = {}
     for p, o in found:
         handle = p.args.get("handle")
-        status = (o.observed or {}).get("status") if isinstance(o.observed, Mapping) else None
-        if handle is None or p.args.get("credential") or not isinstance(status, int):
+        if handle is None or p.args.get("credential"):
             continue
-        refused = status in (401, 403)
-        if p.args.get("same_request"):
-            pass
-        elif not p.args.get("owns_target", True):
-            continue
-        elif not (refused or _ok(status)):
-            continue
-        status = 403 if refused else 200
-        mine = per.setdefault(p.args["caller"], {})
-        mine[handle] = mine.get(handle, True) and not _ok(status)  # any admission admits
-    return {role: hs for role, hs in per.items() if len(set(hs.values())) > 1}
+        status = o.observed.get("status") if isinstance(o.observed, Mapping) else None
+        if p.args.get("same_request") and o.refused is None and isinstance(status, int):
+            if status in (401, 403):
+                o = replace_outcome(o, refused=True)
+            elif status < 500 and status != 405 and not _ok(status):
+                o = replace_outcome(o, refused=False)
+        per.setdefault(p.args["caller"], {}).setdefault(handle, []).append((p, o))
+    out: dict[str, dict[str, bool]] = {}
+    for role, handles in per.items():
+        flags = {h: _caller_flag(rs) for h, rs in handles.items()}
+        decided = {h: f for h, f in flags.items() if f is not None}
+        if len(set(decided.values())) > 1:
+            out[role] = decided
+    return out
 
 
 def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemVerdict:
+    """R1's verdict: refuted when callers of one role answered differently, or a caller
+    was decided against the prediction; verified only when every role a probed caller
+    holds is decided as predicted (the ``decisive`` probes) -- and no caller of a role
+    decided admitted was refused in a way that may be the role's (an ambiguous 403:
+    then ``unclear``); else unexercised."""
     names = [p.name for p, _ in found]
     split = _split_roles(found)
     if split:
@@ -2832,7 +3697,8 @@ def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemV
             )  # fmt: skip
             for role, hs in sorted(split.items())
         )
-        witness = next(p.name for p, _ in found if p.args.get("caller") in split)
+        witness = next(p.name for p, o in found
+                       if p.args.get("caller") in split and o.refused is not None)  # fmt: skip
         return ItemVerdict(
             item,
             "refuted",
@@ -2841,24 +3707,21 @@ def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemV
             names,
             {"split_roles": sorted(split)},
             witness=witness,
+            decisive=[
+                p.name for p, o in found if p.args.get("caller") in split and o.refused is not None
+            ],  # fmt: skip
         )
     by_caller: dict[str, list[tuple[Probe, Outcome]]] = {}
     for p, o in found:
         by_caller.setdefault(p.args["caller"], []).append((p, o))
     admitted: list[str] = []
     wrong: list[tuple[str, Probe]] = []
-    decided = 0
-    decided_callers: list[str] = []
+    decided: dict[str, bool] = {}
     for caller, results in by_caller.items():
-        flags = [o.refused for _, o in results]
-        if any(f is False for f in flags):
-            refused = False
-        elif flags and all(f is True for f in flags):
-            refused = True
-        else:
+        refused = _caller_flag(results)
+        if refused is None:
             continue
-        decided += 1
-        decided_callers.append(caller)
+        decided[caller] = refused
         allowed = results[0][0].args["allowed"]
         if not refused:
             admitted.append(caller)
@@ -2866,7 +3729,6 @@ def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemV
             witness = next(p for p, o in results if o.refused is refused)
             wrong.append((caller, witness))
     observed = {"allowed": sorted(admitted)}
-    roles_decided = [c for c in by_caller if c not in NON_ROLE_CALLERS and c in decided_callers]
     if wrong:
         callers = ", ".join(
             f"{c} {'refused' if p.args['allowed'] else 'admitted'}" for c, p in wrong
@@ -2878,20 +3740,71 @@ def _r1_verdict(item: RuleItem, found: Sequence[tuple[Probe, Outcome]]) -> ItemV
             names,
             observed,
             witness=wrong[0][1].name,
+            decisive=[
+                p.name for c, _ in wrong for p, o in by_caller[c] if o.refused is decided[c]
+            ],  # fmt: skip
         )
-    if not any(c not in NON_ROLE_CALLERS for c in by_caller):
+    roles = [c for c in by_caller if c not in NON_ROLE_CALLERS]
+    if not roles:
         # the prediction is about which roles are admitted: anonymous, a malformed token
         # and the inactive user alone never verify it
         return ItemVerdict(
             item,
             "unexercised",
             "no callers: no user of any role was logged in, so no probe shows who is "
-            "admitted" + (f" ({decided} non-role callers as predicted)" if decided else ""),
+            "admitted" + (f" ({len(decided)} non-role callers as predicted)" if decided else ""),
             names,
         )
-    if roles_decided:
-        return ItemVerdict(item, "verified", f"{decided} callers as predicted", names)
-    return ItemVerdict(item, "unexercised", "no role caller's refusal could be told apart", names)
+    # a caller of a role decided admitted whose own answers are all undecided, one of
+    # them a 403 that may be the role's refusal (on a row not its own): the role may be
+    # split -- the profile's roles missing a distinction the probes cannot see
+    doubt = []
+    for role in roles:
+        if decided.get(role) is not False:
+            continue
+        handles: dict[str, list[tuple[Probe, Outcome]]] = {}
+        for p, o in by_caller[role]:
+            handles.setdefault(p.args.get("handle") or "", []).append((p, o))
+        for h, rs in handles.items():
+            if _caller_flag(rs) is None and any(
+                isinstance(o.observed, Mapping) and o.observed.get("status") in (401, 403)
+                for _, o in rs
+            ):
+                doubt.append(f"{h} ({role})")
+    if doubt:
+        return ItemVerdict(
+            item,
+            "unclear",
+            f"{', '.join(doubt)}: refused only where an ownership refusal and a role refusal "
+            "answer alike (a 403 on rows not its own; on a missing row every caller is "
+            "refused alike), while other callers of the role are admitted -- the role may be "
+            "split",
+            names,
+            observed,
+        )
+    open_roles = [r for r in roles if r not in decided]
+    if open_roles:
+        why = "; ".join(
+            f"{role}: " + "; ".join(dict.fromkeys(
+                o.observed.get("undecided", o.reason) if isinstance(o.observed, Mapping)
+                else o.reason for _, o in by_caller[role]))
+            for role in open_roles
+        )  # fmt: skip
+        return ItemVerdict(item, "unexercised", f"no answer decides {', '.join(open_roles)} -- "
+                           f"{why}", names, observed)  # fmt: skip
+    return ItemVerdict(
+        item,
+        "verified",
+        f"{len(decided)} callers as predicted",
+        names,
+        decisive=[
+            p.name
+            for c, rs in by_caller.items()
+            if c in decided
+            for p, o in rs
+            if o.refused is decided[c]
+        ],  # fmt: skip
+    )
 
 
 def _post_hoc(
@@ -2916,8 +3829,15 @@ def _post_hoc(
                 rows = _rows_in(answer.body, schema, key)
                 if any(col in r for r in rows):
                     shown.append(p.name)
-                elif rows and _ok(answer.status):
+                elif rows and _reached(answer, ctx.api, None, ctx.refusals):
                     rows_seen.append(p.name)
+            for name in shown + rows_seen:
+                says = "contradicts" if name in shown else "confirms"
+                result.probes[name].setdefault("bearing", {})[item_id] = {
+                    "decisive": True,
+                    "says": says,
+                    "why": f"a {table} row {'with' if says == 'contradicts' else 'without'} {col}",
+                }
             if shown:
                 result.items[item_id] = ItemVerdict(
                     item,
@@ -2926,6 +3846,7 @@ def _post_hoc(
                     shown,
                     {"shown_by": shown[:5]},
                     witness=shown[0],
+                    decisive=shown,
                 )
             elif rows_seen:
                 result.items[item_id] = ItemVerdict(
@@ -2933,6 +3854,7 @@ def _post_hoc(
                     "verified",
                     f"{len(rows_seen)} answers show {table} rows without {col}",
                     rows_seen[:20],
+                    decisive=rows_seen[:20],
                 )
             else:
                 result.items[item_id] = ItemVerdict(
@@ -2944,16 +3866,23 @@ def _post_hoc(
             stored = set(item.predicted["stored"])
             sql = sql_names.get(table, table)
             seen: dict[str, str] = {}
+
+            # a value only the seed holds is the import's own (its seeder wrote it), not
+            # the app's: only a value a probe wrote (a new row, a changed column) is
+            seeded = {_row_ident(row, tables[table]): row.get(col) for row in ctx.seed.get(sql, [])}
             for p in probes:
                 _, after = answers[p.name]
                 for row in after.get(sql, []):
                     v = row.get(col)
-                    if v is not None and v not in stored:
+                    ident = _row_ident(row, tables[table])
+                    written = ident not in seeded or seeded[ident] != v
+                    if v is not None and v not in stored and written:
                         seen.setdefault(str(v), p.name)
-            for row in ctx.seed.get(sql, []):
-                v = row.get(col)
-                if v is not None and v not in stored:
-                    seen.setdefault(str(v), "(seed)")
+            ours = sorted({str(row.get(col)) for row in ctx.seed.get(sql, [])
+                           if row.get(col) is not None and row.get(col) not in stored})  # fmt: skip
+            if ours:
+                result.notes.append(f"{item_id}: the import's seed holds values outside the "
+                                    f"list {ours}: the seed's, not the app's")  # fmt: skip
             if seen:
                 first = next(iter(seen.values()))
                 result.items[item_id] = ItemVerdict(
@@ -2963,6 +3892,7 @@ def _post_hoc(
                     sorted(set(seen.values())),
                     {"stored": sorted(seen)},
                     witness=first,
+                    decisive=sorted(set(seen.values())),
                 )
             elif (
                 result.items[item_id].verdict == "unexercised" and not result.items[item_id].probes
@@ -2971,6 +3901,12 @@ def _post_hoc(
                     f"no route writes {table}.{col} through a parameter "
                     "(every stored value is listed)"
                 )
+
+
+def _row_ident(row: Mapping[str, Any], schema: Schema) -> Any:
+    """A row by its key (one column), else by all of it."""
+    key = _key_column(schema)
+    return _k(row.get(key)) if key else tuple(sorted((k, str(v)) for k, v in row.items()))
 
 
 def _route_5xx(
@@ -2991,6 +3927,18 @@ def _route_5xx(
             for p in mine
             if answers[p.name][0].status >= 500 and answers[p.name][0].status not in stated
         ]
+        # a probe refused before the handler ran (a 401/403, the router's 404 or 405)
+        # shows nothing about the handler's errors
+        past = [p for p in mine if _past_auth(answers[p.name][0])]
+        for p in mine:
+            ok = p in past and p not in loud
+            result.probes[p.name].setdefault("bearing", {})[item_id] = {
+                "decisive": p in past or p in loud,
+                "says": "contradicts" if p in loud else "confirms" if ok else "neither",
+                "why": (f"answered an unstated {answers[p.name][0].status}" if p in loud
+                        else "answered past the auth check without a 5xx" if ok
+                        else f"refused before the handler ran ({answers[p.name][0].status})"),
+            }  # fmt: skip
         if loud:
             first = answers[loud[0].name][0]
             result.items[item_id] = ItemVerdict(
@@ -3000,11 +3948,19 @@ def _route_5xx(
                 [p.name for p in loud],
                 {"status": first.status, "body": first.body},
                 witness=loud[0].name,
+                decisive=[p.name for p in loud],
             )
-        elif mine:
+        elif past:
             result.items[item_id] = ItemVerdict(
-                item, "verified", f"no unstated 5xx in {len(mine)} probes", [p.name for p in mine]
-            )
+                item, "verified", f"no unstated 5xx in {len(mine)} probes ({len(past)} past the "
+                "auth check)", [p.name for p in mine], decisive=[p.name for p in past]
+            )  # fmt: skip
+        elif mine:
+            statuses = sorted({answers[p.name][0].status for p in mine})
+            result.items[item_id] = ItemVerdict(
+                item, "unexercised", f"no probe got past the auth check to the handler "
+                f"(answers {statuses})", [p.name for p in mine]
+            )  # fmt: skip
         else:
             result.items[item_id] = ItemVerdict(item, "unexercised", "no probe of the route ran")
 
@@ -3036,8 +3992,11 @@ def _raw_contradictions(v: ItemVerdict, probes: Mapping[str, Mapping[str, Any]])
 def check_verdicts(result: RuleResult) -> None:
     """The self-check: no item is ``verified`` while one of its recorded probes
     contradicts its prediction -- as judged (``RuleResult.contradicted``) or, for R1,
-    as the anonymous answer itself shows (:func:`_raw_contradictions`). One that is
-    raises :class:`VerdictInvariantError`: an internal error of a verdict path."""
+    as the anonymous answer itself shows (:func:`_raw_contradictions`) -- nor without a
+    decisive probe supporting it (``ItemVerdict.decisive``: an answer with one
+    explanation, the one predicted; when the probe's record states its bearing, that
+    bearing is decisive too). One that is raises :class:`VerdictInvariantError`: an
+    internal error of a verdict path."""
     bad = []
     for item_id, v in result.items.items():
         if v.verdict != "verified":
@@ -3046,6 +4005,11 @@ def check_verdicts(result: RuleResult) -> None:
         if against:
             bad.append(f"{item_id}: verified although {', '.join(dict.fromkeys(against))} "
                        "contradict it")  # fmt: skip
+        support = [n for n in v.decisive
+                   if (result.probes.get(n, {}).get("bearing", {}).get(item_id) or
+                       {"decisive": True})["decisive"]]  # fmt: skip
+        if not support:
+            bad.append(f"{item_id}: verified with no decisive probe supporting it")
     if bad:
         raise VerdictInvariantError("; ".join(bad))
 

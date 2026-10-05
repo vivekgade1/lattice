@@ -87,6 +87,9 @@ class ColumnSpec:
     # how the app stores each of ``choices`` (SQLAlchemy's Enum: the member name), when
     # it differs; () when values are stored as they are. The raw-SQL seed writes these
     stored: tuple[str, ...] = ()
+    # the text format the column validates (FieldSpec.format: a slug, a URL...): the seed
+    # writes values of it (lattice.importer.formats)
+    format: str | None = None
 
 
 @dataclass(frozen=True)
@@ -375,6 +378,11 @@ def _seed_value(
         return uuid.uuid5(ns, f"{t.name}/{c.name}/{i}")
     if c.type == "email":
         return f"{t.name}.{i}@example.com"
+    if c.format:  # a slug, a URL...: a value the field (and a router) accepts
+        from lattice.importer.formats import seed_value
+
+        return seed_value(c.format, f"{c.name.replace('_', ' ').title()} {i + 1:02d}", i,
+                          c.max_len)  # fmt: skip
     return _text(c, f"{c.name.replace('_', ' ').title()} {i + 1:02d}")
 
 

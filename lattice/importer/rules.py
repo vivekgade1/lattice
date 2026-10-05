@@ -500,6 +500,10 @@ def _no_nulls(plan: SeedPlan, tables: Sequence[TableSpec], auth: AuthSpec) -> No
                     continue
                 if c.type in ("str", "email") and (own or not filled):
                     text = f"{c.name.replace('_', ' ').title()} {i + 1:02d}"
+                    if c.format and c.type != "email":  # a slug, a URL...: of the format
+                        from lattice.importer.formats import seed_value
+
+                        text = seed_value(c.format, text, i, c.max_len)
                     r[c.name] = f"{t.name}.{c.name}.{i}@example.com" if c.type == "email" else text
                 elif filled and not own:
                     r[c.name] = filled[i % len(filled)]

@@ -237,14 +237,23 @@ def test_layer_r_on_the_original_reports_no_findings(clean):
     assert v["R2 POST /orders"] == "verified"
     assert v["R2 PATCH /vendors/me"] == "verified"  # an update without an id: own rows only
     assert v["R2 GET /vendors/me"] == "verified"  # a read without an id: own row only
-    assert v["R2 PATCH /orders/{order_id}/status"] == "verified"  # owner_scope any
+    # owner_scope any: the vendors' write to another user's order answers 400 ("cannot
+    # transition from delivered", the seed's order 1 being final) -- no sign the row was
+    # reached (a 400 may come before the row is read), nor a refusal: undecided (post-hoc
+    # round 2 2026-10-05; it was "verified" on that 400)
+    assert v["R2 PATCH /orders/{order_id}/status"] == "unexercised"
     assert v["R3 POST /orders 409"] == "verified"
     assert v["R3 PATCH /orders/{order_id}/status 404 Order not found"] == "verified"
+    # the hand profile names no owner of Product: victor's 403 "You do not own this
+    # product" on vicky's products cannot be told from a role refusal (another vendor,
+    # vicky, is admitted) -- unclear, not verified (post-hoc round 2)
+    open_r1 = {"R1 PATCH /products/{product_id}": "unclear"}
     for route in route_contracts(MV_SPEC):
-        assert v[f"R1 {route.endpoint}"] == "verified", clean.rules.items[f"R1 {route.endpoint}"]
+        item = f"R1 {route.endpoint}"
+        assert v[item] == open_r1.get(item, "verified"), clean.rules.items[item]
         assert v[f"R3 {route.endpoint} 5xx"] == "verified"
     assert "refuted" not in v.values()
-    assert "unclear" not in v.values()
+    assert [i for i, x in v.items() if x == "unclear"] == list(open_r1)
 
 
 def test_verified_items_name_their_probes(clean):

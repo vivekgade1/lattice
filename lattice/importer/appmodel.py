@@ -62,6 +62,9 @@ class FieldSpec:
     # a request field the app takes but never answers (DRF's ``write_only``): a
     # private-column candidate
     write_only: bool = field(default=False, metadata=OMIT_DEFAULT)
+    # the text format the field validates (FORMATS: "slug", "url", "ip"): the seed and the
+    # probes give it values of that format (a slug the router and the field accept)
+    format: str | None = field(default=None, metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)
@@ -170,6 +173,9 @@ class RouteParam:
     # a path parameter looking its row up by a column that is not the key (DRF's
     # ``lookup_field = "slug"``): that column's name
     lookup: str | None = field(default=None, metadata=OMIT_DEFAULT)
+    # the text format the parameter takes (FieldSpec.format: Django's ``<slug:...>``
+    # path converter, a lookup column's field)
+    format: str | None = field(default=None, metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)

@@ -282,6 +282,8 @@ def column(field: Any) -> FieldSpec:
         target = field.target_field
         fk = f"{target.model._meta.db_table}.{target.column}"
     typ = field_type(field)
+    from lattice.importer.formats import of_django_field
+
     return FieldSpec(
         name=field.column,
         annotation=type(field).__name__,
@@ -295,6 +297,8 @@ def column(field: Any) -> FieldSpec:
         index=bool(field.db_index),
         tz_aware=typ == "DateTime" and bool(getattr(settings, "USE_TZ", False)),
         choices=choices,
+        # a slug, a URL, an IP address (an email has its own type): the values it takes
+        format=None if field.is_relation or choices else of_django_field(field),
         **bounds,
     )
 

@@ -13,6 +13,14 @@ class Topic(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
 
 
+class Page(models.Model):
+    """A shared table of formatted fields: a slug its routes look rows up by, a URL."""
+
+    slug = models.SlugField(max_length=40, unique=True)
+    link = models.URLField(max_length=200)
+    title = models.CharField(max_length=100)
+
+
 class Comment(models.Model):
     topic = models.ForeignKey(Topic, related_name="comments", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

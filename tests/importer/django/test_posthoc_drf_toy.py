@@ -124,6 +124,40 @@ def test_a_lookup_field_path_is_filled_with_that_columns_value(imported):
     assert paths and all(not p.rstrip("/").rsplit("/", 1)[1].isdigit() for p in paths), paths
 
 
+def test_the_front_end_reads_the_fields_formats(imported):
+    """Post-hoc round 2: ``SlugField`` / ``URLField`` columns and serializer fields, and
+    the slug a ``lookup_field`` route takes, carry their format."""
+    model = imported["model"]
+    page = next(t for t in model["tables"] if t["name"] == "Page")
+    formats = {c["name"]: c.get("format") for c in page["columns"]}
+    assert (formats["slug"], formats["link"], formats["title"]) == ("slug", "url", None)
+    param = next(p for p in routes(model)[("GET", "/api/pages/{slug}/")]["params"]
+                 if p["source"] == "path")  # fmt: skip
+    assert (param["lookup"], param["format"]) == ("slug", "slug")
+
+
+def test_slug_routes_are_reached_and_verified_not_falsely_refuted(imported):
+    """H1 drf_blog's ``{slug}`` routes: the seed's slugs (and the probes' values) are
+    slugs, so every probe reaches the route -- no answer is the router's 404, and the
+    routes' auth verifies (never "anonymous admitted" on a 404)."""
+    import re
+
+    rules = imported["rules"]
+    items = _items(imported)
+    for route in ("GET /api/pages/{slug}/", "PUT /api/pages/{slug}/",
+                  "DELETE /api/pages/{slug}/", "POST /api/pages/"):  # fmt: skip
+        v = items[f"R1 {route}"]
+        assert v["verdict"] == "verified", (route, v["reason"])
+    paths = [p["request"]["path"] for p in rules["probes"].values()
+             if p["route"].startswith(("GET /api/pages/{", "PUT /api/pages/{"))]  # fmt: skip
+    assert paths and all(re.fullmatch(r"/api/pages/[-a-zA-Z0-9_]+/", p) for p in paths), paths
+    assert not [n for n, p in rules["probes"].items() if p["route"].startswith(
+        ("GET /api/pages/{", "PUT /api/pages/{", "DELETE /api/pages/{"))
+        and p["status"] == 404 and isinstance(p["body"], str)]  # fmt: skip
+    for item in ("T3 Page.slug max_len 40", "T3 Page.link max_len 200"):
+        assert items[item]["verdict"] == "verified", (item, items[item]["reason"])
+
+
 def test_owner_or_staff_is_never_corrected_to_admin(imported):
     items = _items(imported)
     for route in ("PUT /api/topics/{pk}/", "DELETE /api/topics/{pk}/"):

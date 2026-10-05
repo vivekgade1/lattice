@@ -151,6 +151,7 @@ def table_spec(t: TableModel, api: ApiProfile) -> TableSpec:
                 foreign_key=c.foreign_key,
                 choices=c.choices,
                 stored=tuple(c.choice_names) if c.choice_names else (),
+                format=c.format,
                 **_bounds(c),
             )
         )

@@ -78,7 +78,10 @@ def test_the_fastapi_apps_have_no_table_outside_the_api(justnotes):
 def _items(*records: tuple[str, str, str, str]) -> dict[str, ItemVerdict]:
     out = {}
     for item_id, kind, subject, verdict in records:
-        out[item_id] = ItemVerdict(RuleItem(item_id, kind, subject, ""), verdict, "")
+        # a verified record names a decisive probe (the self-check refuses one without)
+        decisive = ["p"] if verdict == "verified" else []
+        out[item_id] = ItemVerdict(RuleItem(item_id, kind, subject, ""), verdict, "",
+                                   decisive=decisive)  # fmt: skip
     return out
 
 
