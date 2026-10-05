@@ -46,6 +46,8 @@ phase2_apps = [
     "django-filter>=26.2",
     "djangorestframework>=3.18.1",
     "djangorestframework-simplejwt>=5.5.1",
+    "drf-spectacular>=0.30.0",
+    "drf-spectacular-sidecar>=2026.10.1",
     "flask>=3.1.3",
     "flask-cors>=6.0.5",
     "flask-httpauth>=4.8.1",
@@ -54,6 +56,7 @@ phase2_apps = [
     "flask-mail>=0.10.0",
     "flask-marshmallow>=1.3,<1.5",
     "flask-sqlalchemy>=3.1.1",
+    "loguru>=0.7.3",
     "markdown>=3.11",
     "marshmallow>=3.26,<4",
     "marshmallow-sqlalchemy>=1.5.0",
@@ -88,6 +91,10 @@ extend-exclude = [
     "tests/fixtures/diag_hints",
     "tests/t2ir/golden",
     "tests/importer/goldens",
+    "bench/heldout",
+    "bench/import_repos/drf_blog",
+    "bench/import_repos/projmgmt",
+    "bench/import_repos/conduit",
 ]
 
 [tool.ruff.lint]

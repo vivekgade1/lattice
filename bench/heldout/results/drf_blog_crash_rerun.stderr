@@ -1,0 +1,91 @@
+/Users/vivekgade/Documents/lattice-phase2-heldout/bench/import_repos/drf_blog/src/account/api/serializers.py:47: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+  if not match("^989\d{2}\s*?\d{3}\s*?\d{4}$", value):
+/Users/vivekgade/Documents/lattice-phase2-heldout/bench/import_repos/drf_blog/src/account/api/serializers.py:47: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+  if not match("^989\d{2}\s*?\d{3}\s*?\d{4}$", value):
+/Users/vivekgade/Documents/lattice-phase2-heldout/bench/import_repos/drf_blog/src/account/api/serializers.py:47: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+  if not match("^989\d{2}\s*?\d{3}\s*?\d{4}$", value):
+/Users/vivekgade/Documents/lattice-phase2-heldout/bench/import_repos/drf_blog/src/account/api/serializers.py:47: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+  if not match("^989\d{2}\s*?\d{3}\s*?\d{4}$", value):
+/Users/vivekgade/Documents/lattice-phase2-heldout/bench/import_repos/drf_blog/src/account/api/serializers.py:47: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+  if not match("^989\d{2}\s*?\d{3}\s*?\d{4}$", value):
+/Users/vivekgade/Documents/lattice-phase2-heldout/bench/import_repos/drf_blog/src/account/api/serializers.py:47: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+  if not match("^989\d{2}\s*?\d{3}\s*?\d{4}$", value):
+/Users/vivekgade/Documents/lattice-phase2-heldout/bench/import_repos/drf_blog/src/account/api/serializers.py:47: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+  if not match("^989\d{2}\s*?\d{3}\s*?\d{4}$", value):
+/Users/vivekgade/Documents/lattice-phase2-heldout/bench/import_repos/drf_blog/src/account/api/serializers.py:47: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+  if not match("^989\d{2}\s*?\d{3}\s*?\d{4}$", value):
+Traceback (most recent call last):
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/utils.py", line 101, in inner
+    return func(*args, **kwargs)
+sqlite3.IntegrityError: FOREIGN KEY constraint failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/lattice/importer/__main__.py", line 5, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/lattice/importer/cli.py", line 156, in main
+    return _rules_only(p, args, root)
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/lattice/importer/cli.py", line 228, in _rules_only
+    imported = import_rules(root, args.package, framework=framework,
+                            app_factory=args.app_factory, dialect=args.dialect)  # fmt: skip
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/lattice/importer/rules.py", line 939, in import_rules
+    rules = run_probes(spec, sessions, seeder.make_db,
+                       observe=recorder.observe if recorder else None,
+                       **args("seed"))  # type: ignore[arg-type]  # fmt: skip
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/lattice/spec/probes.py", line 2373, in run_probes
+    seed_db = Path(make_db(variant, tmp / "seed.db"))
+                   ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/lattice/importer/rules.py", line 328, in make_db
+    self._write(variant, target)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/lattice/importer/rules.py", line 340, in _write
+    self.insert_hook(path, plan)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/lattice/importer/frontends/django_orm.py", line 341, in hook
+    model.objects.bulk_create(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        [model(**{attnames.get(k, k): val for k, val in row.items()}) for row in rows]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/models/query.py", line 900, in bulk_create
+    returned_columns = self._batched_insert(
+        objs_with_pk,
+    ...<4 lines>...
+        unique_fields=unique_fields,
+    )
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/models/query.py", line 2204, in _batched_insert
+    self._insert(
+    ~~~~~~~~~~~~^
+        item,
+        ^^^^^
+    ...<5 lines>...
+        returning_fields=returning_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/models/query.py", line 2166, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/models/sql/compiler.py", line 1964, in execute_sql
+    rows = self.connection.ops.fetch_returned_rows(
+        cursor, self.returning_params
+    )
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/backends/base/operations.py", line 404, in fetch_returned_rows
+    return cursor.fetchall()
+           ~~~~~~~~~~~~~~~^^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/utils.py", line 100, in inner
+    with self:
+         ^^^^
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/utils.py", line 94, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/vivekgade/Documents/lattice-phase2-heldout/.venv/lib/python3.14/site-packages/django/db/utils.py", line 101, in inner
+    return func(*args, **kwargs)
+django.db.utils.IntegrityError: FOREIGN KEY constraint failed
