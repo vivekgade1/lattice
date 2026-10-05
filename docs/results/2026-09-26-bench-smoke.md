@@ -1462,3 +1462,147 @@ routes verified, against the ≥ 90% bar.
 
 The held-out run's numbers will be **the** Phase 2 result. Fixes made after seeing them go
 into a separately labelled post-hoc run.
+
+## Roadmap Phase 1: the spec loop on Python (pre-registered, 2026-10-04/05)
+
+Spec: `docs/superpowers/specs/2026-10-04-phase1-loop-experiment.md`, frozen in `7574876`
+before any run. Every run went through the CLI, plan-billed (no API key).
+
+**Arms** (t31–t44 multi-vendor, 6 reps each):
+- **P:** Python from the ticket.
+- **Q:** Python plus pycheck feedback.
+- **S:** the model drafts a spec delta, the owner's approval is simulated against the
+  reference, then Python is checked on layers A–D and repaired.
+- **S\*:** as S, but with the owner's blind delta.
+
+**Protocol incidents, both handled before any analysis:**
+1. **Code drift.** The first S run read code from a working tree that changed under
+   it, at 19:38. Its 21 records were set aside (`phase1_sonnet-5_S.discarded-codedrift.jsonl`).
+   P and Q had finished at 19:34. S, S\* and both Haiku arms were then rerun from a
+   checkout pinned to `7574876`.
+2. **Usage limit.** The plan's usage limit stopped Haiku S after 11 runs. It resumed
+   the next morning with `--resume`.
+   - One Haiku S run (t38 rep 0) is a harness error, which counts as loud. The approval
+     step crashed on a draft whose `given` rows collided with seed ids (`IntegrityError`).
+     The pre-registered rule redid it on resume, and it crashed the same way. Analysis
+     keeps the last record per run.
+
+### Outcomes as pre-registered
+
+| model | arm | correct | silent | loud | $/correct | rounds | s/run |
+|---|---|---|---|---|---|---|---|
+| Sonnet | P | 67/84 | 16/84 | 1 | 0.128 | 1.07 | 32 |
+| Sonnet | Q | 67/84 | 15/84 | 2 | 0.139 | 1.19 | 34 |
+| Sonnet | S | 74/84 | **9/84** | 1 | 0.288 | 1.11 | 95 |
+| Sonnet | S\* | **80/84** | **0/84** | 4 | **0.121** | 1.17 | 51 |
+| Haiku | P | 23/84 | 59/84 | 2 | 0.223 | 1.35 | 67 |
+| Haiku | S | **47/84** | **29/84** | 8 | 0.285 | 2.20 | 194 |
+
+Spec error rate (rejected / drafted rules): Sonnet S **5.1%** (23/453), Haiku S
+**20.2%** (117/579). Both are under the 25% bar, and no draft failed validation.
+
+### Pre-registered verdicts
+
+| test | verdict (pre-registered oracle) | Fisher p | after the oracle review |
+|---|---|---|---|
+| **H1** Sonnet, S vs P | **NOT CONFIRMED** (fewer silent fails) | 0.096 | NOT CONFIRMED, p = 0.071 |
+| **H2** Sonnet, S vs Q | **NOT CONFIRMED** | 0.135 | CONFIRMED, p = 0.047 (post hoc) |
+| **H3** Sonnet, S\* vs S | descriptive: S\* 0 silent, 80 correct, cheapest per correct change | — | unchanged |
+| **H4** Haiku, S vs P | **CONFIRMED** (sign test 10–1, guard 56% vs 27%, spec bar 20.2%) | < 0.0001 | CONFIRMED (silent 25 vs 54) |
+
+### Oracle review (`docs/results/2026-10-05-phase1-oracle-review-sonnet.md`)
+
+All 40 Sonnet silent runs reproduce; 33 are genuine.
+- **The 7 oracle defects** are all on t36. The candidate refused with 403 and left the
+  database unchanged, as the reference does; only the message differed. The ticket states
+  no message for that refusal.
+- **Correction** (`bench/edit_slice/repos/multivendor.py`, STATUS_ONLY): t36/t38
+  refusals and unknown orders are compared on status and effects only. The 166
+  option-1 oracle tests still pass.
+- **Rescore:** offline, every arm and both models, with no new model calls.
+  - Sonnet P 16 → 13, Q 15 → 14, S 9 → 6, S\* 0 → 0.
+  - Haiku P 59 → 54, S 29 → 25.
+- The H2 flip comes from a post-hoc correction with p just under 0.05, so the
+  pre-registered verdict is the headline.
+
+**Genuine failure mechanisms (Sonnet):**
+
+| mechanism | P | Q | S | S\* |
+|---|---|---|---|---|
+| partial write (t38) | 6 | 0 | 0 | 0 |
+| price 0 accepted with no bound (t39, t43) | 7 | 0 | 0 | 0 |
+| price bound written `ge=0` instead of `gt=0` | 0 | 10 | 5 | 0 |
+| `version` missing from a response | 0 | 0 | 2 | 0 |
+| stated message replaced by a role-check message | 0 | 3 | 1 | 0 |
+
+**What the drafts missed:** in every S silent run, the candidate passed its own approved
+spec. The draft simply did not state the failing rule: a zero-price scenario, or a
+`version` field in a subset body. In the 4 S runs whose draft did test price 0, the
+candidate got the bound right.
+
+### Observations
+1. **When the spec states the rule, the loop catches it.**
+   - S\* had no silent runs out of 84 (P had 16), at the lowest cost per correct change.
+   - The remaining weakness is spec authoring: the model's own drafts leave edge cases
+     unstated (Sonnet S: 9 silent, all rules its draft never stated).
+   - This matches Phase 0's 44/50 blind number.
+2. **The loop helps the weaker model most.** Haiku's silent runs halve (59 → 29) and its
+   correct runs double (23 → 47). That is the strongest pre-registered result in the
+   project so far.
+3. **On Sonnet the effect is in the right direction but small** (16 → 9). Q's static checks
+   alone did not help overall: they removed the partial writes, but bounds came out as
+   `ge=0`.
+4. **Catches by layer:** on Sonnet, every repair fed back came from scenarios (D). On
+   Haiku, all four layers fed back: A 5, B 51, C 47, D 76 repair rounds.
+5. **Leftover check findings on correct runs:** 15 Haiku S runs the oracle scores correct
+   end with check findings still open (94 in all). There are none on Sonnet. In these
+   runs the draft states details the oracle doesn't compare, such as exact messages the
+   reference gives. The checker held the model to its own spec, which costs extra rounds:
+   Haiku S averaged 2.20 rounds and 194 s per run.
+6. **Cost:** S costs about 2.3× P per correct change on Sonnet, because of the spec step and
+   larger prompts. S\* costs the same as P.
+7. **Threats that applied:**
+   - simulated approval against the reference (optimistic);
+   - one app and its tickets, with the base spec reviewed on them;
+   - the code-drift restart;
+   - the Haiku harness error;
+   - timing (s/run) was measured while other work ran on the machine.
+
+## Roadmap Phase 2: held-out result (2026-10-05) — exit NOT met
+
+The one frozen run per app (importer `1cda54a`) is recorded in `bench/heldout/RESULTS.md`.
+A fresh agent vendored the apps (`bench/import_repos/{drf_blog,projmgmt,conduit}`), ran
+each import once, then reviewed the reports by hand.
+
+| app | framework | tables | routes | fidelity | verdict |
+|---|---|---|---|---|---|
+| H1 drf_blog | Django + DRF | crash | crash | not run | **fail** |
+| H2 projmgmt | Flask + SQLAlchemy | 1/3 | 23/23 by the script (review: 8 of 23 R1 verdicts right) | fail | **fail** |
+| H3 conduit | Django + DRF | 1/1 by the script (review: 1/6) | 24/26 by the script (review: 21/26) | fail | **fail** |
+
+**What failed:**
+1. **H1 crashed in the importer's seeder.** It inserted `blog_blog` rows before the custom
+   users table they reference (`django_orm.py:341`, a seed-order bug).
+2. **The verifier overstated (soundness bugs).**
+   - On H2 the importer found no login (a JSON login, missed). It then ran with no
+     callers, and still marked 23 `Public` R1 contracts "verified", although 15
+     anonymous probes answered 401.
+   - On H3 the front end missed ORM calls inside plain `ViewSet` methods. It then
+     dropped 5 used tables as "outside the API", which inflated tables to 1/1.
+   - On H3, wrong-credential answers on the public token routes were counted as
+     refusals.
+3. **Missed facts:**
+   - H2's JSON login and its manager/employee role enum;
+   - the enum's stored spelling in the importer's own seed;
+   - H3's owner-or-staff permissions, which were corrected to admin-only.
+4. **What it got right:** 10 of 13 H3 corrections, including all 5 upstream 500s; 21
+   correct R1 verdicts on H3; 8 of 9 mined proposals true.
+5. **Contamination check:** the importer had a test written "for drf_blog_api's kind" of
+   login before the freeze (W3). It didn't help, because H1 crashed first. No other
+   held-out identifier appears in the code.
+
+**What it says:** the dev-app gate (7 of 8) did not carry over to unseen apps. The most
+serious finding is that the verifier can report "verified" when its own probes contradict
+it. That has to be fixed before any number from layer R is trusted. Per the plan, fixes
+from here on are a separately labelled post-hoc run, and a fresh held-out app is needed
+for the exit to count.
