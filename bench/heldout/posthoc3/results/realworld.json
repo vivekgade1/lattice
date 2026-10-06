@@ -1,0 +1,909 @@
+{
+  "app": "realworld",
+  "package": "bench.import_repos.realworld",
+  "framework": "flask",
+  "tables": {
+    "verified": 0,
+    "total": 8,
+    "pct": 0.0
+  },
+  "routes": {
+    "verified": 0,
+    "total": 19,
+    "pct": 0.0
+  },
+  "unverified_tables": {
+    "favoritor_assoc": "unreached",
+    "tag_assoc": "unreached",
+    "Tags": "unreached",
+    "Comment": "unreached",
+    "Article": "unreached",
+    "followers_assoc": "unreached",
+    "UserProfile": "items T1 UserProfile",
+    "User": "unreached"
+  },
+  "outside_api": {},
+  "unverified_routes": {
+    "POST /api/users": "R1 unexercised",
+    "POST /api/users/login": "R1 unexercised",
+    "GET /api/user": "R1 refuted",
+    "PUT /api/user": "R1 refuted",
+    "GET /api/profiles/{username}": "R1 unexercised",
+    "POST /api/profiles/{username}/follow": "R1 refuted",
+    "DELETE /api/profiles/{username}/follow": "R1 refuted",
+    "GET /api/articles": "R1 unexercised",
+    "POST /api/articles": "R1 refuted",
+    "PUT /api/articles/{slug}": "R1 refuted",
+    "DELETE /api/articles/{slug}": "R1 refuted",
+    "GET /api/articles/{slug}": "R1 unexercised",
+    "POST /api/articles/{slug}/favorite": "R1 refuted",
+    "DELETE /api/articles/{slug}/favorite": "R1 refuted",
+    "GET /api/articles/feed": "R1 refuted",
+    "GET /api/tags": "R1 unexercised",
+    "GET /api/articles/{slug}/comments": "R1 unexercised",
+    "POST /api/articles/{slug}/comments": "R1 refuted",
+    "DELETE /api/articles/{slug}/comments/{cid}": "R1 refuted"
+  },
+  "items": {
+    "verified": 5,
+    "refuted": 12,
+    "unexercised": 31,
+    "unclear": 1,
+    "verified (corrected)": 2
+  },
+  "corrected": 2,
+  "unreachable_routes": [],
+  "unreachable_items": 0,
+  "excluded_framework_routes": 1,
+  "baseline": [
+    {
+      "item": "R3 POST /api/users 5xx",
+      "endpoint": "POST /api/users",
+      "status": 500,
+      "request": {
+        "method": "POST",
+        "path": "/api/users",
+        "user": null,
+        "token": null,
+        "params": null,
+        "json": null,
+        "form": null
+      },
+      "body": "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>\n",
+      "reason": "upstream defect: the original app answers 500 to this request (an unhandled error); recorded, not fixed by the import"
+    },
+    {
+      "item": "R3 POST /api/users/login 5xx",
+      "endpoint": "POST /api/users/login",
+      "status": 500,
+      "request": {
+        "method": "POST",
+        "path": "/api/users/login",
+        "user": null,
+        "token": null,
+        "params": null,
+        "json": null,
+        "form": null
+      },
+      "body": "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>\n",
+      "reason": "upstream defect: the original app answers 500 to this request (an unhandled error); recorded, not fixed by the import"
+    }
+  ],
+  "mining": {
+    "proposed": 3,
+    "refuted": 0,
+    "uncompiled": 0,
+    "snapshots": 1,
+    "runs": 48,
+    "app_rows": 0
+  },
+  "agrees": true,
+  "disagreements": [],
+  "fidelity": {
+    "variant2_clean": false,
+    "variant2_findings": [
+      "R1 GET /api/user",
+      "R1 PUT /api/user",
+      "R1 POST /api/profiles/{username}/follow",
+      "R1 DELETE /api/profiles/{username}/follow",
+      "R1 POST /api/articles",
+      "R1 PUT /api/articles/{slug}",
+      "R1 DELETE /api/articles/{slug}",
+      "R1 POST /api/articles/{slug}/favorite",
+      "R1 DELETE /api/articles/{slug}/favorite",
+      "R1 GET /api/articles/feed",
+      "R1 POST /api/articles/{slug}/comments",
+      "R1 DELETE /api/articles/{slug}/comments/{cid}"
+    ],
+    "scenarios": {
+      "passed": false,
+      "scenarios": 22,
+      "steps": 82,
+      "answers_ok": 80,
+      "oracle_ok": 51,
+      "failed": [
+        {
+          "scenario": "registering a taken username or email answers 422",
+          "step": 1,
+          "request": {
+            "method": "POST",
+            "path": "/api/users",
+            "user": null,
+            "params": null,
+            "json": {
+              "user": {
+                "username": "alice",
+                "email": "new@example.com",
+                "password": "x1"
+              }
+            }
+          },
+          "status": 422,
+          "expected": 422,
+          "answer_ok": true,
+          "predicted": [
+            "error",
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['error', 'ok'], not 422"
+          ]
+        },
+        {
+          "scenario": "registering a taken username or email answers 422",
+          "step": 2,
+          "request": {
+            "method": "POST",
+            "path": "/api/users",
+            "user": null,
+            "params": null,
+            "json": {
+              "user": {
+                "username": "newbie",
+                "email": "alice@example.com",
+                "password": "x1"
+              }
+            }
+          },
+          "status": 422,
+          "expected": 422,
+          "answer_ok": true,
+          "predicted": [
+            "error",
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['error', 'ok'], not 422"
+          ]
+        },
+        {
+          "scenario": "registering a taken username or email answers 422",
+          "step": 3,
+          "request": {
+            "method": "POST",
+            "path": "/api/users",
+            "user": null,
+            "params": null,
+            "json": {
+              "user": {
+                "username": "newbie",
+                "email": "not-an-email",
+                "password": "x1"
+              }
+            }
+          },
+          "status": 422,
+          "expected": 422,
+          "answer_ok": true,
+          "predicted": [
+            "error",
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['error', 'ok'], not 422"
+          ]
+        },
+        {
+          "scenario": "login answers the user for valid credentials and 404 otherwise",
+          "step": 2,
+          "request": {
+            "method": "POST",
+            "path": "/api/users/login",
+            "user": null,
+            "params": null,
+            "json": {
+              "user": {
+                "email": "alice@example.com",
+                "password": "wrong"
+              }
+            }
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "error",
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['error', 'ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "login answers the user for valid credentials and 404 otherwise",
+          "step": 3,
+          "request": {
+            "method": "POST",
+            "path": "/api/users/login",
+            "user": null,
+            "params": null,
+            "json": {
+              "user": {
+                "email": "nobody@example.com",
+                "password": "alicepass1"
+              }
+            }
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "error",
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['error', 'ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "the current user needs a token",
+          "step": 3,
+          "request": {
+            "method": "GET",
+            "path": "/api/user",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "a user updates their own email, bio and password",
+          "step": 4,
+          "request": {
+            "method": "POST",
+            "path": "/api/users/login",
+            "user": null,
+            "params": null,
+            "json": {
+              "user": {
+                "email": "carol@example.com",
+                "password": "carolpass1"
+              }
+            }
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "error",
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['error', 'ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "updating the user needs a token and a valid image URL",
+          "step": 1,
+          "request": {
+            "method": "PUT",
+            "path": "/api/user",
+            "user": null,
+            "params": null,
+            "json": {
+              "user": {
+                "bio": "anon"
+              }
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "updating the user needs a token and a valid image URL",
+          "step": 2,
+          "request": {
+            "method": "PUT",
+            "path": "/api/user",
+            "user": "alice",
+            "params": null,
+            "json": {
+              "user": {
+                "image": "not a url"
+              }
+            }
+          },
+          "status": 422,
+          "expected": 422,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 422"
+          ]
+        },
+        {
+          "scenario": "profiles are public; an unknown username is 404",
+          "step": 4,
+          "request": {
+            "method": "GET",
+            "path": "/api/profiles/nobody",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "following needs a token and an existing user",
+          "step": 1,
+          "request": {
+            "method": "POST",
+            "path": "/api/profiles/bob/follow",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "following needs a token and an existing user",
+          "step": 2,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/profiles/bob/follow",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "following needs a token and an existing user",
+          "step": 3,
+          "request": {
+            "method": "POST",
+            "path": "/api/profiles/nobody/follow",
+            "user": "alice",
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "following needs a token and an existing user",
+          "step": 4,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/profiles/nobody/follow",
+            "user": "alice",
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "a single article by slug; an unknown slug is 404",
+          "step": 2,
+          "request": {
+            "method": "GET",
+            "path": "/api/articles/no-such-article",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "creating an article needs a token",
+          "step": 1,
+          "request": {
+            "method": "POST",
+            "path": "/api/articles",
+            "user": null,
+            "params": null,
+            "json": {
+              "article": {
+                "title": "Anon",
+                "description": "d",
+                "body": "b"
+              }
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "only the author updates an article; anyone else gets 404",
+          "step": 2,
+          "request": {
+            "method": "PUT",
+            "path": "/api/articles/how-to-train-your-dragon",
+            "user": "bob",
+            "params": null,
+            "json": {
+              "article": {
+                "title": "Hijack"
+              }
+            }
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "only the author updates an article; anyone else gets 404",
+          "step": 3,
+          "request": {
+            "method": "PUT",
+            "path": "/api/articles/how-to-train-your-dragon",
+            "user": null,
+            "params": null,
+            "json": {
+              "article": {
+                "title": "Anon"
+              }
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "the author deletes an article; someone else's delete is an upstream 500",
+          "step": 1,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/articles/alice-in-wonderland",
+            "user": "alice",
+            "params": null,
+            "json": null
+          },
+          "status": 200,
+          "expected": 200,
+          "answer_ok": false,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": true,
+          "problems": [
+            "body None lacks ''"
+          ]
+        },
+        {
+          "scenario": "the author deletes an article; someone else's delete is an upstream 500",
+          "step": 2,
+          "request": {
+            "method": "GET",
+            "path": "/api/articles/alice-in-wonderland",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "the author deletes an article; someone else's delete is an upstream 500",
+          "step": 3,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/articles/bob-builds-things",
+            "user": "alice",
+            "params": null,
+            "json": null
+          },
+          "status": 500,
+          "expected": 500,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 500"
+          ]
+        },
+        {
+          "scenario": "the author deletes an article; someone else's delete is an upstream 500",
+          "step": 5,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/articles/bob-builds-things",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "favoriting needs a token and an existing article",
+          "step": 1,
+          "request": {
+            "method": "POST",
+            "path": "/api/articles/how-to-train-your-dragon/favorite",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "favoriting needs a token and an existing article",
+          "step": 2,
+          "request": {
+            "method": "POST",
+            "path": "/api/articles/no-such-article/favorite",
+            "user": "carol",
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "favoriting needs a token and an existing article",
+          "step": 3,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/articles/no-such-article/favorite",
+            "user": "carol",
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "commenting needs a token and an existing article",
+          "step": 1,
+          "request": {
+            "method": "POST",
+            "path": "/api/articles/how-to-train-your-dragon/comments",
+            "user": null,
+            "params": null,
+            "json": {
+              "comment": {
+                "body": "anon"
+              }
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "commenting needs a token and an existing article",
+          "step": 2,
+          "request": {
+            "method": "POST",
+            "path": "/api/articles/no-such-article/comments",
+            "user": "carol",
+            "params": null,
+            "json": {
+              "comment": {
+                "body": "x"
+              }
+            }
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "commenting needs a token and an existing article",
+          "step": 3,
+          "request": {
+            "method": "GET",
+            "path": "/api/articles/no-such-article/comments",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "the comment's author deletes it; anyone else's delete is an upstream 500",
+          "step": 1,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/articles/how-to-train-your-dragon/comments/1",
+            "user": "alice",
+            "params": null,
+            "json": null
+          },
+          "status": 500,
+          "expected": 500,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 500"
+          ]
+        },
+        {
+          "scenario": "the comment's author deletes it; anyone else's delete is an upstream 500",
+          "step": 3,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/articles/how-to-train-your-dragon/comments/1",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "the comment's author deletes it; anyone else's delete is an upstream 500",
+          "step": 4,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/articles/how-to-train-your-dragon/comments/1",
+            "user": "bob",
+            "params": null,
+            "json": null
+          },
+          "status": 200,
+          "expected": 200,
+          "answer_ok": false,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": true,
+          "problems": [
+            "body None lacks ''"
+          ]
+        },
+        {
+          "scenario": "the comment's author deletes it; anyone else's delete is an upstream 500",
+          "step": 6,
+          "request": {
+            "method": "DELETE",
+            "path": "/api/articles/no-such-article/comments/1",
+            "user": "bob",
+            "params": null,
+            "json": null
+          },
+          "status": 404,
+          "expected": 404,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 404"
+          ]
+        },
+        {
+          "scenario": "the feed holds articles by followed users, newest first",
+          "step": 5,
+          "request": {
+            "method": "GET",
+            "path": "/api/articles/feed",
+            "user": null,
+            "params": null,
+            "json": null
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        }
+      ]
+    },
+    "spec_valid": true,
+    "passed": false
+  },
+  "gate": {
+    "tables": false,
+    "routes": false
+  },
+  "import_s": 0.94,
+  "stage_s": {
+    "extract": 0.284,
+    "probe": 0.202,
+    "correct": 0.014,
+    "mine": 0.025,
+    "variant2": 0.178,
+    "total": 0.719
+  },
+  "llm": {
+    "tokens": 0,
+    "cost_usd": 0.0
+  }
+}

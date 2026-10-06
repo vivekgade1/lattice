@@ -50,6 +50,10 @@ class OrmTables:
     classes: dict[str, Any] = field(default_factory=dict)
     # model name -> its sqlalchemy Table
     sa_tables: dict[str, Any] = field(default_factory=dict)
+    # model name -> every relationship attribute (backrefs too) -> its direction, the
+    # ones ``relationships`` could not map included: a write through any of them that
+    # the front end cannot follow leaves its evidence incomplete
+    rel_directions: dict[str, dict[str, str]] = field(default_factory=dict)
 
     def model_of(self, cls: Any) -> str | None:
         """The model name of a mapped class (None: not one of the package's)."""
@@ -121,11 +125,13 @@ def read_tables(package: str) -> OrmTables:
     )
     constraints = tuple(c for name, table, _, _ in found for c in _constraints(name, table))
     relationships: dict[str, dict[str, Rel]] = {}
+    directions: dict[str, dict[str, str]] = {}
     for name, _, cls, _ in found:
         if cls is None:
             continue
         rels = {}
         for rel in sa.inspect(cls).relationships:
+            directions.setdefault(name, {})[rel.key] = rel.direction.name
             r = _rel(rel, by_table)
             if r is not None:
                 rels[rel.key] = r
@@ -136,6 +142,7 @@ def read_tables(package: str) -> OrmTables:
         relationships=relationships,
         classes={n: c for n, _, c, _ in found},
         sa_tables={n: t for n, t, _, _ in found},
+        rel_directions=directions,
     )
 
 

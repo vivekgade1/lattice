@@ -1245,6 +1245,9 @@ class _RouteReader:
         raises += deco_sites
 
         owner_uses = self._owner_uses(mod, fn, callers, row_vars, locals_)
+        args = getattr(fn, "args", None)
+        path_args = {a.arg for a in (args.args + args.kwonlyargs)} if args is not None else set()
+        rel_tables, unread = self._rel_writes(mod, fn, row_vars, callers, path_args - {"self"})
         calls = sorted(
             {
                 q
@@ -1314,6 +1317,8 @@ class _RouteReader:
             returns=returns,
             guards=tuple(guards),
             view=f"{mod}:{qualname}",
+            unread=unread,
+            rel_tables=tuple(rel_tables),
         )
 
     def _enclosing(self, mod: str, fn: ast.AST) -> str | None:
@@ -1588,6 +1593,241 @@ class _RouteReader:
                     add(OwnerUse(rel.table, rel.column, "compare", node.lineno))
         return out
 
+    # -- relationship writes (pivot plan 2026-10-05, A.2) --
+
+    def _rel_writes(
+        self, mod: str, fn: ast.AST, rows: dict[str, str], callers: set[str], params: set[str]
+    ) -> tuple[list[str], str | None]:
+        """The tables a route writes through ORM relationships, and why that evidence is
+        incomplete (None: complete). Read in the view and, followed, in the package
+        functions and model methods it calls (``post.star(user)`` running
+        ``self.starrers.append(user)``):
+
+        * ``<x>.<rel>.<mutator>(...)`` (``append``, ``remove``, ``extend``, ``add``...),
+          also through a local holding ``<x>.<rel>``; ``<x>.<rel> = ...`` (and ``+=``);
+          ``Model(<rel>=...)``; ``setattr(<x>, "<rel>", ...)`` -- each the table holding
+          the link (a ``secondary`` table, a one-to-many's target);
+        * not resolvable -- ``getattr(<x>, <name>).<mutator>(...)``, ``setattr(<x>,
+          <name>, ...)`` with a name from data (not a literal loop) and ``Model(**data)``
+          on a model with relationship collections, a relationship that maps to no table,
+          package code deeper than :data:`REL_DEPTH` calls -- a reason (``Route.unread``).
+
+        The receiver's model is a local row (``post = Post.query...``), ``self`` in a
+        model's method, the caller (the users model) or a relationship's target; when it
+        is unknown, every model having that relationship (or method) counts."""
+        ex = self.ex
+        tables: list[str] = []
+        unread: list[str] = []
+        seen: set[tuple[int, str | None]] = set()
+        todo: list[tuple[str, ast.AST, dict[str, str], str | None, int]] = [
+            (mod, fn, dict(rows), None, 0)
+        ]
+        while todo:
+            m, node, rv, me, depth = todo.pop(0)
+            if (id(node), me) in seen:
+                continue
+            seen.add((id(node), me))
+            local = _local_names(node)
+            if depth:
+                rv = {**rv, **self._locals(m, node, local)[1]}
+            top_params = params if depth == 0 else set()
+            aliases: dict[str, list[tuple[str, str]]] = {}
+            loops: dict[str, tuple[str, ...]] = {}
+            for sub in _walk_own(node):
+                if isinstance(sub, ast.For) and isinstance(sub.target, ast.Name):
+                    names = _literal_names(sub.iter)
+                    if names is not None:
+                        loops[sub.target.id] = names
+                elif (isinstance(sub, ast.Assign) and len(sub.targets) == 1
+                      and isinstance(sub.targets[0], ast.Name)
+                      and isinstance(sub.value, ast.Attribute)):  # fmt: skip
+                    found = self._rels_named(m, sub.value, rv, me, callers, top_params)
+                    if found:
+                        aliases[sub.targets[0].id] = found
+
+            def add(pairs: list[tuple[str, str]], line: int, m: str = m) -> None:
+                for model, attr in pairs:
+                    rel = ex.orm.relationships.get(model, {}).get(attr)
+                    if rel is None:
+                        unread.append(f"writes {model}.{attr}, a relationship the front end "
+                                      f"maps to no table ({m}:{line})")  # fmt: skip
+                    elif rel.table not in tables:
+                        tables.append(rel.table)
+
+            def dynamic(obj: ast.expr, what: str, line: int, m: str = m,
+                        rv: dict[str, str] = rv, me: str | None = me,
+                        top: set[str] = top_params) -> None:  # fmt: skip
+                models = self._models_of(m, obj, rv, me, callers, top)
+                if models == []:
+                    return  # not a model
+                pool = models if models is not None else list(ex.orm.rel_directions)
+                hit = [x for x in pool if self._collections(x)]
+                if hit:
+                    unread.append(f"{what} on {', '.join(hit)}, which has relationship "
+                                  f"collections: a write the front end cannot name "
+                                  f"({m}:{line})")  # fmt: skip
+
+            for sub in _walk_own(node):
+                line = getattr(sub, "lineno", 0)
+                if isinstance(sub, ast.Assign | ast.AugAssign):
+                    targets = sub.targets if isinstance(sub, ast.Assign) else [sub.target]
+                    for t in targets:
+                        if isinstance(t, ast.Attribute):
+                            add(self._rels_named(m, t, rv, me, callers, top_params), line)
+                    continue
+                if not isinstance(sub, ast.Call):
+                    continue
+                func = sub.func
+                if isinstance(func, ast.Attribute) and func.attr in REL_MUTATORS:
+                    recv = func.value
+                    if isinstance(recv, ast.Attribute):
+                        add(self._rels_named(m, recv, rv, me, callers, top_params), line)
+                    elif isinstance(recv, ast.Name) and recv.id in aliases:
+                        add(aliases[recv.id], line)
+                    elif (isinstance(recv, ast.Call) and isinstance(recv.func, ast.Name)
+                          and recv.func.id == "getattr" and len(recv.args) >= 2):  # fmt: skip
+                        name = recv.args[1]
+                        if isinstance(name, ast.Constant) and isinstance(name.value, str):
+                            attr = ast.Attribute(recv.args[0], name.value, ast.Load())
+                            add(self._rels_named(m, attr, rv, me, callers, top_params), line)
+                        else:
+                            dynamic(recv.args[0], f"getattr(<{ast.unparse(recv.args[0])}>, "
+                                    f"{ast.unparse(name)}).{func.attr}(...)", line)  # fmt: skip
+                if isinstance(func, ast.Name) and func.id == "setattr" and len(sub.args) >= 2:
+                    obj, name = sub.args[0], sub.args[1]
+                    if isinstance(name, ast.Constant) and isinstance(name.value, str):
+                        names: tuple[str, ...] | None = (name.value,)
+                    elif isinstance(name, ast.Name) and name.id in loops:
+                        names = loops[name.id]
+                    else:
+                        names = None
+                    if names is None:
+                        dynamic(obj, f"setattr(<{ast.unparse(obj)}>, {ast.unparse(name)}, ...)",
+                                line)  # fmt: skip
+                    else:
+                        for n in names:
+                            attr = ast.Attribute(obj, n, ast.Load())
+                            add(self._rels_named(m, attr, rv, me, callers, top_params), line)
+                    continue
+                model = ex.table_class(m, func, local)
+                if model is not None:  # Model(<rel>=..., **data)
+                    for k in sub.keywords:
+                        if k.arg is None:
+                            if self._collections(model):
+                                unread.append(f"{model}(**{ast.unparse(k.value)}) may set a "
+                                              f"relationship collection the front end cannot "
+                                              f"name ({m}:{line})")  # fmt: skip
+                        elif k.arg in ex.orm.rel_directions.get(model, {}):
+                            add([(model, k.arg)], line)
+                    continue
+                for target in self._followed(m, sub, rv, me, callers, top_params):
+                    if depth + 1 > REL_DEPTH:
+                        called = f"{target[0]}:{getattr(target[1], 'name', '?')}"
+                        unread.append(f"calls {called} deeper than the front end follows "
+                                      f"({m}:{line})")  # fmt: skip
+                        continue
+                    tmod, tnode, tme = target
+                    todo.append((tmod, tnode, {}, tme, depth + 1))
+        return tables, "; ".join(dict.fromkeys(unread)) or None
+
+    def _collections(self, model: str) -> list[str]:
+        """The model's relationship collections (one-to-many, many-to-many)."""
+        return [a for a, d in self.ex.orm.rel_directions.get(model, {}).items()
+                if d in ("ONETOMANY", "MANYTOMANY")]  # fmt: skip
+
+    def _models_of(
+        self, mod: str, e: ast.expr, rv: dict[str, str], me: str | None, callers: set[str],
+        params: set[str],
+    ) -> list[str] | None:  # fmt: skip
+        """The models whose row ``e`` may be: [] when it is surely none (a view's path
+        parameter, a literal), None when unknown."""
+        ex = self.ex
+        if isinstance(e, ast.Name):
+            if e.id == "self" and me is not None:
+                return [me]
+            if e.id in rv:
+                return [rv[e.id]]
+            if e.id in params:
+                return []
+        if isinstance(e, ast.Constant | ast.Dict | ast.List | ast.Set | ast.Tuple | ast.JoinedStr):
+            return []
+        if isinstance(e, ast.Call):
+            row = self._row_of(mod, e, set())
+            if row is not None:
+                return [row]
+        if ex.users and ex.is_caller(mod, e, callers):
+            return [ex.users]
+        if isinstance(e, ast.Attribute):
+            owners = self._models_of(mod, e.value, rv, me, callers, params)
+            pool = owners if owners is not None else list(ex.orm.relationships)
+            rels = ex.orm.relationships
+            targets = [r.target for x in pool
+                       if (r := rels.get(x, {}).get(e.attr)) is not None]  # fmt: skip
+            if targets:
+                return list(dict.fromkeys(targets))
+            return None if owners is None else []
+        return None
+
+    def _rels_named(
+        self, mod: str, e: ast.Attribute, rv: dict[str, str], me: str | None, callers: set[str],
+        params: set[str],
+    ) -> list[tuple[str, str]]:  # fmt: skip
+        """(model, relationship) pairs ``<x>.<attr>`` may name: those of ``<x>``'s models,
+        or of every model with a relationship so named when ``<x>`` is unknown."""
+        ex = self.ex
+        models = self._models_of(mod, e.value, rv, me, callers, params)
+        pool = models if models is not None else list(ex.orm.rel_directions)
+        return [(x, e.attr) for x in pool if e.attr in ex.orm.rel_directions.get(x, {})]
+
+    def _followed(
+        self, mod: str, call: ast.Call, rv: dict[str, str], me: str | None, callers: set[str],
+        params: set[str],
+    ) -> list[tuple[str, ast.AST, str | None]]:  # fmt: skip
+        """The package code a call runs, to read for relationship writes: a package
+        function, or a model's method (``self`` that model) -- of the receiver's model
+        when known, else of every model defining a method so named (not a name a
+        builtin container also has: ``data.update(...)`` is no model's)."""
+        ex = self.ex
+        qual = ex.resolve(mod, call.func)
+        if qual is not None:
+            found = ex.def_of(qual)
+            if found is not None and isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
+                return [(found[0], found[1], None)]
+        func = call.func
+        if not isinstance(func, ast.Attribute):
+            return []
+        root = func.value
+        while isinstance(root, ast.Attribute | ast.Call):
+            root = root.value if isinstance(root, ast.Attribute) else root.func
+        lib = ex.resolve(mod, root) if isinstance(root, ast.Name) else None
+        if lib is not None and lib.startswith("builtins:"):
+            lib = None  # a local (or a builtin)
+        if lib is not None and not ex.in_package(lib) and not ex.is_caller(mod, root, callers):
+            return []  # a library's object (``request.args.get``, ``jsonify``)
+        models = self._models_of(mod, func.value, rv, me, callers, params)
+        if models is None:
+            if func.attr in BUILTIN_METHODS:
+                return []
+            models = list(ex.orm.classes)
+        out = []
+        for model in models:
+            found = self._method(model, func.attr)
+            if found is not None:
+                out.append((found[0], found[1], model))
+        return out
+
+    def _method(self, model: str, name: str) -> tuple[str, ast.AST] | None:
+        """The package's definition of ``<model class>.<name>`` (by the MRO)."""
+        cls = self.ex.orm.classes.get(model)
+        for klass in getattr(cls, "__mro__", ()):
+            if name not in vars(klass):
+                continue
+            found = self.ex.def_of(f"{klass.__module__}:{klass.__qualname__}.{name}")
+            if found is not None and isinstance(found[1], ast.FunctionDef | ast.AsyncFunctionDef):
+                return found
+            return None
+        return None
+
     # -- errors, params --
 
     def _called_sites(self, mod: str, fn: ast.AST) -> list[RaiseSite]:
@@ -1737,6 +1977,31 @@ class _RouteReader:
                 if len(elts) >= 2 and _int(elts[1]) is not None and _int(elts[1]) < 300:  # type: ignore[operator]
                     return _int(elts[1])
         return None
+
+
+# a relationship collection's writing methods (list / set collections, dynamic
+# AppenderQuery): ``<x>.<rel>.<one of them>(...)`` writes the relationship's link table
+REL_MUTATORS = frozenset({"append", "remove", "extend", "insert", "pop", "clear", "add",
+                          "discard", "update", "difference_update", "intersection_update",
+                          "symmetric_difference_update"})  # fmt: skip
+# methods a builtin container (or str) also has: a call of one on a receiver of unknown
+# model is not followed into every model defining it (``data.update(...)``)
+BUILTIN_METHODS = frozenset(
+    n for t in (dict, list, set, str, tuple, bytes) for n in dir(t) if not n.startswith("_")
+)
+REL_DEPTH = 4  # calls followed from a view for relationship writes
+
+
+def _literal_names(e: ast.expr) -> tuple[str, ...] | None:
+    """The strings of a literal tuple / list / set of strings, else None."""
+    if not isinstance(e, ast.Tuple | ast.List | ast.Set):
+        return None
+    out = []
+    for x in e.elts:
+        if not (isinstance(x, ast.Constant) and isinstance(x.value, str)):
+            return None
+        out.append(x.value)
+    return tuple(out)
 
 
 def _local_names(fn: ast.AST) -> set[str]:

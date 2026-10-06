@@ -1,0 +1,308 @@
+[
+  {
+    "id": "inv-3bf90008d1",
+    "kind": "invariant",
+    "sentence": "No two User rows share email.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_user_per_email",
+      "sentence": "No two User rows share email.",
+      "expr": "count(User, by=\"email\") <= 1"
+    },
+    "expr": "count(User, by=\"email\") <= 1",
+    "evidence": {
+      "rows": [
+        {
+          "id": 5,
+          "name": "valid name",
+          "email": "probe@example.com",
+          "password_hash": "$2b$12$acgj2Lf.0JAoa88Jt0d0u.XCqlN4/YaUm5ebNk5a89nBYxWrj7B5m",
+          "user_type": "EMPLOYEE",
+          "created_at": "2026-10-05 18:31:59.871872",
+          "updated_at": "2026-10-05 18:31:59.871887"
+        },
+        {
+          "id": 5,
+          "name": "valid name",
+          "email": "probe@example.com",
+          "password_hash": "$2b$12$BRcbXy618Coldu/BX60zKu8v.2dXSqWQ29dovYABVh8nP2/Pr0C9u",
+          "user_type": "EMPLOYEE",
+          "created_at": "2026-10-05 18:31:59.871872",
+          "updated_at": "2026-10-05 18:31:59.871887"
+        },
+        {
+          "id": 5,
+          "name": "valid name",
+          "email": "probe@example.com",
+          "password_hash": "$2b$12$i9psZ6TwyF1P3Ckk17LGRe5Vmnq5eLHFHYm8Zxpt2ihx0AIQMLZ86",
+          "user_type": "EMPLOYEE",
+          "created_at": "2026-10-05 18:31:59.871872",
+          "updated_at": "2026-10-05 18:31:59.871887"
+        },
+        {
+          "id": 5,
+          "name": "valid name",
+          "email": "probe@example.com",
+          "password_hash": "$2b$12$T/mEsJdSKEVimvN2c2ndMOvOypSb1YE3.7eRU7h0ucmnIcQ.lX1ci",
+          "user_type": "EMPLOYEE",
+          "created_at": "2026-10-05 18:31:59.871872",
+          "updated_at": "2026-10-05 18:31:59.871887"
+        }
+      ],
+      "runs": [
+        "R-0004",
+        "R-0005",
+        "R-0006",
+        "R-0007"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/auth/register",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "name": "valid name",
+            "email": "probe@example.com",
+            "password": "valid password"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/auth/register",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {
+            "name": "valid name",
+            "email": "probe@example.com",
+            "password": "valid password"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/auth/register",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "name": "valid name",
+            "email": "probe@example.com",
+            "password": "valid password"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/auth/register",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "name": "valid name",
+            "email": "probe@example.com",
+            "password": "valid password"
+          },
+          "form": null,
+          "status": 201
+        }
+      ],
+      "app_rows": 4
+    },
+    "support": 1,
+    "source": "static: User.email unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-3c7f0d38fc",
+    "kind": "invariant",
+    "sentence": "Project's description is always set.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "project_description_set",
+      "sentence": "Project's description is always set.",
+      "expr": "not is_null(Project.description)"
+    },
+    "expr": "not is_null(Project.description)",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "name": "valid name",
+          "description": "valid description",
+          "user_id": 1,
+          "created_at": "2026-10-05 18:31:59.874605",
+          "updated_at": "2026-10-05 18:31:59.874615"
+        },
+        {
+          "id": 1,
+          "name": "valid name",
+          "description": "valid description",
+          "user_id": 1,
+          "created_at": "2026-01-31 13:00:00.000000",
+          "updated_at": "2026-10-05 18:31:59.874615"
+        },
+        {
+          "id": 2,
+          "name": "valid name",
+          "description": "valid description",
+          "user_id": 2,
+          "created_at": "2026-01-31 14:00:00.000000",
+          "updated_at": "2026-10-05 18:31:59.874615"
+        }
+      ],
+      "runs": [
+        "R-0051",
+        "R-0066",
+        "R-0067"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/projects",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "user_id": 1,
+            "name": "valid name",
+            "description": "valid description"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "PUT",
+          "path": "/projects/1",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "name": "valid name",
+            "description": "valid description"
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/projects/2",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "name": "valid name",
+            "description": "valid description"
+          },
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 3
+    },
+    "support": 3,
+    "source": "observed: Project.description (nullable in the schema) set on every row the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-45d62e3435",
+    "kind": "invariant",
+    "sentence": "Task's description is always set.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "task_description_set",
+      "sentence": "Task's description is always set.",
+      "expr": "not is_null(Task.description)"
+    },
+    "expr": "not is_null(Task.description)",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "description": "valid description",
+          "status": "pending",
+          "project_id": 1,
+          "created_at": "2026-10-05 18:32:03.268539",
+          "updated_at": "2026-10-05 18:32:03.268540"
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "description": "valid description",
+          "status": "pending",
+          "project_id": 1,
+          "created_at": "2026-10-05 18:32:03.277002",
+          "updated_at": "2026-10-05 18:32:03.277003"
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "description": "valid description",
+          "status": "pending",
+          "project_id": 1,
+          "created_at": "2026-10-05 18:32:03.299469",
+          "updated_at": "2026-10-05 18:32:03.299469"
+        }
+      ],
+      "runs": [
+        "R-0084",
+        "R-0085",
+        "R-0088"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/tasks",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "project_id": 1,
+            "title": "valid title",
+            "description": "valid description"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/tasks",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "project_id": 1,
+            "title": "valid title",
+            "description": "valid description"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/projects/1/tasks",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "description": "valid description"
+          },
+          "form": null,
+          "status": 201
+        }
+      ],
+      "app_rows": 3
+    },
+    "support": 3,
+    "source": "observed: Task.description (nullable in the schema) set on every row the app wrote",
+    "status": "pending"
+  }
+]

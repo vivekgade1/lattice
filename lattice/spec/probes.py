@@ -56,7 +56,15 @@ and the database before and after recorded. Each bears on one or more items:
   A request may change its caller's own users row (a last-seen stamp); any other
   change counts as a write. Keys compare in one spelling (a UUID stored as 32 hex
   digits equals its dashed answer).
-* T1 shared: a non-admin reads a row with a 2xx. T1 users: every role a caller can
+* T1 shared: a non-admin reads a row with a 2xx -- and, when routes update or delete
+  the table's rows (``predicted["writes"]``), the same write of the same row (up to two
+  rows, spread over their ``*_id`` columns) as every non-admin caller the route admits
+  (pivot plan 2026-10-05, A.1). Reads alone never verify a table with such routes:
+  verified needs two callers each writing the row, admitted with its database effect
+  (each the other's control: a row has at most one owner); a caller refused (403/404,
+  nothing written) where another wrote the row, having got past the route's check by
+  some request, refutes it (the row is its owner's). With no such route the reads
+  verify it and the reason says so. T1 users: every role a caller can
   have logged in, and a "me" route (a users-table read without an id) returns the
   caller (its key, else its login, in the answer).
 * T2: no recorded body has the column in a row of the table, and some 2xx body returns
@@ -97,8 +105,10 @@ neither confirms nor contradicts an item (a create that fails, say) counts for n
 is no evidence -- its outcome is *undecided*, the reason saying why, and every probe's
 record holds its ``bearing`` on each item (``decisive``, what it ``says``, ``why``); a
 ``verified`` item names its ``decisive`` probes, and :func:`check_verdicts` refuses one
-without. Probes are judged once all have run (:class:`_Evidence`), so an outcome may
-rest on another probe's answer:
+without -- and a verified ``shared`` T1 resting on reads alone when its table has write
+routes, or, without write routes, one whose reason does not say so. Probes are judged
+once all have run (:class:`_Evidence`), so an outcome may rest on another probe's
+answer:
 
 * *reached* takes a 2xx that is no error envelope (``{"code": 404, ...}`` answered 200,
   :func:`_envelope`), and a write (a delete, or an update with a body) the database
@@ -406,6 +416,24 @@ def _column(spec: Spec, ref: str) -> tuple[str, str] | None:
     return (found[0], column) if found else None
 
 
+SHARED_WRITE_KINDS = ("update", "delete")
+# a verified "shared" T1 of a table no route updates or deletes says so in its reason
+_NO_SHARED_WRITES = "no route updates or deletes {table} rows: reads only"
+
+
+def _shared_writes(spec: Spec, table: str, routes: Sequence[Contract]) -> list[str]:
+    """The routes (``METHOD /path``) updating or deleting rows of ``table``: what a
+    ``shared`` T1 claims besides reads -- any user may write another user's row."""
+    found = _schema(spec, table)
+    out = []
+    for c in routes:
+        mine = _schema(spec, c.table)
+        if found is not None and mine is not None and mine[0] == found[0] \
+                and c.kind in SHARED_WRITE_KINDS:  # fmt: skip
+            out.append(c.endpoint)
+    return out
+
+
 def rule_items(spec: Spec) -> list[RuleItem]:
     """Every rule item of the spec: tables first (in the profile's order), then routes."""
     api = spec.profile.api
@@ -441,6 +469,11 @@ def rule_items(spec: Spec) -> list[RuleItem]:
         else:
             predicted = {"ownership": "shared"}
             sentence = f"{name} rows are shared: any user may read them"
+            writes = _shared_writes(spec, name, routes)
+            if writes:
+                # the routes updating or deleting its rows: reads alone never verify it
+                predicted["writes"] = writes
+                sentence += f", and update or delete them ({', '.join(writes)})"
         items.append(RuleItem(f"T1 {name}", "T1", name, sentence, predicted))
         for col in sorted(schema.private):
             items.append(
@@ -1774,6 +1807,59 @@ def _shared_and_users(b: _Probes, routes: Sequence[_Route]) -> None:
                             _build(r, ctx, target=target),
                             "ok",
                         )
+            for r in routes:
+                if r.table and r.table[0] == name and r.c.kind in SHARED_WRITE_KINDS:
+                    _shared_write_probes(b, r, item)
+
+
+def _spread_targets(r: _Route, ctx: ProbeContext, n: int) -> list[Any]:
+    """Up to ``n`` keys of the addressed table, spread over the rows' reference columns
+    (``*_id`` besides the key: a row's vendor, author...) -- the profile names no owner,
+    so rows differing there are likelier to differ in an owner the app checks."""
+    if r.addr is None or r.table is None:
+        return _targets(r, ctx, None, n)
+    table = r.path_params[r.addr].ref or r.table[0]
+    key = ctx.key_of(table)
+    rows = ctx.rows(table)
+    if not key or not rows:
+        return _targets(r, ctx, None, n)
+    refs = sorted({c for row in rows for c in row if c != key and c.endswith("_id")})
+    picked: list[Any] = []
+    seen: set[tuple] = set()
+    for row in rows:
+        sig = tuple(_k(row.get(c)) for c in refs)
+        if sig not in seen:
+            seen.add(sig)
+            picked.append(row[key])
+    for row in rows:  # fewer distinct rows than n: the first others
+        if len(picked) >= n:
+            break
+        if row[key] not in picked:
+            picked.append(row[key])
+    return picked[:n]
+
+
+def _shared_write_probes(b: _Probes, r: _Route, item: str) -> None:
+    """T1 ``shared`` through a route updating or deleting a row of the table: the same
+    write of the same row (up to two rows) as every non-admin caller the route admits
+    (a Public route without any: once, with no caller). The probes of one row form a
+    *group*: each caller's write is the others' control (:func:`_judge`,
+    ``shared_write``)."""
+    ctx = b.ctx
+    if r.addr is None or r.table is None:
+        return
+    writers: list[Caller | None] = list(ctx.non_admin(r.c))
+    if not writers and r.c.auth == "Public" and not ctx.with_token():
+        writers = [None]
+    if not writers:
+        return
+    for target in _spread_targets(r, ctx, 2):
+        group = f"{r.c.endpoint} | {target}"
+        req = _build(r, ctx, target=target, full=r.c.kind == "update",
+                     fields=_changing(r, ctx, target))  # fmt: skip
+        for w in writers:
+            b.add(r, w, f"{r.c.kind}s {r.table[0]} {target} (shared)", [item], req,
+                  "shared_write", table=r.table[0], target=target, group=group)  # fmt: skip
 
 
 def _writer(r: _Route, ctx: ProbeContext) -> Caller | None:
@@ -2626,6 +2712,21 @@ class _Evidence:
         return (meant is not None and 400 <= meant < 500 and meant not in (401, 403, 404, 405)
                 and meant != self.ctx.api.validation_status)  # fmt: skip
 
+    def group(self, group: str) -> list[str]:
+        """The probes of a ``shared_write`` group (one write of one row, per caller)."""
+        return [p.name for p, _, _ in self.runs.values() if p.args.get("group") == group]
+
+    def wrote(self, name: str | None) -> bool:
+        """Whether that probe's write got through (a 2xx, no error envelope) and shows
+        its effect on the addressed row (deleted, or changed)."""
+        run = self.runs.get(name or "")
+        if run is None or not self.reached(name):
+            return False
+        p, _, after = run
+        c = self.contracts.get(p.route)
+        return bool(_row_effect(self.ctx.seed, after, self.ctx, p.args.get("table"),
+                                p.args.get("target"), c.kind if c else None))  # fmt: skip
+
     def answered(self, name: str | None) -> str:
         run = self.runs.get(name or "")
         return "no answer" if run is None else str(run[1].status)
@@ -3039,6 +3140,9 @@ def _judge(
                 ok, f"answered {status} with {a['key']}={got!r}", {"status": status, a["key"]: got}
             )
         )
+    if p.expect == "shared_write":
+        return all_items(_shared_write(p, answer, before, after, ctx, contract, ev, through,
+                                       meant, unchanged, envelope))  # fmt: skip
     if p.expect == "ok":
         if through:
             return all_items(Outcome(True, f"answered {status}", {"status": status}))
@@ -3111,6 +3215,64 @@ def _judge(
     if p.expect == "error":
         return all_items(stated_error(a["status"], a.get("detail")))
     raise ValueError(f"unknown probe judgement {p.expect!r}")
+
+
+def _shared_write(
+    p: Probe,
+    answer: Answer,
+    before: Mapping[str, list[dict[str, Any]]],
+    after: Mapping[str, list[dict[str, Any]]],
+    ctx: ProbeContext,
+    contract: Contract,
+    ev: _Evidence | None,
+    through: bool,
+    meant: int | None,
+    unchanged: bool,
+    envelope: str,
+) -> Outcome:
+    """A ``shared`` T1 write probe's outcome (pivot plan 2026-10-05, A.1). Confirms:
+    the write got through with its effect on the row, and another (non-admin) caller's
+    same write of the same row did too -- one row has at most one owner, so one of the
+    two is not it (a request with no caller at all: nobody to own it). Contradicts: the
+    caller refused (403/404, nothing written) while another caller's same request
+    wrote the row, the caller having got past the route's check by some request (so
+    not its role's refusal): the row is its owner's. Anything else decides nothing."""
+    a, status = p.args, answer.status
+    table, target = a["table"], a["target"]
+    others = [n for n in (ev.group(a["group"]) if ev is not None else []) if n != p.name]
+    writers = [n for n in others if ev is not None and ev.wrote(n)]
+    who = ", ".join(n.split(" | ")[1] for n in writers)
+    if through:
+        effect = _row_effect(before, after, ctx, table, target, contract.kind)
+        if not effect:
+            return Outcome(None, f"answered {status} but {table} {target} was not written: "
+                           "no sign it got through")  # fmt: skip
+        if p.user is None and p.token is None and p.headers is None:
+            return Outcome(True, f"a request with no caller wrote {table} {target} ({status}): "
+                           "no owner to check")  # fmt: skip
+        if not writers:
+            return Outcome(None, f"wrote {table} {target} ({status}); not decisive: no other "
+                           "caller wrote the same row by the same request (the caller may "
+                           "own it)")  # fmt: skip
+        return Outcome(True, f"wrote {table} {target} ({status}), and so did {who} by the same "
+                       "request: callers other than its owner write it")  # fmt: skip
+    if not unchanged:
+        return Outcome(None, f"answered {status}{envelope} and changed the database elsewhere")
+    if meant in NOT_OWNED:
+        why = ""
+        if not writers:
+            why = "no other caller wrote the same row by the same request"
+        elif ev is None or not ev.admitted(p):
+            why = ("the caller got past the route's check by no request: its role's refusal "
+                   "is not ruled out")  # fmt: skip
+        reason = f"{table} {target} refused the caller ({meant}{envelope}), nothing written"
+        if why:
+            return Outcome(None, f"{reason}; not decisive: {why}", {"status": status})
+        return Outcome(False, f"{reason}, while {who} wrote it by the same request: the row is "
+                       "its owner's, not shared",
+                       {"ownership": "owned", "status": meant, "table": table})  # fmt: skip
+    return Outcome(None, f"answered {status}{envelope}: neither a write nor a refusal",
+                   {"status": status})  # fmt: skip
 
 
 def _undecided(answer: Answer, a: Mapping[str, Any], envelope: str) -> str:
@@ -3487,6 +3649,9 @@ def run_probes(
                 result.probes[probe.name]["credential"] = True
             if probe.expect in ("witness", "control"):
                 result.probes[probe.name]["role"] = probe.expect
+            if probe.expect == "shared_write":
+                # a write of a shared table's row: what a verified "shared" T1 rests on
+                result.probes[probe.name]["shared_write"] = True
         # judged once every probe ran: a witness's or a control's answer is read by the
         # probes it backs
         ev = _Evidence(ctx, contracts, {p.name: (p, *answers[p.name]) for p in probes})
@@ -3568,6 +3733,23 @@ def _verdict(
             why = "; ".join(dict.fromkeys(o.reason for p, o in found if o.ok is None))
             return ItemVerdict(item, "unexercised", f"{undecided} half of owner_or_admin is "
                                f"undecided: {why or 'no probe'}", names)  # fmt: skip
+    if good and item.kind == "T1" and item.predicted.get("ownership") == "shared":
+        writes = list(item.predicted.get("writes") or ())
+        if not writes:
+            # reads verify it: nothing else claims more (and the reason says so)
+            notes = sorted({o.reason for _, o in good if "app-baseline" in o.reason})
+            return ItemVerdict(item, "verified", f"{good[0][1].reason}; "
+                               f"{_NO_SHARED_WRITES.format(table=item.subject)}", names,
+                               notes=notes, decisive=[p.name for p, _ in good])  # fmt: skip
+        good = [(p, o) for p, o in good if p.expect == "shared_write"]
+        if not good:
+            why = "; ".join(dict.fromkeys(o.reason for p, o in found
+                                          if p.expect == "shared_write"))  # fmt: skip
+            return ItemVerdict(item, "unexercised", f"reads alone do not verify shared: "
+                               f"{item.subject} rows are updated or deleted by "
+                               f"{', '.join(writes)}, and no write by a caller other than "
+                               f"the row's owner was decisive: {why or 'no write probe'}",
+                               names)  # fmt: skip
     if good:
         notes = sorted({o.reason for _, o in good if "app-baseline" in o.reason})
         return ItemVerdict(item, "verified", good[0][1].reason, names, notes=notes,
@@ -4010,6 +4192,16 @@ def check_verdicts(result: RuleResult) -> None:
                        {"decisive": True})["decisive"]]  # fmt: skip
         if not support:
             bad.append(f"{item_id}: verified with no decisive probe supporting it")
+        if v.item.kind == "T1" and v.item.predicted.get("ownership") == "shared":
+            if v.item.predicted.get("writes"):
+                # reads alone never verify "shared" on a table with write routes
+                if not any(result.probes.get(n, {}).get("shared_write") for n in support):
+                    bad.append(f"{item_id}: verified shared on reads alone; its rows are "
+                               "written by " + ", ".join(v.item.predicted["writes"])
+                               + " and no decisive write probe supports it")  # fmt: skip
+            elif _NO_SHARED_WRITES.format(table=v.item.subject) not in v.reason:
+                bad.append(f"{item_id}: verified shared on reads; its reason must say "
+                           f"'{_NO_SHARED_WRITES.format(table=v.item.subject)}'")  # fmt: skip
     if bad:
         raise VerdictInvariantError("; ".join(bad))
 

@@ -12,6 +12,12 @@ the spec step of arm S, the simulated approval, and the spec check of arms S and
   :class:`DraftError` whose ``feedback`` is the repair message.
 * :func:`draft_spec` -- the spec step: the draft prompt, then up to
   :data:`MAX_SPEC_REPAIRS` validation repairs.
+* Arm S+ (plan 2026-10-05-pivot-spec-authoring.md, item C): ``draft_prompt(...,
+  checklist=True)`` adds the generic edge-case checklist
+  (:mod:`bench.edit_slice.spec_checklist`) to the draft's system prompt, and
+  :func:`review_spec` is one self-review call after the first valid draft (the draft,
+  the ticket and the checklist; parsed and validated like a draft, not repaired; an
+  invalid revision keeps the first draft).
 * :func:`approve` -- the simulated approval: each drafted scenario and invariant runs on
   the ticket's reference (layers C/D, plus B when there are invariants, so they are
   checked after the program cases' requests as the candidate's check will); a rule the
@@ -57,15 +63,19 @@ __all__ = [
     "Approval",
     "DraftError",
     "DraftResult",
+    "ReviewResult",
     "approve",
     "check_candidate",
     "code_prompt",
     "coverage",
     "draft_prompt",
     "draft_spec",
+    "drafted_rules",
     "owner_delta",
     "parse_delta",
     "render_delta",
+    "review_messages",
+    "review_spec",
     "spec_feedback",
 ]
 
@@ -246,8 +256,19 @@ def _relevant_scenarios(ticket_id: str, n: int = 3, max_steps: int = 3) -> list[
     return [replace(s, steps=s.steps[:max_steps]) for s in chosen]
 
 
-def draft_prompt(ticket_id: str) -> tuple[str, str]:
-    """(system, user) of arm S's spec step for ``ticket_id``."""
+def draft_prompt(ticket_id: str, *, checklist: bool = False) -> tuple[str, str]:
+    """(system, user) of arm S's spec step for ``ticket_id``; ``checklist`` (arm S+):
+    the edge-case checklist (:data:`bench.edit_slice.spec_checklist.CHECKLIST_SECTION`)
+    appended to the system prompt, the user message unchanged."""
+    system, user = _draft_prompt(ticket_id)
+    if checklist:
+        from bench.edit_slice.spec_checklist import CHECKLIST_SECTION
+
+        system = system.rstrip("\n") + "\n\n" + CHECKLIST_SECTION
+    return system, user
+
+
+def _draft_prompt(ticket_id: str) -> tuple[str, str]:
     t = ticket(ticket_id)
     src = _spec_source()
     profile = _between(src, "USER = Schema.from_pairs(", "def profile()")
@@ -403,11 +424,16 @@ class DraftResult:
 
 
 def draft_spec(
-    ticket_id: str, generator: Generator, max_repairs: int = MAX_SPEC_REPAIRS
+    ticket_id: str,
+    generator: Generator,
+    max_repairs: int = MAX_SPEC_REPAIRS,
+    *,
+    checklist: bool = False,
 ) -> DraftResult:
     """The draft prompt, then up to ``max_repairs`` validation repairs. A draft still
-    invalid after them, or a refusal, gives an empty delta (``failed``)."""
-    system, user = draft_prompt(ticket_id)
+    invalid after them, or a refusal, gives an empty delta (``failed``). ``checklist``:
+    arm S+'s draft prompt (:func:`draft_prompt`)."""
+    system, user = draft_prompt(ticket_id, checklist=checklist)
     messages = [{"role": "user", "content": user}]
     result = DraftResult(SpecDelta())
     for attempt in range(max_repairs + 1):
@@ -433,6 +459,67 @@ def draft_spec(
             messages.append({"role": "user", "content": err.feedback})
     result.failed = True
     return result
+
+
+def review_messages(ticket_id: str, delta: SpecDelta) -> tuple[str, list[dict[str, str]]]:
+    """(system, messages) of arm S+'s self-review call: the S+ draft prompt, the valid
+    draft (rendered) as the model's answer, then the review request
+    (:data:`bench.edit_slice.spec_checklist.REVIEW_REQUEST`)."""
+    from bench.edit_slice.spec_checklist import REVIEW_REQUEST
+
+    system, user = draft_prompt(ticket_id, checklist=True)
+    draft = f"```python\n{render_delta(delta)}```"
+    return system, [
+        {"role": "user", "content": user},
+        {"role": "assistant", "content": draft},
+        {"role": "user", "content": REVIEW_REQUEST},
+    ]
+
+
+@dataclass
+class ReviewResult:
+    """Arm S+'s self-review: the delta to approve (the revision, or the first draft when
+    the review ``failed``: invalid or refused), the generation, a refused call, the
+    answer's text and its validation feedback ("" when valid)."""
+
+    delta: SpecDelta
+    generations: list[Generation] = field(default_factory=list)
+    refused: list[GenerationRefused] = field(default_factory=list)
+    text: str | None = None
+    feedback: str = ""
+    failed: bool = False
+
+    @property
+    def rounds(self) -> int:
+        """Model calls of the review (always 1: it is not repaired)."""
+        return 1
+
+
+def review_spec(ticket_id: str, generator: Generator, delta: SpecDelta) -> ReviewResult:
+    """One self-review call on the valid draft ``delta``; the answer is parsed and
+    validated as a draft (:func:`parse_delta`) with no repair. An invalid answer or a
+    refusal keeps ``delta`` (``failed``)."""
+    system, messages = review_messages(ticket_id, delta)
+    result = ReviewResult(delta)
+    try:
+        generation = generator.generate(system, messages)
+    except GenerationRefused as exc:
+        result.refused.append(exc)
+        result.feedback, result.failed = f"refused: {exc}", True
+        return result
+    result.generations.append(generation)
+    result.text = generation.text
+    try:
+        result.delta = parse_delta(generation.text)
+    except DraftError as err:
+        result.feedback, result.failed = err.feedback, True
+    return result
+
+
+def drafted_rules(delta: SpecDelta) -> int:
+    """Rules in ``delta`` as :func:`approve` counts them (scenarios, invariants, programs
+    and machines; unchecked entries are not counted)."""
+    return len(delta.scenarios) + len(delta.invariants) + len(delta.programs) + len(delta.machines)
 
 
 # ---- the simulated approval ---------------------------------------------------------------------
@@ -764,12 +851,15 @@ def coverage(ticket_id: str, delta: SpecDelta) -> tuple[int, int]:
 
 
 def estimate_rows(tickets: Sequence[str]) -> list[dict[str, Any]]:
-    """Per ticket, the chars of the S draft prompt and of the S/S* code prompts (arm S's
-    code prompt with the owner's delta standing in for the approved draft) and, for
-    comparison, arm Q's."""
+    """Per ticket, the chars of the S draft prompt, the S+ draft prompt (S's plus the
+    checklist), the S+ review call (the S+ draft prompt, the owner's delta standing in
+    for the first draft, the review request), the S/S+/S* code prompts (the owner's
+    delta standing in for the approved draft) and, for comparison, arm Q's."""
     rows = []
     for tid in tickets:
         d_sys, d_user = draft_prompt(tid)
+        p_sys, p_user = draft_prompt(tid, checklist=True)
+        r_sys, r_msgs = review_messages(tid, owner_delta(tid))
         c_sys, c_user = code_prompt(tid, owner_delta(tid))
         from bench.edit_slice.run import q_prompt
 
@@ -778,6 +868,8 @@ def estimate_rows(tickets: Sequence[str]) -> list[dict[str, Any]]:
             {
                 "ticket": tid,
                 "draft_chars": len(d_sys) + len(d_user),
+                "splus_draft_chars": len(p_sys) + len(p_user),
+                "review_chars": len(r_sys) + sum(len(m["content"]) for m in r_msgs),
                 "code_chars": len(c_sys) + len(c_user),
                 "q_chars": len(q_sys) + len(q_user),
             }
@@ -789,26 +881,24 @@ def render_estimate(rows: Sequence[Mapping[str, Any]]) -> str:
     def tok(chars: int) -> int:
         return round(chars / CHARS_PER_TOKEN)
 
+    keys = ("draft_chars", "splus_draft_chars", "review_chars", "code_chars", "q_chars")
     lines = [
-        "| ticket | S draft chars | tok | S/S* code chars | tok | Q chars | tok |",
-        "|---|---:|---:|---:|---:|---:|---:|",
+        "| ticket | S draft chars | tok | S+ draft chars | tok | S+ review chars | tok "
+        "| S/S+/S* code chars | tok | Q chars | tok |",
+        "|---|" + "---:|" * (2 * len(keys)),
     ]
-    totals = {"draft_chars": 0, "code_chars": 0, "q_chars": 0}
+    totals = dict.fromkeys(keys, 0)
     for r in rows:
-        lines.append(
-            f"| {r['ticket']} | {r['draft_chars']} | {tok(r['draft_chars'])} "
-            f"| {r['code_chars']} | {tok(r['code_chars'])} | {r['q_chars']} | {tok(r['q_chars'])} |"
-        )
-        for k in totals:
+        cells = " | ".join(f"{r[k]} | {tok(r[k])}" for k in keys)
+        lines.append(f"| {r['ticket']} | {cells} |")
+        for k in keys:
             totals[k] += r[k]
+    cells = " | ".join(f"{totals[k]} | {tok(totals[k])}" for k in keys)
+    lines.append(f"| **total** | {cells} |")
     lines.append(
-        f"| **total** | {totals['draft_chars']} | {tok(totals['draft_chars'])} "
-        f"| {totals['code_chars']} | {tok(totals['code_chars'])} "
-        f"| {totals['q_chars']} | {tok(totals['q_chars'])} |"
-    )
-    lines.append(
-        f"\nfirst-prompt sizes only (chars / {CHARS_PER_TOKEN}); arm S's code prompt uses the "
-        "owner's blind delta as a stand-in for its approved draft; no model call was made"
+        f"\nfirst-prompt sizes only (chars / {CHARS_PER_TOKEN}); the code prompts and the S+ "
+        "review use the owner's blind delta as a stand-in for the drafted one; no model "
+        "call was made"
     )
     return "\n".join(lines)
 

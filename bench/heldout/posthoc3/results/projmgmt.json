@@ -1,0 +1,85 @@
+{
+  "app": "projmgmt",
+  "package": "bench.import_repos.projmgmt",
+  "framework": "flask",
+  "tables": {
+    "verified": 2,
+    "total": 3,
+    "pct": 66.7
+  },
+  "routes": {
+    "verified": 16,
+    "total": 23,
+    "pct": 69.6
+  },
+  "unverified_tables": {
+    "Project": "items T1 Project"
+  },
+  "outside_api": {},
+  "unverified_routes": {
+    "POST /users": "R1 refuted",
+    "PUT /users/{user_id}": "R1 refuted",
+    "DELETE /users/{user_id}": "R1 refuted",
+    "POST /projects": "R1 refuted",
+    "PUT /projects/{project_id}": "R1 refuted",
+    "DELETE /projects/{project_id}": "R1 refuted",
+    "POST /projects/{project_id}/tasks": "R1 refuted"
+  },
+  "items": {
+    "verified": 44,
+    "refuted": 7,
+    "unexercised": 66,
+    "unclear": 1,
+    "verified (corrected)": 8
+  },
+  "corrected": 8,
+  "unreachable_routes": [],
+  "unreachable_items": 56,
+  "excluded_framework_routes": 1,
+  "baseline": [],
+  "mining": {
+    "proposed": 3,
+    "refuted": 1,
+    "uncompiled": 0,
+    "snapshots": 17,
+    "runs": 171,
+    "app_rows": 10
+  },
+  "agrees": true,
+  "disagreements": [],
+  "fidelity": {
+    "variant2_clean": false,
+    "variant2_findings": [
+      "R1 POST /users",
+      "R1 POST /projects",
+      "R1 POST /projects/{project_id}/tasks"
+    ],
+    "scenarios": {
+      "passed": true,
+      "scenarios": 19,
+      "steps": 93,
+      "answers_ok": 93,
+      "oracle_ok": 93,
+      "failed": []
+    },
+    "spec_valid": true,
+    "passed": false
+  },
+  "gate": {
+    "tables": false,
+    "routes": false
+  },
+  "import_s": 9.57,
+  "stage_s": {
+    "extract": 0.354,
+    "probe": 3.196,
+    "correct": 1.902,
+    "mine": 0.062,
+    "variant2": 3.142,
+    "total": 9.331
+  },
+  "llm": {
+    "tokens": 0,
+    "cost_usd": 0.0
+  }
+}

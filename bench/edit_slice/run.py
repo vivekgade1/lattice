@@ -50,6 +50,18 @@ multi-vendor tickets (:data:`PHASE1_ARMS`: P, Q, S, S*), both Python edits:
 * **S*.** No spec step: the owner's blind delta (:func:`bench.edit_slice.sdraft.owner_delta`)
   is the approved one.
 
+**Pivot (plan 2026-10-05-pivot-spec-authoring.md, C/D; :data:`PIVOT_ARMS`: S, S+, S*).**
+
+* **S+.** Arm S's flow with (a) the generic edge-case checklist
+  (:mod:`bench.edit_slice.spec_checklist`) appended to the draft's system prompt and (b)
+  one self-review call after the first valid draft
+  (:func:`bench.edit_slice.sdraft.review_spec`: the draft, the ticket and the checklist;
+  the answer is parsed and validated like a draft, with no repair). An invalid or
+  refused review keeps the first draft (``spec_review_failed``); a draft that never
+  validates is not reviewed. The simulated approval, the code step and the spec check
+  are arm S's. S+ is not an aided arm (:func:`is_aided`: no worked examples, no
+  mistakes table).
+
 Their records are :class:`SpecRunRecord` (the spec step's fields; tokens, cost and model
 time include the spec step's calls). ``arm_prompt("S", ...)`` is the spec step's draft
 prompt (the first call); ``system_chars`` / ``user_chars`` / ``prompt_tokens_est`` of an S
@@ -98,7 +110,7 @@ results.jsonl [--max-tokens 16000] [--dry-run-reference | --dry-run-partial]`` (
 all``: the template's t1-t18; ``repos``: the held-out repos' t19-t24; ``round3``: every
 ticket, t1-t24; ``round4``: t1-t30 (round3 plus N4's fresh held-out set, t25-t30, no
 Lattice reference); ``option1``: the option-1 pilot's t31-t38 on the multi-vendor app;
-``option1b``: its atomicity pilot, t39-t44;
+``option1b``: its atomicity pilot, t39-t44; ``pivot``: the pivot's held-out set, t45-t56;
 or comma-separated ids); ``--estimate`` prints the prompt sizes and the
 live run's cost estimate instead (no generation). The dry run feeds the hand-written
 references through each arm (no API call); arm L on t13-t18 has no reference to feed
@@ -153,6 +165,7 @@ from bench.edit_slice.tickets import (
     ALL_TICKETS,
     OPTION1,
     OPTION1B,
+    PIVOT,
     REPO_TICKETS,
     ROUND4_TICKETS,
     TICKETS,
@@ -164,14 +177,18 @@ from bench.metrics import cost_usd
 from lattice.llm.cli_client import CliError, CliUsageLimitError
 from lattice.llm.client import Generation, GenerationRefused, Generator, ScriptedGenerator
 
-Arm = Literal["P", "L", "Q", "L+", "Q+", "S", "S*"]
+Arm = Literal["P", "L", "Q", "L+", "Q+", "S", "S+", "S*"]
 ARMS: tuple[Arm, ...] = ("P", "L")  # rounds 1-4
 # round 5 (spec 2026-09-28): Q = P + pycheck; L+ / Q+ = L / Q + the context aids (§7)
 ROUND5_ARMS: tuple[Arm, ...] = ("P", "L", "Q", "L+", "Q+")
 # phase 1 (spec 2026-10-04): S = drafted + approved spec delta, checked on layers A-D;
 # S* = the owner's blind delta, checked the same way
-SPEC_ARMS: tuple[Arm, ...] = ("S", "S*")
+# pivot (plan 2026-10-05-pivot-spec-authoring.md, C/D): S+ = S with the edge-case
+# checklist in the draft prompt and one self-review call
+SPEC_ARMS: tuple[Arm, ...] = ("S", "S+", "S*")
 PHASE1_ARMS: tuple[Arm, ...] = ("P", "Q", "S", "S*")
+PIVOT_ARMS: tuple[Arm, ...] = ("S", "S+", "S*")
+AIDED_ARMS: tuple[Arm, ...] = ("L+", "Q+")  # the round-5 context aids (S+ is not one)
 ALL_ARMS: tuple[Arm, ...] = (*ROUND5_ARMS, *SPEC_ARMS)
 MAX_REPAIRS = 2
 MAX_TOKENS = 16000  # the default output limit per model call (--max-tokens)
@@ -366,7 +383,7 @@ def language(arm: str) -> str:
 
 
 def is_aided(arm: str) -> bool:
-    return arm.endswith("+")
+    return arm in AIDED_ARMS
 
 
 def with_section(system: str, section: str) -> str:
@@ -419,6 +436,8 @@ def arm_prompt(arm: str, ticket_id: str, *, hints: bool = False) -> tuple[str, s
         # S's first call is its spec step; S*'s is the code prompt with the owner's delta
         if arm == "S":
             system, user = sdraft.draft_prompt(ticket_id)
+        elif arm == "S+":  # S's draft prompt plus the edge-case checklist
+            system, user = sdraft.draft_prompt(ticket_id, checklist=True)
         else:
             system, user = sdraft.code_prompt(ticket_id, sdraft.owner_delta(ticket_id))
     else:
@@ -526,12 +545,20 @@ class SpecRunRecord(RunRecord):
     spec_rejected_rules: list[list[str]] = field(default_factory=list)
     spec_rounds: int = 0
     spec_failed: bool = False
+    # arm S+'s self-review (0 / False / 0 for S and S*, and for an S+ draft that never
+    # validated): its model calls (1 when it ran), whether the revision was invalid or
+    # refused (the first draft is then kept), and the rules drafted before the review
+    # (the first valid draft) and after it (the delta sent to approval)
+    spec_review_rounds: int = 0
+    spec_review_failed: bool = False
+    spec_drafted_before_review: int = 0
+    spec_drafted_after_review: int = 0
     # per repair round, the layers (A-D) of the spec-check findings fed back ([] when the
     # repair was for something else: no files, a failed start or smoke run alone)
     layers_fed_back: list[list[str]] = field(default_factory=list)
     # spec-check findings on the final candidate (-1: it was never checked)
     final_check_findings: int = -1
-    spec_prompt_tokens_est: int = 0  # the draft prompt (arm S)
+    spec_prompt_tokens_est: int = 0  # the draft prompt (arms S, S+)
     approve_s: float = 0.0  # the simulated approval's checks
     check_s: float = 0.0  # every round's spec check
 
@@ -1052,12 +1079,30 @@ def _spec_step(
 
     if arm == "S*":
         return sdraft.owner_delta(ticket_id), [], []
-    system, user = sdraft.draft_prompt(ticket_id)
+    checklist = arm == "S+"
+    system, user = sdraft.draft_prompt(ticket_id, checklist=checklist)
     record.spec_prompt_tokens_est = round((len(system) + len(user)) / CHARS_PER_TOKEN)
-    draft = sdraft.draft_spec(ticket_id, generator)
+    draft = sdraft.draft_spec(ticket_id, generator, checklist=checklist)
     record.spec_rounds, record.spec_failed = draft.rounds, draft.failed
+    delta = draft.delta
+    generations, refused = list(draft.generations), list(draft.refused)
+    if checklist and not draft.failed:  # S+: one self-review call on the valid draft
+        review = sdraft.review_spec(ticket_id, generator, draft.delta)
+        record.spec_review_rounds = review.rounds
+        record.spec_review_failed = review.failed
+        record.spec_drafted_before_review = sdraft.drafted_rules(draft.delta)
+        record.spec_drafted_after_review = sdraft.drafted_rules(review.delta)
+        delta = review.delta
+        generations += review.generations
+        refused += review.refused
+        if rep_dir is not None:
+            review_dir = rep_dir / "review"
+            review_dir.mkdir(parents=True, exist_ok=True)
+            if review.text is not None:
+                (review_dir / "response.md").write_text(review.text)
+            (review_dir / "feedback.txt").write_text(review.feedback)
     started = time.perf_counter()
-    approval = sdraft.approve(ticket_id, draft.delta)
+    approval = sdraft.approve(ticket_id, delta)
     record.approve_s = time.perf_counter() - started
     record.spec_drafted = approval.drafted
     record.spec_rejected = len(approval.rejected)
@@ -1074,7 +1119,7 @@ def _spec_step(
             json.dumps({"drafted": approval.drafted, "rejected": approval.rejected}, indent=2)
             + "\n"
         )
-    return approval.approved, draft.generations, draft.refused
+    return approval.approved, generations, refused
 
 
 def repair_message(feedback: str) -> str:
@@ -1469,6 +1514,11 @@ def dry_run(arm: Arm, ticket_id: str, *, partial: bool = False) -> RunRecord:
 
         draft = sdraft.render_delta(sdraft.owner_delta(ticket_id))
         answers.insert(0, f"```python\n{draft}```")
+    elif arm == "S+":  # the draft and the review's answer: the owner's delta, twice
+        from bench.edit_slice import sdraft
+
+        draft = sdraft.render_delta(sdraft.owner_delta(ticket_id))
+        answers[:0] = [f"```python\n{draft}```"] * 2
     return run_arm(arm, ticket_id, ScriptedGenerator(answers), model="reference", dry_run=True)
 
 
@@ -1574,14 +1624,15 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--arm",
         default="P,L",
-        help="comma-separated arms: P, L (rounds 1-4), Q, L+, Q+ (round 5), S, S* (phase 1)",
+        help="comma-separated arms: P, L (rounds 1-4), Q, L+, Q+ (round 5), S, S* (phase 1), "
+        "S+ (pivot)",
     )
     p.add_argument(
         "--tickets",
         default="all",
         help=(
             "comma-separated ticket ids, all (the template's t1-t18), repos (t19-t24) "
-            "or round3 (all of t1-t24); option1, option1b, phase1 (t31-t44)"
+            "or round3 (all of t1-t24); option1, option1b, phase1 (t31-t44); pivot (t45-t56)"
         ),
     )
     p.add_argument("--reps", type=int, default=1)
@@ -1649,6 +1700,8 @@ def _tickets(spec: str) -> list[str]:
         return list(OPTION1B)
     if spec == "phase1":
         return [*OPTION1, *OPTION1B]
+    if spec == "pivot":
+        return list(PIVOT)
     ids = [s.strip() for s in spec.split(",") if s.strip()]
     for tid in ids:
         ticket(tid)

@@ -2,6 +2,7 @@
 
     python -m bench.heldout.posthoc.run_posthoc APP
     python -m bench.heldout.posthoc.run_posthoc APP --work bench/heldout/posthoc2  # round 2
+    python -m bench.heldout.posthoc.run_posthoc realworld --work bench/heldout/posthoc3
 
 The same approach as the frozen run's ``bench/heldout/run_exit.py``: the held-out
 packages are added to ``bench.phase2_exit.APPS`` at run time, and the exit script's own
@@ -27,9 +28,12 @@ import traceback
 from pathlib import Path
 
 from bench import phase2_exit
-from bench.heldout.run_exit import HELD_OUT
+from bench.heldout.run_exit import HELD_OUT as FIRST_HELD_OUT
 
 HERE = Path(__file__).resolve().parent
+# the frozen first run's held-out apps, plus the reserve app of the second held-out run
+# (``bench/heldout/reserve/run_exit.py``): a post-hoc round measures all four
+HELD_OUT: dict[str, str] = {**FIRST_HELD_OUT, "realworld": "bench.import_repos.realworld"}
 
 
 def main(argv: list[str] | None = None) -> int:

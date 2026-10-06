@@ -11,7 +11,12 @@ seed hashes eight passwords with bcrypt, which was most of a check's time.
 
 `python -m bench.specs.exit [--workers N] [--out FILE]` runs every reference and every
 trap (``TRAPS`` in ``tests/bench/test_edit_slice_option1.py``) and writes the per-layer
-catch table as JSON.
+catch table as JSON. ``--set pivot`` does the same for the pivot's held-out tickets
+(t45-t56: ``TRAPS`` in ``tests/bench/test_edit_slice_pivot.py``, the owner's deltas in
+``bench.specs.pivot_tickets``) into ``bench/specs/pivot-exit.json``.
+
+`check_ticket` takes the deltas as a mapping (``deltas=``); without one, a ticket's delta
+is looked up in t31-t44's ``DELTAS``, then in the pivot's.
 """
 
 from __future__ import annotations
@@ -58,12 +63,42 @@ def seed_db_factory(variant: str, path: Path) -> Path:
     return Path(path)
 
 
+# trap set -> (the test module holding TRAPS, the default output table)
+SETS: dict[str, tuple[str, str]] = {
+    "phase0": ("tests.bench.test_edit_slice_option1", "bench/specs/phase0-exit.json"),
+    "pivot": ("tests.bench.test_edit_slice_pivot", "bench/specs/pivot-exit.json"),
+}
+
+
+def deltas_of(trap_set: str = "phase0") -> Mapping[str, SpecDelta]:
+    """The owner's deltas of a trap set's tickets."""
+    if trap_set == "pivot":
+        from bench.specs.pivot_tickets import DELTAS as PIVOT_DELTAS
+
+        return PIVOT_DELTAS
+    return DELTAS
+
+
+def _delta(tid: str, deltas: Mapping[str, SpecDelta] | None) -> SpecDelta:
+    if deltas is not None:
+        return deltas[tid]
+    if tid in DELTAS:
+        return DELTAS[tid]
+    return deltas_of("pivot")[tid]
+
+
 def check_ticket(
-    tid: str, files: Mapping[str, str], *, layers: str = "ABCD", delta: SpecDelta | None = None
+    tid: str,
+    files: Mapping[str, str],
+    *,
+    layers: str = "ABCD",
+    delta: SpecDelta | None = None,
+    deltas: Mapping[str, SpecDelta] | None = None,
 ) -> Report:
-    """The app with ``files`` replaced, checked against the spec plus ``tid``'s delta
-    (``delta``: this one instead)."""
-    spec = apply(SPEC, DELTAS[tid] if delta is None else delta)
+    """The app with ``files`` replaced, checked against the spec plus ``tid``'s delta from
+    ``deltas`` (default: t31-t44's ``DELTAS``, then the pivot's); ``delta``: this one
+    instead."""
+    spec = apply(SPEC, _delta(tid, deltas) if delta is None else delta)
     variant = load_variant(files, repo="multivendor")
     app = repo("multivendor")
     with tempfile.TemporaryDirectory(prefix="lattice-exit-") as tmp:
@@ -82,11 +117,11 @@ def check_ticket(
         )
 
 
-def _traps() -> dict[str, tuple[str, Any]]:
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    from tests.bench.test_edit_slice_option1 import TRAPS
+def _traps(trap_set: str = "phase0") -> dict[str, tuple[str, Any]]:
+    import importlib
 
-    return dict(TRAPS)
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    return dict(importlib.import_module(SETS[trap_set][0]).TRAPS)
 
 
 def _summary(name: str, tid: str, report: Report) -> dict[str, Any]:
@@ -101,18 +136,20 @@ def _summary(name: str, tid: str, report: Report) -> dict[str, Any]:
     }
 
 
-def run_one(job: tuple[str, str]) -> dict[str, Any]:
-    """``(name, tid)``: a trap name, or ``reference`` for the ticket's reference."""
-    name, tid = job
+def run_one(job: tuple[str, ...]) -> dict[str, Any]:
+    """``(name, tid)`` or ``(name, tid, trap set)``: a trap name, or ``reference`` for the
+    ticket's reference."""
+    name, tid, *rest = job
+    trap_set = rest[0] if rest else "phase0"
     try:
-        files = reference_files(tid) if name == "reference" else _traps()[name][1]()
-        return _summary(name, tid, check_ticket(tid, files))
+        files = reference_files(tid) if name == "reference" else _traps(trap_set)[name][1]()
+        return _summary(name, tid, check_ticket(tid, files, deltas=deltas_of(trap_set)))
     except Exception as err:  # noqa: BLE001 -- reported per job
         return {"name": name, "ticket": tid, "verdict": "error", "error": f"{err!r}"[:500]}
 
 
-def jobs() -> list[tuple[str, str]]:
-    traps = _traps()
+def jobs(trap_set: str = "phase0") -> list[tuple[str, str]]:
+    traps = _traps(trap_set)
     tickets = sorted({tid for tid, _ in traps.values()})
     return [("reference", t) for t in tickets] + [(n, traps[n][0]) for n in sorted(traps)]
 
@@ -120,14 +157,18 @@ def jobs() -> list[tuple[str, str]]:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="python -m bench.specs.exit")
     p.add_argument("--workers", type=int, default=8)
-    p.add_argument("--out", default="bench/specs/phase0-exit.json")
+    p.add_argument("--set", default="phase0", choices=sorted(SETS),
+                   help="phase0: t31-t44 (default); pivot: t45-t56")  # fmt: skip
+    p.add_argument("--out", default=None, help="default: the set's table")
     p.add_argument("--only", nargs="*", help="trap names or 'reference:<tid>'")
     args = p.parse_args(argv)
-    todo = jobs()
+    if args.out is None:
+        args.out = SETS[args.set][1]
+    todo = jobs(args.set)
     if args.only:
         todo = [j for j in todo if j[0] in args.only or f"{j[0]}:{j[1]}" in args.only]
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        results = list(pool.map(run_one, todo))
+        results = list(pool.map(run_one, [(*j, args.set) for j in todo]))
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(results, indent=2) + "\n")
     refs = [r for r in results if r["name"] == "reference"]

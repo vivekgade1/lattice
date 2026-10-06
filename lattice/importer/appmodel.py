@@ -239,6 +239,12 @@ class Route:
     # (its handler calls code the front end did not read); None: complete. A table is
     # set outside the API only when no route has a reason here
     unread: str | None = field(default=None, metadata=OMIT_DEFAULT)
+    # the tables the route writes through ORM relationships (pivot plan 2026-10-05, A.2):
+    # ``obj.rel.append(...)``, ``obj.rel = [...]``, ``obj.m2m.add(...)`` -- the link
+    # table (a many-to-many's ``secondary`` / ``through``) or a one-to-many's target --
+    # in its handler or the package code it calls. Table evidence: such a table is
+    # never "outside the API"
+    rel_tables: tuple[str, ...] = field(default=(), metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)

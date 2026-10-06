@@ -276,7 +276,9 @@ def column(field: Any) -> FieldSpec:
         bounds.setdefault("max_length", max_length)
     choices: tuple[Any, ...] = ()
     if field.choices:
-        choices = tuple(value for value, _ in field.flatchoices)
+        # dict.fromkeys: an app's choice list may repeat a value (pygments >= 2.21 lists
+        # its Mako lexers twice); the column still allows each value once
+        choices = tuple(dict.fromkeys(value for value, _ in field.flatchoices))
     fk = None
     if field.is_relation and (field.many_to_one or field.one_to_one):
         target = field.target_field

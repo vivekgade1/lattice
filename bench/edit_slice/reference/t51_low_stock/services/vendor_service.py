@@ -1,0 +1,71 @@
+# ruff: noqa
+# app/services/vendor_service.py
+from sqlmodel import Session
+from bench.import_repos.multivendor.app.repositories import vendor_repository
+from bench.import_repos.multivendor.app.models.vendor import Vendor
+from bench.import_repos.multivendor.app.models.user import User, Role
+from bench.import_repos.multivendor.app.schemas.vendor import VendorCreate, VendorUpdate
+
+
+class VendorError(Exception):
+    pass
+
+
+def register_vendor(session: Session, current_user: User, data: VendorCreate) -> Vendor:
+    existing = vendor_repository.get_by_user_id(session, current_user.id)
+    if existing is not None:
+        raise VendorError("This user is already registered as a vendor")
+
+    new_vendor = Vendor(
+        user_id=current_user.id,
+        business_name=data.business_name,
+    )
+    vendor = vendor_repository.create(session, new_vendor)
+
+    current_user.role = Role.VENDOR
+    session.add(current_user)
+    session.commit()
+
+    return vendor
+
+
+def get_own_vendor_profile(session: Session, current_user: User) -> Vendor:
+    vendor = vendor_repository.get_by_user_id(session, current_user.id)
+    if vendor is None:
+        raise VendorError("No vendor profile found for this user")
+    return vendor
+
+
+def update_own_vendor_profile(session: Session, current_user: User, data: VendorUpdate) -> Vendor:
+    vendor = get_own_vendor_profile(session, current_user)
+    update_data = data.model_dump(exclude_unset=True)
+    return vendor_repository.update(session, vendor, update_data)
+
+
+def verify_vendor(session: Session, vendor_id: int, is_verified: bool) -> Vendor:
+    vendor = vendor_repository.get_by_id(session, vendor_id)
+    if vendor is None:
+        raise VendorError("Vendor not found")
+
+    return vendor_repository.update(session, vendor, {"is_verified": is_verified})
+
+
+from sqlmodel import select
+from bench.import_repos.multivendor.app.models.product import Product
+
+
+def low_stock(session: Session, current_user: User, threshold: int) -> list[dict]:
+    vendor = get_own_vendor_profile(session, current_user)
+    statement = (
+        select(Product)
+        .where(
+            Product.vendor_id == vendor.id,
+            Product.is_active == True,
+            Product.stock_quantity < threshold,
+        )
+        .order_by(Product.stock_quantity, Product.id)
+    )
+    return [
+        {"product_id": p.id, "name": p.name, "stock_quantity": p.stock_quantity}
+        for p in session.exec(statement).all()
+    ]

@@ -1,0 +1,1634 @@
+[
+  {
+    "id": "inv-bcd7676b6a",
+    "kind": "invariant",
+    "sentence": "Blog's visits is at most 9223372036854775807.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "blog_visits_le_9223372036854775807",
+      "sentence": "Blog's visits is at most 9223372036854775807.",
+      "expr": "Blog.visits <= 9223372036854775807"
+    },
+    "expr": "Blog.visits <= 9223372036854775807",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "6lovtdxhxn",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 18:32:15.770807",
+          "create": "2026-10-05 18:32:15.770936",
+          "updated": "2026-10-05 18:32:15.770938",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "ruxloeoyii",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 18:32:15.775503",
+          "create": "2026-10-05 18:32:15.775565",
+          "updated": "2026-10-05 18:32:15.775567",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 3
+        },
+        {
+          "id": 1,
+          "title": "valid title",
+          "slug": "slug-01",
+          "body": "valid body",
+          "image": "Image 01",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554894",
+          "updated": "2026-10-05 18:32:15.847961",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 1
+        },
+        {
+          "id": 5,
+          "title": "valid title",
+          "slug": "slug-05",
+          "body": "valid body",
+          "image": "Image 05",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554905",
+          "updated": "2026-10-05 18:32:15.851012",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 1
+        },
+        {
+          "id": 3,
+          "title": "valid title",
+          "slug": "slug-03",
+          "body": "valid body",
+          "image": "Image 04",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554901",
+          "updated": "2026-10-05 18:32:15.861151",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 3
+        }
+      ],
+      "runs": [
+        "R-0106",
+        "R-0108",
+        "R-0144",
+        "R-0145",
+        "R-0150"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-01/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-05/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-03/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 19
+    },
+    "support": 19,
+    "source": "static: BlogDetailUpdateDeleteSerializer.visits le=9223372036854775807",
+    "status": "pending"
+  },
+  {
+    "id": "inv-4e87bcf105",
+    "kind": "invariant",
+    "sentence": "Blog's visits is at least 0.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "blog_visits_ge_0",
+      "sentence": "Blog's visits is at least 0.",
+      "expr": "Blog.visits >= 0"
+    },
+    "expr": "Blog.visits >= 0",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "6lovtdxhxn",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 18:32:15.770807",
+          "create": "2026-10-05 18:32:15.770936",
+          "updated": "2026-10-05 18:32:15.770938",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "ruxloeoyii",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 18:32:15.775503",
+          "create": "2026-10-05 18:32:15.775565",
+          "updated": "2026-10-05 18:32:15.775567",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 3
+        },
+        {
+          "id": 1,
+          "title": "valid title",
+          "slug": "slug-01",
+          "body": "valid body",
+          "image": "Image 01",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554894",
+          "updated": "2026-10-05 18:32:15.847961",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 1
+        },
+        {
+          "id": 5,
+          "title": "valid title",
+          "slug": "slug-05",
+          "body": "valid body",
+          "image": "Image 05",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554905",
+          "updated": "2026-10-05 18:32:15.851012",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 1
+        },
+        {
+          "id": 3,
+          "title": "valid title",
+          "slug": "slug-03",
+          "body": "valid body",
+          "image": "Image 04",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554901",
+          "updated": "2026-10-05 18:32:15.861151",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 3
+        }
+      ],
+      "runs": [
+        "R-0106",
+        "R-0108",
+        "R-0144",
+        "R-0145",
+        "R-0150"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-01/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-05/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-03/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 19
+    },
+    "support": 19,
+    "source": "static: Blog.visits ge=0; static: BlogDetailUpdateDeleteSerializer.visits ge=0; observed: Blog.visits >= 0 on the rows the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-588c5f5687",
+    "kind": "invariant",
+    "sentence": "Comment's object_id is at least 0.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "comment_object_id_ge_0",
+      "sentence": "Comment's object_id is at least 0.",
+      "expr": "Comment.object_id >= 0"
+    },
+    "expr": "Comment.object_id >= 0",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: Comment.object_id ge=0",
+    "status": "pending"
+  },
+  {
+    "id": "inv-2cca582189",
+    "kind": "invariant",
+    "sentence": "No two Blog rows share slug.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_blog_per_slug",
+      "sentence": "No two Blog rows share slug.",
+      "expr": "count(Blog, by=\"slug\") <= 1"
+    },
+    "expr": "count(Blog, by=\"slug\") <= 1",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "6lovtdxhxn",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 18:32:15.770807",
+          "create": "2026-10-05 18:32:15.770936",
+          "updated": "2026-10-05 18:32:15.770938",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "ruxloeoyii",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 18:32:15.775503",
+          "create": "2026-10-05 18:32:15.775565",
+          "updated": "2026-10-05 18:32:15.775567",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 3
+        },
+        {
+          "id": 1,
+          "title": "valid title",
+          "slug": "slug-01",
+          "body": "valid body",
+          "image": "Image 01",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554894",
+          "updated": "2026-10-05 18:32:15.847961",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 1
+        },
+        {
+          "id": 5,
+          "title": "valid title",
+          "slug": "slug-05",
+          "body": "valid body",
+          "image": "Image 05",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554905",
+          "updated": "2026-10-05 18:32:15.851012",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 1
+        },
+        {
+          "id": 3,
+          "title": "valid title",
+          "slug": "slug-03",
+          "body": "valid body",
+          "image": "Image 04",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554901",
+          "updated": "2026-10-05 18:32:15.861151",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 3
+        }
+      ],
+      "runs": [
+        "R-0106",
+        "R-0108",
+        "R-0144",
+        "R-0145",
+        "R-0150"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-01/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-05/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-03/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 19
+    },
+    "support": 10,
+    "source": "static: Blog.slug unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-810922cb85",
+    "kind": "invariant",
+    "sentence": "A Blog has at most one Blog_category (Blog_category.blog_id).",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_blog_category_per_blog_id",
+      "sentence": "A Blog has at most one Blog_category (Blog_category.blog_id).",
+      "expr": "count(Blog_category, by=\"blog_id\") <= 1"
+    },
+    "expr": "count(Blog_category, by=\"blog_id\") <= 1",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "blog_id": 9,
+          "category_id": 1
+        },
+        {
+          "id": 9,
+          "blog_id": 5,
+          "category_id": 1
+        },
+        {
+          "id": 9,
+          "blog_id": 3,
+          "category_id": 1
+        }
+      ],
+      "runs": [
+        "R-0106",
+        "R-0145",
+        "R-0150"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-05/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-03/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 3
+    },
+    "support": 3,
+    "source": "observed: no two Blog_category rows share blog_id",
+    "status": "pending"
+  },
+  {
+    "id": "inv-f5bcb31478",
+    "kind": "invariant",
+    "sentence": "No two Category rows share slug.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_category_per_slug",
+      "sentence": "No two Category rows share slug.",
+      "expr": "count(Category, by=\"slug\") <= 1"
+    },
+    "expr": "count(Category, by=\"slug\") <= 1",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: Category.slug unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-ac2fa38417",
+    "kind": "invariant",
+    "sentence": "No two User rows share phone.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_user_per_phone",
+      "sentence": "No two User rows share phone.",
+      "expr": "count(User, by=\"phone\") <= 1"
+    },
+    "expr": "count(User, by=\"phone\") <= 1",
+    "evidence": {
+      "rows": [
+        {
+          "id": 1,
+          "password": "md5$0j1xzPIY5xLKLDM7Gnvqfv$6074a40d6284ad9c4ca99237540727fa",
+          "last_login": "2026-01-01 10:00:00",
+          "is_superuser": 1,
+          "phone": "admin@example.com",
+          "first_name": "valid first name",
+          "last_name": "valid last name",
+          "author": 1,
+          "special_user": "2026-01-01 10:00:00",
+          "is_staff": 1,
+          "is_admin": 1,
+          "date_joined": "2026-01-01 10:00:00",
+          "two_step_password": 1
+        },
+        {
+          "id": 2,
+          "password": "md5$plliyMfVAteH4JTeCMAj1R$d50e9c267f9aa5c1656b505c8d580836",
+          "last_login": "2026-01-01 11:00:00",
+          "is_superuser": 0,
+          "phone": "alice@example.com",
+          "first_name": "valid first name",
+          "last_name": "valid last name",
+          "author": 0,
+          "special_user": "2026-01-01 11:00:00",
+          "is_staff": 0,
+          "is_admin": 0,
+          "date_joined": "2026-01-01 11:00:00",
+          "two_step_password": 0
+        },
+        {
+          "id": 3,
+          "password": "md5$rPRUbPZK77KC0zrkQaY6QF$bf79874ace42de37351a1a0d5f970a0f",
+          "last_login": null,
+          "is_superuser": 1,
+          "phone": "bob@example.com",
+          "first_name": "valid first name",
+          "last_name": "valid last name",
+          "author": 1,
+          "special_user": "2026-01-01 12:00:00",
+          "is_staff": 0,
+          "is_admin": 1,
+          "date_joined": "2026-01-01 12:00:00",
+          "two_step_password": 1
+        },
+        {
+          "id": 2,
+          "password": "md5$plliyMfVAteH4JTeCMAj1R$d50e9c267f9aa5c1656b505c8d580836",
+          "last_login": "2026-01-01 11:00:00",
+          "is_superuser": 0,
+          "phone": "alice@example.com",
+          "first_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_name": "Last Name 02",
+          "author": 0,
+          "special_user": "2026-01-01 11:00:00",
+          "is_staff": 0,
+          "is_admin": 0,
+          "date_joined": "2026-01-01 11:00:00",
+          "two_step_password": 0
+        },
+        {
+          "id": 2,
+          "password": "md5$plliyMfVAteH4JTeCMAj1R$d50e9c267f9aa5c1656b505c8d580836",
+          "last_login": "2026-01-01 11:00:00",
+          "is_superuser": 0,
+          "phone": "alice@example.com",
+          "first_name": "First Name 02",
+          "last_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "author": 0,
+          "special_user": "2026-01-01 11:00:00",
+          "is_staff": 0,
+          "is_admin": 0,
+          "date_joined": "2026-01-01 11:00:00",
+          "two_step_password": 0
+        }
+      ],
+      "runs": [
+        "R-0012",
+        "R-0013",
+        "R-0014",
+        "R-0252",
+        "R-0254"
+      ],
+      "requests": [
+        {
+          "method": "PUT",
+          "path": "/account/api/profile/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "first_name": "valid first name",
+            "last_name": "valid last name"
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/account/api/profile/",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "first_name": "valid first name",
+            "last_name": "valid last name"
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/account/api/profile/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "first_name": "valid first name",
+            "last_name": "valid last name"
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/account/api/profile/",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "first_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/account/api/profile/",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "last_name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 5
+    },
+    "support": 3,
+    "source": "static: User.phone unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-34c955df8b",
+    "kind": "invariant",
+    "sentence": "Blog's image is always set.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "blog_image_set",
+      "sentence": "Blog's image is always set.",
+      "expr": "not is_null(Blog.image)"
+    },
+    "expr": "not is_null(Blog.image)",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "6lovtdxhxn",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 18:32:15.770807",
+          "create": "2026-10-05 18:32:15.770936",
+          "updated": "2026-10-05 18:32:15.770938",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 1
+        },
+        {
+          "id": 9,
+          "title": "valid title",
+          "slug": "ruxloeoyii",
+          "body": "valid body",
+          "image": "",
+          "summary": "valid summary",
+          "publish": "2026-10-05 18:32:15.775503",
+          "create": "2026-10-05 18:32:15.775565",
+          "updated": "2026-10-05 18:32:15.775567",
+          "special": 0,
+          "status": "p",
+          "visits": 0,
+          "author_id": 3
+        },
+        {
+          "id": 1,
+          "title": "valid title",
+          "slug": "slug-01",
+          "body": "valid body",
+          "image": "Image 01",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554894",
+          "updated": "2026-10-05 18:32:15.847961",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 1
+        },
+        {
+          "id": 5,
+          "title": "valid title",
+          "slug": "slug-05",
+          "body": "valid body",
+          "image": "Image 05",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554905",
+          "updated": "2026-10-05 18:32:15.851012",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 1
+        },
+        {
+          "id": 3,
+          "title": "valid title",
+          "slug": "slug-03",
+          "body": "valid body",
+          "image": "Image 04",
+          "summary": "valid summary",
+          "publish": "2026-06-01 12:00:00",
+          "create": "2026-10-05 18:32:15.554901",
+          "updated": "2026-10-05 18:32:15.861151",
+          "special": 0,
+          "status": "d",
+          "visits": 1,
+          "author_id": 3
+        }
+      ],
+      "runs": [
+        "R-0106",
+        "R-0108",
+        "R-0144",
+        "R-0145",
+        "R-0150"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/blog/api/create/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "category": [
+              1
+            ],
+            "status": "p"
+          },
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-01/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-05/",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "PUT",
+          "path": "/blog/api/slug-03/",
+          "user": "bob",
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "body": "valid body",
+            "summary": "valid summary",
+            "publish": "2026-06-01T12:00:00",
+            "special": false,
+            "status": "d",
+            "visits": 1,
+            "category": [
+              1
+            ]
+          },
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 19
+    },
+    "support": 19,
+    "source": "observed: Blog.image (nullable in the schema) set on every row the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "mac-b9555248a1",
+    "kind": "machine",
+    "sentence": "Blog.status moves only p -> d, starting in d or p.",
+    "spec_object": {
+      "type": "Machine",
+      "table": "Blog",
+      "column": "status",
+      "edges": [
+        [
+          "p",
+          "d"
+        ]
+      ],
+      "initial": [
+        "d",
+        "p"
+      ]
+    },
+    "expr": null,
+    "evidence": {
+      "transitions": [
+        {
+          "run": "R-0144",
+          "key": 1,
+          "request": {
+            "method": "PUT",
+            "path": "/blog/api/slug-01/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0145",
+          "key": 5,
+          "request": {
+            "method": "PUT",
+            "path": "/blog/api/slug-05/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0150",
+          "key": 3,
+          "request": {
+            "method": "PUT",
+            "path": "/blog/api/slug-03/",
+            "user": "bob",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0154",
+          "key": 1,
+          "request": {
+            "method": "PUT",
+            "path": "/blog/api/slug-01/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0156",
+          "key": 1,
+          "request": {
+            "method": "PUT",
+            "path": "/blog/api/slug-01/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0157",
+          "key": 1,
+          "request": {
+            "method": "PUT",
+            "path": "/blog/api/slug-01/",
+            "user": "bob",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0160",
+          "key": 1,
+          "request": {
+            "method": "PATCH",
+            "path": "/blog/api/slug-01/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0161",
+          "key": 5,
+          "request": {
+            "method": "PATCH",
+            "path": "/blog/api/slug-05/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0166",
+          "key": 3,
+          "request": {
+            "method": "PATCH",
+            "path": "/blog/api/slug-03/",
+            "user": "bob",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0170",
+          "key": 1,
+          "request": {
+            "method": "PATCH",
+            "path": "/blog/api/slug-01/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0172",
+          "key": 1,
+          "request": {
+            "method": "PATCH",
+            "path": "/blog/api/slug-01/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        },
+        {
+          "run": "R-0173",
+          "key": 1,
+          "request": {
+            "method": "PATCH",
+            "path": "/blog/api/slug-01/",
+            "user": "bob",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "publish": "2026-06-01T12:00:00",
+              "special": false,
+              "status": "d",
+              "visits": 1,
+              "category": [
+                1
+              ]
+            },
+            "form": null,
+            "status": 200
+          },
+          "from": "p",
+          "to": "d"
+        }
+      ],
+      "created": [
+        {
+          "run": "R-0106",
+          "key": 9,
+          "request": {
+            "method": "POST",
+            "path": "/blog/api/create/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "category": [
+                1
+              ],
+              "status": "p"
+            },
+            "form": null,
+            "status": 201
+          },
+          "state": "p"
+        },
+        {
+          "run": "R-0108",
+          "key": 9,
+          "request": {
+            "method": "POST",
+            "path": "/blog/api/create/",
+            "user": "bob",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "category": [
+                1
+              ],
+              "status": "p"
+            },
+            "form": null,
+            "status": 201
+          },
+          "state": "p"
+        },
+        {
+          "run": "R-0275",
+          "key": 9,
+          "request": {
+            "method": "POST",
+            "path": "/blog/api/create/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "valid summary",
+              "category": [
+                1
+              ],
+              "status": "p"
+            },
+            "form": null,
+            "status": 201
+          },
+          "state": "p"
+        },
+        {
+          "run": "R-0276",
+          "key": 9,
+          "request": {
+            "method": "POST",
+            "path": "/blog/api/create/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "body": "valid body",
+              "summary": "valid summary",
+              "category": [
+                1
+              ],
+              "status": "p"
+            },
+            "form": null,
+            "status": 201
+          },
+          "state": "p"
+        },
+        {
+          "run": "R-0278",
+          "key": 9,
+          "request": {
+            "method": "POST",
+            "path": "/blog/api/create/",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": {
+              "title": "valid title",
+              "body": "valid body",
+              "summary": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "category": [
+                1
+              ],
+              "status": "p"
+            },
+            "form": null,
+            "status": 201
+          },
+          "state": "p"
+        }
+      ],
+      "transitions_seen": 12,
+      "rows_created": 7
+    },
+    "support": 12,
+    "source": "observed: Blog.status transitions between snapshots",
+    "status": "pending"
+  },
+  {
+    "id": "unc-6f338c601a",
+    "kind": "unchecked",
+    "sentence": "No two Blog_category rows share (blog_id, category_id).",
+    "spec_object": {
+      "type": "Unchecked",
+      "text": "No two Blog_category rows share (blog_id, category_id).",
+      "concerns": [
+        "Blog_category"
+      ]
+    },
+    "expr": null,
+    "evidence": {
+      "quote": "No two Blog_category rows share (blog_id, category_id)."
+    },
+    "support": 0,
+    "source": "static: unique constraint at front end: unique together",
+    "status": "pending"
+  },
+  {
+    "id": "unc-0b128d0ef3",
+    "kind": "unchecked",
+    "sentence": "No two Blog_likes rows share (blog_id, user_id).",
+    "spec_object": {
+      "type": "Unchecked",
+      "text": "No two Blog_likes rows share (blog_id, user_id).",
+      "concerns": [
+        "Blog_likes"
+      ]
+    },
+    "expr": null,
+    "evidence": {
+      "quote": "No two Blog_likes rows share (blog_id, user_id)."
+    },
+    "support": 0,
+    "source": "static: unique constraint at front end: unique together",
+    "status": "pending"
+  }
+]

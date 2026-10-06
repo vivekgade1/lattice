@@ -133,6 +133,14 @@ GETTEXT = frozenset({"_", "gettext", "gettext_lazy", "ugettext", "ugettext_lazy"
 FILTER_CALLS = frozenset({"filter", "get", "exclude", "get_object_or_404"})
 SERIALIZER_HOOKS = ("validate", "create", "update")
 FUNCTION_DEFS = (ast.FunctionDef, ast.AsyncFunctionDef)
+# a related manager's writing methods: ``<x>.<m2m>.<one of them>(...)`` writes its link
+# table (pivot plan 2026-10-05, A.2)
+M2M_WRITES = frozenset({"add", "remove", "set", "clear", "create", "get_or_create",
+                        "update_or_create", "bulk_create"})  # fmt: skip
+# methods a builtin container (or str) also has: not followed into a model's method
+BUILTIN_METHODS = frozenset(
+    n for t in (dict, list, set, str, tuple, bytes) for n in dir(t) if not n.startswith("_")
+)
 FRAMEWORK_VIEW_MODULES = (
     ("django.contrib.admin", "Django admin"),
     ("django.contrib.auth.views", "DRF browsable-API session login page (api-auth)"),
@@ -409,7 +417,7 @@ class _Extractor:
         # the models the package code the route runs reads or writes (Model.objects,
         # get_object_or_404, a model serializer, related managers, module helpers): a
         # plain ViewSet / APIView method names its model nowhere else
-        orm, link_tables, unread = self._orm(fns)
+        orm, link_tables, unread, rel_tables = self._orm(fns)
         model = qs_model or ser_model or (orm[0] if orm else None)
         get_object = self._own(cls, "get_object")
         if own_handler is not None:
@@ -473,7 +481,9 @@ class _Extractor:
             raises.append(RaiseSite(400, None, 0, "drf"))
         tables = [self.tables[m] for m in (qs_model, ser_model) if m in self.tables]
         if method in WRITE_METHODS and serializer is not None and ser_model is not None:
-            tables += self._link_tables(serializer, ser_model)
+            written = self._link_tables(serializer, ser_model)
+            tables += written
+            rel_tables += written
         tables += [self.tables[m] for m in orm if m in self.tables] + link_tables
         returns = None
         out_model = (
@@ -507,6 +517,7 @@ class _Extractor:
             guards=tuple(guards),
             view=f"{cls.__module__}:{cls.__qualname__}.{handler_name}",
             unread=unread,
+            rel_tables=tuple(dict.fromkeys(rel_tables)),
         )
 
     def _live_permissions(self, v: _View, action: str | None, method: str,
@@ -531,13 +542,19 @@ class _Extractor:
 
     def _orm(
         self, fns: list[tuple[str, ast.FunctionDef]]
-    ) -> tuple[list[Any], list[str], str | None]:
+    ) -> tuple[list[Any], list[str], str | None, list[str]]:
         """The models the functions (and the package's module functions they call,
         followed) read or write -- ``get_object_or_404(M)`` targets first, then
         ``M.objects``, ``M(...)``, a model serializer ``S(...)`` (its ``Meta.model``), a
-        related manager (``topic.tags.add``, ``topic.comments.all``) -- the link tables
-        of many-to-many managers they touch, and why the evidence is incomplete: a call
-        of package code that is not followed (a method of a package class)."""
+        related manager (``topic.tags.add``, ``topic.comments.all``, also held in a local:
+        ``tags = topic.tags; tags.add(t)``) -- the link tables of many-to-many managers
+        they touch, why the evidence is incomplete (a call of package code that is not
+        followed: a method of a package class; a relationship write the front end cannot
+        name: ``getattr(obj, name).add(...)``), and the tables written through
+        relationships (pivot plan 2026-10-05, A.2: a related manager's ``add`` /
+        ``remove`` / ``set`` / ``clear`` / ``create``..., a model serializer setting a
+        many-to-many field). A method call on a row (``post.star(user)``) is followed
+        into every package model defining a method so named."""
         from rest_framework import serializers as drf_serializers
 
         model_serializer = drf_serializers.ModelSerializer
@@ -547,6 +564,7 @@ class _Extractor:
         found: list[Any] = []
         links: list[str] = []
         unread: list[str] = []
+        rels: list[str] = []
         accessors = self._accessors()
         seen: set[int] = set()
         todo = list(fns)
@@ -556,6 +574,14 @@ class _Extractor:
                 continue
             seen.add(id(fn))
             g = vars(sys.modules[mod]) if mod in sys.modules else {}
+            # locals holding a related manager: ``tags = topic.tags``
+            aliases = {
+                node.targets[0].id: node.value.attr
+                for node in ast.walk(fn)
+                if isinstance(node, ast.Assign) and len(node.targets) == 1
+                and isinstance(node.targets[0], ast.Name)
+                and isinstance(node.value, ast.Attribute) and node.value.attr in accessors
+            }  # fmt: skip
             for node in ast.walk(fn):
                 if isinstance(node, ast.Attribute) and node.attr == "objects":
                     m = _live(node.value, g)
@@ -569,13 +595,34 @@ class _Extractor:
                     m = getattr(m, "model", m)  # a queryset or manager names its model
                     if m in self.tables:
                         first.append(m)
-                # a related manager: <x>.<accessor>.<method>(...)
+                # a related manager: <x>.<accessor>.<method>(...), or a local holding one
+                accessor = None
                 if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Attribute):
-                    for m, through in accessors.get(f.value.attr, ()):
-                        found.append(m)
-                        if through is not None and through in self.tables:
-                            links.append(self.tables[through])
+                    accessor = f.value.attr
+                elif (isinstance(f, ast.Attribute) and isinstance(f.value, ast.Name)
+                      and f.value.id in aliases):  # fmt: skip
+                    accessor = aliases[f.value.id]
+                for m, through in accessors.get(accessor or "", ()):
+                    found.append(m)
+                    if through is not None and through in self.tables:
+                        links.append(self.tables[through])
+                        if isinstance(f, ast.Attribute) and f.attr in M2M_WRITES:
+                            rels.append(self.tables[through])
+                if (isinstance(f, ast.Attribute) and f.attr in M2M_WRITES
+                        and isinstance(f.value, ast.Call) and _name(f.value.func) == "getattr"
+                        and len(f.value.args) >= 2
+                        and not isinstance(f.value.args[1], ast.Constant)):  # fmt: skip
+                    unread.append(f"{ast.unparse(f)}(...) writes a relationship the front "
+                                  f"end cannot name ({mod}:{node.lineno})")  # fmt: skip
                 target = _live(f, g)
+                if target is None and isinstance(f, ast.Attribute) and accessor is None \
+                        and f.attr not in BUILTIN_METHODS:  # fmt: skip
+                    # a method of a row (``post.star(user)``): every package model's
+                    # method so named
+                    for model in self.tables:
+                        own = self._own(model, f.attr)
+                        if own is not None:
+                            todo.append(own)
                 if target in self.tables:
                     found.append(target)
                 elif isinstance(target, type) and issubclass(target, model_serializer):
@@ -583,7 +630,9 @@ class _Extractor:
                     if m in self.tables:
                         found.append(m)
                         if any(k.arg == "data" for k in node.keywords):
-                            links += self._link_tables(target, m)
+                            written = self._link_tables(target, m)
+                            links += written
+                            rels += written
                 elif isinstance(target, type) and issubclass(target, base_serializer):
                     # a package serializer: its own create / update / save run on .save()
                     for hook in ("create", "update", "save"):
@@ -601,7 +650,7 @@ class _Extractor:
                         unread.append(f"calls {qual}, which the front end does not follow")
         models = list(dict.fromkeys([*first, *found]))
         reason = "; ".join(dict.fromkeys(unread)) or None
-        return models, list(dict.fromkeys(links)), reason
+        return models, list(dict.fromkeys(links)), reason, list(dict.fromkeys(rels))
 
     def _accessors(self) -> dict[str, list[tuple[Any, Any]]]:
         """Related-manager names -> (the model it reaches, the many-to-many link model

@@ -1024,9 +1024,279 @@ pending 400 "Only pending orders can be merged".""",
 )
 OPTION1B: tuple[str, ...] = tuple(t.id for t in OPTION1B_TICKETS)
 
+# ---- the pivot's held-out set (t45-t56, plan 2026-10-05-pivot-spec-authoring.md, B) ----
+#
+# Twelve new tickets on the same app, written as texts first by an agent that saw neither
+# the drafting checklist (plan item C) nor Phase 1's per-ticket results. They cover state
+# machines (including illegal moves), invariants (totals, stock, counts), nested answers,
+# bounds (exclusive ones too), role x ownership x missing rows, atomicity, aggregates
+# over no rows, duplicates in a request, empty collections and full answer shapes. Every
+# error the oracle compares is stated in the text. Traps (never sent to a model;
+# ``bench/edit_slice/repos/multivendor.py`` pins each, ``tests/bench/
+# test_edit_slice_pivot.py`` has a silent variant for each):
+#
+# * t45_restock -- 0 is refused and 1000 accepted (the bounds as stated); stock is added
+#   to, not set; another vendor's product is the PATCH 403; inactive products restock.
+# * t46_ship_order -- a vendor with products, but none in this order, gets the 403; a
+#   pending order cannot jump to shipped; a cancelled one cannot be shipped; an admin
+#   needs no products in the order.
+# * t47_quote -- a product listed twice is one line, its stock checked against the summed
+#   quantity; lines keep the request's order; `items` is units, not lines; inactive
+#   products are refused; nothing is written.
+# * t48_vendor_dashboard -- an order with two of the vendor's lines counts once; every
+#   status listed, zeros included; inactive products are not "out of stock"; units in
+#   cancelled orders not sold; a shop whose products never sold has a null best seller.
+# * t49_remove_order_item -- the stock comes back; the total follows at the prices paid,
+#   not current prices; an item of another order is 404 and that order is untouched; the
+#   last line stays; another buyer's order is the 403, checked before the status.
+# * t50_cancel_batch -- a refused batch writes nothing (a later unknown or shipped order);
+#   an order listed twice is cancelled and restocked once; every line restocked; only
+#   pending and confirmed orders can be cancelled.
+# * t51_low_stock -- "fewer than" is strict; 0 is refused and 1000 accepted; inactive
+#   products are not on sale; no product is [].
+# * t52_order_by_vendor -- prices paid, not current prices; vendors by id and lines by
+#   item id, not the order the lines come in; a vendor with a product in the order still
+#   gets GET /orders/{order_id}'s 403.
+# * t53_move_stock -- a refused move writes nothing (the target is checked before the
+#   source is debited); moving all of the stock is allowed; the same product is the 400;
+#   0 is the 422.
+# * t54_order_stats -- no orders is 0 spent, not null; the latest order is the latest
+#   non-cancelled one; units and orders exclude cancelled orders; orders, not lines.
+# * t55_vendor_directory -- a verified shop with no active products is listed with 0 and
+#   []; ordered by name, not id; inactive products' counts and categories excluded;
+#   categories once each; unverified shops excluded.
+# * t56_order_received -- only shipped -> delivered (not from pending or confirmed);
+#   another buyer's order is the 403 before the status; admins and the order's vendors
+#   are not the buyer.
+
+MV_USER_ROUTER = "routers/user_router.py"
+MV_USER_SERVICE = "services/user_service.py"
+
+PIVOT_TICKETS: tuple[Ticket, ...] = (
+    Ticket(
+        id="t45_restock",
+        title="Restock a product",
+        text="""\
+Vendors restock by typing a new stock number by hand and keep getting it wrong. Add
+`POST /products/{product_id}/restock` with the JSON body `{"quantity": <n>}`, which adds
+`n` units to the product's stock. `n` must be greater than 0 and at most 1000; any other
+value is a 422. Same access rules and errors as `PATCH /products/{product_id}`. Answer
+with the product, as `GET /products/{product_id}` does.""",
+        routes=("POST /products/{product_id}/restock",),
+        files=(MV_PRODUCT_ROUTER, MV_PRODUCT_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t46_ship_order",
+        title="Vendors ship orders",
+        text="""\
+Vendors want to mark orders as shipped themselves. Add `POST /orders/{order_id}/ship`, for
+vendors and admins (the same permission as `PATCH /orders/{order_id}/status`). A vendor
+can ship an order only if it contains at least one of their products (otherwise 403 with
+detail "You have no products in this order"); an admin can ship any order. Only a
+confirmed order can be shipped: otherwise answer 400 with detail "Only confirmed orders
+can be shipped". An unknown order is 404 "Order not found". Answer with the order, as
+`GET /orders/{order_id}` does.""",
+        routes=("POST /orders/{order_id}/ship",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t47_quote",
+        title="Price a basket before ordering",
+        text="""\
+Buyers want to see what a basket costs before they order it. Add `POST /orders/quote`,
+for anyone signed in, taking the same body as `POST /orders`
+(`{"items": [{"product_id": <id>, "quantity": <n>}, ...]}`). It places no order and
+changes nothing; it answers
+
+    {"lines": [{"product_id": <id>, "name": <name>, "quantity": <n>,
+                "unit_price": <the product's price>,
+                "line_total": <quantity x unit_price>}, ...],
+     "items": <total number of units>,
+     "total": <sum of the line totals>}
+
+with one line per product, in the order the products first appear in the request.
+
+- A product that doesn't exist: 404 with detail "Product <id> not found".
+- A product that is no longer on sale (inactive): 400 "Product <id> is not available".
+- Not enough stock for the quantity asked: 409 "Insufficient stock for product <id>".""",
+        routes=("POST /orders/quote",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t48_vendor_dashboard",
+        title="Shop dashboard for vendors",
+        text="""\
+Vendors want one page showing how their shop stands. Add `GET /vendors/me/dashboard`,
+answering
+
+    {"vendor": <the vendor, as GET /vendors/me shows it>,
+     "products": {"total": <number of their products>,
+                  "active": <number of their active products>,
+                  "out_of_stock": <number of their active products with no stock left>},
+     "orders": {"pending": <n>, "confirmed": <n>, "shipped": <n>, "delivered": <n>,
+                "cancelled": <n>},
+     "units_sold": <units of their products sold>,
+     "best_seller": {"product_id": <id>, "name": <name>, "units": <units sold>}}
+
+`orders` counts, by status, the orders containing the vendor's products. Units in
+cancelled orders were not sold. `best_seller` is the product with the most units sold
+(ties: the lower `product_id`), or null if none of their products has sold. Same access
+as `GET /vendors/me`.""",
+        routes=("GET /vendors/me/dashboard",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t49_remove_order_item",
+        title="Remove one item from an order",
+        text="""\
+Buyers want to drop one item from an order without cancelling all of it. Add
+`DELETE /orders/{order_id}/items/{item_id}`: the line is removed from the order, its
+quantity goes back in stock, and the order's total follows. Answer with the order, as
+`GET /orders/{order_id}` does.
+
+- Only the buyer who placed the order can do this: anyone else gets 403 "You do not have
+  access to this order". An unknown order is 404 "Order not found".
+- Only pending orders can be changed: otherwise 400 "Only pending orders can be
+  changed".
+- An item that isn't a line of this order: 404 "Item not found".
+- An order must keep at least one line: removing its only line is 400 "Cannot remove the
+  last item".""",
+        routes=("DELETE /orders/{order_id}/items/{item_id}",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t50_cancel_batch",
+        title="Cancel orders in a batch",
+        text="""\
+Support cancels orders in batches when they find fraud. Add `POST /orders/cancel-batch`,
+for admins only (the same permission as viewing every order), with the JSON body
+`{"order_ids": [<id>, ...]}`. Every listed order is cancelled, as
+`PATCH /orders/{order_id}/status` with `{"status": "cancelled"}` would cancel it, and the
+ordered quantities go back in stock. The answer is `{"cancelled": <number of orders
+cancelled>}`.
+
+- A listed order doesn't exist: 404 with detail "Order <id> not found".
+- A listed order can no longer be cancelled: 400 "Order <id> cannot be cancelled".""",
+        routes=("POST /orders/cancel-batch",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t51_low_stock",
+        title="Low-stock list for vendors",
+        text="""\
+Vendors want to know what to reorder. Add `GET /vendors/me/low-stock`, listing the
+vendor's products that are on sale and have fewer than `threshold` units in stock, as
+
+    {"product_id": <id>, "name": <name>, "stock_quantity": <n>}
+
+lowest stock first, ties by `product_id`. `threshold` is an optional query parameter, a
+whole number greater than 0 and at most 1000 (otherwise 422); it defaults to 10. Same
+access as `GET /vendors/me`.""",
+        routes=("GET /vendors/me/low-stock",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t52_order_by_vendor",
+        title="An order, grouped by shop",
+        text="""\
+The order page should show an order grouped by shop. Add
+`GET /orders/{order_id}/by-vendor`, with the same access as `GET /orders/{order_id}`,
+answering
+
+    {"order_id": <id>, "status": <the order's status>, "total": <the order's total>,
+     "vendors": [{"vendor_id": <id>, "business_name": <name>,
+                  "subtotal": <what the order pays this vendor>,
+                  "lines": [{"item_id": <order item id>, "product_id": <id>,
+                             "name": <product name>, "quantity": <n>,
+                             "price": <the price paid per unit>}, ...]}, ...]}
+
+with one entry per vendor who has products in the order, vendors in order of
+`vendor_id`, and each vendor's lines in order of `item_id`.""",
+        routes=("GET /orders/{order_id}/by-vendor",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t53_move_stock",
+        title="Move stock between two listings",
+        text="""\
+Vendors who sell one item under two listings want to move stock between them. Add
+`POST /products/{product_id}/move-stock` with the JSON body
+`{"to_product_id": <id>, "quantity": <n>}`: `n` units leave the product's stock and are
+added to the other product's.
+
+- Both products must be the vendor's own, with the same access rules and errors as
+  `PATCH /products/{product_id}` (404 "Product not found", 403 "You do not own this
+  product"), whichever of the two products fails them.
+- `quantity` must be greater than 0 (otherwise 422), and no more than the product has in
+  stock (otherwise 409 "Not enough stock").
+- Moving stock to the same product: 400 "Cannot move stock to the same product".
+
+Answer `{"from": <the product>, "to": <the other product>}`, each as
+`GET /products/{product_id}` shows it.""",
+        routes=("POST /products/{product_id}/move-stock",),
+        files=(MV_PRODUCT_ROUTER, MV_PRODUCT_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t54_order_stats",
+        title="Order summary on the account page",
+        text="""\
+Buyers want a small summary on their account page. Add `GET /users/me/order-stats`, for
+anyone signed in, about the orders they placed:
+
+    {"orders": <number of orders>, "units": <units bought>,
+     "spent": <sum of the orders' totals>,
+     "last_order_at": <when the latest order was placed, or null if there is none>}
+
+Cancelled orders don't count.""",
+        routes=("GET /users/me/order-stats",),
+        files=(MV_USER_ROUTER, MV_USER_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t55_vendor_directory",
+        title="Public list of shops",
+        text="""\
+The storefront wants a page listing the shops. Add `GET /vendors`, public like
+`GET /products`, listing every verified vendor as
+
+    {"vendor_id": <id>, "business_name": <name>,
+     "products": <number of their active products>,
+     "categories": [<the categories of their active products, each once,
+                     alphabetically>]}
+
+ordered by `business_name`.""",
+        routes=("GET /vendors",),
+        files=(MV_VENDOR_ROUTER, MV_VENDOR_SERVICE),
+        repo="multivendor",
+    ),
+    Ticket(
+        id="t56_order_received",
+        title="Buyers confirm delivery",
+        text="""\
+Buyers want to confirm that a parcel arrived. Add `POST /orders/{order_id}/received`,
+which marks the order delivered. Only the buyer who placed the order can do this: anyone
+else gets 403 "You do not have access to this order"; an unknown order is 404 "Order not
+found". Only a shipped order can be marked received: otherwise 400 "Only shipped orders
+can be marked received". Answer with the order, as `GET /orders/{order_id}` does.""",
+        routes=("POST /orders/{order_id}/received",),
+        files=(MV_ORDER_ROUTER, MV_ORDER_SERVICE),
+        repo="multivendor",
+    ),
+)
+PIVOT: tuple[str, ...] = tuple(t.id for t in PIVOT_TICKETS)
+
 
 def ticket(ticket_id: str) -> Ticket:
-    for t in (*ROUND4_TICKETS, *OPTION1_TICKETS, *OPTION1B_TICKETS):
+    for t in (*ROUND4_TICKETS, *OPTION1_TICKETS, *OPTION1B_TICKETS, *PIVOT_TICKETS):
         if t.id == ticket_id:
             return t
     raise KeyError(f"unknown ticket {ticket_id!r}")

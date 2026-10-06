@@ -198,7 +198,10 @@ def test_rule_items_cover_tables_and_routes():
         "ownership": "owner_via",
         "via": ["order_id", "Order"],
     }
-    assert items["T1 Product"].predicted == {"ownership": "shared"}
+    # shared, with the route updating its rows: reads alone never verify it (pivot plan
+    # 2026-10-05, A.1)
+    assert items["T1 Product"].predicted == {"ownership": "shared",
+                                             "writes": ["PATCH /products/{product_id}"]}
     assert items["T1 User"].predicted == {"ownership": "users"}
     assert "T2 User.hashed_password" in items
     assert "T3 OrderItem.quantity gt 0" in items
@@ -218,14 +221,21 @@ def test_rule_items_cover_tables_and_routes():
 # ---- layer R on the original: no findings, every verdict kind ---------------------------------
 
 
-def test_layer_r_on_the_original_reports_no_findings(clean):
-    assert clean.findings == [], clean.render()
-    assert clean.verdict == "pass"
-    assert clean.counts == {"R": 0}
+def test_layer_r_on_the_original_reports_one_finding_the_hand_profile_cannot_state(clean):
+    """The hand profile declares no owner of Product (its REVIEW note: Lattice has no
+    "public read, owner write" table; ``update_product`` checks the vendor itself), so
+    T1 predicts ``shared``. Reads verified that until the pivot plan's A.1 (2026-10-05);
+    now the writes decide it: victor's update of vicky's product answers 403 "You do not
+    own this product" and writes nothing while vicky's same request writes it -- refuted,
+    the one finding."""
+    assert [f.details["item"] for f in clean.findings] == ["T1 Product"], clean.render()
+    assert clean.verdict == "fail"
+    assert clean.counts == {"R": 1}
     v = verdicts(clean)
     assert v["T1 Order"] == "verified"
     assert v["T1 OrderItem"] == "verified"  # owner stamping through POST /orders
-    assert v["T1 Product"] == "verified"
+    assert v["T1 Product"] == "refuted"
+    assert clean.rules.items["T1 Product"].observed["ownership"] == "owned"
     assert v["T1 User"] == "verified"
     assert v["T1 Vendor"] == "verified"
     assert v["T2 User.hashed_password"] == "verified"
@@ -252,7 +262,7 @@ def test_layer_r_on_the_original_reports_no_findings(clean):
         item = f"R1 {route.endpoint}"
         assert v[item] == open_r1.get(item, "verified"), clean.rules.items[item]
         assert v[f"R3 {route.endpoint} 5xx"] == "verified"
-    assert "refuted" not in v.values()
+    assert [i for i, x in v.items() if x == "refuted"] == ["T1 Product"]
     assert [i for i, x in v.items() if x == "unclear"] == list(open_r1)
 
 

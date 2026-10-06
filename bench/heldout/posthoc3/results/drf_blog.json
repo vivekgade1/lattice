@@ -1,0 +1,256 @@
+{
+  "app": "drf_blog",
+  "package": "bench.import_repos.drf_blog",
+  "framework": "django",
+  "tables": {
+    "verified": 2,
+    "total": 6,
+    "pct": 33.3
+  },
+  "routes": {
+    "verified": 15,
+    "total": 30,
+    "pct": 50.0
+  },
+  "unverified_tables": {
+    "Blog": "items T1 Blog",
+    "Category": "unreached",
+    "Blog_category": "unreached",
+    "Blog_likes": "items T1 Blog_likes"
+  },
+  "outside_api": {},
+  "unverified_routes": {
+    "GET /account/api/": "R1 refuted",
+    "POST /account/api/change-two-step-password/": "R1 refuted",
+    "POST /account/api/create-two-step-password/": "R1 refuted",
+    "GET /account/api/users/{pk}/": "R1 refuted",
+    "PUT /account/api/users/{pk}/": "R1 refuted",
+    "PATCH /account/api/users/{pk}/": "R1 refuted",
+    "DELETE /account/api/users/{pk}/": "R1 refuted",
+    "GET /blog/api/": "R2 unexercised",
+    "POST /blog/api/create/": "R1 refuted",
+    "PUT /blog/api/{slug}/": "R2 refuted",
+    "PATCH /blog/api/{slug}/": "R2 refuted",
+    "DELETE /blog/api/{slug}/": "R2 refuted",
+    "POST /comment/api/create/": "R2 unexercised",
+    "POST /api/token/refresh/": "R1 unexercised",
+    "POST /api/token/verify/": "R1 unexercised"
+  },
+  "items": {
+    "verified": 75,
+    "refuted": 12,
+    "unexercised": 49,
+    "unclear": 1,
+    "verified (corrected)": 6
+  },
+  "corrected": 6,
+  "unreachable_routes": [],
+  "unreachable_items": 30,
+  "excluded_framework_routes": 4,
+  "baseline": [],
+  "mining": {
+    "proposed": 11,
+    "refuted": 4,
+    "uncompiled": 0,
+    "snapshots": 40,
+    "runs": 329,
+    "app_rows": 29
+  },
+  "agrees": true,
+  "disagreements": [],
+  "fidelity": {
+    "variant2_clean": false,
+    "variant2_findings": [
+      "T1 Blog",
+      "R1 GET /account/api/",
+      "R1 POST /account/api/change-two-step-password/",
+      "R1 POST /account/api/create-two-step-password/",
+      "R1 GET /account/api/users/{pk}/",
+      "R1 PUT /account/api/users/{pk}/",
+      "R1 PATCH /account/api/users/{pk}/",
+      "R1 DELETE /account/api/users/{pk}/",
+      "R1 POST /blog/api/create/",
+      "R2 PUT /blog/api/{slug}/",
+      "R3 PUT /blog/api/{slug}/ 404 No Blog matches the given query. #2",
+      "R2 PATCH /blog/api/{slug}/",
+      "R3 PATCH /blog/api/{slug}/ 404 No Blog matches the given query. #2",
+      "R2 DELETE /blog/api/{slug}/"
+    ],
+    "scenarios": {
+      "passed": false,
+      "scenarios": 23,
+      "steps": 86,
+      "answers_ok": 86,
+      "oracle_ok": 80,
+      "failed": [
+        {
+          "scenario": "authors create draft blogs; the superuser chooses; plain users are refused",
+          "step": 3,
+          "request": {
+            "method": "POST",
+            "path": "/blog/api/create/",
+            "user": "alice",
+            "params": null,
+            "json": {
+              "title": "Updated title",
+              "body": "Updated body.",
+              "summary": "Updated.",
+              "status": "p",
+              "category": [
+                1
+              ],
+              "special": true
+            }
+          },
+          "status": 201,
+          "expected": 201,
+          "answer_ok": true,
+          "predicted": [
+            "forbidden"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['forbidden'], not 201"
+          ]
+        },
+        {
+          "scenario": "authors create draft blogs; the superuser chooses; plain users are refused",
+          "step": 5,
+          "request": {
+            "method": "POST",
+            "path": "/blog/api/create/",
+            "user": "alice",
+            "params": null,
+            "json": {
+              "title": "No body"
+            }
+          },
+          "status": 400,
+          "expected": 400,
+          "answer_ok": true,
+          "predicted": [
+            "forbidden"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['forbidden'], not 400"
+          ]
+        },
+        {
+          "scenario": "a two-step password is created once, then changed with the old one",
+          "step": 2,
+          "request": {
+            "method": "POST",
+            "path": "/account/api/create-two-step-password/",
+            "user": "role_user",
+            "params": null,
+            "json": {
+              "password": "Zebra-Quill-77",
+              "confirm_password": "Zebra-Quill-78"
+            }
+          },
+          "status": 400,
+          "expected": 400,
+          "answer_ok": true,
+          "predicted": [
+            "method",
+            "not_found",
+            "not_owned",
+            "ok",
+            "unauthenticated"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['method', 'not_found', 'not_owned', 'ok', 'unauthenticated'], not 400"
+          ]
+        },
+        {
+          "scenario": "simplejwt's verify and refresh routes reject bad tokens",
+          "step": 1,
+          "request": {
+            "method": "POST",
+            "path": "/api/token/verify/",
+            "user": null,
+            "params": null,
+            "json": {
+              "token": "not-a-token"
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "simplejwt's verify and refresh routes reject bad tokens",
+          "step": 2,
+          "request": {
+            "method": "POST",
+            "path": "/api/token/refresh/",
+            "user": null,
+            "params": null,
+            "json": {
+              "refresh": "not-a-token"
+            }
+          },
+          "status": 401,
+          "expected": 401,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 401"
+          ]
+        },
+        {
+          "scenario": "simplejwt's verify and refresh routes reject bad tokens",
+          "step": 3,
+          "request": {
+            "method": "POST",
+            "path": "/api/token/refresh/",
+            "user": null,
+            "params": null,
+            "json": {}
+          },
+          "status": 400,
+          "expected": 400,
+          "answer_ok": true,
+          "predicted": [
+            "ok"
+          ],
+          "oracle_ok": false,
+          "problems": [
+            "the rule oracle predicts ['ok'], not 400"
+          ]
+        }
+      ]
+    },
+    "spec_valid": true,
+    "passed": false
+  },
+  "gate": {
+    "tables": false,
+    "routes": false
+  },
+  "import_s": 2.51,
+  "stage_s": {
+    "extract": 0.491,
+    "probe": 0.716,
+    "correct": 0.078,
+    "mine": 0.367,
+    "variant2": 0.588,
+    "total": 2.268
+  },
+  "llm": {
+    "tokens": 0,
+    "cost_usd": 0.0
+  }
+}

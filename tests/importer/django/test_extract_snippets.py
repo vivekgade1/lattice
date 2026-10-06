@@ -72,6 +72,8 @@ def test_snippet_columns(model: dict[str, Any]) -> None:
     assert cols["linenos"]["type"] == "Bool" and cols["linenos"]["default"] == "False"
     assert cols["language"]["max_length"] == 100
     assert "python" in cols["language"]["choices"] and len(cols["language"]["choices"]) > 100
+    # each value once, even where pygments lists a lexer alias twice
+    assert len(set(cols["language"]["choices"])) == len(cols["language"]["choices"])
     assert "friendly" in cols["style"]["choices"]
     owner = cols["owner_id"]
     assert owner["type"] == "Int" and owner["foreign_key"] == "auth_user.id"

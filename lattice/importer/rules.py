@@ -1059,7 +1059,9 @@ def mark_uploads(rules: RuleResult, uploads: Mapping[str, str]) -> None:
 def outside_api(model: RepoModel) -> dict[str, str]:
     """The tables no route reads or writes (table class name -> why), by the front
     end's evidence alone -- the tables a route references (``Route.tables``: its queries,
-    inserts and deletes, its ORM helpers'), compares or sets an owner column of
+    inserts and deletes, its ORM helpers'), writes through an ORM relationship
+    (``Route.rel_tables``: ``obj.tags.append(t)``, ``user.favorites.add(x)``, a link
+    table), compares or sets an owner column of
     (``owner_uses``) or returns rows of -- never by what the probes reached. Framework
     routes are not in ``model.routes``; routes probes cannot call (the network) still
     count. The users table is never outside (logging in reads it). Such a table is
@@ -1070,7 +1072,7 @@ def outside_api(model: RepoModel) -> dict[str, str]:
     users = model.auth.users_table if model.auth is not None else None
     reached: set[str] = set()
     for r in model.routes:
-        reached |= set(r.tables) | {u.table for u in r.owner_uses}
+        reached |= set(r.tables) | set(r.rel_tables) | {u.table for u in r.owner_uses}
         if r.returns:
             reached.add(r.returns)
     out = {}

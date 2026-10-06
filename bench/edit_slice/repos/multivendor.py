@@ -149,6 +149,27 @@ WRITERS: dict[str, Callable[[Engine], None]] = {
                           _line(22, 10, GLOVES, 3, 6.0),
                           _order(11, CAROL, "2026-03-26 11:00:00", "PENDING", 6.0),
                           _line(23, 11, GLOVES, 1, 6.0)),
+    # pivot (t45-t56): dave's order 3 (victor's products only) is confirmed, not shipped
+    "victor_confirmed": _sql("UPDATE orders SET status = 'CONFIRMED' WHERE id = 3"),
+    # pivot: vera lists a product that never sold
+    "vera_stocked": _sql(
+        "INSERT INTO products (id, vendor_id, name, description, category, price, "
+        "stock_quantity, version, is_active) VALUES "
+        "(9, 3, 'Brass lamp', NULL, 'decor', 30.0, 2, 0, 1)"),
+    # pivot: a pending order of carol's whose first line is victor's
+    "victor_first": _sql(_order(10, CAROL, "2026-03-25 10:00:00", "PENDING", 43.0),
+                         _line(20, 10, GLOVES, 1, 6.0),
+                         _line(21, 10, MUG, 1, 12.0),
+                         _line(22, 10, HAMMER, 1, 25.0)),
+    # pivot: frank's only order was cancelled
+    "frank_cancelled": _sql(_order(10, FRANK, "2026-03-30 10:00:00", "CANCELLED", 12.0),
+                            _line(20, 10, GLOVES, 2, 6.0)),
+    # pivot: vera's shop (no products) is verified
+    "vera_verified": _sql("UPDATE vendors SET is_verified = 1 WHERE id = 3"),
+    # pivot: victor delisted every product he sells
+    "victor_delisted": _sql("UPDATE products SET is_active = 0 WHERE vendor_id = 2"),
+    # pivot: no shop is verified
+    "none_verified": _sql("UPDATE vendors SET is_verified = 0"),
 }  # fmt: skip
 
 
@@ -192,15 +213,47 @@ EXCLUDED: frozenset[str] = frozenset(
     {"t36.admin_shipped", "t42.empty_list", "t44.one_order", "t43.no_products"}
 )
 
+# The pivot's held-out set (t45-t56): written with the tickets, before any model run.
+# A 422 whose body the ticket does not give is compared on its status (and database).
+STATUS_ONLY = STATUS_ONLY | frozenset({
+    "t45.zero", "t45.negative", "t45.over_max",
+    "t47.empty_items", "t47.zero_quantity",
+    "t51.threshold_zero", "t51.threshold_negative", "t51.threshold_over_max",
+    "t51.threshold_not_a_number",
+    "t53.zero_quantity", "t53.negative_quantity",
+})  # fmt: skip
+# ... and the cases the text leaves open are dropped:
+# * t46: a vendor without products in an order that is not confirmed fails both stated
+#   checks, and the text does not order them; a vendor-role user with no vendor profile
+#   has no products (the 403) or no profile (GET /vendors/me's 404), not stated;
+# * t50: an empty `order_ids` is neither allowed nor refused by the text.
+EXCLUDED = EXCLUDED | frozenset(
+    {"t46.vendor_not_in_pending_order", "t46.vendor_role_without_profile", "t50.empty_list"}
+)
+
+# product answers (ProductRead) whose optimistic-lock `version` the ticket leaves open
+_PRODUCT_BODIES = ("t45.", "t53.")
+
+
+def _without_version(body: Any) -> Any:
+    if isinstance(body, dict):
+        return {k: _without_version(v) for k, v in body.items()
+                if not (k == "version" and "stock_quantity" in body)}  # fmt: skip
+    if isinstance(body, list):
+        return [_without_version(v) for v in body]
+    return body
+
 
 def canon(record: CaseRecord) -> CaseRecord:
     """Fresh timestamps are "a new timestamp" (as for TaskFlow), and a product's optimistic
     lock ``version`` is not part of any ticket's contract (whether restoring stock bumps
-    it is the implementer's call); a :data:`STATUS_ONLY` case's error body is not
-    compared."""
+    it is the implementer's call; for the pivot's product answers, in the body too); a
+    :data:`STATUS_ONLY` case's error body is not compared."""
     record = fresh_timestamps(record)
     if record.name in STATUS_ONLY and record.status >= 400:
         record = replace(record, body="<error body not stated by the ticket>")
+    if record.name.startswith(_PRODUCT_BODIES):
+        record = replace(record, body=_without_version(record.body))
     db = {
         table: [{k: v for k, v in row.items() if not (table == "products" and k == "version")}
                 for row in rows]
@@ -524,6 +577,284 @@ def t44_cases() -> list[Case]:
     ]
 
 
+# ---- the pivot's held-out set (t45-t56) ----------------------------------------------------------
+# "victor_confirmed": order 3 (dave; hammer x1, screwdriver x2, victor's) is confirmed;
+# "victor_first": carol's pending order 10, lines 20 gloves x1 @6, 21 mug x1 @12, 22 hammer
+# x1 @25; "frank_cancelled": frank's order 10, cancelled; "vera_stocked": vera's product
+# 9, never sold; "vera_verified": vera's shop (no products) is verified.
+
+
+def t45_cases() -> list[Case]:
+    tid, route = "t45", "restock_product"
+
+    def c(what: str, user: str, product: int, quantity: Any, db: str = "seed") -> Case:
+        return _case(tid, route, "POST", f"/products/{product}/restock", what, user, db,
+                     json={"quantity": quantity}, tables=("products",))  # fmt: skip
+
+    return [
+        c("own_ten", "vicky", MUG, 10),
+        c("one_unit", "victor", HAMMER, 1),
+        c("max_1000", "victor", TAPE, 1000),
+        c("inactive_own", "vicky", POSTER, 5),
+        c("zero", "vicky", MUG, 0),
+        c("negative", "vicky", MUG, -5),
+        c("over_max", "vicky", MUG, 1001),
+        c("another_vendors_product", "vicky", HAMMER, 5),
+        c("unknown_product", "vicky", MISSING, 5),
+        c("vendor_without_products", "vera", MUG, 5),
+        c("vendor_role_without_profile", "vera", MUG, 5, "vendorless"),
+        c("admin_forbidden", "admin", MUG, 5),
+        c("buyer_forbidden", "carol", MUG, 5),
+        *auth_cases(tid, "POST", f"/products/{MUG}/restock", route),
+    ]
+
+
+def t46_cases() -> list[Case]:
+    tid, route = "t46", "ship_order"
+
+    def c(what: str, user: str, order: int, db: str = "seed") -> Case:
+        return _case(tid, route, "POST", f"/orders/{order}/ship", what, user, db,
+                     tables=("orders",))  # fmt: skip
+
+    return [
+        c("vicky_ships_confirmed", "vicky", 5),
+        c("victor_ships_confirmed", "victor", 5),
+        c("admin_ships_confirmed", "admin", 5),
+        c("victor_ships_his_order", "victor", 3, "victor_confirmed"),
+        c("vendor_not_in_order", "vicky", 3, "victor_confirmed"),
+        c("vendor_without_products", "vera", 5),
+        c("own_pending", "vicky", 7),
+        c("admin_pending", "admin", 8),
+        c("already_shipped", "victor", 3),
+        c("delivered", "vicky", 1),
+        c("cancelled", "victor", 9),
+        c("admin_cancelled", "admin", 4),
+        c("unknown_order", "vicky", MISSING),
+        c("buyer_forbidden", "carol", 5),
+        c("vendor_not_in_pending_order", "vera", 7),
+        c("vendor_role_without_profile", "vera", 5, "vendorless"),
+        *auth_cases(tid, "POST", "/orders/5/ship", route),
+    ]
+
+
+def t47_cases() -> list[Case]:
+    tid, route, path = "t47", "quote_order", "/orders/quote"
+
+    def c(what: str, user: str, *lines: tuple[int, int], body: Any = None) -> Case:
+        return _case(tid, route, "POST", path, what, user,
+                     json=_items(*lines) if body is None else body, tables=WRITES)  # fmt: skip
+
+    return [
+        c("basket", "carol", (MUG, 2), (HAMMER, 1)),
+        c("repeated_product", "carol", (CANDLE, 2), (MUG, 1), (CANDLE, 3)),
+        c("repeated_beyond_stock", "carol", (HAMMER, 10), (HAMMER, 6)),
+        c("all_the_stock", "dave", (HAMMER, 15)),
+        c("out_of_stock", "carol", (TAPE, 1)),
+        c("inactive_product", "carol", (POSTER, 1)),
+        c("unknown_product", "carol", (MUG, 1), (MISSING, 1)),
+        c("vendor_quotes", "vicky", (GLOVES, 3)),
+        c("admin_quotes", "admin", (NOTEBOOK, 4), (SCREWDRIVER, 1)),
+        c("empty_items", "carol", body={"items": []}),
+        c("zero_quantity", "carol", (MUG, 0)),
+        *auth_cases(tid, "POST", path, route),
+    ]
+
+
+def t48_cases() -> list[Case]:
+    tid, route, path = "t48", "read_own_dashboard", "/vendors/me/dashboard"
+
+    def c(what: str, user: str, db: str = "seed") -> Case:
+        return _case(tid, route, "GET", path, what, user, db)
+
+    return [
+        c("vicky", "vicky"),
+        c("victor", "victor"),
+        c("vendor_without_products", "vera"),
+        c("products_never_sold", "vera", "vera_stocked"),
+        c("inactive_product_sold", "vicky", "poster_sold"),
+        c("buyer_has_no_vendor_profile", "carol"),
+        c("admin_has_no_vendor_profile", "admin"),
+        *auth_cases(tid, "GET", path, route),
+    ]
+
+
+def t49_cases() -> list[Case]:
+    tid, route = "t49", "remove_order_item"
+
+    def c(what: str, user: str, order: int, item: int, db: str = "seed") -> Case:
+        return _case(tid, route, "DELETE", f"/orders/{order}/items/{item}", what, user, db,
+                     tables=WRITES)  # fmt: skip
+
+    return [
+        c("remove_a_line", "carol", 8, 13),
+        c("total_at_prices_paid", "carol", 10, 22, "multi_pending"),
+        c("first_of_three", "carol", 10, 20, "multi_pending"),
+        c("only_line", "carol", 11, 23, "multi_pending"),
+        c("dave_only_line", "dave", 7, 11),
+        c("item_of_another_order", "carol", 8, 11),
+        c("unknown_item", "carol", 8, MISSING),
+        c("another_buyers_pending", "carol", 7, 11),
+        c("another_buyers_shipped", "carol", 3, 4),
+        c("own_confirmed", "carol", 5, 7),
+        c("own_delivered", "carol", 1, 1),
+        c("unknown_order", "carol", MISSING, 1),
+        c("admin_is_not_the_buyer", "admin", 8, 13),
+        c("vendor_is_not_the_buyer", "vicky", 8, 12),
+        *auth_cases(tid, "DELETE", "/orders/8/items/13", route),
+    ]
+
+
+def t50_cases() -> list[Case]:
+    tid, route, path = "t50", "cancel_batch", "/orders/cancel-batch"
+
+    def c(what: str, user: str, ids: list[int], db: str = "seed") -> Case:
+        return _case(tid, route, "POST", path, what, user, db, json={"order_ids": ids},
+                     tables=WRITES)  # fmt: skip
+
+    return [
+        c("two_pending", "admin", [7, 8]),
+        c("confirmed_multi_vendor", "admin", [5]),
+        c("repeated_id", "admin", [7, 7]),
+        c("later_unknown_writes_nothing", "admin", [7, MISSING]),
+        c("later_shipped_writes_nothing", "admin", [8, 3]),
+        c("already_cancelled", "admin", [4]),
+        c("delivered", "admin", [1]),
+        c("buyer_forbidden", "carol", [8]),
+        c("vendor_forbidden", "vicky", [8]),
+        c("empty_list", "admin", []),
+        *auth_cases(tid, "POST", path, route),
+    ]
+
+
+def t51_cases() -> list[Case]:
+    tid, route, path = "t51", "read_own_low_stock", "/vendors/me/low-stock"
+
+    def c(what: str, user: str, threshold: Any = None, db: str = "seed") -> Case:
+        params = None if threshold is None else {"threshold": str(threshold)}
+        return _case(tid, route, "GET", path, what, user, db, params=params)
+
+    return [
+        c("victor_default", "victor"),
+        c("vicky_default_is_empty", "vicky"),
+        c("victor_at_threshold", "victor", 15),
+        c("victor_twenty", "victor", 20),
+        c("victor_51", "victor", 51),
+        c("vicky_41", "vicky", 41),
+        c("vicky_1000", "vicky", 1000),
+        c("vendor_without_products", "vera", 1000),
+        c("threshold_zero", "vicky", 0),
+        c("threshold_negative", "vicky", -1),
+        c("threshold_over_max", "vicky", 1001),
+        c("threshold_not_a_number", "vicky", "few"),
+        c("buyer_has_no_vendor_profile", "carol"),
+        *auth_cases(tid, "GET", path, route),
+    ]
+
+
+def t52_cases() -> list[Case]:
+    tid, route = "t52", "read_order_by_vendor"
+
+    def c(what: str, user: str, order: int, db: str = "seed") -> Case:
+        return _case(tid, route, "GET", f"/orders/{order}/by-vendor", what, user, db)
+
+    return [
+        c("price_changed_since", "carol", 1),
+        c("three_lines", "carol", 5),
+        c("cancelled_order", "carol", 9),
+        c("victor_first", "carol", 10, "victor_first"),
+        c("admin_any_order", "admin", 6),
+        c("another_buyers_order", "carol", 3),
+        c("vendor_with_a_line", "vicky", 1),
+        c("unknown_order", "carol", MISSING),
+        *auth_cases(tid, "GET", "/orders/1/by-vendor", route),
+    ]
+
+
+def t53_cases() -> list[Case]:
+    tid, route = "t53", "move_stock"
+
+    def c(what: str, user: str, src: int, dst: int, qty: Any, db: str = "seed") -> Case:
+        return _case(tid, route, "POST", f"/products/{src}/move-stock", what, user, db,
+                     json={"to_product_id": dst, "quantity": qty},
+                     tables=("products",))  # fmt: skip
+
+    return [
+        c("move_five", "vicky", MUG, CANDLE, 5),
+        c("move_all", "victor", HAMMER, GLOVES, 15),
+        c("into_inactive_own", "vicky", MUG, POSTER, 3),
+        c("too_many", "victor", HAMMER, GLOVES, 16),
+        c("from_empty", "victor", TAPE, GLOVES, 1),
+        c("target_foreign_writes_nothing", "vicky", MUG, HAMMER, 5),
+        c("target_unknown_writes_nothing", "vicky", MUG, MISSING, 5),
+        c("source_foreign", "vicky", HAMMER, MUG, 5),
+        c("source_unknown", "vicky", MISSING, MUG, 5),
+        c("same_product", "vicky", MUG, MUG, 5),
+        c("zero_quantity", "vicky", MUG, CANDLE, 0),
+        c("negative_quantity", "vicky", MUG, CANDLE, -2),
+        c("vendor_without_products", "vera", MUG, CANDLE, 1),
+        c("vendor_role_without_profile", "vera", MUG, CANDLE, 1, "vendorless"),
+        c("admin_forbidden", "admin", MUG, CANDLE, 1),
+        c("buyer_forbidden", "carol", MUG, CANDLE, 1),
+        *auth_cases(tid, "POST", f"/products/{MUG}/move-stock", route),
+    ]
+
+
+def t54_cases() -> list[Case]:
+    tid, route, path = "t54", "read_own_order_stats", "/users/me/order-stats"
+
+    def c(what: str, user: str, db: str = "seed") -> Case:
+        return _case(tid, route, "GET", path, what, user, db)
+
+    return [
+        c("carol", "carol"),
+        c("dave", "dave"),
+        c("no_orders", "frank"),
+        c("only_a_cancelled_order", "frank", "frank_cancelled"),
+        c("vendor_placed_none", "vicky"),
+        c("admin_placed_none", "admin"),
+        *auth_cases(tid, "GET", path, route),
+    ]
+
+
+def t55_cases() -> list[Case]:
+    tid, route, path = "t55", "list_vendors", "/vendors"
+
+    def c(what: str, db: str = "seed", user: str | None = None) -> Case:
+        return _case(tid, route, "GET", path, what, user, db)
+
+    return [
+        c("seed"),
+        c("verified_shop_without_products", "vera_verified"),
+        c("shop_with_only_delisted_products", "victor_delisted"),
+        c("no_verified_shop", "none_verified"),
+        c("inactive_product_sold", "poster_sold"),
+        c("signed_in_buyer", user="carol"),
+        _case(tid, route, "GET", "/vendors/me", "own_profile_still_works", "vicky"),
+    ]
+
+
+def t56_cases() -> list[Case]:
+    tid, route = "t56", "mark_order_received"
+
+    def c(what: str, user: str, order: int) -> Case:
+        return _case(tid, route, "POST", f"/orders/{order}/received", what, user,
+                     tables=("orders",))  # fmt: skip
+
+    return [
+        c("own_shipped", "dave", 3),
+        c("own_pending", "carol", 8),
+        c("own_confirmed", "carol", 5),
+        c("own_delivered", "carol", 1),
+        c("own_cancelled", "carol", 9),
+        c("another_buyers_shipped", "carol", 3),
+        c("another_buyers_pending", "carol", 7),
+        c("admin_is_not_the_buyer", "admin", 3),
+        c("vendor_of_the_order", "victor", 3),
+        c("unknown_order", "dave", MISSING),
+        *auth_cases(tid, "POST", "/orders/3/received", route),
+    ]
+
+
 SPECIFIC: dict[str, Callable[[], list[Case]]] = {
     "t31_vendor_sales": t31_cases,
     "t32_monthly_report": t32_cases,
@@ -539,6 +870,18 @@ SPECIFIC: dict[str, Callable[[], list[Case]]] = {
     "t42_split_order": t42_cases,
     "t43_vendor_onboarding": t43_cases,
     "t44_merge_orders": t44_cases,
+    "t45_restock": t45_cases,
+    "t46_ship_order": t46_cases,
+    "t47_quote": t47_cases,
+    "t48_vendor_dashboard": t48_cases,
+    "t49_remove_order_item": t49_cases,
+    "t50_cancel_batch": t50_cases,
+    "t51_low_stock": t51_cases,
+    "t52_order_by_vendor": t52_cases,
+    "t53_move_stock": t53_cases,
+    "t54_order_stats": t54_cases,
+    "t55_vendor_directory": t55_cases,
+    "t56_order_received": t56_cases,
 }
 
 # ticket -> (route spec, [(module, function)] whose raise sites the cases must reach)
@@ -632,6 +975,83 @@ ROUTES: dict[str, tuple[RouteSpec, tuple[tuple[str, str], ...]]] = {
         RouteSpec("merge_orders", "POST", "/orders/merge", "other", "orders", tables=WRITES),
         (("routers.order_router", "merge_orders"),
          ("services.order_service", "merge_orders"),
+         ("services.order_service", "get_order"),
+         ("services.order_service", "get_own_order")),
+    ),
+    # ---- the pivot's held-out set
+    "t45_restock": (
+        RouteSpec("restock_product", "POST", "/products/{product_id}/restock", "other",
+                  "products"),
+        (("routers.product_router", "restock_product"),
+         ("services.product_service", "restock_own_product")),
+    ),
+    "t46_ship_order": (
+        RouteSpec("ship_order", "POST", "/orders/{order_id}/ship", "other", "orders"),
+        (("routers.order_router", "ship_order"),
+         ("services.order_service", "ship_order"),
+         ("services.order_service", "get_order")),
+    ),
+    "t47_quote": (
+        RouteSpec("quote_order", "POST", "/orders/quote", "other", None, tables=WRITES),
+        (("routers.order_router", "quote_order"),
+         ("services.order_service", "quote")),
+    ),
+    "t48_vendor_dashboard": (
+        RouteSpec("read_own_dashboard", "GET", "/vendors/me/dashboard", "other", None),
+        (("routers.vendor_router", "read_own_dashboard"),
+         ("services.vendor_service", "vendor_dashboard"),
+         ("services.vendor_service", "get_own_vendor_profile")),
+    ),
+    "t49_remove_order_item": (
+        RouteSpec("remove_order_item", "DELETE", "/orders/{order_id}/items/{item_id}",
+                  "other", "orders", tables=WRITES),
+        (("routers.order_router", "remove_order_item"),
+         ("services.order_service", "remove_order_item"),
+         ("services.order_service", "get_order"),
+         ("services.order_service", "get_own_order")),
+    ),
+    "t50_cancel_batch": (
+        RouteSpec("cancel_batch", "POST", "/orders/cancel-batch", "other", "orders",
+                  auth="admin", tables=WRITES),
+        (("routers.order_router", "cancel_batch"),
+         ("services.order_service", "cancel_batch")),
+    ),
+    "t51_low_stock": (
+        RouteSpec("read_own_low_stock", "GET", "/vendors/me/low-stock", "other", None),
+        (("routers.vendor_router", "read_own_low_stock"),
+         ("services.vendor_service", "low_stock"),
+         ("services.vendor_service", "get_own_vendor_profile")),
+    ),
+    "t52_order_by_vendor": (
+        RouteSpec("read_order_by_vendor", "GET", "/orders/{order_id}/by-vendor", "other",
+                  None),
+        (("routers.order_router", "read_order_by_vendor"),
+         ("services.order_service", "order_by_vendor"),
+         ("services.order_service", "get_order"),
+         ("services.order_service", "get_own_order")),
+    ),
+    "t53_move_stock": (
+        RouteSpec("move_stock", "POST", "/products/{product_id}/move-stock", "other",
+                  "products"),
+        (("routers.product_router", "move_stock"),
+         ("services.product_service", "move_stock"),
+         ("services.product_service", "_own_product")),
+    ),
+    "t54_order_stats": (
+        RouteSpec("read_own_order_stats", "GET", "/users/me/order-stats", "other", None),
+        (("routers.user_router", "read_own_order_stats"),
+         ("services.user_service", "order_stats")),
+    ),
+    "t55_vendor_directory": (
+        RouteSpec("list_vendors", "GET", "/vendors", "other", None, auth="public"),
+        (("routers.vendor_router", "list_vendors"),
+         ("services.vendor_service", "vendor_directory")),
+    ),
+    "t56_order_received": (
+        RouteSpec("mark_order_received", "POST", "/orders/{order_id}/received", "other",
+                  "orders"),
+        (("routers.order_router", "mark_order_received"),
+         ("services.order_service", "mark_received"),
          ("services.order_service", "get_order"),
          ("services.order_service", "get_own_order")),
     ),

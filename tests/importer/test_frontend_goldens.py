@@ -76,6 +76,9 @@ ADDED_DEFAULTS: dict[str, Any] = {
     # post-hoc round 2026-10-05: Route.unread (a handler the front end did not read; it
     # vetoes "outside API" exclusions), omitted from to_dict() at its default
     "unread": None,
+    # pivot plan 2026-10-05, A.2: Route.rel_tables (tables written through ORM
+    # relationships; Flask / Django front ends), omitted from to_dict() at its default
+    "rel_tables": [],
 }
 # report.json: volatile fields -> placeholder, and the sections the goldens ignore
 REPORT_PLACEHOLDERS = {("repo",): "<repo>", ("schema",): "<schema>",

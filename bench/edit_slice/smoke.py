@@ -209,6 +209,29 @@ SMOKE: dict[str, tuple[SmokeRequest, ...]] = {
     "t44_merge_orders": (
         SmokeRequest("carol", "POST", "/orders/merge", expect=400, json={"order_ids": [8, 1]}),
     ),
+    # the pivot's held-out set (t45-t56)
+    "t45_restock": (
+        SmokeRequest("vicky", "POST", "/products/1/restock", json={"quantity": 10}),
+    ),
+    "t46_ship_order": (SmokeRequest("admin", "POST", "/orders/5/ship"),),
+    "t47_quote": (
+        SmokeRequest("carol", "POST", "/orders/quote",
+                     json={"items": [{"product_id": 1, "quantity": 2}]}),
+    ),
+    "t48_vendor_dashboard": (SmokeRequest("vicky", "GET", "/vendors/me/dashboard"),),
+    "t49_remove_order_item": (SmokeRequest("carol", "DELETE", "/orders/8/items/13"),),
+    "t50_cancel_batch": (
+        SmokeRequest("admin", "POST", "/orders/cancel-batch", json={"order_ids": [7]}),
+    ),
+    "t51_low_stock": (SmokeRequest("victor", "GET", "/vendors/me/low-stock"),),
+    "t52_order_by_vendor": (SmokeRequest("carol", "GET", "/orders/1/by-vendor"),),
+    "t53_move_stock": (
+        SmokeRequest("vicky", "POST", "/products/1/move-stock",
+                     json={"to_product_id": 2, "quantity": 5}),
+    ),
+    "t54_order_stats": (SmokeRequest("carol", "GET", "/users/me/order-stats"),),
+    "t55_vendor_directory": (SmokeRequest(None, "GET", "/vendors"),),
+    "t56_order_received": (SmokeRequest("dave", "POST", "/orders/3/received"),),
 }  # fmt: skip
 
 
