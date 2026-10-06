@@ -1,0 +1,1113 @@
+[
+  {
+    "name": "reference",
+    "ticket": "t45_restock",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t46_ship_order",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t47_quote",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t48_vendor_dashboard",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t49_remove_order_item",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t50_cancel_batch",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t51_low_stock",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t52_order_by_vendor",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t53_move_stock",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t54_order_stats",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t55_vendor_directory",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "reference",
+    "ticket": "t56_order_received",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t45-max-exclusive",
+    "ticket": "t45_restock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /products/7/restock:t45_restock_bounds / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t45-no-ownership",
+    "ticket": "t45_restock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /products/1/restock:t45_restock_access / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t45-sets-stock",
+    "ticket": "t45_restock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /products/1/restock:t45_restock_adds_to_stock / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t45-zero-accepted",
+    "ticket": "t45_restock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /products/1/restock:t45_restock_bounds / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t46-admin-needs-products",
+    "ticket": "t46_ship_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/5/ship:t46_admin_ships_any_order / step 1",
+      "D:POST /orders/1/ship:t46_only_confirmed_orders_ship / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t46-any-vendor",
+    "ticket": "t46_ship_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/5/ship:t46_vendor_without_products_in_order / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t46-ships-cancelled",
+    "ticket": "t46_ship_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY808::ship_order sets order.status to 'shipped' where the check at line 145 leaves it 'cancelled' or 'confirmed', and the Order.status machine has no edge 'cancelled' -> 'shipped'",
+      "D:POST /orders/9/ship:t46_only_confirmed_orders_ship / step 4"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t46-ships-pending",
+    "ticket": "t46_ship_order",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY808::ship_order sets order.status to 'shipped' where the check at line 145 leaves it 'confirmed' or 'pending', and the Order.status machine has no edge 'pending' -> 'shipped'",
+      "D:POST /orders/8/ship:t46_only_confirmed_orders_ship / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t47-items-counts-lines",
+    "ticket": "t47_quote",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/quote:t47_quote_a_basket / step 1",
+      "D:POST /orders/quote:t47_quote_one_line_per_product / step 1",
+      "D:POST /orders/quote:t47_quote_for_anyone_signed_in / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t47-line-per-entry",
+    "ticket": "t47_quote",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/quote:t47_quote_one_line_per_product / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t47-quotes-inactive",
+    "ticket": "t47_quote",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/quote:t47_quote_errors / step 7"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t47-sorted-by-product",
+    "ticket": "t47_quote",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/quote:t47_quote_one_line_per_product / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t47-stock-per-entry",
+    "ticket": "t47_quote",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/quote:t47_quote_one_line_per_product / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t48-best-seller-unsold",
+    "ticket": "t48_vendor_dashboard",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t48-drops-empty-statuses",
+    "ticket": "t48_vendor_dashboard",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/dashboard:t48_dashboard / step 1",
+      "D:GET /vendors/me/dashboard:t48_dashboard_best_seller_tie / step 2",
+      "D:GET /vendors/me/dashboard:t48_dashboard_cancelled_units_not_sold / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t48-orders-count-lines",
+    "ticket": "t48_vendor_dashboard",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/dashboard:t48_dashboard / step 1",
+      "D:GET /vendors/me/dashboard:t48_dashboard_best_seller_tie / step 2",
+      "D:GET /vendors/me/dashboard:t48_dashboard_cancelled_units_not_sold / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t48-out-of-stock-counts-inactive",
+    "ticket": "t48_vendor_dashboard",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/dashboard:t48_dashboard / step 1",
+      "D:GET /vendors/me/dashboard:t48_dashboard_best_seller_tie / step 2",
+      "D:GET /vendors/me/dashboard:t48_dashboard_cancelled_units_not_sold / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t48-units-count-cancelled",
+    "ticket": "t48_vendor_dashboard",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/dashboard:t48_dashboard / step 1",
+      "D:GET /vendors/me/dashboard:t48_dashboard_best_seller_tie / step 2",
+      "D:GET /vendors/me/dashboard:t48_dashboard_cancelled_units_not_sold / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t49-current-prices",
+    "ticket": "t49_remove_order_item",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t49-item-of-any-order",
+    "ticket": "t49_remove_order_item",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 1,
+      "D": 1
+    },
+    "layers": [
+      "C",
+      "D"
+    ],
+    "findings": [
+      "C:DELETE /orders/8/items/1:t49_remove_refused / step 4",
+      "D:DELETE /orders/8/items/1:t49_remove_refused / step 4"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t49-last-line-removable",
+    "ticket": "t49_remove_order_item",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:DELETE /orders/8/items/12:t49_remove_a_line / step 3",
+      "D:DELETE /orders/7/items/11:t49_remove_refused / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t49-no-restock",
+    "ticket": "t49_remove_order_item",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:DELETE /orders/8/items/13:t49_remove_a_line / step 1",
+      "D:DELETE /orders/8/items/12:t49_remove_the_other_line / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t49-status-before-ownership",
+    "ticket": "t49_remove_order_item",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t50-cancels-as-it-goes",
+    "ticket": "t50_cancel_batch",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [
+      "A"
+    ],
+    "findings": [
+      "A:PY807:POST /orders/cancel-batch:POST /orders/cancel-batch (cancel_batch) commits (in cancel_batch) at line 152 (commit()) and can still fail afterwards on a later pass of the same loop at line 145 (raise): a refused request leaves the earlier writes in the database"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t50-cancels-shipped",
+    "ticket": "t50_cancel_batch",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/cancel-batch:t50_cancel_batch_refused / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t50-no-restock",
+    "ticket": "t50_cancel_batch",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/cancel-batch:t50_cancel_batch / step 1",
+      "D:POST /orders/cancel-batch:t50_cancel_batch_of_one / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t50-repeated-id-twice",
+    "ticket": "t50_cancel_batch",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t51-at-threshold-included",
+    "ticket": "t51_low_stock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/low-stock:t51_low_stock / step 7"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t51-lists-inactive",
+    "ticket": "t51_low_stock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/low-stock:t51_low_stock / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t51-max-exclusive",
+    "ticket": "t51_low_stock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/low-stock:t51_low_stock / step 4"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t51-zero-accepted",
+    "ticket": "t51_low_stock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors/me/low-stock:t51_low_stock_threshold_bounds / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t52-current-prices",
+    "ticket": "t52_order_by_vendor",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /orders/1/by-vendor:t52_order_by_vendor / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t52-lines-by-product",
+    "ticket": "t52_order_by_vendor",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t52-order-vendors-allowed",
+    "ticket": "t52_order_by_vendor",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /orders/5/by-vendor:t52_order_by_vendor_access / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t52-vendors-as-they-come",
+    "ticket": "t52_order_by_vendor",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  },
+  {
+    "name": "t53-cannot-move-all",
+    "ticket": "t53_move_stock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /products/3/move-stock:t53_move_all_stock / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t53-debits-before-checking-target",
+    "ticket": "t53_move_stock",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY807:POST /products/{product_id}/move-stock:POST /products/{product_id}/move-stock (move_stock) commits (in move_stock) at line 99 (commit()) and can still fail afterwards at line 100 (_own_product() (it can raise)): a refused request leaves the earlier writes in the database",
+      "D:POST /products/1/move-stock:t53_move_stock_refused / step 4",
+      "D:POST /products/1/move-stock:t53_move_stock_access / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t53-same-product-allowed",
+    "ticket": "t53_move_stock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /products/1/move-stock:t53_move_stock_refused / step 4"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t53-zero-accepted",
+    "ticket": "t53_move_stock",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /products/1/move-stock:t53_move_stock_refused / step 5"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t54-latest-includes-cancelled",
+    "ticket": "t54_order_stats",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /users/me/order-stats:t54_order_stats / step 1",
+      "D:GET /users/me/order-stats:t54_order_stats_cancelled_dont_count / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t54-orders-count-lines",
+    "ticket": "t54_order_stats",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /users/me/order-stats:t54_order_stats / step 1",
+      "D:GET /users/me/order-stats:t54_order_stats_cancelled_dont_count / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t54-spent-null-when-none",
+    "ticket": "t54_order_stats",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /users/me/order-stats:t54_order_stats / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t54-units-count-cancelled",
+    "ticket": "t54_order_stats",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /users/me/order-stats:t54_order_stats / step 1",
+      "D:GET /users/me/order-stats:t54_order_stats_cancelled_dont_count / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t55-counts-inactive",
+    "ticket": "t55_vendor_directory",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors:t55_vendor_directory / step 1",
+      "D:GET /vendors:t55_vendor_directory_follows_verification / step 2",
+      "D:GET /vendors:t55_vendor_directory_active_products_only / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t55-drops-shops-without-products",
+    "ticket": "t55_vendor_directory",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors:t55_vendor_directory_follows_verification / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t55-lists-unverified",
+    "ticket": "t55_vendor_directory",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors:t55_vendor_directory / step 1",
+      "D:GET /vendors:t55_vendor_directory_follows_verification / step 4",
+      "D:GET /vendors:t55_vendor_directory_active_products_only / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t55-ordered-by-id",
+    "ticket": "t55_vendor_directory",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors:t55_vendor_directory_follows_verification / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t55-repeats-categories",
+    "ticket": "t55_vendor_directory",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 3
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:GET /vendors:t55_vendor_directory / step 1",
+      "D:GET /vendors:t55_vendor_directory_follows_verification / step 2",
+      "D:GET /vendors:t55_vendor_directory_active_products_only / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t56-admin-bypass",
+    "ticket": "t56_order_received",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/3/received:t56_received_access / step 2"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t56-from-confirmed",
+    "ticket": "t56_order_received",
+    "verdict": "fail",
+    "counts": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 2
+    },
+    "layers": [
+      "A",
+      "D"
+    ],
+    "findings": [
+      "A:PY808::mark_received sets order.status to 'delivered' where the check at line 137 leaves it 'confirmed' or 'shipped', and the Order.status machine has no edge 'confirmed' -> 'delivered'",
+      "D:POST /orders/8/received:t56_received_after_shipping / step 2",
+      "D:POST /orders/5/received:t56_only_shipped_orders / step 1"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t56-order-vendors-allowed",
+    "ticket": "t56_order_received",
+    "verdict": "fail",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 1
+    },
+    "layers": [
+      "D"
+    ],
+    "findings": [
+      "D:POST /orders/3/received:t56_received_access / step 3"
+    ],
+    "stale_baseline": []
+  },
+  {
+    "name": "t56-status-before-ownership",
+    "ticket": "t56_order_received",
+    "verdict": "pass",
+    "counts": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "layers": [],
+    "findings": [],
+    "stale_baseline": []
+  }
+]
