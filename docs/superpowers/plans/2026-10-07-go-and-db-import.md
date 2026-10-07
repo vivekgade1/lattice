@@ -1,5 +1,12 @@
 # Plan: import for Go (Gin + GORM) and the popular databases (Python and Go)
 
+> **Superseded in structure by `2026-10-07-module-marketplace.md`.** Its nodes become
+> modules there:
+> - ENG becomes M0 plus the engine pilots;
+> - GOX, GOR, VEN and SQLX become the gin + gorm and sqlx modules in M1.
+>
+> The design notes below stay valid as the content of those modules.
+
 > Requested by the user on 2026-10-07: "Add gorm, gin and most popular db connected in
 > python and golang". Branch `roadmap`. Execution starts after experiment D finishes,
 > as an `epg` graph (see [[use-epg-for-plans]]).
