@@ -1,5 +1,7 @@
 # Plan: import for Go (Gin + GORM) and the popular databases (Python and Go)
 
+> **PARKED with the module plan (2026-10-07).**
+>
 > **Superseded in structure by `2026-10-07-module-marketplace.md`.** Its nodes become
 > modules there:
 > - ENG becomes M0 plus the engine pilots;

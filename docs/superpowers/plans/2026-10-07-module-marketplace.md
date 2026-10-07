@@ -5,7 +5,11 @@
 > from a project and understood by Lattice. Adding a new one should be easy, through a
 > separate marketplace, and Lattice should be able to extend itself.
 >
-> Status: **design, for the user's review**. It runs as an `epg` graph once approved. It
+> Status: **PARKED by the user (2026-10-07) for later phases.** Kept as the north-star
+> architecture. Before building: finish experiment D, run Lattice end to end on one
+> real project, and extract interfaces only once three real instances exist.
+>
+> Original status: design, for the user's review. It runs as an `epg` graph once approved. It
 > **replaces** the ENG node of `2026-10-07-go-and-db-import.md`: PostgreSQL and MySQL
 > become the first engine modules, not core code.
 
