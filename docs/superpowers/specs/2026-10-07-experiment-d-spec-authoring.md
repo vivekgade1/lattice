@@ -3,8 +3,7 @@
 > Plan: `docs/superpowers/plans/2026-10-05-pivot-spec-authoring.md`, item D. Branch
 > `roadmap`.
 >
-> Status: **DRAFT, awaiting the user's approval.** No model call is made before it is
-> approved and committed. Every call goes through the CLI (`--backend cli`), plan-billed,
+> Status: **APPROVED by the user (2026-10-07), frozen with this commit before any run.** Every call goes through the CLI (`--backend cli`), plan-billed,
 > with no API key. The runs use a checkout frozen at the commit that approves this spec.
 
 ## Question
@@ -36,11 +35,15 @@ drafts state more of those rules, and so cut silent failures?**
 The owner's approvals for a ticket apply in every arm. That is t55's public directory,
 stated in its text.
 
-## Scope and cost
+## Scope and usage
 
 - **Models:** claude-sonnet-5 (primary) and claude-haiku-4-5. Both run all three arms.
 - **Size:** 12 tickets × 6 reps × 3 arms × 2 models = **432 runs**.
-- **Cost:**
+- **Billing:** every call goes through the user's logged-in `claude` CLI on their Claude
+  plan. No API key is used, and nothing is charged beyond the plan. The dollar figures
+  below are **list-price equivalents only**: the CLI's per-call cost report, recorded as
+  a benchmark metric ($/correct), never charged.
+- **Expected list-price equivalent:**
   - `run.py --estimate` gives $20.66, but it counts only the first prompt of each run.
   - From Phase 1's observed cost per run (Sonnet S $0.25, S\* $0.12; Haiku S $0.16),
     plus S+'s review call (+30%), the expected total is **about $85, list-price
