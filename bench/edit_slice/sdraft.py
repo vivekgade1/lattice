@@ -23,11 +23,14 @@ the spec step of arm S, the simulated approval, and the spec check of arms S and
   checked after the program cases' requests as the candidate's check will); a rule the
   reference breaks is rejected. Programs and machines are approved as a whole when they
   add no finding on the reference. Unchecked entries are kept and not counted.
-* :func:`owner_delta` -- arm S*'s delta: the owner's blind delta (``BLIND_DELTAS``).
+* :func:`owner_delta` -- arm S*'s delta: the owner's blind delta (``BLIND_DELTAS`` for
+  t31-t44, the pivot's ``BLIND_PIVOT_DELTAS`` for t45-t56).
 * :func:`code_prompt` -- arm Q's code prompt plus the approved spec (:data:`SPEC_SECTION`).
-* :func:`check_candidate` / :func:`spec_feedback` -- the check round of S and S*: layers
-  A-D against ``apply(SPEC, delta)`` with the app's baseline, rendered rule first.
-* :func:`coverage` -- offline: how many of the ticket's Phase 0 traps a delta catches.
+* :func:`check_candidate` / :func:`spec_feedback` -- the check round of S, S+ and S*:
+  layers A-D against ``apply(SPEC, delta)`` with the app's baseline (plus the ticket's
+  own approvals, :func:`_owner_approved`), rendered rule first.
+* :func:`coverage` -- offline: how many of the ticket's traps (Phase 0's or the
+  pivot's) a delta catches.
 
 ``python -m bench.edit_slice.sdraft --estimate`` prints the prompt sizes per ticket (no
 model call).
@@ -610,8 +613,23 @@ def approve(ticket_id: str, delta: SpecDelta) -> Approval:
 
 
 def owner_delta(ticket_id: str) -> SpecDelta:
-    """Arm S*'s delta: the owner's, written from the ticket before any check ran."""
-    return BLIND_DELTAS[ticket_id]
+    """Arm S*'s delta: the owner's, written from the ticket before any check ran
+    (``BLIND_DELTAS`` for t31-t44; the pivot's ``BLIND_PIVOT_DELTAS`` for t45-t56,
+    plan 2026-10-05-pivot-spec-authoring.md, item D)."""
+    if ticket_id in BLIND_DELTAS:
+        return BLIND_DELTAS[ticket_id]
+    from bench.specs.pivot_blind import BLIND_PIVOT_DELTAS
+
+    return BLIND_PIVOT_DELTAS[ticket_id]
+
+
+def _owner_approved(ticket_id: str) -> tuple[Any, ...]:
+    """The ticket's owner-approved layer-A findings, outside any delta: ``DELTAS``'s for
+    t31-t44; the pivot's blind delta's own ``approved`` (e.g. t55's public directory) for
+    t45-t56 -- there is no non-blind ``DELTAS`` entry for the pivot's tickets."""
+    if ticket_id in DELTAS:
+        return DELTAS[ticket_id].approved
+    return owner_delta(ticket_id).approved
 
 
 # ---- rendering a delta --------------------------------------------------------------------------
@@ -754,11 +772,12 @@ def check_candidate(
 ) -> Report:
     """The candidate app (``files`` relative to the app package) checked against
     ``apply(SPEC, delta)`` with the app's baseline. The owner's approvals for the ticket
-    (``DELTAS[ticket_id].approved``, e.g. t33's public aggregate, stated in its text)
-    always apply: a draft cannot write approvals, the simulated owner does."""
+    (:func:`_owner_approved`, e.g. t33's public aggregate or t55's public directory,
+    stated in its text) always apply: a draft cannot write approvals, the simulated
+    owner does."""
     from bench.specs.exit import check_ticket
 
-    owner = DELTAS[ticket_id].approved
+    owner = _owner_approved(ticket_id)
     delta = replace(
         delta, approved=(*delta.approved, *(a for a in owner if a not in delta.approved))
     )
@@ -838,11 +857,13 @@ def finding_layers(report: Report) -> list[str]:
 
 
 def coverage(ticket_id: str, delta: SpecDelta) -> tuple[int, int]:
-    """(traps caught, traps) of Phase 0's trap variants of ``ticket_id`` (``TRAPS`` in
-    tests/bench/test_edit_slice_option1.py) against ``apply(SPEC, delta)``. No model."""
+    """(traps caught, traps) of ``ticket_id``'s trap variants against ``apply(SPEC,
+    delta)``. No model: Phase 0's ``TRAPS`` (tests/bench/test_edit_slice_option1.py) for
+    t31-t44, the pivot's (tests/bench/test_edit_slice_pivot.py) for t45-t56."""
     from bench.specs.exit import _traps
 
-    traps = [make for tid, make in _traps().values() if tid == ticket_id]
+    trap_set = "phase0" if ticket_id in DELTAS else "pivot"
+    traps = [make for tid, make in _traps(trap_set).values() if tid == ticket_id]
     caught = sum(check_candidate(ticket_id, make(), delta).verdict == "fail" for make in traps)
     return caught, len(traps)
 
@@ -904,17 +925,23 @@ def render_estimate(rows: Sequence[Mapping[str, Any]]) -> str:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    from bench.edit_slice.tickets import OPTION1, OPTION1B
+    from bench.edit_slice.tickets import OPTION1, OPTION1B, PIVOT
 
     p = argparse.ArgumentParser(prog="python -m bench.edit_slice.sdraft", description=__doc__)
     p.add_argument("--estimate", action="store_true", help="print the prompt sizes")
-    p.add_argument("--tickets", default=",".join((*OPTION1, *OPTION1B)))
+    p.add_argument(
+        "--tickets",
+        default=",".join((*OPTION1, *OPTION1B)),
+        help="comma-separated ticket ids, or pivot (the pivot's t45-t56)",
+    )
     args = p.parse_args(argv)
     if not args.estimate:
         p.print_help()
         return 2
     started = time.perf_counter()
-    tickets = [t.strip() for t in args.tickets.split(",") if t.strip()]
+    tickets = list(PIVOT) if args.tickets == "pivot" else [
+        t.strip() for t in args.tickets.split(",") if t.strip()
+    ]  # fmt: skip
     print(render_estimate(estimate_rows(tickets)))
     print(f"({time.perf_counter() - started:.1f}s)")
     return 0
