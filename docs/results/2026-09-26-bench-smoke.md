@@ -1682,3 +1682,84 @@ Two verifier soundness problems remain open:
 2. Relationship writes escape the outside-API veto.
 
 These need fixing before any layer R number is trusted.
+
+## Experiment D: does a drafting checklist close the spec-authoring gap? (pre-registered, 2026-10-07)
+
+Spec: `docs/superpowers/specs/2026-10-07-experiment-d-spec-authoring.md`, frozen in
+`647ba94` before any run. 432 runs through the CLI on the user's plan; dollar figures are
+list-price equivalents only. Held-out tickets t45–t56, written after Phase 1. The arms:
+- **S**: the model drafts the spec;
+- **S+**: S plus a generic checklist and one self-review;
+- **S\***: the owner's blind spec, which catches 45/52 traps offline.
+
+The run paused twice at the plan's usage limit and resumed with `--resume`.
+
+| model | arm | correct | silent | loud | spec error rate | $/correct | s/run |
+|---|---|---|---|---|---|---|---|
+| Sonnet | S | 66/72 | 6 | 0 | 7.4% | 0.258 | 148 |
+| Sonnet | S+ | 66/72 | 6 | 0 | 7.9% | 0.498 | 378 |
+| Sonnet | S\* | 65/72 | 7 | 0 | — | 0.150 | 94 |
+| Haiku | S | 61/72 | 10 | 1 | 10.0% | 0.170 | 177 |
+| Haiku | S+ | 61/72 | 9 | 2 | 5.7% | 0.233 | 244 |
+| Haiku | S\* | 65/72 | 6 | 1 | — | 0.106 | 112 |
+
+### Pre-registered verdicts
+- **H1′ (Sonnet, S+ vs S): NOT CONFIRMED.** Silent 6 vs 6, p = 0.62. The guard and the
+  spec bar held.
+- **H2′ (Haiku, S+ vs S): NOT CONFIRMED.** Silent 9 vs 10, p = 0.50. The guard and the
+  spec bar held.
+- **H3′ (descriptive):** on Sonnet, S\* is no better than S or S+ (7 silent); on Haiku,
+  S\* is best (6 silent, 65 correct). S\* is the cheapest on both.
+
+### Oracle review (`docs/results/2026-10-08-experiment-d-oracle-review.md`)
+**43 of the 44 silent runs are genuine.** The one defect:
+- **C1 (fixed after the run, `bench/edit_slice/repos/multivendor.py` `mint`):** minted
+  test tokens expired after 30 minutes inside a long oracle process. A reference saw a
+  live token while its candidate saw an expired one.
+- **Effect:** rescored offline, it flips exactly one run, Sonnet S t52 rep 4, from silent
+  to correct. Sonnet S becomes 67/5, and both verdicts stand.
+
+**C2 (latent, recorded, not applied):** `t50.repeated_id` accepts only the "collapse the
+repeat" reading. The text also allows "refuse with 400". No run's outcome depends on it:
+every t50 failure double-restocks, which is wrong under both readings.
+
+**32 of the 44 silent runs, on both models and in every arm, are one bug: t50**
+(`POST /orders/cancel-batch` with a repeated id). The candidate cancels and restocks once
+per *listing*, so `[7, 7]` returns 2 mugs to stock for an order holding 1. The ticket
+text rules that out under any reading.
+- No spec in any arm, the owner's included, stated the repeated-id case as a scenario.
+  The drafts deferred it to `Unchecked` because the ticket leaves the answer open, and
+  the owner did the same.
+- One step, "list `[7, 7]`, then assert mug stock is 41", asserting the effect and not
+  the status, would have caught every t50 run under either reading.
+
+### Why the checklist didn't help
+1. **The self-review mostly failed validation.** It failed in 42/72 Sonnet runs and
+   21/71 Haiku runs, so those runs fell back to the first draft.
+   - **The cause:** 60 of the 63 failures carry S016. The review named the new endpoint
+     (`"METHOD /path"`) as an `Unchecked` concern, but these deltas have no
+     program or contract for it.
+   - **Who caused it:** this is a harness design defect, not the model's. The review step
+     had no repair round, and the validator's hint invites exactly that string.
+   - **Valid reviews would not have changed t50,** because the revisions deferred
+     repeats the same way.
+2. **The checklist told the model to defer ambiguity** ("write an `Unchecked` entry
+   rather than guessing"). That is the right rule for the *answer*. But the drafts then
+   also skipped the *effect* that every reading shares. Where Haiku's S+ drafts did write
+   the edge scenarios (t47's empty list and 0 quantity), every candidate passed them.
+
+### Observations
+1. **Spec authoring is still the bottleneck, and it's sharper than "edge cases":** the
+   misses are cases where the ticket leaves the response open but fixes the effect. Specs
+   (model or owner) skip them entirely.
+   - **A concrete next aid:** "for each edge case the ticket leaves open, still assert the
+     database effect that every reading shares".
+   - **And a harness fix:** allow a delta's new endpoints as `Unchecked` concerns, and
+     give the review one repair round.
+2. **The loop works when the spec states the rule.** S\* is 0 silent on Haiku's t47/t52
+   and on every ticket except t50.
+3. **A checklist costs a lot:** about 2× list-price per correct change on Sonnet and
+   1.4× on Haiku, with no measured gain.
+4. **Threats:** the same app and base spec as Phase 1; the simulated approval is
+   optimistic; one ticket dominates the outcome. With 12 tickets, a single hard ticket
+   swamps the arm differences.

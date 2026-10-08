@@ -38,6 +38,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import replace
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -82,9 +83,15 @@ def mint(user_id: int, role: str = "buyer") -> str:
     """A token as upstream's ``create_access_token`` makes it (the seed's inactive user
     cannot log in, so the inactive-caller case needs one minted)."""
     import bench.import_repos.multivendor  # noqa: F401  (SECRET_KEY)
-    from bench.import_repos.multivendor.app.core.security import create_access_token
+    from bench.import_repos.multivendor.app.core import security
 
-    return create_access_token({"sub": str(user_id), "role": role})
+    # Signed as upstream's create_access_token signs, but valid for a century: cases are
+    # built once per process and an oracle can outlive the app's 30-minute expiry
+    # (experiment D's review: a reference saw a live token and its candidate an expired one)
+    exp = datetime.utcnow() + timedelta(days=36500)
+    claims = {"sub": str(user_id), "role": role, "exp": exp}
+    return security.jwt.encode(claims, security.settings.secret_key,
+                               algorithm=security.settings.algorithm)  # fmt: skip
 
 
 def auth_cases(tid: str, method: str, path: str, route: str) -> list[Case]:

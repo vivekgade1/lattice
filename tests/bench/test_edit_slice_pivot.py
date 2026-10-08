@@ -553,3 +553,18 @@ def test_one_reference_checks_clean_live():
     tid = "t56_order_received"
     report = check_ticket(tid, reference_files(tid), deltas=DELTAS)
     assert report.verdict == "pass", report.render()
+
+
+def test_minted_tokens_outlive_a_long_oracle_process():
+    """Experiment D's review: an oracle cached in a long process saw a minted token expire
+    between a reference and its candidate (the app's tokens last 30 minutes)."""
+    from datetime import datetime, timedelta
+
+    from bench.import_repos.multivendor.app.core import security
+
+    token = multivendor.mint(7)
+    claims = security.jwt.decode(
+        token, security.settings.secret_key, algorithms=[security.settings.algorithm]
+    )
+    assert claims["sub"] == "7"
+    assert datetime.utcfromtimestamp(claims["exp"]) > datetime.utcnow() + timedelta(days=3650)
