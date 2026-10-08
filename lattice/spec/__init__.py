@@ -4,6 +4,7 @@ compiled to the checks the checker runs (direction draft §4)."""
 
 from __future__ import annotations
 
+from lattice.spec.authoring import access_matrix, requirements_markdown
 from lattice.spec.check import (
     CaseContext,
     CheckError,
@@ -49,9 +50,11 @@ __all__ = [
     "SpecProblem",
     "Step",
     "Unchecked",
+    "access_matrix",
     "cases_for",
     "check",
     "compile_invariant",
+    "requirements_markdown",
     "resolve_table",
     "spec_policy",
     "tables_of",
