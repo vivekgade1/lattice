@@ -1808,3 +1808,30 @@ of its own test code.
 **What it says:** a spec's invariants are what make concurrency checking automatic. Layer X is the
 first checker capability that beat both a careful prose-driven build and human review on a real
 app.
+
+## Cost reduction: Haiku under the spec gate (2026-10-08)
+
+A third job-scheduler build used Haiku, with the cost levers applied:
+- every owner decision resolved up front;
+- layer X in the gate from ticket 1;
+- gate output only, never the checker's code;
+- per-ticket spec slices;
+- a frozen Lattice dependency.
+
+**Result:** it passes the final judge with 0 findings on 141 cases (ABCDX), and the race probes
+held 4/4.
+- It used **~588k Haiku tokens**, against ~1.0M Sonnet tokens for the Sonnet spec-first build to
+  reach the same state.
+- At about ⅓ the list price per token, that is about **a fifth of the cost** of the Sonnet
+  spec-first build.
+- It is cheaper than the Sonnet prose baseline, which still fails 11 checks.
+
+**The trade-off is supervision.** There were 4 send-backs, all on instructions nothing enforced:
+a lint flag bypass, missing tests, an incomplete log, and one run per drain (that one a spec gap;
+the rule has since been added). The orchestrator also diagnosed one zombie-process bug by hand.
+
+Two new tools made this possible:
+- `lattice.spec.access_matrix` and `requirements_markdown`, which cut spec authoring (`7238b30`);
+- layer X (`3cd8b11`).
+
+Details: `job-scheduler/metrics/COMPARISON.md`.
