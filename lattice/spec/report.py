@@ -24,14 +24,15 @@ from dataclasses import asdict, dataclass, field
 from fnmatch import fnmatchcase
 from typing import Any, Literal
 
-Layer = Literal["A", "B", "C", "D", "R"]
-LAYERS: tuple[str, ...] = ("A", "B", "C", "D", "R")
+Layer = Literal["A", "B", "C", "D", "R", "X"]
+LAYERS: tuple[str, ...] = ("A", "B", "C", "D", "R", "X")
 LAYER_NAMES = {
     "A": "static checks on the app's code",
     "B": "endpoint answers against the spec programs",
     "C": "invariants after every request",
     "D": "scenarios",
     "R": "rule items probed on the app",
+    "X": "concurrent races of the writes behind count bounds and machines",
 }
 
 
@@ -58,9 +59,14 @@ class CheckFinding:
     @property
     def key(self) -> str:
         """What a baseline entry matches: ``A:<code>:<endpoint>:<message>`` for a layer
-        A finding, ``<layer>:<endpoint>:<case>`` otherwise."""
+        A finding, ``X:<endpoint>:<scenario>/<step>[+<step>]:<rule>`` for a layer X
+        finding (the rule: the invariant's name, the machine's ``Table.column``, or
+        ``no_server_error_under_concurrency``), ``<layer>:<endpoint>:<case>`` otherwise."""
         if self.layer == "A":
             return f"A:{self.code}:{self.endpoint or ''}:{self.details.get('message', '')}"
+        if self.layer == "X":
+            rule = self.details.get("rule_id", self.rule)
+            return f"X:{self.endpoint or ''}:{self.case or ''}:{rule}"
         return f"{self.layer}:{self.endpoint or ''}:{self.case or ''}"
 
     def to_dict(self) -> dict[str, Any]:
@@ -103,6 +109,8 @@ class Report:
     accepted: list[tuple[CheckFinding, str]] = field(default_factory=list)
     stale: list[Accepted] = field(default_factory=list)
     rules: Any = None
+    # layer X only: every race run (its label, kind, steps, copies, tries, outcome)
+    races: list[dict[str, Any]] | None = None
 
     def apply_baseline(self, baseline: Sequence[Accepted]) -> None:
         """Move the findings ``baseline`` matches to ``accepted``; record unused entries."""
@@ -145,6 +153,8 @@ class Report:
         }
         if self.rules is not None:
             out["rules"] = self.rules.to_dict()
+        if self.races is not None:
+            out["races"] = self.races
         return out
 
     def to_json(self, indent: int | None = 2) -> str:
@@ -226,6 +236,25 @@ def _detail_lines(f: CheckFinding) -> list[str]:
             parts = [f"{k} {_short(v)}" for k, v in diff.items() if v]
             if parts:
                 out.append(f"db {table}: " + "; ".join(parts))
+        return out
+    if f.layer == "X":
+        steps = " + ".join(
+            f"step {s['step']} {s['method']} {s['path']}" + (f" as {s['user']}" if s.get("user")
+                                                            else "")
+            for s in d.get("steps", ())
+        )  # fmt: skip
+        out.append(
+            f"raced {d.get('k')} at once: {steps} (scenario {d.get('scenario')!r}; refuted on "
+            f"try {d.get('try')} of {d.get('repeats')})"
+        )
+        for a in d.get("answers", ()):
+            statuses = ", ".join(f"{n}x {s}" for s, n in a.get("statuses", {}).items())
+            err = f"; {a['error']}" if a.get("error") else ""
+            out.append(f"step {a['step']} answered {statuses}{err}")
+        for row in d.get("rows", ())[:5]:
+            out.append(f"violating row: {_short(row, 400)}")
+        if d.get("also_in"):
+            out.append(f"also refuted by the same race in: {', '.join(d['also_in'])}")
         return out
     if f.layer == "A":
         if d.get("message"):

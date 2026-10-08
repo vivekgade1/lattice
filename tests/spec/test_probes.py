@@ -547,8 +547,8 @@ def test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests(tmp_path)
 def test_unknown_layers_still_fail():
     from lattice.spec import CheckError
 
-    with pytest.raises(CheckError, match="ABCDR"):
-        check(MV_SPEC, make_app, mv.db_factory, layers="X")
+    with pytest.raises(CheckError, match="ABCDRX"):
+        check(MV_SPEC, make_app, mv.db_factory, layers="Q")
 
 
 # ---- language rules ---------------------------------------------------------------------------

@@ -28,6 +28,13 @@
   a request on a fresh copy of the seed. Every item gets a verdict (``report.rules``); a
   refuted item is a finding (key ``R:<endpoint>:<item id> | <probe>``). With C, the
   invariants run after every probe too. Not in the default layers.
+* **X** -- the concurrency layer (:mod:`lattice.spec.race`): the scenario steps that
+  write an upper count bound's or a machine's table, each fired ``x_k`` times at once
+  (and against the scenario's next write of the same table), on app copies sharing one
+  SQLite file; every invariant and machine checked after each race. Probabilistic: a
+  violation is a finding, no violation is "not refuted", never verified. Not in the
+  default layers; it uses D's ``app_factory``, ``db_factory``, ``login`` and
+  ``runtime``.
 
 Callers: ``login(client, handle)`` answers a bearer token for a handle of
 ``Spec.users`` (or ``login_path``: a form login with ``Spec.users``' credentials).
@@ -1416,9 +1423,15 @@ def check(
     rule_items: Sequence[str] | None = None,
     runtime: AppRuntime | None = None,
     probe_options: Mapping[str, Any] | None = None,
+    x_k: int = 12,
+    x_repeats: int = 3,
+    x_budget: int = 60,
+    x_timeout: float = 30.0,
 ) -> Report:
     """Check the app built by ``app_factory(db_path)`` against ``spec`` in ``layers``
-    (letters of ABCDR; see the module docstring). Layer R: ``sessions`` is the probes'
+    (letters of ABCDRX; see the module docstring). Layer X: ``x_k`` copies per
+    self-race, ``x_repeats`` tries per race, at most ``x_budget`` races, each within
+    ``x_timeout`` seconds. Layer R: ``sessions`` is the probes'
     transport (:data:`lattice.spec.probes.SessionFactory`; default the ASGI TestClient
     over ``app_factory``), ``scheme`` the Authorization scheme, ``rule_items`` the item id
     prefixes to probe (default all), ``probe_options`` more of
@@ -1496,6 +1509,21 @@ def check(
             only=rule_items,
             runtime=runtime,
             options=probe_options,
+        )
+    if "X" in run:
+        from lattice.spec.race import layer_x
+
+        layer_x(
+            spec,
+            report,
+            app_factory,
+            make_db,
+            login=login,
+            runtime=runtime,
+            k=x_k,
+            repeats=x_repeats,
+            budget=x_budget,
+            timeout=x_timeout,
         )
     if monitor is not None:
         report.findings.extend(monitor.findings)

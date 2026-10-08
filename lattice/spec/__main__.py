@@ -1,8 +1,9 @@
 """``python -m lattice.spec check``: an app against its spec (lattice.spec.check).
 
     python -m lattice.spec check --spec mod:SPEC --app mod:factory --db mod:build_db \\
-        [--app-dir DIR --package PKG] [--layers ABCD] [--login mod:fn] \\
-        [--login-path /login] [--mint-token mod:fn] [--json]
+        [--app-dir DIR --package PKG] [--layers ABCDX] [--login mod:fn] \\
+        [--login-path /login] [--mint-token mod:fn] [--json] \\
+        [--x-k 12] [--x-repeats 3] [--x-budget 60]
 
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
@@ -57,8 +58,13 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--app-dir", help="the app package's directory (layer A)")
     c.add_argument("--package", help="the app package, dotted (layer A)")
     c.add_argument(
-        "--layers", default="ABCD", help="letters of ABCDR (default ABCD; R: the rule layer)"
+        "--layers",
+        default="ABCD",
+        help="letters of ABCDRX (default ABCD; R: the rule layer; X: concurrent races)",
     )
+    c.add_argument("--x-k", type=int, default=12, help="layer X: copies per self-race")
+    c.add_argument("--x-repeats", type=int, default=3, help="layer X: tries per race")
+    c.add_argument("--x-budget", type=int, default=60, help="layer X: at most this many races")
     c.add_argument("--login", help="module:fn, (client, handle) -> bearer token")
     c.add_argument("--login-path", help="a form login route taking Spec.users' credentials")
     c.add_argument("--mint-token", help="module:fn, (user key) -> bearer token")
@@ -169,6 +175,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             mint_token=load(args.mint_token) if args.mint_token else None,
             natives=load(args.natives) if args.natives else None,
             baseline=load(args.baseline) if args.baseline else (),
+            x_k=args.x_k,
+            x_repeats=args.x_repeats,
+            x_budget=args.x_budget,
         )
     except Exception as err:  # noqa: BLE001 -- any failure to run the check is exit 2
         print(f"error: {type(err).__name__}: {err}", file=sys.stderr)

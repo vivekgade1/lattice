@@ -351,4 +351,4 @@ def test_cli_fails_a_broken_app_with_json(apps, capsys):
 def test_cli_errors_exit_2(apps, capsys):
     assert main(["check", "--spec", "tests.spec.minishop:NOPE", "--app", "x:y", "--db", "x:y"]) == 2
     assert "error" in capsys.readouterr().err
-    assert main(cli(apps, "ok", "--layers", "AX")) == 2
+    assert main(cli(apps, "ok", "--layers", "AQ")) == 2
