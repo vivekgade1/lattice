@@ -206,6 +206,117 @@ def test_count_bound_other_operators(vendors: sqlite3.Connection) -> None:
     assert _groups(vendors, 'count(Vendor, by="user_id") <= 2') == []
 
 
+# ---- count bound: tuple `by` ------------------------------------------------------------
+
+PRODUCTS_DUP = [
+    # id, vendor_id, name, description, category, price, stock, is_active, created_at
+    (1, 1, "pen", "a pen", "office", 2.5, 10, 1, "2024-01-01 00:00:00"),
+    (2, 1, "pen", "a pen too", "office", 3.0, 5, 1, "2024-01-01 00:00:00"),  # dup (1, office)
+    (3, 1, "pad", "a different name", "office", 2.0, 1, 1, "2024-01-01 00:00:00"),
+    (4, 2, "pen", "another vendor", "office", 2.0, 1, 1, "2024-01-01 00:00:00"),
+    (5, 1, None, "no name", "office", 2.0, 1, 1, "2024-01-01 00:00:00"),  # NULL in a by col
+]
+
+
+@pytest.fixture
+def dup_products(tmp_path: Path) -> sqlite3.Connection:
+    return shop.build_db(tmp_path / "pd.db", {"products": PRODUCTS_DUP})
+
+
+def test_count_bound_tuple_by(dup_products: sqlite3.Connection) -> None:
+    expr = 'count(Product, by=("vendor_id", "name")) <= 1'
+    assert _groups(dup_products, expr) == [(1, "pen", 2)]
+
+
+def test_count_bound_tuple_by_null_excluded(dup_products: sqlite3.Connection) -> None:
+    # row 5 has a NULL `name`: it belongs to no group and is never flagged, even as a
+    # lone-row group.
+    expr = 'count(Product, by=("vendor_id", "name")) <= 1'
+    rows = _violations(dup_products, expr)
+    assert all(row["name"] is not None for row in rows)
+
+
+# ---- count bound: `where` ----------------------------------------------------------------
+
+ORDER_ITEMS_WHERE = [
+    # id, order_id, product_id, quantity, price_at_purchase
+    (1, 1, 1, 1, 10.0),
+    (2, 1, 2, 3, 10.0),  # order 1 has two lines, but only one with quantity > 1
+    (3, 2, 1, 2, 10.0),
+    (4, 2, 2, 5, 10.0),  # order 2 has two lines with quantity > 1: violates
+    (5, 3, 1, 1, 10.0),  # order 3 has one line, quantity == 1
+]
+
+
+@pytest.fixture
+def order_items_where(tmp_path: Path) -> sqlite3.Connection:
+    return shop.build_db(tmp_path / "oiw.db", {"order_items": ORDER_ITEMS_WHERE})
+
+
+def test_count_bound_where_restricts_rows(order_items_where: sqlite3.Connection) -> None:
+    expr = 'count(OrderItem, by="order_id", where=OrderItem.quantity > 1) <= 1'
+    assert _groups(order_items_where, expr) == [(2, 2)]
+    # without the where=, order 1 would also violate (two lines total)
+    assert _groups(order_items_where, 'count(OrderItem, by="order_id") <= 1') == [(1, 2), (2, 2)]
+
+
+ORDERS_WHERE_STORED = [
+    # id, user_id, status, total_amount
+    (1, 1, "PENDING", 0.0),
+    (2, 1, "CONFIRMED", 0.0),  # user 1 has two open orders: violates
+    (3, 1, "CANCELLED", 0.0),  # cancelled: not counted
+    (4, 2, "PENDING", 0.0),  # user 2 has one open order: holds
+    (5, 2, "SHIPPED", 0.0),
+]
+
+
+@pytest.fixture
+def orders_where_stored(tmp_path: Path) -> sqlite3.Connection:
+    return shop.build_db(tmp_path / "ows.db", {"orders": ORDERS_WHERE_STORED})
+
+
+def test_count_bound_where_stored_spelling(orders_where_stored: sqlite3.Connection) -> None:
+    expr = (
+        'count(Order, by="user_id", where=Order.status in ("pending", "confirmed")) <= 1'
+    )
+    assert _groups(orders_where_stored, expr) == [(1, 2)]
+
+
+# ---- count bound: refusals ---------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("expr", "code", "words"),
+    [
+        ("count(Product, by=()) <= 1", "S008", "at least one column"),
+        ("count(Product, by=123) <= 1", "S008", "as text"),
+        ("count(Product, by=(1, 2)) <= 1", "S008", "must be text"),
+        ('count(Product, by=("nope",)) <= 1', "S003", "nope"),
+        (
+            "count(Product, by='vendor_id', where=Vendor.user_id > 0) <= 1",
+            "S008",
+            "where=",
+        ),
+        (
+            "count(Product, by='vendor_id', where=Missing.x > 0) <= 1",
+            "S002",
+            "Missing",
+        ),
+        (
+            "count(Product, by='vendor_id', where=Product.nope > 0) <= 1",
+            "S003",
+            "nope",
+        ),
+        ("count(Product, by='vendor_id', nope=1) <= 1", "S008", "allowed forms"),
+    ],
+)
+def test_count_bound_refused(expr: str, code: str, words: str) -> None:
+    with pytest.raises(InvariantError) as info:
+        compile_invariant(_inv(expr), shop.profile())
+    assert info.value.code == code
+    assert words in str(info.value)
+
+
 # ---- refusals ----------------------------------------------------------------------------
 
 

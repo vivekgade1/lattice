@@ -8,7 +8,8 @@ Codes:
 - S002: an unknown table -- in a machine, an invariant, a scenario's `given` or a step's
   `expect_db`. Machines and scenarios may use the schema name ("Order") or the SQL
   table name ("orders"); invariants use the schema name.
-- S003: an unknown column of a known table (same places, plus `by=` in an invariant).
+- S003: an unknown column of a known table (same places, plus `by=` or `where=` in an
+  invariant's `count(...)`).
 - S004: a machine's column is not a one_of column (its states are the one_of values).
 - S005: a machine names a state (in an edge or `initial`) outside the column's one_of.
 - S006: two machines for the same table column.

@@ -16,8 +16,11 @@ uses the profile's table names. Three forms are allowed:
   `P.col` violates. Violating P rows are returned whole plus an `expected` column (the
   sum).
 - **count bound**: `count(T, by="col") <op> n` (either side) with an int literal `n`.
-  Rows whose `col` is NULL belong to no group. Violating groups are returned as
-  (`col`, `count`). Only groups that exist are checked: a lower bound never flags a
+  `by` may instead be a tuple of columns, `by=("a", "b")`: the group is keyed on all of
+  them together. An optional `where=<row rule over T>` (the row rule grammar above, same
+  table) restricts the rows counted, before grouping. Rows with NULL in `col` (or in any
+  column of a tuple `by`) belong to no group. Violating groups are returned as (the `by`
+  columns, `count`). Only groups that exist are checked: a lower bound never flags a
   value with no rows.
 
 One-of columns whose values are stored under other spellings (`Schema.one_of_stored`)
@@ -48,7 +51,8 @@ ALLOWED_FORMS = (
     "comparisons, arithmetic, `and`/`or`/`not`, `is_null(Table.column)` and "
     "`Table.column in (...)`); an aggregate equality (`Order.total_amount == "
     'sum(OrderItem.quantity * OrderItem.price_at_purchase, by="order_id")`); a count '
-    'bound (`count(Vendor, by="user_id") <= 1`)'
+    'bound (`count(Vendor, by="user_id") <= 1`, `by=` a column or a tuple of columns, '
+    "with an optional `where=<row rule>` restricting the rows counted)"
 )
 
 _COMPARE_SQL: dict[type[ast.cmpop], str] = {
@@ -392,11 +396,59 @@ class _Compiler:
             raise _form(f'`{_text(call)}`: write count(Table, by="<column>")')
         table = call.args[0].id
         self.table(table)
-        by = self.quote(self.by_column(call, table))
+        by_cols, where_sql = self.count_keywords(call, table)
+        cols = [self.quote(c) for c in by_cols]
+        select_list = ", ".join(f"t.{c} AS {c}" for c in cols)
+        group_list = ", ".join(f"t.{c}" for c in cols)
+        null_guard = " AND ".join(f"t.{c} IS NOT NULL" for c in cols)
+        where_clause = null_guard if where_sql is None else f"{null_guard} AND ({where_sql})"
         return (
-            f"SELECT t.{by} AS {by}, COUNT(*) AS {self.quote('count')} "
-            f"FROM {self.sql_table(table)} AS t WHERE t.{by} IS NOT NULL "
-            f"GROUP BY t.{by} HAVING NOT (COUNT(*) {_COMPARE_SQL[op]} {bound.value})"
+            f"SELECT {select_list}, COUNT(*) AS {self.quote('count')} "
+            f"FROM {self.sql_table(table)} AS t WHERE {where_clause} "
+            f"GROUP BY {group_list} HAVING NOT (COUNT(*) {_COMPARE_SQL[op]} {bound.value})"
+        )
+
+    def count_keywords(self, call: ast.Call, table: str) -> tuple[list[str], str | None]:
+        kws = {kw.arg: kw.value for kw in call.keywords}
+        extra = set(kws) - {"by", "where"}
+        if extra or "by" not in kws:
+            raise _form(
+                f'{_text(call)}: write count(Table, by="<column>") (a column or a tuple '
+                'of columns), with an optional where=<row rule>'
+            )
+        by = self.by_value(kws["by"], call, table)
+        where_sql: str | None = None
+        if "where" in kws:
+            tables: set[str] = set()
+            where_sql = self.condition(kws["where"], "t", tables)
+            other = tables - {table}
+            if other:
+                raise _form(
+                    f"{_text(call)}: where= reads {table}, not {', '.join(sorted(other))}"
+                )
+        return by, where_sql
+
+    def by_value(self, value: ast.expr, call: ast.Call, table: str) -> list[str]:
+        if isinstance(value, ast.Constant) and isinstance(value.value, str):
+            self.column(table, value.value)
+            return [value.value]
+        if isinstance(value, ast.Tuple | ast.List):
+            if not value.elts:
+                raise _form(
+                    f'{_text(call)}: by= needs at least one column, by=("<column>", ...)'
+                )
+            names: list[str] = []
+            for elt in value.elts:
+                if not (isinstance(elt, ast.Constant) and isinstance(elt.value, str)):
+                    raise _form(
+                        f'{_text(call)}: by= columns must be text, by=("<column>", ...)'
+                    )
+                self.column(table, elt.value)
+                names.append(elt.value)
+            return names
+        raise _form(
+            f'{_text(call)}: by= must name a column as text, by="<column>", or a tuple of '
+            'columns, by=("<column>", ...)'
         )
 
     def sum_equality(self, node: ast.Compare, call: ast.Call, other: ast.expr) -> str:
