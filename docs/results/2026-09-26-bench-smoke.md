@@ -1763,3 +1763,48 @@ text rules that out under any reading.
 4. **Threats:** the same app and base spec as Phase 1; the simulated approval is
    optimistic; one ticket dominates the outcome. With 12 tickets, a single hard ticket
    swamps the arm differences.
+
+## Real app, built spec-first, and layer X (concurrency), 2026-10-08
+
+**The app:** a job scheduler (`~/Documents/job-scheduler`), built from scratch against an
+owner-approved spec. It has 5 tickets plus 2 follow-ups, one Claude Code agent (Sonnet) per
+ticket, and each ticket was gated on `./check.sh N`.
+
+**The comparison:** a baseline (`~/Documents/job-scheduler-baseline`) built from a prose
+requirements document by the same model, with no spec and no checker. The spec was then used as
+the judge of both. Full write-up: `job-scheduler/metrics/COMPARISON.md`.
+
+**Stated rules:**
+- Both builds passed all 129 scenario and invariant cases.
+- Prose was as good as executable scenarios for rules a precise document states.
+
+**Concurrency:**
+- The checker (layers A–D) could not see races; it runs one request at a time.
+- A hand-written probe found the baseline breaking both "at most one" rules (7 live runs, 5 cron
+  runs).
+
+**Layer X** (`lattice/spec/race.py`, `3cd8b11`) races the spec's own scenario writes in parallel,
+then checks the count-bound invariants and the state machines. It never reports "verified".
+Validation:
+- **Baseline:** both race bugs caught.
+- **A mutant** (the spec-first build with its live-run index removed): caught.
+- **The Phase 0 multi-vendor app:** a real, unknown 500 under parallel vendor registration
+  (reproduced by hand), and no false alarm.
+- **The spec-first build:** 3 real bugs that code review and the hand probes had missed:
+  - concurrent duplicates answer 500;
+  - two versions end up active;
+  - a cancel racing the worker's finish overwrites the result.
+
+  Ticket 6 fixed them, gated with X: it passed 3 times in a row.
+
+**Also found:**
+- Both builds failed bcrypt's 72-byte limit; the spec hadn't stated it. Now it does.
+- Owner decision: cancelling a running run stops its process.
+
+**Cost:** the spec-first agents used about 1.11 M tokens in all, follow-ups included; the
+baseline used 0.55 M. Spec-first adds 764 owner-reviewed spec lines; the baseline writes 4× more
+of its own test code.
+
+**What it says:** a spec's invariants are what make concurrency checking automatic. Layer X is the
+first checker capability that beat both a careful prose-driven build and human review on a real
+app.
