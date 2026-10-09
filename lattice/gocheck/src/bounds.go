@@ -255,6 +255,7 @@ type written struct {
 	target string // "Job.Name" / "jobs.name"
 	line   int
 	fn     *Func
+	pos    token.Pos // where the value is written (a dominating check bounds it)
 }
 
 func (b *boundScan) function(fn *Func) {
@@ -322,7 +323,7 @@ func (b *boundScan) function(fn *Func) {
 					continue
 				}
 				if rv := b.requestValue(e, v.Rhs[i], bound, scalars); rv != nil {
-					found = append(found, written{*rv, target, c.m.Line(v.Pos()), fn})
+					found = append(found, written{*rv, target, c.m.Line(v.Pos()), fn, v.Pos()})
 				}
 			}
 		case *ast.CompositeLit:
@@ -345,7 +346,7 @@ func (b *boundScan) function(fn *Func) {
 					continue
 				}
 				if rv := b.requestValue(e, kv.Value, bound, scalars); rv != nil && b.literalWritten(fn, e, v) {
-					found = append(found, written{*rv, md.Table + "." + col, c.m.Line(kv.Pos()), fn})
+					found = append(found, written{*rv, md.Table + "." + col, c.m.Line(kv.Pos()), fn, kv.Pos()})
 				}
 			}
 		case *ast.CallExpr:
@@ -363,7 +364,7 @@ func (b *boundScan) function(fn *Func) {
 				if len(last.call.Args) == 2 {
 					col, _ := c.m.constString(e, last.call.Args[0])
 					if rv := b.requestValue(e, last.call.Args[1], bound, scalars); rv != nil && col != "" {
-						found = append(found, written{*rv, strings.TrimPrefix(table+"."+col, "."), c.m.Line(v.Pos()), fn})
+						found = append(found, written{*rv, strings.TrimPrefix(table+"."+col, "."), c.m.Line(v.Pos()), fn, v.Pos()})
 					}
 				}
 			case "Updates", "UpdateColumns":
@@ -379,7 +380,7 @@ func (b *boundScan) function(fn *Func) {
 								continue
 							}
 							if rv := b.requestValue(e, kv.Value, bound, scalars); rv != nil {
-								found = append(found, written{*rv, strings.TrimPrefix(table+"."+col, "."), c.m.Line(kv.Pos()), fn})
+								found = append(found, written{*rv, strings.TrimPrefix(table+"."+col, "."), c.m.Line(kv.Pos()), fn, kv.Pos()})
 							}
 						}
 					}
@@ -435,7 +436,7 @@ func (b *boundScan) function(fn *Func) {
 		} else {
 			match = func(x ast.Expr) bool { return isName(x, rv.name) }
 		}
-		if b.handBounded(match) {
+		if b.handBounded(match) || b.setBounded(w.fn, e, w.pos, match) {
 			continue
 		}
 		reported[w.rv.key] = true
@@ -529,7 +530,7 @@ func (b *boundScan) wholeModel(fn *Func, e *Env, name string, bind, write *ast.C
 		col := columnOf(f)
 		out = append(out, written{
 			rv:     reqVal{desc: name + "." + f.name, name: name, field: f.name, kind: kind, key: md.TI.Name + "." + f.name},
-			target: md.Table + "." + col, line: c.m.Line(write.Pos()), fn: fn,
+			target: md.Table + "." + col, line: c.m.Line(write.Pos()), fn: fn, pos: write.Pos(),
 		})
 	}
 	return out
@@ -611,7 +612,7 @@ func (b *boundScan) limit(fn *Func, e *Env, call *ast.CallExpr, bound map[string
 	default:
 		return
 	}
-	if b.handBounded(match) {
+	if b.handBounded(match) || b.setBounded(fn, e, call.Pos(), match) {
 		return
 	}
 	where := ""

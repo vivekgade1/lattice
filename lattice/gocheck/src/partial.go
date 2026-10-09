@@ -183,6 +183,9 @@ type pw struct {
 	bools map[string]*origin
 	// error parameters: name -> index
 	errParams map[string]int
+	// a transaction function's "nothing written" flags: name -> the commits the
+	// transaction call added (none happened where the flag is true)
+	flags map[string][]int
 }
 
 func (s *summarizer) newWalker(fn *Func, mask string, depth int) *pw {
@@ -845,6 +848,7 @@ func (w *pw) transaction(c *ast.CallExpr, s flow) flow {
 		success = w.addCommit(success, cm)
 		o.success = append(o.success, cm.id)
 	}
+	w.noteTxFlags(c, lit, o.success)
 	w.callOrig[c] = o
 	return success
 }
@@ -1384,6 +1388,15 @@ func (w *pw) branches(cond ast.Expr, s flow) (flow, flow, bool, bool) {
 		}
 		if e {
 			elseS = falsePath(elseS)
+		}
+	}
+	for name, success := range w.flags {
+		t, e := flagTrueIn(cond, name)
+		if t {
+			thenS = thenS.without(success)
+		}
+		if e {
+			elseS = elseS.without(success)
 		}
 	}
 	return thenS, elseS, thenDB, elseDB

@@ -180,6 +180,28 @@ def test_go803_bounds():
     assert "`.Limit(...)`" in limit.message and 'binding:"min=1,max=100"' in limit.hint
 
 
+def test_go803_dominating_set_and_regex_checks():
+    """A refusal that returns whenever the value is not one of a fixed set of constants
+    (`!=` chains, `!(== || ==)`, a value switch with a refusing default, `slices.Contains`
+    of a constant list, a helper doing one of these) or does not match an anchored regex
+    of finite length bounds the value; a refusal that falls through, a missing default, a
+    non-constant, a check after the write, and unanchored, open-ended (`{1,}`, `*`, `+`)
+    or multi-line patterns do not."""
+    policy = GoPolicy(tables={"Job": "jobs", "Membership": "memberships"}, rules=("GO803",))
+    found = judge("boundsets", policy, "GO803")
+    assert all("req.UserID" not in f.message for f in found)  # binding:"max=..." bounds it
+
+
+def test_go807_nothing_written_flag():
+    """A local bool a transaction function sets to true only on paths that wrote nothing
+    (then returns) makes the refusal under `if flag` follow no commit; a flag set after a
+    write, set without returning, set in a loop, or also set outside the transaction does
+    not."""
+    policy = GoPolicy(tables={"User": "users", "Membership": "memberships"}, rules=("GO807",))
+    found = judge("txflag", policy, "GO807")
+    assert all("the transaction commits" in f.message for f in found)
+
+
 # ---- the multi-package app, the parse gate, the baseline -----------------------------------
 
 APP = GoPolicy(
@@ -233,7 +255,8 @@ def test_rules_select_codes():
 def test_gated_rules_are_explicit_and_never_reported():
     assert set(GO_GATED) == {"GO804", "GO805", "GO806"}
     assert {c.replace("PY", "GO") for c in CODES} == set(GO_CODES) | set(GO_GATED)
-    for fixture in ("partial", "machine", "private", "owner", "bounds", "app"):
+    fixtures = ("partial", "machine", "private", "owner", "bounds", "boundsets", "txflag", "app")
+    for fixture in fixtures:
         assert not {f.code for f in all_go_findings(FIXTURES / fixture, APP)} & set(GO_GATED)
 
 

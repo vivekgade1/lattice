@@ -70,10 +70,24 @@ target); what each cannot see is listed with it.
   query number (``strconv.Atoi(c.Query(...))``, a bound int field) used as a GORM
   ``.Limit(...)`` (directly, through a copy, or in a helper it is handed to) with no
   such bound. A comparison with 0, 1 or a negative number checks a minimum, not a bound.
+  A check that dominates the write (an ``if`` before it in an enclosing block, or the
+  branch or ``case`` it sits in) bounds the value when it refuses -- returns -- whenever
+  the value is not one of a fixed set of constants or literals (``x != A && x != B``,
+  ``!(x == A || x == B)``, ``switch x { case A, B: default: return }``,
+  ``!slices.Contains([]T{A, B}, x)`` or of a package var holding such a list, a module
+  helper ``validX(x) bool`` whose body is ``return x == A || ...`` or the switch form, or a
+  regex check), or does not match a regex anchored at both ends
+  (``^...$``, ``\\A...\\z``) whose longest match is finite and at most 100,000 characters
+  (``regexp/syntax``; ``re.MatchString(x)`` of a package or local ``regexp.MustCompile``
+  of a constant pattern, an inline one, ``regexp.MatchString(pat, x)``, or a helper
+  returning one). An unanchored, ``(?m)``, ``*``/``+``/``{n,}`` pattern bounds nothing.
   Named (enum) types count as bounded; a request struct with a method called on it, or
   handed to other code, is not judged; a row handed to a helper that writes it is
   written. *Cannot see:* request values reaching the database through containers, or
-  handed to a helper as a value (not a row), bounds enforced by code it cannot read.
+  handed to a helper as a value (not a row), bounds enforced by code it cannot read, a
+  set or regex check in another function than the write's (but a bool helper called
+  from it), a set held in a map (``validRoles[x]``), a check through an ``if`` init
+  (``if ok := valid(x); !ok``) or one that skips the write with ``continue``.
 * **GO807 partial writes** (PY807; Lattice's one transaction per write). In a function
   a route runs (the handler, a middleware, or a module helper they call, to
   ``helper_depth``), a committed write -- a GORM ``Create``, ``Save``, ``Update``,
@@ -103,12 +117,17 @@ target); what each cannot see is listed with it.
   only where that parameter is not nil) follows a rollback. A helper whose bool result
   is its conditional write's ``res.RowsAffected == 1`` / ``> 0`` / ``!= 0`` (or a literal
   ``false`` before writing) wrote nothing where the caller sees it false (``if !ok``).
+  A local bool declared false before a transaction (outside any loop), assigned nowhere
+  else, and set to true inside the transaction's function only on paths that wrote
+  nothing before it (no GORM write method, commit, or module helper that may write) and
+  that return right after, marks "nothing written": a refusal under ``if flag`` follows
+  none of the transaction's commits. A flag set after a write, without returning, in a
+  loop or a ``switch``, or also assigned outside the transaction keeps the finding.
   *Cannot see:* failures raised by libraries or Gin itself, a
   helper deeper than ``helper_depth``, a refusal with a status it cannot read (a
   variable), a commit through a callable passed as a value, a transaction function that
   refuses and then returns nil, errors routed through ``c.Error`` to a middleware,
-  conditions correlated across branches (a flag set where a write happened, tested
-  later).
+  conditions correlated across branches other than the "nothing written" flag above.
 * **GO808 state machines** (PY808; only with ``machines``, which come from a spec). In
   any function, a write of a known state (a string constant, a module constant of one,
   or a conversion of one, matched to the machine's states case-insensitively) to the
