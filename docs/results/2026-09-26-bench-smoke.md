@@ -1854,3 +1854,12 @@ Opus is the cheapest in tokens and time, and Haiku is likely the cheapest in dol
 about ⅓ of Sonnet's per token).
 
 Details: `job-scheduler/metrics/COMPARISON.md`.
+
+## Go arm on the job scheduler (2026-10-09)
+
+The same job-scheduler spec, unchanged, judged a Gin + GORM build through the new process runtime (`11a7032`: ProcessApp, HTTP transport, layer C via the transport, layer X against one live server).
+- **Opus spec-first in Go:** PASS on BCDX, 141 cases, every ticket in 1 round. Deep X found nothing (80 races ×6). The HTTP race probes held 4/4.
+- **Cost:** 388k tokens, 70 tool calls, 24 min, no supervision. Python Opus took 331k tokens and 17 min.
+- **Gap:** layer A (static) is Python-only, so Go has no structural check. A Go analyzer is the next step there.
+
+Details: `job-scheduler/metrics/COMPARISON.md`, section "Go arm".
