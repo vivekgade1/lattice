@@ -209,7 +209,13 @@ class ClaudeCliClient:
         backoff_base: float = DEFAULT_BACKOFF_BASE,
         sleep: Callable[[float], None] = time.sleep,
         env: Mapping[str, str] | None = None,
+        full_text: bool = False,
     ) -> None:
+        # full_text: read the CLI's stream-json events and join every assistant text block,
+        # instead of the final `result` (which holds only the last block when a long answer
+        # is split across several messages). Off by default: the benchmark arms keep the
+        # exact transport they were pre-registered with.
+        self.full_text = full_text
         self.model = model
         self.max_tokens = max_tokens
         self.effort = effort
@@ -231,7 +237,8 @@ class ClaudeCliClient:
         argv = [
             self.binary,
             "-p",
-            "--output-format", "json",
+            *(("--output-format", "stream-json", "--verbose") if self.full_text
+              else ("--output-format", "json")),
             "--model", self.model,
             "--system-prompt", system,
             *_ISOLATION_FLAGS,
@@ -306,7 +313,10 @@ class ClaudeCliClient:
         latency_s = time.perf_counter() - start
 
         data = None
-        if proc.stdout and proc.stdout.strip():
+        joined: str | None = None
+        if self.full_text:
+            data, joined = _stream_result(proc.stdout or "")
+        elif proc.stdout and proc.stdout.strip():
             try:
                 data = json.loads(proc.stdout)
             except json.JSONDecodeError:
@@ -322,6 +332,8 @@ class ClaudeCliClient:
 
         is_error = bool(data.get("is_error"))
         text = data.get("result") or ""
+        if joined and not is_error:
+            text = joined
         usage = _usage(data)
         if is_error and _OUTPUT_CAP_RE.search(text):
             return self._generation(data, "", "max_tokens", usage, latency_s)
@@ -367,6 +379,30 @@ class ClaudeCliClient:
             cost_usd=cost,
             cost_basis="cli_list_estimate" if cost is not None else None,
         )
+
+
+def _stream_result(stdout: str) -> tuple[dict | None, str | None]:
+    """The final ``result`` event of a stream-json run, and every assistant text block
+    joined in order (None when there were none)."""
+    result: dict | None = None
+    texts: list[str] = []
+    for line in stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(event, dict):
+            continue
+        if event.get("type") == "result":
+            result = event
+        elif event.get("type") == "assistant":
+            for block in (event.get("message") or {}).get("content") or ():
+                if isinstance(block, dict) and block.get("type") == "text" and block.get("text"):
+                    texts.append(block["text"])
+    return result, ("".join(texts) if texts else None)
 
 
 def _usage(data: Mapping[str, object]) -> Usage:

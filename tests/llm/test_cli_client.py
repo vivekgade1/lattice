@@ -6,6 +6,7 @@ marked ``live`` (see the bottom of this file) and deselected by default.
 
 from __future__ import annotations
 
+import json
 import subprocess
 
 import pytest
@@ -491,3 +492,27 @@ class TestLiveCanaries:
               'mention "CodeGraph"? Answer YES or NO only.'}],
         )  # fmt: skip
         assert result.text.strip().upper().startswith("NO")
+
+
+def test_stream_result_joins_every_assistant_text_block():
+    from lattice.llm.cli_client import _stream_result
+
+    lines = [
+        {"type": "system", "subtype": "init"},
+        {"type": "assistant", "message": {"content": [{"type": "thinking", "thinking": "x"}]}},
+        {"type": "assistant", "message": {"content": [{"type": "text", "text": "part one, "}]}},
+        {"type": "assistant", "message": {"content": [{"type": "text", "text": "part two"}]}},
+        {"type": "result", "result": "part two", "stop_reason": "end_turn", "is_error": False},
+    ]
+    data, joined = _stream_result("\n".join(json.dumps(x) for x in lines) + "\nnot json\n")
+    assert data["result"] == "part two"
+    assert joined == "part one, part two"
+    assert _stream_result("") == (None, None)
+
+
+def test_full_text_mode_uses_stream_json():
+    c = ClaudeCliClient(model="haiku", full_text=True)
+    argv = c._argv("sys")
+    assert "stream-json" in argv and "--verbose" in argv
+    plain = ClaudeCliClient(model="haiku")._argv("s")
+    assert plain[plain.index("--output-format") + 1] == "json"

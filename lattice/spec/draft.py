@@ -812,7 +812,7 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--revise", action="store_true", help="revise the existing --out draft")
     p.add_argument("--feedback", type=Path, help="feedback for --revise (e.g. lint.json)")
     p.add_argument("--effort", default="high", help="CLI effort level ('' for none)")
-    p.add_argument("--max-tokens", type=int, default=32000)
+    p.add_argument("--max-tokens", type=int, default=64000)
     p.add_argument("--timeout", type=float, default=1200.0, help="seconds per model call")
     return p
 
@@ -821,7 +821,8 @@ def _client(args: argparse.Namespace) -> Generator:
     from lattice.llm.cli_client import ClaudeCliClient
 
     return ClaudeCliClient(
-        model=args.model, max_tokens=args.max_tokens, effort=args.effort, timeout=args.timeout
+        model=args.model, max_tokens=args.max_tokens, effort=args.effort, timeout=args.timeout,
+        full_text=True,
     )
 
 

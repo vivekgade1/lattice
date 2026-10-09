@@ -477,7 +477,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         from lattice.llm.cli_client import ClaudeCliClient
 
-        generator = ClaudeCliClient(model=model)
+        generator = ClaudeCliClient(model=model, full_text=True)
         results = probe(
             rules,
             app_dir=args.app_dir,
