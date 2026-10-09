@@ -59,7 +59,9 @@ The gaps both specs share are the hard ones:
 
 - **The drafted spec is stricter than the hand spec, not looser.** It caught real defects in three builds the owner's spec passed, and it closed more probe gaps.
 - **Its blind disagreements came from open questions, as predicted.** A one-line answer and a 3-minute revise fixed the only one that mattered here.
-- **The owner's job becomes reading about 1,100 words and answering 12 questions,** instead of writing about 40k characters. The owner's actual review time is pending; only the owner can measure it.
+- **The owner's job becomes reading about 1,100 words and answering 12 questions,** instead of writing about 40k characters.
+- **Measured (owner, 2026-10-09):** the review on the published page (https://claude.ai/artifact/4VZwLmaVZA2mYP5RbwdLZe) took the owner **2–3 minutes**. No answers were pasted back, so the defaults stand, plus the simulated Q7 answer.
+  - Caveat: at that pace the owner most likely accepted defaults rather than weighing each one. The page makes accepting cheap; whether it makes deciding well cheap is a separate question.
 - **Cost:** about $5 at list price (the CLI, not the API) and about 21 min of model time for draft plus revise, with no human writing.
 - **Caveats:**
   - one app, one drafting run, and the probe sampled once per rule per spec;
