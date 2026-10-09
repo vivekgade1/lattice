@@ -416,3 +416,12 @@ def test_cli_default_title_uses_trace_source(tmp_path):
 
 def test_cli_bad_spec_ref_is_exit_2():
     assert main(["--spec", "tests.spec.test_review:NOPE", "--trace", "x", "--out", "x"]) == 2
+
+
+def test_lint_findings_without_a_rule_render_in_both_formats():
+    spec, trace = make_spec(), make_trace()
+    lint = [{"code": "L006", "rule_id": None, "element": "endpoint:GET /items",
+             "message": "no anonymous step", "fix": "add one"}]
+    md = review_markdown(spec, trace, lint=lint, title="t")
+    html = review_html(spec, trace, lint=lint, title="t")
+    assert "L006" in md and "L006" in html

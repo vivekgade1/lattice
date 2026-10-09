@@ -310,9 +310,9 @@ def _build(
     lint_gaps = tuple(
         LintGap(
             item["code"],
-            item["rule_id"],
-            rules_by_id[item["rule_id"]].text if item["rule_id"] in rules_by_id else "",
-            item.get("element", ""),
+            item.get("rule_id") or "",
+            rules_by_id[item["rule_id"]].text if item.get("rule_id") in rules_by_id else "",
+            item.get("element") or "",
             item.get("message", ""),
             item.get("fix", ""),
         )
