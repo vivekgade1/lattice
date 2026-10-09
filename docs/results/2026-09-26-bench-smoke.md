@@ -1863,3 +1863,17 @@ The same job-scheduler spec, unchanged, judged a Gin + GORM build through the ne
 - **Gap:** layer A (static) is Python-only, so Go has no structural check. A Go analyzer is the next step there.
 
 Details: `job-scheduler/metrics/COMPARISON.md`, section "Go arm".
+
+## Go baseline and gocheck (2026-10-09)
+
+**Matched Go baseline.** It used the same Opus model and the same briefs as the spec-first Go arm, with the prose requirements instead of the spec and no checker (`~/Documents/job-scheduler-go-baseline`).
+- Blind BCDX: **PASS**, 141 cases. Deep X not refuted. Race probes 4/4.
+- Cost: 390k tokens, the same as spec-first's 388k.
+- **No measurable gain from the checker loop when the briefs already carry the implementation lessons.** Lattice's value showed up upstream, in finding those lessons.
+
+**gocheck (`bbb6185`): layer A for Gin + GORM.** It implements GO800–803, GO807 and GO808, and gates GO804–806.
+- **Blind on 6 held-back mutants:** 4/6 caught, with 5 false positives across the 2 clean builds, so the gate failed.
+- **Post hoc:** 6/6 caught with 0 false positives. These are not held-out numbers.
+- **What it adds:** BCD alone catches only 2/6. The static layer catches defects no scenario reaches.
+
+Details: `job-scheduler/metrics/COMPARISON.md`, section "Go baseline and Go layer A".
