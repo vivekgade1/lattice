@@ -1,0 +1,111 @@
+{
+ "id": "c1",
+ "request": "only app admins may cancel runs",
+ "status": "ready",
+ "error": null,
+ "markdown_diff": "--- a/REQUIREMENTS.md\n+++ b/REQUIREMENTS.md\n@@ -10,7 +10,8 @@\n - **App admin**: a membership with role `app_admin` in an application. May do every\n   operation inside that application, including managing its members.\n - **Executor**: a membership with role `executor`. May view that application's job\n-  configs and runs, and run and cancel jobs. May not create or change configs or\n-  members, and may not view the member list.\n+  configs and runs, and run jobs. May not cancel runs, create or change configs or\n+  members, and may not view the member list.\n+- Only app admins and the super admin may cancel a run; an executor gets 403.\n - A user who is **not a member** of an application gets **404 `{\"detail\": \"Not found\"}`**\n   for anything in it, as if it didn't exist.\n@@ -88,7 +89,7 @@\n   job_config_id, application_id, trigger, triggered_by, status, created_at, started_at,\n   finished_at, exit_code.\n-- `POST /applications/{app}/runs/{run_id}/cancel` (any member, or the super admin) moves a\n+- `POST /applications/{app}/runs/{run_id}/cancel` (app admin or super admin) moves a\n   queued or running run to `cancelled` and sets `finished_at`. A run that is already\n   succeeded, failed or cancelled answers 409, unchanged. A cancelled run frees the job,\n   so it can be run again.\n",
+ "rules": {
+  "added": [
+   "R66"
+  ],
+  "changed": [
+   {
+    "old": "R4",
+    "new": "R4"
+   },
+   {
+    "old": "R46",
+    "new": "R46"
+   }
+  ],
+  "removed": []
+ },
+ "targets": {
+  "added": [
+   "scenario:executor_cannot_cancel_a_run"
+  ],
+  "removed": [],
+  "modified": [
+   "scenario:access__cancel__as_eve",
+   "scenario:cancel_finished_is_refused"
+  ]
+ },
+ "view_diff": {
+  "cells": [
+   {
+    "row": "eve",
+    "col": "POST /applications/{}/runs/{}/cancel",
+    "old": "200/409",
+    "new": "403"
+   }
+  ],
+  "invariants": {
+   "added": [],
+   "removed": []
+  },
+  "machines": {
+   "changed": []
+  },
+  "scenarios": {
+   "added": [
+    "scenario:executor_cannot_cancel_a_run"
+   ],
+   "removed": [],
+   "modified": [
+    "scenario:access__cancel__as_eve",
+    "scenario:cancel_finished_is_refused"
+   ]
+  }
+ },
+ "checks": {
+  "valid": true,
+  "problems": [],
+  "lint": [
+   {
+    "code": "L004",
+    "message": "the new 403 for executors on POST /applications/{}/runs/{}/cancel has no step that also checks job_runs is unchanged",
+    "fix": "Add expect_db={'job_runs': {'where': {'id': 200}, 'equals': {'status': 'queued'}}} to the eve step of executor_cannot_cancel_a_run."
+   }
+  ],
+  "conflicts": [
+   {
+    "a": "scenario:cancel_queued_frees_the_job",
+    "b": "scenario:access__cancel__as_eve",
+    "message": "eve POST /applications/1/runs/200/cancel: 200 vs 403",
+    "question": "cancel_queued_frees_the_job has eve (an executor) cancel a queued run and expects 200, but the new rule says executors get 403. Should that scenario cancel as ann (app admin) instead, or may executors still cancel?"
+   }
+  ],
+  "impact": {
+   "verdict": "fail",
+   "failing": [
+    {
+     "target": "scenario:executor_cannot_cancel_a_run",
+     "label": "not_built_yet",
+     "message": "the app answered 200 where the new rule expects 403; the code has not been changed yet"
+    },
+    {
+     "target": "scenario:access__cancel__as_eve",
+     "label": "not_built_yet",
+     "message": "the app answered 200 {\"status\": \"cancelled\"} where the spec now expects 403"
+    },
+    {
+     "target": "scenario:cancel_running_run",
+     "label": "regression",
+     "message": "passed before this change at 4f2c9e1, fails now: job_runs 200 exit_code -15, expected null"
+    },
+    {
+     "target": "scenario:cancel_queued_frees_the_job",
+     "label": "contradiction",
+     "message": "this scenario expects eve's cancel to answer 200, which the new rule forbids"
+    }
+   ]
+  }
+ },
+ "questions": [
+  {
+   "id": "Q13",
+   "text": "May an executor still cancel a run that they triggered themselves?",
+   "default": "No: only app admins and the super admin may cancel any run, including the executor's own."
+  }
+ ]
+}

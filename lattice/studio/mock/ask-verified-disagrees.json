@@ -1,0 +1,33 @@
+{
+ "kind": "value",
+ "answer": "403 {\"detail\": \"Inactive user\"}",
+ "explanation": "R14 says an inactive user who logs in gets 403 \"Inactive user\". On the running app, the generated scenario got 401 \"Incorrect email or password\" instead, so the app does not tell the two cases apart.",
+ "citations": [
+  {
+   "target": "rule:R14",
+   "step": null,
+   "quote": "An inactive user answers 403 {\"detail\": \"Inactive user\"}."
+  },
+  {
+   "target": "cell:root|POST /auth/login",
+   "step": null,
+   "quote": "root · POST /auth/login → 200/401/403"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [
+  {
+   "target": "scenario:login_inactive_user",
+   "reason": "no such scenario in the spec"
+  }
+ ],
+ "verified": {
+  "status": "disagrees",
+  "detail": "app answered 401 {\"detail\": \"Incorrect email or password\"}; the spec says 403 {\"detail\": \"Inactive user\"}",
+  "scenario": "1. seed: users zoe (is_active = false, password 'correct-horse')\n2. POST /auth/login {email: zoe@example.com, password: 'correct-horse'} as no token\n   expect 403 {\"detail\": \"Inactive user\"}\n   app    401 {\"detail\": \"Incorrect email or password\"}"
+ },
+ "usage": {
+  "seconds": 11.8,
+  "tokens": 9310
+ }
+}

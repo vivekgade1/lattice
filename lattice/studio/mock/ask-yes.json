@@ -1,0 +1,29 @@
+{
+ "kind": "yes",
+ "answer": "Yes. Eve is an executor, and executors may cancel runs.",
+ "explanation": "R4 lets an executor run and cancel jobs, and R46 lets any member cancel a queued or running run. The access matrix shows eve's cancel as 200 (or 409 when the run already finished).",
+ "citations": [
+  {
+   "target": "cell:eve|POST /applications/{}/runs/{}/cancel",
+   "step": null,
+   "quote": "eve · POST /applications/{}/runs/{}/cancel → 200/409"
+  },
+  {
+   "target": "scenario:access__cancel__as_eve",
+   "step": 1,
+   "quote": "POST /applications/1/runs/200/cancel as eve -> 200"
+  },
+  {
+   "target": "rule:R4",
+   "step": null,
+   "quote": "May view that application's job configs and runs, and run and cancel jobs."
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 4.2,
+  "tokens": 6180
+ }
+}

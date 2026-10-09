@@ -1,0 +1,29 @@
+{
+ "kind": "not_specified",
+ "answer": "The spec does not say whether a failed run is retried.",
+ "explanation": "R56 and R57 say a run that exits non-zero, times out or cannot start is recorded as failed. No rule says the worker or the scheduler queues it again, and no scenario runs the worker twice on a failed run.",
+ "citations": [
+  {
+   "target": "rule:R56",
+   "step": null,
+   "quote": "record the result: succeeded with exit 0, or failed with the exit code."
+  },
+  {
+   "target": "rule:R57",
+   "step": null,
+   "quote": "A timeout, or a process that can't be started, is a failure."
+  },
+  {
+   "target": "machine:JobRun.status",
+   "step": null,
+   "quote": "running -> succeeded, failed, cancelled"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 5.1,
+  "tokens": 7420
+ }
+}
