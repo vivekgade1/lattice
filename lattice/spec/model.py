@@ -104,13 +104,49 @@ class Step:
 
 
 @dataclass(frozen=True)
+class Await:
+    """A scenario step that waits on a background service (`Spec.services`): after the
+    steps before it, the checker starts the named service against the scenario's
+    database and polls the database (about every 0.2 s) until `expect_db` -- the forms
+    of `Step.expect_db` -- holds; within `within_s` seconds it passes, else it is a
+    layer D finding. The service is stopped afterwards (its process group: SIGTERM,
+    then SIGKILL), whatever happened. How a service starts is the app harness's
+    (`lattice.spec.services.ServiceCmd`), not the spec's. `note`: what the wait means,
+    in words."""
+
+    service: str
+    expect_db: Mapping[str, Any] = field(hash=False)
+    within_s: float = 10.0
+    note: str = ""
+
+
+@dataclass(frozen=True)
+class Service:
+    """A background service the app runs besides its HTTP server (a worker draining a
+    queue, a scheduler); `doc` says what it does, in one line."""
+
+    name: str
+    doc: str = ""
+
+
+def _services(value: Any) -> tuple[Service, ...]:
+    """Services from names, `Service`s, or a Mapping name -> doc."""
+    if isinstance(value, str | Service):
+        value = (value,)
+    if isinstance(value, Mapping):
+        return tuple(Service(name, doc or "") for name, doc in value.items())
+    return tuple(s if isinstance(s, Service) else Service(s) for s in value)
+
+
+@dataclass(frozen=True)
 class Scenario:
     """A concrete example the user approves: rows `given` (table -> rows as dicts of
-    column values, one_of columns by value) before `steps` run in order."""
+    column values, one_of columns by value) before `steps` run in order. A step is a
+    request (`Step`) or a wait on a background service (`Await`)."""
 
     name: str
     given: Mapping[str, list[dict[str, Any]]] | None = field(default=None, hash=False)
-    steps: tuple[Step, ...] = ()
+    steps: tuple[Step | Await, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "steps", tuple(self.steps))
@@ -298,6 +334,7 @@ class Spec:
     users: Mapping[str, tuple[str, str]] = field(default_factory=dict)
     approved: tuple[Any, ...] = ()
     contracts: tuple[Contract, ...] = ()
+    services: tuple[Service, ...] = ()
     # program names given more than once (programs given as pairs); see validate S013
     duplicate_programs: tuple[str, ...] = field(default=(), init=False, repr=False)
 
@@ -309,6 +346,11 @@ class Spec:
         object.__setattr__(self, "users", MappingProxyType(users))
         for name in ("machines", "invariants", "scenarios", "unchecked", "approved", "contracts"):
             object.__setattr__(self, name, tuple(getattr(self, name)))
+        object.__setattr__(self, "services", _services(self.services))
+
+    def service_names(self) -> tuple[str, ...]:
+        """The declared services' names, in order."""
+        return tuple(s.name for s in self.services)
 
     def table(self, name: str) -> tuple[str, str, Schema] | None:
         """(schema name, SQL table name, Schema) of a table named by its schema name or

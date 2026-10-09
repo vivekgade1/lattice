@@ -310,12 +310,15 @@ def process_runtime(
     framework: str = "process",
     auth: AuthDriver | None = None,
     dispose: Sequence[Callable[[Any], None]] = (),
+    services: Mapping[str, Callable[[Path], Any]] | None = None,
 ) -> AppRuntime:
     """The runtime of process apps (see the module docstring). ``framework`` names the
     app's stack for the report (``"go"``: layer A reads the app's ``go_src`` with
     :mod:`lattice.gocheck`; anything else but a Python framework: layer A is skipped);
     ``auth`` how callers log in (default: a bearer token from the check's ``login``);
-    ``dispose``: more hooks, run after the process is stopped."""
+    ``dispose``: more hooks, run after the process is stopped; ``services``: the app's
+    background services, ``{name: (db_path) -> ServiceCmd}``
+    (:mod:`lattice.spec.services`), which the spec's ``Await`` steps start."""
     return AppRuntime(
         framework=framework,
         transport=open_process,
@@ -324,6 +327,7 @@ def process_runtime(
         seed_hook=None,
         openapi=None,
         one_server=True,
+        services=dict(services or {}),
     )
 
 

@@ -48,6 +48,9 @@ connections at once). With a ``monitor`` (layer C through the runtime's transpor
 every request of the layer is watched too: the recordings' and replays' steps
 (``X | <scenario> / step <n>``) and the racing requests (``X | race <race>``).
 
+A scenario's ``Await`` steps (waits on a background service) are never raced: layer X
+takes a scenario's steps before its first ``Await`` only, with a note.
+
 An app whose own database engine cannot be used from several threads ("created in a
 thread can only be used in that same thread") is a note, not a finding; a race the
 harness could not run (an app that does not start, a login that fails, a replay that
@@ -64,7 +67,7 @@ import tempfile
 import threading
 import time
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -83,7 +86,7 @@ from lattice.spec.check import (
     spec_plans,
 )
 from lattice.spec.invariants import _FLIPPED
-from lattice.spec.model import Invariant, Machine, Scenario, Spec, Step, resolve_table
+from lattice.spec.model import Await, Invariant, Machine, Scenario, Spec, Step, resolve_table
 from lattice.spec.report import CheckFinding, Report
 
 if TYPE_CHECKING:
@@ -763,6 +766,7 @@ def layer_x(
         return
     recordings = []
     for sc in spec.scenarios:
+        sc = _before_await(sc, report)
         rec = h.record(sc)
         if rec.error is not None:
             report.notes.append(f"layer X: scenario {sc.name!r} could not run ({rec.error}); "
@@ -834,6 +838,21 @@ def layer_x(
             + (" ..." if len(skipped) > 10 else "")
         )
     _summary(h, report, run, refuted, tries, k, repeats, time.monotonic() - started)
+
+
+def _before_await(scenario: Scenario, report: Report) -> Scenario:
+    """The scenario up to its first ``Await`` step: layer X never races (nor replays) a
+    wait on a background service, nor the steps after it (they rely on what the service
+    did)."""
+    first = next((i for i, s in enumerate(scenario.steps) if isinstance(s, Await)), None)
+    if first is None:
+        return scenario
+    report.notes.append(
+        f"layer X: scenario {scenario.name!r}: only its {first} step(s) before step "
+        f"{first + 1} are raced; step {first + 1} awaits the "
+        f"{scenario.steps[first].service} service"  # type: ignore[union-attr]
+    )
+    return replace(scenario, steps=scenario.steps[:first])
 
 
 def _finding(

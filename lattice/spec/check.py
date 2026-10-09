@@ -26,7 +26,13 @@
   scenario, its ``given`` rows inserted (one-of values in their stored spellings), the
   steps in order (callers logged in through ``login(client, handle)``), each step's
   ``expect_status``, ``expect_body`` (a subset match for objects) and ``expect_db``
-  checked. A scenario stops at its first failing step.
+  checked. A scenario stops at its first failing step. An ``Await`` step starts the
+  background service it names (``services``: the harness's ``{name: (db_path) ->
+  ServiceCmd}``, :mod:`lattice.spec.services`) on the scenario's database, polls the
+  database until its ``expect_db`` holds -- within ``within_s`` it passes, else a
+  finding with the last observed counts -- and stops the service (always); layer C's
+  invariants run after it, on the database the service wrote. A scenario awaiting a
+  service the harness does not start is a CheckError, before anything runs.
 * **R** -- the rule layer (plan 2026-10-05 phase 2, §1): every rule item of the spec's
   profile and route contracts (:mod:`lattice.spec.probes`) probed on the app, each probe
   a request on a fresh copy of the seed. Every item gets a verdict (``report.rules``); a
@@ -73,6 +79,7 @@ import re
 import sqlite3
 import tempfile
 import threading
+import time
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, fields, replace
 from pathlib import Path
@@ -86,8 +93,9 @@ from lattice.diagnostics import Severity
 from lattice.importer.verify import Case, CaseRecord, Rule, ValidationEnvelope, form_login, verify
 from lattice.pycheck import CODES, Policy, derive_policy, run_pycheck
 from lattice.spec.invariants import InvariantError, compile_invariant
-from lattice.spec.model import Invariant, Scenario, Spec, Step, resolve_table, tables_of
+from lattice.spec.model import Await, Invariant, Scenario, Spec, Step, resolve_table, tables_of
 from lattice.spec.report import LAYERS, Accepted, CheckFinding, Report
+from lattice.spec.services import POLL_S, Services, start_service
 from lattice.spec.validate import validate
 from lattice.typesys import Scalar, Schema
 
@@ -1314,7 +1322,13 @@ def _body(response: Any) -> Any:
         return response.text
 
 
-def _step_request(step: Step) -> dict[str, Any]:
+def _step_request(step: Step | Await) -> dict[str, Any]:
+    if isinstance(step, Await):
+        return {
+            "await": step.service,
+            "within_s": step.within_s,
+            "expect_db": dict(step.expect_db),
+        }
     return {
         "method": step.method,
         "path": step.path,
@@ -1322,6 +1336,121 @@ def _step_request(step: Step) -> dict[str, Any]:
         "params": dict(step.params) if step.params else None,
         "json": step.json,
     }
+
+
+def _step_endpoint(step: Step | Await) -> str:
+    """``METHOD /path`` of a request step; ``service <name>`` of an Await."""
+    if isinstance(step, Await):
+        return f"service {step.service}"
+    return f"{step.method} {step.path}"
+
+
+def expect_text(expect: Mapping[str, Any]) -> str:
+    """An ``expect_db`` in words: ``runs where {'id': 1} equals {'status': 'done'}``."""
+    parts = []
+    for table, cond in expect.items():
+        where = cond.get("where") if isinstance(cond, Mapping) else None
+        text = f"{table}" + (f" where {dict(where)}" if where else "")
+        if isinstance(cond, Mapping) and "count" in cond:
+            text += f" count={cond['count']}"
+        if isinstance(cond, Mapping) and "equals" in cond:
+            text += f" equals {dict(cond['equals'])}"
+        parts.append(text)
+    return "; ".join(parts)
+
+
+def _observed_counts(spec: Spec, db: Path, expect: Mapping[str, Any]) -> dict[str, Any]:
+    """Per ``expect_db`` entry, how many rows match its ``where`` now."""
+    out: dict[str, Any] = {}
+    conn = sqlite3.connect(db)
+    try:
+        for table, cond in expect.items():
+            where = dict(cond.get("where") or {}) if isinstance(cond, Mapping) else {}
+            label = f"{table}" + (f" where {where}" if where else "")
+            found = resolve_table(spec.profile, table)
+            if found is None:
+                out[label] = "unknown table"
+                continue
+            _, sql, schema = found
+            clauses, args = [], []
+            for c, v in where.items():
+                if v is None:
+                    clauses.append(f'"{c}" IS NULL')
+                else:
+                    clauses.append(f'"{c}" = ?')
+                    args.append(_stored(schema, c, v))
+            query = f'SELECT COUNT(*) FROM "{sql}"' + (
+                " WHERE " + " AND ".join(clauses) if clauses else ""
+            )
+            try:
+                out[label] = conn.execute(query, args).fetchone()[0]
+            except sqlite3.Error as err:
+                out[label] = f"read failed: {err}"
+    finally:
+        conn.close()
+    return out
+
+
+def missing_services(spec: Spec, services: Mapping[str, Any]) -> list[str]:
+    """The services the spec's scenarios await that ``services`` does not start."""
+    awaited = [
+        step.service
+        for scenario in spec.scenarios
+        for step in scenario.steps
+        if isinstance(step, Await)
+    ]
+    return [name for name in dict.fromkeys(awaited) if name not in services]
+
+
+def run_await(
+    spec: Spec, step: Await, db: Path, services: Services
+) -> tuple[str, list[str], dict[str, Any]]:
+    """Start ``step``'s service on ``db``, poll until its ``expect_db`` holds or
+    ``within_s`` runs out, and stop the service (always). Answers the verdict
+    (``correct``, ``silent``: the service ran and did not bring it about, ``loud``: it
+    could not start, or exited with an error), the problems and the details."""
+    name = step.service
+    want = expect_text(step.expect_db)
+    details: dict[str, Any] = {"service": name, "within_s": step.within_s,
+                               "expect_db": dict(step.expect_db)}  # fmt: skip
+    try:
+        cmd = services[name](db)
+        details["command"] = cmd.describe()
+        service = start_service(name, cmd)
+    except Exception as err:  # noqa: BLE001 -- a service that cannot start is loud
+        problem = f"service {name} could not start: {type(err).__name__}: {err}"
+        return "loud", [problem], details | {"problems": [problem]}
+    started = time.monotonic()
+    deadline = started + step.within_s
+    try:
+        while True:
+            code = service.poll()  # before the read: an exited service's writes are seen
+            try:
+                problems = _expect_db(spec, db, step.expect_db)
+            except sqlite3.Error as err:
+                problems = [f"db read failed: {err}"]
+            if not problems:
+                details["seconds"] = round(time.monotonic() - started, 3)
+                return "correct", [], details
+            now = time.monotonic()
+            if code is not None or now >= deadline:
+                break
+            time.sleep(min(POLL_S, max(0.0, deadline - now)))
+        observed = _observed_counts(spec, db, step.expect_db)
+        verdict = "silent"
+        head = f"service {name} did not bring about {want} within {step.within_s:g}s"
+        if code is not None:
+            head = f"service {name} exited with code {code} without bringing about {want}"
+            details["exit_code"] = code
+            details["stderr"] = service.stderr_text()
+            if code != 0:
+                verdict = "loud"
+        lines = [f"{head} (last observed: {observed})", *problems]
+        details["observed"] = observed
+        details["problems"] = lines
+        return verdict, lines, details
+    finally:
+        service.stop()
 
 
 def _run_scenario(
@@ -1333,21 +1462,23 @@ def _run_scenario(
     monitor: InvariantMonitor | None,
     login: Login | None,
     runtime: AppRuntime | None = None,
+    services: Services | None = None,
 ) -> None:
     """One scenario on a fresh seeded database (see the module docstring). ``runtime``:
     the app's transport, auth driver and dispose hooks (default: FastAPI's TestClient,
-    a bearer header, the engine's dispose)."""
+    a bearer header, the engine's dispose). ``services``: how the services its
+    ``Await`` steps name start."""
     from fastapi.testclient import TestClient
 
     rule = f"scenario: {scenario.name}"
 
-    def fail(label: str, step: Step | None, verdict: str, details: dict[str, Any]) -> None:
+    def fail(label: str, step: Step | Await | None, verdict: str, details: dict[str, Any]) -> None:
         report.findings.append(
             CheckFinding(
                 layer="D",
                 verdict=verdict,  # type: ignore[arg-type]
                 rule=rule,
-                endpoint=f"{step.method} {step.path}" if step else None,
+                endpoint=_step_endpoint(step) if step else None,
                 case=label,
                 request=_step_request(step) if step else None,
                 details=details,
@@ -1361,6 +1492,9 @@ def _run_scenario(
             if monitor is not None:
                 monitor.check(db, f"{scenario.name} / given")
         factory = app_factory
+        # the violations the database has before the app is built: an Await's layer C
+        # check does not blame them on the service
+        start_violations = monitor.violation_keys(db) if monitor is not None else {}
         if monitor is not None and _asgi(runtime):
             factory = monitor.wrap(app_factory)
         elif monitor is not None:
@@ -1382,6 +1516,12 @@ def _run_scenario(
                 tokens: dict[str, str] = {}
                 for i, step in enumerate(scenario.steps, 1):
                     label = f"{scenario.name} / step {i}"
+                    if isinstance(step, Await):
+                        if not _await_step(spec, step, label, db, report, monitor,
+                                           start_violations, services or {},
+                                           fail):  # fmt: skip
+                            return
+                        continue
                     headers = {}
                     if step.user is not None:
                         if step.user not in tokens:
@@ -1463,6 +1603,43 @@ def _run_scenario(
                         return
         finally:
             _close(runtime, app)
+
+
+def _await_step(
+    spec: Spec,
+    step: Await,
+    label: str,
+    db: Path,
+    report: Report,
+    monitor: InvariantMonitor | None,
+    baseline: Mapping[str, set[str]],
+    services: Services,
+    fail: Callable[[str, Step | Await | None, str, dict[str, Any]], None],
+) -> bool:
+    """An Await step of layer D (with layer C's invariants after it, on the database the
+    service wrote); whether the scenario goes on."""
+    try:
+        verdict, problems, details = run_await(spec, step, db, services)
+    except Exception as err:  # noqa: BLE001 -- the wait could not run: loud
+        verdict, problems = "loud", [f"service {step.service}: {type(err).__name__}: {err}"]
+        details = {"service": step.service, "problems": problems}
+    report.cases[label] = {
+        "layer": "D",
+        "endpoint": _step_endpoint(step),
+        "verdict": verdict,
+        "reason": "; ".join(problems),
+        "request": _step_request(step),
+    }
+    if monitor is not None:
+        monitor.label = label
+        monitor.requests[label] = _step_request(step)
+        monitor.endpoints[label] = _step_endpoint(step)
+        with monitor.lock:
+            monitor.check(db, label, baseline=baseline)
+    if problems:
+        fail(label, step, verdict, details)
+        return False
+    return True
 
 
 # ---- layer R --------------------------------------------------------------------------------
@@ -1604,6 +1781,7 @@ def check(
     x_repeats: int = 3,
     x_budget: int = 60,
     x_timeout: float = 30.0,
+    services: Services | None = None,
 ) -> Report:
     """Check the app built by ``app_factory(db_path)`` against ``spec`` in ``layers``
     (letters of ABCDRX; see the module docstring). Layer X: ``x_k`` copies per
@@ -1619,7 +1797,9 @@ def check(
     database. ``policy``: layer A's base policy (default: derived from the app; for a Go
     app a :class:`lattice.gocheck.GoPolicy`, default built from the spec). ``go_src``:
     a Go app's module root, read by layer A's gocheck (default ``app_dir`` when the
-    runtime's framework is ``"go"``).
+    runtime's framework is ``"go"``). ``services``: how the background services the
+    scenarios' ``Await`` steps name start, ``{name: (db_path) -> ServiceCmd}``
+    (:mod:`lattice.spec.services`; laid over ``runtime.services``).
     ``cases_for(spec, endpoint, ctx)``: layer B's case generator; ``extra_cases`` run
     too. ``rules``: verify's representation rules (default: 422 bodies compare by the
     fields they flag). ``natives``/``settings``: for the spec's programs. ``baseline``:
@@ -1639,6 +1819,16 @@ def check(
 
         if returns_process_app(app_factory):
             runtime = process_runtime()
+    harness: dict[str, Any] = dict(getattr(runtime, "services", None) or {})
+    harness.update(services or {})
+    if "D" in run:
+        missing = missing_services(spec, harness)
+        if missing:
+            raise CheckError(
+                f"the spec's scenarios await service(s) {', '.join(missing)}, which the "
+                "harness does not start: give check(services={name: (db_path) -> "
+                "ServiceCmd}), process_runtime(services=...) or --services MOD:NAME"
+            )
 
     if "A" in run:
         _layer_a(spec, report, app_dir, package, policy, runtime, go_src)
@@ -1679,7 +1869,8 @@ def check(
         if not spec.scenarios:
             report.notes.append("layer D: the spec has no scenarios")
         for scenario in spec.scenarios:
-            _run_scenario(spec, scenario, report, app_factory, make_db, monitor, login, runtime)
+            _run_scenario(spec, scenario, report, app_factory, make_db, monitor, login, runtime,
+                          harness)  # fmt: skip
     if "R" in run:
         _layer_r(
             spec,
@@ -1728,6 +1919,9 @@ __all__ = [
     "cases_for",
     "check",
     "db_diff",
+    "expect_text",
+    "missing_services",
+    "run_await",
     "spec_plans",
     "spec_policy",
     "subset",

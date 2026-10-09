@@ -56,6 +56,13 @@ they name is S002 / S003, like everywhere else:
   "owner_or_public(<column>)") needs a table that is owned (`owner` or `owner_via`):
   it names no table, or a table nobody owns. A scope's column must be the table's: a
   Bool column for `owner_or_public`, one of the users key's type for `owner`.
+
+Background services (`Spec.services`, `Await` steps of scenarios); an `Await`'s
+`expect_db` is checked like a step's (S002, S003, S012):
+
+- S024: a scenario's `Await` names a service `Spec.services` does not declare.
+- S025: a malformed `Await` or service: an empty `expect_db`, a `within_s` that is not
+  a positive number; or a service name that is empty or declared twice.
 """
 
 from __future__ import annotations
@@ -74,6 +81,7 @@ from lattice.spec.model import (
     EXAMPLE_KEYS,
     OWNER_SCOPES,
     PARAM_SOURCES,
+    Await,
     Contract,
     ContractParam,
     Machine,
@@ -111,6 +119,8 @@ CODES: Mapping[str, str] = {
     "S021": "malformed contract error",
     "S022": "unknown contract response model",
     "S023": "contract owner scope on a table nobody owns",
+    "S024": "await names an undeclared service",
+    "S025": "malformed await or service",
 }
 HTTP_METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
 EXPECT_DB_KEYS = frozenset({"where", "count", "equals"})
@@ -131,7 +141,8 @@ class SpecProblem:
 
 def validate(spec: Spec) -> list[SpecProblem]:
     """Every problem of `spec`, in the order: users, programs, machines, invariants,
-    scenarios, contracts, unchecked requirements. Empty when the spec is consistent."""
+    services, scenarios, contracts, unchecked requirements. Empty when the spec is
+    consistent."""
     if spec.profile.api is None:
         return [
             SpecProblem(
@@ -145,6 +156,7 @@ def validate(spec: Spec) -> list[SpecProblem]:
     problems += _programs(spec)
     problems += _machines(spec)
     problems += _invariants(spec)
+    problems += _services(spec)
     problems += _scenarios(spec)
     problems += _contracts(spec)
     problems += _unchecked(spec)
@@ -327,7 +339,57 @@ def _scenarios(spec: Spec) -> list[SpecProblem]:
     for scenario in spec.scenarios:
         problems += _given(spec, scenario)
         for index, step in enumerate(scenario.steps, 1):
-            problems += _step(spec, f"scenario {scenario.name!r} step {index}", step)
+            where = f"scenario {scenario.name!r} step {index}"
+            if isinstance(step, Await):
+                problems += _await(spec, where, step)
+            else:
+                problems += _step(spec, where, step)
+    return problems
+
+
+def _services(spec: Spec) -> list[SpecProblem]:
+    problems: list[SpecProblem] = []
+    names = [s.name for s in spec.services]
+    for name in names:
+        if not isinstance(name, str) or not name.strip():
+            problems.append(SpecProblem("S025", f"service name {name!r} is empty",
+                                        'name it: services=("worker",)'))  # fmt: skip
+    for name in dict.fromkeys(n for n in names if names.count(n) > 1):
+        problems.append(SpecProblem("S025", f"service {name!r} is declared twice",
+                                    "declare each service once"))  # fmt: skip
+    return problems
+
+
+def _await(spec: Spec, where: str, step: Await) -> list[SpecProblem]:
+    problems: list[SpecProblem] = []
+    declared = spec.service_names()
+    if step.service not in declared:
+        known = ", ".join(declared) or "none"
+        problems.append(
+            SpecProblem(
+                "S024",
+                f"{where}: awaits service {step.service!r}, which the spec does not declare",
+                f"add it to Spec.services (services=({step.service!r},)); declared: {known}",
+            )
+        )
+    within = step.within_s
+    if isinstance(within, bool) or not isinstance(within, int | float) or not within > 0:
+        problems.append(SpecProblem("S025", f"{where}: within_s {within!r}",
+                                    "a positive number of seconds"))  # fmt: skip
+    if isinstance(step.expect_db, Mapping) and not step.expect_db:
+        problems.append(
+            SpecProblem(
+                "S025",
+                f"{where}: an Await with an empty expect_db",
+                'say what the service brings about: {"runs": {"where": {"id": 1}, '
+                '"equals": {"status": "done"}}}',
+            )
+        )
+    elif step.expect_db is not None:
+        problems += _expect_db(spec, where, step.expect_db)
+    else:
+        problems.append(SpecProblem("S025", f"{where}: an Await with no expect_db",
+                                    "say what the service brings about"))  # fmt: skip
     return problems
 
 

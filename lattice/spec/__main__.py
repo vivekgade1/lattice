@@ -3,7 +3,8 @@
     python -m lattice.spec check --spec mod:SPEC --app mod:factory --db mod:build_db \\
         [--app-dir DIR --package PKG | --go-src DIR] [--layers ABCDX] [--login mod:fn] \\
         [--login-path /login] [--mint-token mod:fn] [--json] \\
-        [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process | go]
+        [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process | go] \\
+        [--services mod:SERVICES]
 
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
@@ -13,7 +14,10 @@ answering a ``ProcessApp`` (a compiled binary over the SQLite file); ``process``
 ``process_runtime()`` itself, ``go`` is ``process_runtime(framework="go")``, and a
 factory annotated ``-> ProcessApp`` selects it with no flag. ``--go-src`` is a Go (Gin +
 GORM) app's module root: layer A reads it with ``lattice.gocheck`` (a runtime whose
-framework is ``go`` also takes ``--app-dir`` as the root). Exit code: 0 pass, 1 fail, 2
+framework is ``go`` also takes ``--app-dir`` as the root). ``--services`` names the
+app's background services, ``{name: (db_path) -> ServiceCmd}``
+(``lattice.spec.services``; or a function returning it): how the spec's ``Await`` steps
+start them. Exit code: 0 pass, 1 fail, 2
 the check could not run.
 
 ::
@@ -85,6 +89,11 @@ def _parser() -> argparse.ArgumentParser:
         help="module:RUNTIME, the app's AppRuntime (or a function returning one); "
         "'process': lattice.spec.process.process_runtime(); 'go': the same with "
         "framework='go'",
+    )
+    c.add_argument(
+        "--services",
+        help="module:SERVICES, the app's background services {name: (db_path) -> "
+        "ServiceCmd} (or a function returning it), started by the spec's Await steps",
     )
     c.add_argument("--json", action="store_true", help="print the report as JSON")
     f = sub.add_parser("fidelity", help="replay an app's fidelity scenarios through its runtime")
@@ -188,6 +197,21 @@ def _runtime(ref: str | None) -> Any:
     return runtime
 
 
+def _services(ref: str | None) -> Any:
+    """The ``--services``: None, or ``module:attr`` (a mapping, or a function answering
+    one)."""
+    from collections.abc import Mapping
+
+    if ref is None:
+        return None
+    services = load(ref)
+    if not isinstance(services, Mapping) and callable(services):
+        services = services()
+    if not isinstance(services, Mapping):
+        raise CheckError(f"{ref} is not a mapping of service name -> (db_path) -> ServiceCmd")
+    return services
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "fidelity":
@@ -215,6 +239,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             x_repeats=args.x_repeats,
             x_budget=args.x_budget,
             runtime=_runtime(args.runtime),
+            services=_services(args.services),
         )
     except Exception as err:  # noqa: BLE001 -- any failure to run the check is exit 2
         print(f"error: {type(err).__name__}: {err}", file=sys.stderr)

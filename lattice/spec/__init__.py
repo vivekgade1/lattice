@@ -15,12 +15,14 @@ from lattice.spec.check import (
 )
 from lattice.spec.invariants import ALLOWED_FORMS, InvariantError, compile_invariant
 from lattice.spec.model import (
+    Await,
     Contract,
     ContractError,
     ContractParam,
     Invariant,
     Machine,
     Scenario,
+    Service,
     Spec,
     Step,
     Unchecked,
@@ -28,11 +30,13 @@ from lattice.spec.model import (
     tables_of,
 )
 from lattice.spec.report import Accepted, CheckFinding, Report
+from lattice.spec.services import ServiceCmd
 from lattice.spec.validate import CODES, SpecProblem, validate
 
 __all__ = [
     "ALLOWED_FORMS",
     "Accepted",
+    "Await",
     "CODES",
     "CaseContext",
     "CheckError",
@@ -46,6 +50,8 @@ __all__ = [
     "Machine",
     "Report",
     "Scenario",
+    "Service",
+    "ServiceCmd",
     "Spec",
     "SpecProblem",
     "Step",

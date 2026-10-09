@@ -518,6 +518,11 @@ class AppRuntime:
     # every transport opened on one app is a client of one live server (a process app):
     # layer X then races its copies as clients of one app, not as app copies
     one_server: bool = False
+    # the app's background services, {name: (db_path) -> ServiceCmd}
+    # (lattice.spec.services): how a spec's Await steps start them
+    services: Mapping[str, Callable[[Path], Any]] = field(
+        default_factory=dict, hash=False, compare=False
+    )
 
     def open(self, app: Any, *, raise_errors: bool = False) -> Transport:
         return self.transport(app, raise_errors=raise_errors)

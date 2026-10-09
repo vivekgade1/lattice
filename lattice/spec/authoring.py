@@ -15,7 +15,7 @@ import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from lattice.spec.model import Scenario, Spec, Step, tables_of
+from lattice.spec.model import Await, Scenario, Spec, Step, tables_of
 from lattice.typesys import Schema
 
 __all__ = ["access_matrix", "requirements_markdown"]
@@ -238,6 +238,22 @@ def _step_fact(step: Step) -> str:
     return "; ".join(bits)
 
 
+def _await_fact(step: Await) -> str:
+    facts = "; ".join(_db_fact(t, c) for t, c in step.expect_db.items())
+    note = f" ({step.note})" if step.note else ""
+    return f"the {step.service} service brings about {facts} within {step.within_s:g}s{note}"
+
+
+def _services_block(spec: Spec) -> list[str]:
+    if not spec.services:
+        return []
+    lines = ["## Background services", ""]
+    for s in spec.services:
+        lines.append(f"- **{s.name}**" + (f": {s.doc}" if s.doc else ""))
+    lines.append("")
+    return lines
+
+
 def _scenarios_block(spec: Spec) -> list[str]:
     if not spec.scenarios:
         return []
@@ -245,6 +261,9 @@ def _scenarios_block(spec: Spec) -> list[str]:
     for scenario in spec.scenarios:
         lines.append(f"- **{scenario.name}**")
         for step in scenario.steps:
+            if isinstance(step, Await):
+                lines.append("  - " + _await_fact(step))
+                continue
             who = step.user or "anon"
             fact = _step_fact(step)
             tail = f" -- {fact}" if fact else ""
@@ -267,9 +286,10 @@ def _unchecked_block(spec: Spec) -> list[str]:
 def requirements_markdown(spec: Spec, *, title: str, notes: Sequence[str] = ()) -> str:
     """Render `spec` as prose requirements: its tables and columns (one_of values,
     keys, nullable and private columns), its invariants as their sentences, its
-    machines as their allowed moves, each scenario as a short bullet (the method, path
-    and caller of each step, then the status and key facts -- the expected body and
-    database checks), and the unchecked notes.
+    machines as their allowed moves, its background services, each scenario as a short
+    bullet (the method, path and caller of each step, then the status and key facts --
+    the expected body and database checks; an ``Await`` as "the <name> service brings
+    about ... within <n>s"), and the unchecked notes.
 
     Deterministic: the same `spec` always renders the same text (the field order of
     `Spec.profile`'s tables, and the tuple order of invariants/machines/scenarios/
@@ -281,6 +301,7 @@ def requirements_markdown(spec: Spec, *, title: str, notes: Sequence[str] = ()) 
     lines += _tables_block(spec)
     lines += _invariants_block(spec)
     lines += _machines_block(spec)
+    lines += _services_block(spec)
     lines += _scenarios_block(spec)
     lines += _unchecked_block(spec)
     if notes:
