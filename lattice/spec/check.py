@@ -4,7 +4,11 @@
   from the spec: pycheck's derived policy, with the spec's owners, ``owner_via``, private
   columns and (when the policy has the field) state machines laid over it
   (:func:`spec_policy`). The app under check is never its own baseline: every finding
-  counts. Skipped (with a note) when the source is not given.
+  counts. Skipped (with a note) when the source is not given. A Go app (Gin + GORM; a
+  runtime whose ``framework`` is ``"go"``, or ``go_src`` given) is read by
+  :mod:`lattice.gocheck` instead, on its module root (``go_src``, else ``app_dir``), with
+  :meth:`lattice.gocheck.GoPolicy.from_spec`; the PY rules with no Go counterpart are
+  named in a note.
 * **B** -- for every endpoint the spec has a program for, a request suite
   (:func:`cases_for`, pluggable; callers may add ``extra_cases``) runs against the app
   and against the spec's programs served by the Lattice runtime, each case on a fresh
@@ -57,7 +61,7 @@ after every request the transport's client sends, in B, D, R and X).
 A process app (:mod:`lattice.spec.process`: a compiled binary serving HTTP over the
 SQLite file) runs through ``process_runtime()``; a factory annotated ``-> ProcessApp``
 selects it when no runtime is given. Layer A is skipped, with a note, for an app whose
-runtime is not a Python framework.
+runtime is neither a Python framework nor Go.
 """
 
 from __future__ import annotations
@@ -89,6 +93,7 @@ from lattice.typesys import Scalar, Schema
 
 AppFactory = Callable[[Path], Any]
 if TYPE_CHECKING:
+    from lattice.gocheck import GoPolicy
     from lattice.importer.transport import AppRuntime
 Login = Callable[[Any, str], str]
 HEADER = "# lattice: v1\n"
@@ -311,14 +316,58 @@ def _endpoint_of(key: str, message: str) -> str | None:
     return m.group(1) if m else None
 
 
+def _layer_a_go(
+    spec: Spec, report: Report, src: Path | str | None, policy: Policy | GoPolicy | None
+) -> None:
+    """Layer A on a Go (Gin + GORM) app: gocheck on its module root."""
+    from lattice.gocheck import (
+        GO_CODES,
+        GoCheckError,
+        GoPolicy,
+        GoToolchainMissing,
+        gated_note,
+        run_gocheck,
+    )
+
+    if src is None:
+        report.notes.append("layer A skipped: no Go source (go_src, or --go-src)")
+        return
+    pol = policy if isinstance(policy, GoPolicy) else GoPolicy.from_spec(spec)
+    try:
+        found = run_gocheck(Path(src), pol, strict=True)
+    except GoToolchainMissing as err:
+        report.notes.append(f"layer A skipped: {err}")
+        return
+    except GoCheckError as err:
+        raise CheckError(f"layer A: gocheck failed: {err}") from err
+    report.notes.append(gated_note())
+    for f in found:
+        report.findings.append(
+            CheckFinding(
+                layer="A",
+                verdict="silent",
+                rule=GO_CODES.get(f.code, f.code),
+                endpoint=_endpoint_of(f.key, f.message),
+                code=f.code,
+                file=f.file,
+                line=f.line,
+                details={"message": f.message, "hint": f.hint, "key": f.key},
+            )
+        )
+
+
 def _layer_a(
     spec: Spec,
     report: Report,
     app_dir: Path | str | None,
     package: str | None,
-    policy: Policy | None,
+    policy: Policy | GoPolicy | None,
     runtime: AppRuntime | None = None,
+    go_src: Path | str | None = None,
 ) -> None:
+    if go_src is not None or (runtime is not None and runtime.framework == "go"):
+        _layer_a_go(spec, report, go_src if go_src is not None else app_dir, policy)
+        return
     if runtime is not None and runtime.framework not in PYTHON_FRAMEWORKS:
         report.notes.append(
             f"layer A: no static checker for this language (the app is {runtime.framework!r}, "
@@ -328,7 +377,7 @@ def _layer_a(
     if app_dir is None or package is None:
         report.notes.append("layer A skipped: no app source (app_dir and package)")
         return
-    pol = spec_policy(spec, app_dir, package, policy)
+    pol = spec_policy(spec, app_dir, package, policy if isinstance(policy, Policy) else None)
     try:
         found = run_pycheck(Path(app_dir), pol, strict=True)
     except Exception as err:  # noqa: BLE001 -- a checker failure is a check error
@@ -1533,7 +1582,8 @@ def check(
     layers: str = "ABCD",
     app_dir: Path | str | None = None,
     package: str | None = None,
-    policy: Policy | None = None,
+    policy: Policy | GoPolicy | None = None,
+    go_src: Path | str | None = None,
     login: Login | None = None,
     login_path: str | None = None,
     mint_token: Callable[[Any], str] | None = None,
@@ -1566,7 +1616,10 @@ def check(
     ``runtime`` (``lattice.importer.transport.AppRuntime``; default FastAPI's
     TestClient, a bearer header and the engine's dispose): how B, D and R serve the app
     and act as its users -- a Django or Flask app's. ``db_factory`` writes the seeded
-    database. ``policy``: layer A's base policy (default: derived from the app).
+    database. ``policy``: layer A's base policy (default: derived from the app; for a Go
+    app a :class:`lattice.gocheck.GoPolicy`, default built from the spec). ``go_src``:
+    a Go app's module root, read by layer A's gocheck (default ``app_dir`` when the
+    runtime's framework is ``"go"``).
     ``cases_for(spec, endpoint, ctx)``: layer B's case generator; ``extra_cases`` run
     too. ``rules``: verify's representation rules (default: 422 bodies compare by the
     fields they flag). ``natives``/``settings``: for the spec's programs. ``baseline``:
@@ -1588,7 +1641,7 @@ def check(
             runtime = process_runtime()
 
     if "A" in run:
-        _layer_a(spec, report, app_dir, package, policy, runtime)
+        _layer_a(spec, report, app_dir, package, policy, runtime, go_src)
     monitor: InvariantMonitor | None = None
     if "C" in run:
         monitor = InvariantMonitor.for_spec(spec)

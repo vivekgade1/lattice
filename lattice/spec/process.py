@@ -312,7 +312,8 @@ def process_runtime(
     dispose: Sequence[Callable[[Any], None]] = (),
 ) -> AppRuntime:
     """The runtime of process apps (see the module docstring). ``framework`` names the
-    app's stack for the report (anything but a Python framework: layer A is skipped);
+    app's stack for the report (``"go"``: layer A reads the app's ``go_src`` with
+    :mod:`lattice.gocheck`; anything else but a Python framework: layer A is skipped);
     ``auth`` how callers log in (default: a bearer token from the check's ``login``);
     ``dispose``: more hooks, run after the process is stopped."""
     return AppRuntime(

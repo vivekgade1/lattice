@@ -1,17 +1,20 @@
 """``python -m lattice.spec check``: an app against its spec (lattice.spec.check).
 
     python -m lattice.spec check --spec mod:SPEC --app mod:factory --db mod:build_db \\
-        [--app-dir DIR --package PKG] [--layers ABCDX] [--login mod:fn] \\
+        [--app-dir DIR --package PKG | --go-src DIR] [--layers ABCDX] [--login mod:fn] \\
         [--login-path /login] [--mint-token mod:fn] [--json] \\
-        [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process]
+        [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process | go]
 
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
 path)``). ``--runtime`` serves the app through an ``AppRuntime`` (or a function
 returning one), e.g. a ``lattice.spec.process.process_runtime(...)`` for a factory
 answering a ``ProcessApp`` (a compiled binary over the SQLite file); ``process`` is
-``process_runtime()`` itself, and a factory annotated ``-> ProcessApp`` selects it with
-no flag. Exit code: 0 pass, 1 fail, 2 the check could not run.
+``process_runtime()`` itself, ``go`` is ``process_runtime(framework="go")``, and a
+factory annotated ``-> ProcessApp`` selects it with no flag. ``--go-src`` is a Go (Gin +
+GORM) app's module root: layer A reads it with ``lattice.gocheck`` (a runtime whose
+framework is ``go`` also takes ``--app-dir`` as the root). Exit code: 0 pass, 1 fail, 2
+the check could not run.
 
 ::
 
@@ -62,6 +65,9 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--app-dir", help="the app package's directory (layer A)")
     c.add_argument("--package", help="the app package, dotted (layer A)")
     c.add_argument(
+        "--go-src", help="a Go (Gin + GORM) app's module root (layer A: lattice.gocheck)"
+    )
+    c.add_argument(
         "--layers",
         default="ABCD",
         help="letters of ABCDRX (default ABCD; R: the rule layer; X: concurrent races)",
@@ -77,7 +83,8 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument(
         "--runtime",
         help="module:RUNTIME, the app's AppRuntime (or a function returning one); "
-        "'process': lattice.spec.process.process_runtime()",
+        "'process': lattice.spec.process.process_runtime(); 'go': the same with "
+        "framework='go'",
     )
     c.add_argument("--json", action="store_true", help="print the report as JSON")
     f = sub.add_parser("fidelity", help="replay an app's fidelity scenarios through its runtime")
@@ -169,10 +176,10 @@ def _runtime(ref: str | None) -> Any:
 
     if ref is None:
         return None
-    if ref == "process":
+    if ref in ("process", "go"):
         from lattice.spec.process import process_runtime
 
-        return process_runtime()
+        return process_runtime() if ref == "process" else process_runtime(framework="go")
     runtime = load(ref)
     if not isinstance(runtime, AppRuntime) and callable(runtime):
         runtime = runtime()
@@ -198,6 +205,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             layers=args.layers,
             app_dir=args.app_dir,
             package=args.package,
+            go_src=args.go_src,
             login=load(args.login) if args.login else None,
             login_path=args.login_path,
             mint_token=load(args.mint_token) if args.mint_token else None,

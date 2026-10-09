@@ -197,10 +197,24 @@ def test_e_a_service_that_never_answers_health_times_out(app, binary):
 # ---- layer A, auto-detection, the CLI ----------------------------------------------------------
 
 
-def test_layer_a_is_skipped_with_a_note(app):
+def test_layer_a_reads_a_go_app_with_gocheck(app):
+    """A runtime whose framework is ``go`` takes ``app_dir`` as the Go module root
+    (lattice.gocheck); the toy app is plain net/http, so there is nothing to find."""
     report = run(app(), "AD", app_dir=GOAPP, package="goapp")
-    assert any("layer A: no static checker for this language" in n for n in report.notes)
+    assert any(n.startswith("layer A (gocheck): not available for Go") for n in report.notes)
     assert of(report, "A") == []
+
+
+def test_layer_a_is_skipped_with_a_note_without_go_source(app):
+    report = run(app(), "AD")
+    assert "layer A skipped: no Go source (go_src, or --go-src)" in report.notes
+    assert of(report, "A") == []
+
+
+def test_layer_a_is_skipped_for_another_language(app):
+    report = run(app(), "AD", app_dir=GOAPP, runtime=process_runtime(
+        framework="rust", auth=gh.RUNTIME.auth))  # fmt: skip
+    assert any("layer A: no static checker for this language" in n for n in report.notes)
 
 
 def test_a_factory_returning_a_process_app_is_detected(app, monkeypatch):
