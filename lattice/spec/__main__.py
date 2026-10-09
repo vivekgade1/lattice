@@ -3,11 +3,15 @@
     python -m lattice.spec check --spec mod:SPEC --app mod:factory --db mod:build_db \\
         [--app-dir DIR --package PKG] [--layers ABCDX] [--login mod:fn] \\
         [--login-path /login] [--mint-token mod:fn] [--json] \\
-        [--x-k 12] [--x-repeats 3] [--x-budget 60]
+        [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process]
 
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
-path)``). Exit code: 0 pass, 1 fail, 2 the check could not run.
+path)``). ``--runtime`` serves the app through an ``AppRuntime`` (or a function
+returning one), e.g. a ``lattice.spec.process.process_runtime(...)`` for a factory
+answering a ``ProcessApp`` (a compiled binary over the SQLite file); ``process`` is
+``process_runtime()`` itself, and a factory annotated ``-> ProcessApp`` selects it with
+no flag. Exit code: 0 pass, 1 fail, 2 the check could not run.
 
 ::
 
@@ -70,6 +74,11 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--mint-token", help="module:fn, (user key) -> bearer token")
     c.add_argument("--natives", help="module:NATIVES, the spec's natives {name: function}")
     c.add_argument("--baseline", help="module:BASELINE, the app's accepted findings")
+    c.add_argument(
+        "--runtime",
+        help="module:RUNTIME, the app's AppRuntime (or a function returning one); "
+        "'process': lattice.spec.process.process_runtime()",
+    )
     c.add_argument("--json", action="store_true", help="print the report as JSON")
     f = sub.add_parser("fidelity", help="replay an app's fidelity scenarios through its runtime")
     f.add_argument("--spec", required=True, help="a spec module file, or module:SPEC")
@@ -153,6 +162,25 @@ def fidelity(args: argparse.Namespace) -> int:
     return 0 if report.passed else 1
 
 
+def _runtime(ref: str | None) -> Any:
+    """The ``--runtime``: None, ``process`` or ``module:attr`` (an AppRuntime or a
+    function answering one)."""
+    from lattice.importer.transport import AppRuntime
+
+    if ref is None:
+        return None
+    if ref == "process":
+        from lattice.spec.process import process_runtime
+
+        return process_runtime()
+    runtime = load(ref)
+    if not isinstance(runtime, AppRuntime) and callable(runtime):
+        runtime = runtime()
+    if not isinstance(runtime, AppRuntime):
+        raise CheckError(f"{ref} is not an AppRuntime")
+    return runtime
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "fidelity":
@@ -178,6 +206,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             x_k=args.x_k,
             x_repeats=args.x_repeats,
             x_budget=args.x_budget,
+            runtime=_runtime(args.runtime),
         )
     except Exception as err:  # noqa: BLE001 -- any failure to run the check is exit 2
         print(f"error: {type(err).__name__}: {err}", file=sys.stderr)

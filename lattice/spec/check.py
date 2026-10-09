@@ -50,8 +50,14 @@ Flask app: B, D and R then open the app through its transport, log callers in th
 its auth driver (``runtime.auth.token``, the ``login`` given winning), send tokens as
 its scheme says (``runtime.auth.present`` / ``headers``) and dispose of every app with
 its hooks (``runtime.close``). Without one, everything is as before: FastAPI's
-TestClient, a bearer header, the engine's dispose. Layer C watches B and D only for an
-ASGI app.
+TestClient, a bearer header, the engine's dispose. Layer C watches an ASGI app through
+its probe, any other through the runtime's transport (:meth:`InvariantMonitor.watch`:
+after every request the transport's client sends, in B, D, R and X).
+
+A process app (:mod:`lattice.spec.process`: a compiled binary serving HTTP over the
+SQLite file) runs through ``process_runtime()``; a factory annotated ``-> ProcessApp``
+selects it when no runtime is given. Layer A is skipped, with a note, for an app whose
+runtime is not a Python framework.
 """
 
 from __future__ import annotations
@@ -62,6 +68,7 @@ import json
 import re
 import sqlite3
 import tempfile
+import threading
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, fields, replace
 from pathlib import Path
@@ -229,6 +236,10 @@ def _dispose(app: Any) -> None:
         engine.dispose()
 
 
+# the frameworks layer A's static checker (pycheck) reads
+PYTHON_FRAMEWORKS = frozenset({"fastapi", "flask", "django"})
+
+
 def _asgi(runtime: AppRuntime | None) -> bool:
     """Whether the app is served as ASGI (layer C's probe wraps an ASGI app only)."""
     return runtime is None or runtime.framework == "fastapi"
@@ -306,7 +317,14 @@ def _layer_a(
     app_dir: Path | str | None,
     package: str | None,
     policy: Policy | None,
+    runtime: AppRuntime | None = None,
 ) -> None:
+    if runtime is not None and runtime.framework not in PYTHON_FRAMEWORKS:
+        report.notes.append(
+            f"layer A: no static checker for this language (the app is {runtime.framework!r}, "
+            "not Python); skipped"
+        )
+        return
     if app_dir is None or package is None:
         report.notes.append("layer A skipped: no app source (app_dir and package)")
         return
@@ -358,6 +376,64 @@ class _Probe:
                 self._monitor.after(self._db, scope, self._baseline)
 
 
+class _TransportProbe:
+    """A transport running the monitor's invariants after each request its client sends
+    (layer C through a runtime: any framework, a process). The hook is on the client's
+    ``send``, so the requests a login makes through ``client`` are watched too; it runs
+    once the answer's body is read in full -- the server has answered, and what it
+    committed is what a new SQLite connection sees. Without an httpx-style client, the
+    transport's own ``request`` is watched."""
+
+    def __init__(
+        self, inner: Any, db: Path, monitor: InvariantMonitor, baseline: Mapping[str, set[str]]
+    ) -> None:
+        self._inner = inner
+        self._db = db
+        self._monitor = monitor
+        self._baseline = baseline
+        self._hooked = False
+        client = getattr(inner, "client", None)
+        send = getattr(client, "send", None)
+        if callable(send):
+
+            def watched_send(request: Any, *args: Any, **kw: Any) -> Any:
+                response = send(request, *args, **kw)
+                if kw.get("stream"):
+                    response.read()
+                self._after(str(request.method), str(request.url.path))
+                return response
+
+            client.send = watched_send  # type: ignore[union-attr]
+            self._hooked = True
+
+    @property
+    def client(self) -> Any:
+        return self._inner.client
+
+    def _after(self, method: str, path: str) -> None:
+        with self._monitor.lock:
+            self._monitor.after(self._db, {"method": method, "path": path}, self._baseline)
+
+    def request(self, method: str, path: str, **kw: Any) -> Any:
+        answer = self._inner.request(method, path, **kw)
+        if not self._hooked:
+            self._after(method, path)
+        return answer
+
+    def set_cookie(self, name: str, value: str) -> None:
+        self._inner.set_cookie(name, value)
+
+    def __enter__(self) -> _TransportProbe:
+        self._inner.__enter__()
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self._inner.__exit__(*exc)
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._inner, name)
+
+
 class InvariantMonitor:
     """Runs every invariant on an app's database after each request (layer C).
 
@@ -374,6 +450,8 @@ class InvariantMonitor:
         self.findings: list[CheckFinding] = []
         self._seen: set[tuple[str, str]] = set()
         self._seed: dict[str, set[str]] = {}
+        # a transport probe's checks run under it (layer X's clients run at once)
+        self.lock = threading.Lock()
 
     @classmethod
     def for_spec(cls, spec: Spec) -> InvariantMonitor:
@@ -425,6 +503,40 @@ class InvariantMonitor:
             return _Probe(app_factory(db_path), Path(db_path), self)
 
         return factory
+
+    def watch(
+        self,
+        app_factory: AppFactory,
+        runtime: AppRuntime,
+        labels: Iterator[str] | None = None,
+    ) -> tuple[AppFactory, AppRuntime]:
+        """Layer C for an app served through ``runtime``'s transport (any framework, a
+        process): the factory and runtime to use instead. Each transport the runtime
+        opens runs the invariants on the app's database after every request its client
+        sends, once the answer is read in full; violations the database had when the app
+        was built are not blamed on a request. ``labels`` as for :meth:`wrap`."""
+        built: dict[int, tuple[Any, Path, dict[str, set[str]]]] = {}
+
+        def factory(db_path: Path) -> Any:
+            if labels is not None:
+                self.label = next(labels, None)
+            app = app_factory(db_path)
+            built[id(app)] = (app, Path(db_path), self.violation_keys(Path(db_path)))
+            return app
+
+        def transport(app: Any, *, raise_errors: bool = False) -> Any:
+            inner = runtime.open(app, raise_errors=raise_errors)
+            entry = built.get(id(app))
+            if entry is None:  # an app this factory did not build: not watched
+                return inner
+            _, db, baseline = entry
+            return _TransportProbe(inner, db, self, baseline)
+
+        def forget(app: Any) -> None:
+            built.pop(id(app), None)
+
+        watched = replace(runtime, transport=transport, dispose=(*runtime.dispose, forget))
+        return factory, watched
 
     def after(self, db: Path, scope: Mapping[str, Any], baseline: Mapping[str, set[str]]) -> None:
         label = self.label or f"{scope.get('method')} {scope.get('path')}"
@@ -970,11 +1082,14 @@ def _layer_b(
             return build_app(plans, path, natives=natives, settings=settings)
 
         app_side = app_factory
-        if monitor is not None and _asgi(runtime):
+        if monitor is not None:
             for c in cases:
                 monitor.requests[c.name] = _request(c)
                 monitor.endpoints[c.name] = endpoint_of[c.name]
-            app_side = monitor.wrap(app_factory, iter(names))
+            if _asgi(runtime):
+                app_side = monitor.wrap(app_factory, iter(names))
+            else:
+                app_side, runtime = monitor.watch(app_factory, runtime, iter(names))  # type: ignore[arg-type]
         try:
             result = verify(
                 app_side,
@@ -987,6 +1102,8 @@ def _layer_b(
                 hash_columns=hash_columns,
                 **({} if runtime is None else {"runtime": runtime}),
             )
+        except CheckError:
+            raise
         except Exception as err:  # noqa: BLE001 -- the app could not run the suite: loud
             report.findings.append(
                 CheckFinding(
@@ -1194,8 +1311,11 @@ def _run_scenario(
             _insert_given(spec, db, scenario.given)
             if monitor is not None:
                 monitor.check(db, f"{scenario.name} / given")
-        watch = monitor is not None and _asgi(runtime)
-        factory = monitor.wrap(app_factory) if watch else app_factory  # type: ignore[union-attr]
+        factory = app_factory
+        if monitor is not None and _asgi(runtime):
+            factory = monitor.wrap(app_factory)
+        elif monitor is not None:
+            factory, runtime = monitor.watch(app_factory, runtime)  # type: ignore[arg-type]
         try:
             app = factory(db)
         except Exception as err:  # noqa: BLE001 -- an app that does not start is loud
@@ -1321,15 +1441,22 @@ def _layer_r(
     if sessions is None and runtime is not None:
         from contextlib import contextmanager
 
+        rt, served_factory = runtime, app_factory
+        if monitor is not None:
+            served_factory, rt = monitor.watch(app_factory, runtime)
+
+            def on_probe(probe: Any) -> None:
+                monitor.label = f"R | {probe.name}"
+                monitor.requests[monitor.label] = probe.request()
+                monitor.endpoints[monitor.label] = probe.route
+
         @contextmanager
         def served(db: Path) -> Iterator[Any]:
-            with runtime.serve(app_factory, db) as (_, transport):
+            with rt.serve(served_factory, db) as (_, transport):
                 yield transport
 
         sessions = served
         options.setdefault("auth_headers", runtime.auth.headers)
-        if monitor is not None:
-            report.notes.append("layer C does not watch layer R's probes through a runtime")
     if sessions is None:
         factory = app_factory
         if monitor is not None:
@@ -1454,9 +1581,14 @@ def check(
         login = form_login(login_path, dict(spec.users))
     report = Report(layers=run, unchecked=[u.text for u in spec.unchecked])
     make_db = as_db_factory(db_factory)
+    if runtime is None:
+        from lattice.spec.process import process_runtime, returns_process_app
+
+        if returns_process_app(app_factory):
+            runtime = process_runtime()
 
     if "A" in run:
-        _layer_a(spec, report, app_dir, package, policy)
+        _layer_a(spec, report, app_dir, package, policy, runtime)
     monitor: InvariantMonitor | None = None
     if "C" in run:
         monitor = InvariantMonitor.for_spec(spec)
@@ -1520,6 +1652,7 @@ def check(
             make_db,
             login=login,
             runtime=runtime,
+            monitor=None if _asgi(runtime) else monitor,
             k=x_k,
             repeats=x_repeats,
             budget=x_budget,

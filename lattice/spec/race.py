@@ -41,6 +41,13 @@ came in while it ran. Layer X races the scenario steps that write those rules' t
   pair race, with the first race of every racing-endpoint combination (ids as holes)
   ahead of the races repeating one, so a budget reaches every endpoint first.
 
+A runtime whose apps are each one live server (``AppRuntime.one_server``: a process
+app) races its copies as ``k`` clients of one server instead: one app built, its
+transport opened ``k`` times (an httpx client each, so the server sees ``k``
+connections at once). With a ``monitor`` (layer C through the runtime's transport),
+every request of the layer is watched too: the recordings' and replays' steps
+(``X | <scenario> / step <n>``) and the racing requests (``X | race <race>``).
+
 An app whose own database engine cannot be used from several threads ("created in a
 thread can only be used in that same thread") is a note, not a finding; a race the
 harness could not run (an app that does not start, a login that fails, a replay that
@@ -291,6 +298,7 @@ class _Harness:
         login: Login | None,
         runtime: AppRuntime | None,
         timeout: float,
+        c_monitor: InvariantMonitor | None = None,
     ) -> None:
         self.spec = spec
         self.app_factory = app_factory
@@ -298,6 +306,11 @@ class _Harness:
         self.login = login
         self.runtime = runtime
         self.timeout = timeout
+        # layer C watching this layer's requests (a runtime's transport only)
+        self.c_monitor = c_monitor
+        if c_monitor is not None and runtime is not None:
+            self.app_factory, self.runtime = c_monitor.watch(app_factory, runtime)
+        self.one_server = bool(getattr(runtime, "one_server", False))
         self.targets = targets(spec)
         self.tables = list(dict.fromkeys(t.table for t in self.targets))
         self.keys: dict[str, str] = {}
@@ -313,6 +326,10 @@ class _Harness:
         self.monitor = InvariantMonitor.for_spec(spec)
 
     # -- serving
+
+    def label(self, text: str) -> None:
+        if self.c_monitor is not None:
+            self.c_monitor.label = text
 
     def open(self, app: Any, *, raise_errors: bool) -> Any:
         if self.runtime is None:
@@ -381,6 +398,7 @@ class _Harness:
             with self.open(app, raise_errors=False) as client:
                 before = _read(db, self.tables) if record else {}
                 for n, step in enumerate(scenario.steps[:upto], 1):
+                    self.label(f"X | {scenario.name} / step {n}")
                     if step.user is not None and step.user not in tokens:
                         tokens[step.user] = self.token(client, step.user)
                     response = self.send(client, step, tokens.get(step.user or ""))
@@ -392,6 +410,7 @@ class _Harness:
                         before = after
                     else:
                         records.append(StepRecord(n, step, status, body, {}, {}))
+                self.label(f"X | {scenario.name} / login")
                 for user in users:
                     if user not in tokens:
                         tokens[user] = self.token(client, user)
@@ -406,8 +425,16 @@ class _Harness:
                 db = self.fresh_db(scenario, Path(name))
                 _, rec.records = self.replay(scenario, db, len(scenario.steps), (), True)
             except Exception as err:  # noqa: BLE001 -- noted; the scenario is not raced
+                if _fatal(self, err):
+                    raise
                 rec.error = f"{type(err).__name__}: {err}"
         return rec
+
+
+def _fatal(h: _Harness, err: Exception) -> bool:
+    """Whether an error ends the check rather than a race: a server process that does not
+    start (a CheckError of a one-server runtime) fails every race the same way."""
+    return h.one_server and isinstance(err, CheckError)
 
 
 def _written(record: StepRecord, tables: Sequence[str] | set[str]) -> set[str]:
@@ -551,6 +578,8 @@ def run_race(
         try:
             tokens, replayed = h.replay(plan.scenario, db, prefix, users, False)
         except Exception as err:  # noqa: BLE001 -- the harness could not replay
+            if _fatal(h, err):
+                raise
             out.skipped = f"the replay of steps 1-{prefix} failed: {type(err).__name__}: {err}"
             return out
         for got, want in zip(replayed, recording.records, strict=False):
@@ -564,13 +593,18 @@ def run_race(
         before = _read(db, h.tables)
         apps: list[Any] = []
         clients: list[Any] = []
+        h.label(f"X | race {plan.label}")
         try:
             for _ in copies:
-                app = h.app_factory(db)
-                apps.append(app)
-                client = h.open(app, raise_errors=True)
+                # one server (a process app): every copy is one more client of one app
+                if not (h.one_server and apps):
+                    apps.append(h.app_factory(db))
+                client = h.open(apps[-1], raise_errors=True)
                 clients.append(client.__enter__())
         except Exception as err:  # noqa: BLE001 -- the harness could not start the copies
+            if _fatal(h, err):
+                _shutdown(h, apps, clients)
+                raise
             out.skipped = f"cannot start {len(copies)} app copies: {type(err).__name__}: {err}"
             _shutdown(h, apps, clients)
             return out
@@ -600,6 +634,8 @@ def run_race(
             t.join(max(0.0, deadline - time.monotonic()))
         if any(t.is_alive() for t in threads):
             out.skipped = f"timed out after {h.timeout:g}s"
+            if h.one_server:  # a server process is never left running
+                _shutdown(h, apps, clients)
             return out  # the copies are left to their threads
         _shutdown(h, apps, clients)
         answers: list[dict[str, Any]] = []
@@ -704,16 +740,18 @@ def layer_x(
     *,
     login: Login | None,
     runtime: AppRuntime | None = None,
+    monitor: InvariantMonitor | None = None,
     k: int = X_K,
     repeats: int = X_REPEATS,
     budget: int = X_BUDGET,
     timeout: float = X_TIMEOUT,
 ) -> None:
-    """Layer X on ``report`` (see the module docstring)."""
+    """Layer X on ``report`` (see the module docstring). ``monitor``: layer C, watching
+    every request of the layer through ``runtime``'s transport (None: not watched)."""
     if k < 2 or repeats < 1 or budget < 0:
         raise CheckError("layer X: x_k must be at least 2, x_repeats at least 1, x_budget >= 0")
     started = time.monotonic()
-    h = _Harness(spec, app_factory, make_db, login, runtime, timeout)
+    h = _Harness(spec, app_factory, make_db, login, runtime, timeout, monitor)
     report.races = []
     if not h.targets:
         report.notes.append(

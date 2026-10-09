@@ -515,6 +515,9 @@ class AppRuntime:
     error_class: Callable[[str], bool] = is_http_exception_class
     # the app's OpenAPI facts (None: the framework has no document)
     openapi: Callable[[Any], OpenApiFacts] | None = fastapi_openapi
+    # every transport opened on one app is a client of one live server (a process app):
+    # layer X then races its copies as clients of one app, not as app copies
+    one_server: bool = False
 
     def open(self, app: Any, *, raise_errors: bool = False) -> Transport:
         return self.transport(app, raise_errors=raise_errors)
