@@ -63,3 +63,14 @@ Request: `{"request": "only app admins may cancel runs", "selected": [...]}`. Re
 
 ## POST /api/check
 Runs the full check of the current spec against the app in the background. Returns `{"started": true}`; then poll `GET /api/model` for `app.last_check`.
+
+## v1.1 additions (gaps the UI found; the UI already accepts these shapes)
+1. **`view_diff` items carry content:**
+   - `invariants.added/removed` are `{"target", "name", "sentence"}`;
+   - `scenarios.added/removed/modified` are `{"target", "name", "steps": ["readable step", ...]}`;
+   - `machines.changed` is `{"target", "old": "moves text", "new": "moves text"}`.
+2. **`rejected_citations`** are `{"target", "reason"}`.
+3. **Follow-ups:** `POST /api/changes` takes an optional `"parent": "c1"`, for answering a change set's conflict or question as a follow-up. The server drafts it on top of the parent's proposal and supersedes the parent.
+4. `app.last_check.targets` may include `cell:` and `profile:` entries when known; otherwise the UI shows scenario, invariant, machine and service results only.
+5. **Cancelling and failures:** `DELETE /api/changes/{id}` cancels a change still drafting or checking (`status: "cancelled"`). `GET /api/model` carries `app.check_running: bool`, and `app.last_check` may carry `"error": "..."` when the check could not run.
+6. `rules[].questions` stays a list of ids; resolve them through `views.questions`.
