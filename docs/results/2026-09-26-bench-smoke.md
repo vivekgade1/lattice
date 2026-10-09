@@ -1835,3 +1835,22 @@ Two new tools made this possible:
 - layer X (`3cd8b11`).
 
 Details: `job-scheduler/metrics/COMPARISON.md`.
+
+## Model ladder on the job scheduler (2026-10-09)
+
+The same spec, the same gate (ABCDX) and the same per-ticket briefs, one build per model.
+
+- **Every spec-first build passed the final judge** (141 cases plus X, race probes 4/4): Opus,
+  Fable, Haiku and Sonnet.
+- **Opus** got there in 331k tokens, 58 tool calls and 17 minutes, almost every ticket in one round,
+  with no supervision.
+- **Fable:** 457k tokens, 31 minutes, no supervision.
+- **Haiku:** ~588k tokens, 110 minutes, 4 send-backs.
+- **Sonnet:** 749k tokens plus follow-ups.
+- **The Sonnet prose baseline** failed the judge with 11 findings.
+
+**Conclusion:** the spec gate fixes the quality; the model sets the effort and the supervision.
+Opus is the cheapest in tokens and time, and Haiku is likely the cheapest in dollars (its price is
+about ⅓ of Sonnet's per token).
+
+Details: `job-scheduler/metrics/COMPARISON.md`.
