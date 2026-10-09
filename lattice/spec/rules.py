@@ -21,7 +21,7 @@ raised:
 
 A link target is ``<kind>:<name>`` with kind one of ``scenario``, ``invariant``,
 ``machine`` (``Table.column``), ``service``, ``profile`` (a schema or column fact, e.g.
-``profile:JobConfig.cron_expr``). ``unchecked`` maps a rule to the reason it is left to an
+``profile:Order.status``). ``unchecked`` maps a rule to the reason it is left to an
 `Unchecked` note; ``context`` lists rules that state no checkable behaviour (an
 introduction, the stack). Every rule is in exactly one of links, unchecked or context --
 `Trace.untraced()` lists the ones that are in none.

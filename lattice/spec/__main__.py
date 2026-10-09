@@ -212,7 +212,21 @@ def _services(ref: str | None) -> Any:
     return services
 
 
+# the spec-authoring tools (each module has its own argument parser)
+AUTHORING = {
+    "draft": "lattice.spec.draft",
+    "lint": "lattice.spec.lint",
+    "probe": "lattice.spec.probe",
+    "review": "lattice.spec.review",
+}
+
+
 def main(argv: Sequence[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] in AUTHORING:
+        import importlib
+
+        return importlib.import_module(AUTHORING[argv[0]]).main(argv[1:])
     args = _parser().parse_args(argv)
     if args.command == "fidelity":
         return fidelity(args)
