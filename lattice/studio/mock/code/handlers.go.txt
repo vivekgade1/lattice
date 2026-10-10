@@ -1,0 +1,302 @@
+package app
+
+import (
+	"errors"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+func pathID(c *gin.Context, name string) (int64, bool) {
+	id, err := strconv.ParseInt(c.Param(name), 10, 64)
+	if err != nil {
+		unprocessable(c, name+" must be an integer")
+		return 0, false
+	}
+	return id, true
+}
+
+// appAccess loads the application and the caller's role in it ("super" for the super
+// admin). A non-member, like a missing application, gets 404.
+func (a *App) appAccess(c *gin.Context) (*Application, string, bool) {
+	id, ok := pathID(c, "id")
+	if !ok {
+		return nil, "", false
+	}
+	u := currentUser(c)
+	var app Application
+	if err := a.DB.First(&app, id).Error; err != nil {
+		fail(c, http.StatusNotFound, detailNotFound)
+		return nil, "", false
+	}
+	if u.IsSuperAdmin {
+		return &app, "super", true
+	}
+	var m Membership
+	if err := a.DB.Where("user_id = ? AND application_id = ?", u.ID, app.ID).First(&m).Error; err != nil {
+		fail(c, http.StatusNotFound, detailNotFound)
+		return nil, "", false
+	}
+	return &app, m.Role, true
+}
+
+// appAdmin is appAccess plus a 403 for anyone but an app admin or the super admin.
+func (a *App) appAdmin(c *gin.Context) (*Application, bool) {
+	app, role, ok := a.appAccess(c)
+	if !ok {
+		return nil, false
+	}
+	if role != "super" && role != RoleAppAdmin {
+		fail(c, http.StatusForbidden, detailDenied)
+		return nil, false
+	}
+	return app, true
+}
+
+func requireSuper(c *gin.Context) bool {
+	if !currentUser(c).IsSuperAdmin {
+		fail(c, http.StatusForbidden, detailDenied)
+		return false
+	}
+	return true
+}
+
+func (a *App) me(c *gin.Context) {
+	c.JSON(http.StatusOK, userOut(currentUser(c)))
+}
+
+func (a *App) createUser(c *gin.Context) {
+	if !requireSuper(c) {
+		return
+	}
+	var in struct {
+		Email        *string `json:"email"`
+		Password     *string `json:"password"`
+		IsSuperAdmin *bool   `json:"is_super_admin"`
+		IsActive     *bool   `json:"is_active"`
+	}
+	if !readJSON(c, &in) {
+		return
+	}
+	if in.Email == nil || !ValidEmail(*in.Email) {
+		unprocessable(c, "email must be a valid address of 3-254 characters")
+		return
+	}
+	if in.Password == nil || !ValidPassword(*in.Password) {
+		unprocessable(c, "password must be 8-72 bytes")
+		return
+	}
+	hash, err := HashPassword(*in.Password)
+	if err != nil {
+		unprocessable(c, "password cannot be hashed")
+		return
+	}
+	u := User{Email: *in.Email, HashedPassword: hash, IsActive: true}
+	if in.IsSuperAdmin != nil {
+		u.IsSuperAdmin = *in.IsSuperAdmin
+	}
+	if in.IsActive != nil {
+		u.IsActive = *in.IsActive
+	}
+	err = transact(a.DB, func(tx *gorm.DB) error {
+		u.ID = 0 // a retried attempt inserts afresh
+		var n int64
+		if err := tx.Model(&User{}).Where("email = ?", u.Email).Count(&n).Error; err != nil {
+			return err
+		}
+		if n > 0 {
+			return gorm.ErrDuplicatedKey
+		}
+		return tx.Create(&u).Error
+	})
+	if isUniqueViolation(err) {
+		fail(c, http.StatusConflict, "A user with this email already exists")
+		return
+	}
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	c.JSON(http.StatusCreated, userOut(&u))
+}
+
+func (a *App) createApplication(c *gin.Context) {
+	if !requireSuper(c) {
+		return
+	}
+	var in struct {
+		Name *string `json:"name"`
+	}
+	if !readJSON(c, &in) {
+		return
+	}
+	if in.Name == nil || !ValidAppName(*in.Name) {
+		unprocessable(c, "name must be 1-100 characters")
+		return
+	}
+	app := Application{Name: *in.Name}
+	err := transact(a.DB, func(tx *gorm.DB) error {
+		app.ID = 0 // a retried attempt inserts afresh
+		var n int64
+		if err := tx.Model(&Application{}).Where("name = ?", app.Name).Count(&n).Error; err != nil {
+			return err
+		}
+		if n > 0 {
+			return gorm.ErrDuplicatedKey
+		}
+		return tx.Create(&app).Error
+	})
+	if isUniqueViolation(err) {
+		fail(c, http.StatusConflict, "An application with this name already exists")
+		return
+	}
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	c.JSON(http.StatusCreated, appOut(&app))
+}
+
+func (a *App) listApplications(c *gin.Context) {
+	u := currentUser(c)
+	var apps []Application
+	q := a.DB.Order("applications.id")
+	if !u.IsSuperAdmin {
+		q = q.Joins("JOIN memberships ON memberships.application_id = applications.id").
+			Where("memberships.user_id = ?", u.ID)
+	}
+	if err := q.Find(&apps).Error; err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	out := make([]map[string]any, 0, len(apps))
+	for i := range apps {
+		out = append(out, appOut(&apps[i]))
+	}
+	c.JSON(http.StatusOK, out)
+}
+
+func (a *App) getApplication(c *gin.Context) {
+	app, _, ok := a.appAccess(c)
+	if !ok {
+		return
+	}
+	c.JSON(http.StatusOK, appOut(app))
+}
+
+func (a *App) listMembers(c *gin.Context) {
+	app, ok := a.appAdmin(c)
+	if !ok {
+		return
+	}
+	var ms []Membership
+	if err := a.DB.Where("application_id = ?", app.ID).Order("id").Find(&ms).Error; err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	out := make([]map[string]any, 0, len(ms))
+	for i := range ms {
+		out = append(out, memberOut(&ms[i]))
+	}
+	c.JSON(http.StatusOK, out)
+}
+
+func (a *App) getMember(c *gin.Context) {
+	app, ok := a.appAdmin(c)
+	if !ok {
+		return
+	}
+	uid, ok := pathID(c, "user_id")
+	if !ok {
+		return
+	}
+	var m Membership
+	if err := a.DB.Where("application_id = ? AND user_id = ?", app.ID, uid).First(&m).Error; err != nil {
+		fail(c, http.StatusNotFound, detailNotFound)
+		return
+	}
+	c.JSON(http.StatusOK, memberOut(&m))
+}
+
+var errNoUser = errors.New("no such user")
+
+func (a *App) putMember(c *gin.Context) {
+	app, ok := a.appAdmin(c)
+	if !ok {
+		return
+	}
+	uid, ok := pathID(c, "user_id")
+	if !ok {
+		return
+	}
+	var in struct {
+		Role *string `json:"role"`
+	}
+	if !readJSON(c, &in) {
+		return
+	}
+	if in.Role == nil || !ValidRole(*in.Role) {
+		unprocessable(c, "role must be app_admin or executor")
+		return
+	}
+	var m Membership
+	put := func(tx *gorm.DB) error {
+		m = Membership{}
+		var n int64
+		if err := tx.Model(&User{}).Where("id = ?", uid).Count(&n).Error; err != nil {
+			return err
+		}
+		if n == 0 {
+			return errNoUser
+		}
+		err := tx.Where("application_id = ? AND user_id = ?", app.ID, uid).First(&m).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			m = Membership{UserID: uid, ApplicationID: app.ID, Role: *in.Role}
+			return tx.Create(&m).Error
+		}
+		if err != nil {
+			return err
+		}
+		m.Role = *in.Role
+		return tx.Model(&m).Update("role", m.Role).Error
+	}
+	err := transact(a.DB, put)
+	if isUniqueViolation(err) {
+		// a concurrent PUT inserted the membership first; it exists now, so this one updates
+		// it, as it would had the two run one after the other
+		err = transact(a.DB, put)
+	}
+	switch {
+	case errors.Is(err, errNoUser):
+		fail(c, http.StatusNotFound, detailNotFound)
+	case isUniqueViolation(err):
+		fail(c, http.StatusConflict, "Membership already exists")
+	case err != nil:
+		fail(c, http.StatusInternalServerError, "database error")
+	default:
+		c.JSON(http.StatusOK, memberOut(&m))
+	}
+}
+
+func (a *App) deleteMember(c *gin.Context) {
+	app, ok := a.appAdmin(c)
+	if !ok {
+		return
+	}
+	uid, ok := pathID(c, "user_id")
+	if !ok {
+		return
+	}
+	res := a.DB.Where("application_id = ? AND user_id = ?", app.ID, uid).Delete(&Membership{})
+	if res.Error != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	if res.RowsAffected == 0 {
+		fail(c, http.StatusNotFound, detailNotFound)
+		return
+	}
+	c.Status(http.StatusNoContent)
+}

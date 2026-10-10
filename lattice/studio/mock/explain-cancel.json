@@ -1,0 +1,50 @@
+{
+ "kind": "value",
+ "answer": "cancelRun answers 409 when CancelRun's conditional UPDATE touches no row, that is when the run is not queued or running.",
+ "explanation": "CancelRun only updates rows whose status is queued or running, so a succeeded, failed or already cancelled run reports live=false and the handler answers 409 with the run unchanged (R46, R47). Who may reach this code is decided one step earlier by appAccess, which lets every member through today (R4).",
+ "citations": [
+  {
+   "target": "code:internal/app/runs.go:117",
+   "step": null,
+   "quote": "Where(\"id = ? AND status IN ?\", id, []string{RunQueued, RunRunning})."
+  },
+  {
+   "target": "code:internal/app/runs.go:139",
+   "step": null,
+   "quote": "if !live {"
+  },
+  {
+   "target": "code:internal/app/runs.go:140",
+   "step": null,
+   "quote": "fail(c, http.StatusConflict, \"Only a queued or running run can be cancelled\")"
+  },
+  {
+   "target": "code:internal/app/runs.go:126",
+   "step": null,
+   "quote": "app, _, ok := a.appAccess(c)"
+  },
+  {
+   "target": "rule:R46",
+   "step": null,
+   "quote": "A run that is already succeeded, failed or cancelled answers 409, unchanged."
+  },
+  {
+   "target": "rule:R47",
+   "step": null,
+   "quote": "A finished run never changes again."
+  },
+  {
+   "target": "scenario:cancel_finished_is_refused",
+   "step": 1,
+   "quote": "POST /applications/1/runs/200/cancel as ann -> 409 -- job_runs where {'id': 200} equals {'status': 'succeeded', 'exit_code': 0}"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 6.1,
+  "tokens": 7400,
+  "digest_elements": 14
+ }
+}

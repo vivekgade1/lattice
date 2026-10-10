@@ -1,0 +1,172 @@
+package app
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// jobConfig loads the path's config within app, answering 404 if it belongs elsewhere.
+func (a *App) jobConfig(c *gin.Context, app *Application) (*JobConfig, bool) {
+	jid, ok := pathID(c, "job_id")
+	if !ok {
+		return nil, false
+	}
+	var j JobConfig
+	if err := a.DB.Where("id = ? AND application_id = ?", jid, app.ID).First(&j).Error; err != nil {
+		fail(c, http.StatusNotFound, detailNotFound)
+		return nil, false
+	}
+	return &j, true
+}
+
+func (a *App) createJobConfig(c *gin.Context) {
+	app, ok := a.appAdmin(c)
+	if !ok {
+		return
+	}
+	var in struct {
+		Name     *string `json:"name"`
+		JobName  *string `json:"job_name"`
+		Version  *string `json:"version"`
+		CodePath *string `json:"code_path"`
+		Command  *string `json:"command"`
+		IsCron   *bool   `json:"is_cron"`
+		CronExpr *string `json:"cron_expr"`
+	}
+	if !readJSON(c, &in) {
+		return
+	}
+	switch {
+	case in.Name == nil || !ValidConfigName(*in.Name):
+		unprocessable(c, "name must be 1-100 characters")
+	case in.JobName == nil || !ValidJobName(*in.JobName):
+		unprocessable(c, "job_name must be 1-100 letters, digits, '_' or '-'")
+	case in.Version == nil || !ValidVersion(*in.Version):
+		unprocessable(c, "version must be 1-50 characters")
+	case in.CodePath == nil || !ValidCodePath(*in.CodePath):
+		unprocessable(c, "code_path must be a relative path inside the repo")
+	case in.Command == nil || !ValidCommand(*in.Command, a.Settings.ExecutableAllowlist):
+		unprocessable(c, "command must be 1-1000 characters and start with an allowed executable")
+	case in.IsCron == nil:
+		unprocessable(c, "is_cron is required")
+	case *in.IsCron && (in.CronExpr == nil || !ValidCron(*in.CronExpr)):
+		unprocessable(c, "a cron job needs a valid 5-field cron_expr")
+	case !*in.IsCron && in.CronExpr != nil:
+		unprocessable(c, "a non-cron job must not have a cron_expr")
+	default:
+		a.insertJobConfig(c, app, &JobConfig{ApplicationID: app.ID, Name: *in.Name,
+			JobName: *in.JobName, Version: *in.Version, CodePath: *in.CodePath,
+			Command: *in.Command, IsCron: *in.IsCron, CronExpr: in.CronExpr,
+			CreatedBy: currentUser(c).ID})
+	}
+}
+
+func (a *App) insertJobConfig(c *gin.Context, app *Application, j *JobConfig) {
+	err := transact(a.DB, func(tx *gorm.DB) error {
+		j.ID = 0 // a retried attempt inserts afresh
+		var n int64
+		if err := tx.Model(&JobConfig{}).Where("application_id = ? AND job_name = ? AND version = ?",
+			app.ID, j.JobName, j.Version).Count(&n).Error; err != nil {
+			return err
+		}
+		if n > 0 {
+			return gorm.ErrDuplicatedKey
+		}
+		return tx.Create(j).Error
+	})
+	if isUniqueViolation(err) {
+		fail(c, http.StatusConflict, "This version of the job is already registered")
+		return
+	}
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	c.JSON(http.StatusCreated, jobConfigOut(j))
+}
+
+func (a *App) listJobConfigs(c *gin.Context) {
+	app, _, ok := a.appAccess(c)
+	if !ok {
+		return
+	}
+	var js []JobConfig
+	if err := a.DB.Where("application_id = ?", app.ID).Order("id").Find(&js).Error; err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	out := make([]map[string]any, 0, len(js))
+	for i := range js {
+		out = append(out, jobConfigOut(&js[i]))
+	}
+	c.JSON(http.StatusOK, out)
+}
+
+func (a *App) getJobConfig(c *gin.Context) {
+	app, _, ok := a.appAccess(c)
+	if !ok {
+		return
+	}
+	j, ok := a.jobConfig(c, app)
+	if !ok {
+		return
+	}
+	c.JSON(http.StatusOK, jobConfigOut(j))
+}
+
+var errGone = errors.New("config gone")
+
+// setActive activates (deactivating the job's other versions) or deactivates a config,
+// in one transaction. It first locks every version of the job (in id order, so two
+// activations never deadlock): concurrent activations of one job then take turns, the last
+// one wins and exactly one version is left active, as on SQLite's single connection.
+func (a *App) setActive(c *gin.Context, active bool) {
+	app, ok := a.appAdmin(c)
+	if !ok {
+		return
+	}
+	j, ok := a.jobConfig(c, app)
+	if !ok {
+		return
+	}
+	err := transact(a.DB, func(tx *gorm.DB) error {
+		var locked []int64
+		if err := forUpdate(tx.Model(&JobConfig{})).
+			Where("application_id = ? AND job_name = ?", j.ApplicationID, j.JobName).
+			Order("id").Pluck("id", &locked).Error; err != nil {
+			return err
+		}
+		if active {
+			if err := tx.Model(&JobConfig{}).
+				Where("application_id = ? AND job_name = ? AND id <> ? AND is_active",
+					j.ApplicationID, j.JobName, j.ID).
+				Update("is_active", false).Error; err != nil {
+				return err
+			}
+		}
+		res := tx.Model(&JobConfig{}).Where("id = ?", j.ID).Update("is_active", active)
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected == 0 {
+			return errGone
+		}
+		return tx.First(j, j.ID).Error
+	})
+	switch {
+	case errors.Is(err, errGone), errors.Is(err, gorm.ErrRecordNotFound):
+		fail(c, http.StatusNotFound, detailNotFound)
+	case isUniqueViolation(err):
+		fail(c, http.StatusConflict, "Another version of this job was activated concurrently")
+	case err != nil:
+		fail(c, http.StatusInternalServerError, "database error")
+	default:
+		c.JSON(http.StatusOK, jobConfigOut(j))
+	}
+}
+
+func (a *App) activateJobConfig(c *gin.Context)   { a.setActive(c, true) }
+func (a *App) deactivateJobConfig(c *gin.Context) { a.setActive(c, false) }

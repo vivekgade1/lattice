@@ -1,0 +1,179 @@
+// Package app wires the Job Scheduler: settings, database, routes.
+package app
+
+import (
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+)
+
+// Settings mirrors the Python build's settings.
+type Settings struct {
+	SecretKey           string
+	TokenMinutes        int
+	ExecutableAllowlist []string
+	RepoRoot            string
+	RunTimeout          time.Duration
+}
+
+// SettingsFromEnv reads the settings, with the same defaults as the Python build.
+func SettingsFromEnv() Settings {
+	secret := os.Getenv("JOB_SCHEDULER_SECRET")
+	if secret == "" {
+		secret = "dev-secret-change-me"
+	}
+	root := os.Getenv("JOB_SCHEDULER_REPO_ROOT")
+	if root == "" {
+		root, _ = os.Getwd()
+	}
+	root, _ = filepath.Abs(root)
+	return Settings{secret, 60, []string{"python", "bash", "sh"}, root, 300 * time.Second}
+}
+
+// App is the HTTP router plus its database.
+type App struct {
+	Router   *gin.Engine
+	DB       *gorm.DB
+	Settings Settings
+}
+
+// New opens the database the setting names (see Dialector), migrates the schema and builds
+// the router.
+func New(setting string, s Settings) (*App, error) {
+	dialector, err := Dialector(setting)
+	if err != nil {
+		return nil, err
+	}
+	db, err := gorm.Open(dialector, &gorm.Config{Logger: logger.Default.LogMode(logger.Silent),
+		NowFunc: nowUTC})
+	if err != nil {
+		return nil, err
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	if db.Dialector.Name() == dialectSQLite {
+		// one connection: every write is serialised, so concurrent requests never race
+		sqlDB.SetMaxOpenConns(1)
+	} else {
+		// a server database: a normal pool; the guards below hold under real concurrency
+		sqlDB.SetMaxOpenConns(16)
+		sqlDB.SetMaxIdleConns(8)
+		sqlDB.SetConnMaxLifetime(30 * time.Minute)
+	}
+	if err := migrate(db); err != nil {
+		_ = sqlDB.Close()
+		return nil, err
+	}
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
+	r.Use(gin.CustomRecovery(func(c *gin.Context, _ any) {
+		fail(c, http.StatusInternalServerError, "Internal Server Error")
+	}))
+	r.HandleMethodNotAllowed = true
+	r.NoRoute(func(c *gin.Context) { fail(c, http.StatusNotFound, "Not Found") })
+	r.NoMethod(func(c *gin.Context) { fail(c, http.StatusMethodNotAllowed, "Method Not Allowed") })
+	a := &App{Router: r, DB: db, Settings: s}
+	r.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "ok"}) })
+	a.routes()
+	return a, nil
+}
+
+// migrate creates the schema; tickets add their models here. Three rules are enforced by the
+// database itself, so they hold for concurrent writers on every dialect:
+//
+//	uq_job_configs_one_active  at most one active version per (application, job_name)
+//	uq_job_runs_one_live       at most one queued or running run per config
+//	uq_job_runs_cron_minute    at most one cron run per config per scheduled minute
+//
+// SQLite and Postgres use partial unique indexes. MySQL has none, so each rule is a STORED
+// generated column that is non-NULL only when the rule's condition holds, under a UNIQUE
+// index (MySQL lets a unique index hold many NULLs). The columns are not in the models, so
+// they never reach the API.
+func migrate(db *gorm.DB) error {
+	m := db
+	if db.Dialector.Name() == dialectMySQL {
+		m = db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE="+mysqlCollation)
+	}
+	if err := m.AutoMigrate(&User{}, &Application{}, &Membership{}, &JobConfig{}, &JobRun{}); err != nil {
+		return err
+	}
+	if db.Dialector.Name() == dialectMySQL {
+		return migrateMySQLGuards(db)
+	}
+	for _, ddl := range []string{
+		"CREATE UNIQUE INDEX IF NOT EXISTS uq_job_configs_one_active " +
+			"ON job_configs (application_id, job_name) WHERE is_active",
+		"CREATE UNIQUE INDEX IF NOT EXISTS uq_job_runs_one_live " +
+			"ON job_runs (job_config_id) WHERE status IN ('queued','running')",
+		// even after the run finished
+		"CREATE UNIQUE INDEX IF NOT EXISTS uq_job_runs_cron_minute " +
+			"ON job_runs (job_config_id, scheduled_for) WHERE \"trigger\" = 'cron'",
+	} {
+		if err := db.Exec(ddl).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// migrateMySQLGuards adds the generated guard columns and their unique indexes, if missing.
+func migrateMySQLGuards(db *gorm.DB) error {
+	guards := []struct{ table, column, expr, index, cols string }{
+		{"job_configs", "active_guard", "TINYINT GENERATED ALWAYS AS (CASE WHEN is_active THEN 1 END) STORED",
+			"uq_job_configs_one_active", "application_id, job_name, active_guard"},
+		{"job_runs", "live_guard",
+			"TINYINT GENERATED ALWAYS AS (CASE WHEN status IN ('queued','running') THEN 1 END) STORED",
+			"uq_job_runs_one_live", "job_config_id, live_guard"},
+		{"job_runs", "cron_minute_guard",
+			"DATETIME(6) GENERATED ALWAYS AS (CASE WHEN `trigger` = 'cron' THEN scheduled_for END) STORED",
+			"uq_job_runs_cron_minute", "job_config_id, cron_minute_guard"},
+	}
+	mig := db.Migrator()
+	for _, g := range guards {
+		if !mig.HasColumn(g.table, g.column) {
+			if err := db.Exec("ALTER TABLE " + g.table + " ADD COLUMN " + g.column + " " + g.expr).Error; err != nil {
+				return err
+			}
+		}
+		if !mig.HasIndex(g.table, g.index) {
+			if err := db.Exec("CREATE UNIQUE INDEX " + g.index + " ON " + g.table +
+				" (" + g.cols + ")").Error; err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (a *App) routes() {
+	r := a.Router
+	r.POST("/auth/login", a.login)
+	g := r.Group("", a.requireUser)
+	g.GET("/users/me", a.me)
+	g.POST("/users", a.createUser)
+	g.POST("/applications", a.createApplication)
+	g.GET("/applications", a.listApplications)
+	g.GET("/applications/:id", a.getApplication)
+	g.GET("/applications/:id/members", a.listMembers)
+	g.GET("/applications/:id/members/:user_id", a.getMember)
+	g.PUT("/applications/:id/members/:user_id", a.putMember)
+	g.DELETE("/applications/:id/members/:user_id", a.deleteMember)
+	g.POST("/applications/:id/jobs", a.createJobConfig)
+	g.GET("/applications/:id/jobs", a.listJobConfigs)
+	g.GET("/applications/:id/jobs/:job_id", a.getJobConfig)
+	g.POST("/applications/:id/jobs/:job_id/activate", a.activateJobConfig)
+	g.POST("/applications/:id/jobs/:job_id/deactivate", a.deactivateJobConfig)
+	g.POST("/applications/:id/jobs/:job_id/runs", a.startRun)
+	g.GET("/applications/:id/jobs/:job_id/runs", a.listRuns)
+	g.GET("/applications/:id/runs/:run_id", a.getRun)
+	g.POST("/applications/:id/runs/:run_id/cancel", a.cancelRun)
+	g.POST("/worker/run-once", a.runOnce)
+	g.POST("/worker/schedule-tick", a.scheduleTick)
+}

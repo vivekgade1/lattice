@@ -1,0 +1,14 @@
+{
+ "kind": "not_specified",
+ "answer": "The code serving this selection is not linked to any rule in the spec.",
+ "explanation": "No annotated line or code link in the indexed files matches the question, so there is no rule to cite. If this behaviour matters, make it a rule and let the rebuild enforce it.",
+ "citations": [],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 3.2,
+  "tokens": 4100,
+  "digest_elements": 6
+ }
+}

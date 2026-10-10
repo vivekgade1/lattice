@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1)
+# Lattice Studio API contract (v1.3)
 
 `lattice studio PROJECT_DIR [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API. It polls; there are no websockets.
 
@@ -79,3 +79,64 @@ Runs the full check of the current spec against the app in the background. Retur
 ## v1.2 additions
 8. **Inconclusive verification:** `verified.status` may be `"inconclusive"`. A setup step of the generated scenario failed before the step that tests the claim, so the app neither confirmed nor contradicted the answer; `detail` says which step failed and why. `"disagrees"` now means only that **the claim step** failed.
 9. **Answer and verification details:** the answer carries `verified.claim_step` (1-based) when a scenario was run, and `usage.digest_elements` (how many spec elements were sent to the model).
+
+## v1.3 additions (Studio 2: code lens, explain, request flow, rebuild)
+All new endpoints are plain JSON and polled; there are no websockets. Unknown ids and paths answer 404 `{"detail": "..."}`, a missing required query parameter or an empty body field answers 422. The status enum of a change set (`drafting|checking|ready|failed|accepted|rejected|cancelled`) does **not** change; build progress is the separate `build` field below.
+
+### `build` on `model.changes[]`
+Every change whose `status` is `"accepted"` carries `"build": {"state": "not_built|rebuilding|built|gave_up", "rebuild_id": "b1"}`; `rebuild_id` is absent until a rebuild has been started for the change. Changes with any other status have no `build`. A change is `not_built` after accepting or after a stopped rebuild, `rebuilding` while a rebuild runs, `built` once a rebuild's check passed, `gave_up` when a rebuild reached its round limit with findings left.
+
+When a rebuild passes: the changes' `build.state` becomes `built`, `app.last_check` becomes a `pass` check (no findings), `project.git_head` moves to the rebuild's commit, and `GET /api/code/file` marks the rebuilt lines (`rebuilt_in`) and no longer reports failing coverage or findings.
+
+### GET /api/code/files
+The source files that touch the spec: `[{"path": "internal/app/runs.go", "language": "go", "size": 3912, "rules": ["R42", "R44", "R46"]}]` (`rules` are rule ids, sorted).
+
+### GET /api/code/file?path=
+```json
+{"path": "internal/app/runs.go", "language": "go", "lines": ["package app", "..."],
+ "annotations": [{"line": 43, "rules": ["R44"],
+                  "finding": {"code": "D", "message": "..."},
+                  "coverage": "covered|failing|untested",
+                  "rebuilt_in": "c1"}]}
+```
+`line` is 1-based and within `lines`. `finding` and `rebuilt_in` are optional. `rebuilt_in` is the id of the change whose rebuild produced the line. 404 for an unknown `path`, 422 without one.
+
+### GET /api/code/links?target=
+For a `rule:Rxx`, `cell:<row>|<METHOD /template>` or `scenario:<name>` (also `invariant:`, `machine:`) target, the code that serves it:
+`[{"path", "line_from", "line_to", "symbol", "why"}]` (empty list when no code is linked: a visible gap).
+For a `code:<path>:<line>` target, the rules that line serves: `[{"rule": "R44", "text": "...", "status": "checked"}]`. 404 for a code target naming an unknown path or a line outside the file; 422 without `target`.
+
+### POST /api/explain
+Request: `{"question": "...", "selected": ["code:internal/app/runs.go:43", "rule:R44"]}`. Answers like `POST /api/ask` (same card, `verified` always `null`), from the code: citations may be `code:<path>:<line>` (with `quote` the line's text) beside `rule:`, `scenario:` and `invariant:` targets. A question the indexed code cannot answer comes back `not_specified` with no citations. 422 when `question` is empty.
+
+### GET /api/flow?endpoint=&caller=
+One request traced end to end. `endpoint` is a route (`POST /applications/{}/runs/{}/cancel`; short forms such as `POST /runs/{}/cancel` and `POST /configs/{}/runs` are accepted), `caller` a user name (default `ann`).
+```json
+{"endpoint": "POST /runs/{}/cancel", "caller": "ann",
+ "stages": [{"stage": "access", "symbol": "appAccess", "path": "internal/app/handlers.go", "line": 23,
+             "rules": ["R4", "R5"], "reads": ["memberships"], "writes": []}],
+ "divergence": null | {"stage": "database write", "expected": "...", "actual": "..."}}
+```
+`divergence.stage` is one of `stages[].stage`. It is set while the last check fails (or, for a pending accepted or ready change, shows what will differ) and `null` once the check passes. 404 for an endpoint with no flow.
+
+### POST /api/rebuild
+Request: `{"changes": ["c1"], "model": "sonnet", "max_rounds": 4}` (`model` and `max_rounds` optional). Response: `{"id": "b1"}`. 409 when a change is not `accepted`, or is already `rebuilding` or `built`; 404 for an unknown change; 422 for an empty list or `max_rounds` below 1. Several changes rebuild together (one brief, one gate).
+
+### GET /api/rebuild/{id}
+```json
+{"id": "b1", "changes": ["c1"], "status": "queued|running|passed|gave_up|stopped",
+ "model": "sonnet", "max_rounds": 4, "started": "2026-10-10T09:00:00Z",
+ "rounds": [{"n": 1, "started": "iso", "agent_summary": "what the agent changed",
+             "files_changed": ["internal/app/runs.go"],
+             "check": {"verdict": "pass|fail", "counts": {"A": 0, "C": 0, "D": 2, "X": 0},
+                       "findings": [{"id": "f1", "title": "...", "target": "scenario:..."}]}}],
+ "targets": [{"id": "scenario:...", "label": "the not-built-yet check", "done": false}],
+ "commit": {"sha": "...", "message": "...", "files_changed": ["..."]}}
+```
+- `rounds` lists finished rounds in order; while one is in progress its entry has `check: null`, an empty `agent_summary` and no `files_changed`.
+- `targets` are the checks labelled *not built yet* by the impact run; `done` flips when a round passes them.
+- `commit` is present only when `status` is `passed`.
+- A `fail` round's findings are the next round's brief; the rebuild is `gave_up` when `max_rounds` rounds ended without a pass, and `stopped` after `DELETE`.
+
+### DELETE /api/rebuild/{id}
+Stops a queued or running rebuild between rounds: `{"id": "b1", "status": "stopped"}`; its completed rounds stay in the record and its changes go back to `build.state` `not_built`. 409 once the rebuild finished (`passed`, `gave_up` or `stopped`).

@@ -1,0 +1,133 @@
+package app
+
+import (
+	"errors"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
+)
+
+// Error details the spec states exactly.
+const (
+	detailBadLogin = "Incorrect email or password"
+	detailInactive = "Inactive user"
+	detailNoAuth   = "Not authenticated"
+	detailBadToken = "Could not validate credentials"
+	detailDenied   = "You do not have permission to perform this action."
+	detailNotFound = "Not found"
+)
+
+// HashPassword hashes a password with bcrypt.
+func HashPassword(pw string) (string, error) {
+	h, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
+	return string(h), err
+}
+
+// VerifyPassword reports whether pw matches the bcrypt hash.
+func VerifyPassword(pw, hash string) bool {
+	if len(pw) > 72 {
+		return false
+	}
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw)) == nil
+}
+
+// MakeToken issues an HS256 JWT whose `sub` is the user id.
+func MakeToken(userID int64, s Settings, now time.Time) (string, error) {
+	claims := jwt.RegisteredClaims{
+		Subject:   strconv.FormatInt(userID, 10),
+		IssuedAt:  jwt.NewNumericDate(now),
+		ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(s.TokenMinutes) * time.Minute)),
+	}
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(s.SecretKey))
+}
+
+// DecodeToken returns the user id of a valid token.
+func DecodeToken(tok string, s Settings) (int64, error) {
+	var claims jwt.RegisteredClaims
+	_, err := jwt.ParseWithClaims(tok, &claims, func(*jwt.Token) (any, error) {
+		return []byte(s.SecretKey), nil
+	}, jwt.WithValidMethods([]string{"HS256"}), jwt.WithExpirationRequired())
+	if err != nil {
+		return 0, err
+	}
+	id, err := strconv.ParseInt(claims.Subject, 10, 64)
+	if err != nil {
+		return 0, errors.New("bad subject")
+	}
+	return id, nil
+}
+
+func fail(c *gin.Context, status int, detail string) {
+	c.AbortWithStatusJSON(status, gin.H{"detail": detail})
+}
+
+// requireUser is the bearer-auth middleware: it puts the active current user in the context.
+func (a *App) requireUser(c *gin.Context) {
+	h := c.GetHeader("Authorization")
+	scheme, tok, ok := strings.Cut(strings.TrimSpace(h), " ")
+	if h == "" || !ok || !strings.EqualFold(scheme, "bearer") || strings.TrimSpace(tok) == "" {
+		c.Header("WWW-Authenticate", "Bearer")
+		fail(c, http.StatusUnauthorized, detailNoAuth)
+		return
+	}
+	id, err := DecodeToken(strings.TrimSpace(tok), a.Settings)
+	if err != nil {
+		c.Header("WWW-Authenticate", "Bearer")
+		fail(c, http.StatusUnauthorized, detailBadToken)
+		return
+	}
+	var u User
+	if err := a.DB.First(&u, id).Error; err != nil {
+		c.Header("WWW-Authenticate", "Bearer")
+		fail(c, http.StatusUnauthorized, detailBadToken)
+		return
+	}
+	if !u.IsActive {
+		fail(c, http.StatusForbidden, detailInactive)
+		return
+	}
+	c.Set("user", &u)
+	c.Next()
+}
+
+func currentUser(c *gin.Context) *User {
+	return c.MustGet("user").(*User)
+}
+
+func (a *App) login(c *gin.Context) {
+	var in struct {
+		Email    *string `json:"email"`
+		Password *string `json:"password"`
+	}
+	if !readJSON(c, &in) {
+		return
+	}
+	if in.Email == nil || in.Password == nil {
+		unprocessable(c, "email and password are required")
+		return
+	}
+	var u User
+	if err := a.DB.Where("email = ?", *in.Email).First(&u).Error; err != nil {
+		fail(c, http.StatusUnauthorized, detailBadLogin)
+		return
+	}
+	if !VerifyPassword(*in.Password, u.HashedPassword) {
+		fail(c, http.StatusUnauthorized, detailBadLogin)
+		return
+	}
+	if !u.IsActive {
+		fail(c, http.StatusForbidden, detailInactive)
+		return
+	}
+	tok, err := MakeToken(u.ID, a.Settings, time.Now())
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "token error")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"access_token": tok, "token_type": "bearer"})
+}

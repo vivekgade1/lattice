@@ -1,0 +1,771 @@
+{
+ "files": [
+  {
+   "path": "internal/app/runs.go",
+   "source": "runs.go.txt",
+   "language": "go",
+   "annotations": [
+    {
+     "line": 15,
+     "rules": [
+      "R42"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) startRun"
+    },
+    {
+     "line": 16,
+     "rules": [
+      "R5",
+      "R42"
+     ],
+     "coverage": "covered",
+     "expect": "a.appAccess(c)"
+    },
+    {
+     "line": 20,
+     "rules": [
+      "R41"
+     ],
+     "coverage": "covered",
+     "expect": "a.jobConfig(c, app)"
+    },
+    {
+     "line": 32,
+     "rules": [
+      "R44"
+     ],
+     "coverage": "covered",
+     "expect": "forUpdate(tx).First(&cur"
+    },
+    {
+     "line": 35,
+     "rules": [
+      "R43"
+     ],
+     "coverage": "covered",
+     "expect": "if !cur.IsActive"
+    },
+    {
+     "line": 39,
+     "rules": [
+      "R44"
+     ],
+     "coverage": "covered",
+     "expect": "tx.Model(&JobRun{}).Where(\"job_config_id = ?"
+    },
+    {
+     "line": 43,
+     "rules": [
+      "R44"
+     ],
+     "coverage": "covered",
+     "expect": "if n > 0"
+    },
+    {
+     "line": 46,
+     "rules": [
+      "R44",
+      "R42"
+     ],
+     "coverage": "covered",
+     "expect": "return tx.Create(&r).Error"
+    },
+    {
+     "line": 52,
+     "rules": [
+      "R43"
+     ],
+     "coverage": "covered",
+     "expect": "Only an active job config can be run"
+    },
+    {
+     "line": 54,
+     "rules": [
+      "R44"
+     ],
+     "coverage": "covered",
+     "expect": "This job already has a queued or running run"
+    },
+    {
+     "line": 58,
+     "rules": [
+      "R42"
+     ],
+     "coverage": "covered",
+     "expect": "c.JSON(http.StatusCreated"
+    },
+    {
+     "line": 62,
+     "rules": [
+      "R45"
+     ],
+     "coverage": "untested",
+     "expect": "func (a *App) listRuns"
+    },
+    {
+     "line": 91,
+     "rules": [
+      "R45"
+     ],
+     "coverage": "covered",
+     "expect": "Where(\"id = ? AND application_id = ?\", rid"
+    },
+    {
+     "line": 113,
+     "rules": [
+      "R46",
+      "R47"
+     ],
+     "coverage": "covered",
+     "expect": "func CancelRun"
+    },
+    {
+     "line": 117,
+     "rules": [
+      "R46",
+      "R47"
+     ],
+     "coverage": "covered",
+     "expect": "Where(\"id = ? AND status IN ?\", id"
+    },
+    {
+     "line": 118,
+     "rules": [
+      "R46",
+      "R49"
+     ],
+     "coverage": "failing",
+     "expect": "Updates(map[string]any{\"status\": RunCancelled",
+     "finding": {
+      "code": "C",
+      "message": "job_runs 200: status 'cancelled' but finished_at is null after POST /applications/1/runs/200/cancel"
+     }
+    },
+    {
+     "line": 125,
+     "rules": [
+      "R46"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) cancelRun"
+    },
+    {
+     "line": 126,
+     "rules": [
+      "R4",
+      "R5",
+      "R46"
+     ],
+     "coverage": "covered",
+     "expect": "a.appAccess(c)"
+    },
+    {
+     "line": 134,
+     "rules": [
+      "R46",
+      "R59"
+     ],
+     "coverage": "failing",
+     "expect": "live, err := CancelRun",
+     "finding": {
+      "code": "D",
+      "message": "POST /applications/1/runs/200/cancel as ann -> app 200, but job_runs 200 has exit_code -15 (expected null)"
+     }
+    },
+    {
+     "line": 139,
+     "rules": [
+      "R46",
+      "R47"
+     ],
+     "coverage": "covered",
+     "expect": "if !live"
+    },
+    {
+     "line": 140,
+     "rules": [
+      "R46"
+     ],
+     "coverage": "covered",
+     "expect": "Only a queued or running run can be cancelled"
+    },
+    {
+     "line": 147,
+     "rules": [
+      "R46"
+     ],
+     "coverage": "covered",
+     "expect": "c.JSON(http.StatusOK, jobRunOut(r))"
+    }
+   ],
+   "rebuilt_source": "runs.rebuilt.go.txt",
+   "rebuilt_lines": [
+    126
+   ]
+  },
+  {
+   "path": "internal/app/handlers.go",
+   "source": "handlers.go.txt",
+   "language": "go",
+   "annotations": [
+    {
+     "line": 23,
+     "rules": [
+      "R5"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) appAccess"
+    },
+    {
+     "line": 34,
+     "rules": [
+      "R2"
+     ],
+     "coverage": "covered",
+     "expect": "if u.IsSuperAdmin"
+    },
+    {
+     "line": 38,
+     "rules": [
+      "R5",
+      "R9"
+     ],
+     "coverage": "covered",
+     "expect": "Where(\"user_id = ? AND application_id = ?\""
+    },
+    {
+     "line": 46,
+     "rules": [
+      "R3",
+      "R6"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) appAdmin"
+    },
+    {
+     "line": 51,
+     "rules": [
+      "R3",
+      "R6"
+     ],
+     "coverage": "covered",
+     "expect": "role != \"super\" && role != RoleAppAdmin"
+    },
+    {
+     "line": 58,
+     "rules": [
+      "R20",
+      "R21"
+     ],
+     "coverage": "covered",
+     "expect": "func requireSuper"
+    },
+    {
+     "line": 70,
+     "rules": [
+      "R20"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) createUser"
+    },
+    {
+     "line": 125,
+     "rules": [
+      "R21"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) createApplication"
+    },
+    {
+     "line": 162,
+     "rules": [
+      "R22"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) listApplications"
+    },
+    {
+     "line": 181,
+     "rules": [
+      "R23"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) getApplication"
+    },
+    {
+     "line": 189,
+     "rules": [
+      "R24"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) listMembers"
+    },
+    {
+     "line": 225,
+     "rules": [
+      "R25"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) putMember"
+    },
+    {
+     "line": 283,
+     "rules": [
+      "R26"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) deleteMember"
+    }
+   ]
+  },
+  {
+   "path": "internal/app/jobs.go",
+   "source": "jobs.go.txt",
+   "language": "go",
+   "annotations": [
+    {
+     "line": 12,
+     "rules": [
+      "R41"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) jobConfig"
+    },
+    {
+     "line": 25,
+     "rules": [
+      "R28"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) createJobConfig"
+    },
+    {
+     "line": 26,
+     "rules": [
+      "R28",
+      "R3",
+      "R6"
+     ],
+     "coverage": "covered",
+     "expect": "a.appAdmin(c)"
+    },
+    {
+     "line": 43,
+     "rules": [
+      "R32"
+     ],
+     "coverage": "covered",
+     "expect": "ValidConfigName"
+    },
+    {
+     "line": 45,
+     "rules": [
+      "R31"
+     ],
+     "coverage": "covered",
+     "expect": "ValidJobName"
+    },
+    {
+     "line": 47,
+     "rules": [
+      "R33"
+     ],
+     "coverage": "covered",
+     "expect": "ValidVersion"
+    },
+    {
+     "line": 49,
+     "rules": [
+      "R34"
+     ],
+     "coverage": "covered",
+     "expect": "ValidCodePath"
+    },
+    {
+     "line": 51,
+     "rules": [
+      "R35"
+     ],
+     "coverage": "covered",
+     "expect": "ValidCommand"
+    },
+    {
+     "line": 55,
+     "rules": [
+      "R36"
+     ],
+     "coverage": "covered",
+     "expect": "case *in.IsCron && (in.CronExpr == nil"
+    },
+    {
+     "line": 71,
+     "rules": [
+      "R37"
+     ],
+     "coverage": "covered",
+     "expect": "Where(\"application_id = ? AND job_name = ? AND version = ?\""
+    },
+    {
+     "line": 81,
+     "rules": [
+      "R37"
+     ],
+     "coverage": "covered",
+     "expect": "This version of the job is already registered"
+    },
+    {
+     "line": 91,
+     "rules": [
+      "R38"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) listJobConfigs"
+    },
+    {
+     "line": 108,
+     "rules": [
+      "R38"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) getJobConfig"
+    },
+    {
+     "line": 126,
+     "rules": [
+      "R39"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) setActive"
+    },
+    {
+     "line": 127,
+     "rules": [
+      "R39",
+      "R3",
+      "R6"
+     ],
+     "coverage": "covered",
+     "expect": "a.appAdmin(c)"
+    },
+    {
+     "line": 144,
+     "rules": [
+      "R39"
+     ],
+     "coverage": "covered",
+     "expect": "id <> ? AND is_active"
+    },
+    {
+     "line": 163,
+     "rules": [
+      "R39"
+     ],
+     "coverage": "untested",
+     "expect": "Another version of this job was activated concurrently"
+    }
+   ]
+  },
+  {
+   "path": "internal/app/app.go",
+   "source": "app.go.txt",
+   "language": "go",
+   "annotations": [
+    {
+     "line": 157,
+     "rules": [
+      "R12",
+      "R13"
+     ],
+     "coverage": "covered",
+     "expect": "r.POST(\"/auth/login\""
+    },
+    {
+     "line": 158,
+     "rules": [
+      "R15",
+      "R16"
+     ],
+     "coverage": "covered",
+     "expect": "r.Group(\"\", a.requireUser)"
+    },
+    {
+     "line": 168,
+     "rules": [
+      "R28"
+     ],
+     "coverage": "covered",
+     "expect": "a.createJobConfig)"
+    },
+    {
+     "line": 173,
+     "rules": [
+      "R42",
+      "R44"
+     ],
+     "coverage": "covered",
+     "expect": "a.startRun)"
+    },
+    {
+     "line": 174,
+     "rules": [
+      "R45"
+     ],
+     "coverage": "covered",
+     "expect": "a.listRuns)"
+    },
+    {
+     "line": 176,
+     "rules": [
+      "R46",
+      "R4"
+     ],
+     "coverage": "covered",
+     "expect": "a.cancelRun)"
+    },
+    {
+     "line": 177,
+     "rules": [
+      "R60"
+     ],
+     "coverage": "covered",
+     "expect": "a.runOnce)"
+    },
+    {
+     "line": 178,
+     "rules": [
+      "R62"
+     ],
+     "coverage": "covered",
+     "expect": "a.scheduleTick)"
+    }
+   ]
+  },
+  {
+   "path": "internal/app/auth.go",
+   "source": "auth.go.txt",
+   "language": "go",
+   "annotations": [
+    {
+     "line": 70,
+     "rules": [
+      "R15",
+      "R16",
+      "R17"
+     ],
+     "coverage": "covered",
+     "expect": "func (a *App) requireUser"
+    },
+    {
+     "line": 75,
+     "rules": [
+      "R16"
+     ],
+     "coverage": "covered",
+     "expect": "fail(c, http.StatusUnauthorized, detailNoAuth)"
+    },
+    {
+     "line": 90,
+     "rules": [
+      "R14",
+      "R18"
+     ],
+     "coverage": "covered",
+     "expect": "if !u.IsActive"
+    }
+   ]
+  }
+ ],
+ "links": [
+  {
+   "path": "internal/app/runs.go",
+   "line_from": 35,
+   "line_to": 36,
+   "symbol": "startRun",
+   "why": "Re-reads the config under a row lock and refuses an inactive one with 409 before any run is created.",
+   "rules": [
+    "R43"
+   ],
+   "targets": [
+    "scenario:inactive_config_cannot_run"
+   ]
+  },
+  {
+   "path": "internal/app/runs.go",
+   "line_from": 31,
+   "line_to": 46,
+   "symbol": "startRun",
+   "why": "Locks the config row, counts its queued or running runs and inserts the new run in one transaction; a non-zero count is the 409 that keeps at most one live run per config.",
+   "rules": [
+    "R44",
+    "R42"
+   ],
+   "targets": [
+    "scenario:a_second_live_run_is_refused",
+    "invariant:one_live_run_per_config",
+    "scenario:run_answers_a_queued_manual_run"
+   ]
+  },
+  {
+   "path": "internal/app/runs.go",
+   "line_from": 51,
+   "line_to": 54,
+   "symbol": "startRun",
+   "why": "Maps the inactive and the duplicate cases to 409 answers.",
+   "rules": [
+    "R43",
+    "R44"
+   ],
+   "targets": [
+    "scenario:inactive_config_cannot_run",
+    "scenario:a_second_live_run_is_refused"
+   ]
+  },
+  {
+   "path": "internal/app/runs.go",
+   "line_from": 113,
+   "line_to": 122,
+   "symbol": "CancelRun",
+   "why": "One conditional UPDATE moves only a queued or running run to cancelled and sets finished_at; a finished run is left unchanged.",
+   "rules": [
+    "R46",
+    "R47",
+    "R49"
+   ],
+   "targets": [
+    "scenario:cancel_queued_frees_the_job",
+    "scenario:cancel_running_run",
+    "scenario:cancel_finished_is_refused",
+    "invariant:finished_at_exactly_when_finished",
+    "machine:JobRun.status"
+   ]
+  },
+  {
+   "path": "internal/app/runs.go",
+   "line_from": 125,
+   "line_to": 129,
+   "symbol": "cancelRun",
+   "why": "Who may cancel: appAccess lets any member or the super admin through, and answers 404 for a non-member.",
+   "rules": [
+    "R4",
+    "R5",
+    "R46"
+   ],
+   "targets": [
+    "cell:*|POST /applications/{}/runs/{}/cancel",
+    "scenario:access__cancel__as_*"
+   ]
+  },
+  {
+   "path": "internal/app/runs.go",
+   "line_from": 139,
+   "line_to": 142,
+   "symbol": "cancelRun",
+   "why": "A run that was not queued or running answers 409 and stays unchanged.",
+   "rules": [
+    "R46",
+    "R47"
+   ],
+   "targets": [
+    "scenario:cancel_finished_is_refused"
+   ]
+  },
+  {
+   "path": "internal/app/handlers.go",
+   "line_from": 23,
+   "line_to": 42,
+   "symbol": "appAccess",
+   "why": "Loads the application and the caller's role; a non-member gets 404 as if the application did not exist.",
+   "rules": [
+    "R5",
+    "R2",
+    "R9"
+   ],
+   "targets": [
+    "scenario:members_of_another_application_are_404",
+    "scenario:super_admin_acts_in_any_application",
+    "scenario:access__*"
+   ]
+  },
+  {
+   "path": "internal/app/handlers.go",
+   "line_from": 46,
+   "line_to": 55,
+   "symbol": "appAdmin",
+   "why": "appAccess plus a 403 for anyone but an app admin or the super admin.",
+   "rules": [
+    "R3",
+    "R6"
+   ],
+   "targets": [
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs/{}/activate",
+    "scenario:access__create_job__as_eve"
+   ]
+  },
+  {
+   "path": "internal/app/jobs.go",
+   "line_from": 25,
+   "line_to": 60,
+   "symbol": "createJobConfig",
+   "why": "App admins register a config after the field validations; a new config starts inactive.",
+   "rules": [
+    "R28",
+    "R29",
+    "R30",
+    "R31",
+    "R32",
+    "R33",
+    "R34",
+    "R35",
+    "R36"
+   ],
+   "targets": [
+    "scenario:create_job_answers_an_inactive_config",
+    "scenario:job_name_bounds",
+    "scenario:cron_rules"
+   ]
+  },
+  {
+   "path": "internal/app/jobs.go",
+   "line_from": 126,
+   "line_to": 169,
+   "symbol": "setActive",
+   "why": "Activating a version deactivates the job's other versions in one transaction, so exactly one stays active.",
+   "rules": [
+    "R39"
+   ],
+   "targets": [
+    "scenario:activate_leaves_one_active_version",
+    "scenario:deactivate_then_activate_again",
+    "invariant:one_active_version_per_job"
+   ]
+  },
+  {
+   "path": "internal/app/app.go",
+   "line_from": 173,
+   "line_to": 173,
+   "symbol": "routes",
+   "why": "Route POST /applications/{id}/jobs/{job_id}/runs to startRun behind the bearer-auth group.",
+   "rules": [
+    "R42"
+   ],
+   "targets": [
+    "cell:*|POST /applications/{}/jobs/{}/runs"
+   ]
+  },
+  {
+   "path": "internal/app/app.go",
+   "line_from": 176,
+   "line_to": 176,
+   "symbol": "routes",
+   "why": "Route POST /applications/{id}/runs/{run_id}/cancel to cancelRun behind the bearer-auth group.",
+   "rules": [
+    "R46"
+   ],
+   "targets": [
+    "cell:*|POST /applications/{}/runs/{}/cancel"
+   ]
+  }
+ ]
+}

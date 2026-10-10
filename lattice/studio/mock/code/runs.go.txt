@@ -1,0 +1,148 @@
+package app
+
+import (
+	"errors"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+var errInactive = errors.New("config inactive")
+
+// startRun queues a manual run of an active config; any member or the super admin may.
+func (a *App) startRun(c *gin.Context) {
+	app, _, ok := a.appAccess(c)
+	if !ok {
+		return
+	}
+	j, ok := a.jobConfig(c, app)
+	if !ok {
+		return
+	}
+	uid := currentUser(c).ID
+	var r JobRun
+	err := transact(a.DB, func(tx *gorm.DB) error {
+		r = JobRun{JobConfigID: j.ID, ApplicationID: app.ID, Trigger: TriggerManual,
+			TriggeredBy: &uid, Status: RunQueued}
+		// lock the config row: concurrent starts (and an activate/deactivate) of this config
+		// take turns, as they do on SQLite's single connection
+		var cur JobConfig
+		if err := forUpdate(tx).First(&cur, j.ID).Error; err != nil {
+			return err
+		}
+		if !cur.IsActive {
+			return errInactive
+		}
+		var n int64
+		if err := tx.Model(&JobRun{}).Where("job_config_id = ? AND status IN ?", j.ID,
+			[]string{RunQueued, RunRunning}).Count(&n).Error; err != nil {
+			return err
+		}
+		if n > 0 {
+			return gorm.ErrDuplicatedKey
+		}
+		return tx.Create(&r).Error
+	})
+	switch {
+	case errors.Is(err, gorm.ErrRecordNotFound):
+		fail(c, http.StatusNotFound, detailNotFound)
+	case errors.Is(err, errInactive):
+		fail(c, http.StatusConflict, "Only an active job config can be run")
+	case isUniqueViolation(err):
+		fail(c, http.StatusConflict, "This job already has a queued or running run")
+	case err != nil:
+		fail(c, http.StatusInternalServerError, "database error")
+	default:
+		c.JSON(http.StatusCreated, jobRunOut(&r))
+	}
+}
+
+func (a *App) listRuns(c *gin.Context) {
+	app, _, ok := a.appAccess(c)
+	if !ok {
+		return
+	}
+	j, ok := a.jobConfig(c, app)
+	if !ok {
+		return
+	}
+	var rs []JobRun
+	if err := a.DB.Where("job_config_id = ? AND application_id = ?", j.ID, app.ID).
+		Order("id").Find(&rs).Error; err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	out := make([]map[string]any, 0, len(rs))
+	for i := range rs {
+		out = append(out, jobRunOut(&rs[i]))
+	}
+	c.JSON(http.StatusOK, out)
+}
+
+// jobRun loads the path's run within app, answering 404 if it belongs elsewhere.
+func (a *App) jobRun(c *gin.Context, app *Application) (*JobRun, bool) {
+	rid, ok := pathID(c, "run_id")
+	if !ok {
+		return nil, false
+	}
+	var r JobRun
+	if err := a.DB.Where("id = ? AND application_id = ?", rid, app.ID).First(&r).Error; err != nil {
+		fail(c, http.StatusNotFound, detailNotFound)
+		return nil, false
+	}
+	return &r, true
+}
+
+func (a *App) getRun(c *gin.Context) {
+	app, _, ok := a.appAccess(c)
+	if !ok {
+		return
+	}
+	r, ok := a.jobRun(c, app)
+	if !ok {
+		return
+	}
+	c.JSON(http.StatusOK, jobRunOut(r))
+}
+
+// CancelRun moves a queued or running run to cancelled in one conditional UPDATE, so it
+// cannot overwrite a final state a worker wrote concurrently. It reports whether the run
+// was live.
+func CancelRun(db *gorm.DB, id int64, now time.Time) (bool, error) {
+	var n int64
+	err := retry(func() error {
+		res := db.Model(&JobRun{}).
+			Where("id = ? AND status IN ?", id, []string{RunQueued, RunRunning}).
+			Updates(map[string]any{"status": RunCancelled, "finished_at": dbTime(now)})
+		n = res.RowsAffected
+		return res.Error
+	})
+	return n == 1, err
+}
+
+func (a *App) cancelRun(c *gin.Context) {
+	app, _, ok := a.appAccess(c)
+	if !ok {
+		return
+	}
+	r, ok := a.jobRun(c, app)
+	if !ok {
+		return
+	}
+	live, err := CancelRun(a.DB, r.ID, time.Now())
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	if !live {
+		fail(c, http.StatusConflict, "Only a queued or running run can be cancelled")
+		return
+	}
+	if err := a.DB.First(r, r.ID).Error; err != nil {
+		fail(c, http.StatusInternalServerError, "database error")
+		return
+	}
+	c.JSON(http.StatusOK, jobRunOut(r))
+}

@@ -1,0 +1,118 @@
+{
+ "endpoint": "POST /applications/{}/runs/{}/cancel",
+ "stages": [
+  {
+   "stage": "route",
+   "symbol": "routes",
+   "path": "internal/app/app.go",
+   "line": 176,
+   "rules": [
+    "R46",
+    "R4"
+   ],
+   "reads": [],
+   "writes": []
+  },
+  {
+   "stage": "auth",
+   "symbol": "requireUser",
+   "path": "internal/app/auth.go",
+   "line": 70,
+   "rules": [
+    "R15",
+    "R16",
+    "R17",
+    "R14"
+   ],
+   "reads": [
+    "users"
+   ],
+   "writes": []
+  },
+  {
+   "stage": "access",
+   "symbol": "cancelRun",
+   "path": "internal/app/runs.go",
+   "line": 126,
+   "rules": [
+    "R4",
+    "R5",
+    "R46"
+   ],
+   "reads": [
+    "applications",
+    "memberships"
+   ],
+   "writes": []
+  },
+  {
+   "stage": "lookup",
+   "symbol": "jobRun",
+   "path": "internal/app/runs.go",
+   "line": 91,
+   "rules": [
+    "R45"
+   ],
+   "reads": [
+    "job_runs"
+   ],
+   "writes": []
+  },
+  {
+   "stage": "handler",
+   "symbol": "cancelRun",
+   "path": "internal/app/runs.go",
+   "line": 134,
+   "rules": [
+    "R46",
+    "R47"
+   ],
+   "reads": [],
+   "writes": []
+  },
+  {
+   "stage": "database write",
+   "symbol": "CancelRun",
+   "path": "internal/app/runs.go",
+   "line": 118,
+   "rules": [
+    "R46",
+    "R47",
+    "R49"
+   ],
+   "reads": [
+    "job_runs"
+   ],
+   "writes": [
+    "job_runs"
+   ]
+  },
+  {
+   "stage": "response",
+   "symbol": "cancelRun",
+   "path": "internal/app/runs.go",
+   "line": 147,
+   "rules": [
+    "R46"
+   ],
+   "reads": [
+    "job_runs"
+   ],
+   "writes": []
+  }
+ ],
+ "divergences": {
+  "ann": {
+   "stage": "database write",
+   "expected": "job_runs 200 has exit_code null and finished_at set (R46, R49)",
+   "actual": "job_runs 200 has exit_code -15 and finished_at null after the 200"
+  }
+ },
+ "pending_divergences": {
+  "eve": {
+   "stage": "access",
+   "expected": "403: only app admins and the super admin may cancel (change {change})",
+   "actual": "200: appAccess lets every member through at runs.go:126"
+  }
+ }
+}

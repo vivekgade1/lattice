@@ -301,6 +301,13 @@ def test_ask_fixtures_cover_observed_and_inconclusive() -> None:
     assert inc["verified"]["claim_step"] == 3
 
 
+def test_ask_yes_fixture_agrees_at_the_claim_step() -> None:
+    v = load("ask-yes")["verified"]
+    assert v["status"] == "agrees" and v["claim_step"] == 4
+    steps = v["scenario"].splitlines()
+    assert len(steps) == 4 and steps[3].startswith("4. ") and "cancel as eve" in steps[3]
+
+
 def test_citations_point_at_real_things() -> None:
     model = load("model")
     known = {f"rule:{r['id']}" for r in model["rules"]}
@@ -445,6 +452,11 @@ def test_post_ask(base: str) -> None:
         {"question": "Can an inactive user log in?", "selected": [], "verify": False},
     )
     assert a["verified"] is None, "no verification unless asked"
+    status, a = post(
+        base + "/api/ask",
+        {"question": "Can an executor cancel a run?", "selected": [], "verify": True},
+    )
+    assert status == 200 and a["verified"]["status"] == "agrees"
 
 
 def test_post_ask_rejects_bad_input(base: str) -> None:
@@ -486,6 +498,10 @@ def test_change_lifecycle_accept(base: str) -> None:
     _, m = get_json(base + "/api/model")
     assert m["project"]["git_head"] == acc["commit"][:7]
     assert find_change(m, cid)["status"] == "accepted"
+    cell = c["view_diff"]["cells"][0]
+    key = f"{cell['row']}|{cell['col']}"
+    values = [g["cells"][key] for g in m["views"]["access_groups"] if key in g["cells"]]
+    assert values == [cell["new"]], "an accepted change rewrites the cells it modifies"
 
 
 def test_change_reject(base: str) -> None:

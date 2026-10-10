@@ -1,0 +1,45 @@
+{
+ "kind": "yes",
+ "answer": "This 409 enforces R44: at most one queued or running run per config; removing it lets a second live run in.",
+ "explanation": "startRun locks the config row, counts its queued or running runs and returns gorm.ErrDuplicatedKey when the count is above zero, which the handler maps to 409. The insert only happens after that check, inside the same transaction.",
+ "citations": [
+  {
+   "target": "code:internal/app/runs.go:43",
+   "step": null,
+   "quote": "if n > 0 {"
+  },
+  {
+   "target": "code:internal/app/runs.go:46",
+   "step": null,
+   "quote": "return tx.Create(&r).Error"
+  },
+  {
+   "target": "code:internal/app/runs.go:54",
+   "step": null,
+   "quote": "fail(c, http.StatusConflict, \"This job already has a queued or running run\")"
+  },
+  {
+   "target": "rule:R44",
+   "step": null,
+   "quote": "At most one queued or running run per config: another one answers 409."
+  },
+  {
+   "target": "scenario:a_second_live_run_is_refused",
+   "step": 2,
+   "quote": "POST /applications/1/jobs/100/runs as ann -> 409 -- job_runs where {'job_config_id': 100} count=1"
+  },
+  {
+   "target": "invariant:one_live_run_per_config",
+   "step": null,
+   "quote": "A config has at most one queued or running run."
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 6.1,
+  "tokens": 7400,
+  "digest_elements": 14
+ }
+}

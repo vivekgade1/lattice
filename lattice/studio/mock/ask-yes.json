@@ -21,9 +21,14 @@
  ],
  "citations_checked": true,
  "rejected_citations": [],
- "verified": null,
+ "verified": {
+  "status": "agrees",
+  "detail": "Step 4 (eve cancels the queued run) answered 200 {\"status\": \"cancelled\"}, as the spec says.",
+  "scenario": "1. POST /auth/login {email: root@example.com, password: ...} as no token -> 200\n2. POST /applications/1/members {user: eve, role: executor} as root -> 201\n3. POST /applications/1/jobs/10/runs as root -> 201 (run 200 queued)\n4. POST /applications/1/runs/200/cancel as eve -> 200 {\"status\": \"cancelled\"} (claim step)",
+  "claim_step": 4
+ },
  "usage": {
-  "seconds": 4.2,
+  "seconds": 9.6,
   "tokens": 6180
  }
 }

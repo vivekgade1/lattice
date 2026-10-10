@@ -1,0 +1,113 @@
+{
+ "endpoint": "POST /applications/{}/jobs/{}/runs",
+ "stages": [
+  {
+   "stage": "route",
+   "symbol": "routes",
+   "path": "internal/app/app.go",
+   "line": 173,
+   "rules": [
+    "R42"
+   ],
+   "reads": [],
+   "writes": []
+  },
+  {
+   "stage": "auth",
+   "symbol": "requireUser",
+   "path": "internal/app/auth.go",
+   "line": 70,
+   "rules": [
+    "R15",
+    "R16",
+    "R17",
+    "R14"
+   ],
+   "reads": [
+    "users"
+   ],
+   "writes": []
+  },
+  {
+   "stage": "access",
+   "symbol": "appAccess",
+   "path": "internal/app/handlers.go",
+   "line": 23,
+   "rules": [
+    "R5",
+    "R2"
+   ],
+   "reads": [
+    "applications",
+    "memberships"
+   ],
+   "writes": []
+  },
+  {
+   "stage": "lookup",
+   "symbol": "jobConfig",
+   "path": "internal/app/jobs.go",
+   "line": 12,
+   "rules": [
+    "R41"
+   ],
+   "reads": [
+    "job_configs"
+   ],
+   "writes": []
+  },
+  {
+   "stage": "handler",
+   "symbol": "startRun",
+   "path": "internal/app/runs.go",
+   "line": 15,
+   "rules": [
+    "R42",
+    "R43"
+   ],
+   "reads": [
+    "job_configs"
+   ],
+   "writes": []
+  },
+  {
+   "stage": "live-run check",
+   "symbol": "startRun",
+   "path": "internal/app/runs.go",
+   "line": 43,
+   "rules": [
+    "R44"
+   ],
+   "reads": [
+    "job_runs"
+   ],
+   "writes": []
+  },
+  {
+   "stage": "database write",
+   "symbol": "startRun",
+   "path": "internal/app/runs.go",
+   "line": 46,
+   "rules": [
+    "R44",
+    "R42"
+   ],
+   "reads": [],
+   "writes": [
+    "job_runs"
+   ]
+  },
+  {
+   "stage": "response",
+   "symbol": "startRun",
+   "path": "internal/app/runs.go",
+   "line": 58,
+   "rules": [
+    "R42"
+   ],
+   "reads": [],
+   "writes": []
+  }
+ ],
+ "divergences": {}
+}

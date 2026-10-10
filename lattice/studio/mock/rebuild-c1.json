@@ -1,0 +1,73 @@
+{
+ "model": "claude-sonnet-5-5",
+ "max_rounds": 4,
+ "rounds": [
+  {
+   "n": 1,
+   "offset_s": 0,
+   "agent_summary": "Added an admin check to cancelRun, after the cancel was already applied: executors now get 403, but the run is still cancelled in the database.",
+   "files_changed": [
+    "internal/app/runs.go"
+   ],
+   "check": {
+    "verdict": "fail",
+    "counts": {
+     "A": 0,
+     "C": 0,
+     "D": 2,
+     "X": 0
+    },
+    "findings": [
+     {
+      "id": "f1",
+      "title": "executor_cannot_cancel_a_run step 1: POST /applications/1/runs/200/cancel as eve -> 403, but job_runs 200 status is 'cancelled' (expected 'queued')",
+      "target": "scenario:executor_cannot_cancel_a_run"
+     },
+     {
+      "id": "f2",
+      "title": "access__cancel__as_eve step 1: answered 403 but wrote job_runs 200 (a refused request must write nothing, R27)",
+      "target": "scenario:access__cancel__as_eve"
+     }
+    ]
+   }
+  },
+  {
+   "n": 2,
+   "offset_s": 71,
+   "agent_summary": "Moved the check to the top of cancelRun: appAccess became appAdmin, so a refused caller reaches no database write.",
+   "files_changed": [
+    "internal/app/runs.go",
+    "internal/app/runs_test.go"
+   ],
+   "check": {
+    "verdict": "pass",
+    "counts": {
+     "A": 0,
+     "C": 0,
+     "D": 0,
+     "X": 0
+    },
+    "findings": []
+   }
+  }
+ ],
+ "targets": [
+  {
+   "id": "scenario:executor_cannot_cancel_a_run",
+   "label": "an executor cancelling a run gets 403",
+   "done_in_round": 2
+  },
+  {
+   "id": "scenario:access__cancel__as_eve",
+   "label": "eve POST cancel answers 403 and writes nothing",
+   "done_in_round": 2
+  }
+ ],
+ "commit": {
+  "message": "build: only app admins and the super admin may cancel runs",
+  "files_changed": [
+   "internal/app/runs.go",
+   "internal/app/runs_test.go"
+  ]
+ }
+}
