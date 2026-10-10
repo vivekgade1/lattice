@@ -6,8 +6,12 @@ model = "stub"
 
 # TEST ONLY: the rebuild loop's stub agent writes round k's files of stub-rebuild.json
 # (round 1 also tries to edit REQUIREMENTS.md, which Studio must restore); gate.sh passes
-# iff built.txt exists, so a rebuild passes in round 2.
+# iff writing.txt and reading.txt exist, so a rebuild of a change passes in round 2.
+# A scoped build (API v1.8) of the area writing-notes or reading-notes plays that scope's
+# rounds instead. Only "release" is protected, so the checked-out "main" is refused as a
+# target for being checked out (not for being protected).
 [rebuild]
 agent = "stub"
 gates = ["./gate.sh"]
 max_rounds = 3
+protected_branches = ["release"]

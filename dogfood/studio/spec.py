@@ -18,12 +18,24 @@ What makes the answers exact:
 - the rebuild loop (API.md v1.7) runs the seed's TEST-ONLY stub agent (``[rebuild] agent =
   "stub"``): round 1 of ``stub-rebuild.json`` holds 2 seconds (long enough to send a second
   POST or a DELETE), writes ``progress.txt`` and tries to overwrite REQUIREMENTS.md; round 2
-  writes ``built.txt``; the gate ``./gate.sh`` passes iff ``built.txt`` exists. So a rebuild
-  of the starred change passes in round 2, and its commit on ``rebuild/c1`` is the
-  reproducible ``REBUILT_COMMIT`` (parent ``STARRED_COMMIT``, adding ``built.txt`` and
-  ``progress.txt`` only) -- recorded from the real server on 2026-10-10 and checked by hand
-  with ``git log --all --name-status`` (docs/results/2026-10-10-rebuild-results.md);
+  writes ``writing.txt`` and ``reading.txt``; the gate ``./gate.sh`` passes iff both exist
+  (each missing file is one finding, for ``scenario:create_a_note`` and
+  ``scenario:read_own_and_other``). So a rebuild of the starred change passes in round 2,
+  and its commit on ``rebuild/c1`` is the reproducible ``REBUILT_COMMIT`` (parent
+  ``STARRED_COMMIT``, adding ``progress.txt``, ``reading.txt`` and ``writing.txt`` only) --
+  recorded from the real server on 2026-10-10 (re-recorded for the two-section seed, see
+  docs/results/2026-10-10-build-from-spec-results.md) and checked by hand with ``git log
+  --all --name-status`` (docs/results/2026-10-10-rebuild-results.md);
   ``GET /api/rebuild/{id}?wait=30`` holds the request until the rebuild has finished.
+- build from spec (API.md v1.8): the seed's requirements have two sections, so two areas
+  (``writing-notes``: R1, R2; ``reading-notes``: R3, R4) plus ``all``. A scoped build plays
+  ``stub-rebuild.json``'s rounds for its scope: ``writing-notes`` writes a draft, then
+  ``writing.txt`` (passes in round 2; ``reading.txt`` stays missing, out of scope);
+  ``reading-notes`` writes ``reading.txt`` and deletes ``writing.txt`` (a regression), then
+  restores it. Builds land on the default target ``build/notes`` (or a named branch) and
+  their commits (``WRITING_COMMIT``, ``READING_COMMIT``) are reproducible like the others.
+  Only ``release`` is protected in the seed, so the checked-out ``main`` is refused as
+  checked out; ``SCRATCH.txt`` (untracked) makes the owner's worktree dirty.
 
 Studio has no database and no login: there are no tables, invariants, machines or users,
 and layers B, C and R have nothing to bind to (the harness's marker database is never
@@ -38,15 +50,20 @@ from lattice.spec import Scenario, Spec, Step, Unchecked
 SEED_MD = """\
 # Notes app
 
+## Writing notes
+
 - A signed-in user creates a note with POST /notes {"text": ...}; it answers 201 with the note.
 - A note's text is 1 to 200 characters; anything else answers 422.
+
+## Reading notes
+
 - GET /notes/{id} answers the caller's own note; another user's note answers 404.
 - Requests without a token answer 401.
 """
-SEED_HEAD = "8b8f66a861cfddef98c6549bd2a4c1ed2d52b834"
+SEED_HEAD = "44bbe502a335e9d73e50f0bfb5db2f35e9a5cb06"
 STARRED = "Notes can be starred."
 STARRED_MD = SEED_MD + f"- {STARRED}\n"
-STARRED_COMMIT = "cf22fc5183e0f676abd43e42ceb8d8958955b05d"
+STARRED_COMMIT = "f6781dee31bbc7ceb82508c3484d197dc14e6782"
 FIRST = "Starred notes come first."
 TRAILER = (
     "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
@@ -63,13 +80,15 @@ SEED_RULES = [
     {"id": "R4", "status": "checked", "links": ["scenario:no_token"]},
 ]
 NO_CHANGE = "change {} is {}, not ready"
-REBUILT_COMMIT = "c1ca55b07e21a6edd92a2b92bf701b16c4f388bb"
+REBUILT_COMMIT = "3cc6b1d7b768b7eca0c90aca7577da10420d0012"
 REBUILT_MESSAGE = (
     f"build: {STARRED}\n\nRebuilt by Lattice Studio from the accepted change(s) c1; the "
     "gates passed in round 2 of 3.\n\nLattice-Rebuild: b1 (notes)\n"
 )
 SPEC_EDITED = "spec files were edited (restored from the base commit): REQUIREMENTS.md"
-GATE_FINDING = "FAIL built.txt is missing (scenario:built)"
+W_FINDING = "FAIL writing.txt is missing (scenario:create_a_note)"
+R_FINDING = "FAIL reading.txt is missing (scenario:read_own_and_other)"
+W_TARGET, R_TARGET = "scenario:create_a_note", "scenario:read_own_and_other"
 ROUND_1 = {
     "n": 1,
     "agent_summary": "round 1: started the build, and tried to edit the requirements",
@@ -77,18 +96,19 @@ ROUND_1 = {
     "spec_edited": ["REQUIREMENTS.md"],
     "check": {
         "verdict": "fail",
-        "counts": {"G": 1},
+        "counts": {"G": 2},
         "findings": [
             {"id": "f1", "title": SPEC_EDITED, "target": "spec"},
-            {"id": "f2", "title": GATE_FINDING, "target": "scenario:built"},
+            {"id": "f2", "title": W_FINDING, "target": W_TARGET},
+            {"id": "f3", "title": R_FINDING, "target": R_TARGET},
         ],
     },
     "gates": [{"command": "./gate.sh", "exit_code": 1}],
 }
 ROUND_2 = {
     "n": 2,
-    "agent_summary": "round 2: wrote built.txt",
-    "files_changed": ["built.txt"],
+    "agent_summary": "round 2: wrote writing.txt and reading.txt",
+    "files_changed": ["reading.txt", "writing.txt"],
     "spec_edited": [],
     "check": {"verdict": "pass", "counts": {"G": 0}, "findings": []},
     "gates": [{"command": "./gate.sh", "exit_code": 0}],
@@ -136,6 +156,81 @@ READY_STARRED = wait(
     rules={"added": ["R5"], "changed": [], "removed": []},
 )  # fmt: skip
 UNCHANGED = model(markdown=SEED_MD, project={"name": "notes", "git_head": SEED_HEAD[:7]})
+
+# ---- build from spec (API.md v1.8) ---------------------------------------------------------
+WRITING_COMMIT = "3a8e280e32863901ff41d8c43c4e3760821be456"
+READING_COMMIT = "f513516c1fb73b91916f621f38e5144e2b13d035"
+WRITING = {"kind": "area", "id": "writing-notes", "title": "Writing notes", "rules": ["R1", "R2"]}
+READING = {"kind": "area", "id": "reading-notes", "title": "Reading notes", "rules": ["R3", "R4"]}
+NOTHING = "nothing to build: the checks in this scope already pass"
+
+
+def area(aid, title, rules, scenarios, failing, status, branch="build/notes"):
+    return {"id": aid, "title": title, "rules": rules, "scenarios": scenarios,
+            "checks": scenarios, "failing": failing, "status": status,
+            "target_branch": branch}  # fmt: skip
+
+
+def areas(w, r, a, branch="build/notes", params=None):
+    """GET /api/areas: (failing, status) of writing-notes, reading-notes and all."""
+    return Step("GET", "/api/areas", params=params, expect_body=[
+        area("writing-notes", "Writing notes", ["R1", "R2"], 2, *w, branch=branch),
+        area("reading-notes", "Reading notes", ["R3", "R4"], 2, *r, branch=branch),
+        area("all", "All", ["R1", "R2", "R3", "R4"], 4, *a, branch=branch),
+    ])  # fmt: skip
+
+
+def build(scope, rid="b1", **body):
+    return Step("POST", "/api/rebuild", json={"scope": scope, **body},
+                expect_body={"id": rid})  # fmt: skip
+
+
+def coded(method, path, status, code, json=None):
+    return Step(method, path, json=json, expect_status=status, expect_body={"code": code})
+
+
+def finding(fid, title, target, in_scope, regression=False):
+    return {"id": fid, "title": title, "target": target, "in_scope": in_scope,
+            "regression": regression}  # fmt: skip
+
+
+W_ROUND_1 = {
+    "n": 1, "agent_summary": "writing 1: a draft only", "files_changed": ["draft.txt"],
+    "check": {"verdict": "fail", "counts": {"G": 2}, "findings": [
+        finding("f1", W_FINDING, W_TARGET, True), finding("f2", R_FINDING, R_TARGET, False)]},
+    "scope_passing": 0, "scope_total": 1, "regressions": [], "newly_fixed": [],
+}  # fmt: skip
+W_ROUND_2 = {
+    "n": 2, "agent_summary": "writing 2: wrote writing.txt", "files_changed": ["writing.txt"],
+    "check": {"verdict": "pass", "counts": {"G": 1}, "findings": [
+        finding("f1", R_FINDING, R_TARGET, False)]},
+    "scope_passing": 1, "scope_total": 1, "regressions": [], "newly_fixed": [W_TARGET],
+}  # fmt: skip
+R_ROUND_1 = {
+    "n": 1, "agent_summary": "reading 1: wrote reading.txt, deleted writing.txt",
+    "files_changed": ["reading.txt", "writing.txt"],
+    "check": {"verdict": "fail", "counts": {"G": 1}, "findings": [
+        finding("f1", W_FINDING, W_TARGET, False, regression=True)]},
+    "scope_passing": 1, "scope_total": 1, "regressions": [W_TARGET], "newly_fixed": [R_TARGET],
+}  # fmt: skip
+R_ROUND_2 = {
+    "n": 2, "agent_summary": "reading 2: restored writing.txt", "files_changed": ["writing.txt"],
+    "check": {"verdict": "pass", "counts": {"G": 0}, "findings": []},
+    "scope_passing": 1, "scope_total": 1, "regressions": [], "newly_fixed": [R_TARGET],
+}  # fmt: skip
+W_BASELINE = {
+    "verdict": "fail", "counts": {"G": 2}, "unmapped": [],
+    "findings": [
+        {"id": "f1", "title": W_FINDING, "target": W_TARGET, "rules": ["R1"], "in_scope": True},
+        {"id": "f2", "title": R_FINDING, "target": R_TARGET, "rules": ["R3"], "in_scope": False},
+    ],
+}  # fmt: skip
+R_BASELINE = {
+    "verdict": "fail", "counts": {"G": 1}, "unmapped": [],
+    "findings": [
+        {"id": "f1", "title": R_FINDING, "target": R_TARGET, "rules": ["R3"], "in_scope": True},
+    ],
+}  # fmt: skip
 
 # fmt: off
 SCENARIOS = (
@@ -340,7 +435,7 @@ SCENARIOS = (
                 base=STARRED_COMMIT, branch="rebuild/c1", rounds=[ROUND_1, ROUND_2],
                 targets=[], error=None,
                 commit={"sha": REBUILT_COMMIT, "message": REBUILT_MESSAGE,
-                        "files_changed": ["built.txt", "progress.txt"]}),
+                        "files_changed": ["progress.txt", "reading.txt", "writing.txt"]}),
         model(markdown=STARRED_MD, project={"name": "notes", "git_head": STARRED_COMMIT[:7]},
               changes=[{"id": "c1", "status": "accepted", "build": {
                   "state": "built", "rebuild_id": "b1", "branch": "rebuild/c1",
@@ -407,6 +502,97 @@ SCENARIOS = (
                 params={"wait": "soon"}),
         UNCHANGED,
     )),
+    Scenario("areas_and_branches_of_a_new_project", steps=(
+        areas((None, "not_built"), (None, "not_built"), (None, "not_built")),
+        Step("GET", "/p/notes/api/areas", expect_body=[{"id": "writing-notes"},
+                                                       {"id": "reading-notes"}, {"id": "all"}]),
+        Step("GET", "/api/branches", expect_body={
+            "branches": [{"name": "main", "head": SEED_HEAD, "current": True,
+                          "protected": False, "ahead_of_base": 0, "is_integration": False}],
+            "current_branch": "main", "protected": ["release"],
+            "default_target": "build/notes"}),
+        Step("GET", "/api/projects", expect_body=[
+            {"name": "notes", "capabilities": {"rebuild": True, "build_from_spec": True}}]),
+    )),
+    Scenario("scoped_builds_accumulate_on_the_integration_branch", steps=(
+        build({"area": "writing-notes"}),
+        rebuilt("b1", "passed", scope=WRITING, changes=[], agent="stub", max_rounds=3,
+                branch="rebuild/writing-notes-1", target_branch="build/notes",
+                integration_branch="build/notes", created_branch=True, base_ref="HEAD",
+                base=SEED_HEAD, integration_base=SEED_HEAD, merged_head=None,
+                baseline=W_BASELINE, rounds=[W_ROUND_1, W_ROUND_2],
+                targets=[{"id": W_TARGET, "label": W_FINDING, "done": True}],
+                commit={"sha": WRITING_COMMIT, "files_changed": ["draft.txt", "writing.txt"]},
+                commit_range={"from": SEED_HEAD, "to": WRITING_COMMIT},
+                error=None, warnings=[]),
+        areas((0, "built"), (1, "partial"), (1, "partial")),
+        # the owner's branch and checkout never move
+        model(markdown=SEED_MD, project={"name": "notes", "git_head": SEED_HEAD[:7]}),
+        Step("GET", "/api/branches", expect_body={"current_branch": "main", "branches": [
+            {"name": "build/notes", "head": WRITING_COMMIT, "current": False,
+             "ahead_of_base": 1, "is_integration": True},
+            {"name": "main", "head": SEED_HEAD, "current": True},
+            {"name": "rebuild/writing-notes-1", "head": WRITING_COMMIT, "current": False},
+        ]}),
+        build({"area": "reading-notes"}, rid="b2"),
+        rebuilt("b2", "passed", scope=READING, branch="rebuild/reading-notes-1",
+                target_branch="build/notes", created_branch=False, base_ref="build/notes",
+                base=WRITING_COMMIT, integration_base=WRITING_COMMIT, baseline=R_BASELINE,
+                rounds=[R_ROUND_1, R_ROUND_2],
+                commit={"sha": READING_COMMIT, "files_changed": ["reading.txt"]},
+                commit_range={"from": WRITING_COMMIT, "to": READING_COMMIT}),
+        areas((0, "built"), (0, "built"), (0, "built")),
+        refused("POST", "/api/rebuild", 409, NOTHING, json={"scope": {"area": "writing-notes"}}),
+        refused("POST", "/api/rebuild", 409, NOTHING, json={"scope": "all"}),
+        Step("GET", "/api/rebuild", expect_body=[{"id": "b1"}, {"id": "b2"}]),
+        Step("GET", "/api/projects", expect_body=[{"name": "notes",
+                                                   "git_head": SEED_HEAD[:7]}]),
+    )),
+    Scenario("scoped_build_refusals", steps=(
+        refused("POST", "/api/rebuild", 404, "no area nope", json={"scope": {"area": "nope"}}),
+        refused("POST", "/api/rebuild", 404, "no rule R9",
+                json={"scope": {"rules": ["R1", "R9"]}}),
+        refused("POST", "/api/rebuild", 422,
+                'scope must be "all", {"area": "<id>"} or {"rules": ["<id>", ...]}',
+                json={"scope": "writing-notes"}),
+        refused("POST", "/api/rebuild", 422, "branch needs a scope",
+                json={"changes": ["c1"], "branch": {"name": "x"}}),
+        coded("POST", "/api/rebuild", 409, "branch_checked_out",
+              json={"scope": "all", "branch": {"name": "main"}}),
+        coded("POST", "/api/rebuild", 409, "tree_dirty",
+              json={"scope": "all", "branch": {"name": "main"}, "confirm_unsafe_branch": True}),
+        coded("POST", "/api/rebuild", 409, "branch_protected",
+              json={"scope": "all", "branch": {"name": "release", "create": True}}),
+        coded("POST", "/api/rebuild", 404, "no_branch",
+              json={"scope": "all", "branch": {"name": "nope"}}),
+        coded("POST", "/api/rebuild", 422, "branch_name_invalid",
+              json={"scope": "all", "branch": {"name": "bad..name", "create": True}}),
+        coded("POST", "/api/rebuild", 404, "no_ref",
+              json={"scope": "all", "branch": {"name": "x", "create": True, "from": "nosuch"}}),
+        Step("GET", "/api/branches", expect_body={"branches": [{"name": "main"}]}),
+        Step("GET", "/api/rebuild", expect_body=[]),
+        UNCHANGED,
+    )),
+    Scenario("a_named_target_branch_is_created_once", steps=(
+        build({"area": "writing-notes"}, branch={"name": "feature/w", "create": True}),
+        rebuilt("b1", "passed", target_branch="feature/w", created_branch=True,
+                base_ref="HEAD", base=SEED_HEAD, commit={"sha": WRITING_COMMIT}),
+        coded("POST", "/api/rebuild", 409, "branch_exists",
+              json={"scope": {"area": "reading-notes"},
+                    "branch": {"name": "feature/w", "create": True}}),
+        Step("GET", "/api/branches", expect_body={"branches": [
+            {"name": "feature/w", "head": WRITING_COMMIT, "is_integration": True},
+            {"name": "main", "head": SEED_HEAD},
+            {"name": "rebuild/writing-notes-1", "head": WRITING_COMMIT},
+        ]}),
+        build({"area": "reading-notes"}, rid="b2", branch={"name": "feature/w"}),
+        rebuilt("b2", "passed", target_branch="feature/w", created_branch=False,
+                base_ref="feature/w", base=WRITING_COMMIT, commit={"sha": READING_COMMIT}),
+        areas((0, "built"), (0, "built"), (0, "built"), branch="feature/w",
+              params={"branch": "feature/w"}),
+        areas((None, "not_built"), (None, "not_built"), (None, "not_built")),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -466,6 +652,15 @@ UNCHECKED = (
     Unchecked("R40: `capabilities.rebuild` is checked true for the seed (stub agent, "
               "./gate.sh); the false cases (no git, no gates, no claude) are in "
               "tests/studio/test_rebuild.py."),
+    Unchecked("R41-R47 (build from spec) are checked with the stub agent and a two-file gate. "
+              "In tests/studio/test_build_scope.py only: the owner's new commits merged into "
+              "the default target (and a merge conflict), a target that moves during the build "
+              "(branch_moved), a confirmed build onto the checked-out branch (the ff-only merge "
+              "in a clean worktree) or a protected one, a branch checked out in another "
+              "worktree, the metrics hook, findings_json, the token and cost fields, gates that "
+              "cannot run at the baseline, unmapped findings and the scope `all`, and areas "
+              "status `building`. WRITING_COMMIT and READING_COMMIT were recorded from the "
+              "real server and checked by hand with `git log --name-status build/notes`."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

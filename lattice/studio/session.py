@@ -34,7 +34,7 @@ reused) and ``ts`` (ISO, UTC):
 - ``{type:"tool_result", tool_use_id, ok, summary}``
 - ``{type:"status", state:"starting"|"running"|"idle"|"interrupted"}``
 - ``{type:"result", ok, text, cost_usd, duration_ms, input_tokens, output_tokens,
-  num_turns, claude_session_id}``
+  cache_read_input_tokens, cache_creation_input_tokens, num_turns, claude_session_id}``
 - ``{type:"error", message, kind:"usage_limit"|"cli"|"timeout"|"other"}``
 
 One turn runs at a time per session (409 otherwise). ``studio.toml`` ``[llm]
@@ -480,6 +480,8 @@ class Transcript:
                 "duration_ms": int(rec.get("duration_ms") or 0),
                 "input_tokens": int(usage.get("input_tokens") or 0),
                 "output_tokens": int(usage.get("output_tokens") or 0),
+                "cache_read_input_tokens": int(usage.get("cache_read_input_tokens") or 0),
+                "cache_creation_input_tokens": int(usage.get("cache_creation_input_tokens") or 0),
                 "num_turns": int(rec.get("num_turns") or 0),
                 "claude_session_id": self.claude_session_id,
             }

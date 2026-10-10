@@ -229,6 +229,7 @@ class StudioHub:
             or llm.get("claude_bin")
             or "claude"
         )
+        can_rebuild = rebuild_capability(p.root, rebuild, claude_bin)[0]
         return {
             "name": name,
             "root": str(p.root),
@@ -240,7 +241,8 @@ class StudioHub:
             ),
             "capabilities": {
                 "session": claude_available(claude_bin),
-                "rebuild": rebuild_capability(p.root, rebuild, claude_bin)[0],
+                "rebuild": can_rebuild,
+                "build_from_spec": can_rebuild,
             },
             "default": name == self.default,
         }

@@ -55,6 +55,8 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
 - ``POST /api/session``, ``POST /api/session/{id}/message``, ``GET /api/session/{id}/events``,
   ``DELETE /api/session/{id}``, ``GET /api/session``: the chat as a real Claude Code
   session (lattice/studio/session.py; API.md v1.5). Lazy: no ``claude`` call until a message.
+- ``GET /api/areas`` and ``POST /api/rebuild {"scope": ...}``: build from the spec, area by
+  area, on the integration branch (lattice/studio/areas.py, rebuild.py; API.md v1.8).
 - ``POST /api/rebuild``, ``GET /api/rebuild/{id}`` (``?wait=S``), ``DELETE /api/rebuild/{id}``,
   ``GET /api/rebuild``: the rebuild loop of accepted changes (lattice/studio/rebuild.py, its
   ``[rebuild]`` table; API.md v1.7): a coding agent in a git worktree on its own branch, the
@@ -146,12 +148,16 @@ def now_iso() -> str:
 
 
 class ApiError(Exception):
-    """An error answered as ``{"detail": ...}`` with `status`."""
+    """An error answered as ``{"detail": ...}`` (plus ``code`` when set) with `status`."""
 
-    def __init__(self, status: HTTPStatus, detail: str) -> None:
+    def __init__(self, status: HTTPStatus, detail: str, code: str | None = None) -> None:
         super().__init__(detail)
         self.status = status
         self.detail = detail
+        self.code = code
+
+    def body(self) -> dict[str, str]:
+        return {"detail": self.detail, **({"code": self.code} if self.code else {})}
 
 
 # ---- studio.toml ----------------------------------------------------------------------------
@@ -948,8 +954,11 @@ class Studio:
             return self._rebuilder
 
     def start_rebuild(self, body: Mapping[str, Any]) -> dict[str, str]:
+        scope = body.get("scope")
         ids = body.get("changes")
-        if not isinstance(ids, list) or not ids or not all(isinstance(i, str) and i for i in ids):
+        if scope is not None and ids is None:
+            ids = []
+        elif not isinstance(ids, list) or not ids or not all(isinstance(i, str) and i for i in ids):
             raise ApiError(
                 HTTPStatus.UNPROCESSABLE_ENTITY, "changes must be a non-empty list of ids"
             )
@@ -967,6 +976,12 @@ class Studio:
         model = body.get("model")
         if model is not None and (not isinstance(model, str) or not model.strip()):
             raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, "model must be a string")
+        if scope is None and body.get("branch") is not None:
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, "branch needs a scope")
+        if not isinstance(body.get("confirm_unsafe_branch", False), bool):
+            raise ApiError(
+                HTTPStatus.UNPROCESSABLE_ENTITY, "confirm_unsafe_branch must be true or false"
+            )
         rb = self.rebuilder
         with self.lock:
             records = []
@@ -983,9 +998,33 @@ class Studio:
                     raise ApiError(HTTPStatus.CONFLICT, f"change {cid} is already {state}")
                 records.append(json.loads(json.dumps(c)))
         try:
-            return rb.start(records, model=model, max_rounds=rounds)
+            return rb.start(
+                records,
+                model=model,
+                max_rounds=rounds,
+                scope=scope,
+                branch=body.get("branch"),
+                confirm_unsafe_branch=body.get("confirm_unsafe_branch") is True,
+            )
         except RebuildError as e:
-            raise ApiError(HTTPStatus(e.status), e.detail) from None
+            raise ApiError(HTTPStatus(e.status), e.detail, e.code) from None
+
+    def get_areas(self, branch: str | None = None) -> list[dict[str, Any]]:
+        """``GET /api/areas[?branch=B]`` (API v1.8): the spec's areas with their build
+        status on target branch B (default: the default target)."""
+        with self.lock:
+            last = self.last_check
+        try:
+            return self.rebuilder.areas(last, branch=branch)
+        except RebuildError as e:
+            raise ApiError(HTTPStatus(e.status), e.detail, e.code) from None
+
+    def get_branches(self) -> dict[str, Any]:
+        """``GET /api/branches`` (API v1.8): the local branches a build can target."""
+        try:
+            return self.rebuilder.branches()
+        except RebuildError as e:
+            raise ApiError(HTTPStatus(e.status), e.detail, e.code) from None
 
     def get_rebuild(self, rid: str, wait: float = 0.0) -> dict[str, Any]:
         try:
@@ -1521,7 +1560,7 @@ class Handler(BaseHTTPRequestHandler):
         except ApiError as e:
             if e.status >= 500:
                 log(f"{self.command} {self.path}: {e.status} {e.detail}")
-            self._json({"detail": e.detail}, e.status)
+            self._json(e.body(), e.status)
             return
         except Exception as exc:  # noqa: BLE001 -- any failure answers 500
             traceback.print_exc(file=sys.stderr)
@@ -1581,6 +1620,11 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(lambda: st.get_change(cid, wait))
         if path == "/api/rebuild":
             return self._dispatch(lambda: st.rebuilder.list())
+        if path == "/api/areas":
+            branch = (parse_qs(urlparse(self.path).query).get("branch") or [None])[-1]
+            return self._dispatch(lambda: st.get_areas(branch))
+        if path == "/api/branches":
+            return self._dispatch(st.get_branches)
         if path.startswith("/api/rebuild/") and "/" not in path.removeprefix("/api/rebuild/"):
             rid = path.removeprefix("/api/rebuild/")
             raw = (parse_qs(urlparse(self.path).query).get("wait") or ["0"])[-1]

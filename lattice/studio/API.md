@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.7)
+# Lattice Studio API contract (v1.8)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -348,3 +348,64 @@ Read live on every call (it was cached with the spec files, so a commit that lef
 
 ### The mock
 The mock's rebuild record has `branch`, `base`, `worktree` and `merge_hint`, its `build` has `branch` and `commit`, and a passing mock rebuild no longer moves `project.git_head`. It still previews the rebuilt code in the Code lens and turns `app.last_check` to pass (the real server does neither until the owner merges).
+
+## v1.8 additions (build from spec, area by area, onto a target branch)
+
+A project whose spec is committed but whose app is not (yet) built can be built from Studio without an accepted change: by **area** (a top-level section of the requirements), by a list of rules, or `all`. Each scoped build starts with a **baseline** gate run, works on the scope's failing checks only, is judged by Studio from the gate findings (never by the agent), and lands on a **target branch** (default `build/<project>`) that accumulates the areas. Code: `lattice/studio/areas.py` (areas and the findings-to-scope mapping, pure) and `lattice/studio/rebuild.py`. Everything in v1.7 holds for a rebuild without `scope`.
+
+### Configuration: `[rebuild]` additions
+```toml
+[rebuild]
+areas = "sections"            # "sections" (default) | "none" (only the area "all")
+metrics_hook = "python3 metrics/collect.py"   # optional; relative to the project dir
+findings_json = "metrics/last-check.json"     # optional; a `lattice.spec check --json`
+                                              # report a gate writes, read for findings
+integration_branch = "build/streak"           # optional; the default target branch
+                                              # (default build/<project name, slugged>)
+protected_branches = ["main", "master"]       # the default
+```
+
+### `capabilities.build_from_spec` on GET /api/projects
+`true` exactly when `capabilities.rebuild` is (the same requirements). The mock says `true`.
+
+### GET /api/areas[?branch=B]
+`[{id, title, rules: [ids], scenarios: int, checks: int, targets: [target], failing: int|null, status, target_branch}]`, in document order, the virtual area `{"id": "all", "title": "All", ...}` last.
+- **Areas.** A rule's trace `section` is its heading path joined by `" > "` (`Streak: requirements > Habits`). When every sectioned rule shares one first heading (the document title) and some go deeper, the area is the second heading and the rules directly under the title form a preamble area named after the title; otherwise the area is the first heading. Rules without a section form one area `Requirements`. `id` is the title slugged (lowercase words joined by `-`, at most 48 characters, `-2`, `-3` on a clash; `all` is reserved). `areas = "none"`: only `all`.
+- **Counts.** `targets`: the trace links of the area's rules, in order, without repeats (a target linked from rules of two areas is in both); `scenarios`: the `scenario:` targets among them; `checks`: all of them.
+- **failing / status** are per target branch B (default: the default target). `failing` = the area's targets that fail in the latest gate results Studio recorded for B while B's tip is still the commit they describe (a scoped build's baseline, or its passing round); for the branch checked out in the owner's worktree, falling back to `app.last_check.targets`; else `null` (unknown, e.g. after a restart, or after B moved). `status`: `building` while a scoped build of this area onto B runs; else `not_built` (failing null, or every target failing), `built` (failing 0; also an area with no targets), `partial` otherwise.
+
+### GET /api/branches
+`{branches: [{name, head, current, protected, checked_out: <worktree path>|null, ahead_of_base: int (commits in the branch not in HEAD), is_integration}], current_branch, protected: [names], default_target}`. Every local branch (including the per-build `rebuild/*` branches). `current`: checked out in the owner's main worktree (the repository of `[rebuild] repo`). `is_integration`: the default target, or the target of a build in this server.
+
+### POST /api/rebuild with a scope
+Body: `{"scope": {"area": "<id>"} | {"rules": ["R1", ...]} | "all", "changes"?: [ids], "branch"?: {"name", "create"?: bool, "from"?: "<ref>"}, "confirm_unsafe_branch"?: bool, "max_rounds"?, "model"?}` -> `{"id": "b3"}`. `changes` may be given too (each must be accepted, as in v1.7; the brief names them and their builds are tracked); without `scope`, `changes` is required (v1.7). `{"area": "all"}` equals `"all"`.
+
+Refusals, in this order: 422 a malformed body (`scope must be "all", {"area": "<id>"} or {"rules": ["<id>", ...]}`; `branch needs a scope`; `confirm_unsafe_branch` not a boolean; the v1.7 checks); 404 `no area <id>` / `no rule <id>[, <id>]` / v1.7's `no change <id>`; 409 v1.7's change states; 503 not available; 409 `a rebuild is already running in this project (<id>)`; then the target branch (below); then, **after the baseline**, 409 `nothing to build: the checks in this scope already pass` (no in-scope target failing; the build leaves no record, no id and no branch). A scoped POST therefore answers only once the baseline gate run is done (for a slow gate, as long as it takes); the record exists meanwhile with status `baseline` (listed by `GET /api/rebuild`, stoppable by `DELETE`).
+
+Error bodies may carry a machine-readable `code` next to `detail` (`{"detail": "...", "code": "branch_protected"}`).
+
+### The target branch
+- Omitted: the default target (`[rebuild] integration_branch`, else `build/<project>`), created from the owner's HEAD on first use (`created_branch: true`, `base_ref: "HEAD"`).
+- `{"name": B}` (create false): B must exist (404 `no branch B`, code `no_branch`).
+- `{"name": B, "create": true, "from": R}`: B must not exist (409 `branch B already exists`, code `branch_exists`; it is created with `git update-ref refs/heads/B <R> ""`, which also refuses a branch that appeared meanwhile, so nothing is ever overwritten); R defaults to `HEAD`, an unknown R is 404 (code `no_ref`); `from` without `create: true` is 422.
+- B must pass `git check-ref-format --branch` (422, code `branch_name_invalid`).
+- **Safety.** B checked out in a linked worktree (not the owner's main one) is always 409 (code `branch_checked_out`). B protected (`protected_branches`, code `branch_protected`) or checked out in the owner's main worktree (code `branch_checked_out`) is 409 unless the body carries `confirm_unsafe_branch: true` **and** the main worktree is clean (`git status --porcelain` empty, untracked files included; else 409 code `tree_dirty`).
+- **Writes.** All work happens in a separate worktree on the per-build branch `rebuild/<scope-slug>-N` (N = 1, 2, ...; slug = the area id, `rules-r1-r2`, or `all`), made from B's tip. On pass, B is fast-forwarded to the build commit: with `git update-ref refs/heads/B <commit> <tip at start>` when no worktree has B checked out, or with `git merge --ff-only <commit>` in the owner's main worktree when the build was confirmed onto the checked-out branch (re-checked clean first). Never a reset, a forced checkout or a non-fast-forward. If B moved during the build (or got checked out, or the confirmed worktree got dirty), the build ends `gave_up` with `error.kind` `branch_moved` (`branch_checked_out`, `tree_dirty`); nothing is lost: the per-build branch keeps the commit and the record has `commit`.
+- **The owner's new commits.** For the default target only: if the owner's HEAD is not in B, the worktree first runs `git merge --no-edit <owner HEAD sha>` (the merge commit is part of the build; `merged_head` records it); a conflict aborts the merge and ends the build `gave_up` with `error.kind: merge_conflict` before the baseline. A named target is built as it is (its own spec).
+
+### Baseline, targets and the verdict
+1. **Baseline.** The gates run once in the worktree before round 1 (`LATTICE_REBUILD_ROUND=0`). Findings come from the gates' text (v1.7), or, with `findings_json`, from that JSON report when a gate (re)wrote it during the run (else the text, plus a warning). A gate exiting with a code other than 0 or 1 makes the baseline unusable: `gave_up`, `error.kind: baseline`.
+2. **Identity and scope.** A finding's identity is its target (`scenario:<name>`, `invariant:<name>`, a rule id, ...), else `key:<key>` (JSON), else `title:<title>`: findings with one identity are one failing check. A finding is in scope when its target is linked from (or is) a rule of the scope; findings without a target, or whose target no rule links to, are **unmapped** and out of scope (for the scope `all`, everything is in scope). The scope's **targets** = the in-scope identities of the baseline.
+3. **Brief.** The scope's rules (id, text, linked checks) grouped by section, its scenarios, the failing in-scope checks (the first 40 with their messages), how many fail outside the scope, `CONTEXT.md`/`README.md` paths when present, the gates, and the rules (fix the code, never the spec, requirements, trace, gate scripts or test harness; do not weaken them; keep behaviour outside the scope; add tests where the stack has a convention). Round n > 1: what still fails in scope and the regressions.
+4. **Verdict per round** (Studio's, from the findings): `pass` iff every gate exited 0 or 1, every target passes (its identity is no longer among the findings), there is **no regression** (an identity failing now that did not fail in the baseline), and the integrity check is clean. Out-of-scope baseline failures may stay. Each round adds `scope_passing`, `scope_total` (= number of targets), `regressions` (identities), `newly_fixed` (baseline identities, any scope, that no longer fail), `wall_s`; `check.findings[]` add `in_scope` and `regression` (a passing round keeps its out-of-scope findings).
+
+### The record of a scoped build
+v1.7's record plus: `scope` `{kind: area|rules|all, id, title, rules}`, `baseline` `{at, seconds, verdict, counts, findings: [{id, title, target, rules, in_scope}], unmapped: [finding ids], gates}`, `targets` (the baseline's in-scope identities, `done` on pass), `target_branch`, `created_branch`, `base_ref` (the ref B was created from, or B), `commit_range` `{from: B's tip at start, to: the commit|null}`, `integration_branch` and `integration_base` (= `target_branch` and `commit_range.from`), `owner_head`, `merged_head` (null unless the owner's HEAD was merged in), `metrics` (null, or the hook run below), `warnings` (strings). `base` is the commit the rounds start from (B's tip, or the merge commit). `status` adds `baseline` (before round 1). The commit message is `build: <scope title>[; <requests>]`, a sentence with the scope, `k/k in-scope checks pass in round n of m, no regressions`, and the `Lattice-Rebuild:` trailer. `merge_hint` names B (and says the owner's checkout was fast-forwarded when it was).
+
+**Usage (every record):** `usage` gains `cost_usd_list_estimate` (the same figure as `cost_usd`, which is kept for v1.7 clients: the CLI's list-price estimate, **not a charge**), `cache_read_input_tokens`, `cache_creation_input_tokens` (from the result events' usage) and `wall_s`; each round's `agent` carries the same token and estimate fields, and `wall_s`. The chat's `result` event (v1.5) gains the two cache fields too.
+
+### The metrics hook
+With `metrics_hook`, after a scoped build ends `passed` (before its commit, so the hook's output, e.g. a new `metrics/phases.jsonl` line, is part of it) or `gave_up` (left in the worktree), Studio runs `<hook> --phase build_<scope-slug> --llm-json <tmp file> --note <text> [--check-json <findings_json path>]` with `cwd` = the worktree's project dir and the gate environment. The JSON: `{model, tokens_in (input + cache read + cache creation), tokens_out, input_tokens_uncached, cache_read_input_tokens, cache_creation_input_tokens, cost_usd_list_estimate, wall_s, rounds, llm_calls, target_branch}`; the note names the build, its end state and round, the scope score, the agent and the target branch. A failing hook is a warning (`warnings`), never a failed build; `metrics` records `{command, phase, exit_code, seconds, output_tail, llm}`. **`findings_json` shape relied on** (Lattice's `check --json`, e.g. Streak's `metrics/last-check.json`, whose top-level keys are `verdict`, `layers`, `counts`, `findings`, `cases`, `notes`, ...): `counts` (`{layer: n}`) and `findings[]` with `layer`, `verdict`, `rule` (`"scenario: <name>"`, `"invariant: <name>"`, or a rule id), `case`, `details.problems` (strings) and `key`; the other keys are not read.
+
+### The mock
+`GET /api/areas[?branch=]` derives the areas from the fixture model's rule sections and links (the job-scheduler spec: 8 areas plus `all`); `GET /api/branches` shows a simulated `main` (checked out, protected) plus every target branch a scoped build created; a scoped `POST /api/rebuild` validates like the real server (codes included), synthesizes a baseline (with no results yet, every check fails), plays two rounds over polls (round 1 fails in scope, round 2 passes) and on pass moves the target branch and marks the scope's targets passing there; building a built area again answers 409 `nothing to build`.

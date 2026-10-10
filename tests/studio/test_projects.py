@@ -197,8 +197,12 @@ def test_projects_list_is_cheap_and_complete(two) -> None:
     for p in lst:
         assert set(p) == PROJECT_KEYS
         assert p["spec"] is True and p["app_configured"] is False and p["last_check"] is None
-        assert len(p["git_head"]) >= 7 and set(p["capabilities"]) == {"session", "rebuild"}
-        assert p["capabilities"]["rebuild"] is False
+        assert len(p["git_head"]) >= 7 and set(p["capabilities"]) == {
+            "session",
+            "rebuild",
+            "build_from_spec",
+        }
+        assert p["capabilities"]["rebuild"] is p["capabilities"]["build_from_spec"] is False
     assert [p["default"] for p in lst] == [True, False]
     assert lst[0]["root"] == str(a.resolve())
     # no Studio was built to answer it

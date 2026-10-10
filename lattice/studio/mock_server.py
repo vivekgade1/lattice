@@ -45,6 +45,15 @@ API v1.6 adds ``GET /api/projects`` and ``/p/<name>/api/...``: two projects with
 state, ``job-scheduler-studio`` (the fixtures, the default, also at the bare ``/api/...``)
 and ``lattice-studio`` (the fixtures cut to ``SECOND_PROJECT_RULES`` rules, no changes).
 
+API v1.8 adds build from spec: ``GET /api/areas[?branch=B]`` (the areas derived from the
+model's rule sections and links by ``lattice.studio.areas``, as the real server does),
+``GET /api/branches`` (a simulated ``main``, checked out and protected, plus every target
+branch a scoped build created) and scoped ``POST /api/rebuild {"scope": ..., "branch":
+...}``: the same validation codes as the real server, a synthetic baseline (the area's
+targets the branch's results fail; with none yet, every check fails), two rounds (the first
+fails in scope, the second passes) and, on pass, the target branch "fast-forwarded" and its
+area results updated; a second build of a built area answers 409 "nothing to build".
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -65,6 +74,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, unquote, urlparse
 
+from lattice.studio import areas as areas_mod
 from lattice.studio.session import (
     SessionError,
     Transcript,
@@ -752,6 +762,17 @@ class MockSessions:
             return {"id": sid, "state": "interrupted"}
 
 
+class MockRefusal(Exception):
+    """A refused mock request: answered as ``{"detail", "code"?}`` with `status`."""
+
+    def __init__(self, status: int, detail: str, code: str | None = None) -> None:
+        super().__init__(detail)
+        self.status, self.detail, self.code = status, detail, code
+
+    def body(self) -> dict[str, str]:
+        return {"detail": self.detail, **({"code": self.code} if self.code else {})}
+
+
 class MockState:
     """The mutable state behind the mock API: change sets, the check run, the git head."""
 
@@ -788,6 +809,9 @@ class MockState:
         self.rebuilds: dict[str, dict[str, Any]] = {}
         self._next_rebuild = 1
         self.built_in: str | None = None  # the change a passed rebuild built, for the Code lens
+        # build from spec (v1.8): simulated branches and per-branch failing targets
+        self.branch_heads: dict[str, str] = {"main": self.model["project"]["git_head"]}
+        self.branch_failing: dict[str, set[str]] = {}
         self.sessions = MockSessions(fixture_dir)
         if seed_change:
             self._seed_initial_change()
@@ -1231,6 +1255,17 @@ class MockState:
         if status != "passed":
             return
         fx = rec["fixture"]
+        if rec.get("scope"):
+            sha = hashlib.sha1(f"build:{rec['id']}:{rec['scope']['id']}".encode()).hexdigest()
+            rec["commit"] = {"sha": sha, "message": fx["commit"]["message"],
+                             "files_changed": list(fx["commit"]["files_changed"])}  # fmt: skip
+            name = rec["target_branch"]
+            before = self._failing(name)
+            if before is None:
+                before = {f["target"] for f in rec["baseline"]["findings"]}
+            self.branch_failing[name] = set(before) - set(rec["scope_targets"])
+            self.branch_heads[name] = sha[:7]
+            return
         requests = "; ".join(self.changes[c]["request"] for c in rec["changes"])
         sha = hashlib.sha1(f"rebuild:{rec['id']}:{requests}".encode()).hexdigest()
         for cid in rec["changes"]:
@@ -1286,11 +1321,36 @@ class MockState:
                 for t in fx["targets"]
             ],
         }
+        if rec.get("scope"):
+            out["scope"] = rec["scope"]
+            out["baseline"] = rec["baseline"]
+            for item, r in zip(out["rounds"], fx["rounds"], strict=False):
+                if item["check"] is not None:
+                    for k in ("scope_passing", "scope_total", "regressions", "newly_fixed"):
+                        item[k] = copy.deepcopy(r[k])
+            tb = rec["target_branch"]
+            out.update(target_branch=tb, created_branch=rec["created_branch"],
+                       base_ref=rec["base_ref"], integration_branch=tb,
+                       integration_base=rec["base"], owner_head=self.model["project"]["git_head"],
+                       merged_head=None, metrics=None, warnings=[],
+                       commit_range={"from": rec["base"],
+                                     "to": rec["commit"]["sha"] if status == "passed" else None},
+                       usage={"cost_usd": 0.0, "cost_usd_list_estimate": 0.0, "duration_ms": 0,
+                              "input_tokens": 0, "output_tokens": 0,
+                              "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0,
+                              "wall_s": 0.0})  # fmt: skip
         out["branch"] = rec["branch"] if status != "stopped" else None
         out["base"] = rec["base"]
         out["worktree"] = rec["worktree"] if status != "stopped" else None
         out["merge_hint"] = None
-        if status == "passed":
+        if status == "passed" and rec.get("scope"):
+            out["commit"] = rec["commit"]
+            out["merge_hint"] = (
+                f"The build is on {rec['target_branch']} (now at {rec['commit']['sha'][:10]}) "
+                f"and {rec['branch']}; Studio never merges into your branch: to take it, run "
+                f"`git merge {rec['target_branch']}` in {self.model['project']['root']}."
+            )
+        elif status == "passed":
             out["commit"] = rec["commit"]
             out["merge_hint"] = (
                 f"Studio never merges. To take the rebuilt code, run `git merge {rec['branch']}` "
@@ -1311,6 +1371,170 @@ class MockState:
             "files_changed": list(r["files_changed"]) if with_check else [],
             "check": copy.deepcopy(r["check"]) if with_check else None,
         }
+
+    # ---------------------------------------------------------------- build from spec
+
+    def _trace(self) -> dict[str, Any]:
+        rules = self.model["rules"]
+        return {
+            "rules": [{"id": r["id"], "text": r["text"], "section": r.get("section", "")}
+                      for r in rules],
+            "links": {r["id"]: list(r.get("links") or []) for r in rules},
+        }  # fmt: skip
+
+    def default_target(self) -> str:
+        return f"build/{areas_mod.slug(self.model['project']['name'], 60)}"
+
+    def _failing(self, branch: str) -> set[str] | None:
+        if branch in self.branch_failing:
+            return self.branch_failing[branch]
+        last = self.model["app"].get("last_check") or {}
+        if branch == "main" and last.get("targets"):
+            return {t for t, v in last["targets"].items() if v == "fail"}
+        return None
+
+    # GET /api/areas
+    def areas(self, branch: str | None) -> list[dict[str, Any]]:
+        target = branch or self.default_target()
+        with self.lock:
+            failing = self._failing(target)
+            building = {
+                r["scope"]["id"]
+                for r in self.rebuilds.values()
+                if r.get("scope") and r.get("target_branch") == target
+                and r["status"] not in REBUILD_FINISHED
+            }  # fmt: skip
+            out = []
+            for a in areas_mod.derive_areas(self._trace()):
+                v = areas_mod.area_view(a, failing, building=a["id"] in building)
+                v["target_branch"] = target
+                out.append(v)
+            return out
+
+    # GET /api/branches
+    def branches(self) -> dict[str, Any]:
+        with self.lock:
+            default = self.default_target()
+            used = {r.get("target_branch") for r in self.rebuilds.values()}
+            return {
+                "branches": [
+                    {"name": n, "head": h, "current": n == "main", "protected": n == "main",
+                     "checked_out": self.model["project"]["root"] if n == "main" else None,
+                     "ahead_of_base": 0 if n == "main" else 1,
+                     "is_integration": n == default or n in used}
+                    for n, h in sorted(self.branch_heads.items())
+                ],
+                "current_branch": "main",
+                "protected": ["main", "master"],
+                "default_target": default,
+            }  # fmt: skip
+
+    # POST /api/rebuild with a scope. Raises MockRefusal.
+    def start_scoped(self, body: dict[str, Any]) -> dict[str, str]:
+        scope_raw = body.get("scope")
+        trace = self._trace()
+        try:
+            scope = areas_mod.resolve_scope(scope_raw, areas_mod.derive_areas(trace), trace)
+        except areas_mod.ScopeError as e:
+            raise MockRefusal(e.status, e.detail) from None
+        spec = body.get("branch")
+        confirm = body.get("confirm_unsafe_branch") is True
+        with self.lock:
+            if any(r["status"] not in REBUILD_FINISHED for r in self.rebuilds.values()):
+                busy = next(r["id"] for r in self.rebuilds.values()
+                            if r["status"] not in REBUILD_FINISHED)  # fmt: skip
+                raise MockRefusal(409, f"a rebuild is already running in this project ({busy})")
+            name = self.default_target() if spec is None else (spec or {}).get("name")
+            create = None if spec is None else bool((spec or {}).get("create", False))
+            if not isinstance(name, str) or not name or ".." in name or " " in name:
+                raise MockRefusal(422, f"{name!r} is not a valid branch name",
+                                  "branch_name_invalid")  # fmt: skip
+            exists = name in self.branch_heads
+            if create is None:
+                create = not exists
+            if create and exists:
+                raise MockRefusal(409, f"branch {name} already exists", "branch_exists")
+            if not create and not exists:
+                raise MockRefusal(404, f"no branch {name}", "no_branch")
+            if name in ("main", "master") and not confirm:
+                raise MockRefusal(409, f"branch {name} is protected; send "
+                                  "confirm_unsafe_branch: true to build onto it "
+                                  "(fast-forward only, with a clean worktree)",
+                                  "branch_protected")  # fmt: skip
+            failing = self._failing(name)
+            targets = list(scope["targets"])
+            if failing is None:  # no results yet: a new project, every check fails
+                failing = {t for a in areas_mod.derive_areas(trace) for t in a["targets"]}
+            in_scope = [t for t in targets if t in failing]
+            if not in_scope:
+                raise MockRefusal(409, "nothing to build: the checks in this scope already pass")
+            tip = self.branch_heads.get(name, self.branch_heads["main"])
+            rid = f"b{self._next_rebuild}"
+            self._next_rebuild += 1
+            slug = areas_mod.scope_slug(scope)
+            n = 1
+            while any(r.get("branch") == f"rebuild/{slug}-{n}" for r in self.rebuilds.values()):
+                n += 1
+            k = len(in_scope)
+            findings = [{"id": f"f{i}", "title": f"{t.split(':', 1)[-1]} step 1: not built yet",
+                         "target": t, "in_scope": True, "regression": False}
+                        for i, t in enumerate(in_scope, 1)]  # fmt: skip
+            others = sorted(failing - set(in_scope))
+            fx = {
+                "model": body.get("model") or "sonnet",
+                "max_rounds": body.get("max_rounds") or 3,
+                "rounds": [
+                    {"n": 1, "offset_s": 0, "files_changed": ["internal/app/area.go"],
+                     "agent_summary": f"Started {scope['title']}: handlers in place, checks "
+                     "still failing.",
+                     "check": {"verdict": "fail", "counts": {"D": k}, "findings": findings},
+                     "scope_passing": 0, "scope_total": k, "regressions": [],
+                     "newly_fixed": []},
+                    {"n": 2, "offset_s": 64,
+                     "files_changed": ["internal/app/area.go", "internal/app/area_test.go"],
+                     "agent_summary": f"Finished {scope['title']}; added tests.",
+                     "check": {"verdict": "pass", "counts": {"D": 0}, "findings": []},
+                     "scope_passing": k, "scope_total": k, "regressions": [],
+                     "newly_fixed": in_scope},
+                ],
+                "targets": [{"id": t, "label": f"{t} passes", "done_in_round": 2}
+                            for t in in_scope],
+                "commit": {"message": f"build: {scope['title']}",
+                           "files_changed": ["internal/app/area.go", "internal/app/area_test.go"]},
+            }  # fmt: skip
+            self.rebuilds[rid] = {
+                "id": rid,
+                "branch": f"rebuild/{slug}-{n}",
+                "base": tip,
+                "worktree": f"{self.model['project']['root']}/.lattice/rebuilds/"
+                f"{self.model['project']['name']}-{rid}",
+                "changes": [],
+                "status": "queued",
+                "model": fx["model"],
+                "max_rounds": fx["max_rounds"],
+                "started": datetime.now(UTC),
+                "polls": 0,
+                "frozen": None,
+                "fixture": fx,
+                "scope": {k2: scope[k2] for k2 in ("kind", "id", "title", "rules")},
+                "scope_targets": in_scope,
+                "target_branch": name,
+                "created_branch": bool(create),
+                "base_ref": (spec or {}).get("from", "HEAD") if create else name,
+                "baseline": {
+                    "verdict": "fail",
+                    "counts": {"D": len(failing)},
+                    "findings": [
+                        {"id": f"f{i}", "title": f"{t.split(':', 1)[-1]}: not built yet",
+                         "target": t, "rules": [], "in_scope": t in in_scope}
+                        for i, t in enumerate(in_scope + others, 1)
+                    ],
+                    "unmapped": [],
+                },
+            }  # fmt: skip
+            if create:
+                self.branch_heads[name] = tip
+            return {"id": rid}
 
     # GET /api/rebuild/{id}
     def get_rebuild(self, rid: str) -> dict[str, Any] | None:
@@ -1419,6 +1643,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(self.server.projects())
         if path == "/api/model":
             return self._json(state.get_model())
+        if path == "/api/areas":
+            return self._json(state.areas(query.get("branch") or None))
+        if path == "/api/branches":
+            return self._json(state.branches())
         if path == "/api/session" or path.startswith("/api/session/"):
             return self._session(
                 lambda: self._session_get(path, query, state.sessions),
@@ -1515,6 +1743,14 @@ class Handler(BaseHTTPRequestHandler):
             if not str(body.get("question", "")).strip():
                 return self._error(HTTPStatus.UNPROCESSABLE_ENTITY, "question is empty")
             return self._json(state.explain(body))
+        if path == "/api/rebuild" and body.get("scope") is not None:
+            if body.get("changes"):
+                return self._error(HTTPStatus.UNPROCESSABLE_ENTITY,
+                                   "the mock builds a scope without changes")  # fmt: skip
+            try:
+                return self._json(state.start_scoped(body))
+            except MockRefusal as e:
+                return self._json(e.body(), e.status)
         if path == "/api/rebuild":
             ids = body.get("changes")
             if (
@@ -1653,7 +1889,11 @@ class MockServer(ThreadingHTTPServer):
                         "last_check": (
                             {"verdict": last.get("verdict"), "at": last.get("at")} if last else None
                         ),
-                        "capabilities": {"session": True, "rebuild": True},
+                        "capabilities": {
+                            "session": True,
+                            "rebuild": True,
+                            "build_from_spec": True,
+                        },
                         "default": name == DEFAULT_PROJECT,
                     }
                 )

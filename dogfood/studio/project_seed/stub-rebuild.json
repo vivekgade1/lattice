@@ -6,8 +6,28 @@
       "files": {"progress.txt": "half way\n", "REQUIREMENTS.md": "# tampered by the agent\n"}
     },
     {
-      "summary": "round 2: wrote built.txt",
-      "files": {"built.txt": "built\n"}
+      "summary": "round 2: wrote writing.txt and reading.txt",
+      "files": {"writing.txt": "written\n", "reading.txt": "read\n"}
     }
-  ]
+  ],
+  "scopes": {
+    "writing-notes": {
+      "rounds": [
+        {"summary": "writing 1: a draft only", "files": {"draft.txt": "draft\n"}},
+        {"summary": "writing 2: wrote writing.txt", "files": {"writing.txt": "written\n"}}
+      ]
+    },
+    "reading-notes": {
+      "rounds": [
+        {
+          "summary": "reading 1: wrote reading.txt, deleted writing.txt",
+          "files": {"reading.txt": "read\n", "writing.txt": null}
+        },
+        {
+          "summary": "reading 2: restored writing.txt",
+          "files": {"reading.txt": "read\n", "writing.txt": "written\n"}
+        }
+      ]
+    }
+  }
 }

@@ -240,6 +240,54 @@
       "text": "GET /api/projects reports `capabilities.rebuild`: true when the project's `[rebuild]` table names a git repository and gate commands that resolve, and its agent (Claude Code, or the test-only stub) can run.",
       "section": "Lattice Studio server: requirements > Rebuild",
       "line": 69
+    },
+    {
+      "id": "R41",
+      "text": "GET /api/areas answers the spec's areas: its rules grouped by their top-level requirements section, in document order, each with `id`, `title`, `rules`, `scenarios` (the scenarios linked to those rules), `failing` (null until a check of the target branch ran) and `status` (`not_built`, `partial`, `built` or `building`), then the area `all`; ?branch=B answers them for target branch B.",
+      "section": "Lattice Studio server: requirements > Build from spec",
+      "line": 73
+    },
+    {
+      "id": "R42",
+      "text": "POST /api/rebuild {\"scope\": {\"area\": id} | {\"rules\": [ids]} | \"all\"} needs no accepted change: Studio first runs the gates once (the baseline), and the scope's targets are the baseline's failing checks linked to the scope's rules; the record carries `scope`, `baseline` (its findings, each with its rules and whether it is in scope) and the targets.",
+      "section": "Lattice Studio server: requirements > Build from spec",
+      "line": 74
+    },
+    {
+      "id": "R43",
+      "text": "A scoped round passes when every target of the scope passes and no check that passed in the baseline fails (a regression), decided by Studio from the gate findings; checks outside the scope that failed in the baseline may stay failing. Each round records `scope_passing`, `scope_total`, `regressions` and `newly_fixed`.",
+      "section": "Lattice Studio server: requirements > Build from spec",
+      "line": 75
+    },
+    {
+      "id": "R44",
+      "text": "Scoped builds land on a target branch, by default `build/<project>`, created from HEAD on first use: each build starts from the target's tip and, when it passes, the target is fast-forwarded to its commit, so areas accumulate; the owner's branch and checkout never move, and GET /api/areas reports the target's areas from the build's results.",
+      "section": "Lattice Studio server: requirements > Build from spec",
+      "line": 76
+    },
+    {
+      "id": "R45",
+      "text": "A scope with nothing failing after the baseline answers 409 (\"nothing to build: the checks in this scope already pass\") and leaves no rebuild record; an unknown area or rule answers 404 (\"no area <id>\", \"no rule <id>\"), a malformed scope 422, and a `branch` without a scope 422 (\"branch needs a scope\").",
+      "section": "Lattice Studio server: requirements > Build from spec",
+      "line": 77
+    },
+    {
+      "id": "R46",
+      "text": "GET /api/branches answers the repository's local branches (`name`, `head`, `current`, `protected`, `ahead_of_base`, `is_integration`) with `current_branch`, `protected` and `default_target`.",
+      "section": "Lattice Studio server: requirements > Build from spec",
+      "line": 78
+    },
+    {
+      "id": "R47",
+      "text": "POST /api/rebuild with \"branch\": {\"name\", \"create\", \"from\"} targets that branch: an unknown branch answers 404 (code `no_branch`), an existing one with create 409 (`branch_exists`, nothing overwritten), an unknown `from` 404 (`no_ref`), an invalid name 422 (`branch_name_invalid`); a protected branch (409 `branch_protected`) or the branch checked out in the owner's worktree (409 `branch_checked_out`) is refused unless the request confirms it, and even then a worktree with changes answers 409 (`tree_dirty`).",
+      "section": "Lattice Studio server: requirements > Build from spec",
+      "line": 79
+    },
+    {
+      "id": "R48",
+      "text": "GET /api/projects reports `capabilities.build_from_spec`, true when the project can rebuild.",
+      "section": "Lattice Studio server: requirements > Build from spec",
+      "line": 80
     }
   ],
   "links": {
@@ -366,6 +414,38 @@
     ],
     "R40": [
       "scenario:projects_lists_the_served_project"
+    ],
+    "R41": [
+      "scenario:areas_and_branches_of_a_new_project",
+      "scenario:scoped_builds_accumulate_on_the_integration_branch",
+      "scenario:a_named_target_branch_is_created_once"
+    ],
+    "R42": [
+      "scenario:scoped_builds_accumulate_on_the_integration_branch"
+    ],
+    "R43": [
+      "scenario:scoped_builds_accumulate_on_the_integration_branch"
+    ],
+    "R44": [
+      "scenario:scoped_builds_accumulate_on_the_integration_branch",
+      "scenario:a_named_target_branch_is_created_once"
+    ],
+    "R45": [
+      "scenario:scoped_builds_accumulate_on_the_integration_branch",
+      "scenario:scoped_build_refusals"
+    ],
+    "R46": [
+      "scenario:areas_and_branches_of_a_new_project",
+      "scenario:scoped_builds_accumulate_on_the_integration_branch",
+      "scenario:scoped_build_refusals",
+      "scenario:a_named_target_branch_is_created_once"
+    ],
+    "R47": [
+      "scenario:scoped_build_refusals",
+      "scenario:a_named_target_branch_is_created_once"
+    ],
+    "R48": [
+      "scenario:areas_and_branches_of_a_new_project"
     ]
   },
   "unchecked": {

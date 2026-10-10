@@ -60,11 +60,22 @@ checkout's editable install is never repointed at the worktree) and
 its ``bin`` first on ``PATH`` -- no venv is re-created per worktree, and ``PYTHONPATH``
 makes the *rebuilt* code the one imported.
 
+**Build from spec (API.md v1.8)**: ``start(..., scope=...)`` builds an area, a list of
+rules or ``all`` with no accepted change: a baseline gate run picks the scope's failing
+checks (``lattice.studio.areas``), each round is judged by Studio (every in-scope target
+passes, no regression of a check that passed in the baseline), and the build lands on a
+target branch (default ``build/<project>``; ``branch={name, create, from}``), fast-forwarded
+from a separate worktree, never touching the owner's branch unless confirmed (and then only
+by ``git merge --ff-only`` in a clean worktree). Extra ``[rebuild]`` keys: ``areas``,
+``metrics_hook``, ``findings_json``, ``integration_branch``, ``protected_branches``.
+
 **TEST ONLY: the stub agent** (``[rebuild] agent = "stub"``): round k writes the files of
 ``rounds[k-1]`` of ``stub-rebuild.json`` in the worktree's project dir
 (``{"rounds": [{"files": {"path": "content"}, "hold": 0, "summary": "...",
 "error": "..."}]}``; paths relative to the project dir; ``hold`` sleeps that many seconds
-first, interruptible by DELETE; ``error`` makes it an error round). Never the default.
+first, interruptible by DELETE; ``error`` makes it an error round; a ``null`` content
+deletes the file; a scoped build plays ``scopes[<scope-slug>].rounds`` when present).
+Never the default.
 """
 
 from __future__ import annotations
@@ -91,6 +102,7 @@ from pathlib import Path
 from typing import Any
 
 from lattice.llm.cli_client import cli_env
+from lattice.studio import areas as areas_mod
 from lattice.studio.session import (
     _MODEL_TOOLS,
     DEFAULT_MAX_TOKENS,
@@ -144,13 +156,35 @@ from their exit codes; what you say about them is not trusted.
 - Finish with one or two sentences saying what you changed and why."""
 
 
-class RebuildError(Exception):
-    """A rebuild request refused: ``status`` is the HTTP status."""
+SCOPE_RULES = """\
+You are the coding agent of a Lattice Studio build from the spec. The project's spec is \
+committed; the app does not do all of it yet. Your job is to change the CODE so the checks \
+of ONE part of the spec (the scope in the brief) pass, without breaking checks that pass now.
 
-    def __init__(self, status: int, detail: str) -> None:
+Rules:
+- Fix the code (and its tests), never the contract: do not edit REQUIREMENTS.md, spec.py, \
+spec.trace.json, the gate scripts or the test harness the gates use, and do not weaken \
+them. Edits to the spec files are blocked, and Studio restores them and fails the round.
+- Keep behaviour outside the scope as it is: a check that passed before the build and \
+fails after it fails the round, even if the scope's checks pass.
+- Add tests for the new code where the project has a test convention.
+- Run the gates with Bash exactly as given; you have no other shell commands. Do not use \
+git: Studio commits the result on its own branch.
+- Stop when the scope's checks pass. Studio runs the gates itself after you finish and \
+decides from their findings; what you say about them is not trusted.
+- Finish with one or two sentences saying what you changed and why."""
+SCOPE_BRIEF_FAILURES = 40  # baseline failures listed in the brief
+
+
+class RebuildError(Exception):
+    """A rebuild request refused: ``status`` is the HTTP status, ``code`` an optional
+    machine-readable reason (``branch_protected``, ``branch_checked_out``, ...)."""
+
+    def __init__(self, status: int, detail: str, code: str | None = None) -> None:
         super().__init__(detail)
         self.status = status
         self.detail = detail
+        self.code = code
 
 
 def _now() -> str:
@@ -242,6 +276,33 @@ class RebuildConfig:
     @property
     def worktrees(self) -> str:
         return str(self.table.get("worktrees") or "repo")
+
+    @property
+    def areas(self) -> str:
+        return "none" if str(self.table.get("areas") or "sections") == "none" else "sections"
+
+    @property
+    def metrics_hook(self) -> str | None:
+        h = self.table.get("metrics_hook")
+        return str(h) if isinstance(h, str) and h.strip() else None
+
+    @property
+    def findings_json(self) -> str | None:
+        f = self.table.get("findings_json")
+        return str(f) if isinstance(f, str) and f.strip() else None
+
+    @property
+    def protected_branches(self) -> list[str]:
+        b = self.table.get("protected_branches")
+        if isinstance(b, list):
+            return [str(x) for x in b if str(x).strip()]
+        return ["main", "master"]
+
+    def integration_branch(self, name: str) -> str:
+        b = self.table.get("integration_branch")
+        if isinstance(b, str) and b.strip():
+            return b.strip()
+        return f"build/{areas_mod.slug(name, 60)}"
 
 
 def _gate_resolves(cmd: str, repo: Path) -> bool:
@@ -469,6 +530,113 @@ def findings_prompt(n: int, check: Mapping[str, Any], gates: Sequence[Mapping[st
     return "\n".join(out)
 
 
+def scope_brief(
+    scope: Mapping[str, Any],
+    *,
+    trace_json: str,
+    gates: Sequence[str],
+    targets: Sequence[Mapping[str, Any]],
+    out_of_scope: int,
+    project_rel: str,
+    context_files: Sequence[str] = (),
+    changes: Sequence[Mapping[str, Any]] = (),
+) -> str:
+    """Round 1's prompt of a scoped build: the rules in scope grouped by section, their
+    checks, the baseline failures in scope, the context files, the gates and the rules."""
+    try:
+        data = json.loads(trace_json) if trace_json else {}
+    except json.JSONDecodeError:
+        data = {}
+    rules = {str(r.get("id")): r for r in data.get("rules") or [] if isinstance(r, Mapping)}
+    links = _links(trace_json)
+    where = "the repository root" if project_rel == "." else f"`{project_rel}/`"
+    out = [
+        "# Build brief",
+        "",
+        f"The project's spec lives in {where} (REQUIREMENTS.md, spec.py, spec.trace.json). "
+        f"Build the scope below: **{scope.get('title')}** "
+        f"({len(scope.get('rules') or [])} rule(s)). Change the code so the scope's failing "
+        "checks pass and every check that passes now still passes.",
+        "",
+    ]
+    if context_files:
+        out += ["Read first: " + ", ".join(f"`{c}`" for c in context_files), ""]
+    for c in changes:
+        out += [f"Also built: accepted change {c['id']}: "
+                f"{' '.join(str(c.get('request') or '').split())}", ""]  # fmt: skip
+    out += ["## Rules in scope", ""]
+    section = None
+    for rid in scope.get("rules") or []:
+        r = rules.get(str(rid)) or {}
+        sec = str(r.get("section") or "")
+        if sec != section:
+            section = sec
+            if sec:
+                out += [f"### {sec}", ""]
+        link = f" (checked by {', '.join(links[rid])})" if links.get(rid) else " (no check)"
+        out.append(f"- {rid}: {' '.join(str(r.get('text') or '').split())}{link}")
+    out.append("")
+    scen = [t for t in scope.get("targets") or [] if str(t).startswith("scenario:")]
+    if scen:
+        out += [
+            "## Scenarios of the scope",
+            "",
+            ", ".join(s.removeprefix("scenario:") for s in scen),
+            "",
+        ]
+    out += [
+        f"## Failing now in scope ({len(targets)}; these must pass)",
+        "",
+    ]
+    for t in list(targets)[:SCOPE_BRIEF_FAILURES]:
+        out.append(f"- {t['id']}: {t['label']}")
+    if len(targets) > SCOPE_BRIEF_FAILURES:
+        out.append(f"- ... and {len(targets) - SCOPE_BRIEF_FAILURES} more (run the gates)")
+    out.append("")
+    if out_of_scope:
+        out += [
+            f"{out_of_scope} other check(s) fail now outside the scope: leave them to later "
+            "builds (they may stay failing), but do not break any check that passes.",
+            "",
+        ]
+    out += ["## Gates (run from the repository root)", ""]
+    out += [f"- `{g}`" for g in gates]
+    out += [
+        "",
+        "Fix the code, never the spec, requirements, trace, gate scripts or test harness; "
+        "add tests for new code where the project has a test convention. Stop when the "
+        "scope's checks pass and nothing else broke.",
+    ]
+    return "\n".join(out)
+
+
+def scope_findings_prompt(n: int, check: Mapping[str, Any], rnd: Mapping[str, Any]) -> str:
+    """Round n's prompt (n > 1) of a scoped build: what still fails in scope and what
+    regressed."""
+    fs = check.get("findings") or []
+    scope = [f for f in fs if f.get("in_scope")]
+    reg = [f for f in fs if f.get("regression") and not f.get("in_scope")]
+    other = [f for f in fs if f.get("target") in ("spec", "agent")]
+    out = [
+        f"Round {n - 1} did not pass ({rnd.get('scope_passing')}/{rnd.get('scope_total')} "
+        "in-scope checks pass). Studio ran the gates; the findings:",
+        "",
+    ]
+    for title, items in (
+        ("Still failing in scope", scope),
+        ("Regressions (passed before this build, fail now): fix these too", reg),
+        ("Other", other),
+    ):
+        if items:
+            out += [f"{title}:"]
+            out += [f"- {f.get('target') or f['id']}: {f['title']}" for f in items[:60]]
+            if len(items) > 60:
+                out.append(f"- ... and {len(items) - 60} more")
+            out.append("")
+    out += ["Fix the code (never the spec files) and run the gates again."]
+    return "\n".join(out)
+
+
 # ---- argv ----------------------------------------------------------------------------------
 
 
@@ -550,6 +718,19 @@ class _Run:
     tmp: Path | None = None
     session_id: str | None = None
     argvs: list[list[str]] = field(default_factory=list)
+    # a scoped build (API v1.8); None for a rebuild of accepted changes only
+    scope: dict[str, Any] | None = None
+    baseline_ids: dict[str, None] = field(default_factory=dict)  # ordered, as a set
+    integration: str | None = None
+    integration_tip: str | None = None
+    created_integration: bool = False
+    target_main: bool = False  # the target is checked out in the owner's main worktree
+    merge_owner_head: bool = False  # the default target: the owner's new commits merge in
+    owner_head: str | None = None
+    baseline_done: threading.Event = field(default_factory=threading.Event)
+    nothing_to_build: bool = False
+    t0: float = field(default_factory=time.monotonic)
+    json_warned: bool = False
 
 
 class Rebuilder:
@@ -585,6 +766,8 @@ class Rebuilder:
         self.runs: dict[str, _Run] = {}
         self.next_id = 1
         self.builds: dict[str, dict[str, Any]] = {}  # change id -> build
+        # per target branch, the latest gate results: {sha, tip, failing, source, at}
+        self.results: dict[str, dict[str, Any]] = {}
 
     # -- capability
     def available(self) -> tuple[bool, str]:
@@ -601,6 +784,104 @@ class Rebuilder:
                     return rid
         return None
 
+    # -- areas (API v1.8)
+    def trace_data(self) -> dict[str, Any]:
+        """The owner's current trace (the project's spec.trace.json)."""
+        try:
+            data = json.loads((self.project / "spec.trace.json").read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return {}
+        return data if isinstance(data, dict) else {}
+
+    def area_list(self, trace: Mapping[str, Any] | None = None) -> list[dict[str, Any]]:
+        return areas_mod.derive_areas(
+            trace if trace is not None else self.trace_data(), self.cfg.areas
+        )
+
+    def default_target(self) -> str:
+        return self.cfg.integration_branch(self.name)
+
+    def areas(
+        self, last_check: Mapping[str, Any] | None = None, branch: str | None = None
+    ) -> list[dict[str, Any]]:
+        """``GET /api/areas[?branch=B]``: every area with its counts and status on the
+        target branch B (default: the default target). ``failing`` comes from the latest
+        gate results Studio recorded for B while B's tip is still the commit they describe
+        (a scoped build's baseline, or its passing round); for the branch checked out in
+        the owner's worktree, else from `last_check` (the Studio check's per-target
+        verdicts); else null (unknown)."""
+        target = branch or self.default_target()
+        repo = _toplevel(self.cfg.repo_dir)
+        tip = current = None
+        if repo is not None:
+            r = _git(repo, "rev-parse", "-q", "--verify", f"refs/heads/{target}")
+            tip = r.stdout.strip() if r.returncode == 0 else None
+            current = _current_branch(repo)
+        with self.lock:
+            res = self.results.get(target)
+            failing = set(res["failing"]) if res and tip and res["tip"] == tip else None
+            building = {
+                str(r.scope["id"])
+                for r in self.runs.values()
+                if r.scope is not None
+                and r.integration == target
+                and r.record["status"] not in FINISHED
+            }
+        if (
+            failing is None
+            and target == current
+            and last_check
+            and isinstance(last_check.get("targets"), Mapping)
+        ):
+            failing = {t for t, v in last_check["targets"].items() if v == "fail"}
+        out = []
+        for a in self.area_list():
+            v = areas_mod.area_view(a, failing, building=str(a["id"]) in building)
+            v["target_branch"] = target
+            out.append(v)
+        return out
+
+    def branches(self) -> dict[str, Any]:
+        """``GET /api/branches``: the local branches a scoped build can target."""
+        repo = _toplevel(self.cfg.repo_dir)
+        default = self.default_target()
+        protected = self.cfg.protected_branches
+        if repo is None:
+            return {"branches": [], "current_branch": None, "protected": protected,
+                    "default_target": default}  # fmt: skip
+        current = _current_branch(repo)
+        checked = _checked_out(repo)
+        with self.lock:
+            used = {r.integration for r in self.runs.values() if r.integration}
+        listing = _git(
+            repo, "for-each-ref", "--format=%(refname:short)%09%(objectname)", "refs/heads"
+        ).stdout
+        out = []
+        for line in listing.splitlines():
+            name, _, head = line.partition("\t")
+            if not name:
+                continue
+            ahead = _git(repo, "rev-list", "--count", f"HEAD..{head}")
+            out.append(
+                {
+                    "name": name,
+                    "head": head,
+                    "current": name == current,
+                    "protected": name in protected,
+                    "checked_out": checked.get(name),
+                    "ahead_of_base": int(ahead.stdout.strip() or 0)
+                    if ahead.returncode == 0
+                    else None,
+                    "is_integration": name == default or name in used,
+                }
+            )
+        return {
+            "branches": out,
+            "current_branch": current,
+            "protected": protected,
+            "default_target": default,
+        }
+
     # -- POST /api/rebuild
     def start(
         self,
@@ -608,9 +889,25 @@ class Rebuilder:
         *,
         model: str | None = None,
         max_rounds: int | None = None,
+        scope: Any = None,
+        baseline_wait: float | None = None,
+        branch: Any = None,
+        confirm_unsafe_branch: bool = False,
     ) -> dict[str, str]:
         """Start a rebuild of `changes` (accepted change records, already validated by
-        the caller). Raises RebuildError (409 running, 503 unavailable)."""
+        the caller) and/or of a spec `scope` (API v1.8: ``"all"``, ``{"area": id}``,
+        ``{"rules": [ids]}``). Raises RebuildError (422/404 scope, 409 running or nothing
+        to build, 503 unavailable). A scoped start answers once its baseline gate run is
+        done (or after `baseline_wait` seconds)."""
+        resolved = None
+        if scope is not None:
+            trace = self.trace_data()
+            try:
+                resolved = areas_mod.resolve_scope(scope, self.area_list(trace), trace)
+            except areas_mod.ScopeError as e:
+                raise RebuildError(e.status, e.detail) from None
+        elif not changes:
+            raise RebuildError(422, "changes must be a non-empty list of ids")
         ok, why = self.available()
         if not ok:
             raise RebuildError(503, f"rebuild is not available: {why}")
@@ -618,22 +915,35 @@ class Rebuilder:
             busy = self.running()
             if busy:
                 raise RebuildError(409, f"a rebuild is already running in this project ({busy})")
-            rid = f"b{self.next_id}"
-            self.next_id += 1
             repo = _toplevel(self.cfg.repo_dir)
             assert repo is not None
             project_rel = self.project.relative_to(repo).as_posix()
-            base = _git_ok(repo, "rev-parse", "HEAD")
-            branch = self._branch_name(repo, str(changes[0]["id"]))
+            owner_head = _git_ok(repo, "rev-parse", "HEAD")
+            integration = tip = None
+            created = False
+            target: dict[str, Any] = {}
+            if resolved is not None:
+                target = self._target(repo, branch, confirm_unsafe_branch)
+                integration, tip, created = target["name"], target["tip"], target["created"]
+                branch = self._branch_name(repo, areas_mod.scope_slug(resolved), numbered=True)
+                start_at = tip
+            else:
+                branch = self._branch_name(repo, str(changes[0]["id"]))
+                start_at = owner_head
+            rid = f"b{self.next_id}"
+            self.next_id += 1
             worktree = self._worktree_dir(repo, rid)
-            r = _git(repo, "worktree", "add", "-q", "-b", branch, str(worktree), base)
+            r = _git(repo, "worktree", "add", "-q", "-b", branch, str(worktree), start_at)
             if r.returncode != 0:
+                self.next_id -= 1
+                if created:
+                    _git(repo, "update-ref", "-d", f"refs/heads/{integration}", str(tip))
                 raise RebuildError(500, f"git worktree add failed: {r.stderr.strip()}")
             trace_path = worktree / project_rel / "spec.trace.json"
             trace_json = trace_path.read_text(encoding="utf-8") if trace_path.is_file() else ""
-            targets = _targets(changes)
+            targets = _targets(changes) if resolved is None else []
             rounds = int(max_rounds or self.cfg.max_rounds)
-            record = {
+            record: dict[str, Any] = {
                 "id": rid,
                 "project": self.name,
                 "changes": [str(c["id"]) for c in changes],
@@ -646,25 +956,49 @@ class Rebuilder:
                 "rounds": [],
                 "targets": [{"id": t["id"], "label": t["label"], "done": False} for t in targets],
                 "gates": list(self.cfg.gates),
-                "base": base,
+                "base": start_at,
                 "branch": branch,
                 "worktree": str(worktree),
                 "merge_hint": None,
-                "usage": {"cost_usd": 0.0, "duration_ms": 0, "input_tokens": 0, "output_tokens": 0},
+                "usage": _zero_usage(),
+                "warnings": [],
                 "error": None,
             }
+            if resolved is not None:
+                record.update(
+                    scope={k: resolved[k] for k in ("kind", "id", "title", "rules")},
+                    baseline=None,
+                    target_branch=integration,
+                    created_branch=created,
+                    base_ref=target["base_ref"],
+                    commit_range={"from": tip, "to": None},
+                    integration_branch=integration,
+                    integration_base=tip,
+                    owner_head=owner_head,
+                    merged_head=None,
+                    metrics=None,
+                )
             run = _Run(
                 record=record,
                 changes=[copy.deepcopy(dict(c)) for c in changes],
                 repo=repo,
                 worktree=worktree,
                 project_rel=project_rel,
-                base=base,
+                base=start_at,
                 branch=branch,
                 gates=list(self.cfg.gates),
                 targets=targets,
                 trace_json=trace_json,
+                scope=resolved,
+                integration=integration,
+                integration_tip=tip,
+                created_integration=created,
+                owner_head=owner_head,
+                target_main=bool(target.get("checked_out_main")),
+                merge_owner_head=bool(target.get("merge_owner_head")),
             )
+            if resolved is None:
+                run.baseline_done.set()
             self.runs[rid] = run
             for cid in record["changes"]:
                 self.builds[cid] = {"state": "rebuilding", "rebuild_id": rid, "branch": branch}
@@ -672,12 +1006,117 @@ class Rebuilder:
                 target=self._run, args=(run,), daemon=True, name=f"studio-rebuild-{rid}"
             )
             run.thread.start()
-        self.log(f"rebuild {rid}: started on {branch} at {base[:10]} ({worktree})")
+        self.log(f"rebuild {rid}: started on {branch} at {start_at[:10]} ({worktree})")
+        if resolved is not None:
+            limit = baseline_wait
+            if limit is None:
+                limit = self.cfg.gate_timeout * max(1, len(run.gates)) + 120
+            run.baseline_done.wait(limit)
+            if run.nothing_to_build:
+                if run.thread is not None:
+                    run.thread.join(30)
+                with self.lock:
+                    self.runs.pop(rid, None)
+                    for cid in record["changes"]:
+                        self.builds.pop(cid, None)
+                    if self.next_id == int(rid[1:]) + 1:
+                        self.next_id -= 1  # the refused build leaves no record and no id
+                raise RebuildError(409, "nothing to build: the checks in this scope already pass")
         return {"id": rid}
 
-    def _branch_name(self, repo: Path, cid: str) -> str:
+    def _target(self, repo: Path, spec: Any, confirm: bool) -> dict[str, Any]:
+        """The target branch of a scoped build (API v1.8): ``{name, tip, created,
+        base_ref, checked_out_main, merge_owner_head}``; creates it when asked (never over
+        an existing branch). Refuses: 422 a malformed spec or branch name; 404 an unknown
+        branch (create=false) or ``from`` ref; 409 ``branch_exists`` (create=true),
+        ``branch_checked_out`` (in a linked worktree, always; in the owner's main
+        worktree, without ``confirm_unsafe_branch``), ``branch_protected`` (without
+        the flag), ``tree_dirty`` (the flag on a main worktree with changes)."""
+        default = self.default_target()
+        bad = 'branch must be {"name": "<branch>", "create": true|false, "from": "<ref>"}'
+        if spec is None:
+            name, create, frm = default, None, "HEAD"
+        else:
+            if not isinstance(spec, Mapping) or set(spec) - {"name", "create", "from"}:
+                raise RebuildError(422, bad)
+            name, create, frm = spec.get("name"), spec.get("create", False), spec.get("from")
+            if not isinstance(name, str) or not name or not isinstance(create, bool):
+                raise RebuildError(422, bad)
+            if frm is None:
+                frm = "HEAD"
+            elif not isinstance(frm, str) or not frm or not create:
+                raise RebuildError(422, bad + ' ("from" only with "create": true)')
+        if _git(repo, "check-ref-format", "--branch", name).returncode != 0 or name.startswith("-"):
+            raise RebuildError(422, f"{name!r} is not a valid branch name", "branch_name_invalid")
+        ref = f"refs/heads/{name}"
+        r = _git(repo, "rev-parse", "-q", "--verify", ref)
+        exists = r.returncode == 0
+        if create is None:
+            create = not exists
+        if create and exists:
+            raise RebuildError(409, f"branch {name} already exists", "branch_exists")
+        if not create and not exists:
+            raise RebuildError(404, f"no branch {name}", "no_branch")
+        from_sha = None
+        if create:
+            fr = _git(repo, "rev-parse", "-q", "--verify", f"{frm}^{{commit}}")
+            if fr.returncode != 0 or frm.startswith("-"):
+                raise RebuildError(404, f"no ref {frm}", "no_ref")
+            from_sha = fr.stdout.strip()
+        checked = _checked_out(repo)
+        current = _current_branch(repo)
+        where = checked.get(name)
+        if where is not None and name != current:
+            raise RebuildError(
+                409,
+                f"branch {name} is checked out in {where}; Studio only moves a branch that "
+                "is checked out nowhere, or in your own worktree with confirmation",
+                "branch_checked_out",
+            )
+        unsafe = None
+        if name in self.cfg.protected_branches:
+            unsafe = ("branch_protected", f"branch {name} is protected")
+        elif name == current:
+            unsafe = ("branch_checked_out", f"branch {name} is checked out in your worktree {repo}")
+        if unsafe is not None:
+            if not confirm:
+                raise RebuildError(
+                    409,
+                    f"{unsafe[1]}; send confirm_unsafe_branch: true to build onto it "
+                    "(fast-forward only, with a clean worktree)",
+                    unsafe[0],
+                )
+            dirty = _git(repo, "status", "--porcelain").stdout.strip()
+            if dirty:
+                raise RebuildError(
+                    409,
+                    f"your worktree {repo} has uncommitted changes; building onto {name} "
+                    "needs a clean worktree",
+                    "tree_dirty",
+                )
+        if create:
+            assert from_sha is not None
+            # the empty old value: git refuses if the branch appeared meanwhile
+            if _git(repo, "update-ref", ref, from_sha, "").returncode != 0:
+                raise RebuildError(409, f"branch {name} already exists", "branch_exists")
+            tip = from_sha
+        else:
+            tip = r.stdout.strip()
+        return {
+            "name": name,
+            "tip": tip,
+            "created": bool(create),
+            "base_ref": frm if create else name,
+            "checked_out_main": name == current,
+            "merge_owner_head": name == default,
+        }
+
+    def _branch_name(self, repo: Path, cid: str, numbered: bool = False) -> str:
         base = f"rebuild/{re.sub(r'[^A-Za-z0-9._-]', '-', cid)}"
-        name, n = base, 2
+        if numbered:
+            name, n = f"{base}-1", 2
+        else:
+            name, n = base, 2
         while _git(repo, "show-ref", "--verify", "-q", f"refs/heads/{name}").returncode == 0:
             name, n = f"{base}-{n}", n + 1
         return name
@@ -778,6 +1217,8 @@ class Rebuilder:
             with self.lock:
                 if run.record["finished"] is None:
                     run.record["finished"] = _now()
+                run.record["usage"]["wall_s"] = round(time.monotonic() - run.t0, 2)
+            run.baseline_done.set()
             run.done.set()
 
     def _loop(self, run: _Run) -> None:
@@ -785,13 +1226,24 @@ class Rebuilder:
         with self.lock:
             if run.stop.is_set():
                 return
-            rec["status"] = "running"
+            rec["status"] = "baseline" if run.scope is not None else "running"
+        if run.scope is not None:
+            go_on = self._prelude(run)
+            run.baseline_done.set()
+            if not go_on or run.stop.is_set():
+                return
+            with self.lock:
+                if run.stop.is_set():
+                    return
+                rec["status"] = "running"
         prev_tree = self._tree(run)
         last_check: dict[str, Any] | None = None
         last_gates: list[dict[str, Any]] = []
+        last_rnd: dict[str, Any] = {}
         for n in range(1, int(rec["max_rounds"]) + 1):
             if run.stop.is_set():
                 return
+            t_round = time.monotonic()
             rnd: dict[str, Any] = {
                 "n": n,
                 "started": _now(),
@@ -802,38 +1254,26 @@ class Rebuilder:
             }
             with self.lock:
                 rec["rounds"].append(rnd)
-            if n == 1 or last_check is None or not run.session_id:
-                prompt = brief(
-                    run.changes,
-                    trace_json=run.trace_json,
-                    gates=run.gates,
-                    targets=run.targets,
-                    project_rel=run.project_rel,
-                )
-                if n > 1 and last_check is not None:
-                    prompt += "\n\n" + findings_prompt(n, last_check, last_gates)
-            else:
-                prompt = findings_prompt(n, last_check, last_gates)
+            prompt = self._prompt(run, n, last_check, last_gates, last_rnd)
             agent = self._agent_step(run, n, prompt)
             # record what the agent step cost BEFORE any later step can raise (B3)
             u = agent.get("usage") or {}
             with self.lock:
                 rnd["agent"] = u
-                for k in ("cost_usd", "duration_ms", "input_tokens", "output_tokens"):
-                    rec["usage"][k] = rec["usage"].get(k, 0) + (u.get(k) or 0)
-                rec["usage"]["cost_usd"] = round(rec["usage"]["cost_usd"], 6)
+                _add_usage(rec["usage"], u)
             if run.stop.is_set():
                 return
             # integrity: the contract must be the base commit's, byte for byte
             edited = self._restore_protected(run)
-            gates = [] if run.stop.is_set() else self._gates(run, n)
+            if run.stop.is_set():
+                return
+            gates, counts, gate_findings = self._gate_round(run, n)
             if run.stop.is_set():
                 return
             tree = self._tree(run)
             files = _tree_diff(run.worktree, prev_tree, tree)
             prev_tree = tree
-            counts: dict[str, int] = {}
-            findings: list[dict[str, str]] = []
+            findings: list[dict[str, Any]] = []
             if edited:
                 findings.append(
                     {
@@ -846,22 +1286,23 @@ class Rebuilder:
                 findings.append(
                     {"title": f"the agent failed: {agent['error']['message']}", "target": "agent"}
                 )
-            for g in gates:
-                c, fs = parse_gate_output(g["command"], g["output_tail"], g["exit_code"])
-                for k, v in c.items():
-                    counts[k] = counts.get(k, 0) + v
-                findings += fs
-            passed = bool(gates) and all(g["exit_code"] == 0 for g in gates) and not edited
-            if passed:
-                findings = []  # a passing gate's informational FAIL-looking lines are no findings
+            extra: dict[str, Any] = {}
+            if run.scope is None:
+                findings += gate_findings
+                passed = bool(gates) and all(g["exit_code"] == 0 for g in gates) and not edited
+                if passed:
+                    findings = []  # a passing gate's informational FAIL-looking lines
+            else:
+                passed, scoped, extra = self._judge(run, gates, gate_findings)
+                passed = passed and not edited
+                findings += scoped
+            failing_now = extra.pop("_failing", None)
             for i, f in enumerate(findings, 1):
                 f["id"] = f"f{i}"
             check = {
                 "verdict": "pass" if passed else "fail",
                 "counts": counts,
-                "findings": [
-                    {"id": f["id"], "title": f["title"], "target": f["target"]} for f in findings
-                ],
+                "findings": [_public_finding(f, run.scope is not None) for f in findings],
             }
             with self.lock:
                 rnd.update(
@@ -873,23 +1314,252 @@ class Rebuilder:
                     spec_edited=edited,
                     agent=u,
                     error=agent.get("error"),
+                    wall_s=round(time.monotonic() - t_round, 2),
+                    **extra,
                 )
+                rec["usage"]["wall_s"] = round(time.monotonic() - run.t0, 2)
             self.log(
                 f"rebuild {rec['id']}: round {n} {check['verdict']} "
                 f"({len(findings)} finding(s), {len(files)} file(s) changed)"
             )
             if passed:
-                self._commit(run, n)
+                self._commit(run, n, failing_now)
                 return
-            last_check, last_gates = check, gates
+            last_check, last_gates, last_rnd = check, gates, rnd
             if (agent.get("error") or {}).get("kind") == "usage_limit":
+                self._end_hook(run, "gave_up")
                 with self.lock:
                     rec["error"] = agent["error"]
                     self._finish(run, "gave_up")
                 return
+        if not run.stop.is_set():
+            self._end_hook(run, "gave_up")
         with self.lock:
             if not run.stop.is_set():
                 self._finish(run, "gave_up")
+
+    def _prompt(
+        self,
+        run: _Run,
+        n: int,
+        last_check: Mapping[str, Any] | None,
+        last_gates: Sequence[Mapping[str, Any]],
+        last_rnd: Mapping[str, Any],
+    ) -> str:
+        def first() -> str:
+            if run.scope is None:
+                return brief(
+                    run.changes,
+                    trace_json=run.trace_json,
+                    gates=run.gates,
+                    targets=run.targets,
+                    project_rel=run.project_rel,
+                )
+            base = run.record.get("baseline") or {}
+            out_of = sum(1 for f in base.get("findings") or [] if not f.get("in_scope"))
+            return scope_brief(
+                run.scope,
+                trace_json=run.trace_json,
+                gates=run.gates,
+                targets=run.targets,
+                out_of_scope=out_of,
+                project_rel=run.project_rel,
+                context_files=self._context_files(run),
+                changes=run.changes,
+            )
+
+        def again() -> str:
+            assert last_check is not None
+            if run.scope is None:
+                return findings_prompt(n, last_check, last_gates)
+            text = scope_findings_prompt(n, last_check, last_rnd)
+            for g in last_gates:
+                if g.get("exit_code") not in (0, 1):
+                    tail = str(g.get("output_tail") or "")[-3000:]
+                    text += (
+                        f"\n\n`{g['command']}` exited {g.get('exit_code')}; the end of its "
+                        f"output:\n```\n{tail.rstrip()}\n```"
+                    )
+            return text
+
+        if n == 1 or last_check is None:
+            return first()
+        if not run.session_id:
+            return first() + "\n\n" + again()
+        return again()
+
+    def _context_files(self, run: _Run) -> list[str]:
+        rel = "" if run.project_rel == "." else run.project_rel + "/"
+        return [
+            f"{rel}{n}"
+            for n in ("CONTEXT.md", "README.md")
+            if (run.worktree / run.project_rel / n).is_file()
+        ]
+
+    # -- a scoped build: the integration branch, the baseline and the judgement
+    def _prelude(self, run: _Run) -> bool:
+        """Merge the owner's HEAD into the worktree when the integration branch lacks it,
+        run the baseline, and pick the scope's targets. False: the build ends here (merge
+        conflict, gates that cannot run, nothing to build, stopped)."""
+        rec = run.record
+        assert run.scope is not None and run.owner_head and run.integration_tip
+        wt = run.worktree
+        if (
+            run.merge_owner_head
+            and _git(wt, "merge-base", "--is-ancestor", run.owner_head, "HEAD").returncode != 0
+        ):
+            r = _git(wt, "merge", "--no-edit", "-q", run.owner_head, timeout=300)
+            if r.returncode != 0:
+                _git(wt, "merge", "--abort")
+                msg = (
+                    f"merging the owner's HEAD {run.owner_head[:10]} into "
+                    f"{run.integration} conflicts: "
+                    + _short(r.stdout.strip() or r.stderr.strip(), 500)
+                )
+                with self.lock:
+                    rec["error"] = {"kind": "merge_conflict", "message": msg}
+                    self._finish(run, "gave_up")
+                return False
+            with self.lock:
+                rec["merged_head"] = run.owner_head
+        base = _git_ok(wt, "rev-parse", "HEAD")
+        run.base = base
+        trace_path = wt / run.project_rel / "spec.trace.json"
+        run.trace_json = trace_path.read_text(encoding="utf-8") if trace_path.is_file() else ""
+        with self.lock:
+            rec["base"] = base
+        t0 = time.monotonic()
+        gates, counts, findings = self._gate_round(run, 0)
+        if run.stop.is_set():
+            return False
+        trace = json.loads(run.trace_json) if run.trace_json else {}
+        owners = areas_mod.target_rules(trace)
+        in_scope = self._in_scope_fn(run)
+        baseline_findings = []
+        seen: dict[str, dict[str, Any]] = {}
+        for i, f in enumerate(findings, 1):
+            ident = areas_mod.finding_identity(f)
+            item = {
+                "id": f"f{i}",
+                "title": f["title"],
+                "target": f.get("target") or "",
+                "rules": owners.get(f.get("target") or "", [])
+                or ([f["target"]] if re.fullmatch(r"R\d+", f.get("target") or "") else []),
+                "in_scope": in_scope(ident),
+            }
+            baseline_findings.append(item)
+            seen.setdefault(ident, item)
+        unmapped = [x["id"] for x in baseline_findings if not x["rules"]]
+        broken = [
+            f"`{g['command']}` exited {g['exit_code']}"
+            for g in gates
+            if g["exit_code"] not in (0, 1)
+        ]
+        baseline = {
+            "at": _now(),
+            "seconds": round(time.monotonic() - t0, 2),
+            "verdict": "pass" if all(g["exit_code"] == 0 for g in gates) else "fail",
+            "counts": counts,
+            "findings": baseline_findings,
+            "unmapped": unmapped,
+            "gates": gates,
+        }
+        run.baseline_ids = dict.fromkeys(seen)
+        run.targets = [
+            {"id": ident, "label": item["title"]}
+            for ident, item in seen.items()
+            if item["in_scope"]
+        ]
+        with self.lock:
+            rec["baseline"] = baseline
+            rec["targets"] = [{**t, "done": False} for t in run.targets]
+            rec["usage"]["wall_s"] = round(time.monotonic() - run.t0, 2)
+        if broken or not gates:
+            what = "; ".join(broken) or "no gate ran"
+            with self.lock:
+                rec["error"] = {
+                    "kind": "baseline",
+                    "message": f"the gates could not run on the base commit: {what}",
+                }
+                self._finish(run, "gave_up")
+            return False
+        self._record_results(run, base, set(seen), f"{rec['id']} baseline", tip=run.integration_tip)
+        if not run.targets:
+            run.nothing_to_build = True
+            self._discard(run)
+            return False
+        self.log(
+            f"rebuild {rec['id']}: baseline {len(findings)} finding(s), "
+            f"{len(run.targets)} in scope {run.scope['id']}"
+        )
+        return True
+
+    def _in_scope_fn(self, run: _Run) -> Callable[[str], bool]:
+        assert run.scope is not None
+        if run.scope["kind"] == areas_mod.ALL:
+            return lambda _ident: True
+        targets = set(run.scope["targets"]) | set(run.scope["rules"])
+        return lambda ident: ident in targets
+
+    def _judge(
+        self, run: _Run, gates: Sequence[Mapping[str, Any]], findings: Sequence[dict[str, Any]]
+    ) -> tuple[bool, list[dict[str, Any]], dict[str, Any]]:
+        """A scoped round's verdict, decided from the gate findings alone: every in-scope
+        target of the baseline passes, and no check that passed in the baseline fails now
+        (a regression). Out-of-scope baseline failures may stay. A gate that did not
+        complete (exit code other than 0 and 1) fails the round."""
+        in_scope = self._in_scope_fn(run)
+        cur: dict[str, dict[str, Any]] = {}
+        out: list[dict[str, Any]] = []
+        for f in findings:
+            ident = areas_mod.finding_identity(f)
+            g = dict(f)
+            g["in_scope"] = in_scope(ident)
+            g["regression"] = ident not in run.baseline_ids
+            out.append(g)
+            cur.setdefault(ident, g)
+        target_ids = [t["id"] for t in run.targets]
+        still = [t for t in target_ids if t in cur]
+        regressions = [i for i in cur if i not in run.baseline_ids]
+        fixed = [i for i in run.baseline_ids if i not in cur]
+        complete = bool(gates) and all(g["exit_code"] in (0, 1) for g in gates)
+        passed = complete and not still and not regressions
+        extra = {
+            "scope_passing": len(target_ids) - len(still),
+            "scope_total": len(target_ids),
+            "regressions": regressions,
+            "newly_fixed": fixed,
+            "_failing": set(cur),
+        }
+        return passed, out, extra
+
+    def _record_results(
+        self, run: _Run, sha: str, failing: set[str], source: str, tip: str | None = None
+    ) -> None:
+        """The gate results of `sha`, valid for the target branch while its tip is `tip`
+        (the baseline: the tip the build started from; a pass: the new tip)."""
+        if not run.integration:
+            return
+        with self.lock:
+            self.results[run.integration] = {
+                "sha": sha,
+                "tip": tip or sha,
+                "failing": sorted(failing),
+                "source": source,
+                "at": _now(),
+            }
+
+    def _discard(self, run: _Run) -> None:
+        """Nothing to build: remove the worktree, the build branch, and an integration
+        branch this build created."""
+        shutil.rmtree(run.worktree, ignore_errors=True)
+        _git(run.repo, "worktree", "prune")
+        _git(run.repo, "update-ref", "-d", f"refs/heads/{run.branch}")
+        if run.created_integration and run.integration and run.integration_tip:
+            _git(run.repo, "update-ref", "-d", f"refs/heads/{run.integration}", run.integration_tip)
+        with self.lock:
+            run.record["status"] = "stopped"
+            run.record["finished"] = _now()
 
     def _fail_round(self, run: _Run, err: dict[str, str]) -> None:
         """A step crashed (Studio's own bug): the open round gets ``error`` and the agent's
@@ -947,6 +1617,10 @@ class Rebuilder:
         except (OSError, json.JSONDecodeError) as exc:
             return {"summary": "", "error": {"kind": "cli", "message": f"{STUB_FILE}: {exc}"}}
         rounds = script.get("rounds") or []
+        if run.scope is not None:
+            scoped = (script.get("scopes") or {}).get(areas_mod.scope_slug(run.scope))
+            if isinstance(scoped, dict):
+                rounds = scoped.get("rounds") or []
         step = rounds[n - 1] if n - 1 < len(rounds) else {}
         hold = min(float(step.get("hold") or 0), STUB_HOLD_MAX)
         if hold and run.stop.wait(hold):
@@ -954,6 +1628,10 @@ class Rebuilder:
         written = []
         for rel, content in (step.get("files") or {}).items():
             p = run.worktree / run.project_rel / rel
+            if content is None:  # null deletes the file
+                p.unlink(missing_ok=True)
+                written.append(f"-{rel}")
+                continue
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(str(content), encoding="utf-8")
             written.append(rel)
@@ -961,10 +1639,7 @@ class Rebuilder:
             "summary": step.get("summary")
             or (f"stub: wrote {', '.join(written)}" if written else "stub: no edit"),
             "usage": {
-                "cost_usd": 0.0,
-                "duration_ms": 0,
-                "input_tokens": 0,
-                "output_tokens": 0,
+                **_zero_usage(),
                 "num_turns": 0,
                 "session_id": None,
             },
@@ -987,6 +1662,7 @@ class Rebuilder:
             settings=run.tmp / "settings.json",
             gates=run.gates,
             resume=resume,
+            rules=RULES if run.scope is None else SCOPE_RULES,
         )
         with self.lock:
             run.argvs.append(argv)
@@ -1052,12 +1728,16 @@ class Rebuilder:
         result = next((e for e in reversed(events) if e["type"] == "result"), None)
         errors = [e for e in events if e["type"] == "error"]
         out: dict[str, Any] = {"summary": _short(texts[-1], 600) if texts else ""}
+        res = result or {}
         out["usage"] = {
-            "cost_usd": (result or {}).get("cost_usd", 0.0),
-            "duration_ms": (result or {}).get("duration_ms", 0),
-            "input_tokens": (result or {}).get("input_tokens", 0),
-            "output_tokens": (result or {}).get("output_tokens", 0),
-            "num_turns": (result or {}).get("num_turns", 0),
+            "cost_usd": res.get("cost_usd", 0.0),
+            "cost_usd_list_estimate": res.get("cost_usd", 0.0),
+            "duration_ms": res.get("duration_ms", 0),
+            "input_tokens": res.get("input_tokens", 0),
+            "output_tokens": res.get("output_tokens", 0),
+            "cache_read_input_tokens": res.get("cache_read_input_tokens", 0),
+            "cache_creation_input_tokens": res.get("cache_creation_input_tokens", 0),
+            "num_turns": res.get("num_turns", 0),
             "session_id": t.claude_session_id,
         }
         if run.stop.is_set():
@@ -1159,24 +1839,90 @@ class Rebuilder:
             )
         return out
 
+    def _gate_round(
+        self, run: _Run, n: int
+    ) -> tuple[list[dict[str, Any]], dict[str, int], list[dict[str, Any]]]:
+        """Run the gates (round `n`; 0 = the baseline): (gates, counts, findings). With
+        ``[rebuild] findings_json`` the findings come from that JSON report when a gate
+        (re)wrote it during this run; else from the gates' text output. A finding marked
+        ``_fallback`` is a gate that failed without a parsable finding."""
+        jpath = (
+            run.worktree / run.project_rel / self.cfg.findings_json
+            if self.cfg.findings_json
+            else None
+        )
+        before = _stat(jpath) if jpath is not None else None
+        gates = self._gates(run, n)
+        counts: dict[str, int] = {}
+        findings: list[dict[str, Any]] = []
+        broken: list[dict[str, Any]] = []
+        for g in gates:
+            c, fs = parse_gate_output(g["command"], g["output_tail"], g["exit_code"])
+            if g["exit_code"] == 0:
+                fs = []  # a passing gate's informational FAIL-looking lines are no findings
+            elif len(fs) == 1 and fs[0]["title"].startswith(f"{g['command']} exited "):
+                fs[0]["_fallback"] = True
+                if g["exit_code"] != 1:
+                    fs[0]["_broken"] = True
+                    broken.append(fs[0])
+            for k, v in c.items():
+                counts[k] = counts.get(k, 0) + v
+            findings += fs
+        if jpath is not None and gates:
+            after = _stat(jpath)
+            data = None
+            if after is not None and after != before:
+                try:
+                    data = json.loads(jpath.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    data = None
+            if isinstance(data, dict) and isinstance(data.get("findings"), list):
+                counts, jf = areas_mod.findings_from_json(data)
+                # keep the gates that did not complete: the report alone would hide them
+                findings = [dict(f) for f in jf] + broken
+            elif not run.json_warned:
+                run.json_warned = True
+                with self.lock:
+                    run.record["warnings"].append(
+                        f"[rebuild] findings_json {self.cfg.findings_json} was not written "
+                        "by the gates; findings were parsed from their text output"
+                    )
+        return gates, counts, findings
+
     def _tree(self, run: _Run) -> str:
         return _snapshot_tree(run.worktree)
 
-    def _commit(self, run: _Run, n: int) -> None:
+    def _commit(self, run: _Run, n: int, failing: set[str] | None = None) -> None:
         rec = run.record
         requests = "; ".join(" ".join(str(c.get("request") or "").split()) for c in run.changes)
-        lines = [
-            f"build: {requests}",
-            "",
-            f"Rebuilt by Lattice Studio from the accepted change(s) {', '.join(rec['changes'])}; "
-            f"the gates passed in round {n} of {rec['max_rounds']}.",
-            "",
-            f"Lattice-Rebuild: {rec['id']} ({self.name})",
-        ]
+        if run.scope is None:
+            lines = [
+                f"build: {requests}",
+                "",
+                "Rebuilt by Lattice Studio from the accepted change(s) "
+                f"{', '.join(rec['changes'])}; the gates passed in round {n} of "
+                f"{rec['max_rounds']}.",
+            ]
+        else:
+            last = rec["rounds"][-1] if rec["rounds"] else {}
+            title = f"build: {run.scope['title']}" + (f"; {requests}" if requests else "")
+            lines = [
+                title,
+                "",
+                f"Built by Lattice Studio from the spec, scope {run.scope['id']} "
+                f"({len(run.scope['rules'])} rule(s)"
+                + (f", and the accepted change(s) {', '.join(rec['changes'])}" if rec["changes"]
+                   else "")
+                + f"): {last.get('scope_passing')}/{last.get('scope_total')} in-scope "
+                f"checks pass in round {n} of {rec['max_rounds']}, no regressions.",
+            ]  # fmt: skip
+        lines += ["", f"Lattice-Rebuild: {rec['id']} ({self.name})"]
         if self.cfg.agent == "claude" and self.trailer:
             lines.append(self.trailer)
         message = "\n".join(lines) + "\n"
         wt = run.worktree
+        if run.scope is not None:
+            self._end_hook(run, "passed")
         try:
             _git_ok(wt, "add", "-A", "--", ".", *_junk_pathspecs())
             _git_ok(wt, "commit", "-q", "--allow-empty", "--no-verify", "-m", message)
@@ -1191,6 +1937,26 @@ class Rebuilder:
             return
         name_status = [" ".join(x.split("\t")) for x in ns.splitlines() if x.strip()]
         files = [x.split("\t")[-1] for x in ns.splitlines() if x.strip()]
+        hint = (
+            f"Studio never merges. To take the rebuilt code, run `git merge {run.branch}` "
+            f"in {run.repo}; the worktree {wt} stays for review."
+        )
+        moved: dict[str, str] | None = None
+        if run.scope is not None and run.integration:
+            moved = self._advance(run, sha)
+            if moved is None:
+                self._record_results(run, sha, set(failing or ()), f"{rec['id']} round {n}")
+            hint = f"The build is on {run.integration} (now at {sha[:10]}) and {run.branch}; " + (
+                "your checkout was fast-forwarded to it."
+                if run.target_main
+                else f"Studio never merges into your branch: to take it, run "
+                f"`git merge {run.integration}` in {run.repo}."
+            )
+            if moved is not None:
+                hint = (
+                    f"{run.integration} was NOT advanced ({moved['message']}); nothing is "
+                    f"lost: the build commit {sha[:10]} is on {run.branch}."
+                )
         with self.lock:
             rec["commit"] = {
                 "sha": sha,
@@ -1198,12 +1964,130 @@ class Rebuilder:
                 "files_changed": files,
                 "name_status": name_status,
             }
-            rec["merge_hint"] = (
-                f"Studio never merges. To take the rebuilt code, run `git merge {run.branch}` "
-                f"in {run.repo}; the worktree {wt} stays for review."
-            )
-            self._finish(run, "passed")
-        self.log(f"rebuild {rec['id']}: passed as {sha[:10]} on {run.branch}")
+            rec["merge_hint"] = hint
+            if "commit_range" in rec:
+                rec["commit_range"] = {"from": run.integration_tip, "to": sha}
+            if moved is not None:
+                rec["error"] = moved
+                self._finish(run, "gave_up")
+            else:
+                self._finish(run, "passed")
+        self.log(f"rebuild {rec['id']}: {'passed' if moved is None else 'gave up'} as "
+                 f"{sha[:10]} on {run.branch}")  # fmt: skip
+
+    def _advance(self, run: _Run, sha: str) -> dict[str, str] | None:
+        """Fast-forward the target branch to `sha`: ``update-ref`` with the tip at start
+        as the old value when no worktree has it checked out; ``git merge --ff-only`` in
+        the owner's (clean) main worktree when the build was confirmed onto the branch
+        checked out there. Never a reset or a forced checkout. None, or the error."""
+        name, old = str(run.integration), str(run.integration_tip)
+        repo = run.repo
+        if run.target_main:
+            if _current_branch(repo) != name:
+                return {"kind": "branch_moved",
+                        "message": f"your worktree is no longer on {name}"}  # fmt: skip
+            if _git(repo, "status", "--porcelain").stdout.strip():
+                return {"kind": "tree_dirty",
+                        "message": f"your worktree {repo} has uncommitted changes"}  # fmt: skip
+            if _git(repo, "rev-parse", "HEAD").stdout.strip() != old:
+                return {"kind": "branch_moved", "message": f"{name} moved during the build"}
+            r = _git(repo, "merge", "--ff-only", "-q", sha, timeout=300)
+            if r.returncode != 0:
+                msg = f"git merge --ff-only failed: {_short(r.stderr, 300)}"
+                return {"kind": "branch_moved", "message": msg}
+            return None
+        where = _checked_out(repo).get(name)
+        if where is not None:
+            return {"kind": "branch_checked_out",
+                    "message": f"{name} was checked out in {where} during the build"}  # fmt: skip
+        if _git(repo, "merge-base", "--is-ancestor", old, sha).returncode != 0:
+            return {
+                "kind": "branch_moved",
+                "message": f"{sha[:10]} does not descend from {old[:10]}",
+            }
+        r = _git(repo, "update-ref", f"refs/heads/{name}", sha, old)
+        if r.returncode != 0:
+            msg = f"{name} moved during the build: {_short(r.stderr, 300)}"
+            return {"kind": "branch_moved", "message": msg}
+        return None
+
+    def _end_hook(self, run: _Run, status: str) -> None:
+        """``[rebuild] metrics_hook`` after a scoped build ends (passed: before the commit,
+        so its output is part of it). A failing hook is a warning, never a failed build."""
+        hook = self.cfg.metrics_hook
+        if run.scope is None or not hook or run.stop.is_set():
+            return
+        rec = run.record
+        u = rec["usage"]
+        slug = areas_mod.scope_slug(run.scope)
+        rounds = len(rec["rounds"])
+        last = rec["rounds"][-1] if rec["rounds"] else {}
+        llm = {
+            "model": rec["model"],
+            "tokens_in": int(u.get("input_tokens") or 0)
+            + int(u.get("cache_read_input_tokens") or 0)
+            + int(u.get("cache_creation_input_tokens") or 0),
+            "tokens_out": int(u.get("output_tokens") or 0),
+            "input_tokens_uncached": int(u.get("input_tokens") or 0),
+            "cache_read_input_tokens": int(u.get("cache_read_input_tokens") or 0),
+            "cache_creation_input_tokens": int(u.get("cache_creation_input_tokens") or 0),
+            "cost_usd_list_estimate": float(u.get("cost_usd_list_estimate") or 0.0),
+            "wall_s": round(time.monotonic() - run.t0, 2),
+            "rounds": rounds,
+            "llm_calls": rounds if self.cfg.agent == "claude" else 0,
+            "target_branch": run.integration,
+        }
+        note = (
+            f"Lattice Studio build {rec['id']} ({run.scope['title']}): {status} in round "
+            f"{rounds} of {rec['max_rounds']}; scope {last.get('scope_passing')}/"
+            f"{last.get('scope_total')}, regressions {len(last.get('regressions') or [])}; "
+            f"agent {self.cfg.agent}, model {rec['model']}; target branch {run.integration}"
+        )
+        cwd = run.worktree / run.project_rel
+        fd, tmp = tempfile.mkstemp(prefix="lattice-build-llm-", suffix=".json")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                json.dump(llm, f)
+            args = ["--phase", f"build_{slug}", "--llm-json", tmp, "--note", note]
+            if self.cfg.findings_json and (cwd / self.cfg.findings_json).is_file():
+                args += ["--check-json", str(cwd / self.cfg.findings_json)]
+            cmd = f"{hook} {' '.join(shlex.quote(a) for a in args)}"
+            t0 = time.perf_counter()
+            try:
+                r = subprocess.run(
+                    ["/bin/sh", "-c", cmd],
+                    cwd=str(cwd),
+                    env=self._child_env(run, rounds),
+                    stdin=subprocess.DEVNULL,
+                    capture_output=True,
+                    text=True,
+                    errors="replace",
+                    timeout=self.cfg.gate_timeout,
+                    start_new_session=True,
+                )
+                rc, output = r.returncode, (r.stdout or "") + (r.stderr or "")
+            except subprocess.TimeoutExpired as exc:
+                rc = 124
+                output = (
+                    str(exc.stdout or "")
+                    + f"\n[studio] the hook timed out after {self.cfg.gate_timeout:g}s"
+                )
+            except OSError as exc:
+                rc, output = 127, str(exc)
+            with self.lock:
+                rec["metrics"] = {
+                    "command": cmd,
+                    "phase": f"build_{slug}",
+                    "exit_code": rc,
+                    "seconds": round(time.perf_counter() - t0, 2),
+                    "output_tail": output[-4000:],
+                    "llm": llm,
+                }
+                if rc != 0:
+                    rec["warnings"].append(f"the metrics hook exited {rc}: {_short(output, 300)}")
+        finally:
+            with contextlib.suppress(OSError):
+                os.unlink(tmp)
 
     def _cleanup_stopped(self, run: _Run) -> None:
         """A stopped rebuild: remove its worktree, and its branch when it has no commit."""
@@ -1237,11 +2121,73 @@ def _targets(changes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
+USAGE_KEYS = (
+    "cost_usd",
+    "cost_usd_list_estimate",
+    "duration_ms",
+    "input_tokens",
+    "output_tokens",
+    "cache_read_input_tokens",
+    "cache_creation_input_tokens",
+)
+
+
+def _zero_usage() -> dict[str, Any]:
+    """The record's ``usage``: ``cost_usd`` is kept for v1.7 clients; the same figure is
+    ``cost_usd_list_estimate`` (the CLI's list-price estimate, not a charge)."""
+    return {**dict.fromkeys(USAGE_KEYS, 0), "cost_usd": 0.0, "cost_usd_list_estimate": 0.0,
+            "wall_s": 0.0}  # fmt: skip
+
+
+def _add_usage(total: dict[str, Any], u: Mapping[str, Any]) -> None:
+    for k in USAGE_KEYS:
+        v = u.get(k)
+        if k == "cost_usd_list_estimate" and v is None:
+            v = u.get("cost_usd")
+        total[k] = total.get(k, 0) + (v or 0)
+    for k in ("cost_usd", "cost_usd_list_estimate"):
+        total[k] = round(float(total[k]), 6)
+
+
+def _public_finding(f: Mapping[str, Any], scoped: bool) -> dict[str, Any]:
+    out = {"id": f["id"], "title": f["title"], "target": f.get("target") or ""}
+    if scoped:
+        out["in_scope"] = bool(f.get("in_scope"))
+        out["regression"] = bool(f.get("regression"))
+    return out
+
+
+def _stat(path: Path) -> tuple[int, int] | None:
+    try:
+        st = path.stat()
+    except OSError:
+        return None
+    return (st.st_mtime_ns, st.st_size)
+
+
 def _junk_pathspecs() -> list[str]:
     # Globs only: a literal ``:(exclude).pytest_cache`` that names an existing, gitignored
     # path makes ``git add`` exit 1 ("paths are ignored"), which killed a real rebuild after
     # the agent had run pytest in the worktree. ``**/`` also matches the root.
     return [f":(exclude,glob)**/{j}/**" for j in JUNK] + [f":(exclude,glob)**/{j}" for j in JUNK]
+
+
+def _current_branch(repo: Path) -> str | None:
+    """The branch checked out in the owner's main worktree (None: detached)."""
+    r = _git(repo, "symbolic-ref", "-q", "--short", "HEAD")
+    return r.stdout.strip() or None if r.returncode == 0 else None
+
+
+def _checked_out(repo: Path) -> dict[str, str]:
+    """branch -> the worktree it is checked out in (every worktree of the repository)."""
+    out: dict[str, str] = {}
+    path = ""
+    for line in _git(repo, "worktree", "list", "--porcelain").stdout.splitlines():
+        if line.startswith("worktree "):
+            path = line.removeprefix("worktree ")
+        elif line.startswith("branch refs/heads/"):
+            out[line.removeprefix("branch refs/heads/")] = path
+    return out
 
 
 def _snapshot_tree(wt: Path) -> str:
