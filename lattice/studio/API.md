@@ -58,6 +58,7 @@ Request: `{"request": "only app admins may cancel runs", "selected": [...]}`. Re
             "impact": null | {"verdict": "pass|fail", "failing": [{"target": "...", "label": "not_built_yet|regression|contradiction", "message": "..."}]}},
  "questions": [{"id": "Q13", "text": "...", "default": "..."}]}
 ```
+- `GET /api/changes/c1?wait=S` (0 < S <= 60): answers once the change's background job has finished (it is `ready` or `failed`, or its cancelled run has stopped), or after S seconds, whichever is first; the same record. A `wait` that is not a number from 0 to 60 is 422.
 - `POST /api/changes/c1/accept`: writes `REQUIREMENTS.md`, `spec.py` and `spec.trace.json`, then makes one git commit. Returns `{"commit": "sha", "message": "..."}`.
 - `POST /api/changes/c1/reject`: returns `{"ok": true}`.
 

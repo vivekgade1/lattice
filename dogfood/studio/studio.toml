@@ -1,0 +1,19 @@
+# Lattice Studio project: Lattice Studio's own server, specified in Lattice (dogfooding).
+# The app is the real server (python -m lattice.studio, TEST-ONLY stub LLM) on a fresh git
+# copy of project_seed/, per scenario; see harness.py. ./check.sh runs the same check.
+[app]
+app = "harness:make_app"
+db = "harness:build_db"
+runtime = "harness:RUNTIME"
+database = "sqlite"
+
+[check]
+layers = "DX"   # A, B, C and R have nothing to bind to (no Python web framework, no database)
+
+[llm]
+model = "sonnet"
+
+# Read by the rebuild loop (a later node); Studio's loader ignores tables it does not know.
+[rebuild]
+repo = "../.."
+gates = ["dogfood/studio/check.sh", "uv run pytest tests/studio -q"]

@@ -29,6 +29,7 @@ Run it with ``uv run --extra db python -m lattice.studio PROJECT_DIR [--port N]
     ask_timeout = 600           # seconds
     session_timeout = 900       # seconds one chat turn may run
     claude_bin = "claude"       # the Claude Code binary of the chat sessions
+    backend = "stub"            # TEST ONLY: StubGenerator instead of Claude (as --stub-llm)
 
 The project directory and the ``sys_path`` entries are put on ``sys.path``. Without
 ``[app] app`` and ``[app] db`` the app overlay, ``verify`` and the change impact are off.
@@ -44,7 +45,8 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
 - ``POST /api/changes``: a change record and a background job -- the LLM edits the
   markdown, ``draft_since`` drafts the change, then validate / lint / L011 conflicts /
   impact, the view diff, the markdown diff, the rule diff and the new questions.
-  ``GET /api/changes/{id}`` polls it, ``DELETE`` cancels it, ``.../accept`` writes the
+  ``GET /api/changes/{id}`` polls it (``?wait=S``: held until its background job has
+  finished, at most S <= 60 seconds), ``DELETE`` cancels it, ``.../accept`` writes the
   three files and commits them, ``.../reject`` drops it.
 - ``POST /api/check``: the full check of the current spec against the app, in the
   background.
@@ -122,6 +124,7 @@ COMMIT_TRAILER = (
 )
 
 LIVE_STATUSES = ("drafting", "checking")
+MAX_WAIT = 60.0  # seconds GET /api/changes/{id}?wait= may hold a request
 
 
 def log(msg: str) -> None:
@@ -539,6 +542,84 @@ def edit_markdown(
     raise RuntimeError("the markdown edit failed: " + "; ".join(problems))
 
 
+# ---- TEST ONLY: the stub generator ----------------------------------------------------------
+#
+# `--stub-llm` (or `[llm] backend = "stub"` in studio.toml) replaces the Claude CLI client
+# with StubGenerator, so a black-box check of this server (dogfood/studio) drafts changes
+# deterministically and offline. Never the default; nothing in the HTTP API selects it.
+
+STUB_HOLD = re.compile(r"\bstub:hold=(\d+(?:\.\d+)?)\b")
+STUB_FAIL = "stub:fail"
+STUB_HOLD_MAX = 30.0
+_STUB_FENCE = re.compile(r"^```(python|json)\n(.*?)^```$", re.S | re.M)
+
+
+class StubGenerator:
+    """A fixed, deterministic Generator for tests (see the comment above).
+
+    - The markdown edit appends the request as one new rule (``- <request>``) to the
+      document, so every change adds exactly one rule. A request containing
+      ``stub:hold=<s>`` first sleeps ``s`` seconds (at most 30: a change that stays
+      drafting); one containing ``stub:fail`` answers no document (the change fails).
+    - The incremental draft answers the base module unchanged and the carried-over trace
+      with every added or changed rule as context (a valid draft that checks nothing new).
+    - ``ask`` answers ``not_specified`` with no citations."""
+
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, list[dict]]] = []
+
+    def generate(self, system: str, messages: Sequence[Mapping[str, str]]) -> Any:
+        from lattice.llm.client import Generation, Usage
+        from lattice.spec import ask as ask_mod
+        from lattice.spec.draft import system_prompt
+
+        self.calls.append((system, [dict(m) for m in messages]))
+        first = str(messages[0]["content"])
+        if system == EDIT_SYSTEM:
+            text = self._edit(first)
+        elif system == system_prompt():
+            text = self._draft(first)
+        elif system.startswith(ask_mod.SYSTEM):
+            text = json.dumps(
+                {
+                    "kind": "not_specified",
+                    "answer": "Not specified (stub answer).",
+                    "explanation": "The stub generator answers every question this way.",
+                    "citations": [],
+                }
+            )
+        else:
+            raise RuntimeError("StubGenerator: a prompt it does not know")
+        return Generation(text=text, usage=Usage(0, 0), latency_s=0.0, stop_reason="end_turn")
+
+    @staticmethod
+    def _edit(message: str) -> str:
+        request = message.split("## The request\n\n", 1)[1].split("\n\n## ", 1)[0].strip()
+        hold = STUB_HOLD.search(request)
+        if hold:
+            time.sleep(min(float(hold.group(1)), STUB_HOLD_MAX))
+        if STUB_FAIL in request:
+            return "The stub was asked to fail."
+        m = _EDITED.search(message)
+        doc = m.group(1) if m else ""
+        doc = doc if doc.endswith("\n") or not doc else doc + "\n"
+        return f"{BEGIN}\n{doc}- {' '.join(request.split())}\n{END}\n"
+
+    @staticmethod
+    def _draft(message: str) -> str:
+        blocks = dict(reversed(_STUB_FENCE.findall(message)))  # the first block of each kind
+        module, trace = blocks["python"], json.loads(blocks["json"])
+        new_ids = []
+        for head in ("## Changed rules", "## Added rules"):
+            if head in message:
+                section = message.split(head, 1)[1].split("\n## ", 1)[0].split("\n# ", 1)[0]
+                new_ids += re.findall(r"^- (R\d+)\b", section, re.M)
+        context = list(trace.get("context") or [])
+        context += [r for r in new_ids if r not in context]
+        trace["context"] = context
+        return f"```python\n{module}```\n\n```json\n{json.dumps(trace, indent=2)}\n```\n"
+
+
 # ---- the change's view diff -----------------------------------------------------------------
 
 
@@ -736,6 +817,8 @@ class Studio:
         if self._generator is None:
             if self._generator_factory is not None:
                 self._generator = self._generator_factory(self.model)
+            elif self.config.llm.get("backend") == "stub":  # TEST ONLY (StubGenerator)
+                self._generator = StubGenerator()
             else:
                 from lattice.llm.cli_client import ClaudeCliClient
 
@@ -917,30 +1000,48 @@ class Studio:
             cid = f"c{self.next_id}"
             self.next_id += 1
             self.changes[cid] = empty_change(cid, request, parent_id)
-            self.private[cid] = {"project_hash": snap.hash, "base": base, "selected": selected}
+            self.private[cid] = {
+                "project_hash": snap.hash,
+                "base": base,
+                "selected": selected,
+                "done": threading.Event(),  # set once the background job has finished
+            }
         threading.Thread(
             target=self._run_change, args=(cid,), name=f"studio-{cid}", daemon=True
         ).start()
         log(f"{cid}: started ({request[:60]!r}{f', parent {parent_id}' if parent_id else ''})")
         return {"id": cid}
 
-    def get_change(self, cid: str) -> dict[str, Any]:
+    def get_change(self, cid: str, wait: float = 0.0) -> dict[str, Any]:
+        """The change record; with `wait` > 0, answered once its background job has
+        finished (it is ready, failed, or its cancelled run has stopped), or after `wait`
+        seconds (at most MAX_WAIT), whichever comes first."""
         with self.lock:
-            c = self.changes.get(cid)
-            if c is None:
+            if cid not in self.changes:
                 raise ApiError(HTTPStatus.NOT_FOUND, f"no change {cid}")
-            return json.loads(json.dumps(c))
+            done = self.private[cid]["done"]
+        if wait > 0:
+            done.wait(min(wait, MAX_WAIT))
+        with self.lock:
+            return json.loads(json.dumps(self.changes[cid]))
 
     def _set(self, cid: str, **fields: Any) -> bool:
-        """Update change `cid`; False (and nothing done) when it was cancelled."""
+        """Update change `cid`; False (and nothing done) when it is no longer drafting or
+        checking (cancelled, or rejected while its job ran)."""
         with self.lock:
             c = self.changes[cid]
-            if c["status"] == "cancelled":
+            if c["status"] not in LIVE_STATUSES:
                 return False
             c.update(fields)
             return True
 
     def _run_change(self, cid: str) -> None:
+        try:
+            self._run_change_job(cid)
+        finally:
+            self.private[cid]["done"].set()
+
+    def _run_change_job(self, cid: str) -> None:
         t0 = time.perf_counter()
         timings: dict[str, float] = {}
         try:
@@ -955,8 +1056,8 @@ class Studio:
         with self.lock:
             c = self.changes[cid]
             c["timings"] = timings
-            if c["status"] == "cancelled":
-                log(f"{cid}: finished after it was cancelled; result dropped")
+            if c["status"] not in LIVE_STATUSES:
+                log(f"{cid}: finished after it was {c['status']}; result dropped")
                 return
             c["status"] = "ready"
             parent = self.changes.get(c["parent"]) if c["parent"] else None
@@ -1279,7 +1380,16 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(st.get_model)
         if path.startswith("/api/changes/") and "/" not in path.removeprefix("/api/changes/"):
             cid = path.removeprefix("/api/changes/")
-            return self._dispatch(lambda: st.get_change(cid))
+            raw = (parse_qs(urlparse(self.path).query).get("wait") or ["0"])[-1]
+            try:
+                wait = float(raw)
+            except ValueError:
+                wait = -1.0
+            if not 0 <= wait <= MAX_WAIT:
+                return self._json(
+                    {"detail": f"wait must be a number of seconds, 0 to {MAX_WAIT:g}"}, 422
+                )
+            return self._dispatch(lambda: st.get_change(cid, wait))
         if path == "/api/session":
             return self._dispatch(lambda: st.sessions.list())
         if path.startswith("/api/session/"):
@@ -1411,17 +1521,33 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--model", default=None, help="the LLM (default: studio.toml, else sonnet)")
     ap.add_argument("--quiet", action="store_true", help="no request log")
+    ap.add_argument(
+        "--stub-llm",
+        action="store_true",
+        help="TEST ONLY: a fixed offline generator instead of Claude (StubGenerator)",
+    )
     args = ap.parse_args(argv)
     root = args.project.resolve()
     missing = [n for n in PROJECT_FILES if not (root / n).is_file()]
     if missing:
         print(f"studio: {root} has no {', '.join(missing)}", file=sys.stderr)
         return 2
-    srv = make_server(root, args.port, model=args.model, verbose=not args.quiet)
+    srv = make_server(
+        root,
+        args.port,
+        model=args.model,
+        generator=StubGenerator() if args.stub_llm else None,
+        verbose=not args.quiet,
+    )
     st = srv.studio
     print(
         f"Lattice Studio on http://127.0.0.1:{srv.server_address[1]}/ -- {root} "
-        f"(model {st.model}; app {'configured' if st.harness else 'not configured'})",
+        f"(model {st.model}; app {'configured' if st.harness else 'not configured'})"
+        + (
+            " [STUB LLM: test only]"
+            if args.stub_llm or st.config.llm.get("backend") == "stub"
+            else ""
+        ),
         file=sys.stderr,
         flush=True,
     )

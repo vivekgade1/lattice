@@ -1,0 +1,5 @@
+# The project the dogfood check serves (dogfood/studio). TEST ONLY: the stub LLM drafts
+# every change deterministically (lattice.studio.server.StubGenerator); no app is hooked up.
+[llm]
+backend = "stub"
+model = "stub"
