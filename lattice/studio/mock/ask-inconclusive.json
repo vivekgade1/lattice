@@ -1,0 +1,30 @@
+{
+ "kind": "no",
+ "answer": "No, the spec says the scheduler should skip it — but this could not be confirmed on the running app.",
+ "explanation": "R63 says the scheduler never queues a second run for a config in the same minute, and never while the config already has a queued or running run. The generated scenario tries to prove this by seeding a live run and then ticking twice, but its setup step failed before the claim step ran.",
+ "citations": [
+  {
+   "target": "rule:R63",
+   "step": null,
+   "quote": "It never queues a second run for a config in the same minute, and never while the config has a queued or running run."
+  },
+  {
+   "target": "scenario:tick_skips_a_config_with_a_live_run",
+   "step": 1,
+   "quote": "POST /worker/schedule-tick {\"now\": ...} as root -> 200 {\"queued\": 1}"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": {
+  "status": "inconclusive",
+  "detail": "Step 2 (seed a live run on the config by queueing one manually) failed: POST /applications/1/jobs/10/runs answered 409, so the scenario never reached step 3, the second tick that tests the claim.",
+  "scenario": "1. POST /auth/login {email: root@example.com, password: ...} as no token -> 200\n2. POST /applications/1/jobs/10/runs as root -> 409 (setup step; expected 201)\n3. POST /worker/schedule-tick {\"now\": \"2026-01-01T00:01:00Z\"} as root -> claim step, not reached",
+  "claim_step": 3
+ },
+ "usage": {
+  "seconds": 7.3,
+  "tokens": 6210,
+  "digest_elements": 38
+ }
+}

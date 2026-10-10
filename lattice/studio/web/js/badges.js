@@ -89,6 +89,23 @@ export function answerBadge(kind) {
   return h("span", { class: ["badge", "badge-answer", k.cls] }, icon(k.icon), h("span", {}, k.label));
 }
 
+// Change set status (contract: drafting|checking|ready|failed|accepted|rejected|cancelled),
+// for the compact cards in the chat panel's "Open changes" / "History" lists.
+export const CHANGE_STATUS = {
+  drafting: { label: "Drafting", cls: "cs-drafting", icon: "pending" },
+  checking: { label: "Checking", cls: "cs-checking", icon: "pending" },
+  ready: { label: "Ready for review", cls: "cs-ready", icon: "pending" },
+  accepted: { label: "Accepted", cls: "cs-accepted", icon: "check" },
+  rejected: { label: "Rejected", cls: "cs-rejected", icon: "cross" },
+  cancelled: { label: "Cancelled", cls: "cs-cancelled", icon: "dash" },
+  failed: { label: "Failed", cls: "cs-failed", icon: "triangle" },
+};
+
+export function changeStatusBadge(status) {
+  const s = CHANGE_STATUS[status] || CHANGE_STATUS.drafting;
+  return h("span", { class: ["badge", s.cls] }, icon(s.icon), h("span", {}, s.label));
+}
+
 // Impact failure labels on a change set.
 export const IMPACT_LABEL = {
   not_built_yet: { label: "Not built yet", cls: "imp-nby", help: "The app does not do this yet. Expected until the code is changed." },

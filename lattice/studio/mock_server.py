@@ -3,9 +3,16 @@
 It serves ``lattice/studio/web/`` at ``/`` and answers the routes of ``API.md`` from the
 fixtures in ``lattice/studio/mock/``. Nothing here calls an LLM or touches git:
 
+- the model starts with one pre-existing ``ready`` change (``c0``), so the UI has
+  something to show on load without the owner doing anything;
 - ``POST /api/ask`` picks an ``ask-*.json`` fixture by keyword in the question;
 - ``POST /api/changes`` hands out ids ``c1``, ``c2``, ...; each one reports ``drafting``,
-  then ``checking``, then ``ready`` (the ``change-c1.json`` fixture) over a few polls;
+  then ``checking``, then ``ready`` (the ``change-c1.json`` fixture, or ``change-followup
+  .json`` when the request carries a ``parent``) over a few polls;
+- a follow-up (``"parent": "c1"``) supersedes its parent the moment it turns ``ready``:
+  the parent is marked ``rejected`` with ``superseded_by`` pointing at the follow-up;
+- ``DELETE /api/changes/{id}`` cancels a change that is still ``drafting`` or
+  ``checking`` (409 otherwise);
 - ``accept`` returns a fake commit sha and moves the model's ``git_head`` to it;
 - ``POST /api/check`` marks a check as running; ``app.last_check.at`` moves forward after
   a couple of ``GET /api/model`` polls.
@@ -42,6 +49,8 @@ POLLS_CHECK = 2
 ASK_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
     (("inactive",), "ask-verified-disagrees"),
     (("login",), "ask-verified-disagrees"),
+    (("concurrently",), "ask-inconclusive"),
+    (("inconclusive",), "ask-inconclusive"),
     (("cancel",), "ask-yes"),
     (("eve",), "ask-yes"),
     (("retry",), "ask-not-specified"),
@@ -68,9 +77,25 @@ class MockState:
         self.model: dict[str, Any] = self._load("model")
         self.changes: dict[str, dict[str, Any]] = {}
         self.check_polls_left: int | None = None
+        self._next_id = 1
+        self._seed_initial_change()
 
     def _load(self, name: str) -> Any:
         return json.loads((self.fixture_dir / f"{name}.json").read_text(encoding="utf-8"))
+
+    def _seed_initial_change(self) -> None:
+        """One change already sits in the model when the server starts, so a fresh page
+        load has something to show without the owner doing anything first."""
+        self.changes["c0"] = {
+            "id": "c0",
+            "request": "only app admins may cancel runs",
+            "status": "ready",
+            "polls": 0,
+            "parent": None,
+            "superseded_by": None,
+            "error": None,
+            "fixture": "change-c1",
+        }
 
     # GET /api/model
     def get_model(self) -> dict[str, Any]:
@@ -84,7 +109,13 @@ class MockState:
                         last["at"] = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
             out = copy.deepcopy(self.model)
             out["changes"] = [
-                {"id": c["id"], "request": c["request"], "status": c["status"]}
+                {
+                    "id": c["id"],
+                    "request": c["request"],
+                    "status": c["status"],
+                    "parent": c.get("parent"),
+                    "superseded_by": c.get("superseded_by"),
+                }
                 for c in self.changes.values()
             ]
             return out
@@ -99,14 +130,34 @@ class MockState:
     # POST /api/changes
     def new_change(self, body: dict[str, Any]) -> dict[str, str]:
         with self.lock:
-            cid = f"c{len(self.changes) + 1}"
+            cid = f"c{self._next_id}"
+            self._next_id += 1
+            parent = body.get("parent")
+            parent = str(parent) if parent else None
             self.changes[cid] = {
                 "id": cid,
                 "request": str(body.get("request", "")),
                 "status": "drafting",
                 "polls": 0,
+                "parent": parent,
+                "superseded_by": None,
+                "error": None,
+                # A follow-up is drafted "on top of the parent's proposal" (v1.1 #3); the
+                # mock just answers with the fixture that shows the conflict resolved.
+                "fixture": "change-followup" if parent else "change-c1",
             }
             return {"id": cid}
+
+    def _supersede_parent(self, c: dict[str, Any]) -> None:
+        """Called with the lock held, right after `c` turns ready: if it is a follow-up,
+        its parent is reported as rejected, pointing at it."""
+        parent_id = c.get("parent")
+        if not parent_id:
+            return
+        p = self.changes.get(parent_id)
+        if p is not None and p["status"] not in ("accepted", "rejected", "cancelled"):
+            p["status"] = "rejected"
+            p["superseded_by"] = c["id"]
 
     # GET /api/changes/{id}
     def get_change(self, cid: str) -> dict[str, Any] | None:
@@ -118,14 +169,19 @@ class MockState:
                 c["polls"] += 1
                 if c["polls"] > POLLS_DRAFTING + POLLS_CHECKING:
                     c["status"] = "ready"
+                    self._supersede_parent(c)
                 elif c["polls"] > POLLS_DRAFTING:
                     c["status"] = "checking"
-            if c["status"] in ("drafting", "checking"):
+            if c["status"] in ("drafting", "checking", "cancelled", "failed", "accepted", "rejected"):
                 return {
                     "id": cid,
                     "request": c["request"],
                     "status": c["status"],
-                    "error": None,
+                    "error": c.get("error"),
+                    "parent": c.get("parent"),
+                    "superseded_by": c.get("superseded_by"),
+                    "notes": [],
+                    "timings": {},
                     "markdown_diff": "",
                     "rules": {"added": [], "changed": [], "removed": []},
                     "targets": {"added": [], "removed": [], "modified": []},
@@ -144,10 +200,14 @@ class MockState:
                     },
                     "questions": [],
                 }
-            full = self._load("change-c1")
+            full = self._load(c.get("fixture", "change-c1"))
             full["id"] = cid
             full["request"] = c["request"] or full["request"]
             full["status"] = c["status"]
+            full["parent"] = c.get("parent")
+            full["superseded_by"] = c.get("superseded_by")
+            full.setdefault("notes", [])
+            full.setdefault("timings", {})
             return full
 
     # POST /api/changes/{id}/accept | reject
@@ -163,6 +223,19 @@ class MockState:
             c["status"] = "accepted"
             self.model["project"]["git_head"] = sha[:7]
             return {"commit": sha, "message": f"spec: {c['request']}"}
+
+    # DELETE /api/changes/{id}
+    def cancel(self, cid: str) -> dict[str, Any]:
+        """The minimal ``{id, status}`` on success. Raises ``KeyError`` for an unknown
+        id, ``ValueError`` (carrying the current status) when it cannot be cancelled."""
+        with self.lock:
+            c = self.changes.get(cid)
+            if c is None:
+                raise KeyError(cid)
+            if c["status"] not in ("drafting", "checking"):
+                raise ValueError(c["status"])
+            c["status"] = "cancelled"
+            return {"id": cid, "status": "cancelled"}
 
     # POST /api/check
     def start_check(self) -> dict[str, Any]:
@@ -237,6 +310,22 @@ class Handler(BaseHTTPRequestHandler):
                 if out is None:
                     return self._error(HTTPStatus.NOT_FOUND, f"no change {parts[0]}")
                 return self._json(out)
+        return self._error(HTTPStatus.NOT_FOUND, "no such route")
+
+    def do_DELETE(self) -> None:  # noqa: N802
+        path = urlparse(self.path).path
+        state = self.server.state
+        if path.startswith("/api/changes/"):
+            cid = path.removeprefix("/api/changes/")
+            if not cid or "/" in cid:
+                return self._error(HTTPStatus.NOT_FOUND, "no such route")
+            try:
+                out = state.cancel(cid)
+            except KeyError:
+                return self._error(HTTPStatus.NOT_FOUND, f"no change {cid}")
+            except ValueError as e:
+                return self._error(HTTPStatus.CONFLICT, f"cannot cancel a change with status {e}")
+            return self._json(out)
         return self._error(HTTPStatus.NOT_FOUND, "no such route")
 
     def _static(self, path: str) -> None:

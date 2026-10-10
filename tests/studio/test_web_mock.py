@@ -64,7 +64,8 @@ def get_json(url: str) -> tuple[int, Any]:
 # A small hand-written check of the shapes in API.md: required keys and value kinds.
 
 STATUSES = {"checked", "unchecked", "context", "untraced", "probe_gap"}
-CHANGE_STATUSES = {"drafting", "checking", "ready", "failed", "accepted", "rejected"}
+CHANGE_STATUSES = {"drafting", "checking", "ready", "failed", "accepted", "rejected", "cancelled"}
+VERIFY_STATUSES = {"agrees", "disagrees", "error", "observed", "inconclusive"}
 TARGET_RE = re.compile(
     r"^(scenario|invariant|service|question):.+$"
     r"|^machine:[A-Za-z_]\w*\.\w+$"
@@ -205,8 +206,12 @@ def check_answer(a: dict[str, Any]) -> None:
     v = a["verified"]
     if v is not None:
         need(v, {"status": str, "detail": str, "scenario": str}, "verified")
-        assert v["status"] in ("agrees", "disagrees", "error")
+        assert v["status"] in VERIFY_STATUSES
+        if "claim_step" in v and v["claim_step"] is not None:
+            assert isinstance(v["claim_step"], int) and v["claim_step"] >= 1
     need(a["usage"], {"seconds": (int, float), "tokens": int}, "usage")
+    if "digest_elements" in a["usage"]:
+        assert isinstance(a["usage"]["digest_elements"], int)
 
 
 def check_change(c: dict[str, Any]) -> None:
@@ -226,7 +231,9 @@ def check_change(c: dict[str, Any]) -> None:
         "change",
     )
     assert "error" in c
-    assert c["status"] in ("drafting", "checking", "ready", "failed")
+    assert c["status"] in CHANGE_STATUSES
+    assert "parent" in c and (c["parent"] is None or isinstance(c["parent"], str))
+    assert "superseded_by" in c and (c["superseded_by"] is None or isinstance(c["superseded_by"], str))
     need(c["rules"], {"added": list, "changed": list, "removed": list}, "rules")
     for ch in c["rules"]["changed"]:
         need(ch, {"old": str, "new": str}, "rules.changed")
@@ -265,7 +272,9 @@ def test_model_fixture_matches_contract() -> None:
     check_model(load("model"))
 
 
-@pytest.mark.parametrize("name", ["ask-yes", "ask-not-specified", "ask-verified-disagrees"])
+@pytest.mark.parametrize(
+    "name", ["ask-yes", "ask-not-specified", "ask-verified-disagrees", "ask-inconclusive"]
+)
 def test_ask_fixtures_match_contract(name: str) -> None:
     check_answer(load(name))
 
@@ -282,6 +291,14 @@ def test_ask_fixtures_cover_the_three_cases() -> None:
     assert dis["verified"]["status"] == "disagrees"
 
 
+def test_ask_fixtures_cover_observed_and_inconclusive() -> None:
+    ns = load("ask-not-specified")
+    inc = load("ask-inconclusive")
+    assert ns["verified"]["status"] == "observed"
+    assert inc["verified"]["status"] == "inconclusive"
+    assert inc["verified"]["claim_step"] == 3
+
+
 def test_citations_point_at_real_things() -> None:
     model = load("model")
     known = {f"rule:{r['id']}" for r in model["rules"]}
@@ -290,7 +307,7 @@ def test_citations_point_at_real_things() -> None:
     known |= {s["target"] for s in s6["scenarios"]}
     for g in model["views"]["access_groups"]:
         known |= {f"cell:{k}" for k in g["cells"]}
-    for name in ("ask-yes", "ask-not-specified", "ask-verified-disagrees"):
+    for name in ("ask-yes", "ask-not-specified", "ask-verified-disagrees", "ask-inconclusive"):
         for c in load(name)["citations"]:
             assert c["target"] in known, f"{name}: {c['target']}"
 
@@ -315,10 +332,23 @@ def test_change_fixture_matches_contract() -> None:
             assert any(s["target"] == t for s in model["views"]["section6"]["scenarios"]), t
 
 
+def test_followup_fixture_matches_contract() -> None:
+    c = load("change-followup")
+    check_change(c)
+    assert c["status"] == "ready"
+    assert not c["checks"]["conflicts"], "the follow-up resolves c1's conflict"
+    assert not c["questions"], "the follow-up resolves c1's question"
+    model = load("model")
+    for k in ("modified", "removed"):
+        for t in c["targets"][k]:
+            assert any(s["target"] == t for s in model["views"]["section6"]["scenarios"]), t
+
+
 def test_pick_ask_fixture_by_keyword() -> None:
     assert pick_ask_fixture("Can eve cancel a run?") == "ask-yes"
     assert pick_ask_fixture("Are failed runs retried?") == "ask-not-specified"
     assert pick_ask_fixture("What does an inactive user get?") == "ask-verified-disagrees"
+    assert pick_ask_fixture("Can two ticks run concurrently for the same config?") == "ask-inconclusive"
     assert pick_ask_fixture("anything else") == "ask-not-specified"
 
 
@@ -365,11 +395,21 @@ def test_js_syntax_with_node() -> None:
 # ---------------------------------------------------------------- API routes
 
 
+def find_change(m: dict[str, Any], cid: str) -> dict[str, Any]:
+    out = next((c for c in m["changes"] if c["id"] == cid), None)
+    assert out is not None, f"no change {cid} in model.changes"
+    return out
+
+
 def test_get_model(base: str) -> None:
     status, m = get_json(base + "/api/model")
     assert status == 200
     check_model(m)
-    assert m["changes"] == []
+    # The mock seeds one pre-existing change so a fresh page load has something to show.
+    assert len(m["changes"]) == 1
+    c0 = find_change(m, "c0")
+    assert c0["status"] == "ready"
+    assert c0["parent"] is None and c0["superseded_by"] is None
 
 
 def test_post_ask(base: str) -> None:
@@ -424,16 +464,23 @@ def test_change_lifecycle_accept(base: str) -> None:
     assert seen[0] == "drafting" and "checking" in seen and seen[-1] == "ready"
     assert c["request"] == "only app admins may cancel runs"
     assert c["view_diff"]["cells"]
+    assert c["parent"] is None and c["superseded_by"] is None
 
     _, m = get_json(base + "/api/model")
-    assert m["changes"] == [{"id": cid, "request": c["request"], "status": "ready"}]
+    assert find_change(m, cid) == {
+        "id": cid,
+        "request": c["request"],
+        "status": "ready",
+        "parent": None,
+        "superseded_by": None,
+    }
 
     status, acc = post(f"{base}/api/changes/{cid}/accept")
     assert status == 200
     assert re.fullmatch(r"[0-9a-f]{40}", acc["commit"]) and acc["message"]
     _, m = get_json(base + "/api/model")
     assert m["project"]["git_head"] == acc["commit"][:7]
-    assert m["changes"][0]["status"] == "accepted"
+    assert find_change(m, cid)["status"] == "accepted"
 
 
 def test_change_reject(base: str) -> None:
@@ -441,7 +488,78 @@ def test_change_reject(base: str) -> None:
     status, r = post(f"{base}/api/changes/{out['id']}/reject")
     assert status == 200 and r == {"ok": True}
     _, m = get_json(base + "/api/model")
-    assert m["changes"][0]["status"] == "rejected"
+    assert find_change(m, out["id"])["status"] == "rejected"
+
+
+def test_change_cancel(base: str) -> None:
+    _, out = post(base + "/api/changes", {"request": "y", "selected": []})
+    cid = out["id"]
+    status, c = get_json(f"{base}/api/changes/{cid}")
+    assert status == 200 and c["status"] == "drafting"
+
+    req = urllib.request.Request(f"{base}/api/changes/{cid}", method="DELETE")
+    with urllib.request.urlopen(req, timeout=10) as r:
+        status, body = r.status, json.loads(r.read())
+    assert status == 200 and body == {"id": cid, "status": "cancelled"}
+
+    status, c = get_json(f"{base}/api/changes/{cid}")
+    assert status == 200
+    check_change(c)
+    assert c["status"] == "cancelled"
+    _, m = get_json(base + "/api/model")
+    assert find_change(m, cid)["status"] == "cancelled"
+
+
+def test_cancel_a_ready_change_is_409(base: str) -> None:
+    req = urllib.request.Request(f"{base}/api/changes/c0", method="DELETE")
+    try:
+        urllib.request.urlopen(req, timeout=10)
+        raised = False
+    except urllib.error.HTTPError as e:
+        raised = True
+        assert e.code == 409
+    assert raised
+
+
+def test_cancel_unknown_change_is_404(base: str) -> None:
+    req = urllib.request.Request(f"{base}/api/changes/c99", method="DELETE")
+    try:
+        urllib.request.urlopen(req, timeout=10)
+        raised = False
+    except urllib.error.HTTPError as e:
+        raised = True
+        assert e.code == 404
+    assert raised
+
+
+def test_followup_supersedes_its_parent(base: str) -> None:
+    # c0 is the pre-seeded ready change; answer its conflict as a follow-up.
+    status, out = post(
+        base + "/api/changes",
+        {"request": "Q13 answered: no, executors may never cancel.", "parent": "c0", "selected": []},
+    )
+    assert status == 200
+    cid = out["id"]
+    for _ in range(mock_server.POLLS_DRAFTING + mock_server.POLLS_CHECKING + 2):
+        status, c = get_json(f"{base}/api/changes/{cid}")
+        assert status == 200
+        check_change(c)
+        if c["status"] == "ready":
+            break
+    assert c["status"] == "ready"
+    assert c["parent"] == "c0"
+    assert not c["checks"]["conflicts"], "the follow-up resolves the parent's conflict"
+
+    status, parent = get_json(f"{base}/api/changes/c0")
+    assert status == 200
+    check_change(parent)
+    assert parent["status"] == "rejected"
+    assert parent["superseded_by"] == cid
+
+    _, m = get_json(base + "/api/model")
+    assert find_change(m, "c0")["status"] == "rejected"
+    assert find_change(m, "c0")["superseded_by"] == cid
+    assert find_change(m, cid)["status"] == "ready"
 
 
 def test_unknown_change_is_404(base: str) -> None:

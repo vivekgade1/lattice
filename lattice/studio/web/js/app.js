@@ -247,7 +247,11 @@ async function pollModel() {
     try {
       const m = await api.model();
       const old = state.model;
-      const changed = !old || old.project?.git_head !== m.project?.git_head || old.app?.last_check?.at !== m.app?.last_check?.at;
+      const changesKey = (model) => JSON.stringify((model?.changes || []).map((c) => [c.id, c.status, c.superseded_by]));
+      const changed = !old
+        || old.project?.git_head !== m.project?.git_head
+        || old.app?.last_check?.at !== m.app?.last_check?.at
+        || changesKey(old) !== changesKey(m);
       if (changed) update({ model: m, connected: true });
       else if (!state.connected) update({ connected: true, loadError: null });
     } catch (e) {

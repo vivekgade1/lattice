@@ -21,9 +21,15 @@
  ],
  "citations_checked": true,
  "rejected_citations": [],
- "verified": null,
+ "verified": {
+  "status": "observed",
+  "detail": "A failing job was run twice: the app recorded the first run as failed, and a second POST /worker/run-once answered {\"processed\": 0}; nothing requeued the failed run or ran it again.",
+  "scenario": "1. seed: job_configs (command exits 1), job_runs (status=failed, exit_code=1)\n2. POST /worker/run-once as root -> 200 {\"processed\": 0}\n   app did not create or requeue a run for the failed config",
+  "claim_step": 2
+ },
  "usage": {
   "seconds": 5.1,
-  "tokens": 7420
+  "tokens": 7420,
+  "digest_elements": 22
  }
 }

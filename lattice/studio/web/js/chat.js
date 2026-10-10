@@ -6,20 +6,36 @@ import { h, icon, clear, plural, add } from "./util.js";
 import { api, sleep } from "./api.js";
 import { state, update, subscribe } from "./store.js";
 import { highlight, targetChip, labelOf, toggleSelection } from "./targets.js";
-import { answerBadge, IMPACT_LABEL } from "./badges.js";
+import { answerBadge, changeStatusBadge, IMPACT_LABEL } from "./badges.js";
 import { unifiedDiff } from "./diff.js";
 
 const POLL_MS = 700;
 const POLL_LIMIT = 300; // about 3.5 minutes
 
+const OPEN_STATUSES = ["drafting", "checking", "ready"];
+const HISTORY_STATUSES = ["accepted", "rejected", "cancelled", "failed"];
+
 let mode = "ask";
 let els = {};
 let onAccepted = () => {};
 
+// Every change the panel knows about (from GET /api/model's `changes`, or fetched in
+// full when opened or drafted here), keyed by id. The id of the change-set card
+// currently open in the thread, and its <li>, so a follow-up can replace it in place.
+let changeRecords = new Map();
+let pollingIds = new Set();
+let openId = null;
+let openLi = null;
+
 export function mountChat(root, opts = {}) {
   onAccepted = opts.onAccepted || onAccepted;
   clear(root);
+  changeRecords = new Map();
+  pollingIds = new Set();
+  openId = null;
+  openLi = null;
   const thread = h("ol", { class: "thread", "aria-live": "polite", "aria-label": "Conversation" });
+  const changesPanel = h("div", { class: "changes-panel", "aria-label": "Changes", hidden: true });
   const selRow = h("div", { class: "sel-row", "aria-label": "Selected items" });
   const input = h("textarea", {
     id: "chat-input",
@@ -59,18 +75,23 @@ export function mountChat(root, opts = {}) {
       h("h2", { id: "chat-title" }, "Ask or change the spec"),
       h("button", { type: "button", class: "btn btn-icon chat-close", "aria-label": "Close chat", onclick: () => document.body.classList.remove("chat-open") }, icon("close")),
     ),
+    changesPanel,
     h("div", { class: "seg seg-wide", role: "group", "aria-label": "Mode" }, modeAsk, modeChange),
     h("div", { class: "thread-wrap" }, thread, emptyState()),
     form,
   );
-  els = { root, thread, selRow, input, verify, verifyLabel, verifyNote, sendBtn, modeAsk, modeChange, inputLabel };
+  els = { root, thread, selRow, input, verify, verifyLabel, verifyNote, sendBtn, modeAsk, modeChange, inputLabel, changesPanel };
   setMode("ask");
   renderSelection();
   subscribe((st, patch) => {
     if ("selection" in patch) renderSelection();
-    if ("model" in patch) syncVerify();
+    if ("model" in patch) {
+      syncVerify();
+      syncChangesFromModel(st.model?.changes || []);
+    }
   });
   syncVerify();
+  syncChangesFromModel(state.model?.changes || []);
 }
 
 function emptyState() {
@@ -113,6 +134,154 @@ function renderSelection() {
     ),
     h("button", { type: "button", class: "btn btn-link small", onclick: () => update({ selection: [] }) }, "Clear"),
   );
+}
+
+// ---------------------------------------------------------------- Changes panel
+//
+// Pending changes aren't only the one this tab just drafted: GET /api/model's
+// `changes` carries every change made so far, including ones from before a reload or
+// from another client. This keeps a local record per id and shows the open ones
+// (drafting, checking, ready) as compact cards, with the rest collapsed into "History".
+
+function isTerminal(status) {
+  return HISTORY_STATUSES.includes(status);
+}
+
+/** Merge fresh data for a change into the local record, propagate a follow-up's
+ *  supersession onto its parent, and redraw the panel. */
+function registerChange(c) {
+  changeRecords.set(c.id, { ...changeRecords.get(c.id), ...c });
+  if (c.status === "ready" && c.parent) {
+    const p = changeRecords.get(c.parent);
+    if (p && !isTerminal(p.status)) {
+      changeRecords.set(c.parent, { ...p, status: "rejected", superseded_by: c.id });
+    }
+  }
+  renderChangesPanel();
+}
+
+/** Called whenever the model refreshes: pick up changes made elsewhere (through the
+ *  API, or before this page loaded) and keep polling the ones still in progress. */
+function syncChangesFromModel(list) {
+  for (const item of list) registerChange(item);
+  for (const item of list) {
+    if ((item.status === "drafting" || item.status === "checking") && !pollingIds.has(item.id)) {
+      pollingIds.add(item.id);
+      backgroundPoll(item.id).finally(() => pollingIds.delete(item.id));
+    }
+  }
+}
+
+async function backgroundPoll(id) {
+  for (let n = 0; n < POLL_LIMIT; n++) {
+    await sleep(POLL_MS);
+    let c;
+    try {
+      c = await api.change(id);
+    } catch (e) {
+      return;
+    }
+    registerChange(c);
+    if (c.status !== "drafting" && c.status !== "checking") return;
+  }
+}
+
+function renderChangesPanel() {
+  const panel = els.changesPanel;
+  if (!panel) return;
+  const all = [...changeRecords.values()].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const open = all.filter((c) => OPEN_STATUSES.includes(c.status));
+  const history = all.filter((c) => isTerminal(c.status));
+  clear(panel);
+  panel.hidden = !open.length && !history.length;
+  if (panel.hidden) return;
+  add(panel,
+    open.length ? h("ul", { class: "change-list", "aria-label": "Open changes" }, open.map(changeRow)) : null,
+    history.length
+      ? h("details", { class: "change-history" },
+          h("summary", {}, `History (${plural(history.length, "change")})`),
+          h("ul", { class: "change-list change-list-history" }, history.map(changeRow)),
+        )
+      : null,
+  );
+}
+
+function changeRow(c) {
+  const openable = OPEN_STATUSES.includes(c.status);
+  return h("li", { class: ["change-row", openId === c.id && "is-open"] },
+    h("button", {
+      type: "button", class: "change-row-main", disabled: !openable,
+      title: openable ? "Open this change" : null,
+      onclick: () => openChangeCard(c.id),
+    },
+      h("span", { class: "muted tiny" }, c.id),
+      h("span", { class: "change-row-req" }, c.request || "(a follow-up)"),
+      changeStatusBadge(c.status),
+    ),
+    (c.status === "drafting" || c.status === "checking")
+      ? h("button", {
+          type: "button", class: "btn btn-quiet small",
+          onclick: (e) => { e.stopPropagation(); cancelChange(c.id); },
+        }, "Cancel")
+      : null,
+    c.superseded_by ? h("span", { class: "muted tiny" }, ` superseded by ${c.superseded_by}`) : null,
+  );
+}
+
+function closedMsg(c, note) {
+  return h("div", { class: "msg msg-bot" },
+    c.request ? h("p", {}, h("q", {}, c.request)) : null,
+    h("p", { class: "muted small" }, note),
+  );
+}
+
+function cancelInlineButton(id) {
+  return h("button", { type: "button", class: "btn btn-quiet small", onclick: () => cancelChange(id) }, "Cancel");
+}
+
+async function cancelChange(id) {
+  try {
+    await api.cancelChange(id);
+  } catch (e) {
+    return;
+  }
+  registerChange({ ...(changeRecords.get(id) || { id }), status: "cancelled" });
+  if (openId === id && openLi) openLi.replaceChildren(closedMsg(changeRecords.get(id), "Cancelled."));
+}
+
+/** Open a change in the thread: a compact row's "Open" action. Drafting/checking
+ *  changes keep polling and rendering into the same <li>; a ready one gets the full
+ *  change-set card (and drives the diff overlay on the views). */
+async function openChangeCard(id) {
+  if (openId === id && openLi) {
+    openLi.scrollIntoView({ block: "start", behavior: "smooth" });
+    return;
+  }
+  const li = push(h("div", { class: "msg msg-bot is-loading" }, h("span", { class: "spinner", "aria-hidden": "true" }), "Opening the change…"));
+  let c;
+  try {
+    c = await api.change(id);
+  } catch (e) {
+    li.replaceChildren(errorMsg(e));
+    return;
+  }
+  registerChange(c);
+  openId = id;
+  openLi = li;
+  if (c.status === "ready") {
+    update({ change: c });
+    li.replaceChildren(changeCard(c));
+  } else if (c.status === "drafting" || c.status === "checking") {
+    li.replaceChildren(h("div", { class: "msg msg-bot" }, progress(c.status), cancelInlineButton(id)));
+    runChange(id, li, c.parent || null);
+  } else if (c.status === "failed") {
+    li.replaceChildren(errorMsg(new Error(c.error || "The change could not be drafted.")));
+  } else if (c.status === "cancelled") {
+    li.replaceChildren(closedMsg(c, "Cancelled."));
+  } else {
+    li.replaceChildren(closedMsg(c, c.superseded_by ? `Superseded by ${c.superseded_by}.` : `This change is ${c.status}.`));
+  }
+  li.scrollIntoView({ block: "start" });
 }
 
 /** Pre-fill a change request (from "Make this a rule", "Promote to rule", etc.). */
@@ -206,11 +375,16 @@ function verifiedBlock(v) {
     agrees: { cls: "ver-agrees", icon: "check", label: "The app agrees" },
     disagrees: { cls: "ver-disagrees", icon: "diamond", label: "The app disagrees" },
     error: { cls: "ver-error", icon: "triangle", label: "Could not verify on the app" },
+    // v1.1 #7: what the app does today, with no spec expectation to agree or disagree with.
+    observed: { cls: "ver-observed", icon: "info", label: "What the app does today" },
+    // v1.2 #8: a setup step failed before the claim step ran, so neither side is proven.
+    inconclusive: { cls: "ver-inconclusive", icon: "question", label: "Could not be confirmed" },
   };
   const m = map[v.status] || map.error;
   return h("div", { class: ["verified", m.cls], role: v.status === "disagrees" ? "alert" : null },
     h("p", { class: "verified-head" }, icon(m.icon), h("strong", {}, m.label)),
     v.detail ? h("p", {}, v.detail) : null,
+    v.claim_step ? h("p", { class: "muted small" }, `Claim step: ${v.claim_step}`) : null,
     v.scenario ? h("details", {}, h("summary", {}, "The scenario that was run"), h("pre", { class: "code-block" }, v.scenario)) : null,
   );
 }
@@ -237,15 +411,23 @@ function progress(status) {
   ));
 }
 
-async function doChange(request, selected) {
+async function doChange(request, selected, parent = null) {
   const li = push(h("div", { class: "msg msg-bot" }, progress("drafting")));
   let id;
   try {
-    id = (await api.newChange(request, selected)).id;
+    id = (await api.newChange(request, selected, parent)).id;
   } catch (e) {
     li.replaceChildren(errorMsg(e));
     return;
   }
+  registerChange({ id, request, status: "drafting", parent, superseded_by: null });
+  await runChange(id, li, parent);
+}
+
+/** Poll a change until it settles, rendering its progress (then its card, or its
+ *  outcome) into `li`. Shared by a fresh request (doChange) and by re-opening a change
+ *  still drafting or checking (openChangeCard). */
+async function runChange(id, li, parent) {
   for (let n = 0; n < POLL_LIMIT; n++) {
     let c;
     try {
@@ -254,18 +436,26 @@ async function doChange(request, selected) {
       li.replaceChildren(errorMsg(e));
       return;
     }
+    registerChange(c);
+    if (c.status === "cancelled") {
+      li.replaceChildren(closedMsg(c, "Cancelled."));
+      return;
+    }
     if (c.status === "failed") {
       li.replaceChildren(h("div", { class: "msg msg-error", role: "alert" }, icon("triangle"), ` The change could not be drafted: ${c.error || "no reason given"}.`));
       return;
     }
     if (c.status === "ready") {
-      if (state.change && state.change.id !== id) closeOpenCard("Replaced by a newer change.");
+      if (state.change && state.change.id !== id) {
+        const note = parent && state.change.id === parent ? `Superseded by ${id}.` : "Replaced by a newer change.";
+        closeOpenCard(note);
+      }
       update({ change: c });
       li.replaceChildren(changeCard(c));
       li.scrollIntoView({ block: "start" });
       return;
     }
-    li.replaceChildren(h("div", { class: "msg msg-bot" }, progress(c.status)));
+    li.replaceChildren(h("div", { class: "msg msg-bot" }, progress(c.status), cancelInlineButton(id)));
     await sleep(POLL_MS);
   }
   li.replaceChildren(errorMsg(new Error("The change is taking too long. Try again later.")));
@@ -287,6 +477,44 @@ function affectedTargets(c) {
   }
   for (const r of c.rules?.changed || []) out.push(`rule:${typeof r === "string" ? r : r.old}`);
   return [...new Set(out.filter(Boolean))];
+}
+
+/** An in-place "Answer" control for a conflict or question (v1.1 #3): choose the
+ *  default (when there is one) or type an answer, and send it as a follow-up change
+ *  (`POST /api/changes` with `parent: parentId`). Replaces the parent's card once ready. */
+function answerControl(parentId, questionText, defaultText) {
+  const input = h("input", {
+    type: "text", class: "answer-input", "aria-label": "Your answer",
+    placeholder: defaultText ? `Default: ${defaultText}` : "Type an answer…",
+  });
+  const note = h("span", { class: "muted small answer-note" });
+  const buttons = [];
+  const disableAll = () => {
+    input.disabled = true;
+    for (const b of buttons) b.disabled = true;
+  };
+  const go = (answerText) => {
+    const text = (answerText ?? input.value).trim();
+    if (!text) {
+      input.focus();
+      return;
+    }
+    disableAll();
+    note.textContent = "Sent as a follow-up — see below.";
+    doChange(`${questionText.trim()} ${text}`.trim(), [], parentId);
+  };
+  const answerBtn = h("button", { type: "button", class: "btn btn-quiet small" }, "Answer");
+  answerBtn.addEventListener("click", () => go());
+  buttons.push(answerBtn);
+  const children = [input];
+  if (defaultText) {
+    const defaultBtn = h("button", { type: "button", class: "btn btn-quiet small" }, "Use default");
+    defaultBtn.addEventListener("click", () => go(defaultText));
+    buttons.push(defaultBtn);
+    children.push(defaultBtn);
+  }
+  children.push(answerBtn, note);
+  return h("div", { class: "answer-row", role: "group", "aria-label": "Answer this" }, children);
 }
 
 function changeCard(c) {
@@ -316,7 +544,7 @@ function changeCard(c) {
             h("p", { class: "conflict-q" }, k.question || "Which one holds?"),
             h("p", { class: "small" }, k.message),
             h("div", { class: "chip-row" }, k.a ? targetChip(k.a) : null, h("span", { class: "muted small", "aria-hidden": "true" }, "vs"), k.b ? targetChip(k.b) : null),
-            h("button", { type: "button", class: "btn btn-quiet small", onclick: () => prefillChange(`For ${c.id} (${c.request}): `, [k.a, k.b].filter(Boolean)) }, "Answer with a follow-up change"),
+            answerControl(c.id, k.question || "Which one holds?", null),
           )),
         )
       : null,
@@ -344,7 +572,11 @@ function changeCard(c) {
     (c.questions || []).length
       ? h("section", { "aria-label": "Questions" },
           h("h3", {}, "Questions it raises"),
-          h("ul", { class: "small" }, c.questions.map((q) => h("li", {}, h("strong", {}, q.id + " "), q.text, q.default ? h("p", { class: "muted" }, "Default: ", q.default) : null))),
+          h("ul", { class: "small" }, c.questions.map((q) => h("li", {},
+            h("strong", {}, q.id + " "), q.text,
+            q.default ? h("p", { class: "muted" }, "Default: ", q.default) : null,
+            answerControl(c.id, q.text, q.default || null),
+          ))),
         )
       : null,
 
@@ -372,6 +604,7 @@ function changeCard(c) {
       status.className = "change-status ok";
       card.classList.remove("is-open");
       update({ change: null });
+      registerChange({ ...(changeRecords.get(c.id) || c), status: "accepted" });
       await onAccepted();
     } catch (e) {
       status.textContent = e.message;
@@ -386,6 +619,7 @@ function changeCard(c) {
       status.textContent = "Rejected. The spec is unchanged.";
       card.classList.remove("is-open");
       update({ change: null });
+      registerChange({ ...(changeRecords.get(c.id) || c), status: "rejected" });
     } catch (e) {
       status.textContent = e.message;
       acceptBtn.disabled = rejectBtn.disabled = false;

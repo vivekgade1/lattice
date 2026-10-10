@@ -29,10 +29,15 @@ async function call(method, path, body) {
 export const api = {
   model: () => call("GET", "/api/model"),
   ask: (question, selected, verify) => call("POST", "/api/ask", { question, selected, verify }),
-  newChange: (request, selected) => call("POST", "/api/changes", { request, selected }),
+  // `parent` (v1.1 #3) answers a change set's conflict or question as a follow-up: the
+  // server drafts it on top of the parent's proposal and supersedes the parent.
+  newChange: (request, selected, parent = null) =>
+    call("POST", "/api/changes", parent ? { request, selected, parent } : { request, selected }),
   change: (id) => call("GET", `/api/changes/${encodeURIComponent(id)}`),
   accept: (id) => call("POST", `/api/changes/${encodeURIComponent(id)}/accept`, {}),
   reject: (id) => call("POST", `/api/changes/${encodeURIComponent(id)}/reject`, {}),
+  // Cancels a change still drafting or checking (v1.1 #5).
+  cancelChange: (id) => call("DELETE", `/api/changes/${encodeURIComponent(id)}`),
   check: () => call("POST", "/api/check", {}),
 };
 

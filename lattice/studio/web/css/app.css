@@ -565,6 +565,37 @@ details > summary { cursor: pointer; color: var(--accent); margin: var(--space-2
 .ver-disagrees { background: var(--silent-bg); border: 2px solid var(--silent); color: var(--silent); }
 .ver-disagrees p, .ver-disagrees summary { color: var(--text); }
 .ver-error { background: var(--loud-bg); border-color: var(--loud); color: var(--loud-text); }
+/* Observed: informational, not a verdict — "what the app does today". */
+.ver-observed { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+.ver-observed p, .ver-observed summary { color: var(--text); }
+/* Inconclusive: neutral/amber, "couldn't be confirmed" — distinct from agrees/disagrees. */
+.ver-inconclusive { background: var(--pending-bg); border: 1.5px dashed var(--inferred); color: var(--inferred-text); }
+.ver-inconclusive p, .ver-inconclusive summary { color: var(--text); }
+
+.changes-panel { padding: 0 var(--space-4) var(--space-3); }
+.change-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.change-list-history { margin-top: 6px; }
+.change-row { display: flex; align-items: center; gap: 6px; }
+.change-row-main {
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: var(--space-2);
+  text-align: left; background: var(--bg-raised); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 5px var(--space-2); cursor: pointer;
+}
+.change-row-main:hover:not(:disabled) { border-color: var(--accent); }
+.change-row-main:disabled { cursor: default; opacity: 0.75; }
+.change-row.is-open .change-row-main { outline: 2px solid var(--accent); outline-offset: 1px; }
+.change-row-req { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.change-history { margin-top: var(--space-2); }
+.change-history summary { font-size: 12px; font-weight: 600; }
+.cs-drafting, .cs-checking { color: var(--accent); background: var(--accent-bg); border-color: var(--accent); }
+.cs-ready { color: var(--pending-text); background: var(--pending-bg); border: 1px dashed var(--pending); }
+.cs-accepted { color: var(--verified-text); background: var(--verified-bg); border-color: var(--verified); }
+.cs-rejected, .cs-cancelled { color: var(--text-2); background: transparent; border-color: var(--border-strong); }
+.cs-failed { color: var(--silent); background: var(--silent-bg); border-color: var(--silent); }
+
+.answer-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.answer-input { flex: 1 1 160px; min-width: 0; padding: 4px 8px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--bg-raised); color: inherit; }
+.answer-note { white-space: nowrap; }
 
 .composer { padding: var(--space-3) var(--space-4) var(--space-4); border-top: 1px solid var(--border); background: var(--bg-surface); }
 .composer textarea { width: 100%; resize: vertical; min-height: 64px; padding: var(--space-2); border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--bg-raised); }
