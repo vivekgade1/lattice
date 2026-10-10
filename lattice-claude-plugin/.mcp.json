@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "lattice": {
-      "command": "python",
-      "args": ["-m", "lattice.mcp", "serve", "--project", "${CLAUDE_PROJECT_DIR:-.}"]
+      "command": "lattice",
+      "args": ["mcp", "serve", "--project", "${CLAUDE_PROJECT_DIR:-.}"]
     }
   }
 }

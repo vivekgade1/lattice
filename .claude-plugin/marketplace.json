@@ -1,0 +1,14 @@
+{
+  "name": "lattice-local",
+  "owner": {
+    "name": "Vivek Gade"
+  },
+  "plugins": [
+    {
+      "name": "lattice",
+      "source": "./lattice-claude-plugin",
+      "description": "Lattice executable-spec tools for Claude Code: spec questions, checks, change proposals, and a guard that keeps spec files behind checked change sets."
+    }
+  ],
+  "description": "Local marketplace for the Lattice Claude Code plugin (served from this checkout)."
+}

@@ -19,7 +19,7 @@ from typing import IO, Any
 from lattice.mcp.tools import (
     OUTPUT_CAP,
     HttpBackend,
-    LocalBackend,
+    PendingBackend,
     Toolbox,
     ToolError,
     cap_result,
@@ -189,13 +189,9 @@ def serve(
     if studio_url:
         backend: Any = HttpBackend(studio_url, root)
     else:
-        missing = [
-            n for n in ("REQUIREMENTS.md", "spec.py", "spec.trace.json") if not (root / n).is_file()
-        ]
-        if missing:
-            print(f"lattice mcp: {root} has no {', '.join(missing)}", file=sys.stderr)
-            return 2
-        backend = LocalBackend(root, model=model)
+        # A directory without a spec still starts (tools say what is missing and upgrade
+        # themselves once the spec exists), so a user-level plugin never shows a failed server.
+        backend = PendingBackend(root, model=model)
     server = McpServer(Toolbox(backend, readonly=readonly))
     try:
         server.run(sys.stdin, stdout)

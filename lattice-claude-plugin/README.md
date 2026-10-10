@@ -2,6 +2,23 @@
 
 Makes a Lattice spec the contract for a Claude Code session: read-only spec tools over MCP, a guard hook that protects spec files, a check gate on Stop, two skills and three slash commands.
 
+## Install once, use in every project (user level)
+
+```sh
+uv tool install -e /path/to/lattice          # puts `lattice` on your PATH (editable: follows the repo)
+claude plugin marketplace add /path/to/lattice   # the repo root carries .claude-plugin/marketplace.json
+claude plugin install lattice@lattice-local --scope user
+```
+
+After that every Claude Code session has the Lattice tools. In a directory without a spec the
+server still starts: `project_status` reports what is missing (`REQUIREMENTS.md`, `spec.py`,
+`spec.trace.json`) and the next steps, and the other tools start working as soon as
+`lattice spec draft` has produced the spec, without restarting the session. The spec-file guard
+hook is inert until a project has both `spec.py` and `spec.trace.json`, so other projects' own
+`spec.py` or `REQUIREMENTS.md` stay editable.
+
+Starting a new project: write `REQUIREMENTS.md`, run `lattice spec draft`, then `lattice studio .`.
+
 ## Quickstart
 
 Prerequisite: the `lattice` package is importable by `python` (for example `uv pip install -e .` in the lattice repo, or run Claude from an activated venv).

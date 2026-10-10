@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -m lattice.mcp.guard --project \"$CLAUDE_PROJECT_DIR\""
+            "command": "lattice mcp guard --project \"$CLAUDE_PROJECT_DIR\""
           }
         ]
       }

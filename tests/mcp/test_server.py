@@ -34,6 +34,7 @@ from tests.studio.test_server import (
 )
 
 READ_TOOLS = [
+    "project_status",
     "model_get",
     "rule_get",
     "spec_ask",
@@ -239,15 +240,78 @@ def test_readonly_hides_change_propose_and_check_run(project: Path) -> None:
     assert out[2]["error"]["code"] == -32602 and out[3]["error"]["code"] == -32602
 
 
-def test_serve_refuses_a_directory_without_the_project_files(tmp_path: Path) -> None:
+def _rpc(project: Path, *msgs: dict[str, Any]) -> list[dict[str, Any]]:
+    init = {
+        "jsonrpc": "2.0",
+        "id": 0,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {"name": "t"},
+        },
+    }
     r = subprocess.run(
-        [sys.executable, "-m", "lattice.mcp", "serve", "--project", str(tmp_path)],
-        input="",
+        [sys.executable, "-m", "lattice.mcp", "serve", "--project", str(project)],
+        input="\n".join(json.dumps(m) for m in (init, *msgs)) + "\n",
         capture_output=True,
         text=True,
         check=False,
     )
-    assert r.returncode == 2 and "REQUIREMENTS.md" in r.stderr
+    assert r.returncode == 0, r.stderr
+    return [json.loads(line) for line in r.stdout.splitlines() if line.strip()]
+
+
+def test_a_directory_without_a_spec_still_starts_and_says_what_is_missing(
+    tmp_path: Path,
+) -> None:
+    """A user-level plugin starts this server in every directory: it must not fail there."""
+    out = _rpc(
+        tmp_path,
+        {"jsonrpc": "2.0", "id": 1, "method": "tools/list"},
+        {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {"name": "project_status", "arguments": {}},
+        },
+        {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {"name": "model_get", "arguments": {}},
+        },
+    )
+    by_id = {o["id"]: o for o in out}
+    assert "project_status" in {t["name"] for t in by_id[1]["result"]["tools"]}
+    status = json.loads(by_id[2]["result"]["content"][0]["text"])
+    assert status["initialised"] is False
+    assert status["missing"] == ["REQUIREMENTS.md", "spec.py", "spec.trace.json"]
+    assert status["next_steps"]
+    failed = by_id[3]["result"]
+    assert failed["isError"] is True
+    assert "not a Lattice project yet" in failed["content"][0]["text"]
+    assert "lattice spec draft" in failed["content"][0]["text"]
+
+
+def test_a_pending_project_upgrades_itself_when_the_spec_appears(
+    project: Path, tmp_path: Path
+) -> None:
+    from lattice.mcp.tools import PendingBackend
+
+    target = tmp_path / "later"
+    target.mkdir()
+    box = Toolbox(PendingBackend(target))
+    with pytest.raises(ToolError, match="not a Lattice project yet"):
+        box.call("model_get", {})
+    assert box.call("project_status", {})["initialised"] is False
+    for name in ("REQUIREMENTS.md", "spec.py", "spec.trace.json"):
+        (target / name).write_text((project / name).read_text())
+    status = box.call("project_status", {})
+    assert status["initialised"] is True and status["missing"] == []
+    box.call("model_get", {})
+    assert box.call("project_status", {})["backend"] == "local"
+    assert box.call("model_get", {})  # served by the real engine now, no restart
 
 
 # ---------------------------------------------------------------- LLM-backed tools (stubs)

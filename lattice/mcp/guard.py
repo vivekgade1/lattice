@@ -286,6 +286,16 @@ class Guard:
         return None
 
 
+def is_lattice_project(project: Path) -> bool:
+    """A project is guarded only once it has a drafted spec (spec.py and spec.trace.json).
+
+    The hook is installed at user level, so it runs in every directory; a project that has
+    its own unrelated ``spec.py`` or ``REQUIREMENTS.md`` must stay editable, and before a
+    spec is drafted ``REQUIREMENTS.md`` is the owner's own input."""
+    root = project.resolve()
+    return (root / "spec.py").is_file() and (root / "spec.trace.json").is_file()
+
+
 def main(argv: Sequence[str] | None = None, stdin: Any = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m lattice.mcp.guard", description=__doc__)
     ap.add_argument("--project", type=Path, required=True)
@@ -298,6 +308,8 @@ def main(argv: Sequence[str] | None = None, stdin: Any = None) -> int:
     except (ValueError, OSError) as e:
         print(f"lattice guard: unreadable hook input: {e}", file=sys.stderr)
         return 1
+    if not is_lattice_project(ns.project):
+        return 0  # a directory with no spec yet (or not a Lattice project): nothing to guard
     hit = Guard(ns.project).decide(event)
     if hit is None:
         return 0

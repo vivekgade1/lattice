@@ -193,3 +193,32 @@ def test_event_without_cwd_uses_process_cwd(proj: Path, monkeypatch: pytest.Monk
     monkeypatch.chdir(proj)
     e = {"tool_name": "Write", "tool_input": {"file_path": "spec.py"}}
     assert Guard(proj).decide(e) == "spec.py"
+
+
+def test_the_hook_is_inert_in_a_directory_with_no_drafted_spec(tmp_path: Path) -> None:
+    """Installed at user level the hook runs everywhere: another project's own spec.py and
+    the owner's REQUIREMENTS.md before drafting must stay editable."""
+    (tmp_path / "spec.py").write_text("# somebody else's file\n")
+    (tmp_path / "REQUIREMENTS.md").write_text("# rules\n")
+    event = {
+        "tool_name": "Edit",
+        "tool_input": {"file_path": str(tmp_path / "spec.py")},
+        "cwd": str(tmp_path),
+    }
+    out = subprocess.run(
+        [sys.executable, "-m", "lattice.mcp.guard", "--project", str(tmp_path)],
+        input=json.dumps(event),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert out.returncode == 0 and out.stdout.strip() == ""
+    (tmp_path / "spec.trace.json").write_text("{}")  # now it is a Lattice project
+    out = subprocess.run(
+        [sys.executable, "-m", "lattice.mcp.guard", "--project", str(tmp_path)],
+        input=json.dumps(event),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert "permissionDecision" in out.stdout and '"deny"' in out.stdout

@@ -109,6 +109,66 @@ class LocalBackend:
         return out
 
 
+SPEC_FILES = ("REQUIREMENTS.md", "spec.py", "spec.trace.json")
+
+
+class PendingBackend:
+    """A project that has no Lattice spec yet (a new project, or any other directory).
+
+    The server still starts, so a user-level plugin does not show a failed server in every
+    directory. Each call re-checks the project: the moment REQUIREMENTS.md, spec.py and
+    spec.trace.json exist (``lattice spec draft``), calls are served by the real engine
+    without restarting the session. Until then every tool answers with what is missing.
+    """
+
+    def __init__(self, root: Path, *, model: str | None = None) -> None:
+        self.root = root.resolve()
+        self._model = model
+        self._real: LocalBackend | None = None
+
+    @property
+    def kind(self) -> str:
+        return "local" if self._real is not None else "pending"
+
+    def missing(self) -> list[str]:
+        return [n for n in SPEC_FILES if not (self.root / n).is_file()]
+
+    def _resolve(self) -> LocalBackend:
+        if self._real is None:
+            miss = self.missing()
+            if miss:
+                raise ToolError(
+                    f"{self.root} is not a Lattice project yet (missing: {', '.join(miss)}). "
+                    "Write REQUIREMENTS.md (the rules in plain language), then run "
+                    "`lattice spec draft` in this directory to draft spec.py and spec.trace.json; "
+                    "after that these tools work without restarting."
+                )
+            self._real = LocalBackend(self.root, model=self._model)
+        return self._real
+
+    @property
+    def configured(self) -> bool:
+        return self._real is not None and self._real.configured
+
+    def model(self) -> dict[str, Any]:
+        return self._resolve().model()
+
+    def lint(self) -> list[dict[str, Any]]:
+        return self._resolve().lint()
+
+    def ask(self, body: Mapping[str, Any]) -> dict[str, Any]:
+        return self._resolve().ask(body)
+
+    def new_change(self, body: Mapping[str, Any]) -> dict[str, Any]:
+        return self._resolve().new_change(body)
+
+    def get_change(self, cid: str) -> dict[str, Any]:
+        return self._resolve().get_change(cid)
+
+    def check(self, layers: str | None, timeout: float) -> dict[str, Any]:
+        return self._resolve().check(layers, timeout)
+
+
 class HttpBackend:
     """A running Studio, over its JSON API."""
 
@@ -635,6 +695,28 @@ class Toolbox:
         b = self.backend
         S = {"type": "string"}
 
+        def project_status(a: Mapping[str, Any]) -> dict[str, Any]:
+            root = self.root
+            missing = [n for n in SPEC_FILES if not (root / n).is_file()]
+            out: dict[str, Any] = {
+                "project": str(root),
+                "initialised": not missing,
+                "missing": missing,
+                "backend": getattr(b, "kind", "?"),
+                "has_studio_toml": (root / "studio.toml").is_file(),
+            }
+            if missing:
+                out["next_steps"] = [
+                    "Write REQUIREMENTS.md: the rules of the app in plain language.",
+                    "Run `lattice spec draft` here to draft spec.py and spec.trace.json.",
+                    "Run `lattice studio .` to review the spec and its questions.",
+                ]
+            else:
+                out["next_steps"] = [
+                    "Read the spec with model_get, rule_get and spec_ask; run check_run.",
+                ]
+            return out
+
         def model_get(a: Mapping[str, Any]) -> dict[str, Any]:
             section = _str(a, "section", required=False)
             m = b.model()
@@ -661,6 +743,14 @@ class Toolbox:
                 "hint": "pass section=rules|views|data_model|app|changes for the full part",
             }
 
+        self._reg(
+            "project_status",
+            "Is this directory a Lattice project (spec files present)? What is missing and the "
+            "next steps. Always available, even before a spec exists.",
+            {},
+            [],
+            project_status,
+        )
         self._reg(
             "model_get",
             "The Studio model of the project (no LLM): without `section`, an overview "
