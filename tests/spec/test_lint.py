@@ -212,6 +212,19 @@ def test_l006_anonymous_access_per_endpoint_template() -> None:
     assert codes(lint(public, trace("- x\n", {"R1": ["scenario:read_a_run"]})), "L006") == []
 
 
+def test_l006_skips_a_405_only_route() -> None:
+    s = spec(
+        READ,
+        Scenario("no_put", steps=(Step("PUT", "/runs/1", "ann", expect_status=405),)),
+    )
+    found = codes(lint(s, trace("- x\n", {"R1": ["scenario:read_a_run"]})), "L006")
+    # GET /runs/{} still lacks its anonymous step; PUT /runs/{} (405 only) is not reported
+    assert [f.element for f in found] == ["endpoint:GET /runs/{}"]
+    mixed = spec(READ, Scenario("put", steps=(Step("PUT", "/runs/1", "ann", expect_status=200),)))
+    found = codes(lint(mixed, trace("- x\n", {"R1": ["scenario:read_a_run"]})), "L006")
+    assert "endpoint:PUT /runs/{}" in [f.element for f in found]
+
+
 def test_l006_outsiders_only_when_the_rules_name_them() -> None:
     s = spec(READ, Scenario("anon", steps=(GET_ANON,)))
     plain = trace("- x\n", {"R1": ["scenario:read_a_run", "scenario:anon"]})

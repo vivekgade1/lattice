@@ -52,13 +52,72 @@ owner_via=None, admin_write=(), public_group=(), one_of=None, one_of_stored=None
 - `users_table`: the schema name of the users table.
 - `roles_from` -- where a caller's role comes from:
 {{doc-bullets:lattice.profile.RoleColumn,lattice.profile.AdminFlag,lattice.profile.NoRoles}}
-- `auth`: `TokenColumn("token")` (the default: a bearer token looked up in that users
-  column).
+- `auth`: `TokenColumn("<users column>")` (the default is `TokenColumn("token")`; see
+  *Auth* below -- the column must exist in the users table you declared).
 - `active_column`: a Bool users column marking an active account (inactive callers
   answer `inactive_status`, 400 by default).
 - `error_body`: `"fastapi"` for `{"detail": ...}` error bodies, else the default
   `"lattice"`. `unauthorized_detail` / `forbidden_detail`: the 401 / 403 texts.
   `validation_status`: 422 (FastAPI, the default) or 400.
+
+### Auth: what the spec declares and what the harness does
+
+The spec never says how a caller logs in. The *harness* (the person running the check)
+supplies the login: a `--login-path /auth/login` route taking `Spec.users`' credentials,
+a `login(client, handle) -> token` function, or an `AuthDriver`. The checker calls it
+once per handle in `Spec.users`, then sends `Authorization: Bearer <token>` on every step
+whose `user` is that handle (`user=None` sends no header). What the spec declares:
+
+- `users={"ann": ("ann@example.com", "pw-ann")}`: handle -> (login, password), two
+  strings, the credentials of a seeded user exactly as the context gives them (the login
+  is the email or username the login route takes, not the handle).
+- `ApiProfile.auth` is `TokenColumn("<column>")` and nothing else for a drafted spec
+  (`NativeToken` needs a declared native; leave it out unless the context gives one).
+  Pass the class itself with a column of the users `Schema` you declared, never a string
+  (`auth="token"`) and never a `{...}` dict.
+- The column must be in the users schema's `pairs`. If the app's tokens are stateless
+  (JWTs: nothing stored per user) and the context's users table has no token column, do
+  **not** invent `("token", S.STR)`: the users table is the app's, and a column it lacks
+  fails the seed. Point `TokenColumn` at a column the context does list, preferably the
+  secret one that is already in `private=[...]` (`TokenColumn("hashed_password")`), and
+  say in a comment that tokens are minted by the login route.
+- Keep the 401 / 403 / inactive answers in the profile (`unauthorized_detail`,
+  `forbidden_detail`, `inactive_status`, `active_column`), not in scenarios' setup.
+
+Minimal correct auth, for an app whose login is `POST /auth/login` returning a JWT and
+whose users table is `users(id, email, hashed_password, is_super_admin, is_active)`:
+
+```python
+USER = Schema.from_pairs(
+    [("id", S.INT), ("email", S.STR), ("hashed_password", S.STR),
+     ("is_super_admin", S.BOOL), ("is_active", S.BOOL)],
+    keys=[("id",), ("email",)],
+    private=["hashed_password"],
+)
+api = ApiProfile(
+    tables={"User": USER},
+    table_names={"User": "users"},
+    roles=frozenset({"Public", "Member", "Admin"}),
+    users_table="User",
+    roles_from=AdminFlag("is_super_admin", "Member"),
+    auth=TokenColumn("hashed_password"),   # JWTs: no token column; the login route mints them
+    active_column="is_active",
+    error_body="fastapi",
+)
+USERS = {"root": ("root@example.com", "pw-root"), "ann": ("ann@example.com", "pw-ann")}
+```
+
+Messages you may get back, and what they mean:
+
+| Message | Meaning and fix |
+|---|---|
+| `import: ValueError: token column 'token' is not a column of User` | `auth` defaults to `TokenColumn("token")` and the users schema has no `token`. Set `auth=TokenColumn("<a column of USER>")` explicitly; do not add a column. |
+| `ValueError: ApiProfile.auth must be TokenColumn(...) or NativeToken(...)` | `auth` is a string, dict or other value. Write `auth=TokenColumn("col")` and import `TokenColumn` from `lattice.profile`. |
+| `NativeToken names unknown native ...` | You used `NativeToken` without declaring the native. Use `TokenColumn`. |
+| `S011` | a step signs in as a handle missing from `Spec.users`. |
+| `S015` | a `Spec.users` entry is not `handle -> (login, password)` of two strings. |
+| `cannot log in as 'ann': ...` / `login as 'ann' failed: 401` (a check finding) | the harness's login route refused the `Spec.users` credentials: they differ from the seed's. Take them from the context; the spec is not at fault otherwise. |
+| `no login given` / `layer B: no login given` | the harness has no login, so every signed-in step cannot run; not a spec problem. |
 
 Take the tables, columns, SQL names, roles, seeded users and service names from the
 context. Do not invent a table or column the context does not give; when the

@@ -91,6 +91,29 @@ def test_reference_renders_from_the_code():
     assert len(REFERENCE) < 40_000  # compact: about 7k tokens
 
 
+def test_reference_auth_section_has_conventions_messages_and_a_valid_snippet():
+    head, _, rest = REFERENCE.partition("### Auth: what the spec declares")
+    assert rest, "the auth section is missing"
+    section = rest.split("\n## ", 1)[0]
+    for text in (
+        "token column 'token' is not a column of User",
+        "ApiProfile.auth must be TokenColumn(...) or NativeToken(...)",
+        "cannot log in as",
+        "handle -> (login, password)",
+        "TokenColumn(",
+    ):
+        assert text in section, text
+    snippet = section.split("```python\n", 1)[1].split("```", 1)[0]
+    scope: dict = {}
+    exec(  # noqa: S102 -- the reference's own snippet, run to prove it is valid
+        "from lattice.profile import AdminFlag, ApiProfile, TokenColumn\n"
+        "from lattice.typesys import Scalar, Schema\nS = Scalar\n" + snippet,
+        scope,
+    )
+    assert scope["api"].auth.column == "hashed_password"
+    assert scope["USERS"]["ann"] == ("ann@example.com", "pw-ann")
+
+
 def test_reference_worked_example_is_a_valid_draft():
     rules = extract_rules(REQUIREMENTS)
     assert [r.id for r in rules] == [f"R{i}" for i in range(1, 10)]

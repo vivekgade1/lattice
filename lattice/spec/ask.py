@@ -45,7 +45,11 @@ It runs alone through `lattice.spec.check.check(..., layers="D")` on a spec that
 the base spec's profile, users and services. ``agrees``: it passed; ``disagrees``: the
 claim step failed (expected vs actual); a setup step failed: the model gets the failure
 and fixes the setup once (keeping the claim step), and if a setup step fails again,
-``inconclusive`` (which step, expected vs actual); ``error``: the scenario was invalid
+``inconclusive`` (which step, expected vs actual). A claim step whose status (and body)
+held but whose database assertion (``expect_db``) failed, with setup steps before it, is
+also ``inconclusive``: the assertion reads state those setup steps were meant to produce
+(a setup job that never ran, say), so the app neither confirmed nor contradicted the
+answer; the detail names the setup steps. ``error``: the scenario was invalid
 or could not run. ``verified.claim_step`` is set whenever a scenario was written. For a
 ``not_specified`` answer, the scenario is an *observation*: it is rerun with each
 failing step's expectation replaced by what the app answered, until it passes, and
@@ -1252,6 +1256,23 @@ def _step_no(finding: Any) -> int | None:
     return int(m.group(1)) if m else None
 
 
+def _db_only_failure(scenario: Scenario, finding: Any) -> bool:
+    """Whether the failing step answered with the expected status and only its database
+    assertion failed (no status or body problem)."""
+    n = _step_no(finding)
+    d = finding.details
+    if n is None or not isinstance(scenario.steps[n - 1], Step) or "actual" not in d:
+        return False
+    step = scenario.steps[n - 1]
+    problems = d.get("problems") or []
+    return (
+        bool(step.expect_db)
+        and d["actual"].get("status") == step.expect_status
+        and bool(problems)
+        and all(str(p).startswith("db ") for p in problems)
+    )
+
+
 def _finding_text(scenario: Scenario, finding: Any) -> str:
     n = _step_no(finding)
     where = f"step {n} ({_step_line(scenario.steps[n - 1])})" if n else finding.case
@@ -1371,6 +1392,24 @@ def _verify(
         if status == "error":
             return {"status": "error", "detail": out, **result}
         n = _step_no(out)
+        if n is not None and n == claim and claim > 1:
+            setup = _db_only_failure(scenario, out)
+            if setup:
+                names = ", ".join(
+                    f"{i} ({_step_line(scenario.steps[i - 1])})" for i in range(1, claim)
+                )
+                plural = "s" if claim > 2 else ""
+                return {
+                    "status": "inconclusive",
+                    "detail": (
+                        f"the claim step {claim} got the expected status but its database "
+                        f"assertion failed, so setup step{plural} {names} did not leave the "
+                        "state the assertion reads (a setup step failed to do its work); "
+                        f"the app neither confirmed nor contradicted the answer: "
+                        f"{_finding_text(scenario, out)}"
+                    ),
+                    **result,
+                }
         if n is None or n == claim:
             return {"status": "disagrees", "detail": _finding_text(scenario, out), **result}
         where = "before" if n < claim else "after"

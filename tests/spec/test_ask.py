@@ -467,6 +467,30 @@ def test_verify_setup_failure_twice_is_inconclusive():
     assert v["claim_step"] == 2
 
 
+def test_verify_claim_status_held_but_db_assertion_failed_is_inconclusive():
+    # the Q06 shape: the claim step answers 409 as expected, but its expect_db reads state
+    # a setup step was meant to produce (the app holds one run, not two)
+    scenario = _scenario(
+        _step("POST", "/configs/1/runs", "ann", 201),
+        _step("POST", "/configs/1/runs", "ben", 409, expect_db={"runs": {"count": 2}}),
+    )
+    gen = ScriptedGenerator([YES, _claim(scenario, 2)])
+    a = ask(SPEC, "Can ben queue a second live run?", generator=gen, verify=_cfg())
+    v = a.verified
+    assert v["status"] == "inconclusive", v
+    assert "setup step 1 (" in v["detail"] and "POST /configs/1/runs as ann" in v["detail"]
+    assert v["claim_step"] == 2
+
+
+def test_verify_db_assertion_failure_on_a_lone_claim_step_still_disagrees():
+    scenario = _scenario(
+        _step("POST", "/configs/1/runs", "ann", 201, expect_db={"runs": {"count": 5}})
+    )
+    gen = ScriptedGenerator([YES, _claim(scenario, 1)])
+    a = ask(SPEC, "q", generator=gen, verify=_cfg())
+    assert a.verified["status"] == "disagrees", a.verified
+
+
 def test_verify_claim_step_failure_disagrees_without_retry():
     claim_fails = _scenario(
         _step("POST", "/configs/1/runs", "ann", 201),

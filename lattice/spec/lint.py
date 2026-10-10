@@ -37,7 +37,9 @@ firing conditions and their known limits:
   expecting a status in ``LintConfig.anon_statuses`` (401, 403). A template is public,
   and skipped, when a contract says ``auth="Public"``, a ``user=None`` step on it
   expects anything else, or its path matches ``LintConfig.public_paths`` (login,
-  register, token, health...). (b) only when the trace's rules (not context) mention
+  register, token, health...), or every step on it expects 405 (a method-not-allowed
+  route: the router answers before authentication, so there is no anonymous behaviour to
+  cover). (b) only when the trace's rules (not context) mention
   outsiders (``LintConfig.outsider_patterns``: "not a member", "non-member",
   "outsider", or a 404 named with "member"), or ``LintConfig.outsiders`` is True: a
   template with a path parameter, not public, called by a signed-in user somewhere,
@@ -527,6 +529,8 @@ def _l006(spec: Spec, trace: Trace, config: LintConfig) -> list[LintFinding]:
     out: list[LintFinding] = []
     for (method, template), uses in by_ep.items():
         anon = [s for _, _, s in uses if s.user is None]
+        if all(s.expect_status == 405 for _, _, s in uses):
+            continue  # a 405-only route: the router refuses it before any auth check
         if ((method, template) in public_contract or public_rx.search(template)
                 or any(s.expect_status not in config.anon_statuses for s in anon)):  # fmt: skip
             continue
