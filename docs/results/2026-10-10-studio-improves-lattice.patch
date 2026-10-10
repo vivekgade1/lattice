@@ -1,0 +1,47 @@
+diff --git a/lattice/studio/server.py b/lattice/studio/server.py
+index d6cd3d4..44a21c1 100644
+--- a/lattice/studio/server.py
++++ b/lattice/studio/server.py
+@@ -1171,6 +1171,14 @@ class Studio:
+         log(f"{cid}: started ({request[:60]!r}{f', parent {parent_id}' if parent_id else ''})")
+         return {"id": cid}
+ 
++    def list_changes(self) -> list[dict[str, Any]]:
++        """Every change as {id, status, request}, newest first."""
++        with self.lock:
++            return [
++                {"id": c["id"], "status": c["status"], "request": c["request"]}
++                for c in reversed(list(self.changes.values()))
++            ]
++
+     def get_change(self, cid: str, wait: float = 0.0) -> dict[str, Any]:
+         """The change record; with `wait` > 0, answered once its background job has
+         finished (it is ready, failed, or its cancelled run has stopped), or after `wait`
+@@ -1567,6 +1575,8 @@ class Handler(BaseHTTPRequestHandler):
+             return None
+         if path == "/api/model":
+             return self._dispatch(st.get_model)
++        if path == "/api/changes":
++            return self._dispatch(st.list_changes)
+         if path.startswith("/api/changes/") and "/" not in path.removeprefix("/api/changes/"):
+             cid = path.removeprefix("/api/changes/")
+             raw = (parse_qs(urlparse(self.path).query).get("wait") or ["0"])[-1]
+diff --git a/tests/studio/test_server.py b/tests/studio/test_server.py
+index 1429842..ed3f8d1 100644
+--- a/tests/studio/test_server.py
++++ b/tests/studio/test_server.py
+@@ -756,3 +756,14 @@ def test_git_head_follows_a_commit_that_leaves_the_spec_files_alone(tmp_path: Pa
+     git(root, "commit", "-q", "-m", "other")
+     after = st.get_model()["project"]["git_head"]
+     assert after != before and after == git(root, "rev-parse", "--short", "HEAD")
++
++
++def test_changes_list_is_newest_first(tmp_path: Path, serve) -> None:
++    gen = ScriptedGenerator([edit_reply(NOTES_V2), V2_DRAFT])
++    s = serve(make_project(tmp_path / "p"), gen)
++    assert s.get("/api/changes") == (200, [])
++    _, out = s.post("/api/changes", {"request": "first"})
++    s.wait_change(out["id"])
++    status, listed = s.get("/api/changes")
++    assert status == 200
++    assert listed == [{"id": out["id"], "status": "ready", "request": "first"}]
