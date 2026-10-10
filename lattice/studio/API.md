@@ -74,3 +74,4 @@ Runs the full check of the current spec against the app in the background. Retur
 4. `app.last_check.targets` may include `cell:` and `profile:` entries when known; otherwise the UI shows scenario, invariant, machine and service results only.
 5. **Cancelling and failures:** `DELETE /api/changes/{id}` cancels a change still drafting or checking (`status: "cancelled"`). `GET /api/model` carries `app.check_running: bool`, and `app.last_check` may carry `"error": "..."` when the check could not run.
 6. `rules[].questions` stays a list of ids; resolve them through `views.questions`.
+7. **Observed answers:** for a `not_specified` answer with `"verify": true`, `verified.status` may be `"observed"`, meaning what the app currently does with no expectation from the spec, with `detail` giving the actual statuses and bodies.
