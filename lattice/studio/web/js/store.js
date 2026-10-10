@@ -21,7 +21,28 @@ export const state = {
   palette: false, // the ⌘K search dialog is open
   changesSeen: 0, // bumped when the conversation learns a change moved (the tray re-draws)
   rulesScope: null, // {name, ids}: the Map opened Rules for one element; Rules shows only these
+  // v1.6 projects
+  projects: null, // GET /api/projects (array) or null before it loaded / when it failed
+  project: null, // the project the owner picked (name), or null for the server's default
+  switching: false, // a project switch is loading its model
 };
+
+/** The project record in force: the picked one, else the default, else the first. */
+export function currentProject() {
+  const list = state.projects || [];
+  return (state.project && list.find((p) => p.name === state.project))
+    || list.find((p) => p.default) || list[0] || null;
+}
+
+/** Whether this project can rebuild: false (with a reason shown), or true. Unknown (no
+ *  project list, an older server) counts as true: the POST answers 503 with the reason. */
+export function canRebuild() {
+  const p = currentProject();
+  if (!p || !p.capabilities || p.capabilities.rebuild === undefined) return true;
+  return p.capabilities.rebuild === true;
+}
+
+export const REBUILD_WHY = "Rebuild needs a git repository and a gate command: add [rebuild] to studio.toml.";
 
 // Hook registry. The shell gives every view `ctx.hooks`; the conversation and inline-edit
 // modules replace these defaults (hooks.ask = ..., etc.) when they mount. Each takes

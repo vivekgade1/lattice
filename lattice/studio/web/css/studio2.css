@@ -225,6 +225,21 @@ button.map-badge:hover { color: var(--ink); text-decoration-color: currentColor;
 .rb-hist-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: var(--space-3); align-items: baseline; padding: var(--space-3) 0; border-top: 1px solid var(--hairline); }
 .rb-hist-row button.s2-quiet-btn { text-align: left; }
 .rb-hist-row.is-current { background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); padding-left: var(--space-2); }
+.rb-branch { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: 0 0 var(--space-4); font-size: var(--fs-13); }
+.rb-copy { min-height: 24px; padding: 0 var(--space-2); }
+.rb-spec-edited, .rb-round-error { grid-column: 2 / -1; display: flex; gap: var(--space-2); align-items: flex-start; margin: 0; padding: var(--space-2) var(--space-3); border-left: 3px solid var(--warn); background: var(--warn-soft); color: var(--warn-text); border-radius: var(--radius-sm); font-size: var(--fs-13); }
+.rb-spec-edited .icon, .rb-round-error .icon { flex: none; margin-top: 2px; }
+.rb-gates { grid-column: 2 / -1; list-style: none; margin: 0; padding: 0; font-size: var(--fs-12); }
+.rb-gate { padding: 2px 0; }
+.rb-gate summary { cursor: pointer; }
+.rb-gate-line { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.rb-gate.is-pass .icon, .rb-gate-ok { color: var(--ok-text); }
+.rb-gate.is-fail .icon, .rb-gate-bad { color: var(--bad-text); }
+.rb-gate-out { margin: var(--space-2) 0; padding: var(--space-2) var(--space-3); max-height: 220px; overflow: auto; background: var(--surface); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: var(--fs-12); white-space: pre-wrap; overflow-wrap: anywhere; }
+.rb-findings-flat { grid-column: auto; margin-bottom: var(--space-3); }
+.rb-merge { margin: var(--space-3) 0; padding-top: var(--space-3); border-top: 1px solid var(--hairline); }
+.rb-cmd { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--raised); border: 1px solid var(--hairline); border-radius: var(--radius-sm); }
+.rb-notice { margin: 0 0 var(--space-4); max-width: var(--measure); }
 .rb-waiting { padding: var(--space-3) var(--space-4); border-left: 3px solid var(--warn); background: var(--warn-soft); border-radius: var(--radius-sm); }
 
 /* the one signature motion: a round resolving. Disabled by reduced motion. */

@@ -19,7 +19,7 @@ import { h, icon, clear, plural, add } from "./util.js";
 import { api, sleep } from "./api.js";
 import { parse as parseMd, inline as inlineMd } from "./markdown.js";
 import { SessionClient, addError } from "./session.js";
-import { state, update, subscribe, hooks } from "./store.js";
+import { state, update, subscribe, hooks, canRebuild, REBUILD_WHY } from "./store.js";
 import { highlight, targetChip, labelOf, toggleSelection, kindOf, nameOf } from "./targets.js";
 import { answerBadge, changeStatusBadge, IMPACT_LABEL } from "./badges.js";
 import { unifiedDiff } from "./diff.js";
@@ -405,8 +405,10 @@ function syncChangesFromModel(list) {
 }
 
 async function backgroundPoll(id) {
+  const ep = api.epoch();
   for (let n = 0; n < POLL_LIMIT; n++) {
     await sleep(POLL_MS);
+    if (ep !== api.epoch()) return; // the project switched
     let c;
     try {
       c = await api.change(id);
@@ -747,7 +749,9 @@ async function doChange(request, selected, parent = null) {
  *  outcome) into `li`. Shared by a fresh request (doChange) and by re-opening a change
  *  still drafting or checking (openChangeCard). */
 async function runChange(id, li, parent) {
+  const ep = api.epoch();
   for (let n = 0; n < POLL_LIMIT; n++) {
+    if (ep !== api.epoch()) return; // the project switched
     let c;
     try {
       c = await api.change(id);
@@ -1090,18 +1094,23 @@ function acceptedCard(c, li) {
   }
   if (b === "built") {
     return h("div", { class: "msg change-card" }, head, req,
-      h("p", { class: "change-status ok" }, icon("check"), " Built and verified. The checks pass on the rebuilt code."),
+      h("p", { class: "change-status ok" }, icon("check"),
+        c.build?.branch ? ` Built on ${c.build.branch}. The checks pass there; the running app is unchanged until you merge it.` : " Built and verified. The checks pass on the rebuilt code."),
       c.build?.rebuild_id ? h("button", { type: "button", class: "btn btn-quiet", onclick: () => update({ view: "rebuilds", rebuild: c.build.rebuild_id }) }, "Open the rebuild") : null);
   }
   const card = h("div", { class: "msg change-card" }, head, req);
   if (b === "gave_up") {
     add(card,
-      h("p", { class: "change-status bad" }, icon("triangle"), " The last rebuild gave up with checks still failing."),
+      h("p", { class: "change-status warn" }, icon("triangle"), " The last rebuild gave up with checks still failing."),
       h("div", { class: "change-actions" },
         h("button", { type: "button", class: "btn btn-quiet", onclick: () => prefillChange(`Revise: ${c.request || ""}`, []) }, "Edit the change"),
-        h("button", { type: "button", class: "btn btn-primary", onclick: () => startRebuild([c.id]) }, icon("play"), "Rebuild again"),
+        canRebuild() ? h("button", { type: "button", class: "btn btn-primary", onclick: () => startRebuild([c.id]) }, icon("play"), "Rebuild again") : null,
       ),
     );
+    return card;
+  }
+  if (!canRebuild()) {
+    add(card, h("p", { class: "muted small rebuild-why" }, REBUILD_WHY));
     return card;
   }
   add(card, rebuildPrompt(c.id, card));
@@ -1169,7 +1178,8 @@ async function followRebuild(rid, host, ids) {
       const ret = mod.pollRebuild(rid, onUpdate);
       if (ret && typeof ret.then === "function") await ret;
     } else {
-      for (let n = 0; n < REBUILD_POLL_LIMIT && !finished; n++) {
+      const ep = api.epoch();
+      for (let n = 0; n < REBUILD_POLL_LIMIT && !finished && ep === api.epoch(); n++) {
         const rb = await api.rebuildGet(rid);
         onUpdate(rb);
         if (finished) break;
@@ -1189,7 +1199,9 @@ async function followRebuild(rid, host, ids) {
 function outcomeBlock(rb, ids) {
   if (rb.status === "passed") {
     return h("p", { class: "change-status ok", role: "status" }, icon("check"),
-      ` Built and verified in round ${rb.rounds?.length || 1}. The amber marks are plain now.`);
+      rb.branch
+        ? ` Built on ${rb.branch} in round ${rb.rounds?.length || 1}. Studio never merges: the app is unchanged until you do.`
+        : ` Built and verified in round ${rb.rounds?.length || 1}.`);
   }
   if (rb.status === "gave_up") {
     return h("div", { class: "rebuild-outcome" },
@@ -1202,7 +1214,7 @@ function outcomeBlock(rb, ids) {
     );
   }
   if (rb.status === "stopped") {
-    return h("p", { class: "change-status", role: "status" }, "Stopped between rounds. The change is accepted · not built.");
+    return h("p", { class: "change-status", role: "status" }, "Stopped. The change is accepted, not built.");
   }
   return null;
 }
@@ -1251,6 +1263,29 @@ function useSession() {
 export function teardownChat() {
   for (const c of Object.values(clients)) c?.dispose();
   clients = {};
+}
+
+/** The project switched: drop every thread, session and change this panel held for the
+ *  previous one. The panel stays mounted (its listeners are installed once). */
+export function resetChat() {
+  teardownChat();
+  for (const v of Object.values(views)) v.ol.remove();
+  views = {};
+  sessionBroken = false;
+  editsInFlight = null;
+  autoText = "";
+  changeRecords = new Map();
+  pollingIds = new Set();
+  followingRebuilds = new Set();
+  openId = null;
+  openLi = null;
+  if (!els.root) return;
+  els.fallbackThread.replaceChildren();
+  els.input.value = "";
+  els.fallbackThread.hidden = false;
+  els.thread = els.fallbackThread;
+  renderWork();
+  syncSession();
 }
 
 function viewFor(m) {

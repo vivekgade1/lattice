@@ -53,6 +53,16 @@ button, input, textarea { font: inherit; color: inherit; }
 .project { display: flex; align-items: center; gap: var(--space-2); min-width: 0; flex: 1 1 auto; overflow: hidden; }
 .project-name { font-weight: var(--fw-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .git-head { padding: 0 6px; border-radius: var(--radius-sm); background: var(--surface); color: var(--ink-2); }
+.project-switch { display: inline-flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.proj-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--ink-3); }
+.proj-ok { background: var(--ok); } .proj-warn { background: var(--warn); } .proj-bad { background: var(--bad); } .proj-quiet { background: var(--ink-3); }
+.project-select {
+  min-height: 28px; max-width: 220px; padding: 0 var(--space-2); font: inherit; font-weight: var(--fw-medium);
+  color: var(--ink); background: var(--raised); border: 1px solid var(--hairline-strong); border-radius: var(--radius-control);
+  text-overflow: ellipsis;
+}
+.project-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.top-note { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 .top-actions { display: flex; align-items: center; gap: var(--space-2); flex: none; }
 .topbar :is(.brand, .btn, .pill, .top-toggle) { white-space: nowrap; flex: none; }
 .project { min-width: 48px; }
@@ -501,6 +511,8 @@ details > summary { cursor: pointer; color: var(--accent); margin: var(--space-2
 .change-status { margin: var(--space-2) 0 0; font-size: var(--fs-13); }
 .change-status.ok { color: var(--ok-text); }
 .change-status.bad { color: var(--bad-text); }
+.change-status.warn { color: var(--warn-text); }
+.rebuild-why { margin: var(--space-2) 0 0; }
 
 /* rebuild states (tray and timeline) */
 .rebuild-running { color: var(--rebuild-running); }
@@ -581,6 +593,10 @@ details > summary { cursor: pointer; color: var(--accent); margin: var(--space-2
 .tray-ok .tray-status { color: var(--ok-text); }
 .tray-bad .tray-status { color: var(--bad-text); }
 .tray-live .tray-status { color: var(--accent); }
+.tray-warn .tray-status, .tray-warn .tray-note { color: var(--warn-text); }
+.tray-warn { box-shadow: inset 2px 0 0 var(--warn); padding-left: var(--space-2); }
+.tray-note { grid-column: 2 / -1; margin-top: calc(-1 * var(--space-1)); }
+.tray-status .spinner { vertical-align: -1px; }
 .tray-quiet { opacity: 0.8; }
 .tray-actions { display: inline-flex; gap: var(--space-1); }
 

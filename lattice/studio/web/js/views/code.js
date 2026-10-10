@@ -32,7 +32,7 @@ let cacheKey = "";
 const cache = new Map();
 
 function cached(model, key, load) {
-  const k = `${model.project?.git_head}|${model.app?.last_check?.at}`;
+  const k = `${api.base()}|${model.project?.git_head}|${model.app?.last_check?.at}`;
   if (k !== cacheKey) {
     cache.clear();
     cacheKey = k;

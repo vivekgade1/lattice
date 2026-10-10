@@ -14,6 +14,7 @@ const typing = (el) =>
 
 let dlg = null;
 let files = null; // code files, fetched on first open; [] when unsupported
+let filesBase = ""; // the project base `files` belongs to
 
 function closePalette() {
   if (!dlg) return;
@@ -25,7 +26,8 @@ function closePalette() {
 }
 
 async function loadFiles() {
-  if (files) return files;
+  if (files && filesBase === api.base()) return files;
+  filesBase = api.base();
   try {
     files = await api.codeFiles();
   } catch (e) {

@@ -62,6 +62,7 @@ function modelKey() {
   const m = state.model;
   const c = state.change;
   return [
+    api.base(),
     m?.project?.git_head || "",
     m?.app?.last_check?.at || "",
     JSON.stringify((m?.changes || []).map((x) => [x.id, x.status, x.build?.state])),

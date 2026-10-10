@@ -66,10 +66,11 @@ const governing = (n) => n.governed_by || n.rules || [];
 
 const linkCache = new Map();
 function codeLinksOf(target) {
-  if (!linkCache.has(target)) {
-    linkCache.set(target, api.codeLinks(target).then((l) => (Array.isArray(l) ? l.length : 0)).catch(() => 0));
+  const key = `${api.base()}|${target}`; // per project
+  if (!linkCache.has(key)) {
+    linkCache.set(key, api.codeLinks(target).then((l) => (Array.isArray(l) ? l.length : 0)).catch(() => 0));
   }
-  return linkCache.get(target);
+  return linkCache.get(key);
 }
 
 /** Open an element's own view: its view for most kinds, the code lens for code. */

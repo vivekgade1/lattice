@@ -20,10 +20,10 @@
 
 import { h, icon, clear, fmtTime, plural, add } from "./util.js";
 import { api, sleep } from "./api.js";
-import { state, update, subscribe, hooks } from "./store.js";
+import { state, update, subscribe, hooks, currentProject, canRebuild, REBUILD_WHY } from "./store.js";
 import { applyMarks, toggleSelection, highlight, clearMarks } from "./targets.js";
 import { hasAppTargets } from "./overlay.js";
-import { mountChat, prefillChange } from "./chat.js";
+import { mountChat, prefillChange, resetChat } from "./chat.js";
 import { renderLensed, refreshPane } from "./lens.js";
 import { mountTray, toast } from "./tray.js";
 import { mountPalette, openPalette } from "./palette.js";
@@ -117,14 +117,16 @@ function setTheme(t) {
 function renderTopbar() {
   const m = state.model;
   clear($project);
-  if (m) {
-    add($project, 
-      h("span", { class: "project-name" }, m.project?.name || "Untitled project"),
-      m.project?.git_head ? h("code", { class: "git-head", title: "Spec version (git HEAD)" }, m.project.git_head) : null,
-    );
+  const list = state.projects || [];
+  const cur = currentProject();
+  if (list.length > 1 && cur) {
+    add($project, projectSwitcher(list, cur));
+  } else if (m) {
+    add($project, h("span", { class: "project-name" }, m.project?.name || "Untitled project"));
   } else {
     add($project, h("span", { class: "project-name" }, state.loadError ? "No project loaded" : "Loading…"));
   }
+  if (m?.project?.git_head) add($project, h("code", { class: "git-head", title: "Spec version (git HEAD)" }, m.project.git_head));
   clear($actions);
   add($actions, statusPill());
   if (m && hasAppTargets(m)) {
@@ -151,12 +153,14 @@ function renderTopbar() {
       title: !configured ? "No app is hooked up (studio.toml), so there is nothing to check against." : "Run the full check of the spec against the app",
       onclick: runCheck,
     }, icon("play"), state.checkRunning ? "Checking…" : "Run check"),
-    h("button", {
-      type: "button", id: "rebuild-btn", class: "btn",
-      disabled: !state.connected || !pending.length,
-      title: pending.length ? `${plural(pending.length, "accepted change")} not built` : "Nothing to rebuild: no accepted change is waiting",
-      onclick: startRebuild,
-    }, icon("play"), "Rebuild"),
+    canRebuild()
+      ? h("button", {
+        type: "button", id: "rebuild-btn", class: "btn",
+        disabled: !state.connected || !pending.length,
+        title: pending.length ? `${plural(pending.length, "accepted change")} not built` : "Nothing to rebuild: no accepted change is waiting",
+        onclick: startRebuild,
+      }, icon("play"), "Rebuild")
+      : h("span", { id: "rebuild-why", class: "top-note muted small", title: REBUILD_WHY }, "Rebuild is off for this project"),
     h("button", {
       type: "button",
       class: "btn btn-icon",
@@ -179,6 +183,27 @@ function renderTopbar() {
         if (document.body.classList.contains("chat-open")) document.getElementById("chat-input")?.focus();
       },
     }, icon("chat"), "Chat"),
+  );
+}
+
+/** The project's one-word health: no spec / no app / ready. */
+function projectHealth(p) {
+  if (!p.spec) return { tone: "bad", word: "no spec yet" };
+  if (!p.app_configured) return { tone: "quiet", word: "no app hooked up" };
+  if (p.last_check?.verdict === "fail") return { tone: "warn", word: "last check failed" };
+  return { tone: "ok", word: "spec and app ready" };
+}
+
+function projectSwitcher(list, cur) {
+  const health = projectHealth(cur);
+  const id = "project-select";
+  return h("span", { class: "project-switch" },
+    h("span", { class: ["proj-dot", `proj-${health.tone}`], role: "img", "aria-label": health.word, title: `${cur.name}: ${health.word}` }),
+    h("label", { class: "sr-only", for: id }, "Project"),
+    h("select", {
+      id, class: "project-select", title: cur.root || cur.name,
+      onchange: (e) => switchProject(e.target.value),
+    }, list.map((p) => h("option", { value: p.name, selected: p.name === cur.name }, `${p.name}${projectHealth(p).tone === "bad" ? " (no spec)" : ""}`))),
   );
 }
 
@@ -277,12 +302,19 @@ function makeCtx() {
 function renderMain(keepScroll) {
   const top = $main.scrollTop;
   clear($main);
+  if (state.projects && state.projects.length === 0) {
+    add($main, h("div", { class: "empty-state", role: "status" },
+      h("h1", {}, "No Lattice projects found"),
+      h("p", {}, "Run ", h("code", {}, "lattice studio DIR"), ", or add a ", h("code", {}, "studio.toml"), " to a project directory."),
+      h("button", { type: "button", class: "btn", onclick: boot }, "Look again")));
+    return;
+  }
   if (!state.model) {
     add($main, state.loadError
       ? h("div", { class: "empty-state", role: "alert" },
           h("h1", {}, "Not connected"),
           h("p", {}, state.loadError),
-          h("p", { class: "muted" }, "Start the server with “lattice studio PROJECT_DIR”, or the mock with “uv run python -m lattice.studio.mock_server”."),
+          h("p", { class: "muted" }, "Start the server with “lattice studio PROJECT_DIR”, or the mock with “uv run python -m lattice.studio.mock_server”. A project needs a studio.toml, or a spec.py and spec.trace.json."),
           h("button", { type: "button", class: "btn btn-primary", onclick: load }, "Try again"))
       : h("div", { class: "skeleton", "aria-busy": "true" }, h("div", {}), h("div", {}), h("div", {})));
     return;
@@ -328,9 +360,25 @@ $main.addEventListener("keydown", (e) => {
   }
 });
 
+// The URL hash: "#rules" (a view; the older form) or "#project=<name>&view=<id>".
+function parseHash() {
+  const raw = location.hash.slice(1);
+  if (!raw.includes("=")) return { view: raw || null, project: null };
+  const q = new URLSearchParams(raw);
+  return { view: q.get("view"), project: q.get("project") };
+}
+
+function hashFor(view, project) {
+  return project ? `#project=${encodeURIComponent(project)}&view=${encodeURIComponent(view)}` : `#${view}`;
+}
+
 window.addEventListener("hashchange", () => {
-  const id = location.hash.slice(1);
-  if (VIEWS.some((v) => v.id === id) && id !== state.view) go(id);
+  const { view, project } = parseHash();
+  if (project && project !== state.project && state.projects?.some((p) => p.name === project)) {
+    switchProject(project, { view });
+    return;
+  }
+  if (view && VIEWS.some((v) => v.id === view) && view !== state.view) go(view);
 });
 
 // ------------------------------------------------------------------ data
@@ -338,25 +386,38 @@ window.addEventListener("hashchange", () => {
 async function load() {
   try {
     const model = await api.model();
-    update({ model, connected: true, loadError: null, overlay: state.overlay && hasAppTargets(model) });
+    update({ model, connected: true, loadError: null, switching: false, overlay: state.overlay && hasAppTargets(model) });
   } catch (e) {
-    update({ connected: false, loadError: e.message });
+    if (e.status === 404 && state.project) {
+      // The project was removed (or never existed): back to the server's default.
+      toast(`The project "${state.project}" is no longer on this server. Showing the default project.`);
+      await loadProjects();
+      await switchProject(null, { silent: true });
+      return;
+    }
+    update({ connected: false, switching: false, loadError: e.message });
   }
 }
 
-async function pollModel() {
-  for (;;) {
+const changesKey = (model) => JSON.stringify((model?.changes || []).map((c) => [c.id, c.status, c.superseded_by, c.build?.state, c.build?.branch]));
+function modelMoved(old, m) {
+  return !old
+    || old.project?.git_head !== m.project?.git_head
+    || old.app?.last_check?.at !== m.app?.last_check?.at
+    || changesKey(old) !== changesKey(m);
+}
+
+// Each poller belongs to one project: it ends when the project switches (api.epoch moves)
+// and boot starts new ones.
+async function pollModel(ep) {
+  while (ep === api.epoch()) {
     await sleep(MODEL_POLL_MS);
+    if (ep !== api.epoch()) return;
     if (state.checkRunning) continue;
     try {
       const m = await api.model();
-      const old = state.model;
-      const changesKey = (model) => JSON.stringify((model?.changes || []).map((c) => [c.id, c.status, c.superseded_by, c.build?.state]));
-      const changed = !old
-        || old.project?.git_head !== m.project?.git_head
-        || old.app?.last_check?.at !== m.app?.last_check?.at
-        || changesKey(old) !== changesKey(m);
-      if (changed) update({ model: m, connected: true });
+      if (ep !== api.epoch()) return;
+      if (modelMoved(state.model, m)) update({ model: m, connected: true });
       else if (!state.connected) update({ connected: true, loadError: null });
     } catch (e) {
       if (state.connected) update({ connected: false });
@@ -378,13 +439,16 @@ async function startRebuild() {
 
 // While a rebuild runs, refresh the model every two seconds so the tray and the Rebuild
 // button follow it; the slow poll above covers everything else.
-async function pollBuilding() {
-  for (;;) {
+async function pollBuilding(ep) {
+  while (ep === api.epoch()) {
     await sleep(2000);
+    if (ep !== api.epoch()) return;
     const live = (state.model?.changes || []).some((c) => c.build?.state === "rebuilding");
     if (!live || state.checkRunning) continue;
     try {
-      update({ model: await api.model(), connected: true });
+      const m = await api.model();
+      if (ep !== api.epoch()) return;
+      if (modelMoved(state.model, m)) update({ model: m, connected: true });
     } catch (e) {
       /* the slow poll reports a lost connection */
     }
@@ -392,12 +456,14 @@ async function pollBuilding() {
 }
 
 async function runCheck() {
+  const ep = api.epoch();
   const before = state.model?.app?.last_check?.at || null;
   update({ checkRunning: true });
   try {
     await api.check();
     for (let i = 0; i < CHECK_POLL_LIMIT; i++) {
       await sleep(CHECK_POLL_MS);
+      if (ep !== api.epoch()) return; // the project switched: its check is not ours to follow
       const m = await api.model();
       if ((m.app?.last_check?.at || null) !== before) {
         update({ model: m, checkRunning: false, connected: true });
@@ -406,20 +472,101 @@ async function runCheck() {
     }
     update({ checkRunning: false });
   } catch (e) {
-    update({ checkRunning: false, connected: false, loadError: e.message });
+    if (ep === api.epoch()) update({ checkRunning: false, connected: false, loadError: e.message });
   }
+}
+
+// ------------------------------------------------------------------ projects
+
+const PROJECT_KEY = "studio-project";
+
+function rememberedProject() {
+  try {
+    return sessionStorage.getItem(PROJECT_KEY) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function remember(name) {
+  try {
+    if (name) sessionStorage.setItem(PROJECT_KEY, name);
+    else sessionStorage.removeItem(PROJECT_KEY);
+  } catch (e) {
+    /* storage blocked: the URL hash still carries the choice */
+  }
+}
+
+async function loadProjects() {
+  try {
+    update({ projects: await api.projects() });
+  } catch (e) {
+    update({ projects: null }); // an older server: no switcher, and no capability gating
+  }
+}
+
+/** Switch to project `name` (null: the server's default, bare /api). Clears everything
+ *  that belongs to the previous project, then loads the new one's model. */
+async function switchProject(name, opts = {}) {
+  if (name && state.projects && !state.projects.some((p) => p.name === name)) {
+    toast(`There is no project "${name}" on this server. Showing the default project.`);
+    name = null;
+  }
+  const view = opts.view && VIEWS.some((v) => v.id === opts.view) ? opts.view : state.view;
+  clearMarks();
+  api.setProject(name);
+  remember(name);
+  resetChat();
+  update({
+    project: name, model: null, connected: true, loadError: null, switching: true,
+    selection: [], marked: [], focusTarget: null, change: null, rebuild: null, codeTarget: null,
+    edits: [], rulesScope: null, checkRunning: false, overlay: false, view,
+  });
+  history.replaceState(null, "", hashFor(state.view, name));
+  startPollers();
+  await load();
+}
+
+function startPollers() {
+  const ep = api.epoch();
+  pollModel(ep);
+  pollBuilding(ep);
+}
+
+async function boot() {
+  await loadProjects();
+  const { project: fromHash } = parseHash();
+  const want = fromHash || rememberedProject();
+  const known = (state.projects || []).some((p) => p.name === want);
+  if (want && state.projects && !known) {
+    toast(`There is no project "${want}" on this server. Showing the default project.`);
+    remember(null);
+    history.replaceState(null, "", hashFor(state.view, null));
+  }
+  if (state.projects?.length === 0) {
+    renderTopbar();
+    renderMain(false);
+    return;
+  }
+  if (want && known) {
+    api.setProject(want);
+    update({ project: want });
+    history.replaceState(null, "", hashFor(state.view, want));
+  }
+  startPollers();
+  await load();
 }
 
 // ------------------------------------------------------------------ boot
 
 subscribe((st, patch) => {
   const keys = Object.keys(patch);
-  if (keys.some((k) => ["model", "connected", "checkRunning", "overlay", "loadError"].includes(k))) renderTopbar();
+  if (keys.some((k) => ["model", "connected", "checkRunning", "overlay", "loadError", "projects", "project"].includes(k))) renderTopbar();
   if (keys.some((k) => ["model", "view"].includes(k))) renderNav();
   if ("view" in patch) document.body.classList.remove("nav-open");
   if ("view" in patch && st.view !== "rules" && !("rulesScope" in patch)) st.rulesScope = null;
-  if ("view" in patch && location.hash.slice(1) !== st.view) history.replaceState(null, "", `#${st.view}`);
-  if (keys.some((k) => ["model", "view", "change", "overlay", "marked", "loadError", "lens"].includes(k))) {
+  if ("view" in patch && location.hash !== hashFor(st.view, st.project)) history.replaceState(null, "", hashFor(st.view, st.project));
+  if (keys.some((k) => ["model", "view", "change", "overlay", "marked", "loadError", "lens", "projects"].includes(k))) {
     const keep = !("view" in patch) && !st.focusTarget;
     renderMain(keep);
   } else if ("selection" in patch || "codeTarget" in patch) {
@@ -429,7 +576,7 @@ subscribe((st, patch) => {
 });
 
 setTheme(storedTheme());
-const initial = location.hash.slice(1);
+const initial = parseHash().view;
 if (VIEWS.some((v) => v.id === initial)) state.view = initial;
 renderTopbar();
 renderNav();
@@ -445,9 +592,7 @@ document.getElementById("nav-toggle")?.addEventListener("click", () => {
   document.body.classList.toggle("nav-open");
   renderNav();
 });
-load();
-pollModel();
-pollBuilding();
+boot();
 
 // For debugging and for other scripts: window.studio.highlight(["cell:eve|..."]).
 window.studio = { highlight, state, hooks };

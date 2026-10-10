@@ -406,6 +406,26 @@ def test_every_js_import_resolves() -> None:
             assert (js.parent / spec).resolve().is_file(), f"{js.name} imports {spec}"
 
 
+def test_ui_is_project_aware() -> None:
+    """v1.6/v1.7: every API call goes through api.js's project base, the switcher reads
+    /api/projects, and the rebuild controls are gated on the rebuild capability."""
+    js = WEB_DIR / "js"
+    api_src = (js / "api.js").read_text()
+    assert '"/api/projects"' in api_src and "/p/${encodeURIComponent(name)}" in api_src
+    # nothing but api.js talks to the server (a bare fetch would bypass the project base)
+    for f in js.rglob("*.js"):
+        if f.name != "api.js":
+            assert "fetch(" not in f.read_text(), f.name
+    app_src = (js / "app.js").read_text()
+    assert "api.projects()" in app_src and "switchProject" in app_src
+    assert "project=" in app_src or "project=${" in app_src or '"project"' in app_src
+    assert "canRebuild" in app_src and "canRebuild" in (js / "tray.js").read_text()
+    assert "No Lattice projects found" in app_src
+    card = (js / "views" / "rebuilds.js").read_text()
+    for needle in ("merge_hint", "spec_edited", "output_tail", "name_status", "git merge"):
+        assert needle in card, needle
+
+
 def test_static_paths_cannot_escape_web_dir(base: str) -> None:
     for path in ("/../mock_server.py", "/%2e%2e/mock_server.py", "/js/../../API.md"):
         status, _, _ = get(base + path)

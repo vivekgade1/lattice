@@ -4,7 +4,7 @@
 
 import { h, icon, add, plural } from "../util.js";
 import { api } from "../api.js";
-import { state, update, subscribe, hooks } from "../store.js";
+import { state, update, subscribe, hooks, canRebuild, REBUILD_WHY } from "../store.js";
 import { highlight } from "../targets.js";
 import { toast } from "../tray.js";
 
@@ -18,8 +18,47 @@ const STATUS = {
 };
 const LAYERS = ["A", "B", "C", "D", "X"];
 
-// Round rows already shown, so only a newly finished round resolves with motion.
+// Round rows already shown, so only a newly finished round resolves with motion. Keys carry
+// the project base: rebuild ids (b1, b2, ...) repeat across projects.
 const seen = new Set();
+const refreshed = new Set(); // rebuild ends already followed by a model reload
+const sk = (...parts) => `${api.base()}|${parts.join(":")}`;
+
+/** A small button that copies `text` to the clipboard and says so. */
+export function copyButton(text, label = "Copy") {
+  const btn = h("button", { type: "button", class: "btn btn-quiet small rb-copy", "aria-label": `${label}: ${text}` }, label);
+  btn.addEventListener("click", async () => {
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch (e) {
+      try {
+        const ta = h("textarea", { class: "sr-only", "aria-hidden": "true" });
+        ta.value = text;
+        document.body.append(ta);
+        ta.select();
+        ok = document.execCommand("copy");
+        ta.remove();
+      } catch (e2) {
+        ok = false;
+      }
+    }
+    btn.textContent = ok ? "Copied" : "Select and copy";
+    setTimeout(() => { btn.textContent = label; }, 1800);
+  });
+  return btn;
+}
+
+function money(n) {
+  const v = Number(n) || 0;
+  return v > 0 ? `$${v < 0.01 ? v.toFixed(4) : v.toFixed(2)}` : "";
+}
+
+function seconds(ms) {
+  const s = (Number(ms) || 0) / 1000;
+  return s >= 60 ? `${Math.floor(s / 60)}m ${String(Math.round(s % 60)).padStart(2, "0")}s` : `${s < 10 ? s.toFixed(1) : Math.round(s)}s`;
+}
 
 // ------------------------------------------------------------------ polling
 
@@ -29,8 +68,9 @@ export function pollRebuild(id, onUpdate, anchor = null) {
   let stopped = false;
   let timer = null;
   let first = true;
+  const ep = api.epoch(); // a project switch ends this poll
   const tick = async () => {
-    if (stopped || (!first && anchor && !anchor.isConnected)) return;
+    if (stopped || ep !== api.epoch() || (!first && anchor && !anchor.isConnected)) return;
     first = false;
     try {
       const r = await api.rebuildGet(id);
@@ -84,7 +124,7 @@ function findingChip(f, opts) {
 }
 
 function roundRow(r, rebuild, opts, animate) {
-  const key = `${rebuild.id}:${r.n}:${r.check ? "done" : "live"}`;
+  const key = sk(rebuild.id, r.n, r.check ? "done" : "live");
   const isNew = animate && !seen.has(key);
   seen.add(key);
   const c = r.check;
@@ -101,10 +141,40 @@ function roundRow(r, rebuild, opts, animate) {
       (r.files_changed || []).length ? h("p", { class: "rb-files" }, r.files_changed.join(", ")) : null,
     ),
     verdict,
+    (r.spec_edited || []).length
+      ? h("p", { class: "rb-spec-edited", role: "note" }, icon("triangle"),
+          h("span", {}, "The agent edited spec files; they were restored: ", h("span", { class: "s2-mono" }, r.spec_edited.join(", "))))
+      : null,
+    r.error
+      ? h("p", { class: "rb-round-error", role: "note" }, icon("triangle"), h("span", {}, errorWords(r.error)))
+      : null,
+    (r.gates || []).length ? gateList(r.gates) : null,
     c && (c.findings || []).length
       ? h("div", { class: "rb-findings" }, c.findings.map((f) => findingChip(f, opts)))
       : null,
   );
+}
+
+function errorWords(err) {
+  const kind = { usage_limit: "The agent hit its usage limit", timeout: "The agent step timed out", cli: "The agent did not finish" }[err.kind] || "The round had an error";
+  return `${kind}${err.message ? `: ${err.message}` : "."}`;
+}
+
+/** One line per gate command (exit code, seconds) with its output tail behind a disclosure. */
+function gateList(gates) {
+  return h("ul", { class: "rb-gates", "aria-label": "Gates" }, gates.map((g) => {
+    const ok = g.exit_code === 0;
+    const tail = String(g.output_tail || "").trimEnd();
+    const label = h("span", { class: "rb-gate-line" },
+      icon(ok ? "check" : "diamond"),
+      h("code", { class: "s2-mono" }, g.command),
+      h("span", { class: ok ? "rb-gate-ok" : "rb-gate-bad" }, ok ? "exit 0" : `exit ${g.exit_code}`),
+      h("span", { class: "muted" }, seconds((Number(g.seconds) || 0) * 1000)));
+    return h("li", { class: ["rb-gate", ok ? "is-pass" : "is-fail"] },
+      tail
+        ? h("details", {}, h("summary", {}, label), h("pre", { class: "rb-gate-out" }, tail))
+        : label);
+  }));
 }
 
 /** The Rebuild card as a DOM element. opts: {changes, onStop, onEdit, onAgain, openCode,
@@ -143,7 +213,8 @@ export function rebuildCard(rebuild, opts = {}) {
       h("p", { class: "rb-meta" },
         `${rebuild.model} · `,
         live ? `round ${Math.max(current, 1)} of ${maxRounds}` : `${plural(current, "round")} of up to ${maxRounds}`,
-        ` · ${elapsed(rebuild)}`),
+        ` · ${elapsed(rebuild)}`,
+        money(rebuild.usage?.cost_usd) ? ` · ${money(rebuild.usage.cost_usd)}` : ""),
     ),
     h("div", { class: "row-actions" },
       h("span", { class: ["rb-status", `is-${rebuild.status}`], role: "status" }, icon(st.icon), st.label),
@@ -161,7 +232,7 @@ export function rebuildCard(rebuild, opts = {}) {
     ? h("section", { "aria-label": "Checks the rebuild must turn green" },
         h("h3", { class: "s2-section-title" }, `Checks not built yet: ${done} of ${targets.length} passing`),
         h("ul", { class: "rb-targets" }, targets.map((t) => {
-          const key = `${rebuild.id}:t:${t.id}:${t.done}`;
+          const key = sk(rebuild.id, "t", t.id, t.done);
           const ticked = t.done && live && !seen.has(key);
           seen.add(key);
           return h("li", { class: ["rb-target", t.done ? "is-done" : "is-waiting", ticked && "is-ticked"] },
@@ -170,35 +241,57 @@ export function rebuildCard(rebuild, opts = {}) {
         })))
     : null;
 
+  const can = canRebuild();
+  const branchLine = rebuild.branch
+    ? h("p", { class: "rb-branch" }, "Branch ", h("code", { class: "s2-mono" }, rebuild.branch), copyButton(rebuild.branch, "Copy branch"),
+        rebuild.base ? h("span", { class: "muted small" }, ` from ${String(rebuild.base).slice(0, 7)}`) : null)
+    : null;
+  const u = rebuild.usage || {};
+  const usageBits = [money(u.cost_usd), u.duration_ms ? seconds(u.duration_ms) : "",
+    u.input_tokens || u.output_tokens ? `${(u.input_tokens || 0) + (u.output_tokens || 0)} tokens` : ""].filter(Boolean);
+  const usage = usageBits.length ? h("p", { class: "muted small" }, `Agent cost: ${usageBits.join(" · ")}`) : null;
+  const errorLine = rebuild.error ? h("p", { class: "rb-round-error", role: "note" }, icon("triangle"), h("span", {}, errorWords(rebuild.error))) : null;
+
   let result = null;
   if (rebuild.status === "passed" && rebuild.commit) {
+    const nameStatus = rebuild.commit.name_status || [];
     const files = rebuild.commit.files_changed || [];
+    const shown = nameStatus.length ? nameStatus : files;
+    const hintCmd = (String(rebuild.merge_hint || "").match(/`(git merge [^`]+)`/) || [])[1];
+    const cmd = hintCmd || (rebuild.branch ? `git merge ${rebuild.branch}` : null);
     result = h("section", { class: "rb-result is-passed", "aria-label": "Result" },
-      h("p", {}, h("code", { class: "s2-mono" }, String(rebuild.commit.sha).slice(0, 7)), ` ${rebuild.commit.message || ""}`),
-      files.length ? h("ul", {}, files.map((f) => h("li", {}, f))) : null,
-      rebuild.branch ? h("p", { class: "muted small" }, "On branch ", h("code", { class: "s2-mono" }, rebuild.branch), ": nothing is merged into your branch.") : null,
-      rebuild.merge_hint ? h("p", { class: "muted small" }, rebuild.merge_hint) : null,
-      h("p", { class: "muted" }, "Amber marks cleared: the changed elements are plain again."),
-      h("button", {
-        type: "button", class: "btn btn-primary",
-        onclick: () => openCode(`code:${files[0] || ""}`),
-      }, icon("text-lines"), "Open in Code lens"),
+      h("h3", {}, rebuild.branch ? `Built on ${rebuild.branch}` : "Built"),
+      h("p", {}, h("code", { class: "s2-mono" }, String(rebuild.commit.sha).slice(0, 7)), ` ${String(rebuild.commit.message || "").split("\n")[0]}`),
+      shown.length ? h("ul", { class: "rb-files-list", "aria-label": "Files changed" }, shown.map((f) => h("li", {}, f))) : null,
+      usage,
+      h("div", { class: "rb-merge" },
+        h("p", {}, "The running app is unchanged until you merge this branch yourself."),
+        rebuild.merge_hint ? h("p", { class: "muted small" }, rebuild.merge_hint) : null,
+        cmd ? h("div", { class: "rb-cmd" }, h("code", { class: "s2-mono" }, cmd), copyButton(cmd, "Copy command")) : null,
+      ),
+      files.length
+        ? h("button", { type: "button", class: "btn", onclick: () => openCode(`code:${files[0]}`) }, icon("text-lines"), "Open in Code lens")
+        : null,
     );
   } else if (rebuild.status === "gave_up") {
     const last = rounds[rounds.length - 1];
     const left = last?.check?.findings || [];
     result = h("section", { class: "rb-result is-gave_up", "aria-label": "Result" },
       h("h3", {}, `Gave up after ${plural(current, "round")}`),
-      h("p", {}, left.length ? `${plural(left.length, "finding")} left:` : "The checker still fails."),
-      left.length ? h("div", { class: "rb-findings" }, left.map((f) => findingChip(f, opts))) : null,
+      h("p", {}, left.length ? `${plural(left.length, "finding")} left:` : "The checks still fail."),
+      left.length ? h("div", { class: "rb-findings rb-findings-flat" }, left.map((f) => findingChip(f, opts))) : null,
+      errorLine,
+      usage,
+      rebuild.branch ? h("p", { class: "muted small" }, "The agent's uncommitted edits stay on ", h("code", { class: "s2-mono" }, rebuild.branch), "; nothing is merged.") : null,
       h("div", { class: "row-actions" },
         h("button", {
           type: "button", class: "btn",
           onclick: () => (opts.onEdit ? opts.onEdit(ids[0]) : hooks.change?.(`change:${ids[0]}`, [])),
         }, "Edit the change"),
-        h("button", {
+        can ? h("button", {
           type: "button", class: "btn btn-primary",
-          onclick: async () => {
+          onclick: async (e) => {
+            e.currentTarget.disabled = true;
             try {
               if (opts.onAgain) await opts.onAgain(ids);
               else {
@@ -207,19 +300,22 @@ export function rebuildCard(rebuild, opts = {}) {
               }
               opts.onChanged?.();
             } catch (err) {
+              e.target.disabled = false;
               toast(`Could not rebuild: ${err.message}`);
             }
           },
-        }, "Rebuild again"),
+        }, icon("play"), "Rebuild again") : h("span", { class: "muted small" }, REBUILD_WHY),
       ),
     );
   } else if (rebuild.status === "stopped") {
     result = h("section", { class: "rb-result", "aria-label": "Result" },
       h("h3", {}, "Stopped"),
-      h("p", { class: "muted" }, "The completed rounds stay on record. The change is back to accepted, not built."));
+      h("p", { class: "muted" }, "The completed rounds stay on record and the worktree was removed. The change is back to accepted, not built."),
+      usage);
   }
 
-  return h("article", { class: "rb-card", "aria-label": `Rebuild ${rebuild.id}` }, head, timeline, targetList, result);
+  const notice = live ? h("p", { class: "muted small rb-notice" }, "The agent works in an isolated worktree. Your checkout is not touched, and Studio decides when it is done by running the gates itself.") : null;
+  return h("article", { class: "rb-card", "aria-label": `Rebuild ${rebuild.id}` }, head, branchLine, timeline, targetList, notice, result);
 }
 
 // ------------------------------------------------------------------ the view
@@ -241,13 +337,14 @@ export function render(model, root, ctx) {
   const shownId = state.rebuild || history[0]?.id || null;
   add(root, h("header", { class: "view-head" },
     h("h1", {}, "Rebuilds"),
-    h("p", { class: "lede" }, "Accepting a change reinforces the contract; a rebuild hands it to the coding agent, which edits the code and runs the checker every round until it passes or reaches its limit."),
+    h("p", { class: "lede" }, "Accepting a change reinforces the contract; a rebuild hands it to the coding agent, which edits the code in its own worktree and branch while Studio runs the gates every round until they pass or the limit is reached. Studio never merges: you do."),
   ));
 
   const layout = h("div", { class: "rb-layout" });
   add(root, layout);
   const slot = h("div", { "aria-live": "polite" });
   let stop = null;
+
 
   async function startFor(ids) {
     try {
@@ -263,7 +360,9 @@ export function render(model, root, ctx) {
     add(layout, h("section", { class: "rb-waiting", "aria-label": "Accepted, not built" },
       h("p", {}, h("strong", {}, `${plural(waiting.length, "accepted change")} not built yet: `),
         waiting.map((c) => `${c.id} ${c.request}`).join("; ")),
-      h("button", { type: "button", class: "btn btn-primary", onclick: () => startFor(waiting.map((c) => c.id)) }, icon("play"), "Rebuild"),
+      canRebuild()
+        ? h("button", { type: "button", class: "btn btn-primary", onclick: () => startFor(waiting.map((c) => c.id)) }, icon("play"), "Rebuild")
+        : h("p", { class: "muted small", id: "rebuild-why-view" }, REBUILD_WHY),
     ));
   }
   add(layout, slot);
@@ -305,6 +404,11 @@ export function render(model, root, ctx) {
         return;
       }
       slot.replaceChildren(rebuildCard(r, opts));
+      if (!LIVE.has(r.status) && !refreshed.has(sk(r.id, r.status))) {
+        // the rebuild just ended: the tray and the top bar follow the new build state
+        refreshed.add(sk(r.id, r.status));
+        api.model().then((m) => update({ model: m, connected: true })).catch(() => {});
+      }
     }, root);
     drawHistory(infoCache);
   }
@@ -318,7 +422,7 @@ export function render(model, root, ctx) {
   if (shownId) show(shownId);
   else slot.replaceChildren(h("div", { class: "s2-empty" },
     h("p", {}, "No rebuild is running."),
-    h("p", { class: "muted" }, "Accept a change in the conversation, then press Rebuild in the top bar.")));
+    h("p", { class: "muted" }, canRebuild() ? "Accept a change in the conversation, then press Rebuild in the top bar." : REBUILD_WHY)));
 
   // keep the pending list and history fresh as the model changes; stop polling on exit
   const unsub = subscribe((st, patch) => {

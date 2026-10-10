@@ -7,16 +7,27 @@
 const MOCK_ONLY = /^\/api\/(code\/|flow|graph|rebuild|explain)/;
 const GENERIC_404 = /^(no such route|not found)$/i;
 
+// The project base path (v1.6): "" for the default project (bare /api), "/p/<name>" once the
+// owner picked one. `epoch` counts switches: a response that arrives for an earlier epoch
+// is dropped (its promise never settles), so a slow answer of project A can never paint
+// into project B. Loops that sleep between calls compare `api.epoch()` to stop themselves.
+let base = "";
+let epoch = 0;
+
 async function call(method, path, body) {
+  const myEpoch = epoch;
+  const url = base + path;
+  const never = () => new Promise(() => {});
   let res;
   try {
-    res = await fetch(path, {
+    res = await fetch(url, {
       method,
       headers: body ? { "Content-Type": "application/json" } : {},
       body: body ? JSON.stringify(body) : undefined,
       cache: "no-store",
     });
   } catch (e) {
+    if (myEpoch !== epoch) return never();
     throw new Error("The Studio server is not reachable. Is it running?");
   }
   let data = null;
@@ -25,6 +36,7 @@ async function call(method, path, body) {
   } catch (e) {
     data = null;
   }
+  if (myEpoch !== epoch) return never();
   if (!res.ok) {
     const detail = data && (data.detail || data.error);
     if (res.status === 404 && MOCK_ONLY.test(path) && (!detail || GENERIC_404.test(String(detail).trim()))) {
@@ -40,6 +52,26 @@ async function call(method, path, body) {
 }
 
 export const api = {
+  // v1.6: many projects behind one server. `name` null/"" is the default project (bare /api).
+  setProject: (name) => {
+    base = name ? `/p/${encodeURIComponent(name)}` : "";
+    epoch += 1;
+  },
+  base: () => base,
+  epoch: () => epoch,
+  // Not project-scoped: the list of projects this server holds.
+  projects: async () => {
+    let res;
+    try {
+      res = await fetch("/api/projects", { cache: "no-store" });
+    } catch (e) {
+      throw new Error("The Studio server is not reachable. Is it running?");
+    }
+    if (!res.ok) throw new Error(`The server answered ${res.status}.`);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error("The server did not return a project list.");
+    return data;
+  },
   model: () => call("GET", "/api/model"),
   ask: (question, selected, verify) => call("POST", "/api/ask", { question, selected, verify }),
   // `parent` (v1.1 #3) answers a change set's conflict or question as a follow-up: the

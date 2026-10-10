@@ -7,7 +7,7 @@
 
 import { h, clear, add, icon, plural } from "./util.js";
 import { api } from "./api.js";
-import { state, update, subscribe } from "./store.js";
+import { state, update, subscribe, canRebuild, REBUILD_WHY } from "./store.js";
 
 /** The one human status of a change: drafting, checking, ready, accepted · not built,
  *  rebuilding, built, gave up, failed, rejected, cancelled. */
@@ -19,10 +19,25 @@ export function changeStatus(c) {
   return c.superseded_by && c.status === "rejected" ? `superseded by ${c.superseded_by}` : c.status;
 }
 
+/** The words the tray shows for a change (sentence case; changeStatus keeps the short
+ *  keys other modules compare against). */
+export function trayStatus(c) {
+  const s = changeStatus(c);
+  if (c.status === "accepted") {
+    const b = c.build?.state || "not_built";
+    if (b === "not_built") return "Accepted, not built";
+    if (b === "rebuilding") return "Rebuilding";
+    if (b === "built") return c.build?.branch ? `Built on ${c.build.branch}` : "Built";
+    if (b === "gave_up") return "Gave up";
+  }
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 function tone(c) {
   const s = changeStatus(c);
   if (s === "built") return "ok";
-  if (s === "failed" || s === "gave up") return "bad";
+  if (s === "gave up") return "warn";
+  if (s === "failed") return "bad";
   if (["drafting", "checking", "rebuilding", "ready", "accepted · not built"].includes(s)) return "live";
   return "quiet";
 }
@@ -76,8 +91,40 @@ export function toast(message) {
   toastTimer = setTimeout(() => el.classList.remove("is-shown"), 6000);
 }
 
+// Gave-up rebuilds, fetched once to show their open findings in the tray.
+const gaveUp = new Map(); // `${base}${rebuild id}` -> record | "pending"
+
 export function mountTray(root, opts = {}) {
   const onChanged = opts.onChanged || (() => {});
+
+  function gaveUpFindings(c) {
+    const rid = c.build?.rebuild_id;
+    if (!rid) return null;
+    const key = `${api.base()}|${rid}`;
+    const got = gaveUp.get(key);
+    if (got && got !== "pending") {
+      const last = (got.rounds || [])[(got.rounds || []).length - 1];
+      return last?.check?.findings || [];
+    }
+    if (!got) {
+      gaveUp.set(key, "pending");
+      api.rebuildGet(rid).then((r) => {
+        gaveUp.set(key, r);
+        render();
+      }).catch(() => gaveUp.delete(key));
+    }
+    return null;
+  }
+
+  async function rebuildNow(c) {
+    try {
+      const { id } = await api.rebuild([c.id]);
+      update({ view: "rebuilds", rebuild: id });
+      onChanged();
+    } catch (e) {
+      toast(`Rebuild could not start: ${e.message}`);
+    }
+  }
 
   async function act(fn, label) {
     try {
@@ -109,6 +156,25 @@ export function mountTray(root, opts = {}) {
     if ((c.status === "drafting" || c.status === "checking")) {
       actions.push(h("button", { type: "button", class: "btn btn-quiet", onclick: () => act(() => api.cancelChange(c.id), "Cancel") }, "Cancel"));
     }
+    const b = c.status === "accepted" ? c.build?.state || "not_built" : null;
+    let note = null;
+    const can = canRebuild();
+    if (b === "not_built") {
+      if (can) {
+        actions.push(h("button", { type: "button", class: "btn btn-primary", onclick: () => rebuildNow(c) }, icon("play"), "Rebuild"));
+      } else {
+        note = h("span", { class: "tray-note muted small" }, REBUILD_WHY);
+      }
+    }
+    if (b === "gave_up") {
+      const left = gaveUpFindings(c);
+      note = h("span", { class: "tray-note small" },
+        left === null ? "Checks still failing." : left.length ? `${plural(left.length, "finding")} left: ${left.slice(0, 2).map((f) => f.title || f.id).join("; ")}${left.length > 2 ? "; …" : ""}` : "Checks still failing.");
+      actions.push(
+        h("button", { type: "button", class: "btn btn-quiet", onclick: () => window.dispatchEvent(new CustomEvent("studio:open-change", { detail: { id: c.id } })) }, "Edit the change"),
+      );
+      if (can) actions.push(h("button", { type: "button", class: "btn btn-primary", onclick: () => rebuildNow(c) }, icon("play"), "Rebuild again"));
+    }
     if (c.build?.rebuild_id && ["rebuilding", "gave_up", "built"].includes(c.build.state)) {
       actions.push(h("button", {
         type: "button", class: "btn btn-quiet",
@@ -118,9 +184,10 @@ export function mountTray(root, opts = {}) {
     return h("li", { class: ["tray-row", `tray-${tone(c)}`], "data-change": c.id },
       h("span", { class: "tray-id" }, c.id),
       h("span", { class: "tray-request" }, c.request || "(no request text)"),
-      h("span", { class: "tray-status" }, s),
+      h("span", { class: "tray-status" }, b === "rebuilding" ? h("span", { class: "spinner", "aria-hidden": "true" }) : null, b === "rebuilding" ? " " : null, trayStatus(c)),
       sum ? h("span", { class: "tray-checks muted" }, sum) : null,
       h("span", { class: "tray-actions" }, actions),
+      note,
     );
   }
 
