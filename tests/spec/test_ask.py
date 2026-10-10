@@ -13,11 +13,14 @@ from lattice.llm.client import ScriptedGenerator
 from lattice.spec import ask as ask_mod
 from lattice.spec.ask import (
     VerifyConfig,
+    approx_tokens,
     ask,
     ask_many,
     build_digest,
     check_citation,
+    retrieve,
 )
+from lattice.spec.model import Scenario, Spec, Step
 from lattice.spec.rules import Trace, extract_rules
 from tests.spec import racy
 
@@ -114,8 +117,11 @@ def test_yes_with_a_valid_cell_citation():
     assert len(gen.calls) == 1
     system, messages = gen.calls[0]
     assert "general knowledge" in system
-    assert "[cell:ann|POST /configs/{}/runs] 201" in messages[0]["content"]
+    # a small access matrix is part of the core, in the (cached) system prompt
+    assert "[cell:ann|POST /configs/{}/runs] 201" in system
+    assert "Question: Can ann queue a run?" in messages[0]["content"]
     assert a.usage["rounds"] == 1 and a.usage["model"] == "m"
+    assert a.usage["digest_elements"] == len(build_digest(SPEC).elements)  # all fit
 
 
 def test_made_up_target_is_rejected_and_the_answer_downgraded_after_one_repair():
@@ -194,6 +200,186 @@ def test_selected_targets_are_shown_and_ask_many_reuses_one_digest(monkeypatch):
     assert "selected these elements" in gen.calls[0][1][0]["content"]
 
 
+# ---- retrieval and cost -------------------------------------------------------------------
+
+TOPICS = (
+    "invoice shipment coupon ticket badge folder alarm survey voucher pallet "
+    "lesson garden recipe kiosk parcel trophy beacon ledger meadow quiver"
+).split()
+VERBS = "approve archive refund close reopen share lock export rename audit".split()
+
+
+def _big_spec() -> Spec:
+    """A synthetic spec the size of a real one: 200 scenarios (20 topics x 10 verbs),
+    each with given rows and seven steps, on the runs profile."""
+    scenarios = []
+    for topic in TOPICS:
+        for j, verb in enumerate(VERBS):
+            given = {
+                "configs": [
+                    {"id": k, "name": f"{topic} config {k}", "notes": f"seeded for {verb} " * 3}
+                    for k in range(1, 7)
+                ]
+            }
+            other = 403 + j % 2
+            scenarios.append(
+                Scenario(
+                    f"{topic}_{verb}_by_owner_and_stranger",
+                    given=given,
+                    steps=(
+                        Step(
+                            "POST",
+                            f"/{topic}s",
+                            "ann",
+                            json={"title": f"{topic} one", "note": "x" * 30},
+                            expect_status=201,
+                            expect_db={"configs": {"count": 6}},
+                        ),  # fmt: skip
+                        Step("GET", f"/{topic}s/1", "ann", expect_body={"id": 1, "state": "new"}),
+                        Step(
+                            "POST",
+                            f"/{topic}s/1/{verb}",
+                            "ann",
+                            expect_status=200,
+                            expect_body={"id": 1, "state": f"{verb}d"},
+                        ),  # fmt: skip
+                        Step("POST", f"/{topic}s/1/{verb}", "ben", expect_status=other),
+                        Step("GET", f"/{topic}s/1", "ben", expect_status=404),
+                        Step("GET", f"/{topic}s", "ben", expect_body=[]),
+                        Step(
+                            "POST",
+                            f"/{topic}s/1/{verb}",
+                            "ann",
+                            expect_status=409,
+                            expect_db={"configs": {"where": {"id": 1}, "count": 1}},
+                        ),  # fmt: skip
+                    ),
+                )
+            )
+    scenarios[57] = Scenario(
+        "password_reset_needs_the_emailed_token",
+        steps=(
+            Step("POST", "/password/reset", None, json={"email": "ann"}, expect_status=202),
+            Step(
+                "POST", "/password/reset/confirm", None, json={"token": "bad"}, expect_status=400
+            ),  # fmt: skip
+        ),
+    )
+    return Spec(profile=racy.RUNS_PROFILE, users=racy.USERS, scenarios=tuple(scenarios))
+
+
+BIG = _big_spec()
+
+
+def _big_trace() -> Trace:
+    """65 owner rules over BIG (a real spec's count), each linked to its scenario."""
+    lines, links = [], {}
+    for t in TOPICS:
+        for v in (*VERBS[:3], VERBS[6]):
+            if len(lines) == 65:
+                break
+            lines.append(f"- Only the owner of a {t} may {v} it; anyone else is refused.")
+            links[f"R{len(lines)}"] = [f"scenario:{t}_{v}_by_owner_and_stranger"]
+    return Trace("REQ.md", extract_rules("# Big\n\n" + "\n".join(lines) + "\n"), links=links)
+
+
+def test_retrieval_includes_the_relevant_scenario_and_excludes_irrelevant_ones():
+    d = build_digest(BIG)
+    r = retrieve(d, "Can ben refund a voucher?")
+    assert r.scenarios[0] == "scenario:voucher_refund_by_owner_and_stranger"
+    assert "[scenario:voucher_refund_by_owner_and_stranger]" in r.context
+    assert "  4. POST /vouchers/1/refund as ben -> 403" in r.context
+    assert "scenario:alarm_lock_by_owner_and_stranger" not in r.sent
+    assert "[scenario:alarm_lock_by_owner_and_stranger]" not in r.context
+    # the index still names every scenario, in the system prompt
+    assert "alarm_lock_by_owner_and_stranger" in r.system
+    assert "[scenario:" not in r.system
+    # word forms meet: "cancelled" / "cancellation", "resetting" / "reset"
+    r = retrieve(d, "What happens when resetting a forgotten password?")
+    assert r.scenarios[0] == "scenario:password_reset_needs_the_emailed_token"
+    # a selected cell pulls in the scenarios that exercise it
+    r = retrieve(d, "what is this?", ["cell:ben|POST /gardens/{}/share"])
+    assert "scenario:garden_share_by_owner_and_stranger" in r.scenarios
+
+
+def test_retrieval_follows_rule_links():
+    md = "# Big\n\n- Only the owner may refund.\n"
+    trace = Trace("REQ.md", extract_rules(md),
+                  links={"R1": ["scenario:quiver_refund_by_owner_and_stranger"]})  # fmt: skip
+    d = build_digest(BIG, trace)
+    r = retrieve(d, "Who may refund things, and is that only the owner?")
+    assert "scenario:quiver_refund_by_owner_and_stranger" in r.scenarios[:3]
+    assert "(checks rule:R1)" in r.context
+    assert "[rule:R1] (checked; checked by scenario:quiver_refund" in r.system
+
+
+def test_prompt_stays_under_the_token_budget_on_a_large_spec():
+    d = build_digest(BIG)
+    assert len(d.of_kind("scenario")) == 200
+    full = approx_tokens(ask_mod.SYSTEM + d.text)
+    r = retrieve(d, "Can ben lock a parcel that ann created?")
+    prompt = approx_tokens(r.system) + approx_tokens(r.context)
+    print(f"full digest prompt ~{full} tokens; retrieved prompt ~{prompt} tokens")
+    assert full > 40_000
+    assert prompt < 25_000
+    assert approx_tokens(r.context) <= ask_mod.SCENARIO_BUDGET + ask_mod.CELLS_BUDGET + 200
+    # the matrix is too large for the core: the question's cells come with it
+    assert "[cell:ben|POST /parcels/{}/lock] 403" in r.context
+    assert "[cell:" not in r.system
+
+
+def test_system_prompt_is_identical_across_questions():
+    gen = ScriptedGenerator([_reply("not_specified", "?", [])] * 2)
+    answers = ask_many(BIG, ["Can ben lock a parcel?", "Who can export a ledger?"], generator=gen)
+    (s1, m1), (s2, m2) = gen.calls
+    assert s1 == s2
+    assert m1[0]["content"] != m2[0]["content"]
+    assert "parcel_lock" in m1[0]["content"] and "ledger_export" in m2[0]["content"]
+    for a in answers:
+        assert 0 < a.usage["digest_elements"] < len(build_digest(BIG).elements)
+
+
+def test_need_more_round_sends_the_asked_elements_once():
+    target = "scenario:meadow_audit_by_owner_and_stranger"
+    need = json.dumps({"need": [target, "scenario:nope"], "search": ["trophy rename"]})
+    final = _reply("no", "No: 403.", [_cite(target, "POST /meadows/1/audit as ben -> 404", 4)])
+    gen = ScriptedGenerator([need, final])
+    a = ask(BIG, "Can ben approve a kiosk?", generator=gen)
+    assert len(gen.calls) == 2
+    first = gen.calls[0][1][0]["content"]
+    assert f"[{target}]" not in first
+    more = gen.calls[1][1][-1]["content"]
+    assert f"[{target}]" in more and "  4. POST /meadows/1/audit as ben -> 404" in more
+    assert "[scenario:trophy_rename_by_owner_and_stranger]" in more  # the keyword search
+    assert "No such elements in the spec: scenario:nope" in more
+    assert gen.calls[1][0] == gen.calls[0][0]  # same system prompt
+    assert a.kind == "no" and a.citations[0]["target"] == target
+    assert a.usage["rounds"] == 2
+
+
+def test_need_more_only_once():
+    need = json.dumps({"need": ["scenario:meadow_audit_by_owner_and_stranger"]})
+    gen = ScriptedGenerator([need, need, need])
+    a = ask(BIG, "Can ben approve a kiosk?", generator=gen)
+    assert len(gen.calls) == 3  # the answer round, one need round, one repair round
+    assert a.kind == "not_specified"
+
+
+def test_a_citation_of_an_element_not_sent_is_checked_against_the_full_digest():
+    target = "scenario:beacon_close_by_owner_and_stranger"
+    d = build_digest(BIG)
+    assert target not in retrieve(d, "Can ben reopen a survey?").sent
+    good = _reply("no", "No.", [_cite(target, "POST /beacons/1/close as ben -> 404", 4)])
+    gen = ScriptedGenerator([good])
+    a = ask(BIG, "Can ben reopen a survey?", generator=gen)
+    assert a.kind == "no" and a.citations[0]["target"] == target
+    bad = _reply("no", "No.", [_cite(target, "POST /beacons/1/close as ben -> 200", 4)])
+    gen = ScriptedGenerator([bad, bad])
+    a = ask(BIG, "Can ben reopen a survey?", generator=gen)
+    assert a.kind == "not_specified"
+    assert "status (the step expects 404)" in a.rejected_citations[0]["reason"]
+
+
 # ---- verify ---------------------------------------------------------------------------------
 
 
@@ -214,6 +400,10 @@ def _scenario(*steps: dict) -> str:
 
 def _step(method, path, user, status, **kw) -> dict:
     return {"method": method, "path": path, "user": user, "expect_status": status, **kw}
+
+
+def _claim(scenario: str, claim: int) -> str:
+    return json.dumps({**json.loads(scenario), "claim_step": claim})
 
 
 def test_verify_agrees():
@@ -245,6 +435,72 @@ def test_verify_disagrees():
     a = ask(SPEC, "q", generator=gen, verify=_cfg())
     assert a.verified["status"] == "disagrees"
     assert "step 2" in a.verified["detail"] and "expected 201, got 409" in a.verified["detail"]
+    assert a.verified["claim_step"] == 2  # the default: the last step
+
+
+BAD_SETUP = _scenario(
+    _step("POST", "/configs/9/runs", "ann", 201),  # no config 9: the app answers 404
+    _step("POST", "/configs/9/runs", "ben", 409),
+)
+GOOD_SETUP = _scenario(
+    _step("POST", "/configs/1/runs", "ann", 201), _step("POST", "/configs/1/runs", "ben", 409)
+)
+
+
+def test_verify_setup_failure_is_retried_once_then_agrees():
+    gen = ScriptedGenerator([YES, _claim(BAD_SETUP, 2), _claim(GOOD_SETUP, 2)])
+    a = ask(SPEC, "Can ben queue a second live run?", generator=gen, verify=_cfg())
+    assert a.verified["status"] == "agrees", a.verified
+    assert a.verified["claim_step"] == 2
+    retry = gen.calls[2][1][-1]["content"]
+    assert "step 1 is setup" in retry and "expected 201, got 404" in retry
+    assert a.usage["rounds"] == 3
+
+
+def test_verify_setup_failure_twice_is_inconclusive():
+    gen = ScriptedGenerator([YES, _claim(BAD_SETUP, 2), _claim(BAD_SETUP, 2)])
+    a = ask(SPEC, "Can ben queue a second live run?", generator=gen, verify=_cfg())
+    v = a.verified
+    assert v["status"] == "inconclusive", v
+    assert "setup step 1 failed before the claim step 2" in v["detail"]
+    assert "expected 201, got 404" in v["detail"]
+    assert v["claim_step"] == 2
+
+
+def test_verify_claim_step_failure_disagrees_without_retry():
+    claim_fails = _scenario(
+        _step("POST", "/configs/1/runs", "ann", 201),
+        _step("POST", "/configs/1/runs", "ben", 201),  # the claim: the app says 409
+        _step("GET", "/runs/1", "ann", 200),
+    )
+    gen = ScriptedGenerator([YES, _claim(claim_fails, 2)])
+    a = ask(SPEC, "q", generator=gen, verify=_cfg())
+    assert a.verified["status"] == "disagrees" and a.verified["claim_step"] == 2
+    assert "step 2" in a.verified["detail"] and len(gen.calls) == 2
+
+
+def test_verify_retry_may_not_change_the_claim():
+    cheat = _scenario(
+        _step("POST", "/configs/1/runs", "ann", 201), _step("POST", "/configs/1/runs", "ben", 201)
+    )
+    gen = ScriptedGenerator([YES, _claim(BAD_SETUP, 2), _claim(cheat, 2)])
+    a = ask(SPEC, "q", generator=gen, verify=_cfg())
+    assert a.verified["status"] == "inconclusive"
+    assert "changed the claim step" in a.verified["detail"]
+
+
+def test_verify_prompt_shows_setup_from_the_spec_and_caches_its_system():
+    gen = ScriptedGenerator([YES, _claim(GOOD_SETUP, 2)])
+    ask(SPEC, "Can ben queue a second live run?", generator=gen, verify=_cfg())
+    system, messages = gen.calls[1]
+    assert "CLAIM STEP" in system and "[machine:Run.status]" in system
+    prompt = messages[0]["content"]
+    assert "Setup that works in this spec" in prompt
+    assert "[scenario:one_live_run_per_config]" in prompt
+    assert (
+        '{"method": "POST", "path": "/configs/1/runs", "user": "ann", "expect_status": 201}'
+        in prompt
+    )
 
 
 def test_verify_invalid_scenario_is_an_error():
@@ -349,3 +605,27 @@ def test_live_haiku_one_cited_answer_one_not_specified():
     first, second = answers
     assert first.kind in ("no", "yes", "value") and first.citations, first
     assert second.kind == "not_specified", second
+
+
+@pytest.mark.skipif(
+    os.environ.get("LATTICE_LIVE_LLM") != "1", reason="live LLM smoke test: set LATTICE_LIVE_LLM=1"
+)
+def test_live_haiku_large_spec_reuses_the_cached_system_prompt():
+    """Two questions on the 200-scenario spec with 65 rules: each sends well under 25k
+    input tokens, and the second reads the core (system prompt) from the CLI's cache.
+    (The toy spec's core is below Haiku's minimum cacheable prompt, so it never caches.)"""
+    from lattice.llm.cli_client import ClaudeCliClient
+
+    gen = ClaudeCliClient(model="haiku", effort="", full_text=True, timeout=600)
+    first, second = ask_many(
+        BIG,
+        ["Can ben lock a parcel that ann created?", "What does ben get exporting a ledger?"],
+        trace=_big_trace(),
+        generator=gen,
+        model="haiku",
+    )
+    for a in (first, second):
+        print(json.dumps({"kind": a.kind, "answer": a.answer, "usage": a.usage}))
+        assert a.usage["input_tokens"] < 25_000 * a.usage["rounds"]
+    assert first.kind == "no" and first.citations, first
+    assert second.usage["cache_read_tokens"] > 0, second.usage

@@ -12,20 +12,41 @@ trace, the owner's rules (``rule:<Rn>``) with their status. It must answer from 
 digest alone, as strict JSON, citing targets (and step numbers), and say
 ``not_specified`` when the digest does not settle the question.
 
+**Retrieval and caching** (`retrieve`). The model is not sent the whole digest. The
+*core* -- seed users, tables, the access matrix (when it fits `CELLS_IN_CORE`), the
+invariants, machines, services, unchecked notes, the rules with their links, and an
+index naming every scenario -- goes in the system prompt after the instructions; it is
+the same for every question on a spec, so the CLI's prompt cache serves it after the
+first question. The user message carries the question's part: the scenarios related to
+the selected targets, then the scenarios the question's words score best (IDF-weighted
+overlap of crude stems, plus half the score of a rule that links them), within
+`SCENARIO_BUDGET` tokens, each noting the rules that check it; and, when the matrix is
+too large for the core, the cells of the callers and endpoints the question names. The
+model is told it sees a subset and may ask, once, for more (``{"need": [targets],
+"search": [keywords]}``); those elements are sent and it must then answer.
+`usage.digest_elements` counts the elements sent in full.
+
 **Citation check** (deterministic, `check_citation`): a cited target must exist in the
 digest; a step number must exist in that scenario; the quote must match the element --
 a cell's statuses equal the quote's, a step's method, path and status appear in the
 quote (and its caller, when the quote names one), a machine's quoted ``a -> b`` moves
 are edges, anything else a normalised substring of the element's text. A failing
-citation moves to `Answer.rejected_citations` with its reason. After one repair round
+citation moves to `Answer.rejected_citations` with its reason. Citations are checked
+against the FULL digest, whether or not the element was sent. After one repair round
 (the model is told which citations failed), a yes / no / value answer left with no
 valid citation is downgraded to ``not_specified``, whatever the model insists.
 
 **Verify** (`VerifyConfig`): the model writes a minimal scenario (Lattice steps as JSON)
-that would demonstrate the answer on the seeded app; it runs alone through
-`lattice.spec.check.check(..., layers="D")` on a spec that reuses the base spec's
-profile, users and services. ``agrees``: it passed; ``disagrees``: a layer D finding
-(expected vs actual); ``error``: the scenario was invalid or could not run. For a
+that would demonstrate the answer on the seeded app, and marks its *claim step*
+(``claim_step``, 1-based, default the last step): the step that tests the answer; the
+others are setup. Its prompt shows real setup from the spec (`setup_patterns`: the
+opening steps, as JSON with request bodies, of scenarios calling the same endpoints).
+It runs alone through `lattice.spec.check.check(..., layers="D")` on a spec that reuses
+the base spec's profile, users and services. ``agrees``: it passed; ``disagrees``: the
+claim step failed (expected vs actual); a setup step failed: the model gets the failure
+and fixes the setup once (keeping the claim step), and if a setup step fails again,
+``inconclusive`` (which step, expected vs actual); ``error``: the scenario was invalid
+or could not run. ``verified.claim_step`` is set whenever a scenario was written. For a
 ``not_specified`` answer, the scenario is an *observation*: it is rerun with each
 failing step's expectation replaced by what the app answered, until it passes, and
 ``verified.status`` is ``observed`` with the app's answers.
@@ -42,6 +63,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import sys
 import time
@@ -68,33 +90,84 @@ NOT_GROUNDED = "Not specified: the answer could not be grounded in the spec."
 class Element:
     """One citable element of the digest: its target, kind and readable content.
     `steps` (a scenario): its readable step lines; `raw` the model object behind it
-    (the scenario's steps, a cell's status set, a machine's edges)."""
+    (the scenario's steps, a cell's status set, a machine's edges, a rule's links);
+    `line`: the element's head line when it is not ``[target] content`` (a rule)."""
 
     target: str
     kind: str
     content: str
     steps: tuple[str, ...] = ()
     raw: Any = field(default=None, compare=False, hash=False)
+    line: str = field(default="", compare=False, hash=False)
+
+    def lines(self, note: str = "", *, plain: bool = False) -> list[str]:
+        """The element as digest lines (`note`: one extra line before its steps;
+        `plain`: the head is ``[target] content`` even for a rule)."""
+        out = [
+            f"[{self.target}] {self.content}"
+            if plain
+            else (self.line or f"[{self.target}] {self.content}")
+        ]
+        if note:
+            out.append(f"  ({note})")
+        return out + [f"  {i}. {s}" for i, s in enumerate(self.steps, 1)]
+
+
+# the digest's sections, in order: (kind, header)
+SECTIONS = (
+    ("profile", "## Tables"),
+    (
+        "cell",
+        "## Access matrix (caller | METHOD /template -> the status(es) the scenarios "
+        "expect; a cell not listed is not exercised by any scenario)",
+    ),
+    ("scenario", "## Scenarios (each runs on a fresh copy of the seeded database)"),
+    ("invariant", "## Invariants (hold after every request)"),
+    ("machine", "## State machines (the only allowed moves)"),
+    ("service", "## Background services"),
+    ("unchecked", "## Not checked (stated in the spec, not checked by it)"),
+    ("rule", "## The owner's requirements (rules), with their status"),
+)
+_HEADERS = dict(SECTIONS)
 
 
 @dataclass(frozen=True)
 class Digest:
-    """The spec digest: `text` (what the model reads) and `elements` (target ->
-    Element, what citations are checked against)."""
+    """The spec digest: `text` (all of it, as one document) and `elements` (target ->
+    Element, what citations are checked against). `users`: the seed-user lines;
+    `with_rules`: a trace was given (the rule section exists)."""
 
     text: str
     elements: Mapping[str, Element]
+    users: tuple[str, ...] = ()
+    with_rules: bool = False
 
     def lines_for(self, targets: Iterable[str]) -> list[str]:
         """The digest lines of the given targets (unknown ones skipped)."""
         out = []
         for t in targets:
             e = self.elements.get(t)
-            if e is None:
-                continue
-            out.append(f"[{t}] {e.content}")
-            out += [f"  {i}. {s}" for i, s in enumerate(e.steps, 1)]
+            if e is not None:
+                out += e.lines(plain=True)
         return out
+
+    def of_kind(self, kind: str) -> list[Element]:
+        return [e for e in self.elements.values() if e.kind == kind]
+
+    def section(self, kind: str, elements: Iterable[Element] | None = None) -> list[str]:
+        """One section's lines: its header, its elements (default: all of that kind)
+        and a blank line; ``(none)`` when it has none."""
+        els = list(self.of_kind(kind) if elements is None else elements)
+        body = [ln for e in els for ln in e.lines()] or ["(none)"]
+        return [_HEADERS[kind], "", *body, ""]
+
+    def users_section(self) -> list[str]:
+        return [
+            "## Seed users (handle: login) -- scenarios sign in by handle",
+            "",
+            *(self.users or ("(none)",)),
+            "",
+        ]
 
 
 def _cell_statuses(text: str) -> frozenset[int]:
@@ -106,26 +179,15 @@ def build_digest(spec: Spec, trace: Trace | None = None) -> Digest:
     trace always give the same text, in the spec's own order."""
     data = _build(spec, trace or Trace(source="", rules=[]), None, None, "spec")
     elements: dict[str, Element] = {}
-    lines = [
-        "SPEC DIGEST -- every citable element, under its exact target in [brackets].",
-        "",
-    ]
 
-    def add(e: Element, line: str | None = None) -> None:
+    def add(e: Element) -> None:
         elements[e.target] = e
-        lines.append(line if line is not None else f"[{e.target}] {e.content}")
-        lines.extend(f"  {i}. {s}" for i, s in enumerate(e.steps, 1))
 
-    lines += ["## Seed users (handle: login) -- scenarios sign in by handle", ""]
-    if spec.users:
-        for handle, cred in spec.users.items():
-            login = cred[0] if isinstance(cred, tuple | list) and cred else cred
-            lines.append(f"- {handle}: {login}")
-    else:
-        lines.append("(none)")
-    lines.append("")
+    users = []
+    for handle, cred in (spec.users or {}).items():
+        login = cred[0] if isinstance(cred, tuple | list) and cred else cred
+        users.append(f"- {handle}: {login}")
 
-    lines += ["## Tables", ""]
     tables, sql_names = tables_of(spec.profile)
     for name, schema in tables.items():
         sql = sql_names.get(name, name)
@@ -134,29 +196,14 @@ def build_digest(spec: Spec, trace: Trace | None = None) -> Digest:
         )
         head = f"{name} ({sql})" if sql != name else name
         add(Element(f"profile:{name}", "profile", f"{head}: {cols}"))
-    if not tables:
-        lines.append("(none)")
-    lines.append("")
 
-    lines += [
-        "## Access matrix (caller | METHOD /template -> the status(es) the scenarios "
-        "expect; a cell not listed is not exercised by any scenario)",
-        "",
-    ]
-    n_cells = 0
     for group in data.access_groups:
         for row in group.rows:
             for col in group.columns:
                 status = group.cells.get((row, col), "·")
-                if status == "·":
-                    continue
-                n_cells += 1
-                add(Element(f"cell:{row}|{col}", "cell", status, raw=_cell_statuses(status)))
-    if not n_cells:
-        lines.append("(none)")
-    lines.append("")
+                if status != "·":
+                    add(Element(f"cell:{row}|{col}", "cell", status, raw=_cell_statuses(status)))
 
-    lines += ["## Scenarios (each runs on a fresh copy of the seeded database)", ""]
     by_name = {sc.name: sc for sc in spec.scenarios}
     for sv in data.section6.scenarios:
         sc = by_name.get(sv.name)
@@ -170,57 +217,45 @@ def build_digest(spec: Spec, trace: Trace | None = None) -> Digest:
                 sv.name + given,
                 steps=tuple(sv.steps),
                 raw=sc.steps if sc is not None else (),
-            ),
+            )
         )
-    if not data.section6.scenarios:
-        lines.append("(none)")
-    lines.append("")
 
-    lines += ["## Invariants (hold after every request)", ""]
     for target, _name, sentence in data.section6.invariants:
         add(Element(target, "invariant", sentence))
-    if not data.section6.invariants:
-        lines.append("(none)")
-    lines.append("")
 
-    lines += ["## State machines (the only allowed moves)", ""]
     machines = {f"machine:{m.table}.{m.column}": m for m in spec.machines}
     for target, _label, moves in data.section6.machines:
         m = machines.get(target)
         add(Element(target, "machine", moves, raw=frozenset(m.edges) if m else frozenset()))
-    if not data.section6.machines:
-        lines.append("(none)")
-    lines.append("")
 
-    lines += ["## Background services", ""]
     for target, name, doc in data.section6.services:
         add(Element(target, "service", f"{name}: {doc}" if doc else name))
-    if not data.section6.services:
-        lines.append("(none)")
-    lines.append("")
 
-    lines += ["## Not checked (stated in the spec, not checked by it)", ""]
     for i, u in enumerate(data.unchecked_notes, 1):
         concerns = f" (concerns: {', '.join(u.concerns)})" if u.concerns else ""
         add(Element(f"unchecked:{i}", "unchecked", u.text + concerns))
-    if not data.unchecked_notes:
-        lines.append("(none)")
-    lines.append("")
 
     if trace is not None:
-        lines += ["## The owner's requirements (rules), with their status", ""]
         for row in data.rule_rows:
             how = f"; checked by {', '.join(row.links)}" if row.links else ""
             note = f"; unchecked because: {row.note}" if row.note else ""
             add(
-                Element(f"rule:{row.id}", "rule", row.text),
-                f"[rule:{row.id}] ({row.status}{how}{note}) {row.text}",
+                Element(
+                    f"rule:{row.id}",
+                    "rule",
+                    row.text,
+                    raw=tuple(row.links),
+                    line=f"[rule:{row.id}] ({row.status}{how}{note}) {row.text}",
+                )
             )
-        if not data.rule_rows:
-            lines.append("(none)")
-        lines.append("")
 
-    return Digest("\n".join(lines).rstrip() + "\n", elements)
+    d = Digest("", elements, tuple(users), trace is not None)
+    lines = ["SPEC DIGEST -- every citable element, under its exact target in [brackets].", ""]
+    lines += d.users_section()
+    for kind, _ in SECTIONS:
+        if kind != "rule" or d.with_rules:
+            lines += d.section(kind)
+    return replace(d, text="\n".join(lines).rstrip() + "\n")
 
 
 # ---- the citation check -------------------------------------------------------------------
@@ -339,19 +374,212 @@ class Answer:
         return "\n".join(out)
 
 
+# ---- retrieval: the core digest and the scenarios relevant to a question -------------------
+
+# Budgets, in estimated tokens (`approx_tokens`: 3 characters a token, a conservative
+# estimate for the digest's dense text). The core (system prompt) is the same for every
+# question on a spec, so the CLI's prompt cache serves it after the first question.
+SCENARIO_BUDGET = 5000  # the relevant scenarios sent with one question
+CELLS_IN_CORE = 4000  # the whole access matrix goes in the core when it fits this
+CELLS_BUDGET = 1500  # else: the cells relevant to the question, in the user message
+NEED_BUDGET = 3000  # the elements the model asked for in its one "need more" round
+NEED_MAX = 10  # at most this many targets per "need more" round
+
+
+def approx_tokens(text: str) -> int:
+    """A conservative token estimate (3 characters a token)."""
+    return (len(text) + 2) // 3
+
+
+_STOP = frozenset(
+    """a an and any are as at be been being but by can could did do does doing done for
+    from get gets getting got has have having he her his how i if in into is it its me my
+    no not of on or our she should so some such than that the their them then there these
+    they this those to too up us was we were what when where which while who whom whose
+    why will with would you your yes ok happen happens happened allowed able may might must
+    s t""".split()
+)
+
+
+def _stem(word: str) -> str:
+    """A crude stem, so cancel / cancelled / cancellation and run / runs / running meet."""
+    w = word
+    if w.endswith("ies") and len(w) > 4:
+        w = w[:-3] + "y"
+    elif w.endswith(("ses", "xes", "zes", "ches", "shes")):
+        w = w[:-2]
+    elif w.endswith("s") and not w.endswith(("ss", "us", "is")) and len(w) > 3:
+        w = w[:-1]
+    for suf in ("ation", "ing", "ed"):
+        if w.endswith(suf) and len(w) - len(suf) >= 3:
+            w = w[: -len(suf)]
+            break
+    if len(w) >= 4 and w[-1] == w[-2] and w[-1] not in "aeiou":
+        w = w[:-1]
+    if len(w) > 4 and w.endswith("e"):
+        w = w[:-1]
+    if len(w) > 3 and w.endswith("y"):
+        w = w[:-1] + "i"
+    return w
+
+
+def terms(text: str) -> set[str]:
+    """The search terms of `text`: stemmed words (snake_case and paths split), stop words
+    dropped, and HTTP statuses kept as ``#409``; other numbers (ids) dropped."""
+    out = set()
+    for tok in re.findall(r"[A-Za-z]+|\d+", str(text)):
+        if tok.isdigit():
+            if len(tok) == 3 and tok[0] in "12345":
+                out.add("#" + tok)
+            continue
+        low = tok.lower()
+        if len(low) < 2 or low in _STOP:
+            continue
+        out.add(_stem(low))
+    return out
+
+
+def _endpoint(step: Any) -> tuple[str, str] | None:
+    if isinstance(step, Step):
+        return step.method, _normalize_path(step.path)
+    return None
+
+
+def _cell_endpoint(target: str) -> tuple[str, str, str] | None:
+    """(caller, METHOD, template) of a ``cell:`` target."""
+    if not target.startswith("cell:") or "|" not in target:
+        return None
+    row, _, col = target[5:].partition("|")
+    method, _, template = col.partition(" ")
+    return row, method, template
+
+
+@dataclass
+class Retrieval:
+    """What one question sends: `system` (instructions + the core, the same for every
+    question on the spec), `context` (the question's elements, for the user message),
+    `scenarios` (the scenario targets in `context`, best first) and `sent` (every target
+    sent in full, the core's included)."""
+
+    system: str
+    context: str
+    scenarios: list[str]
+    sent: set[str]
+
+
+class Index:
+    """Lexical scores over a digest's scenarios and rules (IDF-weighted term overlap)."""
+
+    def __init__(self, digest: Digest) -> None:
+        self.digest = digest
+        self.docs: dict[str, set[str]] = {}
+        for e in digest.elements.values():
+            if e.kind in ("scenario", "rule", "cell"):
+                self.docs[e.target] = terms(" ".join([e.target, e.content, *e.steps]))
+        n = max(len(self.docs), 1)
+        df: dict[str, int] = {}
+        for ts in self.docs.values():
+            for t in ts:
+                df[t] = df.get(t, 0) + 1
+        self.idf = {t: math.log(1 + n / c) for t, c in df.items()}
+        # rule -> the targets it links; target -> the rules that link it
+        self.links = {e.target: tuple(e.raw or ()) for e in digest.of_kind("rule")}
+        self.linked_by: dict[str, list[str]] = {}
+        for rule, targets in self.links.items():
+            for t in targets:
+                self.linked_by.setdefault(t, []).append(rule)
+        self.order = {t: i for i, t in enumerate(digest.elements)}
+
+    def score(self, target: str, query: set[str]) -> float:
+        return sum(self.idf.get(t, 0.0) for t in query & self.docs.get(target, set()))
+
+    def rank_scenarios(
+        self, query: set[str], boost: Mapping[str, float] | None = None
+    ) -> list[tuple[float, str]]:
+        """The scenarios with a positive score, best first: their own score, plus half
+        the best score of a rule that links them (a relevant requirement pulls in the
+        scenarios that check it), plus `boost`."""
+        rule_scores = {r: self.score(r, query) for r in self.links}
+        out = []
+        for e in self.digest.of_kind("scenario"):
+            s = self.score(e.target, query)
+            s += 0.5 * max((rule_scores.get(r, 0.0) for r in self.linked_by.get(e.target, ())),
+                           default=0.0)  # fmt: skip
+            s += (boost or {}).get(e.target, 0.0)
+            if s > 0:
+                out.append((s, e.target))
+        out.sort(key=lambda p: (-p[0], self.order[p[1]]))
+        return out
+
+    def scenario_lines(self, target: str) -> list[str]:
+        """A scenario's digest lines, noting the rules that link it."""
+        e = self.digest.elements[target]
+        rules = self.linked_by.get(target, ())
+        return e.lines(f"checks {', '.join(rules)}" if rules else "")
+
+    def related_scenarios(self, targets: Iterable[str]) -> list[str]:
+        """The scenarios the given targets point at: themselves (a scenario), the targets
+        a rule links, and the scenarios that exercise a cell (its caller and endpoint)."""
+        out: list[str] = []
+        cells = []
+        for t in targets:
+            el = self.digest.elements.get(t)
+            if el is None:
+                continue
+            if el.kind == "scenario":
+                out.append(t)
+            elif el.kind == "rule":
+                out += [x for x in self.links.get(t, ()) if x.startswith("scenario:")]
+            elif el.kind == "cell":
+                cells.append(_cell_endpoint(t))
+        for e in self.digest.of_kind("scenario"):
+            for row, method, template in filter(None, cells):
+                if any(
+                    isinstance(s, Step)
+                    and (s.user or "no token") == row
+                    and _endpoint(s) == (method, template)
+                    for s in e.raw or ()
+                ):
+                    out.append(e.target)
+                    break
+        return list(dict.fromkeys(out))
+
+
+def _fill(candidates: Iterable[str], cost: Callable[[str], int], budget: int) -> list[str]:
+    """The candidates, in order, that fit `budget` (a candidate that does not fit is
+    skipped and smaller later ones may still fit)."""
+    out, used = [], 0
+    for t in candidates:
+        c = cost(t)
+        if used + c <= budget:
+            out.append(t)
+            used += c
+    return out
+
+
 SYSTEM = """\
 You answer business questions about one application, using ONLY its spec digest.
 
-The digest lists every element of the spec under an exact target in [brackets]:
+The digest lists elements of the spec under an exact target in [brackets]:
 access-matrix cells (cell:<caller>|<METHOD /template> -> expected status), scenarios
 with numbered steps ("METHOD /path as <caller> -> <status>"), invariants, state machines,
 background services, tables (profile:<Table>), notes the spec does not check
 (unchecked:<n>) and, when present, the owner's rules (rule:<Rn>).
 
+What you see: the CORE of the digest is below (users, tables, cells, invariants,
+machines, services, unchecked notes, rules, and an index naming every scenario). The
+user message adds the scenarios most relevant to the question, chosen by its words:
+a SUBSET of all scenarios. A scenario not shown still exists if the index names it.
+
 Rules:
 - Answer only from the digest. Never answer from general knowledge of how apps usually
   work, and never guess. If the digest does not settle the question, answer with kind
   "not_specified" and say what is missing.
+- If the answer may be in elements you were not shown (a scenario named in the index, or
+  one a keyword would find), you may ask for them ONCE, before answering, by replying
+  {"need": ["scenario:<name>", ...], "search": ["keyword", ...]} instead of an answer.
+  Ask only when it matters; then answer from what you have. If the evidence is still
+  not there, answer "not_specified".
 - An access cell is only what the scenarios expect for that caller and endpoint; a
   caller or endpoint with no cell is not specified.
 - Every yes / no / value answer must cite the elements that settle it. A citation is
@@ -367,8 +595,115 @@ Rules:
 """
 
 
-def _prompt(digest: Digest, question: str, selected: Sequence[str]) -> str:
-    parts = [digest.text]
+def _cells_in_core(digest: Digest) -> bool:
+    return approx_tokens("\n".join(digest.section("cell"))) <= CELLS_IN_CORE
+
+
+def core_text(digest: Digest) -> str:
+    """The question-independent part of the digest: everything but the scenarios (named
+    in an index) -- and the access matrix, when it is too large (`CELLS_IN_CORE`)."""
+    lines = [
+        "SPEC DIGEST, CORE -- citable elements, under their exact target in [brackets].",
+        "",
+        *digest.users_section(),
+    ]
+    for kind, _ in SECTIONS:
+        if kind == "scenario" or (kind == "rule" and not digest.with_rules):
+            continue
+        if kind == "cell" and not _cells_in_core(digest):
+            lines += [
+                _HEADERS["cell"],
+                "",
+                "(large: the cells relevant to the question are in the user message)",
+                "",
+            ]
+            continue
+        lines += digest.section(kind)
+    names = [e.target.removeprefix("scenario:") for e in digest.of_kind("scenario")]
+    lines += [
+        f"## Scenario index ({len(names)} scenarios; target = scenario:<name>; the "
+        "relevant ones are shown in full in the user message)",
+        "",
+        "; ".join(names) or "(none)",
+    ]
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _relevant_cells(digest: Digest, index: Index, query: set[str], selected: Sequence[str]):
+    """The cells for the question when the matrix is not in the core: rows the question
+    names (all rows when it names none) x columns that share its words, best first."""
+    cells = digest.of_kind("cell")
+    rows = {(_cell_endpoint(e.target) or ("",))[0] for e in cells}
+    named = {r for r in rows if terms(r) and terms(r) <= query}
+    scored = []
+    for e in cells:
+        row = (_cell_endpoint(e.target) or ("",))[0]
+        if named and row not in named and e.target not in selected:
+            continue
+        s = index.score(e.target, query) + (100.0 if e.target in selected else 0.0)
+        if s > 0:
+            scored.append((s, e.target))
+    scored.sort(key=lambda p: (-p[0], index.order[p[1]]))
+    return _fill(
+        (t for _, t in scored),
+        lambda t: approx_tokens("\n".join(digest.elements[t].lines())),
+        CELLS_BUDGET,
+    )
+
+
+def retrieve(
+    digest: Digest,
+    question: str,
+    selected: Sequence[str] = (),
+    *,
+    index: Index | None = None,
+    budget: int = SCENARIO_BUDGET,
+) -> Retrieval:
+    """The prompt parts for `question` (see `Retrieval`): the core in the system prompt;
+    in the context, the relevant cells (when the matrix is not in the core) and the
+    scenarios related to the selected targets, then the best-scoring ones, within
+    `budget` tokens."""
+    index = index or Index(digest)
+    query = terms(question)
+    for t in selected:
+        el = digest.elements.get(t)
+        if el is not None and el.kind != "scenario":
+            query |= terms(el.content)
+    sent = {
+        e.target
+        for e in digest.elements.values()
+        if e.kind not in ("scenario", "cell") or (e.kind == "cell" and _cells_in_core(digest))
+    }
+    parts: list[str] = []
+    if not _cells_in_core(digest):
+        cells = _relevant_cells(digest, index, query, selected)
+        if cells:
+            parts += [
+                "## Access-matrix cells relevant to the question (a subset)",
+                "",
+                *digest.lines_for(cells),
+                "",
+            ]
+            sent |= set(cells)
+    forced = [t for t in index.related_scenarios(selected) if t not in selected]
+    boost = dict.fromkeys(forced, 1000.0)
+    ranked = [t for _, t in index.rank_scenarios(query, boost) if t not in selected]
+    picked = _fill(
+        dict.fromkeys(forced + ranked),
+        lambda t: approx_tokens("\n".join(index.scenario_lines(t))),
+        budget,
+    )
+    n_all = len(digest.of_kind("scenario"))
+    parts += [
+        f"## Relevant scenarios ({len(picked)} of {n_all}, chosen by the question's words; "
+        "the rest are only named in the index)",
+        "",
+    ]
+    for t in picked:
+        parts += index.scenario_lines(t)
+    if not picked:
+        parts.append("(none matched the question)")
+    parts.append("")
     sel = digest.lines_for(selected)
     if sel:
         parts += [
@@ -376,8 +711,57 @@ def _prompt(digest: Digest, question: str, selected: Sequence[str]) -> str:
             *sel,
             "",
         ]
-    parts.append(f"Question: {question}")
-    return "\n".join(parts)
+        sent |= {t for t in selected if t in digest.elements}
+    sent |= set(picked)
+    return Retrieval(SYSTEM + "\n" + core_text(digest), "\n".join(parts), picked, sent)
+
+
+def _need_request(data: Any) -> tuple[list[str], list[str]] | None:
+    """A "need more" reply's (targets, keywords), or None when it is not one."""
+    if not isinstance(data, Mapping) or "kind" in data:
+        return None
+    if "need" not in data and "search" not in data:
+        return None
+    need, search = data.get("need") or [], data.get("search") or []
+    need = [need] if isinstance(need, str) else need
+    search = [search] if isinstance(search, str) else search
+    return [str(t) for t in need if t][:NEED_MAX], [str(k) for k in search if k]
+
+
+def _more(
+    digest: Digest, index: Index, sent: set[str], need: list[str], search: list[str]
+) -> tuple[list[str], list[str]]:
+    """The extra elements for a "need more" round: the named targets that exist and were
+    not sent, then the scenarios the keywords score best, within `NEED_BUDGET`. Returns
+    (targets, unknown names)."""
+    unknown = [t for t in need if t not in digest.elements]
+    named = [t for t in need if t in digest.elements and t not in sent]
+    query = set().union(*(terms(k) for k in search)) if search else set()
+    found = [t for _, t in index.rank_scenarios(query) if t not in sent] if query else []
+
+    def cost(t: str) -> int:
+        lines = index.scenario_lines(t) if t.startswith("scenario:") else digest.lines_for([t])
+        return approx_tokens("\n".join(lines))
+
+    return _fill(dict.fromkeys(named + found[:NEED_MAX]), cost, NEED_BUDGET), unknown
+
+
+def _more_message(digest: Digest, index: Index, picked: list[str], unknown: list[str]) -> str:
+    lines = []
+    if picked:
+        lines += ["Here are the elements you asked for:", ""]
+        for t in picked:
+            lines += index.scenario_lines(t) if t.startswith("scenario:") else digest.lines_for([t])
+        lines.append("")
+    else:
+        lines.append("Nothing more matched your request beyond what you were already shown.")
+    if unknown:
+        lines.append(f"No such elements in the spec: {', '.join(unknown)}.")
+    lines.append(
+        "No more elements can be sent. Answer now with the JSON answer object; if the "
+        'evidence is not there, answer with kind "not_specified".'
+    )
+    return "\n".join(lines)
 
 
 def _json_object(text: str) -> Any:
@@ -440,19 +824,32 @@ def _split(digest: Digest, cites: list[dict[str, Any]]) -> tuple[list, list]:
 
 
 class _Meter:
-    """Model calls' usage, summed."""
+    """Model calls' usage, summed; `sent`: every digest target sent to the model."""
 
     def __init__(self) -> None:
         self.start = time.perf_counter()
         self.rounds = 0
-        self.input = self.output = 0
+        self.input = self.output = self.cache_read = self.cache_write = 0
         self.cost: float | None = None
+        self.sent: set[str] = set()
+        self.calls: list[dict[str, int]] = []
 
     def call(self, generator: Generator, system: str, messages: list[dict[str, str]]) -> str:
         gen = generator.generate(system, messages)
+        u = gen.usage
         self.rounds += 1
-        self.input += gen.usage.total_input_tokens
-        self.output += gen.usage.output_tokens
+        self.input += u.total_input_tokens
+        self.output += u.output_tokens
+        self.cache_read += u.cache_read_input_tokens
+        self.cache_write += u.cache_creation_input_tokens
+        self.calls.append(
+            {
+                "input_tokens": u.total_input_tokens,
+                "cache_read_tokens": u.cache_read_input_tokens,
+                "prompt_tokens_est": approx_tokens(system)
+                + sum(approx_tokens(m["content"]) for m in messages),
+            }
+        )
         if gen.cost_usd is not None:
             self.cost = (self.cost or 0.0) + gen.cost_usd
         return gen.text
@@ -463,8 +860,12 @@ class _Meter:
             "tokens": self.input + self.output,
             "input_tokens": self.input,
             "output_tokens": self.output,
+            "cache_read_tokens": self.cache_read,
+            "cache_creation_tokens": self.cache_write,
             "rounds": self.rounds,
             "model": model,
+            "digest_elements": len(self.sent),
+            "calls": self.calls,
         }
         if self.cost is not None:
             out["cost_usd"] = round(self.cost, 6)
@@ -498,13 +899,34 @@ def ask(
     model: str = "",
     verify: VerifyConfig | None = None,
     digest: Digest | None = None,
+    index: Index | None = None,
 ) -> Answer:
-    """Answer `question` from `spec` (see the module docstring). `digest`: a prebuilt
-    `build_digest(spec, trace)` (`ask_many` reuses one)."""
+    """Answer `question` from `spec` (see the module docstring). `digest` / `index`: a
+    prebuilt `build_digest(spec, trace)` and its `Index` (`ask_many` reuses them).
+
+    Rounds: the answer; at most one "need more" round (the model asked for elements it
+    was not shown); at most one citation-repair round. Citations are always checked
+    against the FULL digest, whatever was sent."""
     digest = digest or build_digest(spec, trace)
+    index = index or Index(digest)
     meter = _Meter()
-    messages = [{"role": "user", "content": _prompt(digest, question, selected)}]
-    text = meter.call(generator, SYSTEM, messages)
+    r = retrieve(digest, question, selected, index=index)
+    meter.sent |= r.sent
+    system = r.system
+    messages = [{"role": "user", "content": f"{r.context}\nQuestion: {question}"}]
+    text = meter.call(generator, system, messages)
+    try:
+        need = _need_request(_json_object(text))
+    except (ValueError, json.JSONDecodeError):
+        need = None
+    if need is not None:
+        picked, unknown = _more(digest, index, meter.sent, *need)
+        meter.sent |= set(picked)
+        messages += [
+            {"role": "assistant", "content": text},
+            {"role": "user", "content": _more_message(digest, index, picked, unknown)},
+        ]
+        text = meter.call(generator, system, messages)
     parsed, err = _parse_answer(text)
     good, bad = _split(digest, parsed["citations"]) if parsed else ([], [])
     needs = parsed is None or bool(bad) or (parsed["kind"] != "not_specified" and not good)
@@ -516,7 +938,7 @@ def ask(
                 "content": _repair_message(err, bad, parsed and parsed["kind"], len(good)),
             },
         ]
-        text = meter.call(generator, SYSTEM, messages)
+        text = meter.call(generator, system, messages)
         parsed2, err2 = _parse_answer(text)
         if parsed2 is not None or parsed is None:
             parsed, err = parsed2, err2
@@ -546,7 +968,9 @@ def ask(
                 "so the answer is not grounded in the spec."
             )
     if verify is not None:
-        answer.verified = _verify(spec, digest, question, answer, verify, generator, meter)
+        answer.verified = _verify(
+            spec, digest, index, question, answer, r.scenarios, verify, generator, meter
+        )
     answer.usage = meter.as_dict(model)
     return answer
 
@@ -560,10 +984,20 @@ def ask_many(
     model: str = "",
     verify: VerifyConfig | None = None,
 ) -> list[Answer]:
-    """`ask` each question in turn, on one digest."""
+    """`ask` each question in turn, on one digest (and so one cached system prompt)."""
     digest = build_digest(spec, trace)
+    index = Index(digest)
     return [
-        ask(spec, q, trace=trace, generator=generator, model=model, verify=verify, digest=digest)
+        ask(
+            spec,
+            q,
+            trace=trace,
+            generator=generator,
+            model=model,
+            verify=verify,
+            digest=digest,
+            index=index,
+        )
         for q in questions
     ]
 
@@ -605,17 +1039,113 @@ You write ONE minimal Lattice scenario that runs against the real application, o
 copy of its seeded database. Use only the spec digest: its seed users (by handle), its
 endpoints and paths, and the setup steps of its existing scenarios. The seeded database
 holds only what the seed creates; anything else the scenario needs must be created by
-earlier steps -- copy an existing scenario's setup steps. Use concrete paths (/runs/1,
-never /runs/{}).
+earlier steps (or by "given" rows) -- copy the setup of an existing scenario that calls
+the same endpoint: the same request bodies, with every field they send. Use concrete
+paths (/runs/1, never /runs/{}).
+
+Exactly one step tests the answer: the CLAIM STEP. Every step before it is setup and
+must succeed for the run to say anything. Make the claim step the last step when you
+can, and give its number (1-based) in "claim_step".
 
 Reply with ONE JSON object and nothing else:
-{"steps": [{"method": "POST", "path": "/...", "user": "<handle or null>",
+{"given": <null or {"<sql table>": [{row}, ...]}>,
+ "steps": [{"method": "POST", "path": "/...", "user": "<handle or null>",
             "json": <request body or null>, "expect_status": 200,
-            "expect_db": <null or {"<table>": {"where": {...}, "count": n}}>}]}
+            "expect_db": <null or {"<table>": {"where": {...}, "count": n}}>}],
+ "claim_step": <number of the step that tests the answer>}
 """
 
+SETUP_BUDGET = 2500  # tokens of setup patterns in the verify prompt
+SETUP_SCENARIOS = 6  # at most this many patterns, 2 per endpoint
 
-def _verify_prompt(digest: Digest, question: str, answer: Answer, observe: bool) -> str:
+
+def _step_json(step: Step | Await) -> str:
+    if isinstance(step, Await):
+        d: dict[str, Any] = {"service": step.service, "expect_db": step.expect_db}
+        d["within_s"] = step.within_s
+    else:
+        d = {"method": step.method, "path": step.path, "user": step.user}
+        if step.json is not None:
+            d["json"] = step.json
+        if step.params:
+            d["params"] = dict(step.params)
+        d["expect_status"] = step.expect_status
+    return json.dumps(d, default=str)
+
+
+def _answer_endpoints(digest: Digest, question: str, answer: Answer) -> list[tuple[str, str]]:
+    """The endpoints the answer is about: its cited cells' and cited steps' endpoints,
+    and any ``METHOD /path`` the question names."""
+    out: list[tuple[str, str]] = []
+    for c in answer.citations:
+        el = digest.elements.get(c["target"])
+        if el is None:
+            continue
+        if el.kind == "cell":
+            ce = _cell_endpoint(el.target)
+            if ce:
+                out.append(ce[1:])
+        elif el.kind == "scenario":
+            steps = el.raw or ()
+            n = c.get("step")
+            picks = [steps[n - 1]] if isinstance(n, int) and 1 <= n <= len(steps) else steps
+            out += [ep for ep in map(_endpoint, picks) if ep]
+    for m, path in re.findall(r"\b(GET|POST|PUT|PATCH|DELETE)\s+(/[^\s?,;]*)", question):
+        out.append((m, _normalize_path(path.replace("{id}", "1"))))
+    return list(dict.fromkeys(out))
+
+
+def setup_patterns(
+    digest: Digest, endpoints: Sequence[tuple[str, str]], fallback: Sequence[str] = ()
+) -> list[str]:
+    """Real setup from the spec's own scenarios, as the JSON steps the model writes: for
+    each endpoint, up to two scenarios that call it, from their first step to the first
+    call (6 steps at most: the first 3, then that call); `fallback` scenarios (whole,
+    first 4 steps) when no endpoint is known. Within `SETUP_BUDGET`."""
+    blocks: list[tuple[str, list[str]]] = []
+    seen: set[str] = set()
+    for ep in endpoints:
+        hits = 0
+        for e in digest.of_kind("scenario"):
+            if hits == 2 or e.target in seen:
+                continue
+            steps = list(e.raw or ())
+            k = next((i for i, s in enumerate(steps) if _endpoint(s) == ep), None)
+            if k is None:
+                continue
+            shown = list(enumerate(steps[: k + 1], 1))
+            if len(shown) > 6:
+                shown = shown[:3] + [(k + 1, steps[k])]
+            blocks.append((e.target, [f"  {i}. {_step_json(s)}" for i, s in shown]))
+            seen.add(e.target)
+            hits += 1
+    if not blocks:
+        for t in fallback:
+            e = digest.elements.get(t)
+            if e is not None and t not in seen:
+                steps = list(e.raw or ())[:4]
+                blocks.append((t, [f"  {i}. {_step_json(s)}" for i, s in enumerate(steps, 1)]))
+    out: list[str] = []
+    used = 0
+    for target, lines in blocks[:SETUP_SCENARIOS]:
+        sc = digest.elements[target]
+        given = sc.content.partition(" given rows: ")[2]
+        head = f"[{target}]" + (f" given rows: {given}" if given else "")
+        cost = approx_tokens("\n".join([head, *lines]))
+        if used + cost > SETUP_BUDGET:
+            continue
+        out += [head, *lines]
+        used += cost
+    return out
+
+
+def _verify_prompt(
+    digest: Digest,
+    question: str,
+    answer: Answer,
+    observe: bool,
+    patterns: Sequence[str],
+) -> str:
     if observe:
         goal = (
             "The spec does not settle this question. Write the steps that would show "
@@ -632,7 +1162,19 @@ def _verify_prompt(digest: Digest, question: str, answer: Answer, observe: bool)
             f"(cited: {cites}). Write the steps whose expectations demonstrate exactly "
             "this answer: the scenario passes only if the app behaves as answered."
         )
-    return f"{digest.text}\nQuestion: {question}\n\n{goal}"
+    parts = []
+    cited = digest.lines_for(dict.fromkeys(c["target"] for c in answer.citations))
+    if cited:
+        parts += ["The cited elements:", *cited, ""]
+    if patterns:
+        parts += [
+            "Setup that works in this spec (steps of its own scenarios that call the same "
+            "endpoints, as JSON; copy their bodies and the steps that come before):",
+            *patterns,
+            "",
+        ]
+    parts += [f"Question: {question}", "", goal]
+    return "\n".join(parts)
 
 
 def _scenario_from(data: Any, name: str) -> Scenario:
@@ -764,15 +1306,36 @@ def _observe(spec: Spec, scenario: Scenario, cfg: VerifyConfig) -> dict[str, Any
     }
 
 
+def _claim_step(data: Any, n_steps: int) -> int:
+    """The model's ``claim_step`` (1-based); the last step when absent or out of range."""
+    c = data.get("claim_step") if isinstance(data, Mapping) else None
+    if isinstance(c, str) and c.strip().isdigit():
+        c = int(c)
+    if isinstance(c, bool) or not isinstance(c, int) or not 1 <= c <= n_steps:
+        return n_steps
+    return c
+
+
+def _claim_key(step: Step | Await) -> tuple:
+    if isinstance(step, Await):
+        return ("await", step.service)
+    return (step.method, _normalize_path(step.path), step.user, step.expect_status)
+
+
 def _verify(
     spec: Spec,
     digest: Digest,
+    index: Index,
     question: str,
     answer: Answer,
+    relevant: Sequence[str],
     cfg: VerifyConfig,
     generator: Generator,
     meter: _Meter,
 ) -> dict[str, Any]:
+    """Write a scenario for the answer and run it (see the module docstring). A failing
+    step other than the claim step is setup: the model gets one try to fix it, then the
+    result is ``inconclusive``."""
     observe = answer.kind == "not_specified"
     if observe and not cfg.observe:
         return {
@@ -780,32 +1343,77 @@ def _verify(
             "detail": "not run: the answer is not_specified and observation is off",
             "scenario": "",
         }
-    messages = [{"role": "user", "content": _verify_prompt(digest, question, answer, observe)}]
+    patterns = setup_patterns(digest, _answer_endpoints(digest, question, answer), relevant)
+    meter.sent |= set(re.findall(r"^\[(scenario:[^\]]+)\]", "\n".join(patterns), re.M))
+    meter.sent |= {c["target"] for c in answer.citations if c["target"] in digest.elements}
+    system = VERIFY_SYSTEM + "\n" + core_text(digest)
+    messages = [
+        {"role": "user", "content": _verify_prompt(digest, question, answer, observe, patterns)}
+    ]
     try:
-        text = meter.call(generator, VERIFY_SYSTEM, messages)
-        scenario = _scenario_from(_json_object(text), "ask_verify")
+        text = meter.call(generator, system, messages)
+        data = _json_object(text)
+        scenario = _scenario_from(data, "ask_verify")
     except Exception as err:  # noqa: BLE001 -- a bad scenario is an error result
         return {
             "status": "error",
             "detail": f"no valid scenario: {type(err).__name__}: {err}",
             "scenario": "",
         }
+    claim = _claim_step(data, len(scenario.steps))
     if observe:
-        return _observe(spec, scenario, cfg)
-    status, out = _run(spec, scenario, cfg)
-    if status == "pass":
-        return {
-            "status": "agrees",
-            "detail": "the scenario passed against the app",
-            "scenario": _readable(scenario),
-        }
-    if status == "error":
-        return {"status": "error", "detail": out, "scenario": _readable(scenario)}
-    return {
-        "status": "disagrees",
-        "detail": _finding_text(scenario, out),
-        "scenario": _readable(scenario),
-    }
+        return {**_observe(spec, scenario, cfg), "claim_step": claim}
+    for attempt in (1, 2):
+        status, out = _run(spec, scenario, cfg)
+        result = {"scenario": _readable(scenario), "claim_step": claim}
+        if status == "pass":
+            return {"status": "agrees", "detail": "the scenario passed against the app", **result}
+        if status == "error":
+            return {"status": "error", "detail": out, **result}
+        n = _step_no(out)
+        if n is None or n == claim:
+            return {"status": "disagrees", "detail": _finding_text(scenario, out), **result}
+        where = "before" if n < claim else "after"
+        detail = (
+            f"setup step {n} failed {where} the claim step {claim}, so the app neither "
+            f"confirmed nor contradicted the answer: {_finding_text(scenario, out)}"
+        )
+        if attempt == 2:
+            return {"status": "inconclusive", "detail": detail, **result}
+        messages += [
+            {"role": "assistant", "content": text},
+            {
+                "role": "user",
+                "content": (
+                    f"The scenario did not test the claim: step {n} is setup ({where} the "
+                    f"claim step {claim}) and it failed: {_finding_text(scenario, out)}.\n"
+                    "Fix the setup so every step but the claim step succeeds: valid request "
+                    "bodies with every required field, ids that exist, the steps the "
+                    "endpoint needs first (copy the setup patterns). Keep the claim step's "
+                    "request, caller and expected status as they are, and give its number "
+                    "in claim_step. Reply with the JSON object only."
+                ),
+            },
+        ]
+        try:
+            text = meter.call(generator, system, messages)
+            data = _json_object(text)
+            fixed = _scenario_from(data, "ask_verify")
+        except Exception as err:  # noqa: BLE001 -- a bad retry leaves the first result
+            return {
+                "status": "inconclusive",
+                "detail": f"{detail}; the setup retry was not a valid scenario ({err})",
+                **result,
+            }
+        new_claim = _claim_step(data, len(fixed.steps))
+        if _claim_key(fixed.steps[new_claim - 1]) != _claim_key(scenario.steps[claim - 1]):
+            return {
+                "status": "inconclusive",
+                "detail": f"{detail}; the setup retry changed the claim step, so it was not run",
+                **result,
+            }
+        scenario, claim = fixed, new_claim
+    raise AssertionError("unreachable")
 
 
 # ---- CLI ----------------------------------------------------------------------------------
@@ -894,12 +1502,19 @@ __all__ = [
     "Answer",
     "Digest",
     "Element",
+    "Index",
+    "Retrieval",
     "VerifyConfig",
+    "approx_tokens",
     "ask",
     "ask_many",
     "build_digest",
     "check_citation",
+    "core_text",
     "main",
+    "retrieve",
+    "setup_patterns",
+    "terms",
 ]
 
 
