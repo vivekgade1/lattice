@@ -201,3 +201,14 @@ plus up to 3 rounds is about $1 by this run's numbers.
 
 Screenshots (light mode, zero console errors):
 `.../scratchpad/v1-shots/rebuild-card-gave-up-light.jpg` (the Rebuild card in the gave-up state).
+
+## Addendum (orchestrator, same day, after the run)
+
+- Bug 1 (`git add` junk-pathspec crash) is fixed and committed in `75ef3fb` with a regression test.
+- Bug 2 (the pytest gate failing inside Studio's own gate env) was a test-isolation problem, not
+  a product one: the test now clears `UV_PROJECT_ENVIRONMENT` and `VIRTUAL_ENV`. It fails before
+  and passes after when run under a simulated gate env (same commit). The code keeps
+  `setdefault`, so an outer venv still wins at runtime as documented.
+- Bugs 3 and 4 (usage lost when a round crashes; the Rebuild card misleading after a crash) are
+  being fixed separately; the run is to be repeated once with the fixes (this document describes
+  the first attempt only).
