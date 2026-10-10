@@ -1028,6 +1028,7 @@ class Studio:
                         new_trace,
                         app_factory=r["app_factory"],
                         db_factory=r["db_factory"],
+                        base_spec=base_spec,
                         **self.harness.check_kwargs(),
                     )
                 checks["impact"] = impact_json(items, self.last_check)

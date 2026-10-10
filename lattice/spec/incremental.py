@@ -25,7 +25,7 @@ the diff is deterministic.
 
 **Impact** (:func:`impact`, :func:`label_impact`): the combined spec runs against the
 current app (layers D and C, X optional), and every failing target (``kind:name``) is
-labelled from the rules that link it:
+labelled. With no `base_spec`, purely from the rules that link it:
 
 * ``contradiction`` -- the target is in an L011 conflict pair, or it is linked both to
   added or changed rules and to unchanged ones;
@@ -33,6 +33,23 @@ labelled from the rules that link it:
   trace says ``replaces`` an old one counts as changed);
 * ``regression`` -- it is linked only to unchanged rules;
 * ``unlinked`` -- no rule links it.
+
+With `base_spec` (the spec the base module loads), the label instead follows what
+actually changed in the failing finding, which rules link it:
+
+* ``contradiction`` stays only for a real conflict -- the target is in an L011 conflict
+  pair -- which wins over every other rule.
+* A D finding (a scenario step): compared with `base_spec`'s version of the same
+  scenario by the finding's ``case`` (``"<scenario> / step <n>"``). The step is new, its
+  expectation changed (``expect_status``, ``expect_body``, ``expect_db``, or the request
+  itself: ``method``, ``path``, ``user``, ``json``, ``params``), the scenario itself is
+  new, or (for a case naming no step, e.g. ``"<scenario> / given"``) the scenario
+  differs from the base one some other way: ``not_built_yet`` -- the app has not caught
+  up with a change the owner made. Unchanged from the base spec: fall through to the
+  rule-based labelling above.
+* A C or X finding naming an invariant or a machine: compared with `base_spec`'s version
+  of the same element. New or changed: ``not_built_yet``. Unchanged: fall through to the
+  rule-based labelling above.
 
 CLI (through ``lattice.spec.draft``)::
 
@@ -539,12 +556,61 @@ def _finding_target(spec: Spec, finding: Any) -> str | None:
     return None
 
 
+_CASE_STEP = re.compile(r"^(.*) / step (\d+)$")
+
+
+def _scenario_changed(name: str, case: str | None, spec: Spec, base_spec: Spec) -> bool:
+    """Whether the scenario `name`'s step named by `case` (see the module docstring)
+    differs from `base_spec`'s version of it, or is new -- `base_spec` has no scenario
+    of that name, or (`case` naming no step) the scenario differs some other way."""
+    new_sc = next((s for s in spec.scenarios if s.name == name), None)
+    base_sc = next((s for s in base_spec.scenarios if s.name == name), None)
+    if new_sc is None or base_sc is None:
+        return True
+    m = _CASE_STEP.match(case or "")
+    if m is None:
+        return _canon(new_sc) != _canon(base_sc)
+    i = int(m.group(2)) - 1
+    if i >= len(base_sc.steps) or i >= len(new_sc.steps):
+        return True
+    return _canon(new_sc.steps[i]) != _canon(base_sc.steps[i])
+
+
+def _element_changed(target: str, spec: Spec, base_spec: Spec) -> bool:
+    """Whether `target` (an invariant or a machine, already resolved against `spec`) is
+    new in `spec` or differs structurally from `base_spec`'s version of it (its
+    elements, resolved the same way against `base_spec`)."""
+    new_elements = spec_elements(spec)
+    if target not in new_elements:
+        return True
+    base_elements = spec_elements(base_spec)
+    return base_elements.get(target, object()) != new_elements[target]
+
+
+def _finding_changed(f: Mapping[str, Any], target: str, spec: Spec, base_spec: Spec) -> bool:
+    kind, _, name = target.partition(":")
+    if kind == "scenario" and f.get("layer") == "D":
+        return _scenario_changed(name, f.get("case"), spec, base_spec)
+    if kind in ("invariant", "machine"):
+        return _element_changed(target, spec, base_spec)
+    return False
+
+
 def label_impact(
-    report: Any, spec: Spec, diff: RuleDiff, trace: Trace, *, conflict_pairs: Iterable[Any] = ()
+    report: Any,
+    spec: Spec,
+    diff: RuleDiff,
+    trace: Trace,
+    *,
+    conflict_pairs: Iterable[Any] = (),
+    base_spec: Spec | None = None,
 ) -> list[ImpactItem]:
     """Label every failing target of `report` (see the module docstring). Findings whose
     target cannot be named (a layer A or B finding) are left out. `conflict_pairs`:
-    :class:`lattice.spec.lint.Conflict`s (default: those of `spec`)."""
+    :class:`lattice.spec.lint.Conflict`s (default: those of `spec`). `base_spec`: the
+    base module's spec, to label by what actually changed in the failing finding rather
+    than purely by its rules (see the module docstring); omitted, the labelling is the
+    rule-based fallback only."""
     from lattice.spec.lint import conflicts
 
     pairs = list(conflict_pairs) or conflicts(spec)
@@ -567,7 +633,12 @@ def label_impact(
         rules = sorted(set(by_target.get(target, [])), key=_order)
         has_fresh = any(r in fresh for r in rules)
         has_old = any(r in unchanged for r in rules)
-        if target in in_conflict or (has_fresh and has_old):
+        if target in in_conflict:
+            label = "contradiction"
+        elif base_spec is not None and any(_finding_changed(f, target, spec, base_spec)
+                                           for f in found):  # fmt: skip
+            label = "not_built_yet"
+        elif has_fresh and has_old:
             label = "contradiction"
         elif has_fresh:
             label = "not_built_yet"
@@ -589,10 +660,12 @@ def impact(
     db_factory: Callable[..., Any],
     race: bool = False,
     check: Callable[..., Any] | None = None,
+    base_spec: Spec | None = None,
     **check_kwargs: Any,
 ) -> list[ImpactItem]:
     """Run the combined `spec` against the current app (layers D and C; X too with
-    `race`) and label each failing target (:func:`label_impact`). `check_kwargs` go to
+    `race`) and label each failing target (:func:`label_impact`; `base_spec`, when
+    given, labels by what changed rather than purely by rules). `check_kwargs` go to
     :func:`lattice.spec.check.check` (``login``, ``runtime``, ``services``,
     ``database``, ``database_url``, ...); `check` replaces it (tests)."""
     if check is None:
@@ -601,7 +674,7 @@ def impact(
         run_check = check
     layers = "CDX" if race else "CD"
     report = run_check(spec, app_factory, db_factory, layers=layers, **check_kwargs)
-    return label_impact(report, spec, diff, trace)
+    return label_impact(report, spec, diff, trace, base_spec=base_spec)
 
 
 # ---- the CLI part (called from lattice.spec.draft.main) ------------------------------------
@@ -688,6 +761,7 @@ def run_cli(args: Any, generator: Generator) -> int:
         try:
             from lattice.spec.__main__ import _runtime, _services, load
 
+            base_spec, _ = load_spec(base_module)
             items = impact(
                 result.spec,
                 d,
@@ -695,6 +769,7 @@ def run_cli(args: Any, generator: Generator) -> int:
                 app_factory=load(args.app),
                 db_factory=load(args.db),
                 race=args.race,
+                base_spec=base_spec,
                 login=load(args.login) if args.login else None,
                 runtime=_runtime(args.runtime),
                 services=_services(args.services),

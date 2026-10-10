@@ -10,11 +10,12 @@ import dataclasses
 import json
 import os
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from lattice.llm.client import ScriptedGenerator
-from lattice.spec import Scenario, Step
+from lattice.spec import Invariant, Scenario, Step
 from lattice.spec.draft import draft_json_path, load_spec, main
 from lattice.spec.incremental import (
     ImpactItem,
@@ -29,7 +30,7 @@ from lattice.spec.incremental import (
 from lattice.spec.lint import Conflict, conflicts, lint
 from lattice.spec.report import CheckFinding, Report
 from lattice.spec.review import review_change_markdown
-from lattice.spec.rules import Question, Trace, extract_rules, trace_path
+from lattice.spec.rules import Question, Rule, Trace, extract_rules, trace_path
 from tests.spec.incremental_toy import (
     NOTES_BASE_MODULE,
     NOTES_BASE_TRACE,
@@ -510,6 +511,101 @@ def test_impact_labels():
     items = label_impact(Report("D", findings=[_d("text_bounds")]), spec, diff, trace,
                          conflict_pairs=[pair])  # fmt: skip
     assert items[0].label == "contradiction"
+
+
+# ---- impact labelling with base_spec: by what actually changed ------------------------------
+
+
+def _access_specs(current_status: int, new_status: int) -> tuple[Any, Any]:
+    """A scenario linked to both a changed and an unchanged rule: the base app still
+    answers `current_status`, the change asks for `new_status` (the real case: an
+    executor gets 403 cancelling, but the current app still answers 200)."""
+    base_spec = _spec(
+        Scenario("access__cancel__as_eve", steps=(
+            Step("POST", "/jobs/1/cancel", "eve", expect_status=current_status),)),
+    )  # fmt: skip
+    new_spec = _spec(
+        Scenario("access__cancel__as_eve", steps=(
+            Step("POST", "/jobs/1/cancel", "eve", expect_status=new_status),)),
+    )  # fmt: skip
+    return base_spec, new_spec
+
+
+def _access_diff_and_trace() -> tuple[RuleDiff, Trace]:
+    r1 = Rule("R1", "An executor gets 403 cancelling a job.", "Access", 1)
+    r2 = Rule("R2", "Roles are enforced on every endpoint.", "Access", 2)
+    diff = RuleDiff([r1, r2], [r1, r2], unchanged=[("R2", "R2")], changed=[("R1", "R1")])
+    trace = Trace("ACCESS.md", [r1, r2], links={
+        "R1": ["scenario:access__cancel__as_eve"],
+        "R2": ["scenario:access__cancel__as_eve"],
+    })  # fmt: skip
+    return diff, trace
+
+
+def test_impact_not_built_yet_when_the_failing_step_itself_changed():
+    """The real case: a scenario linked to both a changed rule (R1) and an unchanged one
+    (R2) fails on the step the change touched -- not_built_yet, not contradiction."""
+    base_spec, new_spec = _access_specs(current_status=200, new_status=403)
+    diff, trace = _access_diff_and_trace()
+    report = Report("D", findings=[_d("access__cancel__as_eve")])
+    items = label_impact(report, new_spec, diff, trace, base_spec=base_spec)
+    assert [(i.target, i.label) for i in items] == [
+        ("scenario:access__cancel__as_eve", "not_built_yet")
+    ]
+
+
+def test_impact_label_fallback_without_base_spec_keeps_the_old_rule_based_logic():
+    """The same real case, but without `base_spec`: the old purely rule-based logic
+    applies (mixed changed/unchanged rules -> contradiction), unchanged behaviour."""
+    base_spec, new_spec = _access_specs(current_status=200, new_status=403)
+    diff, trace = _access_diff_and_trace()
+    report = Report("D", findings=[_d("access__cancel__as_eve")])
+    items = label_impact(report, new_spec, diff, trace)
+    assert items[0].label == "contradiction"
+
+
+def test_impact_regression_when_the_failing_step_is_unchanged():
+    """Linked only to an unchanged rule and the failing step itself did not change:
+    regression, same as the rule-based fallback."""
+    base_spec, new_spec = _access_specs(current_status=200, new_status=200)
+    r2 = Rule("R2", "Roles are enforced on every endpoint.", "Access", 1)
+    diff = RuleDiff([r2], [r2], unchanged=[("R2", "R2")])
+    trace = Trace("ACCESS.md", [r2], links={"R2": ["scenario:access__cancel__as_eve"]})
+    report = Report("D", findings=[_d("access__cancel__as_eve")])
+    items = label_impact(report, new_spec, diff, trace, base_spec=base_spec)
+    assert items[0].label == "regression"
+
+
+def test_impact_conflict_pair_stays_contradiction_even_if_the_step_changed():
+    """An L011 conflict wins over the changed-step check: real conflicts stay
+    contradictions whatever the base-spec comparison says."""
+    base_spec, new_spec = _access_specs(current_status=200, new_status=403)
+    diff, trace = _access_diff_and_trace()
+    pair = Conflict("access__cancel__as_eve", 1, 403, "other_scenario", 1, 200,
+                    "POST /jobs/{}/cancel", "eve")  # fmt: skip
+    report = Report("D", findings=[_d("access__cancel__as_eve")])
+    items = label_impact(report, new_spec, diff, trace, base_spec=base_spec,
+                         conflict_pairs=[pair])  # fmt: skip
+    assert items[0].label == "contradiction"
+
+
+def test_impact_not_built_yet_for_a_new_invariant():
+    """A C finding on an invariant that is new in the spec (not in the base) is
+    not_built_yet even though no rule yet links to anything in the base trace."""
+    base_spec = _spec()
+    new_spec = dataclasses.replace(base_spec, invariants=(
+        Invariant("notes_at_most_5", "A user has at most 5 notes.",
+                  'count(Note, by="user_id") <= 5'),
+    ))  # fmt: skip
+    r1 = Rule("R1", "A user has at most 5 notes.", "Notes", 1)
+    diff = RuleDiff([], [r1], added=["R1"])
+    trace = Trace("NOTES.md", [r1], links={"R1": ["invariant:notes_at_most_5"]})
+    report = Report("C", findings=[
+        CheckFinding("C", "silent", "A user has at most 5 notes.",
+                    details={"invariant": "notes_at_most_5"}),  # fmt: skip
+    ])
+    items = label_impact(report, new_spec, diff, trace, base_spec=base_spec)
+    assert items[0].label == "not_built_yet"
 
 
 def test_impact_runs_layers_d_and_c_through_check():
