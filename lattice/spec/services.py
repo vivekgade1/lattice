@@ -13,6 +13,11 @@ MOD:NAME``::
         "scheduler": lambda db: ServiceCmd([sys.executable, "-m", "app.scheduler", str(db)]),
     }
 
+On a server database (``check(..., database=...)``) a service gets the database's
+canonical URL (:mod:`lattice.spec.db`) where it would get the SQLite path::
+
+    "worker": lambda url: ServiceCmd(["./bin/worker"], env={"DATABASE_URL": str(url)}),
+
 A service runs in its own process group with the caller's environment plus
 ``ServiceCmd.env``; it is stopped as a whole -- SIGTERM, then SIGKILL after
 ``stop_timeout`` seconds -- and reaped, whatever happened (an ``atexit`` guard stops
@@ -52,7 +57,8 @@ class ServiceCmd:
         return " ".join(str(a) for a in self.argv)
 
 
-Services = Mapping[str, Callable[[Path], ServiceCmd]]
+# name -> (the database: a SQLite path, or a server database's URL) -> how it starts
+Services = Mapping[str, Callable[[Path | str], ServiceCmd]]
 
 _LIVE: set[RunningService] = set()
 _LIVE_LOCK = threading.Lock()

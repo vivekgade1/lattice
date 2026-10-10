@@ -29,6 +29,15 @@ compare the stored spelling: `Order.status == "pending"` compiles to `status =
 column (it would order the stored spellings). Uuid and DateTime columns, whose stored
 spellings depend on the profile, compare only with columns of their own type.
 
+**Dialects.** `compile_invariant(inv, profile, dialect)` writes the SQL of `sqlite` (the
+default: the profile backend's quoting, `1`/`0` booleans), `postgres` (`"..."`, `TRUE`/
+`FALSE`: a Bool column is a native boolean), `mysql` (backticks, `TRUE`/`FALSE`, a
+backslash in a text literal doubled) or `clickhouse` (`"..."`, `true`/`false`, a
+backslash doubled). The forms use no other dialect-specific SQL: no string
+concatenation, no `LIMIT`, `IS NULL` only, `GROUP BY ... HAVING` with `COUNT(*)`.
+MySQL compares text under the column's collation (case-insensitive by default), so a
+one-of or text comparison there is case-insensitive.
+
 `compile_invariant` raises `InvariantError` (codes as in `lattice.spec.validate`): S002
 unknown table, S003 unknown column, S007 does not parse, S008 not an allowed form, S009
 a type error.
@@ -139,11 +148,31 @@ class _Operand:
 
 
 class _Compiler:
-    def __init__(self, inv: Invariant, profile: Profile) -> None:
+    def __init__(self, inv: Invariant, profile: Profile, dialect: str = "sqlite") -> None:
         self.inv = inv
+        self.dialect = dialect
         self.tables, self.sql_names = tables_of(profile)
-        backend = profile.api.backend if profile.api is not None else "sqlite"
-        self.quote: Callable[[str], str] = dialect_for(backend).quote
+        if dialect == "sqlite":
+            backend = profile.api.backend if profile.api is not None else "sqlite"
+            self.quote: Callable[[str], str] = dialect_for(backend).quote
+        elif dialect == "mysql":
+            self.quote = _backtick
+        elif dialect in ("postgres", "clickhouse"):
+            self.quote = _double_quote
+        else:
+            raise ValueError(f"unknown SQL dialect {dialect!r}")
+        true, false = _BOOLS[dialect]
+        self.true, self.false = true, false
+        # a condition that is NULL (unknown) does not hold
+        self.unknown = "0" if dialect == "sqlite" else false
+
+    def text(self, value: str) -> str:
+        return _sql_text(value, self.dialect)
+
+    def num(self, sql: str) -> str:
+        """A number as a float where the dialect mixes Decimal and Float only so
+        (ClickHouse); as it is elsewhere."""
+        return f"toFloat64({sql})" if self.dialect == "clickhouse" else sql
 
     # ---- names -----------------------------------------------------------------------
 
@@ -217,6 +246,8 @@ class _Compiler:
                     )
             scalar = unify(left.scalar, right.scalar) or Scalar.FLOAT
             if isinstance(node.op, ast.Div):  # SQL divides ints as ints
+                if self.dialect == "clickhouse":  # no Decimal-with-Float arithmetic there
+                    return _Operand(f"({self.num(left.sql)} / {self.num(right.sql)})", Scalar.FLOAT)
                 return _Operand(f"(({left.sql}) * 1.0 / ({right.sql}))", Scalar.FLOAT)
             op = _ARITH_SQL[type(node.op)]
             return _Operand(f"({left.sql} {op} {right.sql})", scalar)
@@ -228,13 +259,14 @@ class _Compiler:
         if value is None:
             raise _form("a comparison with None is never true: use is_null(Table.column)")
         if isinstance(value, bool):
-            return _Operand("1" if value else "0", Scalar.BOOL, literal=value, is_literal=True)
+            sql = self.true if value else self.false
+            return _Operand(sql, Scalar.BOOL, literal=value, is_literal=True)
         if isinstance(value, int):
             return _Operand(str(value), Scalar.INT, literal=value, is_literal=True)
         if isinstance(value, float):
             return _Operand(repr(value), Scalar.FLOAT, literal=value, is_literal=True)
         if isinstance(value, str):
-            return _Operand(_sql_text(value), Scalar.STR, literal=value, is_literal=True)
+            return _Operand(self.text(value), Scalar.STR, literal=value, is_literal=True)
         raise _form(f"`{_text(node)}` is not an allowed literal (int, float, text, bool)")
 
     # ---- row rules -------------------------------------------------------------------
@@ -257,7 +289,7 @@ class _Compiler:
                     f"`{_text(node)}` is a {value.scalar.value} column, not a condition",
                     "compare it, e.g. Table.column > 0",
                 )
-            return f"({value.sql} = 1)"
+            return f"({value.sql} = {'1' if self.dialect == 'sqlite' else self.true})"
         if isinstance(node, ast.Name):
             raise _form(f"`{node.id}` is not a column: a column is written Table.column")
         raise _form(f"`{_text(node)}` is not an allowed form")
@@ -331,7 +363,7 @@ class _Compiler:
                 f"use one of {', '.join(choices)}",
             )
         stored = other.stored()
-        return _sql_text(stored[side.literal]) if stored else side.sql
+        return self.text(stored[side.literal]) if stored else side.sql
 
     def membership(self, node: ast.Compare, left: _Operand, right: ast.expr, negated: bool) -> str:
         if not isinstance(right, ast.Tuple | ast.List | ast.Set) or not right.elts:
@@ -379,7 +411,10 @@ class _Compiler:
                 f"`{_text(body)}`: a row rule reads one table, not {', '.join(sorted(tables))}"
             )
         (table,) = tables
-        return f"SELECT t.* FROM {self.sql_table(table)} AS t WHERE NOT COALESCE({condition}, 0)"
+        return (
+            f"SELECT t.* FROM {self.sql_table(table)} AS t "
+            f"WHERE NOT COALESCE({condition}, {self.unknown})"
+        )
 
     def count_bound(
         self, node: ast.Compare, call: ast.Call, bound: ast.expr, op: type[ast.cmpop]
@@ -481,17 +516,18 @@ class _Compiler:
             )
         by = self.quote(self.by_column(call, child))
         key = self.quote(_one_column_key(self.table(parent_table), parent_table))
-        total = f"COALESCE(s.{self.quote('total')}, 0)"
-        diff = f"ABS({parent.sql} - {total})"
+        total = self.num(f"COALESCE(s.{self.quote('total')}, 0)")
+        parent_sql = self.num(parent.sql)
+        diff = f"ABS({parent_sql} - {total})"
         tol = repr(TOLERANCE)
-        close = f"({diff} <= {tol} * ABS({parent.sql}) OR {diff} <= {tol} * ABS({total}))"
+        close = f"({diff} <= {tol} * ABS({parent_sql}) OR {diff} <= {tol} * ABS({total}))"
         return (
             f"SELECT p.*, {total} AS {self.quote('expected')} "
             f"FROM {self.sql_table(parent_table)} AS p "
             f"LEFT JOIN (SELECT c.{by} AS {self.quote('k')}, SUM({summed.sql}) AS "
             f"{self.quote('total')} FROM {self.sql_table(child)} AS c GROUP BY c.{by}) AS s "
             f"ON s.{self.quote('k')} = p.{key} "
-            f"WHERE NOT COALESCE({close}, 0)"
+            f"WHERE NOT COALESCE({close}, {self.unknown})"
         )
 
 
@@ -511,11 +547,33 @@ def _one_column_key(schema: Schema, table: str) -> str:
     raise _form(f"{table} has no one-column key for sum(..., by=...) to reference")
 
 
-def _sql_text(value: str) -> str:
+# (true, false) literals per dialect
+_BOOLS = {
+    "sqlite": ("1", "0"),
+    "postgres": ("TRUE", "FALSE"),
+    "mysql": ("TRUE", "FALSE"),
+    "clickhouse": ("true", "false"),
+}
+
+
+def _double_quote(name: str) -> str:
+    return '"' + name.replace('"', '""') + '"'
+
+
+def _backtick(name: str) -> str:
+    return "`" + name.replace("`", "``") + "`"
+
+
+def _sql_text(value: str, dialect: str = "sqlite") -> str:
+    """A text literal; MySQL and ClickHouse read a backslash as an escape, so it is
+    doubled there."""
+    if dialect in ("mysql", "clickhouse"):
+        value = value.replace("\\", "\\\\")
     return "'" + value.replace("'", "''") + "'"
 
 
-def compile_invariant(inv: Invariant, profile: Profile) -> str:
-    """SQL returning the rows that violate `inv` (none when it holds). Raises
-    InvariantError for an expression outside the allowed forms."""
-    return _Compiler(inv, profile).compile()
+def compile_invariant(inv: Invariant, profile: Profile, dialect: str = "sqlite") -> str:
+    """SQL returning the rows that violate `inv` (none when it holds), in `dialect`'s SQL
+    (``sqlite`` -- the profile's backend --, ``postgres``, ``mysql`` or ``clickhouse``).
+    Raises InvariantError for an expression outside the allowed forms."""
+    return _Compiler(inv, profile, dialect).compile()

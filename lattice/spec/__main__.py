@@ -4,7 +4,8 @@
         [--app-dir DIR --package PKG | --go-src DIR] [--layers ABCDX] [--login mod:fn] \\
         [--login-path /login] [--mint-token mod:fn] [--json] \\
         [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process | go] \\
-        [--services mod:SERVICES]
+        [--services mod:SERVICES] [--database sqlite|postgres|mysql|clickhouse] \\
+        [--database-url URL]
 
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
@@ -17,7 +18,11 @@ GORM) app's module root: layer A reads it with ``lattice.gocheck`` (a runtime wh
 framework is ``go`` also takes ``--app-dir`` as the root). ``--services`` names the
 app's background services, ``{name: (db_path) -> ServiceCmd}``
 (``lattice.spec.services``; or a function returning it): how the spec's ``Await`` steps
-start them. Exit code: 0 pass, 1 fail, 2
+start them. ``--database`` (default ``sqlite``) runs layers C, D and X on a server
+database: ``--db``, ``--app`` and the services then get a database's canonical URL
+instead of a file path (``lattice.spec.db``), on a throwaway Docker container, or on the
+server ``--database-url`` (or ``$LATTICE_<DIALECT>_URL``) names, where only databases
+the check creates are touched (``lattice.spec.dbserver``). Exit code: 0 pass, 1 fail, 2
 the check could not run.
 
 ::
@@ -94,6 +99,18 @@ def _parser() -> argparse.ArgumentParser:
         "--services",
         help="module:SERVICES, the app's background services {name: (db_path) -> "
         "ServiceCmd} (or a function returning it), started by the spec's Await steps",
+    )
+    c.add_argument(
+        "--database",
+        default="sqlite",
+        choices=("sqlite", "postgres", "mysql", "clickhouse"),
+        help="the database the app runs on (default sqlite; the others: a throwaway Docker "
+        "container, or --database-url)",
+    )
+    c.add_argument(
+        "--database-url",
+        help="an existing server to create the check's databases on (an account that may "
+        "create databases), instead of a container; default $LATTICE_<DIALECT>_URL",
     )
     c.add_argument("--json", action="store_true", help="print the report as JSON")
     f = sub.add_parser("fidelity", help="replay an app's fidelity scenarios through its runtime")
@@ -254,6 +271,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             x_budget=args.x_budget,
             runtime=_runtime(args.runtime),
             services=_services(args.services),
+            database=args.database,
+            database_url=args.database_url,
         )
     except Exception as err:  # noqa: BLE001 -- any failure to run the check is exit 2
         print(f"error: {type(err).__name__}: {err}", file=sys.stderr)

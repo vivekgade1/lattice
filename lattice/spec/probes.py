@@ -3388,22 +3388,19 @@ def _reachable_roles(api: ApiProfile) -> set[str]:
 
 def _set_active(spec: Spec, db: Path, key: Any, value: bool) -> None:
     """Set a users row's active column (the inactive caller is logged in while active)."""
-    import sqlite3
+    from lattice.spec.db import open_db
 
     api = spec.profile.api
     found = resolve_table(spec.profile, api.users_table) if api is not None else None
     if api is None or found is None or not api.active_column:
         return
     key_col = _key_column(found[2]) or "id"
-    con = sqlite3.connect(db)
-    try:
+    with open_db(db) as con:
+        q, ph = con.quote_ident, con.ph
         con.execute(
-            f'UPDATE "{found[1]}" SET "{api.active_column}" = ? WHERE "{key_col}" = ?',
+            f"UPDATE {q(found[1])} SET {q(api.active_column)} = {ph} WHERE {q(key_col)} = {ph}",
             (int(value), key),
         )
-        con.commit()
-    finally:
-        con.close()
 
 
 class _Recorder:

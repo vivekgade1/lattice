@@ -30,13 +30,13 @@ from __future__ import annotations
 
 import re
 import shutil
-import sqlite3
 import tempfile
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from lattice.spec.db import open_db
 from lattice.spec.model import Await, Contract, Scenario, Spec, Step, resolve_table
 from lattice.spec.validate import validate
 
@@ -216,12 +216,8 @@ def _callers(spec: Spec, db: Path, user_ids: Mapping[str, Any]) -> dict[str, Cal
         return {}
     _, sql, schema = found
     key = next(iter(schema.keys[0]), "id") if schema.keys else "id"
-    con = sqlite3.connect(db)
-    con.row_factory = sqlite3.Row
-    try:
-        rows = {r[key]: dict(r) for r in con.execute(f'SELECT * FROM "{sql}"')}
-    finally:
-        con.close()
+    with open_db(db) as con:
+        rows = {r[key]: r for r in con.query_dicts(f"SELECT * FROM {con.quote_ident(sql)}")}
     out = {}
     for handle, uid in user_ids.items():
         row = rows.get(uid)

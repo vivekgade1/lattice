@@ -48,6 +48,13 @@ connections at once). With a ``monitor`` (layer C through the runtime's transpor
 every request of the layer is watched too: the recordings' and replays' steps
 (``X | <scenario> / step <n>``) and the racing requests (``X | race <race>``).
 
+On a server database (``check(..., database=...)``) the copies share one database of
+the server instead of one SQLite file; each race gets its own clone of the seed, dropped
+after it. On ClickHouse, which has no unique constraints and no transactions, an upper
+count bound cannot be enforced by the app, so its races are not run: the bound is
+reported as not applicable on ClickHouse, in a note, never as a finding (machines are
+still raced).
+
 A scenario's ``Await`` steps (waits on a background service) are never raced: layer X
 takes a scenario's steps before its first ``Await`` only, with a note.
 
@@ -62,7 +69,6 @@ from __future__ import annotations
 import ast
 import json
 import re
-import sqlite3
 import tempfile
 import threading
 import time
@@ -82,9 +88,12 @@ from lattice.spec.check import (
     _key_column,
     _row_key,
     _template_of,
+    db_dialect,
     db_diff,
+    release_db,
     spec_plans,
 )
+from lattice.spec.db import DB_ERRORS, DbRef, open_db
 from lattice.spec.invariants import _FLIPPED
 from lattice.spec.model import Await, Invariant, Machine, Scenario, Spec, Step, resolve_table
 from lattice.spec.report import CheckFinding, Report
@@ -251,21 +260,18 @@ class RacePlan:
         return [(self.i, s[self.i - 1]), (self.j, s[self.j - 1])]
 
 
-def _read(db: Path, tables: Sequence[str]) -> dict[str, list[dict[str, Any]]]:
-    conn = sqlite3.connect(db)
-    try:
+def _read(
+    db: DbRef, tables: Sequence[str], keys: Mapping[str, str] | None = None
+) -> dict[str, list[dict[str, Any]]]:
+    """The rows of ``tables`` (SQLite: in rowid order; a server: by the table's key)."""
+    with open_db(db) as conn:
         out: dict[str, list[dict[str, Any]]] = {}
         for t in tables:
             try:
-                cur = conn.execute(f'SELECT * FROM "{t}" ORDER BY rowid')
-            except sqlite3.Error:
+                out[t] = conn.read_table(t, (keys or {}).get(t))
+            except DB_ERRORS:
                 out[t] = []
-                continue
-            cols = [d[0] for d in cur.description]
-            out[t] = [dict(zip(cols, row, strict=True)) for row in cur]
         return out
-    finally:
-        conn.close()
 
 
 def _answer(response: Any) -> tuple[int, Any]:
@@ -314,7 +320,12 @@ class _Harness:
         if c_monitor is not None and runtime is not None:
             self.app_factory, self.runtime = c_monitor.watch(app_factory, runtime)
         self.one_server = bool(getattr(runtime, "one_server", False))
+        self.dialect = db_dialect(make_db)
         self.targets = targets(spec)
+        # ClickHouse enforces no uniqueness: an upper count bound is not raced there
+        clickhouse = self.dialect == "clickhouse"
+        self.not_applicable = [t for t in self.targets if clickhouse and t.invariant is not None]
+        self.targets = [t for t in self.targets if t not in self.not_applicable]
         self.tables = list(dict.fromkeys(t.table for t in self.targets))
         self.keys: dict[str, str] = {}
         for t in self.tables:
@@ -326,7 +337,7 @@ class _Harness:
             self.plans = spec_plans(spec)
         except CheckError:
             self.plans = []
-        self.monitor = InvariantMonitor.for_spec(spec)
+        self.monitor = InvariantMonitor.for_spec(spec, self.dialect)
 
     # -- serving
 
@@ -376,10 +387,17 @@ class _Harness:
         path = re.sub(r"/(\d+|[0-9a-fA-F-]{36})(?=/|$)", "/{}", step.path)
         return f"{step.method} {path}"
 
-    def fresh_db(self, scenario: Scenario, where: Path) -> Path:
+    def read(self, db: DbRef) -> dict[str, list[dict[str, Any]]]:
+        return _read(db, self.tables, self.keys)
+
+    def fresh_db(self, scenario: Scenario, where: Path) -> DbRef:
         db = self.make_db("seed", where / "race.db")
-        if scenario.given:
-            _insert_given(self.spec, db, scenario.given)
+        try:
+            if scenario.given:
+                _insert_given(self.spec, db, scenario.given)
+        except BaseException:
+            release_db(self.make_db, db)
+            raise
         return db
 
     # -- the sequential pass
@@ -387,7 +405,7 @@ class _Harness:
     def replay(
         self,
         scenario: Scenario,
-        db: Path,
+        db: DbRef,
         upto: int,
         users: Sequence[str],
         record: bool,
@@ -399,7 +417,7 @@ class _Harness:
         app = self.app_factory(db)
         try:
             with self.open(app, raise_errors=False) as client:
-                before = _read(db, self.tables) if record else {}
+                before = self.read(db) if record else {}
                 for n, step in enumerate(scenario.steps[:upto], 1):
                     self.label(f"X | {scenario.name} / step {n}")
                     if step.user is not None and step.user not in tokens:
@@ -407,7 +425,7 @@ class _Harness:
                     response = self.send(client, step, tokens.get(step.user or ""))
                     status, body = _answer(response)
                     if record:
-                        after = _read(db, self.tables)
+                        after = self.read(db)
                         diff = db_diff(before, after, self.keys)
                         records.append(StepRecord(n, step, status, body, diff, after))
                         before = after
@@ -424,6 +442,7 @@ class _Harness:
     def record(self, scenario: Scenario) -> Recording:
         rec = Recording(scenario)
         with tempfile.TemporaryDirectory(prefix="lattice-check-x-") as name:
+            db: DbRef | None = None
             try:
                 db = self.fresh_db(scenario, Path(name))
                 _, rec.records = self.replay(scenario, db, len(scenario.steps), (), True)
@@ -431,6 +450,9 @@ class _Harness:
                 if _fatal(self, err):
                     raise
                 rec.error = f"{type(err).__name__}: {err}"
+            finally:
+                if db is not None:
+                    release_db(self.make_db, db)
         return rec
 
 
@@ -572,139 +594,153 @@ def run_race(
     recording: Recording,
     shows: Mapping[tuple[str, str], bool],
 ) -> RaceOutcome:
+    with tempfile.TemporaryDirectory(prefix="lattice-check-x-") as name:
+        db = h.fresh_db(plan.scenario, Path(name))
+        try:
+            return _race_on(h, plan, k, recording, shows, db)
+        finally:
+            release_db(h.make_db, db)
+
+
+def _race_on(
+    h: _Harness,
+    plan: RacePlan,
+    k: int,
+    recording: Recording,
+    shows: Mapping[tuple[str, str], bool],
+    db: DbRef,
+) -> RaceOutcome:
     out = RaceOutcome()
     copies = plan.steps(k)
     prefix = plan.i - 1
-    with tempfile.TemporaryDirectory(prefix="lattice-check-x-") as name:
-        db = h.fresh_db(plan.scenario, Path(name))
-        users = [s.user for _, s in copies if s.user is not None]
-        try:
-            tokens, replayed = h.replay(plan.scenario, db, prefix, users, False)
-        except Exception as err:  # noqa: BLE001 -- the harness could not replay
-            if _fatal(h, err):
-                raise
-            out.skipped = f"the replay of steps 1-{prefix} failed: {type(err).__name__}: {err}"
+    users = [s.user for _, s in copies if s.user is not None]
+    try:
+        tokens, replayed = h.replay(plan.scenario, db, prefix, users, False)
+    except Exception as err:  # noqa: BLE001 -- the harness could not replay
+        if _fatal(h, err):
+            raise
+        out.skipped = f"the replay of steps 1-{prefix} failed: {type(err).__name__}: {err}"
+        return out
+    for got, want in zip(replayed, recording.records, strict=False):
+        if got.status != want.status:
+            out.skipped = (
+                f"the replay's step {got.index} answered {got.status}, the recording "
+                f"{want.status}: the prefix is not deterministic"
+            )
             return out
-        for got, want in zip(replayed, recording.records, strict=False):
-            if got.status != want.status:
-                out.skipped = (
-                    f"the replay's step {got.index} answered {got.status}, the recording "
-                    f"{want.status}: the prefix is not deterministic"
-                )
-                return out
-        base_inv = h.monitor.violation_keys(db)
-        before = _read(db, h.tables)
-        apps: list[Any] = []
-        clients: list[Any] = []
-        h.label(f"X | race {plan.label}")
-        try:
-            for _ in copies:
-                # one server (a process app): every copy is one more client of one app
-                if not (h.one_server and apps):
-                    apps.append(h.app_factory(db))
-                client = h.open(apps[-1], raise_errors=True)
-                clients.append(client.__enter__())
-        except Exception as err:  # noqa: BLE001 -- the harness could not start the copies
-            if _fatal(h, err):
-                _shutdown(h, apps, clients)
-                raise
-            out.skipped = f"cannot start {len(copies)} app copies: {type(err).__name__}: {err}"
+    base_inv = h.monitor.violation_keys(db)
+    before = h.read(db)
+    apps: list[Any] = []
+    clients: list[Any] = []
+    h.label(f"X | race {plan.label}")
+    try:
+        for _ in copies:
+            # one server (a process app): every copy is one more client of one app
+            if not (h.one_server and apps):
+                apps.append(h.app_factory(db))
+            client = h.open(apps[-1], raise_errors=True)
+            clients.append(client.__enter__())
+    except Exception as err:  # noqa: BLE001 -- the harness could not start the copies
+        if _fatal(h, err):
             _shutdown(h, apps, clients)
-            return out
-        results: list[Any] = [None] * len(copies)
-        barrier = threading.Barrier(len(copies))
-
-        def fire(n: int) -> None:
-            _, step = copies[n]
-            try:
-                barrier.wait(timeout=h.timeout)
-            except threading.BrokenBarrierError as err:
-                results[n] = ("harness", err)
-                return
-            try:
-                response = h.send(clients[n], step, tokens.get(step.user or ""))
-                results[n] = ("answer", _answer(response))
-            except Exception as err:  # noqa: BLE001 -- the app raised
-                results[n] = ("raised", err)
-
-        threads = [
-            threading.Thread(target=fire, args=(n,), daemon=True) for n in range(len(copies))
-        ]
-        for t in threads:
-            t.start()
-        deadline = time.monotonic() + h.timeout
-        for t in threads:
-            t.join(max(0.0, deadline - time.monotonic()))
-        if any(t.is_alive() for t in threads):
-            out.skipped = f"timed out after {h.timeout:g}s"
-            if h.one_server:  # a server process is never left running
-                _shutdown(h, apps, clients)
-            return out  # the copies are left to their threads
+            raise
+        out.skipped = f"cannot start {len(copies)} app copies: {type(err).__name__}: {err}"
         _shutdown(h, apps, clients)
-        answers: list[dict[str, Any]] = []
-        for (index, _step), res in zip(copies, results, strict=True):
-            kind, value = res if res is not None else ("harness", "no result")
-            if kind == "harness":
-                out.skipped = f"the harness failed: {value}"
-                return out
-            if kind == "raised":
-                text = f"{type(value).__name__}: {value}"
-                text = text if len(text) <= 300 else text[:297] + "..."
-                if SAME_THREAD in str(value):
-                    out.engine_note = text
-                answers.append({"step": index, "status": 500, "error": text})
-            else:
-                status, body = value
-                answers.append({"step": index, "status": status, "body": body})
-        if out.engine_note is not None:
+        return out
+    results: list[Any] = [None] * len(copies)
+    barrier = threading.Barrier(len(copies))
+
+    def fire(n: int) -> None:
+        _, step = copies[n]
+        try:
+            barrier.wait(timeout=h.timeout)
+        except threading.BrokenBarrierError as err:
+            results[n] = ("harness", err)
+            return
+        try:
+            response = h.send(clients[n], step, tokens.get(step.user or ""))
+            results[n] = ("answer", _answer(response))
+        except Exception as err:  # noqa: BLE001 -- the app raised
+            results[n] = ("raised", err)
+
+    threads = [
+        threading.Thread(target=fire, args=(n,), daemon=True) for n in range(len(copies))
+    ]
+    for t in threads:
+        t.start()
+    deadline = time.monotonic() + h.timeout
+    for t in threads:
+        t.join(max(0.0, deadline - time.monotonic()))
+    if any(t.is_alive() for t in threads):
+        out.skipped = f"timed out after {h.timeout:g}s"
+        if h.one_server:  # a server process is never left running
+            _shutdown(h, apps, clients)
+        return out  # the copies are left to their threads
+    _shutdown(h, apps, clients)
+    answers: list[dict[str, Any]] = []
+    for (index, _step), res in zip(copies, results, strict=True):
+        kind, value = res if res is not None else ("harness", "no result")
+        if kind == "harness":
+            out.skipped = f"the harness failed: {value}"
             return out
-        steps = [_step_view(i, s) for i, s in dict.fromkeys(copies)]
-        common = {"race": plan.label, "steps": steps, "k": len(copies),
-                  "answers": _answer_summary(answers)}  # fmt: skip
-        # a step that answers 5xx sequentially too is layer D's finding, not a race's
-        sequential = {r.index: r.status or 0 for r in recording.records}
-        errors = [a for a in answers if a["status"] >= 500 and sequential.get(a["step"], 0) < 500]
-        if errors:
-            out.findings.append(
-                (
-                    SERVER_ERROR_RULE,
-                    SERVER_ERROR_SENTENCE,
-                    "loud",
-                    common | {"rows": [], "errors": errors[:5]},
-                )  # fmt: skip
-            )
-        found = h.monitor.violations(db)
-        for inv, _ in h.monitor.invariants:
-            new = [r for r in found[inv.name] if _row_key(r) not in base_inv.get(inv.name, set())]
-            if new:
-                out.findings.append((inv.name, inv.sentence, "silent",
-                                     common | {"rows": new[:20], "expr": inv.expr}))  # fmt: skip
-        after = _read(db, h.tables)
-        for t in h.targets:
-            m = t.machine
-            if m is None:
-                continue
-            key = h.keys.get(t.table)
-            promises: list[tuple[Any, Any]] = []
-            for (_, step), a in zip(copies, answers, strict=True):
-                body = a.get("body")
-                if (
-                    key is not None
-                    and 200 <= a["status"] < 300
-                    and isinstance(body, Mapping)
-                    and key in body
-                    and m.column in body
-                    and shows.get((h.endpoint_class(step), t.rule_id))
-                ):
-                    promises.append((str(body[key]), body[m.column]))
-            bad = machine_violations(
-                m,
-                _states(h, m, before.get(t.table, [])),
-                _states(h, m, after.get(t.table, [])),
-                promises,
-            )
-            if bad:
-                out.findings.append((t.rule_id, t.sentence, "silent", common | {"rows": bad[:20]}))
+        if kind == "raised":
+            text = f"{type(value).__name__}: {value}"
+            text = text if len(text) <= 300 else text[:297] + "..."
+            if SAME_THREAD in str(value):
+                out.engine_note = text
+            answers.append({"step": index, "status": 500, "error": text})
+        else:
+            status, body = value
+            answers.append({"step": index, "status": status, "body": body})
+    if out.engine_note is not None:
+        return out
+    steps = [_step_view(i, s) for i, s in dict.fromkeys(copies)]
+    common = {"race": plan.label, "steps": steps, "k": len(copies),
+              "answers": _answer_summary(answers)}  # fmt: skip
+    # a step that answers 5xx sequentially too is layer D's finding, not a race's
+    sequential = {r.index: r.status or 0 for r in recording.records}
+    errors = [a for a in answers if a["status"] >= 500 and sequential.get(a["step"], 0) < 500]
+    if errors:
+        out.findings.append(
+            (
+                SERVER_ERROR_RULE,
+                SERVER_ERROR_SENTENCE,
+                "loud",
+                common | {"rows": [], "errors": errors[:5]},
+            )  # fmt: skip
+        )
+    found = h.monitor.violations(db)
+    for inv, _ in h.monitor.invariants:
+        new = [r for r in found[inv.name] if _row_key(r) not in base_inv.get(inv.name, set())]
+        if new:
+            out.findings.append((inv.name, inv.sentence, "silent",
+                                 common | {"rows": new[:20], "expr": inv.expr}))  # fmt: skip
+    after = h.read(db)
+    for t in h.targets:
+        m = t.machine
+        if m is None:
+            continue
+        key = h.keys.get(t.table)
+        promises: list[tuple[Any, Any]] = []
+        for (_, step), a in zip(copies, answers, strict=True):
+            body = a.get("body")
+            if (
+                key is not None
+                and 200 <= a["status"] < 300
+                and isinstance(body, Mapping)
+                and key in body
+                and m.column in body
+                and shows.get((h.endpoint_class(step), t.rule_id))
+            ):
+                promises.append((str(body[key]), body[m.column]))
+        bad = machine_violations(
+            m,
+            _states(h, m, before.get(t.table, [])),
+            _states(h, m, after.get(t.table, [])),
+            promises,
+        )
+        if bad:
+            out.findings.append((t.rule_id, t.sentence, "silent", common | {"rows": bad[:20]}))
     return out
 
 
@@ -756,7 +792,14 @@ def layer_x(
     started = time.monotonic()
     h = _Harness(spec, app_factory, make_db, login, runtime, timeout, monitor)
     report.races = []
+    for t in h.not_applicable:
+        report.notes.append(
+            f"layer X: {t.rule_id} not applicable on ClickHouse (no unique constraints or "
+            "transactions): an upper count bound cannot be enforced there, so it is not raced"
+        )
     if not h.targets:
+        if h.not_applicable:
+            return
         report.notes.append(
             "layer X: the spec has no upper count bound and no machine; nothing to race"
         )

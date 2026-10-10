@@ -17,6 +17,11 @@ command that serves the database, not started. :func:`process_runtime` is the
   ``stop_timeout`` -- and reaps it. An ``atexit`` guard stops whatever is still running
   when the interpreter exits.
 
+On a server database (``check(..., database="postgres" | "mysql" | "clickhouse")``)
+``db_path`` is the database's canonical URL (:mod:`lattice.spec.db`), and ``db_env``
+carries it unchanged (a SQLite path is made absolute); the app opens it (a Go app
+translates it with :func:`lattice.spec.db.url_for`, e.g. ``go-mysql``).
+
 The check reads the SQLite file directly (layer C's invariants, a scenario's
 ``expect_db``, layer B's tables) once a request's answer has been read in full: what the
 app committed before answering is what a new SQLite connection sees.
@@ -158,7 +163,7 @@ class ProcessApp:
         env.update({k: str(v) for k, v in self.env.items()})
         env[self.port_env] = str(self.port)
         if self.db_path is not None:
-            env[self.db_env] = str(Path(self.db_path).resolve())
+            env[self.db_env] = _db_env_value(self.db_path)
         if self._stderr is not None:
             self._stderr.close()
         self._stderr = tempfile.TemporaryFile()  # noqa: SIM115 -- closed in stop()
@@ -234,6 +239,13 @@ class ProcessApp:
             with contextlib.suppress(OSError):
                 self._stderr.close()
             self._stderr = None
+
+
+def _db_env_value(db: Path | str) -> str:
+    """What ``db_env`` carries: a server database's URL as it is, a SQLite path absolute."""
+    if isinstance(db, str) and "://" in db:
+        return db
+    return str(Path(db).resolve())
 
 
 def _signal_group(proc: subprocess.Popen[bytes], sig: int) -> None:

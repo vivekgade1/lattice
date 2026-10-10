@@ -55,6 +55,22 @@ those tokens on both sides; ``mint_token(user_key)``, when given, adds the
 ``db_factory`` writes the seeded database: ``db_factory(path)`` or, like the importer's,
 ``db_factory(variant, path)``.
 
+**Databases** (``database=``: ``sqlite``, the default, ``postgres``, ``mysql``,
+``clickhouse``). On SQLite everything is as it always was: the factories and services get
+a file path. On a server dialect (:mod:`lattice.spec.db`, :mod:`lattice.spec.dbserver`)
+the check runs on one server -- a throwaway Docker container, or ``database_url`` /
+``$LATTICE_<DIALECT>_URL`` -- and every path above is instead the **canonical URL** of a
+database on it: ``db_factory(url)`` gets an empty, freshly created database once per
+variant (it has the app create its schema, e.g. ``server migrate $URL``, then inserts
+the seed rows, e.g. through ``lattice.spec.db.open_db(url).insert(...)``); every
+scenario, race and seed check then runs on a clone of that seed, dropped after it; the
+app factory, a ``ProcessApp``'s ``db_env`` and the services get the clone's URL (a Go app
+translates it with ``lattice.spec.db.url_for(url, "go-mysql")`` and the like). Layers C,
+D and X run there through the database adapter (C's invariants compiled to the
+dialect's SQL); layer B (the spec's programs run on SQLite) and layer R (whole-table
+SQLite diffs) are skipped, with a note. On ClickHouse layer X does not race an upper
+count bound (no unique constraints or transactions): a note says it is not applicable.
+
 ``runtime`` (``lattice.importer.transport.AppRuntime``; Phase 2 W3) serves a Django or
 Flask app: B, D and R then open the app through its transport, log callers in through
 its auth driver (``runtime.auth.token``, the ``login`` given winning), send tokens as
@@ -76,11 +92,11 @@ import ast
 import inspect
 import json
 import re
-import sqlite3
 import tempfile
 import threading
 import time
 from collections.abc import Callable, Iterator, Mapping, Sequence
+from contextlib import ExitStack
 from dataclasses import dataclass, fields, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -92,6 +108,7 @@ from lattice.check.api_info import MISSING
 from lattice.diagnostics import Severity
 from lattice.importer.verify import Case, CaseRecord, Rule, ValidationEnvelope, form_login, verify
 from lattice.pycheck import CODES, Policy, derive_policy, run_pycheck
+from lattice.spec.db import DB_ERRORS, DbRef, as_ref, check_dialect, open_db
 from lattice.spec.invariants import InvariantError, compile_invariant
 from lattice.spec.model import Await, Invariant, Scenario, Spec, Step, resolve_table, tables_of
 from lattice.spec.report import LAYERS, Accepted, CheckFinding, Report
@@ -118,6 +135,19 @@ class CheckError(Exception):
 
 
 # ---- inputs --------------------------------------------------------------------------------
+
+
+def release_db(make_db: Any, db: Any) -> None:
+    """Drop a database ``make_db`` made, once its scenario or race is done (a server
+    dialect's clone; a SQLite file goes with its temporary directory)."""
+    release = getattr(make_db, "release", None)
+    if release is not None:
+        release(db)
+
+
+def db_dialect(make_db: Any) -> str:
+    """The dialect of the databases ``make_db`` makes (``sqlite`` unless it says)."""
+    return str(getattr(make_db, "dialect", "sqlite"))
 
 
 def as_db_factory(db_factory: Callable[..., Any]) -> Callable[[str, Path], Path]:
@@ -224,23 +254,9 @@ def _fetched_tables(spec: Spec, endpoint: EndpointPlan) -> list[str]:
     return []
 
 
-def _read_tables(db: Path) -> dict[str, list[dict[str, Any]]]:
-    conn = sqlite3.connect(db)
-    try:
-        names = [
-            r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-            )
-        ]
-        out: dict[str, list[dict[str, Any]]] = {}
-        for t in names:
-            cur = conn.execute(f'SELECT * FROM "{t}" ORDER BY rowid')
-            cols = [d[0] for d in cur.description]
-            out[t] = [dict(zip(cols, row, strict=True)) for row in cur]
-        return out
-    finally:
-        conn.close()
+def _read_tables(db: DbRef) -> dict[str, list[dict[str, Any]]]:
+    with open_db(db) as conn:
+        return {t: conn.read_table(t) for t in conn.tables()}
 
 
 def _dispose(app: Any) -> None:
@@ -416,7 +432,7 @@ class _Probe:
     """An ASGI wrapper running the monitor's invariants after each HTTP request; every
     other attribute is the wrapped app's (``state``, ``routes``...)."""
 
-    def __init__(self, app: Any, db: Path, monitor: InvariantMonitor) -> None:
+    def __init__(self, app: Any, db: DbRef, monitor: InvariantMonitor) -> None:
         self._app = app
         self._db = db
         self._monitor = monitor
@@ -442,7 +458,7 @@ class _TransportProbe:
     transport's own ``request`` is watched."""
 
     def __init__(
-        self, inner: Any, db: Path, monitor: InvariantMonitor, baseline: Mapping[str, set[str]]
+        self, inner: Any, db: DbRef, monitor: InvariantMonitor, baseline: Mapping[str, set[str]]
     ) -> None:
         self._inner = inner
         self._db = db
@@ -500,7 +516,7 @@ class InvariantMonitor:
     ``endpoints`` map a label to its request and endpoint, for the findings."""
 
     def __init__(self, invariants: Sequence[tuple[Invariant, str]]) -> None:
-        self.invariants = list(invariants)
+        self.invariants = list(invariants)  # (invariant, its SQL in the database's dialect)
         self.label: str | None = None
         self.requests: dict[str, dict[str, Any]] = {}
         self.endpoints: dict[str, str] = {}
@@ -511,40 +527,41 @@ class InvariantMonitor:
         self.lock = threading.Lock()
 
     @classmethod
-    def for_spec(cls, spec: Spec) -> InvariantMonitor:
+    def for_spec(cls, spec: Spec, dialect: str = "sqlite") -> InvariantMonitor:
+        """The spec's invariants, compiled to ``dialect``'s SQL (the database's)."""
         compiled = []
         for inv in spec.invariants:
             try:
-                compiled.append((inv, compile_invariant(inv, spec.profile)))
+                compiled.append((inv, compile_invariant(inv, spec.profile, dialect)))
             except InvariantError as err:
                 raise CheckError(f"invariant {inv.name!r}: {err}") from err
         return cls(compiled)
 
-    def violations(self, db: Path) -> dict[str, list[dict[str, Any]]]:
-        conn = sqlite3.connect(db)
-        conn.row_factory = sqlite3.Row
-        try:
+    def violations(self, db: DbRef) -> dict[str, list[dict[str, Any]]]:
+        if not self.invariants:
+            return {}
+        with open_db(db) as conn:
             out = {}
             for inv, sql in self.invariants:
                 try:
-                    rows = [dict(r) for r in conn.execute(sql)]
-                except sqlite3.Error as err:
+                    rows = conn.query_dicts(sql)
+                except DB_ERRORS as err:
                     rows = [{"error": f"the invariant's SQL failed: {err}"}]
                 out[inv.name] = rows
             return out
-        finally:
-            conn.close()
 
-    def violation_keys(self, db: Path) -> dict[str, set[str]]:
+    def violation_keys(self, db: DbRef) -> dict[str, set[str]]:
         return {n: {_row_key(r) for r in rows} for n, rows in self.violations(db).items()}
 
-    def set_seed(self, db: Path) -> None:
+    def set_seed(self, db: DbRef) -> None:
         """The seed's violations: reported once (case ``(seed)``), never blamed on a
         request."""
         self._seed = self.violation_keys(db)
         self.check(db, SEED_CASE, baseline={})
 
-    def check(self, db: Path, label: str, baseline: Mapping[str, set[str]] | None = None) -> None:
+    def check(
+        self, db: DbRef, label: str, baseline: Mapping[str, set[str]] | None = None
+    ) -> None:
         """Report the violations of ``db`` not in ``baseline`` (default: the seed's)."""
         base = self._seed if baseline is None else baseline
         found = self.violations(db)
@@ -557,7 +574,7 @@ class InvariantMonitor:
         def factory(db_path: Path) -> Any:
             if labels is not None:
                 self.label = next(labels, None)
-            return _Probe(app_factory(db_path), Path(db_path), self)
+            return _Probe(app_factory(db_path), as_ref(db_path), self)
 
         return factory
 
@@ -572,13 +589,13 @@ class InvariantMonitor:
         opens runs the invariants on the app's database after every request its client
         sends, once the answer is read in full; violations the database had when the app
         was built are not blamed on a request. ``labels`` as for :meth:`wrap`."""
-        built: dict[int, tuple[Any, Path, dict[str, set[str]]]] = {}
+        built: dict[int, tuple[Any, DbRef, dict[str, set[str]]]] = {}
 
-        def factory(db_path: Path) -> Any:
+        def factory(db_path: DbRef) -> Any:
             if labels is not None:
                 self.label = next(labels, None)
             app = app_factory(db_path)
-            built[id(app)] = (app, Path(db_path), self.violation_keys(Path(db_path)))
+            built[id(app)] = (app, as_ref(db_path), self.violation_keys(as_ref(db_path)))
             return app
 
         def transport(app: Any, *, raise_errors: bool = False) -> Any:
@@ -595,7 +612,9 @@ class InvariantMonitor:
         watched = replace(runtime, transport=transport, dispose=(*runtime.dispose, forget))
         return factory, watched
 
-    def after(self, db: Path, scope: Mapping[str, Any], baseline: Mapping[str, set[str]]) -> None:
+    def after(
+        self, db: DbRef, scope: Mapping[str, Any], baseline: Mapping[str, set[str]]
+    ) -> None:
         label = self.label or f"{scope.get('method')} {scope.get('path')}"
         found = self.violations(db)
         for inv, _ in self.invariants:
@@ -1229,28 +1248,58 @@ def _stored(schema: Schema, column: str, value: Any) -> Any:
     return value
 
 
-def _insert_given(spec: Spec, db: Path, given: Mapping[str, list[dict[str, Any]]]) -> None:
-    conn = sqlite3.connect(db)
+def _insert_given(spec: Spec, db: DbRef, given: Mapping[str, list[dict[str, Any]]]) -> None:
+    """A scenario's ``given`` rows (one-of values in their stored spellings), inserted
+    through the database's adapter."""
+    batches = []
+    for table, rows in given.items():
+        found = resolve_table(spec.profile, table)
+        if found is None:
+            raise CheckError(f"given rows of an unknown table {table!r}")
+        _, sql, schema = found
+        batches.append((sql, [{c: _stored(schema, c, row[c]) for c in row} for row in rows]))
+    with open_db(db) as conn:
+        for sql, rows in batches:
+            conn.insert(sql, rows)
+
+
+def _plain(value: Any) -> Any:
+    """A server driver's value as SQLite would answer it: a Decimal as a number, a UUID
+    as its text (a SQLite value is answered as it is)."""
+    from decimal import Decimal
+    from uuid import UUID
+
+    if isinstance(value, Decimal):
+        return int(value) if value == value.to_integral_value() else float(value)
+    if isinstance(value, UUID):
+        return str(value)
+    return value
+
+
+def _same_time(expected: Any, actual: Any) -> bool | None:
+    """A date or datetime the driver answered, against the spec's ISO text (None: not
+    that case)."""
+    from datetime import UTC, date, datetime
+
+    if not (isinstance(actual, date) and isinstance(expected, str)):
+        return None
     try:
-        for table, rows in given.items():
-            found = resolve_table(spec.profile, table)
-            if found is None:
-                raise CheckError(f"given rows of an unknown table {table!r}")
-            _, sql, schema = found
-            for row in rows:
-                cols = list(row)
-                marks = ", ".join("?" for _ in cols)
-                names = ", ".join(f'"{c}"' for c in cols)
-                conn.execute(
-                    f'INSERT INTO "{sql}" ({names}) VALUES ({marks})',
-                    [_stored(schema, c, row[c]) for c in cols],
-                )
-        conn.commit()
-    finally:
-        conn.close()
+        want: Any = datetime.fromisoformat(expected.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if not isinstance(actual, datetime):
+        return want.date() == actual if want.time() == datetime.min.time() else False
+    if (want.tzinfo is None) != (actual.tzinfo is None):  # a naive value is UTC
+        want = want.replace(tzinfo=UTC) if want.tzinfo is None else want
+        actual = actual.replace(tzinfo=UTC) if actual.tzinfo is None else actual
+    return bool(want == actual)
 
 
 def _same(expected: Any, actual: Any) -> bool:
+    timed = _same_time(expected, actual)
+    if timed is not None:
+        return timed
+    expected, actual = _plain(expected), _plain(actual)
     if isinstance(expected, bool) or isinstance(actual, bool):
         return expected == actual
     if isinstance(expected, float | int) and isinstance(actual, float | int):
@@ -1274,11 +1323,16 @@ def subset(expected: Any, actual: Any) -> bool:
     return _same(expected, actual)
 
 
-def _expect_db(spec: Spec, db: Path, expect: Mapping[str, Any]) -> list[str]:
+def _where(conn: Any, schema: Schema, where: Mapping[str, Any]) -> tuple[str, list[Any]]:
+    """An ``expect_db`` entry's ``where`` as SQL for ``conn``'s dialect (one-of values in
+    their stored spellings; ``None`` is ``IS NULL``)."""
+    return conn.where_sql({c: (None if v is None else _stored(schema, c, v))
+                           for c, v in where.items()})  # fmt: skip
+
+
+def _expect_db(spec: Spec, db: DbRef, expect: Mapping[str, Any]) -> list[str]:
     problems: list[str] = []
-    conn = sqlite3.connect(db)
-    conn.row_factory = sqlite3.Row
-    try:
+    with open_db(db) as conn:
         for table, cond in expect.items():
             found = resolve_table(spec.profile, table)
             if found is None:
@@ -1286,17 +1340,8 @@ def _expect_db(spec: Spec, db: Path, expect: Mapping[str, Any]) -> list[str]:
                 continue
             _, sql, schema = found
             where = dict(cond.get("where") or {})
-            clauses, args = [], []
-            for c, v in where.items():
-                if v is None:
-                    clauses.append(f'"{c}" IS NULL')
-                else:
-                    clauses.append(f'"{c}" = ?')
-                    args.append(_stored(schema, c, v))
-            query = f'SELECT * FROM "{sql}"' + (
-                " WHERE " + " AND ".join(clauses) if clauses else ""
-            )
-            rows = [dict(r) for r in conn.execute(query, args)]
+            clause, args = _where(conn, schema, where)
+            rows = conn.query_dicts(f"SELECT * FROM {conn.quote_ident(sql)}{clause}", args)
             what = f"db {table}" + (f" where {where}" if where else "")
             if "count" in cond and len(rows) != cond["count"]:
                 problems.append(f"{what}: expected {cond['count']} rows, found {len(rows)}")
@@ -1307,9 +1352,8 @@ def _expect_db(spec: Spec, db: Path, expect: Mapping[str, Any]) -> list[str]:
                     for c, v in cond["equals"].items():
                         want = _stored(schema, c, v)
                         if not _same(want, row.get(c)):
-                            problems.append(f"{what}: {c} is {row.get(c)!r}, expected {want!r}")
-    finally:
-        conn.close()
+                            got = _plain(row.get(c))
+                            problems.append(f"{what}: {c} is {got!r}, expected {want!r}")
     return problems
 
 
@@ -1359,11 +1403,10 @@ def expect_text(expect: Mapping[str, Any]) -> str:
     return "; ".join(parts)
 
 
-def _observed_counts(spec: Spec, db: Path, expect: Mapping[str, Any]) -> dict[str, Any]:
+def _observed_counts(spec: Spec, db: DbRef, expect: Mapping[str, Any]) -> dict[str, Any]:
     """Per ``expect_db`` entry, how many rows match its ``where`` now."""
     out: dict[str, Any] = {}
-    conn = sqlite3.connect(db)
-    try:
+    with open_db(db) as conn:
         for table, cond in expect.items():
             where = dict(cond.get("where") or {}) if isinstance(cond, Mapping) else {}
             label = f"{table}" + (f" where {where}" if where else "")
@@ -1372,22 +1415,13 @@ def _observed_counts(spec: Spec, db: Path, expect: Mapping[str, Any]) -> dict[st
                 out[label] = "unknown table"
                 continue
             _, sql, schema = found
-            clauses, args = [], []
-            for c, v in where.items():
-                if v is None:
-                    clauses.append(f'"{c}" IS NULL')
-                else:
-                    clauses.append(f'"{c}" = ?')
-                    args.append(_stored(schema, c, v))
-            query = f'SELECT COUNT(*) FROM "{sql}"' + (
-                " WHERE " + " AND ".join(clauses) if clauses else ""
-            )
+            clause, args = _where(conn, schema, where)
             try:
-                out[label] = conn.execute(query, args).fetchone()[0]
-            except sqlite3.Error as err:
+                out[label] = conn.scalar(
+                    f"SELECT COUNT(*) FROM {conn.quote_ident(sql)}{clause}", args
+                )
+            except DB_ERRORS as err:
                 out[label] = f"read failed: {err}"
-    finally:
-        conn.close()
     return out
 
 
@@ -1403,7 +1437,7 @@ def missing_services(spec: Spec, services: Mapping[str, Any]) -> list[str]:
 
 
 def run_await(
-    spec: Spec, step: Await, db: Path, services: Services
+    spec: Spec, step: Await, db: DbRef, services: Services
 ) -> tuple[str, list[str], dict[str, Any]]:
     """Start ``step``'s service on ``db``, poll until its ``expect_db`` holds or
     ``within_s`` runs out, and stop the service (always). Answers the verdict
@@ -1427,7 +1461,7 @@ def run_await(
             code = service.poll()  # before the read: an exited service's writes are seen
             try:
                 problems = _expect_db(spec, db, step.expect_db)
-            except sqlite3.Error as err:
+            except DB_ERRORS as err:
                 problems = [f"db read failed: {err}"]
             if not problems:
                 details["seconds"] = round(time.monotonic() - started, 3)
@@ -1485,8 +1519,9 @@ def _run_scenario(
             )
         )
 
-    with tempfile.TemporaryDirectory(prefix="lattice-check-d-") as name:
+    with tempfile.TemporaryDirectory(prefix="lattice-check-d-") as name, ExitStack() as cleanup:
         db = make_db("seed", Path(name) / "scenario.db")
+        cleanup.callback(release_db, make_db, db)
         if scenario.given:
             _insert_given(spec, db, scenario.given)
             if monitor is not None:
@@ -1609,7 +1644,7 @@ def _await_step(
     spec: Spec,
     step: Await,
     label: str,
-    db: Path,
+    db: DbRef,
     report: Report,
     monitor: InvariantMonitor | None,
     baseline: Mapping[str, set[str]],
@@ -1782,6 +1817,8 @@ def check(
     x_budget: int = 60,
     x_timeout: float = 30.0,
     services: Services | None = None,
+    database: str = "sqlite",
+    database_url: str | None = None,
 ) -> Report:
     """Check the app built by ``app_factory(db_path)`` against ``spec`` in ``layers``
     (letters of ABCDRX; see the module docstring). Layer X: ``x_k`` copies per
@@ -1804,8 +1841,18 @@ def check(
     too. ``rules``: verify's representation rules (default: 422 bodies compare by the
     fields they flag). ``natives``/``settings``: for the spec's programs. ``baseline``:
     the app's accepted findings (:class:`Accepted`; with ``spec.approved``, the spec's
-    own), reported but not failing. Raises
-    :class:`CheckError` when the check cannot run."""
+    own), reported but not failing. ``database``: ``sqlite`` (the default: ``db_factory``,
+    ``app_factory`` and services get a file path), ``postgres``, ``mysql`` or
+    ``clickhouse`` (they get the canonical URL of a database on a server, see
+    :mod:`lattice.spec.db`): a throwaway Docker container, or the server at
+    ``database_url`` (or ``$LATTICE_<DIALECT>_URL``) -- :mod:`lattice.spec.dbserver`.
+    Raises :class:`CheckError` when the check cannot run."""
+    try:
+        dialect = check_dialect(database)
+    except ValueError as err:
+        raise CheckError(str(err)) from err
+    if database_url is not None and dialect == "sqlite":
+        raise CheckError("database_url is for a server database: give database= too")
     run = _layers(layers)
     problems = validate(spec)
     if problems:
@@ -1813,7 +1860,6 @@ def check(
     if login is None and login_path is not None and spec.users:
         login = form_login(login_path, dict(spec.users))
     report = Report(layers=run, unchecked=[u.text for u in spec.unchecked])
-    make_db = as_db_factory(db_factory)
     if runtime is None:
         from lattice.spec.process import process_runtime, returns_process_app
 
@@ -1832,9 +1878,79 @@ def check(
 
     if "A" in run:
         _layer_a(spec, report, app_dir, package, policy, runtime, go_src)
+    opts = {
+        "login": login, "mint_token": mint_token, "runtime": runtime, "harness": harness,
+        "cases_for": cases_for, "extra_cases": extra_cases, "rules": rules,
+        "natives": natives, "settings": settings, "hash_columns": hash_columns,
+        "max_rows": max_rows, "sessions": sessions, "scheme": scheme,
+        "rule_items": rule_items, "probe_options": probe_options, "x_k": x_k,
+        "x_repeats": x_repeats, "x_budget": x_budget, "x_timeout": x_timeout,
+    }  # fmt: skip
+    if dialect == "sqlite":
+        _run_layers(spec, report, run, app_factory, as_db_factory(db_factory), opts)
+    else:
+        _on_server(spec, report, run, app_factory, db_factory, dialect, database_url, opts)
+    order = {layer: i for i, layer in enumerate(LAYERS)}
+    report.findings.sort(key=lambda f: order[f.layer])
+    report.apply_baseline((*spec.approved, *baseline))
+    return report
+
+
+def _on_server(
+    spec: Spec,
+    report: Report,
+    run: str,
+    app_factory: AppFactory,
+    db_factory: Callable[..., Any],
+    dialect: str,
+    database_url: str | None,
+    opts: Mapping[str, Any],
+) -> None:
+    """The dynamic layers on a server database: one server for the check (a container
+    removed at the end, or the given one), the seed built once, a clone per use."""
+    from lattice.spec.dbserver import DbServerError, ServerDatabases, server_for
+
+    skipped = [x for x in "BR" if x in run]
+    for x in skipped:
+        what = ("compares the app with the spec's programs, which the Lattice runtime "
+                "serves on SQLite") if x == "B" else (
+                "reads and diffs whole tables per probe, a SQLite-only harness")  # fmt: skip
+        report.notes.append(f"layer {x} skipped on {dialect}: it {what}; run it with "
+                            "database='sqlite'")  # fmt: skip
+    run = "".join(x for x in run if x not in "BR")
+    if not any(x in run for x in "CDX"):
+        return
+    try:
+        server, owned = server_for(dialect, database_url)
+    except DbServerError as err:
+        raise CheckError(str(err)) from err
+    dbs = ServerDatabases(server, db_factory)
+    try:
+        _run_layers(spec, report, run, app_factory, dbs, opts)
+        report.notes.append(dbs.timing_note())
+    finally:
+        dbs.close()
+        # an owned server's container is removed; a given server's admin connection closed
+        server.stop()
+        if not owned:
+            report.notes.append(f"databases created on {server.describe()} were dropped")
+
+
+def _run_layers(
+    spec: Spec,
+    report: Report,
+    run: str,
+    app_factory: AppFactory,
+    make_db: Callable[[str, Path], Any],
+    opts: Mapping[str, Any],
+) -> None:
+    """Layers B, C, D, R and X (those of ``run``) on the databases ``make_db`` makes."""
+    login = opts["login"]
+    mint_token, runtime, harness = opts["mint_token"], opts["runtime"], opts["harness"]
+    dialect = db_dialect(make_db)
     monitor: InvariantMonitor | None = None
     if "C" in run:
-        monitor = InvariantMonitor.for_spec(spec)
+        monitor = InvariantMonitor.for_spec(spec, dialect)
         if not monitor.invariants:
             report.notes.append("layer C: the spec has no invariants")
         with tempfile.TemporaryDirectory(prefix="lattice-check-c-") as name:
@@ -1844,7 +1960,10 @@ def check(
                 raise
             except Exception as err:
                 raise CheckError(f"the db factory failed: {type(err).__name__}: {err}") from err
-            monitor.set_seed(seed_db)
+            try:
+                monitor.set_seed(seed_db)
+            finally:
+                release_db(make_db, seed_db)
         if "B" not in run and "D" not in run and "R" not in run:
             report.notes.append("layer C ran on the seed only: run it with B or D")
     if "B" in run:
@@ -1856,13 +1975,13 @@ def check(
             monitor,
             login=login,
             mint_token=mint_token,
-            generate=cases_for,
-            extra_cases=extra_cases,
-            rules=rules,
-            natives=natives,
-            settings=settings,
-            hash_columns=hash_columns,
-            max_rows=max_rows,
+            generate=opts["cases_for"],
+            extra_cases=opts["extra_cases"],
+            rules=opts["rules"],
+            natives=opts["natives"],
+            settings=opts["settings"],
+            hash_columns=opts["hash_columns"],
+            max_rows=opts["max_rows"],
             runtime=runtime,
         )
     if "D" in run:
@@ -1880,11 +1999,11 @@ def check(
             monitor,
             login=login,
             mint_token=mint_token,
-            sessions=sessions,
-            scheme=scheme,
-            only=rule_items,
+            sessions=opts["sessions"],
+            scheme=opts["scheme"],
+            only=opts["rule_items"],
             runtime=runtime,
-            options=probe_options,
+            options=opts["probe_options"],
         )
     if "X" in run:
         from lattice.spec.race import layer_x
@@ -1897,17 +2016,13 @@ def check(
             login=login,
             runtime=runtime,
             monitor=None if _asgi(runtime) else monitor,
-            k=x_k,
-            repeats=x_repeats,
-            budget=x_budget,
-            timeout=x_timeout,
+            k=opts["x_k"],
+            repeats=opts["x_repeats"],
+            budget=opts["x_budget"],
+            timeout=opts["x_timeout"],
         )
     if monitor is not None:
         report.findings.extend(monitor.findings)
-    order = {layer: i for i, layer in enumerate(LAYERS)}
-    report.findings.sort(key=lambda f: order[f.layer])
-    report.apply_baseline((*spec.approved, *baseline))
-    return report
 
 
 __all__ = [
