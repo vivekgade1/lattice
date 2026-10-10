@@ -764,12 +764,11 @@ class Rebuilder:
             import traceback
 
             traceback.print_exc(file=sys.stderr)
+            err = {"kind": "internal", "message": f"{type(exc).__name__}: {exc}"}
+            self._fail_round(run, err)
             with self.lock:
                 if run.record["status"] not in FINISHED:
-                    run.record["error"] = {
-                        "kind": "internal",
-                        "message": f"{type(exc).__name__}: {exc}",
-                    }
+                    run.record["error"] = err
                     self._finish(run, "gave_up")
         finally:
             if run.stop.is_set():
@@ -816,6 +815,13 @@ class Rebuilder:
             else:
                 prompt = findings_prompt(n, last_check, last_gates)
             agent = self._agent_step(run, n, prompt)
+            # record what the agent step cost BEFORE any later step can raise (B3)
+            u = agent.get("usage") or {}
+            with self.lock:
+                rnd["agent"] = u
+                for k in ("cost_usd", "duration_ms", "input_tokens", "output_tokens"):
+                    rec["usage"][k] = rec["usage"].get(k, 0) + (u.get(k) or 0)
+                rec["usage"]["cost_usd"] = round(rec["usage"]["cost_usd"], 6)
             if run.stop.is_set():
                 return
             # integrity: the contract must be the base commit's, byte for byte
@@ -865,13 +871,9 @@ class Rebuilder:
                     check=check,
                     gates=gates,
                     spec_edited=edited,
-                    agent=agent.get("usage") or {},
+                    agent=u,
                     error=agent.get("error"),
                 )
-                u = agent.get("usage") or {}
-                for k in ("cost_usd", "duration_ms", "input_tokens", "output_tokens"):
-                    rec["usage"][k] = rec["usage"].get(k, 0) + (u.get(k) or 0)
-                rec["usage"]["cost_usd"] = round(rec["usage"]["cost_usd"], 6)
             self.log(
                 f"rebuild {rec['id']}: round {n} {check['verdict']} "
                 f"({len(findings)} finding(s), {len(files)} file(s) changed)"
@@ -888,6 +890,29 @@ class Rebuilder:
         with self.lock:
             if not run.stop.is_set():
                 self._finish(run, "gave_up")
+
+    def _fail_round(self, run: _Run, err: dict[str, str]) -> None:
+        """A step crashed (Studio's own bug): the open round gets ``error`` and the agent's
+        changed files from the worktree status. It never gets ``gates``/``check`` it did not
+        produce. The usage was already summed when the agent step ended."""
+        with self.lock:
+            rounds = run.record["rounds"]
+            rnd = rounds[-1] if rounds else None
+            if rnd is None or rnd.get("error"):
+                return
+        files: list[str] = []
+        try:
+            out = _git_ok(
+                run.worktree, "status", "--porcelain", "-uall", "--", ".", *_junk_pathspecs()
+            )
+            files = sorted({ln[3:].split(" -> ")[-1].strip('"') for ln in out.splitlines() if ln})
+        except Exception:  # noqa: BLE001 -- best effort; the error is already being recorded
+            pass
+        with self.lock:
+            rnd["error"] = err
+            rnd["finished"] = rnd.get("finished") or _now()
+            if not rnd.get("files_changed"):
+                rnd["files_changed"] = files
 
     def _finish(self, run: _Run, status: str) -> None:
         """With the lock held: the end state and the changes' build."""
@@ -1158,8 +1183,10 @@ class Rebuilder:
             sha = _git_ok(wt, "rev-parse", "HEAD")
             ns = _git_ok(wt, "diff", "--name-status", f"{run.base}..{sha}")
         except RuntimeError as exc:
+            err = {"kind": "git", "message": str(exc)}
+            self._fail_round(run, err)
             with self.lock:
-                rec["error"] = {"kind": "git", "message": str(exc)}
+                rec["error"] = err
                 self._finish(run, "gave_up")
             return
         name_status = [" ".join(x.split("\t")) for x in ns.splitlines() if x.strip()]

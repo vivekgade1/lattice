@@ -505,6 +505,36 @@ def test_a_crashing_agent_is_an_error_round_and_the_loop_goes_on(repo: Path, fak
     cleanup(repo, rec)
 
 
+def test_a_crash_after_the_agent_keeps_its_usage_and_marks_the_round(
+    repo: Path, fake: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The real run: the snapshot crashed after a 6.5 minute agent turn; usage showed $0.
+    plan(fake, {"files": {"notes.txt": "half\n"}, "text": "Edited."})
+    calls = {"n": 0}
+    real = Rebuilder._tree
+
+    def boom(self: Rebuilder, run: Any) -> str:
+        calls["n"] += 1
+        if calls["n"] >= 2:  # the base snapshot works; the post-agent one raises
+            raise RuntimeError("git add failed: paths are ignored")
+        return real(self, run)
+
+    monkeypatch.setattr(Rebuilder, "_tree", boom)
+    rb = rebuilder(repo, fake)
+    rec = finish(rb, rb.start([CHANGE])["id"])
+    assert rec["status"] == "gave_up"
+    assert rec["error"]["kind"] == "internal" and "paths are ignored" in rec["error"]["message"]
+    assert rec["usage"]["cost_usd"] == 0.25 and rec["usage"]["output_tokens"] == 20
+    assert rec["usage"]["duration_ms"] == 1000
+    (rnd,) = rec["rounds"]
+    assert rnd["error"] == rec["error"] and rnd["finished"] is not None
+    assert rnd["agent"]["cost_usd"] == 0.25 and rnd["agent"]["session_id"] == SID
+    assert rnd["files_changed"] == ["notes.txt"]
+    assert "gates" not in rnd and rnd.get("check") is None  # no gate ran
+    assert rb.build_of("c1")["state"] == "gave_up"
+    cleanup(repo, rec)
+
+
 def test_the_stub_agent_and_temp_worktrees(repo: Path, fake: Path) -> None:
     (repo / "stub-rebuild.json").write_text(
         json.dumps(

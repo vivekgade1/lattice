@@ -90,13 +90,28 @@ export function pollRebuild(id, onUpdate, anchor = null) {
 
 // ------------------------------------------------------------------ the card
 
+/** A round the Studio itself crashed in: it has an error and no gate ever ran. */
+export function roundCrashed(r) {
+  return Boolean(r && r.error && !(r.gates || []).length && !r.check);
+}
+
+/** Seconds of one round from its own started/finished, never from "now" or the mount time.
+ *  Empty while the round is open or when the record has no usable stamps. */
+export function roundSeconds(r) {
+  const a = Date.parse(r?.started);
+  const b = Date.parse(r?.finished);
+  if (Number.isNaN(a) || Number.isNaN(b)) return "";
+  return seconds(Math.max(0, b - a));
+}
+
 function elapsed(rebuild) {
   const start = Date.parse(rebuild.started);
   if (Number.isNaN(start)) return "";
   let end = Date.now();
   if (!LIVE.has(rebuild.status)) {
-    const last = (rebuild.rounds || []).map((r) => Date.parse(r.started)).filter((x) => !Number.isNaN(x));
-    end = last.length ? Math.max(...last) : start;
+    const stamps = [rebuild.finished, ...(rebuild.rounds || []).map((r) => r.finished || r.started)]
+      .map((x) => Date.parse(x)).filter((x) => !Number.isNaN(x));
+    end = stamps.length ? Math.max(...stamps) : start;
   }
   const s = Math.max(0, Math.round((end - start) / 1000));
   return s >= 60 ? `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s` : `${s}s`;
@@ -128,7 +143,12 @@ function roundRow(r, rebuild, opts, animate) {
   const isNew = animate && !seen.has(key);
   seen.add(key);
   const c = r.check;
-  const verdict = c
+  const crashed = roundCrashed(r);
+  const verdict = crashed
+    ? h("div", { class: "rb-verdict is-fail" },
+        h("span", { class: "rb-verdict-word" }, icon("triangle"), "Stopped by an error"),
+        h("span", { class: "muted" }, "no check ran"))
+    : c
     ? h("div", { class: ["rb-verdict", c.verdict === "pass" ? "is-pass" : "is-fail"] },
         h("span", { class: "rb-verdict-word" }, icon(c.verdict === "pass" ? "check" : "diamond"), c.verdict === "pass" ? "Passes" : "Fails"),
         layerCounts(c.counts))
@@ -137,8 +157,9 @@ function roundRow(r, rebuild, opts, animate) {
   return h("li", { class: ["rb-round", isNew && "is-new"], "data-round": String(r.n) },
     h("span", { class: "rb-round-n" }, `Round ${r.n}`),
     h("div", {},
-      h("p", { class: "rb-summary" }, r.agent_summary || (c ? "No summary." : "The agent is editing the code and running the checker.")),
-      (r.files_changed || []).length ? h("p", { class: "rb-files" }, r.files_changed.join(", ")) : null,
+      h("p", { class: "rb-summary" }, r.agent_summary || (c || crashed ? "No summary." : "The agent is editing the code and running the checker.")),
+      (r.files_changed || []).length ? h("p", { class: "rb-files" }, `${crashed ? "Files the agent changed: " : ""}${r.files_changed.join(", ")}`) : null,
+      roundCost(r),
     ),
     verdict,
     (r.spec_edited || []).length
@@ -155,9 +176,23 @@ function roundRow(r, rebuild, opts, animate) {
   );
 }
 
+/** The agent's cost and time for one round, from the round's own usage and stamps. */
+function roundCost(r) {
+  const a = r.agent || {};
+  const bits = [money(a.cost_usd), a.duration_ms ? seconds(a.duration_ms) : roundSeconds(r)].filter(Boolean);
+  return bits.length ? h("p", { class: "rb-round-cost muted small" }, bits.join(" · ")) : null;
+}
+
 function errorWords(err) {
-  const kind = { usage_limit: "The agent hit its usage limit", timeout: "The agent step timed out", cli: "The agent did not finish" }[err.kind] || "The round had an error";
-  return `${kind}${err.message ? `: ${err.message}` : "."}`;
+  const kind = {
+    usage_limit: "The agent hit its usage limit",
+    timeout: "The agent step timed out",
+    cli: "The agent did not finish",
+    internal: "Studio stopped the round with an error",
+    git: "Studio could not commit the result",
+  }[err.kind] || "The round had an error";
+  const tag = err.kind ? ` [${err.kind}]` : "";
+  return `${kind}${tag}${err.message ? `: ${err.message}` : "."}`;
 }
 
 /** One line per gate command (exit code, seconds) with its output tail behind a disclosure. */
@@ -276,13 +311,24 @@ export function rebuildCard(rebuild, opts = {}) {
   } else if (rebuild.status === "gave_up") {
     const last = rounds[rounds.length - 1];
     const left = last?.check?.findings || [];
+    const before = roundCrashed(last); // an error, and no gate ran
+    const commitFailed = !before && rebuild.error?.kind === "git";
+    const headline = before || commitFailed ? `Stopped by an error after ${plural(current, "round")}` : `Gave up after ${plural(current, "round")}`;
+    const banner = before
+      ? "The rebuild stopped before the checks ran."
+      : commitFailed
+        ? "The checks passed, but Studio could not commit the result."
+        : left.length ? `${plural(left.length, "finding")} left:` : "The checks still fail.";
     result = h("section", { class: "rb-result is-gave_up", "aria-label": "Result" },
-      h("h3", {}, `Gave up after ${plural(current, "round")}`),
-      h("p", {}, left.length ? `${plural(left.length, "finding")} left:` : "The checks still fail."),
+      h("h3", {}, headline),
+      h("p", {}, banner),
       left.length ? h("div", { class: "rb-findings rb-findings-flat" }, left.map((f) => findingChip(f, opts))) : null,
       errorLine,
       usage,
-      rebuild.branch ? h("p", { class: "muted small" }, "The agent's uncommitted edits stay on ", h("code", { class: "s2-mono" }, rebuild.branch), "; nothing is merged.") : null,
+      rebuild.branch
+        ? h("p", { class: "muted small" }, "The agent's uncommitted edits stay on ", h("code", { class: "s2-mono" }, rebuild.branch),
+            rebuild.worktree ? [" in the worktree ", h("code", { class: "s2-mono" }, rebuild.worktree)] : null, "; nothing is merged.")
+        : null,
       h("div", { class: "row-actions" },
         h("button", {
           type: "button", class: "btn",

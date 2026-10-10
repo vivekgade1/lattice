@@ -646,3 +646,45 @@ def test_post_check_moves_last_check(base: str) -> None:
 def test_mock_reads_fixtures_from_the_package() -> None:
     assert FIXTURE_DIR == Path(mock_server.__file__).parent / "mock"
     assert (WEB_DIR / "index.html").is_file()
+
+
+def test_rebuild_card_handles_a_crashed_round() -> None:
+    """The card reads a round with `error` and no `gates` as 'Stopped by an error'.
+
+    There is no JS test harness for DOM modules, so: string checks on the module, plus the
+    exported pure helpers evaluated in node when it is installed."""
+    src = (WEB_DIR / "js" / "views" / "rebuilds.js").read_text()
+    for needle in (
+        "Stopped by an error",
+        "The rebuild stopped before the checks ran.",
+        "Rebuild again",
+        "export function roundCrashed",
+        "rebuild.finished",
+        "r.finished",
+    ):
+        assert needle in src, needle
+    assert "Date.now()" not in src.split("function elapsed")[0].split("roundSeconds")[1]
+    css = (WEB_DIR / "css" / "studio2.css").read_text()
+    assert not re.search(r"rb-[a-z-]+[^{]*\{[^}]*#[0-9a-fA-F]{3,8}\b", css)
+    if shutil.which("node") is None:
+        return
+    m = re.search(r"export function roundCrashed.*?\n}\n", src, re.S)
+    m2 = re.search(r"export function roundSeconds.*?\n}\n", src, re.S)
+    assert m and m2
+    script = (
+        "function seconds(ms){return Math.round(ms/1000)+'s'}\n"
+        + m.group(0).replace("export ", "")
+        + m2.group(0).replace("export ", "")
+        + """
+const ok = roundCrashed({n:1, error:{kind:'internal',message:'x'}, files_changed:['a']});
+const gated = roundCrashed({error:{kind:'cli'}, gates:[{exit_code:1}], check:{verdict:'fail'}});
+const secs = roundSeconds({started:'2026-01-01T00:00:00Z', finished:'2026-01-01T00:06:35Z'});
+const open = roundSeconds({started:'2026-01-01T00:00:00Z', finished:null});
+console.log(JSON.stringify([ok, gated, secs, open]));
+"""
+    )
+    r = subprocess.run(
+        ["node", "--input-type=commonjs", "-e", script], capture_output=True, text=True
+    )
+    assert r.returncode == 0, r.stderr
+    assert json.loads(r.stdout) == [True, False, "395s", ""]
