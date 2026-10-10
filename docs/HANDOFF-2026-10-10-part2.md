@@ -92,3 +92,28 @@ epg graph with objective gates; agents never commit, the orchestrator does. Pre-
 report blind and post-hoc separately. Never edit `docs/design/lattice-visualization-figma-spec.md`. Never
 commit `app.db`, `db.sqlite`, `reports/`, `research_notes/`, `docs/LLM-Native...md`, `.DS_Store`. Never
 read `.env`. Do not `git stash` in this repo during verification.
+
+## Addendum: the Streak project (first new project built with Lattice)
+
+Repo `~/Documents/streak` (not in this repo): mobile habit-tracker API, Go + Gin + GORM + MySQL.
+State at HEAD `31b1f5b`: spec final (143 rules, 153 scenarios, 15 invariants, 1 service), Go skeleton
+and MySQL harness set up, `./check.sh` runs clean and is red as expected (152 findings, all
+"no endpoint yet"). The app is not built. Metrics history: `metrics/phases.jsonl`.
+
+Lattice-side findings from it (backlog):
+
+1. **MySQL adapter and ISO `Z` instants.** `_stored`/MysqlDatabase inserts `2026-03-01T00:00:00Z`
+   as text; strict MySQL 8.4 rejects the `Z` (error 1292). The Streak harness works around it by
+   relaxing the throwaway container's global `sql_mode`, which also makes spec `given` rows
+   non-strict. Fix in Lattice: convert ISO-Z strings for DATE/DATETIME columns.
+2. **A missing spec table aborts the whole check** (uncaught DatabaseError 1146 in `_expect_db`)
+   instead of a finding. The Streak skeleton therefore creates all tables up front.
+3. **Accepted change sets do not mark questions answered:** the 17 questions stay open in the trace
+   with their defaults rewritten. Needs an answer-recording path in Studio.
+4. **The DSL cannot express** (so these rules stay Unchecked): request headers (426, Retry-After),
+   arbitrary Authorization headers, carrying a value between steps (next_cursor, returned tokens),
+   response header reads, pattern matches in `expect_body`.
+5. **Studio's in-process mysql check** needs `lattice[db]` (PyMySQL) in Studio's venv; the project's
+   own `./check.sh` uses the project's uv env, so the rebuild gate is unaffected.
+6. **Studio's commit message** is the full request text and carries its own co-author trailer.
+7. Layer B is skipped on MySQL by design (served on SQLite).
