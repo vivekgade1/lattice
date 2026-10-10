@@ -1211,7 +1211,10 @@ def _targets(changes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _junk_pathspecs() -> list[str]:
-    return [f":(exclude,glob)**/{j}/**" for j in JUNK] + [f":(exclude){j}" for j in JUNK]
+    # Globs only: a literal ``:(exclude).pytest_cache`` that names an existing, gitignored
+    # path makes ``git add`` exit 1 ("paths are ignored"), which killed a real rebuild after
+    # the agent had run pytest in the worktree. ``**/`` also matches the root.
+    return [f":(exclude,glob)**/{j}/**" for j in JUNK] + [f":(exclude,glob)**/{j}" for j in JUNK]
 
 
 def _snapshot_tree(wt: Path) -> str:

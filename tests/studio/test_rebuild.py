@@ -423,9 +423,17 @@ def test_the_gate_runs_in_the_worktree_with_it_first_on_the_import_path(
 
 
 @pytest.mark.skipif(not __import__("shutil").which("uv"), reason="uv is not installed")
-def test_a_uv_run_gate_imports_the_worktree_and_never_syncs(tmp_path: Path, fake: Path) -> None:
+def test_a_uv_run_gate_imports_the_worktree_and_never_syncs(
+    tmp_path: Path, fake: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """A uv project: ``uv run`` in the worktree uses the main checkout's .venv (no new venv,
-    no sync: UV_NO_SYNC) and imports the rebuilt module from the worktree."""
+    no sync: UV_NO_SYNC) and imports the rebuilt module from the worktree.
+
+    Isolated from the ambient environment: when Studio runs this suite as a rebuild gate
+    (Studio rebuilding itself) the gate env already carries UV_PROJECT_ENVIRONMENT and
+    VIRTUAL_ENV, which would otherwise win over the throwaway project's own venv."""
+    monkeypatch.delenv("UV_PROJECT_ENVIRONMENT", raising=False)
+    monkeypatch.delenv("VIRTUAL_ENV", raising=False)
     root = tmp_path / "uvproj"
     make_project(root, repo=False)
     (root / "pyproject.toml").write_text(
@@ -534,6 +542,29 @@ def test_parse_gate_output() -> None:
     counts, fs = parse_gate_output("make", "error: nope\n", 2)
     assert fs == [{"title": "make exited 2: error: nope", "target": ""}]
     assert parse_gate_output("ok", "PASS: 0 findings (D 0)\n", 0) == ({"D": 0}, [])
+
+
+def test_snapshot_ignores_gitignored_junk_dirs(tmp_path: Path) -> None:
+    # A real rebuild died here: the agent ran pytest, `.pytest_cache` (gitignored) appeared at
+    # the worktree root, and `git add -A -- . :(exclude).pytest_cache` exited 1.
+    r = tmp_path / "r"
+    r.mkdir()
+    g = ["git", "-C", str(r), "-c", "user.name=t", "-c", "user.email=t@t"]
+    subprocess.run([*g, "init", "-q"], check=True)
+    (r / ".gitignore").write_text(".pytest_cache\n__pycache__\n")
+    (r / "a.py").write_text("x = 1\n")
+    subprocess.run([*g, "add", "."], check=True)
+    subprocess.run([*g, "commit", "-qm", "init"], check=True)
+    for junk in (".pytest_cache", "__pycache__", "pkg/.pytest_cache", ".venv", ".lattice"):
+        (r / junk).mkdir(parents=True)
+        (r / junk / "f").write_text("junk\n")
+    (r / "a.py").write_text("x = 2\n")
+    (r / "b.py").write_text("y = 1\n")
+    tree = rebuild_mod._snapshot_tree(r)
+    files = subprocess.run(
+        [*g, "ls-tree", "-r", "--name-only", tree], check=True, capture_output=True, text=True
+    ).stdout.split()
+    assert sorted(files) == [".gitignore", "a.py", "b.py"]
 
 
 def test_capability(repo: Path, fake: Path, tmp_path: Path) -> None:
