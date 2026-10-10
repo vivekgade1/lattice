@@ -423,6 +423,9 @@ class AuthDriver:
             return {}
         if self.scheme == BASIC_TOKEN:
             return {self.header: basic_credentials(token, "")}
+        if not self.scheme:
+            # a raw key header (e.g. ``X-Api-Key: <key>``): the token alone
+            return {self.header: token}
         return {self.header: f"{scheme_header(self.scheme)} {token}"}
 
     def present(self, transport: Transport, token: str | None) -> dict[str, str]:
