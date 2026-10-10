@@ -1,0 +1,28 @@
+diff --git a/lattice/studio/server.py b/lattice/studio/server.py
+index d6cd3d4..bace073 100644
+--- a/lattice/studio/server.py
++++ b/lattice/studio/server.py
+@@ -1171,6 +1171,14 @@ class Studio:
+         log(f"{cid}: started ({request[:60]!r}{f', parent {parent_id}' if parent_id else ''})")
+         return {"id": cid}
+ 
++    def list_changes(self) -> list[dict[str, Any]]:
++        """Every change as {id, status, request}, newest first."""
++        with self.lock:
++            return [
++                {"id": c["id"], "status": c["status"], "request": c["request"]}
++                for c in reversed(list(self.changes.values()))
++            ]
++
+     def get_change(self, cid: str, wait: float = 0.0) -> dict[str, Any]:
+         """The change record; with `wait` > 0, answered once its background job has
+         finished (it is ready, failed, or its cancelled run has stopped), or after `wait`
+@@ -1579,6 +1587,8 @@ class Handler(BaseHTTPRequestHandler):
+                     {"detail": f"wait must be a number of seconds, 0 to {MAX_WAIT:g}"}, 422
+                 )
+             return self._dispatch(lambda: st.get_change(cid, wait))
++        if path == "/api/changes":
++            return self._dispatch(st.list_changes)
+         if path == "/api/rebuild":
+             return self._dispatch(lambda: st.rebuilder.list())
+         if path.startswith("/api/rebuild/") and "/" not in path.removeprefix("/api/rebuild/"):
