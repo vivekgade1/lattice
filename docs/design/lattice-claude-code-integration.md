@@ -66,7 +66,7 @@ Run against the real CLI (subscription login, `apiKeySource: "none"`, no `ANTHRO
 
 ```
 claude --plugin-dir ./lattice-claude-plugin        # from the lattice repo root, inside your project
-python -m lattice.mcp serve --project DIR           # standalone server
+lattice mcp serve --project DIR                    # standalone server (= python -m lattice.mcp serve ...)
 LATTICE_GATE=strict claude --plugin-dir ...         # blocking Stop gate
 ```
 

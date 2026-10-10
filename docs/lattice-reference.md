@@ -183,7 +183,21 @@ tests/                                    ~5,400 tests; `uv run pytest -q`; `liv
 - Usage limits stop cleanly (resume with `--resume`).
 - Output cap via `CLAUDE_CODE_MAX_OUTPUT_TOKENS`.
 
-**Importer:** `uv run python -m lattice.importer . --package <pkg>.app --app-factory <mod>:make_app --out DIR [--no-llm] [--backend cli] [--method M1..M6] [--max-cost-usd X]`. The committed imports are in `bench/imports/`.
+**The `lattice` command** (`lattice/cli.py`, a console script: `uv run lattice ...` in the repo, `uv tool install -e .` for a global one). A thin dispatcher: `lattice X ...` is the same as `python -m lattice.X ...`, argv forwarded verbatim.
+
+| Command | Same as | Notes |
+|---|---|---|
+| `lattice studio [DIR ...] [--port N] [--model M] [--mock [FIXTURES]]` | `python -m lattice.studio` | the Studio server |
+| `lattice check [--project DIR] [flags]` | `python -m lattice.spec check` | `--spec`, `--app`, `--db`, `--login`, `--runtime`, `--services`, `--database`, `--layers` ... default to `DIR/spec.py` and the `[app]`/`[check]` tables of `DIR/studio.toml` (DIR defaults to the cwd); explicit flags win |
+| `lattice spec check/fidelity/draft/lint/probe/review/ask ...` | `python -m lattice.spec ...` | |
+| `lattice import ...` | `python -m lattice.importer` | |
+| `lattice mcp serve/guard ...` | `python -m lattice.mcp` | |
+| `lattice gogen build ...`, `lattice tsgen ...` | `python -m lattice.gogen`, `python -m lattice.tsgen` | |
+| `lattice projects [DIR ...]` | | lists Studio projects (`studio.toml`, or `spec.py` + `spec.trace.json`) in DIR, cwd, `dogfood/*` and one level of children |
+
+`lattice --version`, `lattice --help` and `lattice <command> --help` exit 0; an unknown command exits 2.
+
+**Importer:** `uv run lattice import . --package <pkg>.app --app-factory <mod>:make_app --out DIR [--no-llm] [--backend cli] [--method M1..M6] [--max-cost-usd X]` (equivalently `uv run python -m lattice.importer ...`). The committed imports are in `bench/imports/`.
 
 ---
 

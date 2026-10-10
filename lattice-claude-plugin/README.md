@@ -17,9 +17,12 @@ Then try `/lattice:check`, `/lattice:ask what happens when a job fails?`, `/latt
 Run the MCP server standalone (for debugging, or to register it by hand):
 
 ```
-python -m lattice.mcp serve --project /path/to/project
-claude mcp add lattice -- python -m lattice.mcp serve --project /path/to/project
+lattice mcp serve --project /path/to/project
+claude mcp add lattice -- lattice mcp serve --project /path/to/project
 ```
+
+`lattice mcp ...` is the same as `python -m lattice.mcp ...` (the `lattice` command comes from
+`uv tool install -e .` in the lattice repo; `python -m` works wherever the package is importable).
 
 ## What is inside
 
@@ -36,7 +39,7 @@ Project-side template: `lattice/studio/templates/CLAUDE.md.tmpl` (copy to the pr
 
 ## Hooks
 
-- PreToolUse on `Edit|Write|MultiEdit|NotebookEdit|Bash` runs `python -m lattice.mcp.guard --project "$CLAUDE_PROJECT_DIR"`; it denies edits to requirements, spec and trace files, including shell writes.
+- PreToolUse on `Edit|Write|MultiEdit|NotebookEdit|Bash` runs `lattice mcp guard --project "$CLAUDE_PROJECT_DIR"` (equivalently `python -m lattice.mcp.guard`); it denies edits to requirements, spec and trace files, including shell writes.
 - Stop runs `./check.sh` if it exists and the working tree has uncommitted changes. Default is non-blocking: a pass/fail summary goes to stderr. With `LATTICE_GATE=strict` in the environment a failing check exits 2, which makes Claude continue and fix. A re-entry guard (`stop_hook_active`) prevents infinite loops.
 
 ## Notes and fallbacks
