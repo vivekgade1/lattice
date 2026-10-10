@@ -1,8 +1,12 @@
-// Lifecycle: one SVG diagram per state machine, laid out left to right in layers from
-// the initial state, with the transitions table as the accessible alternative.
+// Lifecycle: one React Flow diagram per state machine (states as nodes, moves as lines,
+// initial and final marked in words, pending moves marked added or removed), with the
+// transitions table below as the accessible alternative. The graph comes from
+// GET /api/graph (`machines`); without it (the real server) or when the bundle cannot
+// load, the original hand-drawn SVG diagram is shown instead.
 
 import { h, s, add } from "../util.js";
-import { targetAttrs } from "../targets.js";
+import { targetAttrs, toggleSelection } from "../targets.js";
+import { mountGraph, fetchGraph } from "../graph.js";
 import { rulesByTarget, appResult, machineChange, changeBanner } from "../overlay.js";
 import { resultBadge, pendingBadge } from "../badges.js";
 import { actions, impactClass, ruleLinks, emptyState } from "./rules.js";
@@ -24,6 +28,8 @@ export function render(model, root, ctx) {
     return;
   }
   const idx = rulesByTarget(model);
+  // One shared request for every machine's graph data; null when the server has none.
+  const graphData = fetchGraph({ kinds: "machine", limit: 1 }).then((g) => g.machines || []).catch(() => null);
   for (const [target, name, sentence] of machines) {
     const change = machineChange(target);
     const res = appResult(target);
@@ -41,11 +47,97 @@ export function render(model, root, ctx) {
           ? h("p", { class: "machine-sentence pending-text" },
               h("del", {}, sentence), h("span", { class: "cell-arrow", "aria-hidden": "true" }, " → "), h("strong", {}, change.new))
           : h("p", { class: "machine-sentence" }, sentence),
-        h("div", { class: "scroll-x diagram-wrap", tabindex: "0", role: "region", "aria-label": `${name} diagram` }, diagram(m, name)),
+        diagramHost(m, name, target, sentence, change, graphData, ctx),
         transitionsTable(m, name),
       ),
     );
   }
+}
+
+/** The graph of one machine; the SVG diagram stands in until (or instead of) the graph. */
+function diagramHost(m, name, target, sentence, change, graphData, ctx) {
+  const wrap = h("div", { class: "machine-diagram" });
+  const svgFallback = () =>
+    h("div", { class: "scroll-x diagram-wrap", tabindex: "0", role: "region", "aria-label": `${name} diagram` }, diagram(m, name));
+  wrap.append(h("p", { class: "muted small", role: "status" }, "Drawing the lifecycle…"));
+  graphData.then((list) => {
+    if (!wrap.isConnected) return;
+    const mine = (list || []).find((x) => x.target === target);
+    if (!mine) {
+      wrap.replaceChildren(svgFallback());
+      return;
+    }
+    const g = machineGraph(mine, m, change);
+    const canvas = h("div", { class: "gr-canvas is-compact", "data-view": "machine-graph", "data-machine": target });
+    wrap.replaceChildren(canvas, h("p", { class: "muted small gr-machine-note" },
+      `Start: ${g.initial.join(", ") || "none"}. Final: ${g.final.join(", ") || "none"}. Any move not drawn is refused.${g.pending ? " Dashed green lines are moves the pending change adds; dotted red lines are moves it removes." : ""}`));
+    mountGraph(canvas, {
+      nodes: g.nodes,
+      edges: g.edges,
+      direction: "LR",
+      diff: g.diff,
+      selected: [],
+      label: `${name} lifecycle graph`,
+      onSelect: () => toggleSelection(target),
+      onOpen: () => ctx.openCode(target),
+      onError: () => wrap.replaceChildren(svgFallback()),
+    });
+  });
+  return wrap;
+}
+
+/** API machine (+ the pending change's new moves) -> bundle nodes and edges. */
+function machineGraph(api, parsed, change) {
+  const states = new Map(api.states.map((x) => [x.id, { ...x }]));
+  const moves = new Map(api.moves.map((mv) => [`${mv.from}>${mv.to}`, { ...mv }]));
+  const diff = {};
+  let pending = false;
+  const newText = change && typeof change.new === "string" ? change.new : null;
+  if (newText) {
+    const next = parseMachine(newText);
+    if (next.edges.length || next.states.length) {
+      pending = true;
+      const nextKeys = new Set(next.edges.map(([f, t]) => `${f}>${t}`));
+      for (const st of next.states) {
+        if (!states.has(st)) {
+          states.set(st, { id: st, final: next.terminal.includes(st) });
+          diff[st] = "added";
+        }
+      }
+      for (const [f, t] of next.edges) {
+        const k = `${f}>${t}`;
+        if (!moves.has(k)) moves.set(k, { from: f, to: t, change: "added" });
+      }
+      for (const [k, mv] of moves) {
+        if (!nextKeys.has(k) && !mv.change) mv.change = "removed";
+      }
+      for (const st of [...states.keys()]) {
+        if (!next.states.includes(st) && !diff[st]) diff[st] = "removed";
+      }
+    }
+  }
+  const nodes = [...states.values()].map((x) => ({
+    id: x.id,
+    kind: "state",
+    label: x.id,
+    sub: x.initial ? "start" : x.final ? "final" : "",
+  }));
+  const edges = [...moves.values()].map((mv) => {
+    const rules = (mv.rules || []).slice(0, 2).join(", ") + ((mv.rules || []).length > 2 ? "…" : "");
+    return {
+      id: `${mv.from}>${mv.to}`,
+      source: mv.from,
+      target: mv.to,
+      kind: mv.change || "moves",
+      label: mv.change === "added" ? "added" : mv.change === "removed" ? "removed" : rules || undefined,
+      state: mv.change === "removed" ? "dashed" : undefined,
+    };
+  });
+  return {
+    nodes, edges, diff, pending,
+    initial: [...states.values()].filter((x) => x.initial).map((x) => x.id),
+    final: [...states.values()].filter((x) => x.final).map((x) => x.id),
+  };
 }
 
 /** "queued -> running, cancelled; running -> succeeded (initial: queued)" -> {states, edges, initial} */

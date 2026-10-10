@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.3)
+# Lattice Studio API contract (v1.4)
 
 `lattice studio PROJECT_DIR [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API. It polls; there are no websockets.
 
@@ -140,3 +140,76 @@ Request: `{"changes": ["c1"], "model": "sonnet", "max_rounds": 4}` (`model` and 
 
 ### DELETE /api/rebuild/{id}
 Stops a queued or running rebuild between rounds: `{"id": "b1", "status": "stopped"}`; its completed rounds stay in the record and its changes go back to `build.state` `not_built`. 409 once the rebuild finished (`passed`, `gave_up` or `stopped`).
+
+## v1.4 additions (business-logic graph)
+Derived entirely from data the mock already serves (`model.json`, `code/index.json`, the `flow-*.json` fixtures); nothing is invented. Backward compatible: v1.3 shapes are unchanged except that flow stages gain two fields.
+
+### GET /api/flow: stage `id` and `next`
+Every `stages[]` item also carries `"id"` (stable slug of `stage`, unique within the flow, e.g. `"database-write"`) and `"next"` (list of the stage ids that follow: today the single following stage, `[]` for the last). A graph draws the flow as lanes from these.
+
+### GET /api/graph?focus=&kinds=&depth=&limit=
+| param | meaning |
+|---|---|
+| `focus` | optional target; omitted: the whole graph. Accepts any node `target`, a `cell:<row>\|<route>` (resolves to that endpoint), a `profile:<Table>.<column>` (resolves to the table) or an `endpoint:` route in any spelling (`POST /runs/{}/cancel`). 404 if no node matches. |
+| `depth` | hops from `focus`, integer 0..6, default 1; ignored without `focus`. 422 otherwise. |
+| `kinds` | comma list of node kinds to keep (`rule,endpoint,table,service,scenario,code,invariant,machine`); default all. 422 on an unknown kind. The focus node is kept whatever its kind. Traversal runs over the full graph, then filters, so excluding `rule` does not disconnect the rest. |
+| `limit` | max nodes, 1..5000, default 400 (the full mock graph has 278). Past it the nodes nearest the focus win, then rules, endpoints, tables, services, machines, invariants, code, scenarios; `truncated` is `true`. |
+
+```json
+{"nodes": [{"id": "rule:R44", "kind": "rule", "label": "R44", "sub": "At most one queued or running run per config: ...",
+            "target": "rule:R44", "trust": "checked", "failing": 0, "rules": ["R44"]}],
+ "edges": [{"id": "rule:R44>traces>scenario:a_second_live_run_is_refused", "source": "rule:R44",
+            "target": "scenario:a_second_live_run_is_refused", "kind": "traces"}],
+ "counts": {"nodes": {"rule": 65}, "edges": {"traces": 378}, "total": {"nodes": 278, "edges": 483}},
+ "truncated": false, "focus": null, "depth": null,
+ "change": "c0", "diff": {"endpoint:POST /applications/{}/runs/{}/cancel": "modified"},
+ "machines": [{"target": "machine:JobRun.status", "name": "JobRun.status",
+               "states": [{"id": "queued", "initial": true}, {"id": "cancelled", "final": true}],
+               "moves": [{"from": "queued", "to": "cancelled", "rules": ["R47"]}],
+               "rules": ["R47", "R54"], "trust": "checked", "failing": 0}]}
+```
+**Nodes.** `id` equals `target` and is unique; `target` is in the contract's grammar. `label`/`sub` are display text (`sub` optional).
+
+| kind | target | built from |
+|---|---|---|
+| `rule` | `rule:R44` | `model.rules` |
+| `endpoint` | `endpoint:POST /applications/{}/runs/{}/cancel` | the access-matrix columns (`views.access_groups[].columns`) |
+| `table` | `profile:JobRun` | `data_model.tables` (`sub` is the SQL name) |
+| `service` / `invariant` / `machine` | `service:worker`, `invariant:...`, `machine:JobRun.status` | `views.section6` |
+| `scenario` | `scenario:<name>` | `views.section6.scenarios` |
+| `code` | `code:<path>:<line>` | one per (file, symbol) in `code/index.json` links and flow stages; `line` is the first line seen for the symbol, so the target resolves in `GET /api/code/links` |
+
+- `trust`: `checked|unchecked|context|untraced|probe_gap|not_built`. A rule's is its `status`, or `not_built` while an accepted change that adds or changes it is not yet built. Every other node takes the worst (order `unchecked, probe_gap, untraced, not_built, checked, context`) trust of the rules in its `rules`; `context` when it has none.
+- `rules`: ids of the rules joined to the node by a **direct** edge (a rule node: itself), sorted numerically.
+- `governed_by` (endpoint and table nodes only): ids of every rule joined to the node by a direct **or derived** edge, sorted numerically; always a superset of `rules`. The Map's rule-count badge reads it.
+- `failing`: count of failed checks (`app.last_check.targets` entries equal to `fail`): a scenario/invariant/machine/service node is 1 or 0 for itself; a rule counts its failing links; any other node counts the failing checks adjacent to it or linked from its adjacent rules. 0 when there is no check or the last check passed.
+
+**Edges** (`id` is `source>kind>target`, deduplicated; both ends always exist among `nodes`; `label` is reserved and currently absent):
+
+| kind | from -> to | source |
+|---|---|---|
+| `traces` | rule -> scenario/invariant; scenario -> endpoint | `rule.links`; the `METHOD /path` that starts each scenario step, normalised (`/1` -> `/{}`) |
+| `transitions` | rule -> machine | `rule.links` |
+| `applies_to` | rule -> service; rule -> table; machine -> table | `rule.links` (`profile:`, `service:`); rule text naming a table in backticks (`` `users` ``, `` `users.email` ``); the table half of `Table.column` |
+| `enforces` | rule -> endpoint | `cell:` links; `` `METHOD /path` `` in rule text (placeholders and a leading `...` are matched to the matrix); rules of a code link whose targets include a `cell:*\|route` |
+| `reads` / `writes` | endpoint -> table; code -> table | flow fixtures' stage `reads`/`writes`; plus a route whose last literal segment is a table's SQL name (`GET` reads, others write) |
+| `implements` | code -> rule; code -> endpoint | `code/index.json` links; flow stage `rules` and the flow's endpoint; links' `cell:` targets |
+
+**Derived edges** tie a rule to what it governs when no direct link says so. They carry `"inferred": true` and `"via"`: the node ids between the two ends, in order, such that every consecutive pair (ends included) is joined by a direct edge in either direction. Direct edges carry neither field and always win: a derived edge is only added when no edge with the same `source>kind>target` id exists, and each id appears once. Derivation runs over direct edges only (a derived edge is never a step of another), in rule order, so it is deterministic and never names a rule, endpoint or table that is not already a node.
+
+| derived edge | rule | `via` |
+|---|---|---|
+| rule `enforces` endpoint | rule `traces` scenario, scenario `traces` endpoint (any step of a linked scenario calls the route) | `[scenario]` |
+| rule `enforces` endpoint | code `implements` rule, the same code `implements` endpoint | `[code]` |
+| rule `applies_to` table | rule `enforces` endpoint (direct, or derived through a scenario) and that endpoint `writes` the table | `[endpoint]` or `[scenario, endpoint]` |
+| rule `applies_to` table | code `implements` rule, the same code `reads` or `writes` the table | `[code]` |
+
+Derived edges count in `focus`/`depth` traversal (so `focus=rule:R44&depth=1` reaches `POST /applications/{}/jobs/{}/runs` and `JobRun`) and in `governed_by`; they do not change `trust`, `rules`, `failing` or the diff's `impact` marks, which stay on direct edges. The UI draws them dashed and says "inferred".
+
+**Limits of the derivation.** A scenario's setup steps count like its claim step, so a rule can be tied to an endpoint a scenario only calls to set up state. Code-based edges are only as wide as the code index and the two flow fixtures: shared stages (`requireUser`, `appAccess`) tie auth and access rules to the two traced endpoints only, not to every route they guard. Rule-to-table edges through an endpoint follow its writes only (reads would tie every access rule to every table it looks up); through code they follow reads and writes. Rules with no scenario, code or direct endpoint link stay untied.
+
+**`diff`**: `target -> modified|added|removed|impact` for the open change (the newest change in status `ready`; `change` is its id, `null` and `diff` `{}` when none). Read like the UI overlay reads it: `view_diff.cells` mark the column's endpoint `modified`; `view_diff.scenarios|invariants` `added/removed/modified`; `view_diff.machines.changed` and `targets.modified` `modified`; `targets.added/removed`; `rules.added/removed/changed`. `impact` marks every node adjacent to a changed existing node and each `checks.impact.failing` target, unless it is already marked. Added targets may have no node yet (a new scenario or rule); the UI can draw a ghost. A cell diff marks the endpoint, not the person's row.
+
+**`machines`**: one per `section6.machines` entry, parsed from its moves text (`a -> b, c; b -> d (initial: a)`). States are in first-seen order, `initial` is the `(initial: x)` state, `final` a state with no outgoing move. A move's `rules` are the rules linked to the machine whose text names the move's target state (omitted when none; a heuristic); `rules` on the machine are all rules linking to it. `machines` is always the full list, regardless of `focus`/`kinds`.
+
+**Known limits.** Endpoint to table edges beyond the two flow fixtures come only from the route's resource name, so e.g. `GET /applications/{}/members` has no `memberships` edge. Code nodes cover only the symbols the index and flows mention. Scenario patterns in code links (`scenario:access__*`) are not expanded into edges. Node set and edges are static for a project; only `trust`, `failing`, `change`, `diff` move with checks and changes.

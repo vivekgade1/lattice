@@ -30,6 +30,10 @@ Studio 2 (API v1.3) adds, all fixture-driven and polled:
   "built"``, moves ``app.last_check`` to pass and ``project.git_head`` to the commit, and
   the Code lens then serves the rebuilt ``cancelRun`` with ``rebuilt_in`` markers.
 
+API v1.4 adds ``GET /api/graph`` (the business-logic graph: nodes, edges, lifecycle
+machines and the open change's diff, all derived from the same fixtures, see
+``build_graph``) and ``id``/``next`` on every ``GET /api/flow`` stage.
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -109,6 +113,9 @@ def pick_explain_fixture(question: str) -> str:
     return EXPLAIN_DEFAULT
 
 
+FLOW_FIXTURES = ("flow-start-run", "flow-cancel-run")
+
+
 def flow_key(endpoint: str) -> str:
     """A route in any of its spellings ("POST /configs/{}/runs", "POST
     /applications/1/jobs/{id}/runs") reduced to one comparable form."""
@@ -116,6 +123,513 @@ def flow_key(endpoint: str) -> str:
     path = re.sub(r"\{[^}]*\}|(?<=/)\d+(?=/|$)", "{}", path)
     path = re.sub(r"^/applications/\{\}", "", path).replace("/configs/", "/jobs/")
     return f"{method.upper()} {path}"
+
+
+# ---------------------------------------------------------------- business-logic graph
+
+GRAPH_KINDS = ("rule", "endpoint", "table", "service", "scenario", "code", "invariant", "machine")
+GRAPH_DEFAULT_LIMIT = 400
+GRAPH_MAX_DEPTH = 6
+# Worst first: a derived node shows the worst trust among the rules it touches.
+TRUST_ORDER = ("unchecked", "probe_gap", "untraced", "not_built", "checked", "context")
+# Which kinds survive a truncation first.
+KIND_PRIORITY = {k: i for i, k in enumerate(GRAPH_KINDS)}
+CHECK_KINDS = ("scenario", "invariant", "machine", "service")
+METHODS = "GET|POST|PUT|PATCH|DELETE"
+_RULE_ENDPOINT = re.compile(rf"`((?:{METHODS}) [^`\s]+)`")
+_STEP_ENDPOINT = re.compile(rf"^({METHODS}) (\S+)")
+_BACKTICK = re.compile(r"`([A-Za-z_][A-Za-z0-9_]*)(?:\.[A-Za-z_][A-Za-z0-9_]*)?`")
+
+
+def _rule_num(rid: str) -> int:
+    m = re.search(r"\d+", rid)
+    return int(m.group()) if m else 0
+
+
+def _norm_route(route: str) -> str:
+    """``POST /applications/{app}/jobs/1`` -> ``POST /applications/{}/jobs/{}``."""
+    method, _, path = route.strip().partition(" ")
+    path = path.split("?", 1)[0]
+    path = re.sub(r"\{[^}]*\}", "{}", path)
+    path = re.sub(r"(?<=/)\d+(?=/|$)", "{}", path)
+    return f"{method.upper()} {path}"
+
+
+def _slug(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-") or "stage"
+
+
+def _short(text: str, n: int = 90) -> str:
+    text = re.sub(r"[*`]", "", text).strip()
+    return text if len(text) <= n else text[: n - 1].rstrip() + "…"
+
+
+def with_stage_links(stages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Stages with a stable ``id`` (the slug of the stage name, unique within the flow)
+    and ``next`` (the ids that follow: the lanes of a graph). Existing values are kept."""
+    seen: set[str] = set()
+    ids: list[str] = []
+    for s in stages:
+        base = s.get("id") or _slug(s["stage"])
+        sid, n = base, 2
+        while sid in seen:
+            sid, n = f"{base}-{n}", n + 1
+        seen.add(sid)
+        ids.append(sid)
+    out = []
+    for i, s in enumerate(stages):
+        item = dict(s)
+        item["id"] = ids[i]
+        item.setdefault("next", [ids[i + 1]] if i + 1 < len(ids) else [])
+        out.append(item)
+    return out
+
+
+def parse_machine(target: str, name: str, text: str) -> dict[str, Any]:
+    """``"queued -> running, cancelled; running -> done (initial: queued)"`` -> states and
+    moves. A final state is one with no outgoing move."""
+    initial = None
+    m = re.search(r"\(initial:\s*([^)]+)\)", text)
+    if m:
+        initial = m.group(1).strip()
+        text = text[: m.start()]
+    moves: list[dict[str, Any]] = []
+    order: list[str] = [initial] if initial else []
+    for clause in text.split(";"):
+        src, arrow, dsts = clause.partition("->")
+        src = src.strip()
+        if not arrow or not src:
+            continue
+        if src not in order:
+            order.append(src)
+        for dst in (d.strip() for d in dsts.split(",")):
+            if dst:
+                moves.append({"from": src, "to": dst})
+                if dst not in order:
+                    order.append(dst)
+    sources = {mv["from"] for mv in moves}
+    states = []
+    for s in order:
+        st: dict[str, Any] = {"id": s}
+        if s == initial:
+            st["initial"] = True
+        if s not in sources:
+            st["final"] = True
+        states.append(st)
+    return {"target": target, "name": name, "states": states, "moves": moves}
+
+
+def _worst(trusts: list[str]) -> str:
+    for t in TRUST_ORDER:
+        if t in trusts:
+            return t
+    return "context"
+
+
+def build_graph(
+    model: dict[str, Any],
+    code: dict[str, Any],
+    flows: list[dict[str, Any]],
+    not_built: set[str],
+) -> dict[str, Any]:
+    """The whole business-logic graph: ``{"nodes": {id: node}, "edges": {id: edge},
+    "machines": [...]}``. Pure: the same inputs always give the same graph."""
+    nodes: dict[str, dict[str, Any]] = {}
+    edges: dict[str, dict[str, Any]] = {}
+
+    def node(kind: str, target: str, label: str, sub: str | None = None) -> dict[str, Any]:
+        n = nodes.get(target)
+        if n is None:
+            n = {"id": target, "kind": kind, "label": label, "target": target}
+            if sub:
+                n["sub"] = sub
+            nodes[target] = n
+        return n
+
+    def edge(src: str, dst: str, kind: str, label: str | None = None) -> None:
+        if src == dst or src not in nodes or dst not in nodes:
+            return
+        eid = f"{src}>{kind}>{dst}"
+        if eid not in edges:
+            e = {"id": eid, "source": src, "target": dst, "kind": kind}
+            if label:
+                e["label"] = label
+            edges[eid] = e
+
+    views = model.get("views", {})
+    s6 = views.get("section6", {})
+    rules = model["rules"]
+    for r in rules:
+        node("rule", f"rule:{r['id']}", r["id"], _short(r["text"]))
+    for t in model.get("data_model", {}).get("tables", []):
+        node("table", f"profile:{t['name']}", t["name"], t["sql"])
+    sql_to_table = {t["sql"]: f"profile:{t['name']}" for t in model["data_model"]["tables"]}
+    for target, name, text in s6.get("services", []):
+        node("service", target, name, _short(text))
+    for target, name, text in s6.get("invariants", []):
+        node("invariant", target, name, _short(text))
+    for target, name, text in s6.get("machines", []):
+        node("machine", target, name, text)
+    for sc in s6.get("scenarios", []):
+        node("scenario", sc["target"], sc["name"], _short(sc["steps"][0]) if sc["steps"] else None)
+
+    # Endpoints: every column of the access matrix.
+    ep_of: dict[str, str] = {}
+    for g in views.get("access_groups", []):
+        for col in g["columns"]:
+            node("endpoint", f"endpoint:{col}", col)
+            ep_of[_norm_route(col)] = f"endpoint:{col}"
+
+    def endpoint_for(route: str) -> list[str]:
+        route = route.strip()
+        method, _, path = route.partition(" ")
+        if path.startswith("..."):
+            tail = _norm_route(route)[len(method) + 4 :]
+            return sorted(
+                t for k, t in ep_of.items() if k.startswith(method + " ") and k.endswith(tail)
+            )
+        hit = ep_of.get(_norm_route(route))
+        return [hit] if hit else []
+
+    # rule -> scenario / invariant / machine / service / table, and rule text -> endpoint, table.
+    for r in rules:
+        src = f"rule:{r['id']}"
+        for link in r.get("links", []):
+            kind = link.split(":", 1)[0]
+            if kind in ("scenario", "invariant"):
+                edge(src, link, "traces")
+            elif kind == "machine":
+                edge(src, link, "transitions")
+            elif kind == "service":
+                edge(src, link, "applies_to")
+            elif kind == "profile":
+                tbl = f"profile:{link.split(':', 1)[1].split('.', 1)[0]}"
+                edge(src, tbl, "applies_to")
+            elif kind == "cell":
+                for ep in endpoint_for(link.split("|", 1)[-1]):
+                    edge(src, ep, "enforces")
+        for m in _RULE_ENDPOINT.finditer(r["text"]):
+            for ep in endpoint_for(m.group(1)):
+                edge(src, ep, "enforces")
+        for m in _BACKTICK.finditer(r["text"]):
+            if m.group(1) in sql_to_table:
+                edge(src, sql_to_table[m.group(1)], "applies_to")
+    for target in [t for t, n in nodes.items() if n["kind"] == "machine"]:
+        tbl = f"profile:{target.split(':', 1)[1].split('.', 1)[0]}"
+        edge(target, tbl, "applies_to")
+
+    # scenario steps -> endpoint
+    for sc in s6.get("scenarios", []):
+        for step in sc["steps"]:
+            m = _STEP_ENDPOINT.match(step)
+            if m:
+                for ep in endpoint_for(f"{m.group(1)} {m.group(2)}"):
+                    edge(sc["target"], ep, "traces")
+
+    # endpoint -> table: the resource a route names, then the flow fixtures' reads/writes.
+    for key, ep in ep_of.items():
+        method, _, path = key.partition(" ")
+        segs = [s for s in path.split("/") if s and s != "{}"]
+        if segs and segs[-1] in sql_to_table:
+            edge(ep, sql_to_table[segs[-1]], "reads" if method == "GET" else "writes")
+
+    # code symbols: index links and flow stages.
+    sym_line: dict[tuple[str, str], int] = {}
+    for link in code.get("links", []):
+        k = (link["path"], link["symbol"])
+        sym_line[k] = min(sym_line.get(k, link["line_from"]), link["line_from"])
+    for fl in flows:
+        for st in fl["stages"]:
+            k = (st["path"], st["symbol"])
+            sym_line[k] = min(sym_line.get(k, st["line"]), st["line"])
+    code_id: dict[tuple[str, str], str] = {}
+    for (path, symbol), line in sorted(sym_line.items()):
+        cid = f"code:{path}:{line}"
+        code_id[(path, symbol)] = cid
+        node("code", cid, symbol, f"{path}:{line}")
+    for link in code.get("links", []):
+        cid = code_id[(link["path"], link["symbol"])]
+        for rid in link["rules"]:
+            edge(cid, f"rule:{rid}", "implements")
+        for t in link["targets"]:
+            if t.startswith("cell:"):
+                for ep in endpoint_for(t.split("|", 1)[-1]):
+                    edge(cid, ep, "implements")
+                    for rid in link["rules"]:
+                        edge(f"rule:{rid}", ep, "enforces")
+    flow_ep = {flow_key(t.removeprefix("endpoint:")): t for t in ep_of.values()}
+    for fl in flows:
+        ep = flow_ep.get(flow_key(fl["endpoint"]))
+        for st in fl["stages"]:
+            cid = code_id[(st["path"], st["symbol"])]
+            if ep:
+                edge(cid, ep, "implements")
+                for tname in st["reads"]:
+                    if tname in sql_to_table:
+                        edge(ep, sql_to_table[tname], "reads")
+                for tname in st["writes"]:
+                    if tname in sql_to_table:
+                        edge(ep, sql_to_table[tname], "writes")
+            for rid in st["rules"]:
+                edge(cid, f"rule:{rid}", "implements")
+            for tname in st["reads"]:
+                if tname in sql_to_table:
+                    edge(cid, sql_to_table[tname], "reads")
+            for tname in st["writes"]:
+                if tname in sql_to_table:
+                    edge(cid, sql_to_table[tname], "writes")
+
+    # Derived edges: tie each rule to what it governs. A derived edge carries
+    # ``inferred: true`` and ``via`` (the node ids between its ends; every consecutive
+    # pair, ends included, is joined by a direct edge). A direct edge with the same id
+    # always wins, and a derived edge is never added twice.
+    direct = list(edges.values())
+    out_of: dict[str, list[tuple[str, str]]] = {}
+    into: dict[str, list[tuple[str, str]]] = {}
+    for e in direct:
+        out_of.setdefault(e["source"], []).append((e["kind"], e["target"]))
+        into.setdefault(e["target"], []).append((e["kind"], e["source"]))
+
+    def derive(src: str, dst: str, kind: str, via: list[str]) -> None:
+        eid = f"{src}>{kind}>{dst}"
+        if src == dst or eid in edges:
+            return
+        edges[eid] = {
+            "id": eid,
+            "source": src,
+            "target": dst,
+            "kind": kind,
+            "inferred": True,
+            "via": via,
+        }
+
+    def nk(t: str) -> str:
+        return nodes[t]["kind"]
+
+    rule_ids = sorted((t for t in nodes if nk(t) == "rule"), key=lambda t: _rule_num(t))
+    for r in rule_ids:
+        # 1. rule -traces-> scenario -traces-> endpoint  =>  rule -enforces-> endpoint
+        for k1, sc in sorted(out_of.get(r, [])):
+            if k1 != "traces" or nk(sc) != "scenario":
+                continue
+            for k2, ep in sorted(out_of.get(sc, [])):
+                if k2 == "traces" and nk(ep) == "endpoint":
+                    derive(r, ep, "enforces", [sc])
+        # 2. code -implements-> rule, code -implements-> endpoint  =>  rule -enforces-> endpoint
+        for k1, cd in sorted(into.get(r, [])):
+            if k1 != "implements" or nk(cd) != "code":
+                continue
+            for k2, ep in sorted(out_of.get(cd, [])):
+                if k2 == "implements" and nk(ep) == "endpoint":
+                    derive(r, ep, "enforces", [cd])
+    for r in rule_ids:
+        # 3. rule -enforces-> endpoint (direct, or derived through a scenario) -writes-> table
+        #    =>  rule -applies_to-> table
+        for e in sorted(
+            (x for x in edges.values() if x["source"] == r and x["kind"] == "enforces"),
+            key=lambda x: x["id"],
+        ):
+            hop = e.get("via", [])
+            if hop and nk(hop[0]) != "scenario":
+                continue
+            for k2, tbl in sorted(out_of.get(e["target"], [])):
+                if k2 == "writes" and nk(tbl) == "table":
+                    derive(r, tbl, "applies_to", [*hop, e["target"]])
+        # 4. code -implements-> rule, code -reads/writes-> table  =>  rule -applies_to-> table
+        for k1, cd in sorted(into.get(r, [])):
+            if k1 != "implements" or nk(cd) != "code":
+                continue
+            for k2, tbl in sorted(out_of.get(cd, [])):
+                if k2 in ("reads", "writes") and nk(tbl) == "table":
+                    derive(r, tbl, "applies_to", [cd])
+
+    # trust and failing
+    results = (model.get("app", {}).get("last_check") or {}).get("targets", {})
+    failing_checks = {t for t, v in results.items() if v == "fail" and t in nodes}
+    # ``adj`` (every edge) drives focus and the diff's impact; ``near`` (direct edges only)
+    # drives trust, ``rules`` and ``failing``, so a derived edge never changes those.
+    adj: dict[str, set[str]] = {t: set() for t in nodes}
+    near: dict[str, set[str]] = {t: set() for t in nodes}
+    for e in edges.values():
+        adj[e["source"]].add(e["target"])
+        adj[e["target"]].add(e["source"])
+        if not e.get("inferred"):
+            near[e["source"]].add(e["target"])
+            near[e["target"]].add(e["source"])
+    rule_by_id = {r["id"]: r for r in rules}
+
+    def rule_trust(rid: str) -> str:
+        if rid in not_built:
+            return "not_built"
+        return rule_by_id[rid]["status"]
+
+    for t, n in nodes.items():
+        if n["kind"] == "rule":
+            rid = t.split(":", 1)[1]
+            n["trust"] = rule_trust(rid)
+            n["rules"] = [rid]
+            links = {x for x in rule_by_id[rid].get("links", []) if x in failing_checks}
+            n["failing"] = len(links)
+            continue
+        rids = sorted({a.split(":", 1)[1] for a in near[t] if a.startswith("rule:")}, key=_rule_num)
+        n["rules"] = rids
+        gov = sorted({a.split(":", 1)[1] for a in adj[t] if a.startswith("rule:")}, key=_rule_num)
+        if n["kind"] in ("endpoint", "table"):
+            n["governed_by"] = gov
+        n["trust"] = _worst([rule_trust(x) for x in rids])
+        if n["kind"] in CHECK_KINDS:
+            n["failing"] = 1 if t in failing_checks else 0
+            continue
+        seen = {a for a in near[t] if a in failing_checks}
+        for x in rids:
+            seen.update(y for y in rule_by_id[x].get("links", []) if y in failing_checks)
+        n["failing"] = len(seen)
+
+    machines = []
+    for target, name, text in s6.get("machines", []):
+        mc = parse_machine(target, name, text)
+        linked = [r for r in rules if target in r.get("links", [])]
+        for mv in mc["moves"]:
+            hit = sorted(
+                (r["id"] for r in linked if re.search(rf"\b{re.escape(mv['to'])}\b", r["text"])),
+                key=_rule_num,
+            )
+            if hit:
+                mv["rules"] = hit
+        mc["rules"] = sorted((r["id"] for r in linked), key=_rule_num)
+        mc["trust"] = nodes[target]["trust"]
+        mc["failing"] = nodes[target]["failing"]
+        machines.append(mc)
+    return {"nodes": nodes, "edges": edges, "machines": machines, "adj": adj, "near": near}
+
+
+def graph_diff(change: dict[str, Any] | None, graph: dict[str, Any]) -> dict[str, str]:
+    """target -> modified|added|removed|impact for the open change, the way the UI overlay
+    reads ``view_diff``. ``impact`` marks the nodes next to a changed one and the targets
+    the impact run reports failing."""
+    if change is None:
+        return {}
+    nodes: dict[str, Any] = graph["nodes"]
+    out: dict[str, str] = {}
+
+    def item(x: Any) -> str:
+        if isinstance(x, str):
+            return x
+        if isinstance(x, list):
+            return str(x[0])
+        return str(x.get("target") or "")
+
+    def put(target: str, how: str) -> None:
+        if target:
+            out[target] = how
+
+    vd = change.get("view_diff", {})
+    for cell in vd.get("cells", []):
+        ep = next((n for n in nodes if n == f"endpoint:{cell['col']}"), None)
+        if ep:
+            put(ep, "modified")
+    for group, kind in (("scenarios", "scenario"), ("invariants", "invariant")):
+        g = vd.get(group, {})
+        for how in ("added", "removed", "modified"):
+            for x in g.get(how, []):
+                t = item(x)
+                put(t if ":" in t else f"{kind}:{t}", how)
+    for x in vd.get("machines", {}).get("changed", []):
+        put(item(x), "modified")
+    for how in ("added", "removed"):
+        for x in change.get("targets", {}).get(how, []):
+            put(item(x), how)
+    for x in change.get("targets", {}).get("modified", []):
+        put(item(x), "modified")
+    rl = change.get("rules", {})
+    for rid in rl.get("added", []):
+        put(f"rule:{rid}", "added")
+    for rid in rl.get("removed", []):
+        put(f"rule:{rid}", "removed")
+    for x in rl.get("changed", []):
+        rid = x if isinstance(x, str) else x.get("new") or x.get("old")
+        put(f"rule:{rid}", "modified")
+    changed = [t for t in out if t in nodes]
+    for t in changed:
+        for a in graph["near"][t]:
+            out.setdefault(a, "impact")
+    impact = (change.get("checks") or {}).get("impact") or {}
+    for f in impact.get("failing", []):
+        t = f.get("target", "")
+        if t in nodes:
+            out.setdefault(t, "impact")
+    return dict(sorted(out.items()))
+
+
+def resolve_focus(graph: dict[str, Any], focus: str) -> str | None:
+    """The node id a focus target names: a node's own target, a ``cell:<row>|<route>``
+    (its endpoint), a ``profile:<Table>.<column>`` (its table) or a route in any spelling."""
+    nodes = graph["nodes"]
+    if focus in nodes:
+        return focus
+    if focus.startswith("cell:"):
+        return resolve_focus(graph, "endpoint:" + focus.split("|", 1)[-1])
+    if focus.startswith("profile:") and "." in focus:
+        return resolve_focus(graph, focus.split(".", 1)[0])
+    if focus.startswith("endpoint:"):
+        want = flow_key(focus.removeprefix("endpoint:"))
+        for t, n in nodes.items():
+            if n["kind"] == "endpoint" and flow_key(t.removeprefix("endpoint:")) == want:
+                return t
+    return None
+
+
+def select_graph(
+    graph: dict[str, Any],
+    focus: str | None,
+    depth: int,
+    kinds: set[str] | None,
+    limit: int,
+) -> dict[str, Any]:
+    """The nodes and edges of ``graph`` within ``depth`` hops of ``focus`` (the whole
+    graph without one), of the given kinds, capped at ``limit`` nodes."""
+    nodes: dict[str, Any] = graph["nodes"]
+    adj: dict[str, set[str]] = graph["adj"]
+    dist: dict[str, int] = {}
+    if focus is None:
+        dist = {t: 0 for t in nodes}
+    else:
+        dist[focus] = 0
+        frontier = [focus]
+        for d in range(1, depth + 1):
+            nxt: list[str] = []
+            for t in frontier:
+                for a in sorted(adj[t]):
+                    if a not in dist:
+                        dist[a] = d
+                        nxt.append(a)
+            frontier = nxt
+    keep = [t for t in dist if t == focus or kinds is None or nodes[t]["kind"] in kinds]
+    keep.sort(key=lambda t: (t != focus, dist[t], KIND_PRIORITY[nodes[t]["kind"]], t))
+    truncated = len(keep) > limit
+    keep = keep[:limit]
+    kept = set(keep)
+    out_nodes = [nodes[t] for t in sorted(kept, key=lambda t: (KIND_PRIORITY[nodes[t]["kind"]], t))]
+    out_edges = sorted(
+        (e for e in graph["edges"].values() if e["source"] in kept and e["target"] in kept),
+        key=lambda e: e["id"],
+    )
+    nc: dict[str, int] = {}
+    for n in out_nodes:
+        nc[n["kind"]] = nc.get(n["kind"], 0) + 1
+    ec: dict[str, int] = {}
+    for e in out_edges:
+        ec[e["kind"]] = ec.get(e["kind"], 0) + 1
+    return {
+        "nodes": out_nodes,
+        "edges": out_edges,
+        "counts": {
+            "nodes": dict(sorted(nc.items())),
+            "edges": dict(sorted(ec.items())),
+            "total": {"nodes": len(nodes), "edges": len(graph["edges"])},
+        },
+        "truncated": truncated,
+    }
 
 
 class MockState:
@@ -431,7 +945,7 @@ class MockState:
     def flow(self, endpoint: str, caller: str) -> dict[str, Any] | None:
         key = flow_key(endpoint)
         fixture = None
-        for name in ("flow-start-run", "flow-cancel-run"):
+        for name in FLOW_FIXTURES:
             f = self._load(name)
             if flow_key(f["endpoint"]) == key:
                 fixture = f
@@ -461,9 +975,46 @@ class MockState:
             return {
                 "endpoint": endpoint,
                 "caller": caller,
-                "stages": fixture["stages"],
+                "stages": with_stage_links(fixture["stages"]),
                 "divergence": divergence,
             }
+
+    # GET /api/graph?focus=&kinds=&depth=&limit=
+    def graph(
+        self, focus: str | None, kinds: set[str] | None, depth: int, limit: int
+    ) -> dict[str, Any] | None:
+        """The graph payload; ``None`` when ``focus`` names no node."""
+        flows = [self._load(n) for n in FLOW_FIXTURES]
+        with self.lock:
+            built = [
+                c
+                for c in self.changes.values()
+                if c["status"] == "accepted"
+                and (c.get("build") or {}).get("state", "not_built") != "built"
+            ]
+            not_built: set[str] = set()
+            for c in built:
+                rl = self._load(c.get("fixture", "change-c1")).get("rules", {})
+                for x in [*rl.get("added", []), *rl.get("changed", [])]:
+                    not_built.add(x if isinstance(x, str) else x.get("new") or x["old"])
+            not_built &= {r["id"] for r in self.model["rules"]}
+            ready = [c for c in self.changes.values() if c["status"] == "ready"]
+            open_change = None
+            if ready:
+                c = max(ready, key=lambda c: int(c["id"][1:]) if c["id"][1:].isdigit() else 0)
+                open_change = (c["id"], self._load(c.get("fixture", "change-c1")))
+            g = build_graph(self.model, self.code, flows, not_built)
+        if focus is not None:
+            focus = resolve_focus(g, focus)
+            if focus is None:
+                return None
+        out = select_graph(g, focus, depth, kinds, limit)
+        out["focus"] = focus
+        out["depth"] = depth if focus else None
+        out["change"] = open_change[0] if open_change else None
+        out["diff"] = graph_diff(open_change[1] if open_change else None, g)
+        out["machines"] = g["machines"]
+        return out
 
     # ---------------------------------------------------------------- rebuild
 
@@ -657,7 +1208,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         path = parsed.path
-        query = {k: v[-1] for k, v in parse_qs(parsed.query).items()}
+        query = {k: v[-1] for k, v in parse_qs(parsed.query, keep_blank_values=True).items()}
         state = self.server.state
         if path == "/api/model":
             return self._json(state.get_model())
@@ -687,6 +1238,35 @@ class Handler(BaseHTTPRequestHandler):
             if flow is None:
                 return self._error(HTTPStatus.NOT_FOUND, f"no flow for {endpoint}")
             return self._json(flow)
+        if path == "/api/graph":
+            focus = query.get("focus") or None
+            kinds = None
+            if "kinds" in query:
+                kinds = {k.strip() for k in query["kinds"].split(",") if k.strip()}
+                bad = sorted(kinds - set(GRAPH_KINDS))
+                if bad or not kinds:
+                    return self._error(
+                        HTTPStatus.UNPROCESSABLE_ENTITY,
+                        f"unknown kinds {bad}; use {','.join(GRAPH_KINDS)}",
+                    )
+            nums: dict[str, int] = {}
+            for key, default, lo, hi in (
+                ("depth", 1, 0, GRAPH_MAX_DEPTH),
+                ("limit", GRAPH_DEFAULT_LIMIT, 1, 5000),
+            ):
+                raw = query.get(key)
+                try:
+                    nums[key] = default if raw is None else int(raw)
+                except ValueError:
+                    nums[key] = lo - 1
+                if not lo <= nums[key] <= hi:
+                    return self._error(
+                        HTTPStatus.UNPROCESSABLE_ENTITY, f"{key} must be an integer {lo}..{hi}"
+                    )
+            graph = state.graph(focus, kinds, nums["depth"], nums["limit"])
+            if graph is None:
+                return self._error(HTTPStatus.NOT_FOUND, f"no node {focus}")
+            return self._json(graph)
         if path.startswith("/api/rebuild/"):
             rid = path.removeprefix("/api/rebuild/")
             rebuild = state.get_rebuild(rid)

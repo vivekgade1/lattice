@@ -384,6 +384,22 @@ def test_index_and_assets_are_served(base: str) -> None:
         assert ctype.startswith(want), (rel, ctype)
 
 
+def test_graph_adapter_and_bundle_assets(base: str) -> None:
+    # js/graph.js lazy-loads vendor/graph.js (dynamic import) and vendor/graph.css (a <link>).
+    src = (WEB_DIR / "js" / "graph.js").read_text()
+    assert "../vendor/graph.js" in src and "../vendor/graph.css" in src
+    for rel in ("vendor/graph.js", "vendor/graph.css", "js/views/map-tiles.js"):
+        status, _ctype, body = get(f"{base}/{rel}")
+        assert status == 200 and body, rel
+
+
+def test_no_colour_literals_outside_tokens() -> None:
+    lit = re.compile(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(")
+    for css in (WEB_DIR / "css").glob("*.css"):
+        if css.name != "tokens.css":
+            assert not lit.search(css.read_text()), css.name
+
+
 def test_every_js_import_resolves() -> None:
     for js in WEB_DIR.rglob("*.js"):
         for spec in re.findall(r'^import .*? from "([^"]+)";', js.read_text(), re.M):

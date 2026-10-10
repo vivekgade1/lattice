@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Graph demo</title>
+<!-- Dev page, not served by the app. Serve the studio/ dir: python -m http.server -d lattice/studio, open /graph/demo.html -->
+<link rel="stylesheet" href="../web/css/tokens.css">
+<link rel="stylesheet" href="../web/vendor/graph.css">
+<style>html,body{height:100%;margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-ui)}
+#bar{height:40px;display:flex;gap:8px;align-items:center;padding:0 12px;border-bottom:1px solid var(--hairline)}
+#g{height:calc(100% - 41px)}</style></head>
+<body>
+<div id="bar"><button id="dir">Direction: LR</button><button id="theme">Toggle theme</button><button id="diff">Toggle diff</button><span id="log" style="color:var(--ink-2)"></span></div>
+<div id="g"></div>
+<script type="module">
+import { mount } from "../web/vendor/graph.js";
+const T = ["checked","unchecked","context","untraced","probe_gap","not_built","failing"];
+const kinds = ["caller","endpoint","rule","rule","rule","table","service","scenario","scenario","code","state","state","stage","stage","rule"];
+const nodes = kinds.map((k, i) => ({
+  id: "n" + i, kind: k,
+  label: k === "endpoint" ? "POST /orders" : k === "table" ? "orders" : k + " " + i + (i === 3 ? " with a very long name that truncates" : ""),
+  sub: "sub text for " + k, trust: T[i % T.length], target: k + ":n" + i,
+  badges: i % 4 === 0 ? [{ label: "3 checks", tone: i % 8 === 0 ? "bad" : "ok" }] : [],
+}));
+const E = [[0,1],[1,2],[1,3],[2,4],[3,4],[4,5],[4,6],[6,7],[6,8],[7,9],[8,9],[5,10],[10,11],[11,12],[12,13],[2,14]];
+const edges = E.map(([a,b],i) => ({ id: "e"+i, source: "n"+a, target: "n"+b, label: i === 2 ? "when paid" : undefined, kind: i === 5 ? "inferred" : "calls", state: i === 8 ? "failing" : i === 3 ? "active" : undefined }));
+let sel = ["n2"], dir = "LR", showDiff = true;
+const diffs = { n2: "modified", n3: "added", n5: "removed", n7: "impact" };
+const g = mount(document.getElementById("g"), {
+  nodes, edges, direction: dir, selected: sel, marked: ["n4","n6"], diff: diffs, minimap: true,
+  onSelect(id, { additive }) { sel = additive ? (sel.includes(id) ? sel.filter(x => x !== id) : [...sel, id]) : [id]; g.update({ selected: sel }); log("select " + id + (additive ? " +" : "")); },
+  onOpen(id) { log("open " + id); },
+});
+function log(t) { document.getElementById("log").textContent = t; }
+window.g = g;
+document.getElementById("dir").onclick = (e) => { dir = dir === "LR" ? "TB" : "LR"; e.target.textContent = "Direction: " + dir; g.update({ direction: dir }); };
+document.getElementById("theme").onclick = () => { const r = document.documentElement; r.dataset.theme = r.dataset.theme === "dark" ? "light" : "dark"; };
+document.getElementById("diff").onclick = () => { showDiff = !showDiff; g.update({ diff: showDiff ? diffs : {} }); };
+</script></body></html>

@@ -1,12 +1,17 @@
-// Request flow: one request traced end to end, left to right, one column per stage
-// (route, middleware, handler, database writes, response). Each stage lists the rules it
-// applies and the tables it reads and writes. A failing divergence overlays the path in red
-// and says "expected X, got Y at <stage>". Select a stage to ask about it or open its code.
-// A table below the diagram carries the same facts for screen readers.
+// Request flow: one request traced end to end, one node per stage (route, middleware,
+// handler, database writes, response) drawn with React Flow from the flow's stage ids and
+// `next`, in rows that wrap to the canvas width so every label reads at full size. Each
+// stage carries a line of facts: the rules it applies and the tables
+// it reads and writes. A failing divergence overlays the path in red and says "expected X,
+// got Y at <stage>". Select a stage to ask about it or open its code. A table below the
+// diagram carries the same facts for screen readers; the original columns are the fallback
+// when the graph cannot load.
 
 import { h, icon, add, plural } from "../util.js";
 import { api } from "../api.js";
+import { state, update } from "../store.js";
 import { targetAttrs } from "../targets.js";
+import { mountGraph } from "../graph.js";
 
 let endpoint = null;
 let caller = null;
@@ -102,7 +107,68 @@ function drawFlow(out, model, flow, ctx) {
     cols.push(el);
   });
 
+  // The graph: stages as nodes, `next` as lines, a caller node in front.
+  const ids = stages.map((st, i) => st.id || `stage-${i}`);
+  const base = (p) => String(p).split("/").pop();
+  const facts = (st) => {
+    const out = [];
+    if ((st.rules || []).length) out.push(plural(st.rules.length, "rule"));
+    if ((st.reads || []).length) out.push(`reads ${st.reads.length}`);
+    if ((st.writes || []).length) out.push(`writes ${st.writes.length}`);
+    return out.join(" · ");
+  };
+  const W = 208;
+  const gNodes = [
+    { id: "caller", kind: "caller", label: flow.caller || caller, sub: "calls " + (flow.endpoint || endpoint).split(" ")[0], w: W },
+    ...stages.map((st, i) => ({
+      id: ids[i],
+      kind: "stage",
+      label: `${sentence(st.stage)}: ${st.symbol}`,
+      sub: i === divIdx ? `expected ${div.expected}, got ${div.actual}` : `${base(st.path)}:${st.line}`,
+      trust: i === divIdx ? "failing" : undefined,
+      badges: facts(st) && i !== divIdx ? [{ label: facts(st), tone: "neutral" }] : [],
+      target: stageTarget(st),
+      w: W,
+    })),
+  ];
+  const gEdges = [];
+  if (stages.length) gEdges.push({ id: `caller>${ids[0]}`, source: "caller", target: ids[0], kind: "calls", state: divIdx >= 0 ? "failing" : undefined });
+  stages.forEach((st, i) => {
+    const next = Array.isArray(st.next) ? st.next : i + 1 < stages.length ? [ids[i + 1]] : [];
+    for (const n of next) {
+      const j = ids.indexOf(n);
+      gEdges.push({
+        id: `${ids[i]}>${n}`, source: ids[i], target: n, kind: "next",
+        state: divIdx >= 0 && j >= 0 && j <= divIdx ? "failing" : undefined,
+        label: j === divIdx ? "diverges here" : undefined,
+      });
+    }
+  });
+  const canvas = h("div", { class: "gr-canvas is-flow", "data-view": "flow-graph" });
+  const lanes = h("div", { class: "flow-lanes", role: "group", "aria-label": `Request flow for ${flow.endpoint} as ${flow.caller}`, tabindex: "0" }, cols);
+  const graph = mountGraph(canvas, {
+    nodes: gNodes,
+    edges: gEdges,
+    layout: "wrap",
+    selected: [ids[selected]],
+    label: `Request flow for ${flow.endpoint} as ${flow.caller}`,
+    onSelect: (id) => {
+      const i = ids.indexOf(id);
+      if (i < 0) return;
+      selected = i;
+      const t = stageTarget(stages[i]);
+      if (!state.selection.includes(t)) update({ selection: [...state.selection, t] });
+      showDetail();
+    },
+    onOpen: (id) => {
+      const i = ids.indexOf(id);
+      if (i >= 0) ctx.openCode(stageTarget(stages[i]));
+    },
+    onError: () => canvas.replaceWith(lanes),
+  });
+
   function showDetail() {
+    graph.update({ selected: [ids[selected]] });
     for (const el of out.querySelectorAll(".flow-col")) el.classList.toggle("is-chosen", false);
     const s = stages[selected];
     if (!s) { detail.replaceChildren(); return; }
@@ -142,7 +208,7 @@ function drawFlow(out, model, flow, ctx) {
       h("span", {},
         h("strong", {}, "Diverges: "), "expected ", h("code", {}, div.expected),
         ", got ", h("code", {}, div.actual), ` at ${div.stage}`)) : null,
-    h("div", { class: "flow-lanes", role: "group", "aria-label": `Request flow for ${flow.endpoint} as ${flow.caller}`, tabindex: "0" }, cols),
+    canvas,
     detail,
     h("p", { class: "muted small" }, `${plural(stages.length, "stage")}. ${div ? "The last check fails on this path." : "The last check does not contradict this path."}`),
     table,

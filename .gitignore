@@ -10,3 +10,5 @@ __pycache__/
 /corpus/
 /.cache/
 /.claude/
+
+/lattice/studio/graph/node_modules/

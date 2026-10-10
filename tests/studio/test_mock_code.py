@@ -232,7 +232,17 @@ def test_flow_shape_and_rules(base: str, endpoint: str) -> None:
     stages = f["stages"]
     assert len(stages) >= 5
     for s in stages:
-        assert set(s) == {"stage", "symbol", "path", "line", "rules", "reads", "writes"}
+        assert set(s) == {
+            "stage",
+            "symbol",
+            "path",
+            "line",
+            "rules",
+            "reads",
+            "writes",
+            "id",
+            "next",
+        }
         assert s["rules"] and set(s["rules"]) <= ids
         _, c = get(f"{base}/api/code/file?{q(path=s['path'])}")
         assert 1 <= s["line"] <= len(c["lines"])

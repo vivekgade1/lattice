@@ -244,6 +244,87 @@ button.map-badge:hover { color: var(--ink); text-decoration-color: currentColor;
 .chk-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
 .chk-empty { max-width: var(--measure); padding: var(--space-8) 0; }
 
+/* ------------------------------------------------------------------ Graph (Map, Lifecycle, Request flow) */
+/* Node, edge and trust styling lives in the graph bundle (graph/src/graph.css); this is the
+   chrome around the canvas only. */
+.gr-toolbar { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); align-items: center; margin-bottom: var(--space-2); }
+.gr-search { position: relative; display: inline-flex; align-items: center; flex: 1 1 220px; max-width: 320px; }
+.gr-search .icon { position: absolute; left: 9px; width: 14px; height: 14px; color: var(--ink-3); pointer-events: none; }
+.gr-select, .gr-input {
+  font: inherit; font-size: var(--fs-13); padding: 5px var(--space-2); border-radius: var(--radius-control);
+  border: 1px solid var(--hairline-strong); background: var(--raised); color: var(--ink); min-height: 32px;
+}
+.gr-input { width: 100%; padding-left: 30px; }
+.gr-toggle[aria-pressed="true"] { background: var(--warn-soft); color: var(--warn-text); border-color: var(--warn); }
+.gr-toggle .icon, .gr-toolbar .btn .icon { width: 12px; height: 12px; }
+.gr-focus-chip { display: inline-flex; align-items: center; gap: var(--space-2); padding: 2px 2px 2px var(--space-3); border-radius: 999px; background: var(--accent-soft); font-size: var(--fs-13); }
+.gr-options { position: relative; margin-left: auto; }
+.gr-options > summary { list-style: none; cursor: pointer; }
+.gr-options > summary::-webkit-details-marker { display: none; }
+.gr-options > summary::after { content: ""; display: inline-block; margin-left: 6px; border: 4px solid transparent; border-top-color: currentColor; border-bottom: 0; vertical-align: middle; }
+.gr-options-panel {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; width: 300px; max-width: calc(100vw - 32px);
+  display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4);
+  background: var(--raised); border: 1px solid var(--hairline); border-radius: var(--radius-surface); box-shadow: var(--shadow-popover);
+}
+.gr-field { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-12); color: var(--ink-2); font-weight: var(--fw-medium); }
+.gr-check { display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--fs-13); color: var(--ink); cursor: pointer; }
+.gr-check input { margin-top: 2px; }
+.gr-status { margin: 0 0 var(--space-2); font-size: var(--fs-13); color: var(--ink-2); }
+.gr-search-note { color: var(--ink); font-weight: var(--fw-medium); }
+.gr-note { margin: 0 0 var(--space-3); padding: var(--space-2) var(--space-3); border-left: 3px solid var(--hairline-strong); background: var(--surface); border-radius: var(--radius-sm); }
+.gr-ghost { display: flex; gap: var(--space-2); align-items: center; margin: 0 0 var(--space-2); padding: var(--space-2) var(--space-3); background: var(--pending-soft); color: var(--pending-text); border-radius: var(--radius-sm); font-size: var(--fs-13); }
+.gr-ghost .icon { flex: none; width: 12px; height: 12px; }
+
+.view:has(.gr-canvas.is-map) { max-width: none; }
+.gr-stage { position: relative; }
+.gr-canvas {
+  position: relative; min-width: 0; height: clamp(380px, calc(100vh - 300px), 900px);
+  border: 1px solid var(--hairline); border-radius: var(--radius-surface); overflow: hidden; background: var(--paper);
+}
+.gr-canvas.is-compact { height: 264px; }
+.gr-canvas.is-flow { height: 360px; }
+.gr-host .gr-mount { position: absolute; inset: 0; }
+.gr-loading { position: absolute; inset: 0; margin: 0; display: grid; place-items: center; color: var(--ink-2); pointer-events: none; }
+.gr-error { padding: var(--space-5); max-width: var(--measure); }
+.gr-error p { margin: 0 0 var(--space-2); }
+
+.gr-drawer {
+  position: absolute; left: 116px; right: var(--space-3); bottom: var(--space-3); z-index: 5; max-height: 55%; overflow: auto;
+  display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); align-items: center;
+  padding: var(--space-2) var(--space-3); font-size: var(--fs-13);
+  background: var(--raised); border: 1px solid var(--hairline); border-radius: var(--radius-surface); box-shadow: var(--shadow-popover);
+}
+.gr-drawer[hidden] { display: none; }
+.gr-drawer-id { display: flex; flex-wrap: wrap; gap: 2px var(--space-2); align-items: baseline; flex: 1 1 200px; min-width: 0; }
+.gr-drawer h2 { margin: 0; font-size: var(--fs-14); font-weight: var(--fw-strong); overflow-wrap: anywhere; }
+.gr-drawer-kind { font-size: var(--fs-12); color: var(--ink-2); }
+.gr-drawer-actions { display: flex; flex-wrap: wrap; gap: var(--space-1); align-items: center; }
+.gr-drawer-close { padding: 4px 6px; }
+.gr-drawer-more { flex: 1 1 100%; font-size: var(--fs-12); }
+.gr-drawer-more > summary { cursor: pointer; color: var(--ink-2); width: max-content; }
+.gr-drawer-sub { margin: var(--space-1) 0 0; color: var(--ink-2); overflow-wrap: anywhere; max-width: var(--measure); }
+.gr-drawer-lines { margin: var(--space-2) 0 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 2px var(--space-3); }
+.gr-drawer-lines dt { color: var(--ink-2); }
+.gr-drawer-lines dd { margin: 0; overflow-wrap: anywhere; }
+.gr-stage { container-type: inline-size; }
+@container (max-width: 560px) {
+  .gr-drawer { left: var(--space-2); right: var(--space-2); }
+}
+
+.gr-legend-wrap { margin-top: var(--space-2); display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); align-items: center; }
+.gr-legend-wrap p { margin: 0; }
+.gr-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); font-size: var(--fs-12); color: var(--ink-2); }
+.gr-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.gr-line { stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: butt; }
+.gr-line-inferred { stroke-dasharray: 4 4; }
+.gr-line-added { stroke: var(--added); stroke-dasharray: 4 3; }
+.gr-line-removed { stroke: var(--removed); stroke-dasharray: 2 3; }
+
+.gr-list-sub { display: block; font-size: var(--fs-12); font-weight: var(--fw-regular); color: var(--ink-2); max-width: 60ch; overflow-wrap: anywhere; }
+.gr-list-acts { display: inline-flex; gap: var(--space-1); }
+.map-list td.num { font-variant-numeric: tabular-nums; }
+
 @media (max-width: 900px) {
   .code-view { display: block; }
   .code-tree { position: static; margin-bottom: var(--space-4); }

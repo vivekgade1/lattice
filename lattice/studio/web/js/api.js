@@ -4,7 +4,7 @@
 // Studio 2 endpoints that only the mock server has. A 404 whose body is the router's
 // generic "no such route" (or has no body) on one of these means "unsupported here"; a 404
 // that names a missing file, change or rebuild is an ordinary error.
-const MOCK_ONLY = /^\/api\/(code\/|flow|rebuild|explain)/;
+const MOCK_ONLY = /^\/api\/(code\/|flow|graph|rebuild|explain)/;
 const GENERIC_404 = /^(no such route|not found)$/i;
 
 async function call(method, path, body) {
@@ -58,6 +58,16 @@ export const api = {
   codeLinks: (target) => call("GET", `/api/code/links?target=${encodeURIComponent(target)}`),
   flow: (endpoint, caller = "ann") =>
     call("GET", `/api/flow?endpoint=${encodeURIComponent(endpoint)}&caller=${encodeURIComponent(caller)}`),
+  // v1.4: the business-logic graph. params: {focus, kinds (comma list or array), depth, limit}.
+  graph: (params = {}) => {
+    const q = new URLSearchParams();
+    for (const [k, v] of Object.entries(params)) {
+      if (v === null || v === undefined || v === "") continue;
+      q.set(k, Array.isArray(v) ? v.join(",") : String(v));
+    }
+    const qs = q.toString();
+    return call("GET", `/api/graph${qs ? `?${qs}` : ""}`);
+  },
   // opts: {model, max_rounds}. Resolves to {id}.
   rebuild: (changes, opts = {}) => call("POST", "/api/rebuild", { changes, ...opts }),
   rebuildGet: (id) => call("GET", `/api/rebuild/${encodeURIComponent(id)}`),

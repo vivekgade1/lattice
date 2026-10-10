@@ -1,0 +1,143 @@
+/* Business-logic graph. Colour comes only from the app's custom properties (tokens.css).
+   Quiet by default: a node is a label and one line of facts; the kind is carried by the
+   column, the group, a small glyph or the node's shape, never by a repeated word. */
+.lg-root {
+  position: relative; width: 100%; height: 100%; min-height: 200px;
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-ui); font-size: var(--fs-12);
+  --xy-edge-stroke: var(--hairline-strong);
+  --xy-edge-stroke-width: 1px;
+  --xy-edge-stroke-selected: var(--accent);
+  --xy-connectionline-stroke: var(--hairline-strong);
+  --xy-background-color: var(--paper);
+  --xy-node-color: var(--ink);
+  --xy-node-border: 1px solid var(--hairline);
+  --xy-node-background-color: var(--raised);
+  --xy-handle-background-color: var(--hairline-strong);
+  --xy-handle-border-color: var(--paper);
+  --xy-minimap-background-color: var(--surface);
+  --xy-minimap-mask-background-color: color-mix(in srgb, var(--paper) 70%, transparent);
+  --xy-minimap-node-background-color: var(--hairline-strong);
+  --xy-attribution-background-color: transparent;
+}
+.lg-root .react-flow { background: var(--paper); font-family: inherit; }
+.lg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.lg-m { fill: var(--ink-3); }
+.lg-m-accent { fill: var(--accent); }
+.lg-m-bad { fill: var(--bad); }
+
+/* edges: one hairline; dashed = inferred; the selected element's lines in accent, labelled */
+.lg-root .react-flow__edge-path { stroke: var(--hairline-strong); stroke-width: 1px; fill: none; }
+.lg-root .lg-edge-dashed .react-flow__edge-path { stroke-dasharray: 4 4; }
+.lg-root .lg-edge-active .react-flow__edge-path { stroke: var(--accent); stroke-width: 1.5px; }
+.lg-root .lg-edge-failing .react-flow__edge-path { stroke: var(--bad); stroke-width: 1.5px; }
+.lg-root .lg-edge-k-added .react-flow__edge-path { stroke: var(--added); stroke-dasharray: 4 3; stroke-width: 1.5px; }
+.lg-root .lg-edge-k-removed .react-flow__edge-path { stroke: var(--removed); stroke-dasharray: 2 3; stroke-width: 1.5px; }
+.lg-root .lg-edge-active.lg-edge-flow .react-flow__edge-path { stroke-dasharray: 5 4; animation: lg-flow 1.2s linear infinite; }
+@keyframes lg-flow { to { stroke-dashoffset: -9; } }
+.lg-root .react-flow__edge-textbg { fill: var(--paper); stroke: none; }
+.lg-root .react-flow__edge-text { fill: var(--ink-2); font-size: var(--fs-12); font-family: var(--font-ui); }
+
+/* node frame (React Flow's wrapper stays invisible; the button is the node) */
+.lg-root .react-flow__node { padding: 0; border: 0; background: none; box-shadow: none; border-radius: 0; width: auto; }
+.lg-root .react-flow__node.lg-extra { pointer-events: none; cursor: default; }
+.lg-handle { width: 1px; height: 1px; min-width: 0; min-height: 0; opacity: 0; border: 0; background: none; pointer-events: none; }
+
+.lg-node {
+  position: relative; display: flex; flex-direction: column; justify-content: center; gap: 2px;
+  padding: 5px 10px; margin: 0; overflow: hidden;
+  text-align: left; cursor: pointer;
+  background: var(--raised); color: var(--ink);
+  border: 1px solid var(--hairline); border-radius: 8px;
+  font: inherit; font-size: var(--fs-12); line-height: 16px;
+  transition: background var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast);
+}
+.lg-node:hover { border-color: var(--ink-3); }
+.lg-node:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lg-node.is-marked { background: var(--accent-soft); }
+.lg-node.is-selected { box-shadow: 0 0 0 2px var(--accent); border-color: var(--accent); }
+.lg-node[data-dim] { opacity: 0.3; }
+.lg-node[data-dim]:hover, .lg-node[data-dim]:focus-visible { opacity: 1; }
+
+.lg-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.lg-label { font-size: var(--fs-13); line-height: 18px; font-weight: var(--fw-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.lg-meta { color: var(--ink-2); white-space: nowrap; }
+.lg-meta:empty { display: none; }
+.lg-sub { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
+.lg-fill { flex: 1 1 0; min-width: 0; }
+.lg-glyph { color: var(--ink-3); }
+.lg-icon { flex: none; }
+.lg-trust { display: inline-flex; align-items: center; gap: 3px; flex: none; font-weight: var(--fw-medium); }
+.lg-badge { flex: none; padding: 0 5px; border-radius: 4px; font-size: var(--fs-12); line-height: 16px; color: var(--ink-2); }
+.lg-tone-ok { background: var(--ok-soft); color: var(--ok-text); }
+.lg-tone-warn { background: var(--warn-soft); color: var(--warn-text); }
+.lg-tone-bad { background: var(--bad-soft); color: var(--bad-text); }
+.lg-tone-gap { background: var(--gap-soft); color: var(--gap-text); }
+.lg-tone-accent { background: var(--accent-soft); color: var(--accent); }
+.lg-more { flex: none; padding: 0 6px; border-radius: 999px; line-height: 16px; color: var(--ink-2); border: 1px solid var(--hairline-strong); }
+.lg-more:hover { color: var(--accent); border-color: var(--accent); }
+
+/* trust: one colour + icon + word per state, as everywhere in the app */
+.lg-t-checked .lg-trust { color: var(--ok-text); }
+.lg-t-probe_gap .lg-trust { color: var(--warn-text); }
+.lg-t-untraced .lg-trust { color: var(--gap-text); }
+.lg-t-unchecked .lg-trust, .lg-t-context .lg-trust, .lg-t-not_built .lg-trust { color: var(--ink-2); }
+.lg-t-failing .lg-trust { color: var(--bad-text); }
+.lg-node.lg-t-failing { border-color: var(--bad); }
+.lg-node.lg-t-probe_gap { border-color: var(--warn); }
+.lg-node.lg-t-untraced { border-color: var(--gap); }
+.lg-node.lg-t-not_built { border-style: dashed; border-color: var(--ink-3); }
+.lg-node.is-selected { border-color: var(--accent); }
+
+/* kinds: shape and type, not words */
+.lg-k-endpoint .lg-label, .lg-k-table .lg-label, .lg-k-code .lg-label { font-family: var(--font-mono); font-size: var(--fs-13); font-weight: var(--fw-regular); }
+.lg-method { font-weight: var(--fw-strong); color: var(--accent); }
+.lg-k-machine, .lg-k-state { border-radius: 999px; padding-left: 14px; padding-right: 14px; }
+.lg-k-invariant { border-left: 3px solid var(--ink-3); border-radius: 2px 8px 8px 2px; }
+.lg-k-scenario { border-radius: 8px 8px 8px 2px; }
+.lg-k-stage { border-left: 3px solid var(--ink-3); border-radius: 2px 8px 8px 2px; }
+.lg-k-caller { border-style: dashed; background: var(--surface); }
+.lg-k-caller.is-marked { background: var(--accent-soft); }
+
+/* group containers and column heads */
+.lg-group {
+  box-sizing: border-box; border: 1px solid var(--hairline); border-radius: 10px; background: var(--surface);
+  padding: 4px 10px; display: flex; align-items: baseline; gap: 6px;
+}
+.lg-group-label { font-size: var(--fs-12); font-weight: var(--fw-medium); color: var(--ink-2); }
+.lg-group-n { font-size: var(--fs-12); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.lg-colhead.is-side { border-bottom: 0; line-height: 16px; white-space: normal; }
+.lg-colhead { font-size: var(--fs-12); font-weight: var(--fw-medium); color: var(--ink-2); padding: 4px 0; border-bottom: 1px solid var(--hairline); }
+
+/* pending change: modified amber, added green, removed red strike, impact dashed amber;
+   each also says its word on the node */
+.lg-diffword { flex: none; font-weight: var(--fw-medium); }
+.lg-d-modified { box-shadow: inset 4px 0 0 var(--pending); background: var(--pending-soft); }
+.lg-d-modified .lg-diffword, .lg-d-impact .lg-diffword { color: var(--pending-text); }
+.lg-d-added { box-shadow: inset 4px 0 0 var(--added); background: var(--added-soft); }
+.lg-d-added .lg-diffword { color: var(--ok-text); }
+.lg-d-removed { box-shadow: inset 4px 0 0 var(--removed); background: var(--removed-soft); }
+.lg-d-removed .lg-label { text-decoration: line-through; color: var(--bad-text); }
+.lg-d-removed .lg-diffword { color: var(--bad-text); }
+.lg-node.lg-d-impact { border: 1px dashed var(--impact); }
+.lg-d-modified.is-selected { box-shadow: inset 4px 0 0 var(--pending), 0 0 0 2px var(--accent); }
+.lg-d-added.is-selected { box-shadow: inset 4px 0 0 var(--added), 0 0 0 2px var(--accent); }
+.lg-d-removed.is-selected { box-shadow: inset 4px 0 0 var(--removed), 0 0 0 2px var(--accent); }
+
+/* zoom controls, minimap, attribution */
+.lg-zoom { display: flex; gap: 4px; margin: 8px; }
+.lg-zoom button {
+  display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0;
+  background: var(--raised); color: var(--ink-2); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer;
+}
+.lg-zoom button:hover { color: var(--ink); border-color: var(--ink-3); }
+.lg-zoom button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lg-root .react-flow__minimap { border: 1px solid var(--hairline); border-radius: var(--radius-md); margin: 8px; }
+.lg-mini-node { fill: var(--hairline-strong); stroke: none; }
+.lg-mini-node.is-selected { fill: var(--accent); }
+.lg-root .react-flow__attribution { background: transparent; font-size: var(--fs-12); }
+.lg-root .react-flow__attribution a { color: var(--ink-3); text-decoration: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-root *, .lg-root *::before, .lg-root *::after { animation: none !important; transition: none !important; }
+}
