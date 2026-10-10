@@ -34,6 +34,11 @@ API v1.4 adds ``GET /api/graph`` (the business-logic graph: nodes, edges, lifecy
 machines and the open change's diff, all derived from the same fixtures, see
 ``build_graph``) and ``id``/``next`` on every ``GET /api/flow`` stage.
 
+API v1.5 adds the chat as a Claude Code session (``/api/session``): the mock replays
+``mock/session-ask.jsonl`` (partial text, an ``mcp__lattice__spec_ask`` card, a result) over
+four polls, and ``mock/session-error.jsonl`` (a usage-limit error) for a message that
+contains "limit". ``GET /api/model`` has ``app.session: true``.
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -53,6 +58,13 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, unquote, urlparse
+
+from lattice.studio.session import (
+    SessionError,
+    Transcript,
+    parse_create,
+    parse_message,
+)
 
 HERE = Path(__file__).resolve().parent
 WEB_DIR = HERE / "web"
@@ -632,6 +644,103 @@ def select_graph(
     }
 
 
+class MockSessions:
+    """Chat sessions replayed from ``session-*.jsonl`` fixtures: raw Claude Code
+    stream-json records, each with a ``_poll`` number. A message starts a turn; every
+    ``GET .../events`` while it runs is one poll and reveals the records up to that number,
+    fed through the same normalizer as the real server (lattice/studio/session.py). A
+    message containing "limit" replays ``session-error.jsonl`` (a usage-limit error)."""
+
+    def __init__(self, fixture_dir: Path) -> None:
+        self.fixture_dir = fixture_dir
+        self.lock = threading.Lock()
+        self.sessions: dict[str, dict[str, Any]] = {}
+        self._next = 1
+
+    def _records(self, name: str) -> list[dict[str, Any]]:
+        text = (self.fixture_dir / f"{name}.jsonl").read_text(encoding="utf-8")
+        return [json.loads(line) for line in text.splitlines() if line.strip()]
+
+    def _get(self, sid: str) -> dict[str, Any]:
+        s = self.sessions.get(sid)
+        if s is None:
+            raise SessionError(404, f"no session {sid}")
+        return s
+
+    def _summary(self, s: dict[str, Any]) -> dict[str, Any]:
+        t: Transcript = s["t"]
+        return {
+            "id": s["id"],
+            "mode": s["mode"],
+            "change": s["change"],
+            "state": t.state,
+            "claude_session_id": t.claude_session_id,
+            "resume_command": (
+                f"claude --resume {t.claude_session_id}" if t.claude_session_id else None
+            ),
+            "cwd": "/mock/project",
+            "turns": t.turns,
+            "cost_usd_total": round(t.cost_total, 6),
+        }
+
+    def create(self, body: dict[str, Any]) -> dict[str, Any]:
+        mode, change = parse_create(body)
+        with self.lock:
+            sid = f"s{self._next}"
+            self._next += 1
+            self.sessions[sid] = {
+                "id": sid,
+                "mode": mode,
+                "change": change,
+                "t": Transcript(),
+                "records": [],
+                "polls": 0,
+                "fed": 0,
+            }
+            return self._summary(self.sessions[sid])
+
+    def list(self) -> list[dict[str, Any]]:
+        with self.lock:
+            return [self._summary(s) for s in self.sessions.values()]
+
+    def message(self, sid: str, body: dict[str, Any]) -> dict[str, Any]:
+        text, selected = parse_message(body)
+        with self.lock:
+            s = self._get(sid)
+            t: Transcript = s["t"]
+            if t.state in ("starting", "running"):
+                raise SessionError(409, "a turn is already running in this session")
+            t.add_user(text, selected)
+            t.set_state("starting")
+            fixture = "session-error" if "limit" in text.lower() else "session-ask"
+            s["records"], s["polls"], s["fed"] = self._records(fixture), 0, 0
+            return {"turn": t.turns}
+
+    def events(self, sid: str, after: int) -> dict[str, Any]:
+        with self.lock:
+            s = self._get(sid)
+            t: Transcript = s["t"]
+            if t.state in ("starting", "running"):
+                s["polls"] += 1
+                recs = s["records"]
+                while s["fed"] < len(recs) and recs[s["fed"]].get("_poll", 0) <= s["polls"]:
+                    t.feed({k: v for k, v in recs[s["fed"]].items() if k != "_poll"})
+                    s["fed"] += 1
+                if s["fed"] >= len(recs):
+                    t.set_state("idle")
+            return t.view(after)
+
+    def interrupt(self, sid: str) -> dict[str, Any]:
+        with self.lock:
+            s = self._get(sid)
+            t: Transcript = s["t"]
+            if t.state not in ("starting", "running"):
+                raise SessionError(409, "no turn is running in this session")
+            s["fed"] = len(s["records"])
+            t.set_state("interrupted")
+            return {"id": sid, "state": "interrupted"}
+
+
 class MockState:
     """The mutable state behind the mock API: change sets, the check run, the git head."""
 
@@ -648,6 +757,7 @@ class MockState:
         self.rebuilds: dict[str, dict[str, Any]] = {}
         self._next_rebuild = 1
         self.built_in: str | None = None  # the change a passed rebuild built, for the Code lens
+        self.sessions = MockSessions(fixture_dir)
         self._seed_initial_change()
 
     def _load(self, name: str) -> Any:
@@ -678,6 +788,7 @@ class MockState:
                     if last is not None:
                         last["at"] = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
             out = copy.deepcopy(self.model)
+            out["app"]["session"] = True
             out["changes"] = []
             for c in self.changes.values():
                 item = {
@@ -1205,6 +1316,27 @@ class Handler(BaseHTTPRequestHandler):
             return None
         return body if isinstance(body, dict) else None
 
+    def _session(self, fn: Any, status: int = 200) -> None:
+        try:
+            self._json(fn(), status)
+        except SessionError as e:
+            self._error(HTTPStatus(e.status), e.detail)
+
+    @staticmethod
+    def _session_get(path: str, query: dict[str, str], sessions: MockSessions) -> Any:
+        if path == "/api/session":
+            return sessions.list()
+        parts = path.removeprefix("/api/session/").split("/")
+        if len(parts) == 2 and parts[1] == "events":
+            try:
+                after = int(query.get("after", "0"))
+            except ValueError:
+                after = -1
+            if after < 0:
+                raise SessionError(422, "after must be an integer >= 0")
+            return sessions.events(parts[0], after)
+        raise SessionError(404, "no such route")
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         path = parsed.path
@@ -1212,6 +1344,10 @@ class Handler(BaseHTTPRequestHandler):
         state = self.server.state
         if path == "/api/model":
             return self._json(state.get_model())
+        if path == "/api/session" or path.startswith("/api/session/"):
+            return self._session(
+                lambda: self._session_get(path, query, state.sessions),
+            )
         if path == "/api/code/files":
             return self._json(state.code_files())
         if path == "/api/code/file":
@@ -1289,6 +1425,11 @@ class Handler(BaseHTTPRequestHandler):
         body = self._body()
         if body is None:
             return self._error(HTTPStatus.BAD_REQUEST, "the body must be a JSON object")
+        if path == "/api/session":
+            return self._session(lambda: state.sessions.create(body), 201)
+        if path.startswith("/api/session/") and path.endswith("/message"):
+            sid = path.removeprefix("/api/session/").removesuffix("/message")
+            return self._session(lambda: state.sessions.message(sid, body), 202)
         if path == "/api/ask":
             if not str(body.get("question", "")).strip():
                 return self._error(HTTPStatus.UNPROCESSABLE_ENTITY, "question is empty")
@@ -1350,6 +1491,11 @@ class Handler(BaseHTTPRequestHandler):
             except ValueError as e:
                 return self._error(HTTPStatus.CONFLICT, f"cannot cancel a change with status {e}")
             return self._json(out)
+        if path.startswith("/api/session/"):
+            sid = path.removeprefix("/api/session/")
+            if not sid or "/" in sid:
+                return self._error(HTTPStatus.NOT_FOUND, "no such route")
+            return self._session(lambda: state.sessions.interrupt(sid))
         if path.startswith("/api/rebuild/"):
             rid = path.removeprefix("/api/rebuild/")
             if not rid or "/" in rid:

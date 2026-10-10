@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.4)
+# Lattice Studio API contract (v1.5)
 
 `lattice studio PROJECT_DIR [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API. It polls; there are no websockets.
 
@@ -213,3 +213,52 @@ Derived edges count in `focus`/`depth` traversal (so `focus=rule:R44&depth=1` re
 **`machines`**: one per `section6.machines` entry, parsed from its moves text (`a -> b, c; b -> d (initial: a)`). States are in first-seen order, `initial` is the `(initial: x)` state, `final` a state with no outgoing move. A move's `rules` are the rules linked to the machine whose text names the move's target state (omitted when none; a heuristic); `rules` on the machine are all rules linking to it. `machines` is always the full list, regardless of `focus`/`kinds`.
 
 **Known limits.** Endpoint to table edges beyond the two flow fixtures come only from the route's resource name, so e.g. `GET /applications/{}/members` has no `memberships` edge. Code nodes cover only the symbols the index and flows mention. Scenario patterns in code links (`scenario:access__*`) are not expanded into edges. Node set and edges are static for a project; only `trust`, `failing`, `change`, `diff` move with checks and changes.
+
+## v1.5 additions (the chat runs on a Claude Code session)
+
+Each user message spawns one `claude -p --output-format stream-json` subprocess in the project directory with the `lattice` MCP server (tools: `model_get`, `rule_get`, `spec_ask`, `code_links`, `graph_get`, `spec_lint`; `change_propose|get|list` in mode `change`) and no edit or shell tools; the first turn's Claude session id is reused with `--resume`, so the owner can continue the same conversation in a terminal. API credentials are stripped from the child's environment. Nothing is spawned until a message is sent. The UI polls; there are no websockets. Errors use the usual `{"detail": ...}`: 404 unknown session, 409 a turn is running (message) or none is running (DELETE), 422 a bad body, 501 mode `rebuild`, 503 the `claude` binary is missing.
+
+### `app.session` on GET /api/model
+`model.app.session` is `true` when the `claude` binary is found (so the session routes can work) and `false` otherwise; the UI then falls back to the one-shot `POST /api/ask` chat. The mock always says `true`.
+
+### POST /api/session
+Body `{"mode": "ask|explain|change|rebuild", "change": "c1"?}` (`change` is the open change id, mode `change`). `201`:
+```json
+{"id": "s1", "mode": "ask", "change": null, "state": "idle", "claude_session_id": null,
+ "resume_command": null, "cwd": "/path/to/project", "turns": 0, "cost_usd_total": 0}
+```
+`rebuild` answers `501 {"detail": "mode rebuild is not enabled yet"}` (it needs a worktree). An unknown mode is 422.
+
+### POST /api/session/{id}/message
+Body `{"text": "...", "selected": ["rule:R47", "cell:ann|POST /notes"]?}`; `selected` are the targets the owner has picked in the Studio (chips); they reach the model's system prompt. `202 {"turn": 1}`. 422 on empty text, 409 while a turn runs.
+
+### GET /api/session/{id}/events?after=N
+```json
+{"events": [ ... ], "next": 14, "state": "running", "done": false,
+ "claude_session_id": "3f6c1d52-...", "resume_command": "claude --resume 3f6c1d52-...",
+ "cost_usd_total": 0.0412}
+```
+`events` are those with `seq > after` (default 0); pass `next` as `after` on the following poll. `state` is `idle` (no turn yet or the last one ended), `starting`, `running` or `interrupted`; `done` is `state` not `starting`/`running`. `resume_command` is null until the first turn reports its session id (run it in the project directory, `cwd` in the session record).
+
+**Events.** Every event has `seq` (int, from 1, strictly increasing) and `ts` (ISO UTC):
+
+| `type` | fields |
+|---|---|
+| `user` | `text`, `selected[]` |
+| `text` | `text`, `partial` (bool), `message_id` |
+| `tool_use` | `id`, `name` (`mcp__lattice__spec_ask`, `Read`, ...), `label` (human: "Read runs.go", "Asked the spec"), `input_summary` |
+| `tool_result` | `tool_use_id`, `ok`, `summary` |
+| `status` | `state`: `starting|running|idle|interrupted` |
+| `result` | `ok`, `text`, `cost_usd`, `duration_ms`, `input_tokens`, `output_tokens`, `num_turns`, `claude_session_id` |
+| `error` | `message`, `kind`: `usage_limit|cli|timeout|other` |
+
+**Partial text.** Streamed deltas are merged: one `text` event per content block, `partial: true` while it grows. Each growth re-issues that event under a fresh, higher `seq` (the older one is gone from later polls), so the latest text always arrives as a replacement; key it by `message_id` + position, or simply by `seq` order, and the last `text` event of a message wins. It ends with `partial: false`. A turn that ends with `error` (`usage_limit` when the plan's limit is hit) may or may not also carry a `result` with `ok: false`.
+
+### DELETE /api/session/{id}
+Interrupts the running turn (terminates the process group): `200 {"id": "s1", "state": "interrupted"}`; the next poll shows `status interrupted` and `done: true`. 409 when no turn is running. The session itself stays and can take another message.
+
+### GET /api/session
+A list of the session records (the shape of the POST answer, plus `created` on the real server).
+
+### Configuration
+`studio.toml` `[llm]`: `session_timeout` (seconds a turn may run, default 900; a turn that exceeds it is killed and ends with `error` kind `timeout`), `claude_bin` (the Claude Code binary, default `claude`), `model` (as for the other chat).

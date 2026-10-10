@@ -1,0 +1,21 @@
+# {{project_name}}
+
+The Lattice spec is the contract for this project. Code is correct when `./check.sh` passes.
+
+## Commands
+- `./check.sh` : run all Lattice checks (run after every group of edits; may take a while, a full run can call an LLM and cost money, prefer targeted runs when available).
+- `check_run` tool: same checks through MCP, returns structured findings.
+
+## Protected files
+Do not edit: `{{requirements_path}}`, `{{spec_path}}`, `{{trace_path}}`. A PreToolUse hook denies these edits (including via shell). They are protected because the spec is what the code is judged against; changing it to pass a check defeats the check.
+
+## Working with the spec
+- Read: `model_get`, `rule_get`, `code_links`, `graph_get`.
+- Ask: `spec_ask` (answers cite rule ids).
+- Lint: `spec_lint`.
+- Change the spec: `change_propose`, then ask the user to review and accept it in Lattice Studio. You cannot accept changes.
+
+## Rules of thumb
+- Fix findings in code, quoting the rule id. Never silence or weaken a check.
+- If a rule looks wrong, propose a change; do not work around it.
+- Keep edits small and rerun `./check.sh` until it passes.

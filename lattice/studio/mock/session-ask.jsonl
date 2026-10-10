@@ -1,0 +1,17 @@
+{"_poll": 1, "type": "system", "subtype": "init", "session_id": "3f6c1d52-7a0e-4b8e-9d51-2a4e6b7c8d90", "model": "sonnet", "tools": ["Read", "mcp__lattice__spec_ask"]}
+{"_poll": 1, "type": "stream_event", "event": {"type": "message_start", "message": {"id": "msg_01ask", "role": "assistant"}}}
+{"_poll": 1, "type": "stream_event", "event": {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}}}
+{"_poll": 1, "type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "Let me check "}}}
+{"_poll": 1, "type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "what the spec says "}}}
+{"_poll": 2, "type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "about cancelling a run."}}}
+{"_poll": 2, "type": "stream_event", "event": {"type": "content_block_stop", "index": 0}}
+{"_poll": 2, "type": "assistant", "message": {"id": "msg_01ask", "role": "assistant", "content": [{"type": "text", "text": "Let me check what the spec says about cancelling a run."}]}}
+{"_poll": 2, "type": "assistant", "message": {"id": "msg_01ask", "role": "assistant", "content": [{"type": "tool_use", "id": "toolu_01spec", "name": "mcp__lattice__spec_ask", "input": {"question": "Who may cancel a run?"}}]}}
+{"_poll": 3, "type": "user", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_01spec", "content": [{"type": "text", "text": "yes (R47): the run's owner or an app admin may cancel a queued or running run; anyone else gets 403."}]}]}}
+{"_poll": 3, "type": "stream_event", "event": {"type": "message_start", "message": {"id": "msg_01ans", "role": "assistant"}}}
+{"_poll": 3, "type": "stream_event", "event": {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}}}
+{"_poll": 3, "type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "The run's owner or an app admin may cancel it (R47)."}}}
+{"_poll": 4, "type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": " Any other member gets 403."}}}
+{"_poll": 4, "type": "stream_event", "event": {"type": "content_block_stop", "index": 0}}
+{"_poll": 4, "type": "assistant", "message": {"id": "msg_01ans", "role": "assistant", "content": [{"type": "text", "text": "The run's owner or an app admin may cancel it (R47). Any other member gets 403."}]}}
+{"_poll": 4, "type": "result", "subtype": "success", "is_error": false, "result": "The run's owner or an app admin may cancel it (R47). Any other member gets 403.", "session_id": "3f6c1d52-7a0e-4b8e-9d51-2a4e6b7c8d90", "total_cost_usd": 0.0412, "duration_ms": 5230, "num_turns": 2, "usage": {"input_tokens": 1840, "output_tokens": 96}}

@@ -263,6 +263,7 @@ def test_model_matches_the_contract(tmp_path: Path, serve) -> None:
         "private": True,
         "bounds": None,
     }
+    assert isinstance(m["app"].pop("session"), bool)  # v1.5: is the claude binary there
     assert m["app"] == {"configured": False, "check_running": False, "last_check": None}
     assert m["changes"] == []
 

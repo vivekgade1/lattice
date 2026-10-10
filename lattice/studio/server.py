@@ -27,6 +27,8 @@ Run it with ``uv run --extra db python -m lattice.studio PROJECT_DIR [--port N]
     model = "sonnet"            # --model wins
     context = "CONTEXT.md"      # optional: context for incremental drafting
     ask_timeout = 600           # seconds
+    session_timeout = 900       # seconds one chat turn may run
+    claude_bin = "claude"       # the Claude Code binary of the chat sessions
 
 The project directory and the ``sys_path`` entries are put on ``sys.path``. Without
 ``[app] app`` and ``[app] db`` the app overlay, ``verify`` and the change impact are off.
@@ -46,6 +48,9 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
   three files and commits them, ``.../reject`` drops it.
 - ``POST /api/check``: the full check of the current spec against the app, in the
   background.
+- ``POST /api/session``, ``POST /api/session/{id}/message``, ``GET /api/session/{id}/events``,
+  ``DELETE /api/session/{id}``, ``GET /api/session``: the chat as a real Claude Code
+  session (lattice/studio/session.py; API.md v1.5). Lazy: no ``claude`` call until a message.
 """
 
 from __future__ import annotations
@@ -60,6 +65,7 @@ import json
 import mimetypes
 import os
 import re
+import signal
 import subprocess
 import sys
 import threading
@@ -72,7 +78,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 from lattice.llm.client import Generator
 from lattice.spec.ask import VerifyConfig, ask, build_digest
@@ -89,6 +95,12 @@ from lattice.spec.model import Spec, resolve_table, tables_of
 from lattice.spec.report import _detail_lines
 from lattice.spec.review import AccessGroup, ReviewData, _build
 from lattice.spec.rules import Trace, extract_rules
+from lattice.studio.session import (
+    DEFAULT_SESSION_TIMEOUT,
+    SessionError,
+    SessionManager,
+    claude_available,
+)
 
 HERE = Path(__file__).resolve().parent
 WEB_DIR = HERE / "web"
@@ -687,6 +699,7 @@ class Studio:
         model: str | None = None,
         generator: Generator | None = None,
         generator_factory: Callable[[str], Generator] | None = None,
+        claude_bin: str | None = None,
     ) -> None:
         self.root = root.resolve()
         self.config = StudioConfig.load(self.root)
@@ -703,6 +716,12 @@ class Studio:
         self.last_check: dict[str, Any] | None = None
         self._cache: tuple[str, str, dict[str, Any], Snapshot, list[dict]] | None = None
         self.ask_timeout = float(self.config.llm.get("ask_timeout") or DEFAULT_ASK_TIMEOUT)
+        self.claude_bin = str(claude_bin or self.config.llm.get("claude_bin") or "claude")
+        self.session_timeout = float(
+            self.config.llm.get("session_timeout") or DEFAULT_SESSION_TIMEOUT
+        )
+        self._sessions: SessionManager | None = None
+        self.base_url: str | None = None  # set by StudioServer once it is bound
         self.pool = concurrent.futures.ThreadPoolExecutor(
             max_workers=4, thread_name_prefix="studio-ask"
         )
@@ -724,6 +743,26 @@ class Studio:
                     model=self.model, max_tokens=32000, effort="", timeout=900, full_text=True
                 )
         return self._generator
+
+    @property
+    def sessions(self) -> SessionManager:
+        """The chat sessions, built on first use (nothing is spawned before a message)."""
+        with self.lock:
+            if self._sessions is None:
+                self._sessions = SessionManager(
+                    self.root,
+                    model=self.model,
+                    claude_bin=self.claude_bin,
+                    timeout=self.session_timeout,
+                    studio_url=self.base_url,
+                )
+            return self._sessions
+
+    def close_sessions(self) -> None:
+        with self.lock:
+            mgr, self._sessions = self._sessions, None
+        if mgr is not None:
+            mgr.close()
 
     @contextlib.contextmanager
     def app_context(self) -> Iterator[None]:
@@ -793,6 +832,7 @@ class Studio:
                 "configured": self.harness is not None,
                 "check_running": self.check_running,
                 "last_check": self.last_check,
+                "session": claude_available(self.claude_bin),
             }
             out["changes"] = [
                 {"id": c["id"], "request": c["request"], "status": c["status"]}
@@ -1177,6 +1217,14 @@ class Studio:
 # ---- HTTP -----------------------------------------------------------------------------------
 
 
+class Reply:
+    """A route's answer with a status other than 200."""
+
+    def __init__(self, body: Any, status: int) -> None:
+        self.body = body
+        self.status = status
+
+
 class Handler(BaseHTTPRequestHandler):
     server: StudioServer  # type: ignore[assignment]
 
@@ -1207,6 +1255,9 @@ class Handler(BaseHTTPRequestHandler):
     def _dispatch(self, fn: Callable[[], Any]) -> None:
         try:
             out = fn()
+        except SessionError as e:
+            self._json({"detail": e.detail}, e.status)
+            return
         except ApiError as e:
             if e.status >= 500:
                 log(f"{self.command} {self.path}: {e.status} {e.detail}")
@@ -1216,7 +1267,9 @@ class Handler(BaseHTTPRequestHandler):
             traceback.print_exc(file=sys.stderr)
             self._json({"detail": f"{type(exc).__name__}: {exc}"}, 500)
             return
-        if out is not None:
+        if isinstance(out, Reply):
+            self._json(out.body, out.status)
+        elif out is not None:
             self._json(out)
 
     def do_GET(self) -> None:  # noqa: N802
@@ -1227,6 +1280,20 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/api/changes/") and "/" not in path.removeprefix("/api/changes/"):
             cid = path.removeprefix("/api/changes/")
             return self._dispatch(lambda: st.get_change(cid))
+        if path == "/api/session":
+            return self._dispatch(lambda: st.sessions.list())
+        if path.startswith("/api/session/"):
+            parts = path.removeprefix("/api/session/").split("/")
+            if len(parts) == 2 and parts[1] == "events":
+                query = parse_qs(urlparse(self.path).query)
+                raw = (query.get("after") or ["0"])[-1]
+                try:
+                    after = int(raw)
+                except ValueError:
+                    after = -1
+                if after < 0:
+                    return self._json({"detail": "after must be an integer >= 0"}, 422)
+                return self._dispatch(lambda: st.sessions.events(parts[0], after))
         if path.startswith("/api/"):
             return self._json({"detail": "no such route"}, 404)
         return self._static(path)
@@ -1243,6 +1310,12 @@ class Handler(BaseHTTPRequestHandler):
                 return st.new_change(body)
             if path == "/api/check":
                 return st.start_check()
+            if path == "/api/session":
+                return Reply(st.sessions.create(body), 201)
+            if path.startswith("/api/session/"):
+                parts = path.removeprefix("/api/session/").split("/")
+                if len(parts) == 2 and parts[1] == "message":
+                    return Reply(st.sessions.message(parts[0], body), 202)
             if path.startswith("/api/changes/"):
                 parts = path.removeprefix("/api/changes/").split("/")
                 if len(parts) == 2 and parts[1] == "accept":
@@ -1259,6 +1332,9 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/api/changes/") and "/" not in path.removeprefix("/api/changes/"):
             cid = path.removeprefix("/api/changes/")
             return self._dispatch(lambda: st.cancel(cid))
+        if path.startswith("/api/session/") and "/" not in path.removeprefix("/api/session/"):
+            sid = path.removeprefix("/api/session/")
+            return self._dispatch(lambda: st.sessions.interrupt(sid))
         return self._json({"detail": "no such route"}, 404)
 
     def _static(self, path: str) -> None:
@@ -1295,8 +1371,13 @@ class StudioServer(ThreadingHTTPServer):
     ) -> None:
         super().__init__(addr, Handler)
         self.studio = studio
+        studio.base_url = f"http://{self.server_address[0]}:{self.server_address[1]}"
         self.web_dir = web_dir
         self.verbose = verbose
+
+    def server_close(self) -> None:
+        self.studio.close_sessions()
+        super().server_close()
 
 
 def make_server(
@@ -1306,13 +1387,18 @@ def make_server(
     model: str | None = None,
     generator: Generator | None = None,
     generator_factory: Callable[[str], Generator] | None = None,
+    claude_bin: str | None = None,
     web_dir: Path = WEB_DIR,
     verbose: bool = False,
 ) -> StudioServer:
     """A Studio server for `project` on 127.0.0.1:`port` (0 picks a free one); not yet
     serving. `generator` (tests: a ScriptedGenerator) replaces the Claude CLI client."""
     studio = Studio(
-        Path(project), model=model, generator=generator, generator_factory=generator_factory
+        Path(project),
+        model=model,
+        generator=generator,
+        generator_factory=generator_factory,
+        claude_bin=claude_bin,
     )
     return StudioServer(("127.0.0.1", port), studio, web_dir, verbose)
 
@@ -1339,6 +1425,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         file=sys.stderr,
         flush=True,
     )
+
+    def on_term(_sig: int, _frame: object) -> None:
+        # chat turns run `claude` in their own process groups: a plain SIGTERM would skip
+        # server_close() and leave them (and their MCP servers) running as orphans
+        raise KeyboardInterrupt
+
+    signal.signal(signal.SIGTERM, on_term)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
