@@ -40,6 +40,7 @@ import * as flow from "./views/flow.js";
 import * as gaps from "./views/gaps.js";
 import * as checks from "./views/checks.js";
 import * as rebuilds from "./views/rebuilds.js";
+import * as areas from "./views/areas.js";
 
 // Grouped navigator. `attn(m)` returns a short reason when the item needs attention (it
 // draws the dot); `count(m)` shows a number only where it helps.
@@ -61,11 +62,17 @@ const GROUPS = [
   { id: "evidence", title: "Evidence", views: [
     { id: "gaps", label: "Gaps", mod: gaps, count: gapCount, attn: (m) => (gapCount(m) ? `${gapCount(m)} open` : null) },
     { id: "checks", label: "Checks", mod: checks, attn: (m) => (m.app?.last_check?.verdict === "fail" ? "the last check failed" : null) },
+    { id: "build", label: "Build", mod: areas, attn: () => (buildLive() ? "a build is running" : null) },
     { id: "rebuilds", label: "Rebuilds", mod: rebuilds, attn: (m) => (notBuilt(m).length ? `${notBuilt(m).length} accepted, not built` : null) },
   ] },
 ];
 const VIEWS = GROUPS.flatMap((g) => g.views.map((v) => ({ ...v, group: g.id, lens: !!g.lens, groupTitle: g.title })));
 const HOME = "map";
+
+function buildLive() {
+  const r = state.buildRun;
+  return !!r && (r.phase === "starting" || (r.phase === "live" && !["passed", "gave_up", "stopped"].includes(r.record?.status)));
+}
 
 function notBuilt(m) {
   return (m?.changes || []).filter((c) => c.build?.state === "not_built");
@@ -337,6 +344,8 @@ function renderMain(keepScroll) {
   }
   if (keepScroll) $main.scrollTop = top;
   applyMarks($main);
+  if (v.id === "rules") areas.decorateRuleHeadings($main);
+  else if (v.id === "map") areas.decorateMap($main);
   document.title = `${v.label} · ${state.model.project?.name || "Lattice Studio"}`;
 }
 
@@ -521,6 +530,7 @@ async function switchProject(name, opts = {}) {
     project: name, model: null, connected: true, loadError: null, switching: true,
     selection: [], marked: [], focusTarget: null, change: null, rebuild: null, codeTarget: null,
     edits: [], rulesScope: null, checkRunning: false, overlay: false, view,
+    buildArea: null, buildRun: null,
   });
   history.replaceState(null, "", hashFor(state.view, name));
   startPollers();
@@ -531,6 +541,7 @@ function startPollers() {
   const ep = api.epoch();
   pollModel(ep);
   pollBuilding(ep);
+  areas.watchBuilds(ep);
 }
 
 async function boot() {
@@ -559,10 +570,18 @@ async function boot() {
 
 // ------------------------------------------------------------------ boot
 
+let navBuildLive = false;
+window.addEventListener("studio:run-check", () => {
+  if (!state.checkRunning && state.model?.app?.configured) runCheck();
+});
+
 subscribe((st, patch) => {
   const keys = Object.keys(patch);
   if (keys.some((k) => ["model", "connected", "checkRunning", "overlay", "loadError", "projects", "project"].includes(k))) renderTopbar();
-  if (keys.some((k) => ["model", "view"].includes(k))) renderNav();
+  if (keys.some((k) => ["model", "view"].includes(k)) || ("buildRun" in patch && buildLive() !== navBuildLive)) {
+    navBuildLive = buildLive();
+    renderNav();
+  }
   if ("view" in patch) document.body.classList.remove("nav-open");
   if ("view" in patch && st.view !== "rules" && !("rulesScope" in patch)) st.rulesScope = null;
   if ("view" in patch && location.hash !== hashFor(st.view, st.project)) history.replaceState(null, "", hashFor(st.view, st.project));

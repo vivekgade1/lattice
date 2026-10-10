@@ -21,6 +21,9 @@ export const state = {
   palette: false, // the ⌘K search dialog is open
   changesSeen: 0, // bumped when the conversation learns a change moved (the tray re-draws)
   rulesScope: null, // {name, ids}: the Map opened Rules for one element; Rules shows only these
+  // v1.8 build from the spec
+  buildArea: null, // an area id the Build view should open preselected (set by "Build…" links)
+  buildRun: null, // the scoped build in view: {phase: starting|live|done|stopped|error, id, title, branch, record, message}
   // v1.6 projects
   projects: null, // GET /api/projects (array) or null before it loaded / when it failed
   project: null, // the project the owner picked (name), or null for the server's default
@@ -41,6 +44,16 @@ export function canRebuild() {
   if (!p || !p.capabilities || p.capabilities.rebuild === undefined) return true;
   return p.capabilities.rebuild === true;
 }
+
+/** Whether this project can build from the spec (GET /api/projects capabilities). Unknown
+ *  (no project list) counts as true: the areas call then says what is wrong. */
+export function canBuild() {
+  const p = currentProject();
+  if (!p) return true;
+  return Boolean(p.capabilities && p.capabilities.build_from_spec === true);
+}
+
+export const BUILD_WHY = "Build from the spec needs a git repository and a [rebuild] section in studio.toml with at least one gate command.";
 
 export const REBUILD_WHY = "Rebuild needs a git repository and a gate command: add [rebuild] to studio.toml.";
 

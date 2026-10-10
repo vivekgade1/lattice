@@ -688,3 +688,85 @@ console.log(JSON.stringify([ok, gated, secs, open]));
     )
     assert r.returncode == 0, r.stderr
     assert json.loads(r.stdout) == [True, False, "395s", ""]
+
+
+# ---------------------------------------------------------------- build from spec (v1.8)
+
+
+def test_build_view_is_wired() -> None:
+    """The Build view: in the Evidence group, gated on capabilities.build_from_spec, with
+    the areas, the target branch control and the scoped card strings the contract needs."""
+    js = WEB_DIR / "js"
+    app_src = (js / "app.js").read_text()
+    assert 'id: "build", label: "Build"' in app_src and "areas.decorateRuleHeadings" in app_src
+    assert "studio:run-check" in app_src and "areas.watchBuilds" in app_src
+    store_src = (js / "store.js").read_text()
+    assert "build_from_spec" in store_src and "export function canBuild" in store_src
+    api_src = (js / "api.js").read_text()
+    for needle in ("/api/areas", "/api/branches", "err.code"):
+        assert needle in api_src, needle
+    src = (js / "views" / "areas.js").read_text()
+    for needle in (
+        "Builds are checked against the spec. "
+        "Your checked-out branch is not changed unless you confirm it.",
+        "Build this area",
+        "Build everything",
+        "Check now",
+        "not checked yet",
+        "New branch…",
+        "I understand, update this branch",
+        "fast-forward only",
+        "confirm_unsafe_branch",
+        "Checking the current state…",
+        "studio-build-branch",
+        "canBuild()",
+        "api.epoch()",
+    ):
+        assert needle in src, needle
+    card = (js / "views" / "rebuilds.js").read_text()
+    for needle in (
+        "scope_passing",
+        "newly_fixed",
+        "regression",
+        "cache_read_input_tokens",
+        "cache_creation_input_tokens",
+        "cost_usd_list_estimate",
+        "not charged",
+        "commit_range",
+        "target_branch",
+        "warnings",
+    ):
+        assert needle in card, needle
+    tray = (js / "tray.js").read_text()
+    assert "Building ${title} · round" in tray
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node is not installed")
+def test_build_refusals_have_calm_messages() -> None:
+    """Every refusal code of the v1.8 contract maps to a sentence with a next action."""
+    src = (WEB_DIR / "js" / "views" / "rebuilds.js").read_text()
+    m = re.search(r"export function buildRefusal.*?\n}\n", src, re.S)
+    assert m
+    script = (
+        m.group(0).replace("export ", "")
+        + """
+const codes = ['branch_exists','branch_protected','branch_checked_out','tree_dirty',
+  'branch_moved','merge_conflict','no_branch','branch_name_invalid','no_ref','baseline'];
+const out = codes.map((c) => buildRefusal({code: c, status: 409, detail: 'x'}, {branch: 'b'}));
+const nothing = 'nothing to build: the checks in this scope already pass';
+out.push(buildRefusal({status: 409, detail: nothing}));
+const running = 'a rebuild is already running in this project (b1)';
+out.push(buildRefusal({status: 409, detail: running}));
+console.log(JSON.stringify(out));
+"""
+    )
+    r = subprocess.run(
+        ["node", "--input-type=commonjs", "-e", script], capture_output=True, text=True
+    )
+    assert r.returncode == 0, r.stderr
+    msgs = json.loads(r.stdout)
+    assert len(set(msgs)) == len(msgs)
+    assert "That branch is protected. Pick another branch or confirm the update." in msgs
+    assert "Commit or stash your working changes, then try again." in msgs
+    assert "The checks in this area already pass." in msgs
+    assert all(m.endswith(".") and "409" not in m for m in msgs)

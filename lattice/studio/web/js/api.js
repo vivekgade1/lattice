@@ -46,6 +46,8 @@ async function call(method, path, body) {
     }
     const err = new Error(detail ? `${res.status}: ${detail}` : `The server answered ${res.status}.`);
     err.status = res.status;
+    err.detail = detail ? String(detail) : "";
+    err.code = (data && data.code) || null; // v1.8: branch_protected, tree_dirty, ...
     throw err;
   }
   return data;
@@ -106,6 +108,13 @@ export const api = {
   rebuild: (changes, opts = {}) => call("POST", "/api/rebuild", { changes, ...opts }),
   rebuildGet: (id) => call("GET", `/api/rebuild/${encodeURIComponent(id)}`),
   rebuildStop: (id) => call("DELETE", `/api/rebuild/${encodeURIComponent(id)}`),
+  // v1.8: build from the spec. `areas(branch)` and `branches()` feed the Build view;
+  // `buildStart` is a scoped POST that may block until the baseline has run; `rebuildList`
+  // lists every record of the project (the mock has no such route: err.unsupported).
+  areas: (branch = null) => call("GET", `/api/areas${branch ? `?branch=${encodeURIComponent(branch)}` : ""}`),
+  branches: () => call("GET", "/api/branches"),
+  buildStart: (body) => call("POST", "/api/rebuild", body),
+  rebuildList: () => call("GET", "/api/rebuild"),
 
   // v1.5: the chat on a Claude Code session (session.js drives these).
   sessionCreate: (mode, change = null) => call("POST", "/api/session", change ? { mode, change } : { mode }),

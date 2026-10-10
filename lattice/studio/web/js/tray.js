@@ -57,9 +57,30 @@ export function summarize(changes) {
   return n;
 }
 
+/** The scoped build in flight (Build view), or null. */
+function liveBuild() {
+  const r = state.buildRun;
+  if (!r) return null;
+  const status = r.record?.status;
+  if (r.phase === "starting" || (r.phase === "live" && !["passed", "gave_up", "stopped"].includes(status))) return r;
+  return null;
+}
+
+/** "Building Habits · round 2 of 3", or the baseline check before round 1. */
+export function buildWords(r) {
+  const rec = r.record || {};
+  const title = r.title || "the spec";
+  if (r.phase === "starting" || rec.status === "baseline") return `Checking the current state of ${title}`;
+  const max = rec.max_rounds || "";
+  const n = Math.max((rec.rounds || []).length, 1);
+  return `Building ${title} · round ${n}${max ? ` of ${max}` : ""}`;
+}
+
 function barText(changes) {
   const n = summarize(changes);
   const parts = [];
+  const lb = liveBuild();
+  if (lb) parts.push(buildWords(lb));
   if (n.ready) parts.push(`${plural(n.ready, "change")} ready`);
   if (n.working) parts.push(`${n.working} drafting`);
   if (n.notBuilt) parts.push(`${n.notBuilt} accepted, not built`);
@@ -198,25 +219,31 @@ export function mountTray(root, opts = {}) {
     clear(root);
     const active = changes.filter((c) => ACTIVE.has(changeStatus(c)));
     const history = changes.filter((c) => !ACTIVE.has(changeStatus(c)));
+    const lb = liveBuild();
     add(root,
       h("button", {
         type: "button", class: "tray-bar", id: "tray-toggle",
         "aria-expanded": open ? "true" : "false", "aria-controls": "tray-body",
         onclick: () => update({ trayOpen: !state.trayOpen }),
       },
-        h("span", { class: "tray-count" }, icon(active.length ? "pending" : "dash"), h("span", {}, barText(changes))),
+        h("span", { class: "tray-count" }, lb ? h("span", { class: "spinner", "aria-hidden": "true" }) : icon(active.length ? "pending" : "dash"), h("span", {}, barText(changes))),
         h("span", { class: "tray-chev muted" }, open ? "Hide" : "Show"),
       ),
       open ? h("div", { class: "tray-body", id: "tray-body" },
+        lb ? h("ul", { class: "tray-list" }, h("li", { class: "tray-row tray-live", "data-build": lb.id || "" },
+          h("span", { class: "tray-id" }, lb.id || "build"),
+          h("span", { class: "tray-request" }, `${buildWords(lb)}${lb.branch ? ` · onto ${lb.branch}` : ""}`),
+          h("span", { class: "tray-status" }, h("span", { class: "spinner", "aria-hidden": "true" }), " Building"),
+          h("span", { class: "tray-actions" }, h("button", { type: "button", class: "btn btn-quiet", onclick: () => update({ view: "build" }) }, "Open build")))) : null,
         changes.length
           ? h("ul", { class: "tray-list" }, [...active, ...history].map(row))
-          : h("p", { class: "muted" }, "No changes yet. Ask for one in the conversation and it appears here."),
+          : lb ? null : h("p", { class: "muted" }, "No changes yet. Ask for one in the conversation and it appears here."),
       ) : null,
     );
   }
 
   subscribe((st, patch) => {
-    if ("model" in patch || "trayOpen" in patch || "changesSeen" in patch) render();
+    if ("model" in patch || "trayOpen" in patch || "changesSeen" in patch || "buildRun" in patch) render();
   });
   render();
 }

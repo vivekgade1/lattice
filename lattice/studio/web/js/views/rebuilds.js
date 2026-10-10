@@ -8,8 +8,9 @@ import { state, update, subscribe, hooks, canRebuild, REBUILD_WHY } from "../sto
 import { highlight } from "../targets.js";
 import { toast } from "../tray.js";
 
-const LIVE = new Set(["queued", "running"]);
+const LIVE = new Set(["queued", "baseline", "running"]);
 const STATUS = {
+  baseline: { label: "Checking the current state", icon: "pending" },
   queued: { label: "Queued", icon: "pending" },
   running: { label: "Rebuilding", icon: "play" },
   passed: { label: "Passed", icon: "check" },
@@ -23,6 +24,38 @@ const LAYERS = ["A", "B", "C", "D", "X"];
 const seen = new Set();
 const refreshed = new Set(); // rebuild ends already followed by a model reload
 const sk = (...parts) => `${api.base()}|${parts.join(":")}`;
+
+const short = (sha) => String(sha || "").slice(0, 7);
+const num = (n) => Number(n || 0).toLocaleString("en-US");
+
+/** A calm sentence and the next action for a refused or failed build start. `err` is an
+ *  Error from api.js (status, code, detail) or a record's {kind, message}. Names are
+ *  filled from `ctx` {branch, scope}. */
+export function buildRefusal(err, ctx = {}) {
+  const code = err.code || err.kind || null;
+  const detail = String(err.detail || err.message || "");
+  const b = ctx.branch ? ` ${ctx.branch}` : "";
+  const known = {
+    branch_exists: `A branch named${b} already exists. Pick a different name, or choose it from the list.`,
+    branch_protected: "That branch is protected. Pick another branch or confirm the update.",
+    branch_checked_out: "That branch is checked out in a working tree. Pick another branch, or confirm the update if it is your own checkout.",
+    tree_dirty: "Commit or stash your working changes, then try again.",
+    branch_moved: "The branch moved while the build ran. Nothing is lost: the build commit is kept on its working branch. Build again to continue.",
+    merge_conflict: "Your latest commits conflict with the target branch, so the build could not start. Merge them yourself, or build onto a new branch.",
+    no_branch: "That branch no longer exists. Pick another branch.",
+    branch_name_invalid: "That is not a valid branch name. Use letters, digits, dashes and slashes, with no spaces.",
+    no_ref: "That starting point does not exist. Pick another one.",
+    baseline: "The first check of the current state could not run. Look at the gate output below, fix the gate, then try again.",
+  };
+  if (known[code]) return known[code];
+  if (err.status === 409 && /nothing to build/i.test(detail)) {
+    return ctx.scopeKind === "all" ? "The checks already pass, so there is nothing to build." : "The checks in this area already pass.";
+  }
+  if (err.status === 409 && /already running/i.test(detail)) return "Another build is running in this project. Wait for it to finish, or stop it first.";
+  if (err.status === 404 && /no area|no rule/i.test(detail)) return "That area is not in the spec any more. Reload the list and pick again.";
+  if (err.status === 503) return `Build is not available here: ${detail || "the project is not set up for it"}.`;
+  return `The build could not start: ${detail || err.message}`;
+}
 
 /** A small button that copies `text` to the clipboard and says so. */
 export function copyButton(text, label = "Copy") {
@@ -127,8 +160,12 @@ function layerCounts(counts) {
 
 function findingChip(f, opts) {
   const name = String(f.target || f.id || "finding").replace(/^[a-z]+:/, "");
-  return h("details", { class: "rb-finding" },
-    h("summary", { title: "Open the counterexample" }, icon("diamond"), h("span", {}, name)),
+  const regression = f.regression === true;
+  const outside = f.in_scope === false && !regression;
+  return h("details", { class: ["rb-finding", regression && "is-regression", outside && "is-outside"] },
+    h("summary", { title: "Open the counterexample" }, icon(regression ? "triangle" : "diamond"), h("span", {}, name),
+      regression ? h("span", { class: "rb-tag" }, "regression") : null,
+      outside ? h("span", { class: "rb-tag" }, "outside this scope") : null),
     h("div", { class: "rb-finding-body" },
       h("p", {}, f.title || ""),
       f.target
@@ -158,6 +195,7 @@ function roundRow(r, rebuild, opts, animate) {
     h("span", { class: "rb-round-n" }, `Round ${r.n}`),
     h("div", {},
       h("p", { class: "rb-summary" }, r.agent_summary || (c || crashed ? "No summary." : "The agent is editing the code and running the checker.")),
+      scopeLine(r),
       (r.files_changed || []).length ? h("p", { class: "rb-files" }, `${crashed ? "Files the agent changed: " : ""}${r.files_changed.join(", ")}`) : null,
       roundCost(r),
     ),
@@ -171,15 +209,35 @@ function roundRow(r, rebuild, opts, animate) {
       : null,
     (r.gates || []).length ? gateList(r.gates) : null,
     c && (c.findings || []).length
-      ? h("div", { class: "rb-findings" }, c.findings.map((f) => findingChip(f, opts)))
+      ? h("div", { class: "rb-findings" }, c.findings.slice(0, 12).map((f) => findingChip(f, opts)),
+          c.findings.length > 12
+            ? h("details", { class: "rb-more" },
+                h("summary", {}, `and ${c.findings.length - 12} more`),
+                h("div", { class: "rb-findings" }, c.findings.slice(12).map((f) => findingChip(f, opts))))
+            : null)
       : null,
   );
+}
+
+/** A scoped build's score for one round: "In scope 3 of 5 pass", regression chips and the
+ *  newly fixed count. Null for a round of an ordinary rebuild or one still open. */
+function scopeLine(r) {
+  if (r.scope_total === undefined || r.scope_total === null || !r.check) return null;
+  const regs = r.regressions || [];
+  const fixed = (r.newly_fixed || []).length;
+  return h("p", { class: "rb-scope-line" },
+    h("span", { class: "rb-scope-score" }, `In scope ${r.scope_passing} of ${r.scope_total} pass`),
+    fixed ? h("span", { class: "muted" }, ` · ${plural(fixed, "check")} newly fixed`) : null,
+    regs.length
+      ? h("span", { class: "rb-regressions", "aria-label": `${plural(regs.length, "regression")}` },
+          regs.map((id) => h("span", { class: "rb-regress" }, icon("triangle"), h("span", {}, "regression"), " ", h("span", { class: "s2-mono" }, String(id).replace(/^[a-z]+:/, "")))))
+      : null);
 }
 
 /** The agent's cost and time for one round, from the round's own usage and stamps. */
 function roundCost(r) {
   const a = r.agent || {};
-  const bits = [money(a.cost_usd), a.duration_ms ? seconds(a.duration_ms) : roundSeconds(r)].filter(Boolean);
+  const bits = [money(a.cost_usd_list_estimate ?? a.cost_usd), a.duration_ms ? seconds(a.duration_ms) : roundSeconds(r)].filter(Boolean);
   return bits.length ? h("p", { class: "rb-round-cost muted small" }, bits.join(" · ")) : null;
 }
 
@@ -190,6 +248,11 @@ function errorWords(err) {
     cli: "The agent did not finish",
     internal: "Studio stopped the round with an error",
     git: "Studio could not commit the result",
+    baseline: "The first check of the current state could not run",
+    branch_moved: "The target branch moved while the build ran, so it was not updated",
+    branch_checked_out: "The target branch got checked out during the build, so it was not updated",
+    tree_dirty: "Your working tree has uncommitted changes, so the target branch was not updated",
+    merge_conflict: "Your latest commits conflict with the target branch",
   }[err.kind] || "The round had an error";
   const tag = err.kind ? ` [${err.kind}]` : "";
   return `${kind}${tag}${err.message ? `: ${err.message}` : "."}`;
@@ -210,6 +273,59 @@ function gateList(gates) {
         ? h("details", {}, h("summary", {}, label), h("pre", { class: "rb-gate-out" }, tail))
         : label);
   }));
+}
+
+/** Tokens, time, rounds and the estimated API value of a scoped build. */
+function metricsBlock(rebuild) {
+  const u = rebuild.usage || {};
+  const uncached = u.input_tokens || 0;
+  const read = u.cache_read_input_tokens || 0;
+  const write = u.cache_creation_input_tokens || 0;
+  const tokensIn = uncached + read + write;
+  const out = u.output_tokens || 0;
+  const wall = u.wall_s ?? (u.duration_ms ? u.duration_ms / 1000 : null);
+  const cost = u.cost_usd_list_estimate ?? u.cost_usd;
+  const rows = [
+    ["Tokens in", `${num(tokensIn)}${read || write ? ` (${num(uncached)} new, ${num(read)} cache read, ${num(write)} cache write)` : ""}`],
+    ["Tokens out", num(out)],
+    ["Time", wall !== null && wall !== undefined ? seconds(wall * 1000) : elapsed(rebuild)],
+    ["Rounds", `${(rebuild.rounds || []).filter((r) => r.check || roundCrashed(r)).length} of up to ${rebuild.max_rounds}`],
+    ["Estimated API value", cost ? `${money(cost)} (list-price estimate, not charged)` : "none recorded"],
+  ];
+  const m = rebuild.metrics;
+  if (m) rows.push(["Metrics hook", `${m.phase || "ran"}${m.exit_code === 0 ? ", ok" : `, exit ${m.exit_code}`}`]);
+  return h("dl", { class: "rb-metrics", "aria-label": "Metrics" }, rows.map(([k, v]) => [h("dt", {}, k), h("dd", {}, v)]));
+}
+
+/** The result block of a scoped build that passed and landed on its target branch. */
+function scopedPassed(rebuild, { files, shown, usage, warnings, cmd, openCode }) {
+  const range = rebuild.commit_range || {};
+  const target = rebuild.target_branch || "the target branch";
+  const u = rebuild.commit || {};
+  const lines = (u.insertions || u.deletions) ? ` · +${num(u.insertions)} −${num(u.deletions)} lines` : "";
+  return h("section", { class: "rb-result is-passed", "aria-label": "Result" },
+    h("h3", {}, `${rebuild.scope.kind === "all" ? "Everything" : rebuild.scope.title} is built on `, h("span", { class: "s2-mono" }, target)),
+    h("dl", { class: "rb-facts" },
+      h("dt", {}, "Target branch"),
+      h("dd", {}, h("span", { class: "s2-mono" }, target), " was updated",
+        rebuild.created_branch ? ` (created from ${rebuild.base_ref || "HEAD"})` : ""),
+      h("dt", {}, "Working branch"),
+      h("dd", {}, h("span", { class: "s2-mono" }, rebuild.branch || "none"), rebuild.branch ? copyButton(rebuild.branch, "Copy branch") : null),
+      h("dt", {}, "Commits"),
+      h("dd", {}, h("span", { class: "s2-mono" }, `${short(range.from)}..${short(range.to || u.sha)}`),
+        range.from && (range.to || u.sha) ? copyButton(`${short(range.from)}..${short(range.to || u.sha)}`, "Copy range") : null),
+      h("dt", {}, "Files"),
+      h("dd", {}, `${plural(files.length, "file")} changed${lines}`)),
+    shown.length ? h("ul", { class: "rb-files-list", "aria-label": "Files changed" }, shown.map((f) => h("li", {}, f))) : null,
+    warnings,
+    usage,
+    h("div", { class: "rb-merge" },
+      rebuild.merge_hint ? h("p", { class: "muted small" }, rebuild.merge_hint) : null,
+      cmd && /^git merge/.test(cmd) ? h("div", { class: "rb-cmd" }, h("code", { class: "s2-mono" }, cmd), copyButton(cmd, "Copy command")) : null),
+    files.length
+      ? h("button", { type: "button", class: "btn", onclick: () => openCode(`code:${files[0]}`) }, icon("text-lines"), "Open in Code lens")
+      : null,
+  );
 }
 
 /** The Rebuild card as a DOM element. opts: {changes, onStop, onEdit, onAgain, openCode,
@@ -242,14 +358,22 @@ export function rebuildCard(rebuild, opts = {}) {
     },
   }, "Stop");
 
+  const scope = rebuild.scope || null;
+  const baselineNow = rebuild.status === "baseline";
+  const scopeTitle = scope ? (scope.kind === "all" ? "Everything" : scope.title || scope.id) : null;
+  const est = money(rebuild.usage?.cost_usd_list_estimate ?? rebuild.usage?.cost_usd);
   const head = h("header", { class: "rb-head" },
     h("div", {},
-      h("h2", {}, ids.map((id) => `${id}${byId.get(id)?.request ? ` · ${byId.get(id).request}` : ""}`).join(" and ") || `Rebuild ${rebuild.id}`),
+      h("h2", {}, scope
+        ? `Build ${scopeTitle}`
+        : ids.map((id) => `${id}${byId.get(id)?.request ? ` · ${byId.get(id).request}` : ""}`).join(" and ") || `Rebuild ${rebuild.id}`),
       h("p", { class: "rb-meta" },
+        scope && rebuild.target_branch ? [`onto `, h("span", { class: "s2-mono" }, rebuild.target_branch), " · "] : null,
         `${rebuild.model} · `,
-        live ? `round ${Math.max(current, 1)} of ${maxRounds}` : `${plural(current, "round")} of up to ${maxRounds}`,
+        baselineNow ? "checking the current state"
+          : live ? `round ${Math.max(current, 1)} of ${maxRounds}` : `${plural(current, "round")} of up to ${maxRounds}`,
         ` · ${elapsed(rebuild)}`,
-        money(rebuild.usage?.cost_usd) ? ` · ${money(rebuild.usage.cost_usd)}` : ""),
+        est ? ` · ${est} estimated` : ""),
     ),
     h("div", { class: "row-actions" },
       h("span", { class: ["rb-status", `is-${rebuild.status}`], role: "status" }, icon(st.icon), st.label),
@@ -259,32 +383,45 @@ export function rebuildCard(rebuild, opts = {}) {
 
   const timeline = rounds.length
     ? h("ol", { class: "rb-rounds", "aria-label": "Rounds" }, rounds.map((r) => roundRow(r, rebuild, opts, animate)))
-    : h("p", { class: "muted" }, live ? "Queued. The first round starts shortly." : "No round ran.");
+    : h("p", { class: "muted" }, baselineNow
+      ? "Running the checks once on the current code, to find what this build has to fix. The first round starts after that."
+      : live ? "Queued. The first round starts shortly." : "No round ran.");
 
   const targets = rebuild.targets || [];
+  const targetRow = (t) => {
+    const key = sk(rebuild.id, "t", t.id, t.done);
+    const ticked = t.done && live && !seen.has(key);
+    seen.add(key);
+    return h("li", { class: ["rb-target", t.done ? "is-done" : "is-waiting", ticked && "is-ticked"] },
+      icon(t.done ? "check" : "pending"),
+      h("span", {}, (scope && t.id ? String(t.id).replace(/^[a-z]+:/, "") : t.label) || String(t.id || "").replace(/^[a-z]+:/, ""), h("span", { class: "s2-sr" }, t.done ? " (passing)" : " (not built yet)")));
+  };
   const done = targets.filter((t) => t.done).length;
   const targetList = targets.length
     ? h("section", { "aria-label": "Checks the rebuild must turn green" },
-        h("h3", { class: "s2-section-title" }, `Checks not built yet: ${done} of ${targets.length} passing`),
-        h("ul", { class: "rb-targets" }, targets.map((t) => {
-          const key = sk(rebuild.id, "t", t.id, t.done);
-          const ticked = t.done && live && !seen.has(key);
-          seen.add(key);
-          return h("li", { class: ["rb-target", t.done ? "is-done" : "is-waiting", ticked && "is-ticked"] },
-            icon(t.done ? "check" : "pending"),
-            h("span", {}, t.label, h("span", { class: "s2-sr" }, t.done ? " (passing)" : " (not built yet)")));
-        })))
+        h("h3", { class: "s2-section-title" }, scope
+          ? `Checks in this scope: ${done} of ${targets.length} passing`
+          : `Checks not built yet: ${done} of ${targets.length} passing`),
+        h("ul", { class: "rb-targets" }, targets.slice(0, 10).map(targetRow)),
+        targets.length > 10
+          ? h("details", { class: "rb-more" }, h("summary", {}, `Show the other ${targets.length - 10}`),
+              h("ul", { class: "rb-targets" }, targets.slice(10).map(targetRow)))
+          : null)
     : null;
 
   const can = canRebuild();
   const branchLine = rebuild.branch
-    ? h("p", { class: "rb-branch" }, "Branch ", h("code", { class: "s2-mono" }, rebuild.branch), copyButton(rebuild.branch, "Copy branch"),
+    ? h("p", { class: "rb-branch" }, scope ? "Working branch " : "Branch ", h("code", { class: "s2-mono" }, rebuild.branch), copyButton(rebuild.branch, "Copy branch"),
         rebuild.base ? h("span", { class: "muted small" }, ` from ${String(rebuild.base).slice(0, 7)}`) : null)
     : null;
   const u = rebuild.usage || {};
-  const usageBits = [money(u.cost_usd), u.duration_ms ? seconds(u.duration_ms) : "",
+  const usageBits = [money(u.cost_usd_list_estimate ?? u.cost_usd), u.duration_ms ? seconds(u.duration_ms) : "",
     u.input_tokens || u.output_tokens ? `${(u.input_tokens || 0) + (u.output_tokens || 0)} tokens` : ""].filter(Boolean);
-  const usage = usageBits.length ? h("p", { class: "muted small" }, `Agent cost: ${usageBits.join(" · ")}`) : null;
+  const usage = scope ? metricsBlock(rebuild)
+    : usageBits.length ? h("p", { class: "muted small" }, `Estimated API value, not charged: ${usageBits.join(" · ")}`) : null;
+  const warnings = (rebuild.warnings || []).length
+    ? h("ul", { class: "rb-warnings", "aria-label": "Warnings" }, rebuild.warnings.map((w) => h("li", {}, icon("triangle"), h("span", {}, w))))
+    : null;
   const errorLine = rebuild.error ? h("p", { class: "rb-round-error", role: "note" }, icon("triangle"), h("span", {}, errorWords(rebuild.error))) : null;
 
   let result = null;
@@ -294,7 +431,7 @@ export function rebuildCard(rebuild, opts = {}) {
     const shown = nameStatus.length ? nameStatus : files;
     const hintCmd = (String(rebuild.merge_hint || "").match(/`(git merge [^`]+)`/) || [])[1];
     const cmd = hintCmd || (rebuild.branch ? `git merge ${rebuild.branch}` : null);
-    result = h("section", { class: "rb-result is-passed", "aria-label": "Result" },
+    result = scope ? scopedPassed(rebuild, { files, shown, usage, warnings, cmd: hintCmd || null, openCode }) : h("section", { class: "rb-result is-passed", "aria-label": "Result" },
       h("h3", {}, rebuild.branch ? `Built on ${rebuild.branch}` : "Built"),
       h("p", {}, h("code", { class: "s2-mono" }, String(rebuild.commit.sha).slice(0, 7)), ` ${String(rebuild.commit.message || "").split("\n")[0]}`),
       shown.length ? h("ul", { class: "rb-files-list", "aria-label": "Files changed" }, shown.map((f) => h("li", {}, f))) : null,
@@ -324,17 +461,35 @@ export function rebuildCard(rebuild, opts = {}) {
       h("p", {}, banner),
       left.length ? h("div", { class: "rb-findings rb-findings-flat" }, left.map((f) => findingChip(f, opts))) : null,
       errorLine,
+      scope && rebuild.error ? h("p", { class: "rb-next" }, buildRefusal(rebuild.error, { branch: rebuild.target_branch })) : null,
+      warnings,
       usage,
-      rebuild.branch
+      rebuild.commit?.sha && scope
+        ? h("p", { class: "muted small" }, "The build commit ", h("code", { class: "s2-mono" }, short(rebuild.commit.sha)), " is kept on ",
+            h("code", { class: "s2-mono" }, rebuild.branch), `; ${rebuild.target_branch || "the target branch"} was not updated.`)
+        : rebuild.branch
         ? h("p", { class: "muted small" }, "The agent's uncommitted edits stay on ", h("code", { class: "s2-mono" }, rebuild.branch),
-            rebuild.worktree ? [" in the worktree ", h("code", { class: "s2-mono" }, rebuild.worktree)] : null, "; nothing is merged.")
+            rebuild.worktree ? [" in the worktree ", h("code", { class: "s2-mono" }, rebuild.worktree)] : null,
+            scope ? `; ${rebuild.target_branch || "the target branch"} is unchanged.` : "; nothing is merged.")
         : null,
       h("div", { class: "row-actions" },
-        h("button", {
+        ids.length ? h("button", {
           type: "button", class: "btn",
           onclick: () => (opts.onEdit ? opts.onEdit(ids[0]) : hooks.change?.(`change:${ids[0]}`, [])),
-        }, "Edit the change"),
-        can ? h("button", {
+        }, "Edit the change") : null,
+        scope ? (opts.onAgain ? h("button", {
+          type: "button", class: "btn btn-primary",
+          onclick: async (e) => {
+            e.currentTarget.disabled = true;
+            try {
+              await opts.onAgain(rebuild);
+              opts.onChanged?.();
+            } catch (err) {
+              e.target.disabled = false;
+              toast(`Could not build: ${err.message}`);
+            }
+          },
+        }, icon("play"), "Build again") : null) : can ? h("button", {
           type: "button", class: "btn btn-primary",
           onclick: async (e) => {
             e.currentTarget.disabled = true;
@@ -356,11 +511,15 @@ export function rebuildCard(rebuild, opts = {}) {
   } else if (rebuild.status === "stopped") {
     result = h("section", { class: "rb-result", "aria-label": "Result" },
       h("h3", {}, "Stopped"),
-      h("p", { class: "muted" }, "The completed rounds stay on record and the worktree was removed. The change is back to accepted, not built."),
+      h("p", { class: "muted" }, scope
+        ? `The completed rounds stay on record and the worktree was removed. ${rebuild.target_branch || "The target branch"} is unchanged.`
+        : "The completed rounds stay on record and the worktree was removed. The change is back to accepted, not built."),
       usage);
   }
 
-  const notice = live ? h("p", { class: "muted small rb-notice" }, "The agent works in an isolated worktree. Your checkout is not touched, and Studio decides when it is done by running the gates itself.") : null;
+  const notice = live ? h("p", { class: "muted small rb-notice" }, scope
+    ? "The agent works in an isolated worktree. Your checkout is not touched, and Studio decides when it is done by running the checks itself."
+    : "The agent works in an isolated worktree. Your checkout is not touched, and Studio decides when it is done by running the gates itself.") : null;
   return h("article", { class: "rb-card", "aria-label": `Rebuild ${rebuild.id}` }, head, branchLine, timeline, targetList, notice, result);
 }
 
