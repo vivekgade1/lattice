@@ -618,3 +618,15 @@ def test_cli_since_impact_writes_the_impact_record(tmp_path: Path, monkeypatch):
     record = json.loads(out.with_name("spec_v2.impact.json").read_text())
     assert record["items"][0]["label"] == "not_built_yet"
     assert seen["database"] == "sqlite" and seen["race"] is False and seen["runtime"] is None
+
+
+def test_l011_silent_on_a_public_login_answering_good_and_bad_credentials():
+    spec = _spec(
+        Scenario("login_ok", steps=(
+            Step("POST", "/auth/login", None, json={"email": "a", "password": "good"},
+                 expect_status=200),)),
+        Scenario("login_bad", steps=(
+            Step("POST", "/auth/login", None, json={"email": "a", "password": "bad"},
+                 expect_status=401),)),
+    )  # fmt: skip
+    assert conflicts(spec) == []

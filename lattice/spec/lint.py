@@ -792,8 +792,9 @@ def _setup_steps(spec: Spec) -> list[tuple[Scenario, int, Step, str]]:
     return out
 
 
-def conflicts(spec: Spec) -> list[Conflict]:
+def conflicts(spec: Spec, config: LintConfig | None = None) -> list[Conflict]:
     """The L011 pairs of `spec` (see the module docstring), in scenario order."""
+    public_rx = re.compile((config or LintConfig()).public_paths, re.I)
     groups: dict[tuple[Any, ...], list[tuple[Scenario, int, Step]]] = {}
     for scenario, i, step, template in _setup_steps(spec):
         key = (_canonical_json(scenario.given), step.user, step.method.upper(), template,
@@ -806,7 +807,10 @@ def conflicts(spec: Spec) -> list[Conflict]:
                 if sa.name == sb.name or a.expect_status == b.expect_status:
                     continue
                 statuses = {a.expect_status, b.expect_status}
-                access = bool(statuses & ACCESS_STATUSES) and any(_ok(x) for x in statuses)
+                # an access answer (401/403 vs 2xx) conflicts whatever the bodies -- except
+                # on a public endpoint (a login answers good and bad credentials differently)
+                access = (not public_rx.search(key[3]) and bool(statuses & ACCESS_STATUSES)
+                          and any(_ok(x) for x in statuses))
                 same_body = (_canonical_json(a.json) == _canonical_json(b.json)
                              and _canonical_json(a.params) == _canonical_json(b.params))
                 if not (same_body or access):

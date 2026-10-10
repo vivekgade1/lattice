@@ -1523,7 +1523,19 @@ def _run_scenario(
         db = make_db("seed", Path(name) / "scenario.db")
         cleanup.callback(release_db, make_db, db)
         if scenario.given:
-            _insert_given(spec, db, scenario.given)
+            try:
+                _insert_given(spec, db, scenario.given)
+            except DB_ERRORS as err:
+                # the app's own schema refuses the scenario's starting state (e.g. a unique
+                # index the spec no longer has): a finding about this scenario, not a crash
+                fail(
+                    f"{scenario.name} / given",
+                    None,
+                    "loud",
+                    {"error": f"the app's database refused the scenario's given rows: "
+                              f"{type(err).__name__}: {err}"},
+                )
+                return
             if monitor is not None:
                 monitor.check(db, f"{scenario.name} / given")
         factory = app_factory
