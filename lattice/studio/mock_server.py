@@ -54,6 +54,14 @@ targets the branch's results fail; with none yet, every check fails), two rounds
 fails in scope, the second passes) and, on pass, the target branch "fast-forwarded" and its
 area results updated; a second build of a built area answers 409 "nothing to build".
 
+API v1.9 adds build plans (``MockPlans``): ``POST /api/plan``, ``GET /api/plan/{id}``,
+``GET /api/plans``, ``POST /api/plan/{id}/revise|approve|run``, ``DELETE /api/plan/{id}``.
+Planning takes one poll; the planner ``agent`` gives a mock agent plan (a scaffold over the
+infrastructure areas, the accounts area, every other area depending on it with its tables
+and one package, huge areas split in two), ``fallback`` the real fallback; both go through
+the real validator (``lattice.studio.plan.validate_plan``). A run advances one step per
+poll of ``GET /api/plan/{id}``: a level's nodes start, then pass, then the level merges.
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -75,6 +83,7 @@ from typing import Any
 from urllib.parse import parse_qs, unquote, urlparse
 
 from lattice.studio import areas as areas_mod
+from lattice.studio import plan as plan_mod
 from lattice.studio.session import (
     SessionError,
     Transcript,
@@ -813,6 +822,7 @@ class MockState:
         self.branch_heads: dict[str, str] = {"main": self.model["project"]["git_head"]}
         self.branch_failing: dict[str, set[str]] = {}
         self.sessions = MockSessions(fixture_dir)
+        self.plans = MockPlans(self)
         if seed_change:
             self._seed_initial_change()
 
@@ -1570,6 +1580,480 @@ class MockState:
             return {"started": True}
 
 
+class MockPlans:
+    """API v1.9 build plans over the fixture model (see the module docstring)."""
+
+    def __init__(self, state: MockState) -> None:
+        self.state = state
+        self.plans: dict[str, dict[str, Any]] = {}
+        self._next = 1
+        self._builds = 1
+
+    def _areas(self) -> list[dict[str, Any]]:
+        return areas_mod.derive_areas(self.state._trace())
+
+    def _agent_doc(self, scope: dict[str, Any]) -> dict[str, Any]:
+        areas = [a for a in self._areas() if a["id"] in scope["areas"]]
+        keep = set(scope["rules"])
+        tables = (self.state.model.get("data_model") or {}).get("tables") or []
+        texts = {r["id"]: r.get("text", "") for r in self.state.model["rules"]}
+        nodes: list[dict[str, Any]] = []
+        infra = [a for a in areas if plan_mod.is_infra(a["title"])]
+        rest = [a for a in areas if not plan_mod.is_infra(a["title"])]
+        none = {"tables": [], "packages": [], "files": []}
+        if infra:
+            nodes.append(
+                {
+                    "id": "scaffold",
+                    "title": "Shared infrastructure",
+                    "kind": "scaffold",
+                    "scope": {"rules": [r for a in infra for r in a["rules"] if r in keep]},
+                    "depends_on": [],
+                    "tier": "mid",
+                    "touches": {
+                        "tables": [],
+                        "packages": ["internal/app"],
+                        "files": ["internal/app/router.go"],
+                    },
+                    "why": "router, config and error format the areas plug into",
+                }
+            )
+        auth = next(
+            (a for a in rest if re.search(r"account|auth|token|session", a["title"], re.I)), None
+        )
+        order = ([auth] if auth else []) + [a for a in rest if a is not auth]
+        for a in order:
+            rules = [r for r in a["rules"] if r in keep]
+            if not rules:
+                continue
+            joined = " ".join(texts.get(r, "") for r in rules)
+            touch = {
+                "tables": plan_mod._area_tables(joined, tables)[:3],
+                "packages": [f"internal/{a['id']}"],
+                "files": [],
+            }
+            deps = (
+                []
+                if a is auth or auth is None
+                else [{"id": auth["id"], "why": "needs a signed-in user"}]
+            )
+            tier = "frontier" if a is auth else "mid"
+            parts = (
+                [rules]
+                if len(rules) <= plan_mod.SPLIT_RULES
+                else [rules[: len(rules) // 2], rules[len(rules) // 2 :]]
+            )
+            for i, part in enumerate(parts, 1):
+                nid = a["id"] if len(parts) == 1 else f"{a['id']}-{i}"
+                nodes.append(
+                    {
+                        "id": nid,
+                        "title": a["title"] + ("" if len(parts) == 1 else f" ({i}/{len(parts)})"),
+                        "kind": "area",
+                        "scope": {"area": a["id"]}
+                        if len(parts) == 1 and len(part) == len(a["rules"])
+                        else {"rules": part},
+                        "depends_on": deps,
+                        "tier": tier,
+                        "touches": touch
+                        if i == 1
+                        else {**none, "packages": [f"internal/{a['id']}/part{i}"]},
+                        "why": f"builds {a['title']}",
+                    }
+                )
+        nodes.append(
+            {
+                "id": "integration",
+                "title": "Integration: the full gate",
+                "kind": "integration",
+                "scope": "all",
+                "depends_on": [],
+                "tier": "frontier",
+                "touches": none,
+                "why": "the full gate",
+            }
+        )
+        return {"nodes": nodes}
+
+    def _validate(self, rec: dict[str, Any], doc: dict[str, Any]) -> dict[str, Any]:
+        trace = self.state._trace()
+        return plan_mod.validate_plan(
+            doc,
+            scope=rec["_scope"],
+            areas=self._areas(),
+            max_parallel=rec["max_parallel"],
+            models=rec["models"],
+            model_overrides=rec["_overrides"],
+            trace_links=trace["links"],
+        )
+
+    def _apply(self, rec: dict[str, Any], v: dict[str, Any]) -> None:
+        rec["version"] += 1
+        rec["validation"] = {k: v[k] for k in ("ok", "issues", "auto_edits")}
+        rec["levels"], rec["edges"] = v["levels"], v["edges"]
+        rec["nodes"] = [
+            {
+                **n,
+                "status": "pending",
+                "build_id": None,
+                "builds": [],
+                "branch": None,
+                "commit": None,
+                "merged": False,
+                "nothing_to_build": False,
+                "blocked_by": [],
+                "usage": plan_mod._node_usage({}),
+                "wall_s": 0.0,
+                "rounds": 0,
+                "lines_changed": 0,
+                "files_changed": [],
+                "started_ts": None,
+                "finished_ts": None,
+                "error": None,
+                "metrics": None,
+            }
+            for n in v["nodes"]
+        ]
+
+    def create(self, body: dict[str, Any]) -> dict[str, str]:
+        try:
+            scope = plan_mod.resolve_plan_scope(body.get("scope"), self._areas())
+        except plan_mod.PlanError as e:
+            raise MockRefusal(e.status, e.detail) from None
+        mp = body.get("max_parallel", 2)
+        if isinstance(mp, bool) or not isinstance(mp, int) or not 1 <= mp <= 8:
+            raise MockRefusal(422, "max_parallel must be 1 to 8")
+        planner = body.get("planner", "agent")
+        if planner not in ("agent", "fallback"):
+            raise MockRefusal(422, 'planner must be "agent" or "fallback"')
+        models = dict(plan_mod.DEFAULT_MODELS)
+        if isinstance(body.get("models"), dict):
+            models.update({k: str(v) for k, v in body["models"].items() if k in models})
+        spec = body.get("branch")
+        name = self.state.default_target() if spec is None else (spec or {}).get("name")
+        if not isinstance(name, str) or not name or ".." in name or " " in name:
+            raise MockRefusal(422, f"{name!r} is not a valid branch name", "branch_name_invalid")
+        if name in ("main", "master") and body.get("confirm_unsafe_branch") is not True:
+            raise MockRefusal(
+                409,
+                f"branch {name} is protected; send confirm_unsafe_branch: "
+                "true to build onto it (fast-forward only, with a clean "
+                "worktree)",
+                "branch_protected",
+            )
+        with self.state.lock:
+            pid = f"p{self._next}"
+            self._next += 1
+            self.plans[pid] = {
+                "id": pid,
+                "project": self.state.model["project"]["name"],
+                "status": "planning",
+                "source": None,
+                "fallback_reason": None,
+                "version": 0,
+                "scope": {k: scope[k] for k in ("kind", "areas", "rules", "title")},
+                "target_branch": name,
+                "branch": spec,
+                "created_branch": False,
+                "max_parallel": mp,
+                "models": models,
+                "planner": {
+                    "kind": planner,
+                    "model": "opus",
+                    "attempts": 1,
+                    "usage": plan_mod._node_usage(
+                        {
+                            "input_tokens": 18000,
+                            "output_tokens": 2400,
+                            "cost_usd_list_estimate": 0.41,
+                        }
+                    ),
+                    "wall_s": 41.0,
+                    "error": None,
+                },
+                "nodes": [],
+                "edges": [],
+                "levels": [],
+                "validation": {"ok": False, "issues": [], "auto_edits": []},
+                "level_gate": plan_mod.LEVEL_GATE,
+                "level_runs": [],
+                "baseline": None,
+                "runs": 0,
+                "created": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "approved": None,
+                "started": None,
+                "finished": None,
+                "target_tip": None,
+                "owner_head": self.state.model["project"]["git_head"],
+                "error": None,
+                "warnings": [],
+                "metrics": None,
+                "totals": plan_mod._usage_totals(),
+                "_scope": scope,
+                "_planner": planner,
+                "_overrides": {},
+                "_doc": None,
+                "_cursor": None,
+            }
+            return {"id": pid, "status": "planning"}
+
+    @staticmethod
+    def _view(rec: dict[str, Any]) -> dict[str, Any]:
+        return copy.deepcopy({k: v for k, v in rec.items() if not k.startswith("_")})
+
+    def _plan_now(self, rec: dict[str, Any]) -> None:
+        doc = (
+            plan_mod.fallback_plan(rec["_scope"], self._areas())
+            if rec["_planner"] == "fallback"
+            else self._agent_doc(rec["_scope"])
+        )
+        v = self._validate(rec, doc)
+        if not v["ok"]:  # the mock agent plan is always valid; the fallback in any case
+            doc = plan_mod.fallback_plan(rec["_scope"], self._areas())
+            v = self._validate(rec, doc)
+            rec["_planner"] = "fallback"
+        rec["_doc"] = doc
+        self._apply(rec, v)
+        rec["source"] = "fallback" if rec["_planner"] == "fallback" else "agent"
+        if rec["source"] == "fallback":
+            rec["fallback_reason"] = "requested: the request asked for the fallback planner"
+        rec["status"] = "ready"
+
+    def _step(self, rec: dict[str, Any]) -> None:
+        """One poll of a running plan."""
+        nodes = {n["id"]: n for n in rec["nodes"]}
+        cur = rec["_cursor"]
+        now = datetime.now(UTC).timestamp()
+        if cur["level"] >= len(rec["levels"]):
+            rec["status"] = "passed"
+            rec["finished"] = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+            tot = plan_mod._usage_totals()
+            for n in rec["nodes"]:
+                plan_mod._sum_into(tot, n["usage"])
+                tot["rounds"] += n["rounds"]
+                tot["lines_changed"] += n["lines_changed"]
+            plan_mod._sum_into(tot, rec["planner"]["usage"])
+            tot["wall_s"] = round(sum(n["wall_s"] for n in rec["nodes"]), 2)
+            widths = [len(x) for x in rec["levels"]]
+            tot["shape"] = {
+                "nodes": len(rec["nodes"]),
+                "levels": len(widths),
+                "max_level_width": max(widths),
+            }
+            rec["totals"] = tot
+            return
+        ids = rec["levels"][cur["level"]]
+        if cur["phase"] == "start":
+            for nid in ids:
+                n = nodes[nid]
+                bid = f"b{100 + self._builds}"
+                self._builds += 1
+                n.update(
+                    status="running",
+                    build_id=bid,
+                    builds=[bid],
+                    started_ts=now,
+                    branch=f"rebuild/{rec['id']}-{nid}",
+                )
+            rec["level_runs"].append(
+                {
+                    "level": cur["level"],
+                    "run": rec["runs"],
+                    "base": rec["target_tip"],
+                    "nodes": list(ids),
+                    "status": "running",
+                    "merged": [],
+                    "merge_conflicts": [],
+                    "tip": None,
+                    "gate": None,
+                    "regressions": [],
+                    "blame": [],
+                }
+            )
+            cur["phase"] = "running"
+        elif cur["phase"] == "running":
+            for nid in ids:
+                n = nodes[nid]
+                k = len(n["scope"]["rules"]) or 1
+                sha = hashlib.sha1(f"{rec['id']}:{nid}".encode()).hexdigest()
+                n.update(
+                    status="passed",
+                    commit=sha,
+                    finished_ts=now + 60 * k,
+                    rounds=2,
+                    wall_s=float(60 * k),
+                    lines_changed=40 * k,
+                    files_changed=[f"internal/{nid}/handlers.go"],
+                    usage=plan_mod._node_usage(
+                        {
+                            "input_tokens": 9000 * k,
+                            "output_tokens": 1500 * k,
+                            "cache_read_input_tokens": 60000 * k,
+                            "cost_usd_list_estimate": 0.12 * k,
+                        }
+                    ),
+                )
+            cur["phase"] = "merge"
+        else:
+            tip = hashlib.sha1(f"{rec['id']}:L{cur['level']}".encode()).hexdigest()
+            lr = rec["level_runs"][-1]
+            lr.update(
+                status="passed",
+                merged=list(ids),
+                tip=tip,
+                gate={
+                    "sha": tip,
+                    "verdict": "fail",
+                    "counts": {"D": 0},
+                    "failing": [],
+                    "regressions": [],
+                    "newly_fixed": [],
+                    "gates": [],
+                },
+            )
+            for nid in ids:
+                nodes[nid]["merged"] = True
+            rec["target_tip"] = tip
+            self.state.branch_heads[rec["target_branch"]] = tip
+            cur.update(level=cur["level"] + 1, phase="start")
+
+    def get(self, pid: str) -> dict[str, Any] | None:
+        with self.state.lock:
+            rec = self.plans.get(pid)
+            if rec is None:
+                return None
+            if rec["status"] == "planning":
+                self._plan_now(rec)
+            elif rec["status"] == "running":
+                self._step(rec)
+            return self._view(rec)
+
+    def list(self) -> list[dict[str, Any]]:
+        with self.state.lock:
+            return [
+                {
+                    **{
+                        k: copy.deepcopy(r[k])
+                        for k in (
+                            "id",
+                            "status",
+                            "source",
+                            "version",
+                            "scope",
+                            "target_branch",
+                            "max_parallel",
+                            "levels",
+                            "created",
+                            "finished",
+                            "totals",
+                        )
+                    },
+                    "nodes": [{"id": n["id"], "status": n["status"]} for n in r["nodes"]],
+                }
+                for r in self.plans.values()
+            ]
+
+    def _rec(self, pid: str) -> dict[str, Any]:
+        rec = self.plans.get(pid)
+        if rec is None:
+            raise MockRefusal(404, f"no plan {pid}")
+        return rec
+
+    def approve(self, pid: str) -> dict[str, Any]:
+        with self.state.lock:
+            rec = self._rec(pid)
+            if rec["status"] != "ready":
+                raise MockRefusal(409, f"plan {pid} is {rec['status']}, not ready")
+            rec["status"] = "approved"
+            rec["approved"] = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+            return {"id": pid, "status": "approved", "version": rec["version"]}
+
+    def run(self, pid: str) -> dict[str, Any]:
+        with self.state.lock:
+            rec = self._rec(pid)
+            if rec["status"] not in ("approved", "partial", "failed", "stopped"):
+                hint = ": approve it first" if rec["status"] == "ready" else ""
+                raise MockRefusal(409, f"plan {pid} is {rec['status']}, not approved{hint}")
+            busy = next((p for p in self.plans.values() if p["status"] == "running"), None)
+            if busy is not None:
+                raise MockRefusal(409, f"a build plan is running in this project ({busy['id']})")
+            rec.update(
+                status="running",
+                runs=rec["runs"] + 1,
+                finished=None,
+                started=datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                target_tip=self.state.branch_heads.get(
+                    rec["target_branch"], self.state.branch_heads["main"]
+                ),
+            )
+            self.state.branch_heads.setdefault(rec["target_branch"], rec["target_tip"])
+            rec["baseline"] = {
+                "sha": rec["target_tip"],
+                "verdict": "fail",
+                "counts": {"D": 0},
+                "failing": [],
+                "findings": [],
+            }
+            rec["_cursor"] = {"level": 0, "phase": "start"}
+            return {"id": pid, "status": "running"}
+
+    def stop(self, pid: str) -> dict[str, Any]:
+        with self.state.lock:
+            rec = self._rec(pid)
+            if rec["status"] not in ("planning", "running"):
+                raise MockRefusal(409, f"cannot stop a plan that is {rec['status']}")
+            rec["status"] = "stopped"
+            for n in rec["nodes"]:
+                if n["status"] == "running":
+                    n["status"] = "stopped"
+            return {"id": pid, "status": "stopped"}
+
+    def revise(self, pid: str, body: dict[str, Any]) -> dict[str, Any]:
+        with self.state.lock:
+            rec = self._rec(pid)
+            if rec["status"] not in ("ready", "approved"):
+                raise MockRefusal(
+                    409,
+                    f"plan {pid} is {rec['status']}; only a ready or approved plan can be revised",
+                )
+            if ("feedback" in body) == ("edits" in body):
+                raise MockRefusal(422, "send feedback or edits (one of them)")
+            if "feedback" in body:
+                rec["status"] = "planning"
+                rec["approved"] = None
+                return {"id": pid, "status": "planning"}
+            edits = body["edits"] if isinstance(body["edits"], dict) else {}
+            doc = copy.deepcopy(rec["_doc"])
+            by = {n["id"]: n for n in doc["nodes"]}
+            for nid, e in (edits.get("nodes") or {}).items():
+                if nid not in by:
+                    raise MockRefusal(404, f"no node {nid}")
+                if "depends_on" in e:
+                    by[nid]["depends_on"] = list(e["depends_on"])
+                if "tier" in e:
+                    by[nid]["tier"] = e["tier"]
+                if e.get("model"):
+                    rec["_overrides"][nid] = e["model"]
+            for a, b in edits.get("remove_edges") or []:
+                by[b]["depends_on"] = [
+                    d for d in by[b]["depends_on"] if (d if isinstance(d, str) else d["id"]) != a
+                ]
+            for a, b in edits.get("add_edges") or []:
+                by[b]["depends_on"] = [*by[b]["depends_on"], a]
+            if "max_parallel" in edits:
+                rec["max_parallel"] = int(edits["max_parallel"])
+            v = self._validate(rec, doc)
+            if not v["ok"]:
+                raise MockRefusal(
+                    422, "the edited plan is invalid: " + "; ".join(v["issues"]), "plan_invalid"
+                )
+            rec["_doc"] = doc
+            self._apply(rec, v)
+            rec["status"] = "ready"
+            rec["approved"] = None
+            return self._view(rec)
+
+
 class Handler(BaseHTTPRequestHandler):
     server: MockServer  # type: ignore[assignment]
 
@@ -1647,6 +2131,14 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(state.areas(query.get("branch") or None))
         if path == "/api/branches":
             return self._json(state.branches())
+        if path == "/api/plans":
+            return self._json(state.plans.list())
+        if path.startswith("/api/plan/") and "/" not in path.removeprefix("/api/plan/"):
+            pid = path.removeprefix("/api/plan/")
+            plan = state.plans.get(pid)
+            if plan is None:
+                return self._error(HTTPStatus.NOT_FOUND, f"no plan {pid}")
+            return self._json(plan)
         if path == "/api/session" or path.startswith("/api/session/"):
             return self._session(
                 lambda: self._session_get(path, query, state.sessions),
@@ -1743,6 +2235,20 @@ class Handler(BaseHTTPRequestHandler):
             if not str(body.get("question", "")).strip():
                 return self._error(HTTPStatus.UNPROCESSABLE_ENTITY, "question is empty")
             return self._json(state.explain(body))
+        if path == "/api/plan" or path.startswith("/api/plan/"):
+            parts = path.removeprefix("/api/plan").strip("/").split("/")
+            try:
+                if path == "/api/plan":
+                    return self._json(state.plans.create(body))
+                if len(parts) == 2 and parts[1] == "approve":
+                    return self._json(state.plans.approve(parts[0]))
+                if len(parts) == 2 and parts[1] == "run":
+                    return self._json(state.plans.run(parts[0]))
+                if len(parts) == 2 and parts[1] == "revise":
+                    return self._json(state.plans.revise(parts[0], body))
+            except MockRefusal as e:
+                return self._json(e.body(), e.status)
+            return self._error(HTTPStatus.NOT_FOUND, "no such route")
         if path == "/api/rebuild" and body.get("scope") is not None:
             if body.get("changes"):
                 return self._error(HTTPStatus.UNPROCESSABLE_ENTITY,
@@ -1811,6 +2317,14 @@ class Handler(BaseHTTPRequestHandler):
             if not sid or "/" in sid:
                 return self._error(HTTPStatus.NOT_FOUND, "no such route")
             return self._session(lambda: state.sessions.interrupt(sid))
+        if path.startswith("/api/plan/"):
+            pid = path.removeprefix("/api/plan/")
+            if not pid or "/" in pid:
+                return self._error(HTTPStatus.NOT_FOUND, "no such route")
+            try:
+                return self._json(state.plans.stop(pid))
+            except MockRefusal as e:
+                return self._json(e.body(), e.status)
         if path.startswith("/api/rebuild/"):
             rid = path.removeprefix("/api/rebuild/")
             if not rid or "/" in rid:
@@ -1893,6 +2407,7 @@ class MockServer(ThreadingHTTPServer):
                             "session": True,
                             "rebuild": True,
                             "build_from_spec": True,
+                            "build_plan": True,
                         },
                         "default": name == DEFAULT_PROJECT,
                     }

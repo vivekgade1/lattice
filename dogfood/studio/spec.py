@@ -36,6 +36,20 @@ What makes the answers exact:
   their commits (``WRITING_COMMIT``, ``READING_COMMIT``) are reproducible like the others.
   Only ``release`` is protected in the seed, so the checked-out ``main`` is refused as
   checked out; ``SCRATCH.txt`` (untracked) makes the owner's worktree dirty.
+- build plans (API.md v1.9): the seed's TEST-ONLY stub planner (``[rebuild] planner =
+  "stub"``) answers one planner document per plan scope from ``stub-plan.json``, and each
+  node plays ``stub-rebuild.json``'s rounds under its node id. The scope ``all`` is a
+  scaffold, two independent nodes (``writing``: the area writing-notes; ``reading``: R3),
+  one dependent node (``tokens``: R4, after ``reading``) and the integration node; the
+  scope of both areas declares two siblings writing one file (serialised); the scope
+  ``rules R1, R3`` covers R1 twice and R3 never (the fallback); the two areas in the other
+  order are two siblings that each pass alone but clash once merged (``gate.sh`` fails
+  ``scenario:no_token`` when ``left.txt`` and ``right.txt`` both exist: a regression at the
+  level's full gate); ``rules R1, R3, R4`` has a node that gives up (three rounds without
+  ``writing.txt``) with a dependent and a sibling; ``rules R3`` holds 30 seconds (stop).
+  The merge commits are reproducible like the others: ``PLAN_TIP`` (recorded from the
+  real server and checked by hand with ``git log --graph build/notes``) pins the level
+  merges and their order.
 
 Studio has no database and no login: there are no tables, invariants, machines or users,
 and layers B, C and R have nothing to bind to (the harness's marker database is never
@@ -60,10 +74,10 @@ SEED_MD = """\
 - GET /notes/{id} answers the caller's own note; another user's note answers 404.
 - Requests without a token answer 401.
 """
-SEED_HEAD = "44bbe502a335e9d73e50f0bfb5db2f35e9a5cb06"
+SEED_HEAD = "e691f93081fcab61d18b57f3524917fff139ad75"
 STARRED = "Notes can be starred."
 STARRED_MD = SEED_MD + f"- {STARRED}\n"
-STARRED_COMMIT = "f6781dee31bbc7ceb82508c3484d197dc14e6782"
+STARRED_COMMIT = "0fa38224f24645e01755f2bd215a6bad6e8e09ff"
 FIRST = "Starred notes come first."
 TRAILER = (
     "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
@@ -80,7 +94,7 @@ SEED_RULES = [
     {"id": "R4", "status": "checked", "links": ["scenario:no_token"]},
 ]
 NO_CHANGE = "change {} is {}, not ready"
-REBUILT_COMMIT = "3cc6b1d7b768b7eca0c90aca7577da10420d0012"
+REBUILT_COMMIT = "e437e4e9d01713c40091cbf68a0f99bb9b4807dc"
 REBUILT_MESSAGE = (
     f"build: {STARRED}\n\nRebuilt by Lattice Studio from the accepted change(s) c1; the "
     "gates passed in round 2 of 3.\n\nLattice-Rebuild: b1 (notes)\n"
@@ -158,11 +172,38 @@ READY_STARRED = wait(
 UNCHANGED = model(markdown=SEED_MD, project={"name": "notes", "git_head": SEED_HEAD[:7]})
 
 # ---- build from spec (API.md v1.8) ---------------------------------------------------------
-WRITING_COMMIT = "3a8e280e32863901ff41d8c43c4e3760821be456"
-READING_COMMIT = "f513516c1fb73b91916f621f38e5144e2b13d035"
+WRITING_COMMIT = "6bbdb4d23a3392e5b9f0c7eb550c4b2afbd8718d"
+READING_COMMIT = "7c15f8a9f651a271f1fffff919e4e0d0af9c0ffe"
 WRITING = {"kind": "area", "id": "writing-notes", "title": "Writing notes", "rules": ["R1", "R2"]}
 READING = {"kind": "area", "id": "reading-notes", "title": "Reading notes", "rules": ["R3", "R4"]}
 NOTHING = "nothing to build: the checks in this scope already pass"
+
+# ---- build plans (API.md v1.9) ---------------------------------------------------------------
+PLAN_TIP = "a1d0deb92dd178e4c7bff136bf65b8fe7e93ea76"
+NOT_APPROVED = "plan p1 is ready, not approved: approve it first"
+NO_TOUCH = {"tables": [], "packages": [], "files": []}
+NOTES_FILE = {"tables": [], "packages": [], "files": ["notes.py"]}
+ALL_RULES = ["R1", "R2", "R3", "R4"]
+
+
+def post_plan(body, pid="p1"):
+    return Step("POST", "/api/plan", json=body, expect_body={"id": pid, "status": "planning"})
+
+
+def planned(pid, status, **fields):
+    """The plan once it is neither planning nor running."""
+    return Step("GET", f"/api/plan/{pid}", params={"wait": 30},
+                expect_body={"id": pid, "status": status, **fields})  # fmt: skip
+
+
+def plan_step(pid, verb, code=200, **body):
+    return Step("POST", f"/api/plan/{pid}/{verb}", json={}, expect_status=code,
+                expect_body=body or None)  # fmt: skip
+
+
+def approve_and_run(pid="p1"):
+    return (plan_step(pid, "approve", id=pid, status="approved"),
+            plan_step(pid, "run", id=pid, status="running"))  # fmt: skip
 
 
 def area(aid, title, rules, scenarios, failing, status, branch="build/notes"):
@@ -593,6 +634,208 @@ SCENARIOS = (
         areas((None, "not_built"), (None, "not_built"), (None, "not_built")),
         UNCHANGED,
     )),
+    Scenario("a_plan_runs_level_by_level", steps=(
+        post_plan({"scope": "all"}),
+        planned("p1", "ready", source="agent", fallback_reason=None, version=1,
+                target_branch="build/notes", max_parallel=2,
+                scope={"kind": "all", "rules": ALL_RULES},
+                levels=[["scaffold"], ["writing", "reading"], ["tokens"], ["integration"]],
+                validation={"ok": True, "issues": [], "auto_edits": []},
+                nodes=[
+                    {"id": "scaffold", "kind": "scaffold", "scope": {"kind": "rules", "rules": []},
+                     "depends_on": [], "tier": "mid", "model": "sonnet", "level": 0,
+                     "touches": {**NO_TOUCH, "files": ["scaffold.txt"]}, "status": "pending",
+                     "gate": {"kind": "scoped", "regressions": "none", "decided_by": "studio"}},
+                    {"id": "writing", "kind": "area",
+                     "scope": {"kind": "area", "area": "writing-notes", "rules": ["R1", "R2"]},
+                     "depends_on": ["scaffold"], "tier": "mid", "model": "sonnet", "level": 1,
+                     "gate": {"kind": "scoped", "rules": ["R1", "R2"],
+                              "checks": [W_TARGET, "scenario:text_bounds"]}},
+                    {"id": "reading", "scope": {"kind": "rules", "rules": ["R3"]},
+                     "depends_on": ["scaffold"], "tier": "frontier", "model": "opus", "level": 1},
+                    {"id": "tokens", "depends_on": ["reading"], "tier": "fast", "model": "haiku",
+                     "level": 2},
+                    {"id": "integration", "kind": "integration",
+                     "scope": {"kind": "all", "rules": ALL_RULES},
+                     "depends_on": ["writing", "tokens"], "level": 3, "gate": {"kind": "full"}},
+                ]),
+        plan_step("p1", "run", 409, detail=NOT_APPROVED),
+        *approve_and_run(),
+        planned("p1", "passed", target_branch="build/notes", created_branch=True,
+                target_tip=PLAN_TIP, error=None,
+                baseline={"sha": SEED_HEAD, "failing": [W_TARGET, R_TARGET]},
+                nodes=[
+                    {"id": "scaffold", "status": "passed", "nothing_to_build": False,
+                     "merged": True, "branch": "rebuild/p1-scaffold",
+                     "files_changed": ["scaffold.txt"], "rounds": 1},
+                    {"id": "writing", "status": "passed", "merged": True,
+                     "branch": "rebuild/p1-writing", "files_changed": ["writing.txt"]},
+                    {"id": "reading", "status": "passed", "merged": True,
+                     "branch": "rebuild/p1-reading", "files_changed": ["reading.txt"]},
+                    {"id": "tokens", "status": "passed", "nothing_to_build": True,
+                     "merged": False, "build_id": None},
+                    {"id": "integration", "status": "passed", "nothing_to_build": True},
+                ],
+                level_runs=[
+                    {"level": 0, "status": "passed", "base": SEED_HEAD, "merged": ["scaffold"],
+                     "gate": {"failing": [W_TARGET, R_TARGET], "regressions": []}},
+                    {"level": 1, "status": "passed", "merged": ["writing", "reading"],
+                     "tip": PLAN_TIP, "gate": {"failing": [], "regressions": [],
+                                               "newly_fixed": [W_TARGET, R_TARGET]}},
+                    {"level": 2, "status": "passed", "merged": [], "gate": None},
+                    {"level": 3, "status": "passed", "merged": [], "gate": None},
+                ],
+                totals={"rounds": 3, "lines_changed": 3,
+                        "shape": {"nodes": 5, "levels": 4, "max_level_width": 2}}),
+        Step("GET", "/api/branches", expect_body={"current_branch": "main", "branches": [
+            {"name": "build/notes", "head": PLAN_TIP, "current": False, "is_integration": True},
+            {"name": "main", "head": SEED_HEAD, "current": True},
+            {"name": "rebuild/p1-reading"}, {"name": "rebuild/p1-scaffold"},
+            {"name": "rebuild/p1-writing"},
+        ]}),
+        areas((0, "built"), (0, "built"), (0, "built")),
+        UNCHANGED,
+        Step("GET", "/p/notes/api/plans", expect_body=[{"id": "p1", "status": "passed", "nodes": [
+            {"id": "scaffold", "status": "passed"}, {"id": "writing", "status": "passed"},
+            {"id": "reading", "status": "passed"}, {"id": "tokens", "status": "passed"},
+            {"id": "integration", "status": "passed"}]}]),
+    )),
+    Scenario("overlapping_siblings_are_serialised", steps=(
+        post_plan({"scope": {"areas": ["writing-notes", "reading-notes"]}}),
+        planned("p1", "ready", source="agent",
+                levels=[["writing"], ["reading"], ["integration"]],
+                nodes=[
+                    {"id": "writing", "depends_on": [], "level": 0, "touches": NOTES_FILE},
+                    {"id": "reading", "depends_on": ["writing"], "level": 1,
+                     "serialised_because": {"node": "writing", "overlap": NOTES_FILE}},
+                    {"id": "integration", "depends_on": ["writing", "reading"], "level": 2},
+                ],
+                edges=[
+                    {"from": "writing", "to": "reading", "kind": "serialised", "auto": True},
+                    {"from": "writing", "to": "integration", "kind": "declared", "auto": False},
+                    {"from": "reading", "to": "integration", "kind": "declared", "auto": False},
+                ],
+                validation={"ok": True, "issues": [], "auto_edits": [
+                    {"kind": "serialise", "from": "writing", "to": "reading",
+                     "overlap": NOTES_FILE}]}),
+        plan_step("p1", "approve", id="p1", status="approved", version=1),
+        # the owner removes the edge: the overlap puts it back; the tier edit sticks
+        Step("POST", "/api/plan/p1/revise", json={"edits": {
+            "remove_edges": [["writing", "reading"]], "nodes": {"reading": {"tier": "frontier"}}}},
+            expect_body={"id": "p1", "status": "ready", "version": 2, "approved": None,
+                         "levels": [["writing"], ["reading"], ["integration"]],
+                         "nodes": [{"id": "writing"},
+                                   {"id": "reading", "tier": "frontier", "model": "opus",
+                                    "depends_on": ["writing"],
+                                    "serialised_because": {"node": "writing"}},
+                                   {"id": "integration"}]}),
+        plan_step("p1", "run", 409, detail=NOT_APPROVED),
+        post_plan({"scope": "all", "max_parallel": 1}, pid="p2"),
+        planned("p2", "ready", max_parallel=1,
+                levels=[["scaffold"], ["writing"], ["reading"], ["tokens"], ["integration"]],
+                validation={"ok": True, "issues": [], "auto_edits": [
+                    {"kind": "level", "node": "reading", "from": 1, "to": 2}]}),
+        UNCHANGED,
+    )),
+    Scenario("an_invalid_plan_falls_back", steps=(
+        post_plan({"scope": {"rules": ["R1", "R3"]}}),
+        planned("p1", "ready", source="fallback",
+                fallback_reason="the planner's plan was invalid twice: R1 is covered by 2 "
+                "nodes (a, b); R3 is covered by no node",
+                planner={"kind": "stub", "attempts": 2},
+                scope={"kind": "rules", "rules": ["R1", "R3"]},
+                levels=[["writing-notes"], ["reading-notes"], ["integration"]],
+                nodes=[
+                    {"id": "writing-notes", "kind": "area",
+                     "scope": {"kind": "rules", "rules": ["R1"]}, "depends_on": []},
+                    {"id": "reading-notes", "kind": "area",
+                     "scope": {"kind": "rules", "rules": ["R3"]},
+                     "depends_on": ["writing-notes"]},
+                    {"id": "integration", "kind": "integration",
+                     "depends_on": ["reading-notes"]},
+                ]),
+        post_plan({"scope": {"areas": ["writing-notes"]}, "planner": "fallback"}, pid="p2"),
+        planned("p2", "ready", source="fallback",
+                fallback_reason="requested: the request asked for the fallback planner",
+                levels=[["writing-notes"], ["integration"]]),
+        plan_step("p1", "run", 409, detail=NOT_APPROVED),
+    )),
+    Scenario("a_regression_at_the_full_gate_fails_the_level", steps=(
+        post_plan({"scope": {"areas": ["reading-notes", "writing-notes"]}}),
+        planned("p1", "ready", levels=[["w-clash", "r-clash"], ["integration"]]),
+        *approve_and_run(),
+        planned("p1", "failed", target_tip=SEED_HEAD,
+                nodes=[{"id": "w-clash", "status": "regressed", "merged": False},
+                       {"id": "r-clash", "status": "regressed", "merged": False},
+                       {"id": "integration", "status": "pending"}],
+                level_runs=[{"level": 0, "status": "failed", "merged": ["w-clash", "r-clash"],
+                             "tip": None, "regressions": ["scenario:no_token"],
+                             "blame": [{"target": "scenario:no_token", "nodes": ["r-clash"],
+                                        "by": "rules"}],
+                             "gate": {"failing": ["scenario:no_token"],
+                                      "regressions": ["scenario:no_token"],
+                                      "newly_fixed": [W_TARGET, R_TARGET]}}]),
+        # each node passed its own gate: the clash shows only once they are merged
+        Step("GET", "/api/rebuild/b1", expect_body={
+            "id": "b1", "status": "passed", "plan": {"id": "p1", "node": "w-clash"}}),
+        Step("GET", "/api/rebuild/b2", expect_body={
+            "id": "b2", "status": "passed", "plan": {"id": "p1", "node": "r-clash"}}),
+        Step("GET", "/api/branches", expect_body={"branches": [
+            {"name": "build/notes", "head": SEED_HEAD}, {"name": "main", "head": SEED_HEAD},
+            {"name": "rebuild/p1-r-clash"}, {"name": "rebuild/p1-w-clash"}]}),
+        UNCHANGED,
+    )),
+    Scenario("a_failed_node_blocks_its_dependents_not_its_siblings", steps=(
+        post_plan({"scope": {"rules": ["R1", "R3", "R4"]}}),
+        planned("p1", "ready", levels=[["w-broken", "r-ok"], ["t-dep"], ["integration"]]),
+        *approve_and_run(),
+        planned("p1", "partial",
+                nodes=[{"id": "w-broken", "status": "gave_up", "rounds": 3, "merged": False},
+                       {"id": "r-ok", "status": "passed", "merged": True},
+                       {"id": "t-dep", "status": "blocked", "blocked_by": ["w-broken"],
+                        "build_id": None},
+                       {"id": "integration", "status": "blocked", "blocked_by": ["t-dep"],
+                        "build_id": None}],
+                level_runs=[{"level": 0, "status": "passed", "merged": ["r-ok"],
+                             "gate": {"failing": [W_TARGET], "regressions": []}}]),
+        Step("GET", "/api/rebuild/b1", expect_body={
+            "id": "b1", "status": "gave_up", "plan": {"id": "p1", "node": "w-broken"}}),
+        areas((1, "partial"), (0, "built"), (1, "partial")),
+        UNCHANGED,
+    )),
+    Scenario("a_running_plan_can_be_stopped", steps=(
+        post_plan({"scope": {"rules": ["R3"]}}),
+        planned("p1", "ready", levels=[["slow"], ["integration"]]),
+        *approve_and_run(),
+        refused("POST", "/api/rebuild", 409, "a build plan is running in this project (p1)",
+                json={"scope": "all"}),
+        Step("DELETE", "/api/plan/p1", expect_body={"id": "p1", "status": "stopped"}),
+        Step("GET", "/api/plan/p1", expect_body={"id": "p1", "status": "stopped"}),
+        refused("DELETE", "/api/plan/p1", 409, "cannot stop a plan that is stopped"),
+        refused("POST", "/api/plan/p1/approve", 409, "plan p1 is stopped, not ready", json={}),
+        UNCHANGED,
+    )),
+    Scenario("plan_refusals", steps=(
+        refused("GET", "/api/plan/p9", 404, "no plan p9"),
+        refused("GET", "/api/plan/p1", 422, "wait must be a number of seconds, 0 to 60",
+                params={"wait": "soon"}),
+        refused("POST", "/api/plan", 422,
+                'scope must be "all", {"areas": ["<id>", ...]} or {"rules": ["<id>", ...]}',
+                json={"scope": "writing-notes"}),
+        refused("POST", "/api/plan", 404, "no area nope", json={"scope": {"areas": ["nope"]}}),
+        refused("POST", "/api/plan", 404, "no rule R9", json={"scope": {"rules": ["R1", "R9"]}}),
+        refused("POST", "/api/plan", 422, "max_parallel must be 1 to 8",
+                json={"scope": "all", "max_parallel": 9}),
+        coded("POST", "/api/plan", 409, "branch_checked_out",
+              json={"scope": "all", "branch": {"name": "main"}}),
+        coded("POST", "/api/plan", 404, "no_branch",
+              json={"scope": "all", "branch": {"name": "nope"}}),
+        refused("DELETE", "/api/plan/p9", 404, "no plan p9"),
+        refused("POST", "/api/plan/p9/approve", 404, "no plan p9", json={}),
+        Step("GET", "/api/plans", expect_body=[]),
+        Step("GET", "/api/branches", expect_body={"branches": [{"name": "main"}]}),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -661,6 +904,16 @@ UNCHECKED = (
               "cannot run at the baseline, unmapped findings and the scope `all`, and areas "
               "status `building`. WRITING_COMMIT and READING_COMMIT were recorded from the "
               "real server and checked by hand with `git log --name-status build/notes`."),
+    Unchecked("R49-R57 (build plans) are checked with the TEST-ONLY stub planner and stub "
+              "agent. The real planner (claude -p with read-only tools, its argv, isolation "
+              "and the re-ask after an invalid answer) runs only against a fake claude in "
+              "tests/studio/test_build_plan.py, as do: the concurrency of siblings (start and "
+              "finish timestamps overlap), merge conflicts, resume, the metrics hook per node "
+              "and per plan, revise with feedback, owner edits that reverse an edge, branch "
+              "creation at run time, a node started after DELETE, and the fallback on Streak's "
+              "real trace. Here the timing of a stop is not pinned: the plan is stopped, "
+              "whether its node had started or not. PLAN_TIP was recorded from the real "
+              "server and checked by hand with `git log --graph build/notes`."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

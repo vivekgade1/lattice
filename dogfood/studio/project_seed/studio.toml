@@ -15,3 +15,7 @@ agent = "stub"
 gates = ["./gate.sh"]
 max_rounds = 3
 protected_branches = ["release"]
+# TEST ONLY (API.md v1.9): build plans come from stub-plan.json, one planner document per
+# plan scope (see lattice/studio/plan.py); their nodes play stub-rebuild.json's rounds by
+# node id.
+planner = "stub"

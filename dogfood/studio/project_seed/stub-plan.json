@@ -1,0 +1,454 @@
+{
+ "scopes": {
+  "all": {
+   "nodes": [
+    {
+     "id": "scaffold",
+     "title": "Shared scaffold",
+     "kind": "scaffold",
+     "scope": {
+      "rules": []
+     },
+     "depends_on": [],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "scaffold.txt"
+      ]
+     },
+     "why": "the notes router the areas plug into"
+    },
+    {
+     "id": "writing",
+     "title": "Writing notes",
+     "kind": "area",
+     "scope": {
+      "area": "writing-notes"
+     },
+     "depends_on": [
+      {
+       "id": "scaffold",
+       "why": "plugs into the router"
+      }
+     ],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "writing.txt"
+      ]
+     },
+     "why": "create and validate notes"
+    },
+    {
+     "id": "reading",
+     "title": "Reading own notes",
+     "kind": "area",
+     "scope": {
+      "rules": [
+       "R3"
+      ]
+     },
+     "depends_on": [
+      {
+       "id": "scaffold",
+       "why": "plugs into the router"
+      }
+     ],
+     "tier": "frontier",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "reading.txt"
+      ]
+     },
+     "why": "owner-only reads"
+    },
+    {
+     "id": "tokens",
+     "title": "Tokens",
+     "kind": "area",
+     "scope": {
+      "rules": [
+       "R4"
+      ]
+     },
+     "depends_on": [
+      {
+       "id": "reading",
+       "why": "guards the read endpoint"
+      }
+     ],
+     "tier": "fast",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "tokens.txt"
+      ]
+     },
+     "why": "401 without a token"
+    },
+    {
+     "id": "integration",
+     "title": "Integration",
+     "kind": "integration",
+     "scope": "all",
+     "depends_on": [
+      {
+       "id": "writing",
+       "why": "runs last"
+      },
+      {
+       "id": "tokens",
+       "why": "runs last"
+      }
+     ],
+     "tier": "frontier",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": []
+     },
+     "why": "the full gate"
+    }
+   ]
+  },
+  "areas-writing-notes-reading-notes": {
+   "nodes": [
+    {
+     "id": "writing",
+     "title": "Writing notes",
+     "kind": "area",
+     "scope": {
+      "area": "writing-notes"
+     },
+     "depends_on": [],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "notes.py"
+      ]
+     },
+     "why": ""
+    },
+    {
+     "id": "reading",
+     "title": "Reading notes",
+     "kind": "area",
+     "scope": {
+      "area": "reading-notes"
+     },
+     "depends_on": [],
+     "tier": "mid",
+     "touches": {
+      "tables": [
+       "notes"
+      ],
+      "packages": [],
+      "files": [
+       "notes.py"
+      ]
+     },
+     "why": ""
+    },
+    {
+     "id": "integration",
+     "title": "Integration",
+     "kind": "integration",
+     "scope": "all",
+     "depends_on": [
+      {
+       "id": "writing",
+       "why": "runs last"
+      },
+      {
+       "id": "reading",
+       "why": "runs last"
+      }
+     ],
+     "tier": "frontier",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": []
+     },
+     "why": ""
+    }
+   ]
+  },
+  "rules-r1-r3": {
+   "doc": {
+    "nodes": [
+     {
+      "id": "a",
+      "title": "a",
+      "kind": "area",
+      "scope": {
+       "rules": [
+        "R1"
+       ]
+      },
+      "depends_on": [],
+      "tier": "mid",
+      "touches": {
+       "tables": [],
+       "packages": [],
+       "files": [
+        "a.txt"
+       ]
+      },
+      "why": ""
+     },
+     {
+      "id": "b",
+      "title": "b",
+      "kind": "area",
+      "scope": {
+       "rules": [
+        "R1"
+       ]
+      },
+      "depends_on": [],
+      "tier": "mid",
+      "touches": {
+       "tables": [],
+       "packages": [],
+       "files": [
+        "b.txt"
+       ]
+      },
+      "why": ""
+     },
+     {
+      "id": "integration",
+      "title": "integration",
+      "kind": "integration",
+      "scope": "all",
+      "depends_on": [
+       {
+        "id": "a",
+        "why": ""
+       },
+       {
+        "id": "b",
+        "why": ""
+       }
+      ],
+      "tier": "frontier",
+      "touches": {
+       "tables": [],
+       "packages": [],
+       "files": []
+      },
+      "why": ""
+     }
+    ]
+   }
+  },
+  "areas-reading-notes-writing-notes": {
+   "nodes": [
+    {
+     "id": "w-clash",
+     "title": "Writing notes",
+     "kind": "area",
+     "scope": {
+      "area": "writing-notes"
+     },
+     "depends_on": [],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "left.txt"
+      ]
+     },
+     "why": ""
+    },
+    {
+     "id": "r-clash",
+     "title": "Reading notes",
+     "kind": "area",
+     "scope": {
+      "area": "reading-notes"
+     },
+     "depends_on": [],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "right.txt"
+      ]
+     },
+     "why": ""
+    },
+    {
+     "id": "integration",
+     "title": "integration",
+     "kind": "integration",
+     "scope": "all",
+     "depends_on": [
+      {
+       "id": "w-clash",
+       "why": ""
+      },
+      {
+       "id": "r-clash",
+       "why": ""
+      }
+     ],
+     "tier": "frontier",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": []
+     },
+     "why": ""
+    }
+   ]
+  },
+  "rules-r1-r3-r4": {
+   "nodes": [
+    {
+     "id": "w-broken",
+     "title": "w-broken",
+     "kind": "area",
+     "scope": {
+      "rules": [
+       "R1"
+      ]
+     },
+     "depends_on": [],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "writing.txt"
+      ]
+     },
+     "why": ""
+    },
+    {
+     "id": "r-ok",
+     "title": "r-ok",
+     "kind": "area",
+     "scope": {
+      "rules": [
+       "R3"
+      ]
+     },
+     "depends_on": [],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "reading.txt"
+      ]
+     },
+     "why": ""
+    },
+    {
+     "id": "t-dep",
+     "title": "t-dep",
+     "kind": "area",
+     "scope": {
+      "rules": [
+       "R4"
+      ]
+     },
+     "depends_on": [
+      {
+       "id": "w-broken",
+       "why": "needs notes to exist"
+      }
+     ],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "tokens.txt"
+      ]
+     },
+     "why": ""
+    },
+    {
+     "id": "integration",
+     "title": "integration",
+     "kind": "integration",
+     "scope": "all",
+     "depends_on": [
+      {
+       "id": "r-ok",
+       "why": ""
+      },
+      {
+       "id": "t-dep",
+       "why": ""
+      }
+     ],
+     "tier": "frontier",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": []
+     },
+     "why": ""
+    }
+   ]
+  },
+  "rules-r3": {
+   "nodes": [
+    {
+     "id": "slow",
+     "title": "slow",
+     "kind": "area",
+     "scope": {
+      "rules": [
+       "R3"
+      ]
+     },
+     "depends_on": [],
+     "tier": "mid",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": [
+       "reading.txt"
+      ]
+     },
+     "why": ""
+    },
+    {
+     "id": "integration",
+     "title": "integration",
+     "kind": "integration",
+     "scope": "all",
+     "depends_on": [
+      {
+       "id": "slow",
+       "why": ""
+      }
+     ],
+     "tier": "frontier",
+     "touches": {
+      "tables": [],
+      "packages": [],
+      "files": []
+     },
+     "why": ""
+    }
+   ]
+  }
+ }
+}

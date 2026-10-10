@@ -201,6 +201,7 @@ def test_projects_list_is_cheap_and_complete(two) -> None:
             "session",
             "rebuild",
             "build_from_spec",
+            "build_plan",
         }
         assert p["capabilities"]["rebuild"] is p["capabilities"]["build_from_spec"] is False
     assert [p["default"] for p in lst] == [True, False]

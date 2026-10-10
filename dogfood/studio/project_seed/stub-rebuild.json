@@ -3,29 +3,148 @@
     {
       "hold": 2,
       "summary": "round 1: started the build, and tried to edit the requirements",
-      "files": {"progress.txt": "half way\n", "REQUIREMENTS.md": "# tampered by the agent\n"}
+      "files": {
+        "progress.txt": "half way\n",
+        "REQUIREMENTS.md": "# tampered by the agent\n"
+      }
     },
     {
       "summary": "round 2: wrote writing.txt and reading.txt",
-      "files": {"writing.txt": "written\n", "reading.txt": "read\n"}
+      "files": {
+        "writing.txt": "written\n",
+        "reading.txt": "read\n"
+      }
     }
   ],
   "scopes": {
     "writing-notes": {
       "rounds": [
-        {"summary": "writing 1: a draft only", "files": {"draft.txt": "draft\n"}},
-        {"summary": "writing 2: wrote writing.txt", "files": {"writing.txt": "written\n"}}
+        {
+          "summary": "writing 1: a draft only",
+          "files": {
+            "draft.txt": "draft\n"
+          }
+        },
+        {
+          "summary": "writing 2: wrote writing.txt",
+          "files": {
+            "writing.txt": "written\n"
+          }
+        }
       ]
     },
     "reading-notes": {
       "rounds": [
         {
           "summary": "reading 1: wrote reading.txt, deleted writing.txt",
-          "files": {"reading.txt": "read\n", "writing.txt": null}
+          "files": {
+            "reading.txt": "read\n",
+            "writing.txt": null
+          }
         },
         {
           "summary": "reading 2: restored writing.txt",
-          "files": {"reading.txt": "read\n", "writing.txt": "written\n"}
+          "files": {
+            "reading.txt": "read\n",
+            "writing.txt": "written\n"
+          }
+        }
+      ]
+    },
+    "scaffold": {
+      "rounds": [
+        {
+          "summary": "scaffold: wrote scaffold.txt",
+          "files": {
+            "scaffold.txt": "shared\n"
+          }
+        }
+      ]
+    },
+    "writing": {
+      "rounds": [
+        {
+          "hold": 1,
+          "summary": "writing: wrote writing.txt",
+          "files": {
+            "writing.txt": "written\n"
+          }
+        }
+      ]
+    },
+    "reading": {
+      "rounds": [
+        {
+          "hold": 1,
+          "summary": "reading: wrote reading.txt",
+          "files": {
+            "reading.txt": "read\n"
+          }
+        }
+      ]
+    },
+    "w-clash": {
+      "rounds": [
+        {
+          "summary": "w-clash: writing.txt and left.txt",
+          "files": {
+            "writing.txt": "written\n",
+            "left.txt": "left\n"
+          }
+        }
+      ]
+    },
+    "r-clash": {
+      "rounds": [
+        {
+          "summary": "r-clash: reading.txt and right.txt",
+          "files": {
+            "reading.txt": "read\n",
+            "right.txt": "right\n"
+          }
+        }
+      ]
+    },
+    "w-broken": {
+      "rounds": [
+        {
+          "summary": "w-broken 1: no writing.txt",
+          "files": {
+            "attempt.txt": "1\n"
+          }
+        },
+        {
+          "summary": "w-broken 2: no writing.txt",
+          "files": {
+            "attempt.txt": "2\n"
+          }
+        },
+        {
+          "summary": "w-broken 3: no writing.txt",
+          "files": {
+            "attempt.txt": "3\n"
+          }
+        }
+      ]
+    },
+    "r-ok": {
+      "rounds": [
+        {
+          "summary": "r-ok: wrote reading.txt",
+          "files": {
+            "reading.txt": "read\n"
+          }
+        }
+      ]
+    },
+    "slow": {
+      "rounds": [
+        {
+          "hold": 30,
+          "summary": "slow: wrote reading.txt",
+          "files": {
+            "reading.txt": "read\n"
+          }
         }
       ]
     }

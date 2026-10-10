@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.8)
+# Lattice Studio API contract (v1.9)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -409,3 +409,99 @@ With `metrics_hook`, after a scoped build ends `passed` (before its commit, so t
 
 ### The mock
 `GET /api/areas[?branch=]` derives the areas from the fixture model's rule sections and links (the job-scheduler spec: 8 areas plus `all`); `GET /api/branches` shows a simulated `main` (checked out, protected) plus every target branch a scoped build created; a scoped `POST /api/rebuild` validates like the real server (codes included), synthesizes a baseline (with no results yet, every check fails), plays two rounds over polls (round 1 fails in scope, round 2 passes) and on pass moves the target branch and marks the scope's targets passing there; building a built area again answers 409 `nothing to build`.
+
+## v1.9 additions (build plans: the build from spec as an agentic execution graph)
+
+v1.8 builds one scope at a time. A **build plan** builds a whole scope as an execution graph of **nodes** (each one a v1.8 scoped build: own worktree, own branch, own process group, judged by Studio), wired by real dependencies and run **level by level**; independent nodes of a level run concurrently. Parallel versus sequential is decided by the graph's construction (dependencies plus declared write sets), never by a flag: the only knob is `max_parallel`, a machine capacity cap. The plan is shown, editable and **approved** before it runs. Code: `lattice/studio/plan.py` (+ `prompts/epg_plan.md`, the planner's method prompt, distilled from the `epg` skill), on `lattice/studio/rebuild.py`. Everything in v1.8 holds; a stand-alone scoped build still runs one at a time.
+
+### Configuration: `[rebuild]` additions
+```toml
+[rebuild]
+planner = "agent"           # "agent" (claude -p, default) | "stub" (TEST ONLY: stub-plan.json)
+planner_model = "opus"      # the planner's model (default opus)
+planner_timeout = 900       # seconds one planner call may run
+models = {fast = "haiku", mid = "sonnet", frontier = "opus"}   # tier -> node model (defaults)
+max_parallel = 2            # default max_parallel of a new plan (1..8)
+```
+
+### `capabilities.build_plan` on GET /api/projects
+`true` exactly when `capabilities.rebuild` is. The mock says `true`.
+
+### POST /api/plan
+Body: `{"scope": "all" | {"areas": ["<id>", ...]} | {"rules": ["<id>", ...]}, "branch"?: {"name", "create"?, "from"?}, "confirm_unsafe_branch"?: bool, "max_parallel"?: 1..8 (default 2), "planner"?: "agent" | "fallback" (default agent), "models"?: {"fast", "mid", "frontier"}}` -> `{"id": "p1", "status": "planning"}` (ids `p1`, `p2`, ... per project). The target branch is validated now with v1.8's rules and codes (`no_branch`, `branch_exists`, `no_ref`, `branch_name_invalid`, `branch_checked_out`, `branch_protected`, `tree_dirty`); nothing is created until the plan runs. Refusals: 422 malformed (`scope must be "all", {"areas": ["<id>", ...]} or {"rules": ["<id>", ...]}`, `scope is required`, `max_parallel must be 1 to 8`, `planner must be "agent" or "fallback"`, `models must map fast, mid and frontier to model names`, `unknown field(s): ...`); 404 `no area <id>` / `no rule <id>`; the branch codes; 503 not available. Planning runs in the background.
+
+### GET /api/plan/{id}[?wait=S], GET /api/plans
+`?wait=S` (0..60) holds the answer until the plan is neither `planning` nor `running`, or S seconds. Unknown id: 404 `no plan <id>`. `GET /api/plans`: every plan, short (`id, status, source, version, scope, target_branch, max_parallel, levels, created, finished, totals, nodes: [{id, status}]`).
+
+The record:
+```json
+{"id": "p1", "project": "notes",
+ "status": "planning|ready|approved|running|passed|partial|failed|stopped",
+ "source": "agent|fallback", "fallback_reason": null, "version": 1,
+ "scope": {"kind": "all|areas|rules", "areas": ["writing-notes"], "rules": ["R1"], "title": "All"},
+ "target_branch": "build/notes", "branch": null, "created_branch": false, "max_parallel": 2,
+ "models": {"fast": "haiku", "mid": "sonnet", "frontier": "opus"},
+ "planner": {"kind": "agent|stub|fallback", "model": "opus", "attempts": 1, "usage": {...}, "wall_s": 12.3, "error": null},
+ "nodes": [{"id": "scaffold", "title": "...", "kind": "scaffold|area|merge|integration",
+            "scope": {"kind": "area|rules|all", "area": "<id, for kind area>", "rules": ["R1"]},
+            "depends_on": ["..."], "why": "...", "tier": "fast|mid|frontier", "model": "sonnet",
+            "touches": {"tables": [], "packages": [], "files": []},
+            "gate": {"kind": "scoped|full", "criterion": "...", "rules": [...] | "all", "checks": [...] | "all", "regressions": "none", "decided_by": "studio"},
+            "level": 0, "serialised_because": {"node": "a", "overlap": {"tables": [], "packages": [], "files": ["x"]}},
+            "status": "pending|running|passed|gave_up|blocked|merge_conflict|regressed|stopped",
+            "build_id": "b3", "builds": ["b3"], "branch": "rebuild/p1-scaffold", "commit": "<sha>|null",
+            "merged": true, "nothing_to_build": false, "blocked_by": [],
+            "usage": {"tokens_in", "tokens_out", "cache_read_input_tokens", "cache_creation_input_tokens", "cost_usd_list_estimate"},
+            "wall_s": 0.0, "rounds": 0, "lines_changed": 0, "files_changed": [],
+            "started_ts": 0.0, "finished_ts": 0.0, "error": null, "metrics": null, "live": {"rounds", "status", ...}}],
+ "edges": [{"from": "scaffold", "to": "writing", "why": "...", "kind": "declared|scaffold|integration|serialised", "auto": false}],
+ "levels": [["scaffold"], ["writing", "reading"], ["integration"]],
+ "validation": {"ok": true, "issues": [], "auto_edits": [{"kind": "serialise|level|edge|node|tier|touches|scope|gate", "detail": "...", ...}]},
+ "level_gate": "...", "level_runs": [{"level": 1, "run": 1, "base": "<sha>", "nodes": [...], "status": "running|passed|failed", "merged": [...], "merge_conflicts": [...], "tip": "<sha>|null", "gate": {"sha", "verdict", "counts", "failing", "regressions", "newly_fixed", "gates"}, "regressions": [...], "blame": [{"target", "nodes", "by": "rules|only_node|level"}], "error"?: {...}, "started", "finished"}],
+ "baseline": {"at", "sha", "seconds", "verdict", "counts", "failing", "findings"}, "runs": 1,
+ "created", "approved", "started", "finished", "target_tip": "<sha>", "owner_head": "<sha>",
+ "error": null, "warnings": [], "metrics": null,
+ "totals": {"tokens_in", "tokens_out", "cache_read_input_tokens", "cache_creation_input_tokens", "cost_usd_list_estimate", "wall_s", "rounds", "lines_changed", "shape": {"nodes", "levels", "max_level_width"}}}
+```
+`cost_usd_list_estimate` is the CLI's list-price estimate, not a charge. `live` (while a node runs) carries its build's rounds and usage so far. Node build records are ordinary rebuild records (`GET /api/rebuild/{build_id}`) with `plan: {id, node}`.
+
+### The planner
+One `claude -p` call per attempt: `--tools Read,Grep,Glob`, `--allowedTools Read,Grep,Glob`, `--disallowedTools Bash,Edit,Write,MultiEdit,NotebookEdit,WebFetch,WebSearch`, `--permission-mode dontAsk`, `--setting-sources ""`, `--strict-mcp-config --mcp-config '{"mcpServers":{}}'`, `--no-session-persistence`, `--disable-slash-commands`, `--append-system-prompt <prompts/epg_plan.md>`, `--model <planner_model>`; `cwd` = the repository root; the environment without API credentials (`ANTHROPIC_*` and provider switches removed); its own process group (killed on DELETE or timeout). Its message: the scope's areas (id, title, rule ids and texts clipped to 220 characters, scenario/check/failing counts, endpoints and data-model tables their rules mention, `huge` when > 25 rules or > 30 scenarios), the data model (tables and column names), the repository file list (`git ls-files`, first 600). It answers one JSON object `{"nodes": [{id, title, kind, scope, depends_on: [{id, why}], tier, touches, why}]}`. Any `gate` it gives is ignored (an `auto_edits` entry): Studio sets every gate, so a plan can never contain a gate the agent could game.
+
+### Validation (Studio, deterministic, on every plan and every edit)
+- **Schema**: `nodes` non-empty; ids `[a-z0-9][a-z0-9_-]*`, unique; `kind` one of the four; `scope` `{"area"}` (an area of the plan scope; covers its rules in the scope), `{"rules"}` (rules of the plan scope) or `"all"` (the integration node); an `area` node covers at least one rule; `depends_on` names nodes (not itself, not the integration node); the scaffold depends on nothing.
+- **Acyclic.** **Coverage**: every rule of the plan scope is covered by exactly one non-integration node (`R5 is covered by no node`, `R5 is covered by 2 nodes (a, b)`); the scaffold covers no rules or only infrastructure ones (rules of areas whose title names errors, versioning, the data model, time/timezones, lists or pagination); at most one scaffold and one integration node.
+- **Sanitised**: `touches` keeps strings only, paths repo-relative without `..` or a leading `/`, at most 64 per list; unknown tier -> `mid`. Each correction is an `auto_edits` entry.
+- **Structure**: every node without dependencies depends on the scaffold (when there is one); every sink depends on the integration node, which is added when missing.
+- **Levels**: a node's level is one more than its deepest dependency. **No two nodes on one level may have overlapping write sets** (a table, a package or file path equal to or inside the other's): Studio adds an edge from the earlier node (document order) to the later one, records `serialised_because` on it and a `serialise` auto-edit, and re-levels; a level holds at most `max_parallel` nodes (the later ones move down a level, `level` auto-edits), to a fixpoint.
+- **Models**: `tier` -> `models` (the request's, else `[rebuild] models`); an owner edit can pin a node's `model`.
+- An invalid **agent** plan (schema, cycle, coverage) is sent back once with the issues; if the second answer is invalid too, or a call fails (timeout, no JSON, CLI error), the plan is the fallback. An invalid **edit** is refused (422, code `plan_invalid`) and changes nothing.
+
+### The fallback plan (deterministic, no LLM)
+A `scaffold` node covering the infrastructure areas' rules (when the scope has any), then the first area whose title names accounts, auth, tokens or sessions, then every other area in document order, each depending on the one before (sequential: safe), then `integration`. Area nodes are named after the area id; an area only partly in a rules scope covers just those rules. Tiers: `frontier` for areas naming accounts, auth, tokens, sessions, sync, concurrency, locks, nudges or scheduling, and for integration; else `mid`. `source: "fallback"` and `fallback_reason` say why (`requested: the request asked for the fallback planner`, `the planner failed: ...`, `the planner's plan was invalid twice: <issues>`).
+
+### POST /api/plan/{id}/revise
+`{"feedback": "..."}` re-runs the planner (agent, or the stub) with the current plan and the feedback (status `planning`, then `ready`), or `{"edits": {"nodes": {"<id>": {"depends_on": [ids], "tier": "...", "model": "..."|null}}, "remove_edges": [[from, to]], "add_edges": [[from, to]], "max_parallel": n, "branch": {...}, "confirm_unsafe_branch": bool}}` -> the new record (re-validated; `version` + 1; status `ready`: an approval is cleared). One of the two, not both (422). Only a `ready` or `approved` plan (else 409). An edge the overlap rule needs comes back as a `serialised` edge.
+
+### POST /api/plan/{id}/approve, POST /api/plan/{id}/run, DELETE /api/plan/{id}
+- `approve`: a `ready` plan -> `{"id", "status": "approved", "version"}`; else 409 `plan p1 is <status>, not ready`.
+- `run`: 409 `plan p1 is ready, not approved: approve it first` (any status but `approved`, or `partial`/`failed`/`stopped` to resume); 409 `a build plan is running in this project (<id>)` or `a rebuild is already running in this project (<id>)`; 503 not available -> `{"id", "status": "running"}`. While a plan runs, `POST /api/rebuild` answers 409 `a build plan is running in this project (<id>)`.
+- `DELETE`: a `planning` or `running` plan -> `{"id", "status": "stopped"}` (the planner or the running node builds are stopped, their process groups killed; passed nodes' branches stay); else 409 `cannot stop a plan that is <status>`.
+
+### The runner
+1. The target branch is resolved as in v1.8 (created now when asked or when the default target does not exist). The **start baseline** is the full gate (every `[rebuild] gates` command) on its tip, in a detached integration worktree (for the default target, the owner's HEAD is merged in first when the branch lacks it, as in v1.8). Gates that cannot run end the plan `failed` (`error.kind: baseline`).
+2. **Per level**, in order: a node whose dependencies are not all `passed` is `blocked` (`blocked_by`); the others start from the target tip **at the start of the level**, at most `max_parallel` at once, as builds `rebuild/<plan>-<node>[-n]` (`Lattice-Plan: <plan>/<node>` trailer), model = the node's. A node's targets are its in-scope failing checks of the level-start full gate; with none it is `passed` with `nothing_to_build` (no agent run) -- except the scaffold, which always runs (judged on regressions alone). Each node is judged by Studio (v1.8's verdict against the level-start gate). The stub agent plays `scopes[<node id>]`.
+3. **Level end**: the passed nodes' commits are merged into the level's start tip **in plan node order** in a temporary integration worktree, one `git merge --no-ff` commit per node (`plan p1 level 1: merge node writing (rebuild/p1-writing)`), so each node stays a revertible unit; a conflicting merge is aborted and the node is `merge_conflict` (its dependents are blocked; the others continue). The nodes' metrics hooks run there (below). Then the **full gate** on the merged tip: a check failing there that did not fail on the last good tip (which never fails more than the start baseline) is a **regression**: the level fails (`level_runs[].status: failed`, `regressions`, `blame` by the rules each failing check is linked to, else the only merged node, else the level), its merged nodes become `regressed`, and the plan stops. Otherwise the target branch is fast-forwarded to the merged tip (v1.8's `update-ref` with the old tip, or `merge --ff-only` in the owner's clean worktree when confirmed; a moved branch fails the level): **the target only ever moves to a tip whose full gate showed no regression.** Passed nodes' worktrees are removed (branches kept); a gave-up node keeps its worktree for review.
+4. **End**: `passed` (every node passed), `partial` (some passed: e.g. a node gave up and blocked its dependents), `failed` (none passed, or a level failed before anything landed), `stopped`. `POST .../run` on a `partial`, `failed` or `stopped` plan resumes: every node not `passed` runs again from the current target tip (a new start baseline first).
+
+**Locking.** The Rebuilder's one lock guards builds and plans. A running plan holds the project's build slot (`plan_active`), taken under that lock only when no build runs; `POST /api/rebuild` refuses while it is held, and a plan run refuses while any build runs. Node builds of the holding plan start without the one-at-a-time check (each has its own worktree, branch, process group and record); the plan's own steps (merges, full gates) run in its integration worktrees.
+
+### Metrics
+Per node: its builds' usage summed (`usage`), `wall_s`, `rounds`, `lines_changed` and `files_changed` (`git diff --numstat` of its commit). `totals`: the nodes' and the planner's tokens and estimate, the run wall time, rounds, lines and the plan's shape. With `metrics_hook`: per node `--phase build_<plan>_<node>` (v1.8's JSON and note), run at the level end in the integration worktree, so sibling nodes never both append to the hook's files on their branches (its output is committed there as `metrics: plan <id> level <n>`, before the full gate); and once per plan `--phase build_plan_<id>` with the totals, the shape and per-node lines in the JSON, in a temporary worktree at the final target tip; files it writes are committed on `rebuild/<plan>-metrics` (`metrics.branch`), never on the target, because that commit has not been gated.
+
+### TEST ONLY: the stub planner
+`[rebuild] planner = "stub"` reads `stub-plan.json` in the project dir: a planner document, or `{"scopes": {"<plan scope slug>": <doc> | {"doc": <doc>, "retry": <doc>} | {"error": "..."}}}` (slugs: `all`, `areas-<ids joined by ->`, `rules-r1-r3`; `default` as a fallback key); the re-ask after an invalid plan reads `retry` (else `doc` again). Never the default.
+
+### The mock
+`POST /api/plan` validates like the real server and plans over one poll: the planner `agent` gives a mock agent plan (a scaffold over the infrastructure areas, the accounts area, the other areas as siblings with one package each, integration), `fallback` the real fallback; both go through the real validator. `approve`, `revise` (edits only; `feedback` re-plans the same way) and `DELETE` behave as on the real server. A run advances one step per `GET /api/plan/{id}` poll: a level's nodes start, then pass (with synthetic usage), then the level merges and its full gate passes; the plan ends `passed`.
+

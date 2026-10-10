@@ -288,6 +288,60 @@
       "text": "GET /api/projects reports `capabilities.build_from_spec`, true when the project can rebuild.",
       "section": "Lattice Studio server: requirements > Build from spec",
       "line": 80
+    },
+    {
+      "id": "R49",
+      "text": "POST /api/plan {\"scope\": \"all\" | {\"areas\": [ids]} | {\"rules\": [ids]}} answers 200 with the plan's id (`p1`, then `p2`, ... in order) and status `planning`, and plans in the background; GET /api/plan/{id}?wait=S (S from 0 to 60 seconds) answers the plan once it is neither planning nor running, or after S seconds, and GET /api/plans lists the plans. A ready plan has its `source` (`agent`, or `fallback` with a `fallback_reason`), `version`, `target_branch`, `max_parallel` (default 2), its nodes -- each with `kind` (scaffold, area, merge or integration), `scope`, `depends_on`, `tier`, the tier's `model`, `touches` (the tables, packages and files it writes), the `gate` Studio sets and its `level` -- and `levels`, the node ids of each level.",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 84
+    },
+    {
+      "id": "R50",
+      "text": "Studio validates every plan: two nodes on one level never write the same table, package or file -- the later node (in the plan's order) gets a dependency on the earlier one, `serialised_because` names the earlier node and the overlap, and `validation.auto_edits` records it -- and a level holds at most `max_parallel` nodes (the others move down a level).",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 85
+    },
+    {
+      "id": "R51",
+      "text": "A plan whose rules are not each covered by exactly one node (or that has a cycle or a malformed node) goes back to the planner once; if it is still invalid, the plan is the fallback -- the areas in document order, each depending on the one before, then an integration node -- with `source` `fallback` and a `fallback_reason` naming the issues. `\"planner\": \"fallback\"` asks for the fallback directly.",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 86
+    },
+    {
+      "id": "R52",
+      "text": "A plan runs only once approved: POST /api/plan/{id}/run on a plan that is not approved answers 409 (\"plan <id> is ready, not approved: approve it first\" for a ready plan); POST /api/plan/{id}/approve on a ready plan answers its status `approved`; POST /api/plan/{id}/revise with edits re-validates the plan, raises its `version` and clears the approval.",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 87
+    },
+    {
+      "id": "R53",
+      "text": "A running plan builds level by level: the nodes of a level whose dependencies all passed start from the target branch's tip at the start of the level; a node with no failing check in its scope passes with `nothing_to_build`; at the end of the level the passed nodes' branches are merged into that tip in the plan's node order and the full gate runs on the merged tip, and the target branch (by default `build/<project>`) moves to the merged tip only when that gate shows no regression. The owner's branch and checkout never move. A plan whose nodes all passed ends `passed`.",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 88
+    },
+    {
+      "id": "R54",
+      "text": "When the full gate after a level fails a check that passed before the level (a regression), the level fails: its merged nodes become `regressed`, the level's record names the regressions and the nodes blamed, the plan ends `failed` (or `partial` once an earlier level landed), and the target branch stays at its last good tip.",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 89
+    },
+    {
+      "id": "R55",
+      "text": "A node whose build gives up ends `gave_up`; the nodes that depend on it are `blocked` (with `blocked_by`) and never run, while its siblings run and land; the plan ends `partial`.",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 90
+    },
+    {
+      "id": "R56",
+      "text": "DELETE /api/plan/{id} stops a planning or running plan: it answers {\"id\": ..., \"status\": \"stopped\"} and its running node builds are stopped; on any other plan it answers 409 (\"cannot stop a plan that is <status>\"). While a plan runs, POST /api/rebuild answers 409 (\"a build plan is running in this project (<id>)\").",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 91
+    },
+    {
+      "id": "R57",
+      "text": "An unknown plan answers 404 (\"no plan <id>\"); when a plan is created, a malformed scope answers 422, an unknown area or rule 404 (\"no area <id>\", \"no rule <id>\"), a `max_parallel` outside 1 to 8 422, and a target branch is refused with the codes of scoped builds.",
+      "section": "Lattice Studio server: requirements > Build plans",
+      "line": 92
     }
   ],
   "links": {
@@ -446,6 +500,35 @@
     ],
     "R48": [
       "scenario:areas_and_branches_of_a_new_project"
+    ],
+    "R49": [
+      "scenario:a_plan_runs_level_by_level",
+      "scenario:plan_refusals"
+    ],
+    "R50": [
+      "scenario:overlapping_siblings_are_serialised"
+    ],
+    "R51": [
+      "scenario:an_invalid_plan_falls_back"
+    ],
+    "R52": [
+      "scenario:a_plan_runs_level_by_level",
+      "scenario:overlapping_siblings_are_serialised"
+    ],
+    "R53": [
+      "scenario:a_plan_runs_level_by_level"
+    ],
+    "R54": [
+      "scenario:a_regression_at_the_full_gate_fails_the_level"
+    ],
+    "R55": [
+      "scenario:a_failed_node_blocks_its_dependents_not_its_siblings"
+    ],
+    "R56": [
+      "scenario:a_running_plan_can_be_stopped"
+    ],
+    "R57": [
+      "scenario:plan_refusals"
     ]
   },
   "unchecked": {

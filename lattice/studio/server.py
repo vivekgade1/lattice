@@ -57,6 +57,9 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
   session (lattice/studio/session.py; API.md v1.5). Lazy: no ``claude`` call until a message.
 - ``GET /api/areas`` and ``POST /api/rebuild {"scope": ...}``: build from the spec, area by
   area, on the integration branch (lattice/studio/areas.py, rebuild.py; API.md v1.8).
+- ``POST /api/plan``, ``GET /api/plan/{id}`` (``?wait=S``), ``GET /api/plans``,
+  ``POST /api/plan/{id}/revise|approve|run``, ``DELETE /api/plan/{id}``: build plans, the
+  build from spec as an agentic execution graph (lattice/studio/plan.py; API.md v1.9).
 - ``POST /api/rebuild``, ``GET /api/rebuild/{id}`` (``?wait=S``), ``DELETE /api/rebuild/{id}``,
   ``GET /api/rebuild``: the rebuild loop of accepted changes (lattice/studio/rebuild.py, its
   ``[rebuild]`` table; API.md v1.7): a coding agent in a git worktree on its own branch, the
@@ -105,6 +108,7 @@ from lattice.spec.model import Spec, resolve_table, tables_of
 from lattice.spec.report import _detail_lines
 from lattice.spec.review import AccessGroup, ReviewData, _build
 from lattice.spec.rules import Trace, extract_rules
+from lattice.studio.plan import PlanError, PlanManager
 from lattice.studio.rebuild import MAX_ROUNDS_LIMIT, Rebuilder, RebuildError
 from lattice.studio.session import (
     DEFAULT_SESSION_TIMEOUT,
@@ -885,6 +889,7 @@ class Studio:
         )
         self._sessions: SessionManager | None = None
         self._rebuilder: Rebuilder | None = None
+        self._plans: PlanManager | None = None
         self.base_url: str | None = None  # set by StudioServer once it is bound
         self.pool = concurrent.futures.ThreadPoolExecutor(
             max_workers=4, thread_name_prefix="studio-ask"
@@ -929,8 +934,11 @@ class Studio:
         with self.lock:
             mgr, self._sessions = self._sessions, None
             rb = self._rebuilder
+            plans = self._plans
         if mgr is not None:
             mgr.close()
+        if plans is not None:
+            plans.close()
         if rb is not None:
             rb.close()
 
@@ -1006,6 +1014,29 @@ class Studio:
                 branch=body.get("branch"),
                 confirm_unsafe_branch=body.get("confirm_unsafe_branch") is True,
             )
+        except RebuildError as e:
+            raise ApiError(HTTPStatus(e.status), e.detail, e.code) from None
+
+    # -- build plans (lattice/studio/plan.py, API.md v1.9)
+    @property
+    def plans(self) -> PlanManager:
+        rb = self.rebuilder
+        with self.lock:
+            if self._plans is None:
+                self._plans = PlanManager(rb, data_model=self._data_model, log=log)
+            return self._plans
+
+    def _data_model(self) -> dict[str, Any] | None:
+        try:
+            return self.get_model().get("data_model")
+        except Exception:  # noqa: BLE001 -- the planner works without it
+            return None
+
+    def plan_call(self, fn: Callable[[], Any]) -> Any:
+        try:
+            return fn()
+        except PlanError as e:
+            raise ApiError(HTTPStatus(e.status), e.detail, e.code) from None
         except RebuildError as e:
             raise ApiError(HTTPStatus(e.status), e.detail, e.code) from None
 
@@ -1625,6 +1656,20 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(lambda: st.get_areas(branch))
         if path == "/api/branches":
             return self._dispatch(st.get_branches)
+        if path == "/api/plans":
+            return self._dispatch(lambda: st.plan_call(st.plans.list))
+        if path.startswith("/api/plan/") and "/" not in path.removeprefix("/api/plan/"):
+            pid = path.removeprefix("/api/plan/")
+            raw = (parse_qs(urlparse(self.path).query).get("wait") or ["0"])[-1]
+            try:
+                wait = float(raw)
+            except ValueError:
+                wait = -1.0
+            if not 0 <= wait <= MAX_WAIT:
+                return self._json(
+                    {"detail": f"wait must be a number of seconds, 0 to {MAX_WAIT:g}"}, 422
+                )
+            return self._dispatch(lambda: st.plan_call(lambda: st.plans.get(pid, wait)))
         if path.startswith("/api/rebuild/") and "/" not in path.removeprefix("/api/rebuild/"):
             rid = path.removeprefix("/api/rebuild/")
             raw = (parse_qs(urlparse(self.path).query).get("wait") or ["0"])[-1]
@@ -1674,6 +1719,18 @@ class Handler(BaseHTTPRequestHandler):
                 return st.start_check()
             if path == "/api/rebuild":
                 return st.start_rebuild(body)
+            if path == "/api/plan":
+                return st.plan_call(lambda: st.plans.create(body))
+            if path.startswith("/api/plan/"):
+                parts = path.removeprefix("/api/plan/").split("/")
+                if len(parts) == 2 and parts[1] in ("revise", "approve", "run"):
+                    pm = st.plans
+                    calls = {
+                        "revise": lambda: pm.revise(parts[0], body),
+                        "approve": lambda: pm.approve(parts[0]),
+                        "run": lambda: pm.run(parts[0]),
+                    }
+                    return st.plan_call(calls[parts[1]])
             if path == "/api/session":
                 return Reply(st.sessions.create(body), 201)
             if path.startswith("/api/session/"):
@@ -1707,6 +1764,9 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/api/rebuild/") and "/" not in path.removeprefix("/api/rebuild/"):
             rid = path.removeprefix("/api/rebuild/")
             return self._dispatch(lambda: st.stop_rebuild(rid))
+        if path.startswith("/api/plan/") and "/" not in path.removeprefix("/api/plan/"):
+            pid = path.removeprefix("/api/plan/")
+            return self._dispatch(lambda: st.plan_call(lambda: st.plans.stop(pid)))
         return self._json({"detail": "no such route"}, 404)
 
     def _static(self, path: str) -> None:

@@ -243,6 +243,7 @@ class StudioHub:
                 "session": claude_available(claude_bin),
                 "rebuild": can_rebuild,
                 "build_from_spec": can_rebuild,
+                "build_plan": can_rebuild,
             },
             "default": name == self.default,
         }
