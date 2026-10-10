@@ -186,6 +186,60 @@
       "text": "Projects served by one server do not share change sets: each project numbers its own changes from `c1`, and a change made in one project is not visible in another.",
       "section": "Lattice Studio server: requirements > Projects",
       "line": 57
+    },
+    {
+      "id": "R32",
+      "text": "POST /api/rebuild {\"changes\": [...]} on accepted changes answers 200 with the rebuild's id (`b1`, then `b2`, ... in order) and runs it in the background in a new git worktree, on a new branch `rebuild/<first change id>` (`-2`, `-3`, ... when that branch exists) made from HEAD. GET /api/rebuild/{id} answers its record; with ?wait=S (S from 0 to 60 seconds) it answers once the rebuild has finished, or after S seconds.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 61
+    },
+    {
+      "id": "R33",
+      "text": "Each round, the coding agent edits the code in the worktree, then Studio itself runs the project's gate commands there: a round passes only when every gate exits 0. A failing round's findings, taken from the gates' output, are in the round's record with each gate's exit code, and they are the next round's brief.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 62
+    },
+    {
+      "id": "R34",
+      "text": "A round in which the agent edited REQUIREMENTS.md, spec.py or spec.trace.json fails with the finding \"spec files were edited\", and those files are restored to the base commit's content.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 63
+    },
+    {
+      "id": "R35",
+      "text": "When a round passes, the rebuild ends `passed` with exactly one commit on its branch, on top of the base commit, with the message `build: <requests>` and a `Lattice-Rebuild:` trailer, holding the files the rounds changed. After `max_rounds` failing rounds it ends `gave_up`, with nothing committed.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 64
+    },
+    {
+      "id": "R36",
+      "text": "A rebuild never merges and never moves the owner's checkout: after it passes, GET /api/model answers the same markdown and `git_head` as before, and the record's `merge_hint` says how to merge the branch.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 65
+    },
+    {
+      "id": "R37",
+      "text": "An accepted change carries `build` in GET /api/model: `not_built` before any rebuild and after a stopped one, `rebuilding` while one runs, `built` with its `rebuild_id`, `branch` and `commit` once one passed, and `gave_up` when one gave up. A gave-up change can be rebuilt again.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 66
+    },
+    {
+      "id": "R38",
+      "text": "POST /api/rebuild for a change that is not accepted answers 409 (\"change <id> is <status>, not accepted\"), for a change already rebuilding or built 409 (\"change <id> is already <state>\"), and while a rebuild runs another one in the same project answers 409 (\"a rebuild is already running in this project (<id>)\"). An unknown change answers 404 (\"no change <id>\") and a body without a non-empty list of change ids, or with `max_rounds` below 1, answers 422.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 67
+    },
+    {
+      "id": "R39",
+      "text": "DELETE /api/rebuild/{id} stops a queued or running rebuild: it answers {\"id\": ..., \"status\": \"stopped\"}, its worktree is removed, its branch too when it has no commit of its own, and its changes go back to `not_built`. DELETE on a finished rebuild answers 409 (\"cannot stop a rebuild that is <status>\"); an unknown rebuild id answers 404 (\"no rebuild <id>\") on GET and DELETE.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 68
+    },
+    {
+      "id": "R40",
+      "text": "GET /api/projects reports `capabilities.rebuild`: true when the project's `[rebuild]` table names a git repository and gate commands that resolve, and its agent (Claude Code, or the test-only stub) can run.",
+      "section": "Lattice Studio server: requirements > Rebuild",
+      "line": 69
     }
   ],
   "links": {
@@ -272,6 +326,46 @@
     ],
     "R30": [
       "scenario:an_unknown_project_is_404"
+    ],
+    "R32": [
+      "scenario:a_rebuild_passes_in_round_2_on_its_own_branch",
+      "scenario:a_rebuild_gives_up_at_max_rounds_and_can_run_again",
+      "scenario:one_rebuild_at_a_time_and_stop",
+      "scenario:rebuild_refusals"
+    ],
+    "R33": [
+      "scenario:a_rebuild_passes_in_round_2_on_its_own_branch",
+      "scenario:a_rebuild_gives_up_at_max_rounds_and_can_run_again"
+    ],
+    "R34": [
+      "scenario:a_rebuild_passes_in_round_2_on_its_own_branch",
+      "scenario:a_rebuild_gives_up_at_max_rounds_and_can_run_again"
+    ],
+    "R35": [
+      "scenario:a_rebuild_passes_in_round_2_on_its_own_branch",
+      "scenario:a_rebuild_gives_up_at_max_rounds_and_can_run_again"
+    ],
+    "R36": [
+      "scenario:a_rebuild_passes_in_round_2_on_its_own_branch",
+      "scenario:a_rebuild_gives_up_at_max_rounds_and_can_run_again"
+    ],
+    "R37": [
+      "scenario:a_rebuild_passes_in_round_2_on_its_own_branch",
+      "scenario:a_rebuild_gives_up_at_max_rounds_and_can_run_again",
+      "scenario:one_rebuild_at_a_time_and_stop"
+    ],
+    "R38": [
+      "scenario:a_rebuild_passes_in_round_2_on_its_own_branch",
+      "scenario:one_rebuild_at_a_time_and_stop",
+      "scenario:rebuild_refusals"
+    ],
+    "R39": [
+      "scenario:a_rebuild_passes_in_round_2_on_its_own_branch",
+      "scenario:one_rebuild_at_a_time_and_stop",
+      "scenario:rebuild_refusals"
+    ],
+    "R40": [
+      "scenario:projects_lists_the_served_project"
     ]
   },
   "unchecked": {

@@ -334,12 +334,19 @@ def test_rebuild_passing_updates_model_and_code_lens(base: str) -> None:
     final = run_rebuild(base)
     assert final["status"] == "passed"
     m = get(base + "/api/model")[1]
-    assert m["changes"][0]["build"] == {"state": "built", "rebuild_id": final["id"]}
+    assert m["changes"][0]["build"] == {
+        "state": "built",
+        "rebuild_id": final["id"],
+        "branch": "rebuild/c0",
+        "commit": final["commit"]["sha"],
+    }
     assert m["changes"][0]["status"] == "accepted"
     lc = m["app"]["last_check"]
     assert lc["verdict"] == "pass" and lc["findings"] == []
     assert set(lc["targets"].values()) == {"pass"}
-    assert m["project"]["git_head"] == final["commit"]["sha"][:7]
+    # API v1.7: the commit is on the rebuild branch; the owner's HEAD does not move
+    assert m["project"]["git_head"] == final["base"] != final["commit"]["sha"][:7]
+    assert final["branch"] == "rebuild/c0" and "git merge rebuild/c0" in final["merge_hint"]
     _, c1 = get(f"{base}/api/code/file?{q(path=RUNS)}")
     rebuilt = [a for a in c1["annotations"] if a.get("rebuilt_in")]
     assert rebuilt and all(a["rebuilt_in"] == "c0" for a in rebuilt)

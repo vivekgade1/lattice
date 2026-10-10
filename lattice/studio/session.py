@@ -20,7 +20,7 @@ ask       Read/Grep/Glob + model_get, rule_get, spec_ask,  questions about the s
           code_links, graph_get, spec_lint (read-only)
 explain   the same, a code-reading prompt                  how the app implements X
 change    ask's tools + change_propose/get/list            propose a spec change
-rebuild   (defined, 501 "not enabled yet")                 needs a worktree
+rebuild   (defined, 501 "not enabled yet")                 see POST /api/rebuild
 ========  ===============================================  ==========================
 
 **Events** (the contract the UI codes against). Every event has ``seq`` (int from 1, never

@@ -3,3 +3,11 @@
 [llm]
 backend = "stub"
 model = "stub"
+
+# TEST ONLY: the rebuild loop's stub agent writes round k's files of stub-rebuild.json
+# (round 1 also tries to edit REQUIREMENTS.md, which Studio must restore); gate.sh passes
+# iff built.txt exists, so a rebuild passes in round 2.
+[rebuild]
+agent = "stub"
+gates = ["./gate.sh"]
+max_rounds = 3

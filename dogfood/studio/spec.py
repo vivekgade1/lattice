@@ -14,7 +14,16 @@ What makes the answers exact:
   --name-status`` (see docs/results/2026-10-10-dogfood-results.md);
 - ``GET /api/changes/{id}?wait=30`` holds the request until the change's background job
   has finished, so no scenario races the drafting thread; ``stub:hold=2`` in a request
-  keeps a change drafting for 2 seconds, long enough to cancel or reject it.
+  keeps a change drafting for 2 seconds, long enough to cancel or reject it;
+- the rebuild loop (API.md v1.7) runs the seed's TEST-ONLY stub agent (``[rebuild] agent =
+  "stub"``): round 1 of ``stub-rebuild.json`` holds 2 seconds (long enough to send a second
+  POST or a DELETE), writes ``progress.txt`` and tries to overwrite REQUIREMENTS.md; round 2
+  writes ``built.txt``; the gate ``./gate.sh`` passes iff ``built.txt`` exists. So a rebuild
+  of the starred change passes in round 2, and its commit on ``rebuild/c1`` is the
+  reproducible ``REBUILT_COMMIT`` (parent ``STARRED_COMMIT``, adding ``built.txt`` and
+  ``progress.txt`` only) -- recorded from the real server on 2026-10-10 and checked by hand
+  with ``git log --all --name-status`` (docs/results/2026-10-10-rebuild-results.md);
+  ``GET /api/rebuild/{id}?wait=30`` holds the request until the rebuild has finished.
 
 Studio has no database and no login: there are no tables, invariants, machines or users,
 and layers B, C and R have nothing to bind to (the harness's marker database is never
@@ -34,10 +43,10 @@ SEED_MD = """\
 - GET /notes/{id} answers the caller's own note; another user's note answers 404.
 - Requests without a token answer 401.
 """
-SEED_HEAD = "6e48fed01710059caef55ee168e31c09c0e230e7"
+SEED_HEAD = "8b8f66a861cfddef98c6549bd2a4c1ed2d52b834"
 STARRED = "Notes can be starred."
 STARRED_MD = SEED_MD + f"- {STARRED}\n"
-STARRED_COMMIT = "85623dd6a516b45acd8aab413c3936e4c3aca168"
+STARRED_COMMIT = "cf22fc5183e0f676abd43e42ceb8d8958955b05d"
 FIRST = "Starred notes come first."
 TRAILER = (
     "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
@@ -54,6 +63,36 @@ SEED_RULES = [
     {"id": "R4", "status": "checked", "links": ["scenario:no_token"]},
 ]
 NO_CHANGE = "change {} is {}, not ready"
+REBUILT_COMMIT = "c1ca55b07e21a6edd92a2b92bf701b16c4f388bb"
+REBUILT_MESSAGE = (
+    f"build: {STARRED}\n\nRebuilt by Lattice Studio from the accepted change(s) c1; the "
+    "gates passed in round 2 of 3.\n\nLattice-Rebuild: b1 (notes)\n"
+)
+SPEC_EDITED = "spec files were edited (restored from the base commit): REQUIREMENTS.md"
+GATE_FINDING = "FAIL built.txt is missing (scenario:built)"
+ROUND_1 = {
+    "n": 1,
+    "agent_summary": "round 1: started the build, and tried to edit the requirements",
+    "files_changed": ["progress.txt"],
+    "spec_edited": ["REQUIREMENTS.md"],
+    "check": {
+        "verdict": "fail",
+        "counts": {"G": 1},
+        "findings": [
+            {"id": "f1", "title": SPEC_EDITED, "target": "spec"},
+            {"id": "f2", "title": GATE_FINDING, "target": "scenario:built"},
+        ],
+    },
+    "gates": [{"command": "./gate.sh", "exit_code": 1}],
+}
+ROUND_2 = {
+    "n": 2,
+    "agent_summary": "round 2: wrote built.txt",
+    "files_changed": ["built.txt"],
+    "spec_edited": [],
+    "check": {"verdict": "pass", "counts": {"G": 0}, "findings": []},
+    "gates": [{"command": "./gate.sh", "exit_code": 0}],
+}
 
 
 def post_change(request, parent=None, cid="c1"):
@@ -79,6 +118,17 @@ def accept(cid, status=200, **body):
 def refused(method, path, status, detail, json=None, params=None):
     return Step(method, path, json=json, params=params, expect_status=status,
                 expect_body={"detail": detail})  # fmt: skip
+
+
+def rebuild(changes, rid="b1", **body):
+    return Step("POST", "/api/rebuild", json={"changes": changes, **body},
+                expect_body={"id": rid})  # fmt: skip
+
+
+def rebuilt(rid, status, **fields):
+    """The rebuild once it has finished."""
+    return Step("GET", f"/api/rebuild/{rid}", params={"wait": 30},
+                expect_body={"id": rid, "status": status, **fields})  # fmt: skip
 
 
 READY_STARRED = wait(
@@ -246,7 +296,7 @@ SCENARIOS = (
         Step("GET", "/api/projects", expect_body=[
             {"name": "notes", "git_head": SEED_HEAD[:7], "spec": True,
              "app_configured": False, "last_check": None, "default": True,
-             "capabilities": {"rebuild": False}},
+             "capabilities": {"rebuild": True}},
         ]),
         Step("GET", "/p/notes/api/projects", expect_body=[{"name": "notes", "default": True}]),
     )),
@@ -277,6 +327,85 @@ SCENARIOS = (
         refused("DELETE", "/p/nope/api/changes/c1", 404, "no such project"),
         refused("GET", "/p/nope/", 404, "no such project"),
         model(changes=[]),
+    )),
+    Scenario("a_rebuild_passes_in_round_2_on_its_own_branch", steps=(
+        post_change(STARRED),
+        READY_STARRED,
+        accept("c1", commit=STARRED_COMMIT),
+        model(changes=[{"id": "c1", "status": "accepted", "build": {"state": "not_built"}}]),
+        rebuild(["c1"]),
+        refused("POST", "/api/rebuild", 409, "change c1 is already rebuilding",
+                json={"changes": ["c1"]}),
+        rebuilt("b1", "passed", changes=["c1"], agent="stub", max_rounds=3,
+                base=STARRED_COMMIT, branch="rebuild/c1", rounds=[ROUND_1, ROUND_2],
+                targets=[], error=None,
+                commit={"sha": REBUILT_COMMIT, "message": REBUILT_MESSAGE,
+                        "files_changed": ["built.txt", "progress.txt"]}),
+        model(markdown=STARRED_MD, project={"name": "notes", "git_head": STARRED_COMMIT[:7]},
+              changes=[{"id": "c1", "status": "accepted", "build": {
+                  "state": "built", "rebuild_id": "b1", "branch": "rebuild/c1",
+                  "commit": REBUILT_COMMIT}}]),
+        # post hoc (docs/results/2026-10-10-rebuild-results.md): the live HEAD, as
+        # /api/projects reads it, did not move either
+        Step("GET", "/api/projects", expect_body=[{"name": "notes",
+                                                   "git_head": STARRED_COMMIT[:7]}]),
+        Step("GET", "/p/notes/api/rebuild/b1",
+             expect_body={"id": "b1", "status": "passed", "commit": {"sha": REBUILT_COMMIT}}),
+        refused("DELETE", "/api/rebuild/b1", 409, "cannot stop a rebuild that is passed"),
+        refused("POST", "/api/rebuild", 409, "change c1 is already built",
+                json={"changes": ["c1"]}),
+    )),
+    Scenario("a_rebuild_gives_up_at_max_rounds_and_can_run_again", steps=(
+        post_change(STARRED),
+        READY_STARRED,
+        accept("c1", commit=STARRED_COMMIT),
+        rebuild(["c1"], max_rounds=1),
+        rebuilt("b1", "gave_up", max_rounds=1, branch="rebuild/c1", merge_hint=None,
+                rounds=[ROUND_1]),
+        model(project={"git_head": STARRED_COMMIT[:7]}, markdown=STARRED_MD,
+              changes=[{"id": "c1", "build": {"state": "gave_up", "rebuild_id": "b1",
+                                              "branch": "rebuild/c1"}}]),
+        rebuild(["c1"], rid="b2"),
+        rebuilt("b2", "passed", branch="rebuild/c1-2", base=STARRED_COMMIT,
+                rounds=[ROUND_1, ROUND_2]),
+        model(project={"git_head": STARRED_COMMIT[:7]},
+              changes=[{"id": "c1", "build": {"state": "built", "rebuild_id": "b2",
+                                              "branch": "rebuild/c1-2"}}]),
+    )),
+    Scenario("one_rebuild_at_a_time_and_stop", steps=(
+        post_change(STARRED),
+        READY_STARRED,
+        accept("c1", commit=STARRED_COMMIT),
+        post_change(FIRST, cid="c2"),
+        wait("c2", "ready"),
+        accept("c2"),
+        rebuild(["c1"]),
+        refused("POST", "/api/rebuild", 409, "a rebuild is already running in this project (b1)",
+                json={"changes": ["c2"]}),
+        Step("DELETE", "/api/rebuild/b1", expect_body={"id": "b1", "status": "stopped"}),
+        rebuilt("b1", "stopped", rounds=[], branch=None, worktree=None),
+        model(changes=[{"id": "c1", "build": {"state": "not_built", "rebuild_id": "b1"}},
+                       {"id": "c2", "build": {"state": "not_built"}}]),
+        refused("DELETE", "/api/rebuild/b1", 409, "cannot stop a rebuild that is stopped"),
+        rebuild(["c2"], rid="b2"),
+        rebuilt("b2", "passed", changes=["c2"], branch="rebuild/c2"),
+    )),
+    Scenario("rebuild_refusals", steps=(
+        refused("POST", "/api/rebuild", 404, "no change c9", json={"changes": ["c9"]}),
+        refused("POST", "/api/rebuild", 422, "changes must be a non-empty list of ids", json={}),
+        refused("POST", "/api/rebuild", 422, "changes must be a non-empty list of ids",
+                json={"changes": []}),
+        refused("POST", "/api/rebuild", 422, "max_rounds must be 1 to 50",
+                json={"changes": ["c1"], "max_rounds": 0}),
+        post_change(STARRED),
+        READY_STARRED,
+        refused("POST", "/api/rebuild", 409, "change c1 is ready, not accepted",
+                json={"changes": ["c1"]}),
+        refused("GET", "/api/rebuild/b9", 404, "no rebuild b9"),
+        refused("DELETE", "/api/rebuild/b9", 404, "no rebuild b9"),
+        refused("GET", "/api/rebuild/b9", 422, "wait must be a number of seconds, 0 to 60",
+                params={"wait": "soon"}),
+        UNCHANGED,
     )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
@@ -323,6 +452,20 @@ UNCHECKED = (
               "binary (R25)."),
     Unchecked("R31: the harness serves one project directory, so two projects' change sets "
               "cannot be compared here; tests/studio/test_projects.py checks the isolation."),
+    Unchecked("R32-R39: the agent here is the TEST-ONLY stub (a scripted edit); the real "
+              "Claude Code agent's argv, isolation (acceptEdits, Bash limited to the gate "
+              "commands, the guard on the worktree, no API credentials), --resume and the "
+              "findings-as-prompt are checked against a fake claude in "
+              "tests/studio/test_rebuild.py, as are the gate's import path, the process-group "
+              "kill on DELETE and usage-limit rounds."),
+    Unchecked("R32/R39: the worktree's location and its removal on DELETE, and that the "
+              "owner's working tree stays untouched, are seen here only through the record "
+              "(`worktree: null`, `branch: null`) and `git_head`; the spec cannot read the "
+              "repository. R35's commit is pinned by a reproducible id (REBUILT_COMMIT), "
+              "recorded once and verified by hand."),
+    Unchecked("R40: `capabilities.rebuild` is checked true for the seed (stub agent, "
+              "./gate.sh); the false cases (no git, no gates, no claude) are in "
+              "tests/studio/test_rebuild.py."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

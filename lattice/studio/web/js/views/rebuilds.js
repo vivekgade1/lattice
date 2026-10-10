@@ -176,6 +176,8 @@ export function rebuildCard(rebuild, opts = {}) {
     result = h("section", { class: "rb-result is-passed", "aria-label": "Result" },
       h("p", {}, h("code", { class: "s2-mono" }, String(rebuild.commit.sha).slice(0, 7)), ` ${rebuild.commit.message || ""}`),
       files.length ? h("ul", {}, files.map((f) => h("li", {}, f))) : null,
+      rebuild.branch ? h("p", { class: "muted small" }, "On branch ", h("code", { class: "s2-mono" }, rebuild.branch), ": nothing is merged into your branch.") : null,
+      rebuild.merge_hint ? h("p", { class: "muted small" }, rebuild.merge_hint) : null,
       h("p", { class: "muted" }, "Amber marks cleared: the changed elements are plain again."),
       h("button", {
         type: "button", class: "btn btn-primary",

@@ -1,0 +1,13 @@
+{
+  "rounds": [
+    {
+      "hold": 2,
+      "summary": "round 1: started the build, and tried to edit the requirements",
+      "files": {"progress.txt": "half way\n", "REQUIREMENTS.md": "# tampered by the agent\n"}
+    },
+    {
+      "summary": "round 2: wrote built.txt",
+      "files": {"built.txt": "built\n"}
+    }
+  ]
+}

@@ -212,6 +212,7 @@ class StudioHub:
 
     def summary(self, name: str) -> dict[str, Any]:
         """One ``GET /api/projects`` item, from cheap fields only."""
+        from lattice.studio.rebuild import capability as rebuild_capability
         from lattice.studio.server import SPEC_FILE, TRACE_FILE
         from lattice.studio.session import claude_available
 
@@ -219,6 +220,7 @@ class StudioHub:
         toml = _read_toml(p.root / "studio.toml")
         app = toml.get("app") if isinstance(toml.get("app"), dict) else {}
         llm = toml.get("llm") if isinstance(toml.get("llm"), dict) else {}
+        rebuild = toml.get("rebuild") if isinstance(toml.get("rebuild"), dict) else {}
         st = p.studio
         last = st.last_check if st is not None else None
         claude_bin = str(
@@ -236,7 +238,10 @@ class StudioHub:
             "last_check": (
                 {"verdict": last.get("verdict"), "at": last.get("at")} if last else None
             ),
-            "capabilities": {"session": claude_available(claude_bin), "rebuild": False},
+            "capabilities": {
+                "session": claude_available(claude_bin),
+                "rebuild": rebuild_capability(p.root, rebuild, claude_bin)[0],
+            },
             "default": name == self.default,
         }
 

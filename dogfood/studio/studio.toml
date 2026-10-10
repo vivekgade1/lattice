@@ -16,7 +16,8 @@ layers = "DX"   # A, B, C and R have nothing to bind to (no Python web framework
 [llm]
 model = "sonnet"
 
-# Read by the rebuild loop (a later node); Studio's loader ignores tables it does not know.
+# The rebuild loop (lattice/studio/rebuild.py, API.md v1.7): the repository is the lattice
+# checkout, the gates run from its root in the rebuild's worktree.
 [rebuild]
 repo = "../.."
 gates = ["dogfood/studio/check.sh", "uv run pytest tests/studio -q"]

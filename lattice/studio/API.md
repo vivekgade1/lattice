@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.6)
+# Lattice Studio API contract (v1.7)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -87,7 +87,7 @@ All new endpoints are plain JSON and polled; there are no websockets. Unknown id
 ### `build` on `model.changes[]`
 Every change whose `status` is `"accepted"` carries `"build": {"state": "not_built|rebuilding|built|gave_up", "rebuild_id": "b1"}`; `rebuild_id` is absent until a rebuild has been started for the change. Changes with any other status have no `build`. A change is `not_built` after accepting or after a stopped rebuild, `rebuilding` while a rebuild runs, `built` once a rebuild's check passed, `gave_up` when a rebuild reached its round limit with findings left.
 
-When a rebuild passes: the changes' `build.state` becomes `built`, `app.last_check` becomes a `pass` check (no findings), `project.git_head` moves to the rebuild's commit, and `GET /api/code/file` marks the rebuilt lines (`rebuilt_in`) and no longer reports failing coverage or findings.
+When a rebuild passes: the changes' `build.state` becomes `built`, `app.last_check` becomes a `pass` check (no findings), `project.git_head` moves to the rebuild's commit, and `GET /api/code/file` marks the rebuilt lines (`rebuilt_in`) and no longer reports failing coverage or findings. *(Superseded in v1.7: the commit lives on the rebuild's own branch and `project.git_head` does not move; see "v1.7 additions".)*
 
 ### GET /api/code/files
 The source files that touch the spec: `[{"path": "internal/app/runs.go", "language": "go", "size": 3912, "rules": ["R42", "R44", "R46"]}]` (`rules` are rule ids, sorted).
@@ -288,7 +288,7 @@ A project is a directory with `studio.toml`, or `spec.py` and `spec.trace.json` 
   "capabilities": {"session": true, "rebuild": false},
   "default": true}]
 ```
-In discovery order. Cheap: it reads each `studio.toml` and runs `git rev-parse --short HEAD` (5 s timeout; `""` outside git); it never builds a project. `spec`: `spec.py` and `spec.trace.json` are present. `app_configured`: `[app] app` and `[app] db` are set. `last_check`: the project's last full check, `null` until one has run in this server (a project not opened yet has none). `capabilities.session`: the `claude` binary is runnable (as `app.session`); `capabilities.rebuild`: the server can rebuild (always `false` on the real server; the mock says `true` for its default project).
+In discovery order. Cheap: it reads each `studio.toml` and runs `git rev-parse --short HEAD` (5 s timeout; `""` outside git); it never builds a project. `spec`: `spec.py` and `spec.trace.json` are present. `app_configured`: `[app] app` and `[app] db` are set. `last_check`: the project's last full check, `null` until one has run in this server (a project not opened yet has none). `capabilities.session`: the `claude` binary is runnable (as `app.session`); `capabilities.rebuild`: the server can rebuild this project (v1.7: a git repository, gate commands that resolve, and a runnable agent; the mock says `true` for both its projects).
 
 ### Prefix routing
 Every `/api/...` route is also served under `/p/<name>/api/...` (the prefix is stripped, the query string kept, e.g. `/p/lattice-studio/api/changes/c1?wait=30`). An unknown `<name>` answers `404 {"detail": "no such project"}` on any method. The bare `/api/...` routes are the default project's. `GET /api/model`'s `project.name` is the project's name. Static files are unchanged (also served under `/p/<name>/`).
@@ -298,3 +298,52 @@ A project's chat sessions run the `lattice` MCP server with `--studio-url http:/
 
 ### The mock
 `python -m lattice.studio --mock` serves two projects: `job-scheduler-studio` (the fixtures, the default, also at the bare `/api/...`, with the pre-seeded change `c0`) and `lattice-studio` (the same fixtures cut to 12 rules, no changes). Their state is separate; the code, graph, flow and rebuild fixtures are the job scheduler's for both.
+
+## v1.7 additions (the real rebuild loop)
+
+The real server runs `POST /api/rebuild` (`lattice/studio/rebuild.py`): a coding agent edits the code in an isolated **git worktree on its own branch**, and the project's **gate commands, run by Studio itself**, decide when it is done. The shapes of v1.3 hold, with the additions below. The owner's checkout is never modified: no checkout, no merge, no index change.
+
+### Configuration: `[rebuild]` in `studio.toml`
+```toml
+[rebuild]
+repo = "."               # the git repository, relative to the project dir (default ".")
+gates = ["./check.sh"]   # shell commands run from the repository root in the worktree
+                         # (default: the project's check.sh, if it has one)
+max_rounds = 3           # rounds before giving up (POST's max_rounds wins; 1..50)
+round_timeout = 1800     # seconds one agent step may run
+gate_timeout = 900       # seconds one gate command may run
+model = "sonnet"         # optional; default: the Studio's model
+worktrees = "repo"       # "repo": <repo>/.lattice/rebuilds/ (added to .git/info/exclude,
+                         # never to .gitignore) | "temp": the system temp directory
+agent = "claude"         # "claude" | "stub" (TEST ONLY: writes round k's files of
+                         # stub-rebuild.json in the project dir; never the default)
+```
+
+### `capabilities.rebuild` on GET /api/projects
+`true` when `[rebuild] repo` is a git work tree with a commit that holds the project, every gate's command resolves (a file in the repository, or a program on `PATH`), and the agent can run (the `claude` binary, or `agent = "stub"`).
+
+### POST /api/rebuild
+Request and response as v1.3 (`{"changes": [...], "model"?, "max_rounds"?}` -> `{"id": "b1"}`; ids `b1`, `b2`, ... per project). Refusals, in this order: 422 a body without a non-empty list of distinct change ids, `max_rounds` not 1..50 or `model` not a non-empty string; 404 `no change <id>`; 409 `change <id> is <status>, not accepted` or `change <id> is already rebuilding|built`; 503 `rebuild is not available: <why>` (no git, no gates, no claude and no stub); 409 `a rebuild is already running in this project (<id>)` (one at a time per project). It creates `git worktree add -b rebuild/<first change id>[-2, -3, ...] <dir> HEAD` before answering; the accepted change's spec, requirements and trace are already in HEAD (accept is a commit), so the worktree holds the contract.
+
+### The round loop
+1. **Agent.** `claude -p --output-format stream-json --verbose` in the worktree, with the API credentials stripped from its environment, `--setting-sources ""`, `--disable-slash-commands`, `--strict-mcp-config` with the `lattice` MCP server `--readonly` on the worktree's project dir, the `lattice.mcp.guard` PreToolUse hook on the worktree's project dir, `--tools Read,Grep,Glob,Edit,Write,Bash`, `--permission-mode acceptEdits`, `--allowedTools` = Read, Grep, Glob, Edit, Write, `Bash(<gate>:*)` for each gate command and the read-only MCP tools, `--disallowedTools NotebookEdit`, `--append-system-prompt` with the rules (fix the code, never the spec, requirements, trace or gate scripts; run the gates; stop when they pass), its own process group. Round 1's prompt is the brief: each change's request, its rules added / changed / retired (with their text and linked checks), its requirements diff, the targets, and the gate commands. Round n > 1 resumes the same Claude session (`--resume`) with the previous round's findings and the failing gates' output tails.
+2. **Integrity.** The project's `REQUIREMENTS.md`, `spec.py`, `spec.trace.json` (plus `[mcp] protected`) and the gate scripts must be byte-identical to the base commit; an edited one fails the round with the finding `spec files were edited (restored from the base commit): <files>` (target `spec`) and is restored inside the worktree.
+3. **Gates.** Studio runs each gate (`/bin/sh -c`) in the worktree. Its environment: no API credentials; `PYTHONPATH` = the worktree root, the worktree's project dir and its `[app] sys_path` entries first, then the `lattice` package's directory, then any inherited `PYTHONPATH`; `UV_NO_SYNC=1` and `UV_PROJECT_ENVIRONMENT` = the main checkout's `.venv` (else the server's venv), its `bin` first on `PATH`, so `uv run` reuses that venv without syncing it and imports the rebuilt code from the worktree; `PYTHONDONTWRITEBYTECODE=1`; `LATTICE_REBUILD`, `LATTICE_REBUILD_ROUND`, `LATTICE_REBUILD_WORKTREE`. The verdict is `pass` when every gate exits 0 (and the integrity check is clean); the agent's own claims are never used.
+
+### GET /api/rebuild/{id}
+The v1.3 record plus: `project`, `agent` (`claude|stub`), `finished`, `gates` (the commands), `base` (the commit the branch starts from), `branch`, `worktree` (absolute path; `null` once removed), `merge_hint` (`null` until passed), `usage` (`cost_usd`, `duration_ms`, `input_tokens`, `output_tokens`, summed over the rounds' result events), `error` (`null`, or `{kind, message}` for `usage_limit`, `git` or `internal`). `commit` gains `name_status` (`git diff --name-status base..commit`, as `"A path"`). Each round also has `finished`, `gates` (`[{command, exit_code, seconds, output_tail}]`, the tail capped at 20 000 characters), `spec_edited` (paths), `agent` (`cost_usd`, `duration_ms`, tokens, `num_turns`, `session_id`) and `error` (`null` or `{kind: usage_limit|cli|timeout, message}`). `check.counts` sums `PASS|FAIL: N findings (D n, X n)` lines over the gates, else `{<gate command>: n}`; `check.findings` come from the lattice report's finding lines (target = their scenario), from lines starting `FAIL`, `finding` or `✗` (target = a `scenario:`/`cell:`/... token in the line, else `""`), or `<gate> exited <code>: <last line>`. `?wait=S` (0..60 s) holds the answer until the rebuild has finished. `GET /api/rebuild` lists every record of the project.
+
+### End states and branches
+- `passed`: one commit on the rebuild branch (`git add -A` in the worktree minus caches; message `build: <requests>`, a sentence naming the changes and the round, and the trailer `Lattice-Rebuild: <id> (<project>)`; the author is the repository's identity), the worktree is kept for review, and `merge_hint` reads ``Studio never merges. To take the rebuilt code, run `git merge rebuild/c1` in <repo>; the worktree <dir> stays for review.`` **Studio never merges into the owner's branch.** `project.git_head` and `app.last_check` describe the owner's checkout and do not move until the owner merges.
+- `gave_up`: after `max_rounds` failing rounds, or at once when the agent hits its usage limit (`error.kind: usage_limit`); the branch and worktree stay (uncommitted edits), nothing is committed. A gave-up change can be rebuilt again (on `rebuild/<id>-2`, ...).
+- `stopped` (`DELETE`): the running agent's or gate's process group is killed, the worktree removed, the branch deleted when it has no commit of its own (`branch: null`, `worktree: null`), rounds still in progress dropped.
+- A crashing agent (non-zero exit, no result) is an error round (`error.kind: cli`); the loop goes on.
+
+### `build` on `model.changes[]`
+v1.3's shape plus `branch` (while `rebuilding`, and when `built` or `gave_up`) and `commit` (when `built`): `{"state": "built", "rebuild_id": "b1", "branch": "rebuild/c1", "commit": "<sha>"}`. Build state is in memory: after a restart every accepted change is `not_built` again (the branches stay in git).
+
+### GET /api/model: `project.git_head`
+Read live on every call (it was cached with the spec files, so a commit that left them alone, like a merge of a rebuild branch, did not show).
+
+### The mock
+The mock's rebuild record has `branch`, `base`, `worktree` and `merge_hint`, its `build` has `branch` and `commit`, and a passing mock rebuild no longer moves `project.git_head`. It still previews the rebuilt code in the Code lens and turns `app.last_check` to pass (the real server does neither until the owner merges).

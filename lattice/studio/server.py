@@ -55,6 +55,10 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
 - ``POST /api/session``, ``POST /api/session/{id}/message``, ``GET /api/session/{id}/events``,
   ``DELETE /api/session/{id}``, ``GET /api/session``: the chat as a real Claude Code
   session (lattice/studio/session.py; API.md v1.5). Lazy: no ``claude`` call until a message.
+- ``POST /api/rebuild``, ``GET /api/rebuild/{id}`` (``?wait=S``), ``DELETE /api/rebuild/{id}``,
+  ``GET /api/rebuild``: the rebuild loop of accepted changes (lattice/studio/rebuild.py, its
+  ``[rebuild]`` table; API.md v1.7): a coding agent in a git worktree on its own branch, the
+  gates run by Studio, never merged. ``model.changes[]`` carries ``build``.
 """
 
 from __future__ import annotations
@@ -99,6 +103,7 @@ from lattice.spec.model import Spec, resolve_table, tables_of
 from lattice.spec.report import _detail_lines
 from lattice.spec.review import AccessGroup, ReviewData, _build
 from lattice.spec.rules import Trace, extract_rules
+from lattice.studio.rebuild import MAX_ROUNDS_LIMIT, Rebuilder, RebuildError
 from lattice.studio.session import (
     DEFAULT_SESSION_TIMEOUT,
     SessionError,
@@ -159,6 +164,8 @@ class StudioConfig:
     app: dict[str, Any] = dataclasses.field(default_factory=dict)
     check: dict[str, Any] = dataclasses.field(default_factory=dict)
     llm: dict[str, Any] = dataclasses.field(default_factory=dict)
+    rebuild: dict[str, Any] = dataclasses.field(default_factory=dict)
+    mcp: dict[str, Any] = dataclasses.field(default_factory=dict)
 
     @classmethod
     def load(cls, root: Path) -> StudioConfig:
@@ -167,7 +174,11 @@ class StudioConfig:
             return cls()
         data = tomllib.loads(path.read_text(encoding="utf-8"))
         return cls(
-            dict(data.get("app") or {}), dict(data.get("check") or {}), dict(data.get("llm") or {})
+            dict(data.get("app") or {}),
+            dict(data.get("check") or {}),
+            dict(data.get("llm") or {}),
+            dict(data.get("rebuild") or {}) if isinstance(data.get("rebuild"), dict) else {},
+            dict(data.get("mcp") or {}) if isinstance(data.get("mcp"), dict) else {},
         )
 
     @property
@@ -867,6 +878,7 @@ class Studio:
             self.config.llm.get("session_timeout") or DEFAULT_SESSION_TIMEOUT
         )
         self._sessions: SessionManager | None = None
+        self._rebuilder: Rebuilder | None = None
         self.base_url: str | None = None  # set by StudioServer once it is bound
         self.pool = concurrent.futures.ThreadPoolExecutor(
             max_workers=4, thread_name_prefix="studio-ask"
@@ -907,10 +919,85 @@ class Studio:
             return self._sessions
 
     def close_sessions(self) -> None:
+        """Stop every chat turn and every running rebuild (the server is closing)."""
         with self.lock:
             mgr, self._sessions = self._sessions, None
+            rb = self._rebuilder
         if mgr is not None:
             mgr.close()
+        if rb is not None:
+            rb.close()
+
+    # -- rebuild (lattice/studio/rebuild.py, API.md v1.7)
+    @property
+    def rebuilder(self) -> Rebuilder:
+        with self.lock:
+            if self._rebuilder is None:
+                protected = self.config.mcp.get("protected") or []
+                self._rebuilder = Rebuilder(
+                    self.root,
+                    self.config.rebuild,
+                    name=self.name,
+                    model=self.model,
+                    claude_bin=self.claude_bin,
+                    sys_path=[str(p) for p in self.config.app.get("sys_path") or []],
+                    protected=[str(p) for p in protected if isinstance(p, str)],
+                    log=log,
+                    trailer=COMMIT_TRAILER,
+                )
+            return self._rebuilder
+
+    def start_rebuild(self, body: Mapping[str, Any]) -> dict[str, str]:
+        ids = body.get("changes")
+        if not isinstance(ids, list) or not ids or not all(isinstance(i, str) and i for i in ids):
+            raise ApiError(
+                HTTPStatus.UNPROCESSABLE_ENTITY, "changes must be a non-empty list of ids"
+            )
+        if len(set(ids)) != len(ids):
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, "changes must not repeat an id")
+        rounds = body.get("max_rounds")
+        if rounds is not None and (
+            isinstance(rounds, bool)
+            or not isinstance(rounds, int)
+            or not 1 <= rounds <= MAX_ROUNDS_LIMIT
+        ):
+            raise ApiError(
+                HTTPStatus.UNPROCESSABLE_ENTITY, f"max_rounds must be 1 to {MAX_ROUNDS_LIMIT}"
+            )
+        model = body.get("model")
+        if model is not None and (not isinstance(model, str) or not model.strip()):
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, "model must be a string")
+        rb = self.rebuilder
+        with self.lock:
+            records = []
+            for cid in ids:
+                c = self.changes.get(cid)
+                if c is None:
+                    raise ApiError(HTTPStatus.NOT_FOUND, f"no change {cid}")
+                if c["status"] != "accepted":
+                    raise ApiError(
+                        HTTPStatus.CONFLICT, f"change {cid} is {c['status']}, not accepted"
+                    )
+                state = rb.build_of(cid)["state"]
+                if state in ("rebuilding", "built"):
+                    raise ApiError(HTTPStatus.CONFLICT, f"change {cid} is already {state}")
+                records.append(json.loads(json.dumps(c)))
+        try:
+            return rb.start(records, model=model, max_rounds=rounds)
+        except RebuildError as e:
+            raise ApiError(HTTPStatus(e.status), e.detail) from None
+
+    def get_rebuild(self, rid: str, wait: float = 0.0) -> dict[str, Any]:
+        try:
+            return self.rebuilder.get(rid, wait)
+        except RebuildError as e:
+            raise ApiError(HTTPStatus(e.status), e.detail) from None
+
+    def stop_rebuild(self, rid: str) -> dict[str, Any]:
+        try:
+            return self.rebuilder.stop(rid)
+        except RebuildError as e:
+            raise ApiError(HTTPStatus(e.status), e.detail) from None
 
     @contextlib.contextmanager
     def app_context(self) -> Iterator[None]:
@@ -972,7 +1059,10 @@ class Studio:
             with self.lock:
                 self._cache = cache = (h, git_head(self.root), core, snap, lint_items)
             log(f"model built in {time.perf_counter() - t0:.2f}s")
-        h, head, core, _snap, _lint = cache
+        h, _head, core, _snap, _lint = cache
+        # read live, not from the cache: a commit that leaves the three files alone (the
+        # owner merging a rebuild branch, a commit in a terminal) still moves HEAD
+        head = git_head(self.root)
         with self.lock:
             out = dict(core)
             out["project"] = {**core["project"], "git_head": head}
@@ -986,6 +1076,10 @@ class Studio:
                 {"id": c["id"], "request": c["request"], "status": c["status"]}
                 for c in self.changes.values()
             ]
+            rb = self._rebuilder
+        for c in out["changes"]:
+            if c["status"] == "accepted":
+                c["build"] = rb.build_of(c["id"]) if rb is not None else {"state": "not_built"}
         return out
 
     def _base_lint(self) -> list[dict]:
@@ -1485,6 +1579,20 @@ class Handler(BaseHTTPRequestHandler):
                     {"detail": f"wait must be a number of seconds, 0 to {MAX_WAIT:g}"}, 422
                 )
             return self._dispatch(lambda: st.get_change(cid, wait))
+        if path == "/api/rebuild":
+            return self._dispatch(lambda: st.rebuilder.list())
+        if path.startswith("/api/rebuild/") and "/" not in path.removeprefix("/api/rebuild/"):
+            rid = path.removeprefix("/api/rebuild/")
+            raw = (parse_qs(urlparse(self.path).query).get("wait") or ["0"])[-1]
+            try:
+                wait = float(raw)
+            except ValueError:
+                wait = -1.0
+            if not 0 <= wait <= MAX_WAIT:
+                return self._json(
+                    {"detail": f"wait must be a number of seconds, 0 to {MAX_WAIT:g}"}, 422
+                )
+            return self._dispatch(lambda: st.get_rebuild(rid, wait))
         if path == "/api/session":
             return self._dispatch(lambda: st.sessions.list())
         if path.startswith("/api/session/"):
@@ -1520,6 +1628,8 @@ class Handler(BaseHTTPRequestHandler):
                 return st.new_change(body)
             if path == "/api/check":
                 return st.start_check()
+            if path == "/api/rebuild":
+                return st.start_rebuild(body)
             if path == "/api/session":
                 return Reply(st.sessions.create(body), 201)
             if path.startswith("/api/session/"):
@@ -1550,6 +1660,9 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/api/session/") and "/" not in path.removeprefix("/api/session/"):
             sid = path.removeprefix("/api/session/")
             return self._dispatch(lambda: st.sessions.interrupt(sid))
+        if path.startswith("/api/rebuild/") and "/" not in path.removeprefix("/api/rebuild/"):
+            rid = path.removeprefix("/api/rebuild/")
+            return self._dispatch(lambda: st.stop_rebuild(rid))
         return self._json({"detail": "no such route"}, 404)
 
     def _static(self, path: str) -> None:

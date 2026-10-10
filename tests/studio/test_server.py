@@ -743,3 +743,16 @@ def test_live_haiku_ask_and_change(tmp_path: Path) -> None:
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+def test_git_head_follows_a_commit_that_leaves_the_spec_files_alone(tmp_path: Path) -> None:
+    """GET /api/model reads HEAD live: the model cache (keyed on the three files) must not
+    hide a commit of other files, e.g. the owner merging a rebuild branch."""
+    root = make_project(tmp_path / "p")
+    st = server_mod.Studio(root)
+    before = st.get_model()["project"]["git_head"]
+    (root / "other.txt").write_text("x\n")
+    git(root, "add", "other.txt")
+    git(root, "commit", "-q", "-m", "other")
+    after = st.get_model()["project"]["git_head"]
+    assert after != before and after == git(root, "rev-parse", "--short", "HEAD")

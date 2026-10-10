@@ -27,8 +27,10 @@ Studio 2 (API v1.3) adds, all fixture-driven and polled:
   ``GET /api/rebuild/{id}`` (one round per ``POLLS_ROUND`` polls, from ``rebuild-c1.json``:
   round 1 fails with two findings, round 2 passes) and ``DELETE /api/rebuild/{id}`` (stops
   between rounds, 409 once finished). A passing rebuild marks its changes ``build.state
-  "built"``, moves ``app.last_check`` to pass and ``project.git_head`` to the commit, and
-  the Code lens then serves the rebuilt ``cancelRun`` with ``rebuilt_in`` markers.
+  "built"`` and moves ``app.last_check`` to pass, and the Code lens then serves the rebuilt
+  ``cancelRun`` with ``rebuilt_in`` markers (a preview of the branch). As on the real server
+  (API v1.7), ``project.git_head`` does not move: the commit is on the record's ``branch``
+  (``rebuild/<change>``) with ``base``, ``worktree`` and a ``merge_hint``; nothing merges.
 
 API v1.4 adds ``GET /api/graph`` (the business-logic graph: nodes, edges, lifecycle
 machines and the open change's diff, all derived from the same fixtures, see
@@ -1176,8 +1178,16 @@ class MockState:
                     raise ValueError(f"change {cid} is already {state}")
             rid = f"b{self._next_rebuild}"
             self._next_rebuild += 1
+            branch = f"rebuild/{ids[0]}"
+            n = 2
+            while any(r.get("branch") == branch for r in self.rebuilds.values()):
+                branch, n = f"rebuild/{ids[0]}-{n}", n + 1
             self.rebuilds[rid] = {
                 "id": rid,
+                "branch": branch,
+                "base": self.model["project"]["git_head"],
+                "worktree": f"{self.model['project']['root']}/.lattice/rebuilds/"
+                f"{self.model['project']['name']}-{rid}",
                 "changes": list(ids),
                 "status": "queued",
                 "model": model or fx["model"],
@@ -1188,7 +1198,11 @@ class MockState:
                 "fixture": fx,
             }
             for cid in ids:
-                self.changes[cid]["build"] = {"state": "rebuilding", "rebuild_id": rid}
+                self.changes[cid]["build"] = {
+                    "state": "rebuilding",
+                    "rebuild_id": rid,
+                    "branch": branch,
+                }
             return {"id": rid}
 
     def _round_state(self, rec: dict[str, Any]) -> tuple[int, str]:
@@ -1210,18 +1224,23 @@ class MockState:
         rec["status"] = status
         state = {"passed": "built", "gave_up": "gave_up", "stopped": "not_built"}[status]
         for cid in rec["changes"]:
-            self.changes[cid]["build"] = {"state": state, "rebuild_id": rec["id"]}
+            build = {"state": state, "rebuild_id": rec["id"]}
+            if status != "stopped":
+                build["branch"] = rec["branch"]
+            self.changes[cid]["build"] = build
         if status != "passed":
             return
         fx = rec["fixture"]
         requests = "; ".join(self.changes[c]["request"] for c in rec["changes"])
         sha = hashlib.sha1(f"rebuild:{rec['id']}:{requests}".encode()).hexdigest()
+        for cid in rec["changes"]:
+            self.changes[cid]["build"]["commit"] = sha
         rec["commit"] = {
             "sha": sha,
             "message": f"build: {requests}" if requests else fx["commit"]["message"],
             "files_changed": list(fx["commit"]["files_changed"]),
         }
-        self.model["project"]["git_head"] = sha[:7]
+        # the commit is on the rebuild branch: git_head (the owner's HEAD) does not move
         self.built_in = rec["changes"][0]
         now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
         last = self.model["app"].get("last_check") or {}
@@ -1267,8 +1286,17 @@ class MockState:
                 for t in fx["targets"]
             ],
         }
+        out["branch"] = rec["branch"] if status != "stopped" else None
+        out["base"] = rec["base"]
+        out["worktree"] = rec["worktree"] if status != "stopped" else None
+        out["merge_hint"] = None
         if status == "passed":
             out["commit"] = rec["commit"]
+            out["merge_hint"] = (
+                f"Studio never merges. To take the rebuilt code, run `git merge {rec['branch']}` "
+                f"in {self.model['project']['root']}; the worktree {rec['worktree']} stays for "
+                "review."
+            )
         return out
 
     @staticmethod
@@ -1625,7 +1653,7 @@ class MockServer(ThreadingHTTPServer):
                         "last_check": (
                             {"verdict": last.get("verdict"), "at": last.get("at")} if last else None
                         ),
-                        "capabilities": {"session": True, "rebuild": name == DEFAULT_PROJECT},
+                        "capabilities": {"session": True, "rebuild": True},
                         "default": name == DEFAULT_PROJECT,
                     }
                 )
