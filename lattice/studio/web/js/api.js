@@ -32,7 +32,9 @@ async function call(method, path, body) {
       err.unsupported = true;
       throw err;
     }
-    throw new Error(detail ? `${res.status}: ${detail}` : `The server answered ${res.status}.`);
+    const err = new Error(detail ? `${res.status}: ${detail}` : `The server answered ${res.status}.`);
+    err.status = res.status;
+    throw err;
   }
   return data;
 }
@@ -72,6 +74,14 @@ export const api = {
   rebuild: (changes, opts = {}) => call("POST", "/api/rebuild", { changes, ...opts }),
   rebuildGet: (id) => call("GET", `/api/rebuild/${encodeURIComponent(id)}`),
   rebuildStop: (id) => call("DELETE", `/api/rebuild/${encodeURIComponent(id)}`),
+
+  // v1.5: the chat on a Claude Code session (session.js drives these).
+  sessionCreate: (mode, change = null) => call("POST", "/api/session", change ? { mode, change } : { mode }),
+  sessionMessage: (id, text, selected = []) =>
+    call("POST", `/api/session/${encodeURIComponent(id)}/message`, { text, selected }),
+  sessionEvents: (id, after = 0) =>
+    call("GET", `/api/session/${encodeURIComponent(id)}/events?after=${Number(after) || 0}`),
+  sessionStop: (id) => call("DELETE", `/api/session/${encodeURIComponent(id)}`),
 };
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

@@ -1,0 +1,7 @@
+{
+  "name": "lattice",
+  "description": "Use a Lattice spec as the contract for coding sessions: read-only spec/rule/check tools, protected spec files, change proposals, and a check gate.",
+  "version": "0.1.0",
+  "author": { "name": "Lattice" },
+  "keywords": ["lattice", "spec", "mcp", "verification"]
+}

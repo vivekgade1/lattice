@@ -10,9 +10,15 @@
 //
 // Hooks assigned on mount (store.js): hooks.ask, hooks.change, hooks.edit (edit.js).
 // Listens on window for "studio:open-change" {detail: {id}} (the tray's Open action).
+//
+// When the server reports `app.session` (a Claude Code session behind the chat, API.md v1.5)
+// each mode talks to its own session (session.js): streamed text, tool lines, change cards.
+// Otherwise the panel falls back to the one-shot ask / explain / change calls.
 
 import { h, icon, clear, plural, add } from "./util.js";
 import { api, sleep } from "./api.js";
+import { parse as parseMd, inline as inlineMd } from "./markdown.js";
+import { SessionClient, addError } from "./session.js";
 import { state, update, subscribe, hooks } from "./store.js";
 import { highlight, targetChip, labelOf, toggleSelection, kindOf, nameOf } from "./targets.js";
 import { answerBadge, changeStatusBadge, IMPACT_LABEL } from "./badges.js";
@@ -36,6 +42,10 @@ const MODES = [
 
 let mode = "ask";
 let els = {};
+let clients = {}; // mode -> SessionClient, created on the first message and kept across re-mounts
+let views = {}; // mode -> {ol, dom: Map(item key -> li)}: the session threads
+let sessionBroken = false; // a 503 said the claude binary is missing: use the one-shot calls
+let editsInFlight = null; // edits sent to a session; owned by the change its next change_propose opens
 let onAccepted = () => {};
 let autoText = ""; // the last text this panel wrote into the composer for the owner
 
@@ -70,7 +80,8 @@ export function mountChat(root, opts = {}) {
   followingRebuilds = new Set();
   openId = null;
   openLi = null;
-  const thread = h("ol", { class: "thread", "aria-live": "polite", "aria-label": "Conversation" });
+  const thread = h("ol", { class: "thread", role: "log", "aria-live": "polite", "aria-label": "Conversation" });
+  const live = h("div", { class: "sr-only", role: "status", "aria-live": "polite" });
   const workStrip = h("div", { class: "work-strip", "aria-label": "Open work", hidden: true });
   const editsBox = h("form", { class: "edits-box", "aria-label": "Edits to send", hidden: true, onsubmit: (e) => {
     e.preventDefault();
@@ -103,6 +114,14 @@ export function mountChat(root, opts = {}) {
   const verifyLabel = h("label", { class: "toggle", for: "chat-verify" }, verify, h("span", {}, "Verify on the app"));
   const verifyNote = h("span", { class: "muted small", id: "verify-note" });
   const sendBtn = h("button", { type: "submit", class: "btn btn-primary", title: "Send (⌘↵)", "aria-keyshortcuts": "Meta+Enter" }, "Ask");
+  const stopBtn = h("button", { type: "button", class: "btn", hidden: true, title: "Stop this turn", onclick: () => stopTurn() }, icon("cross"), "Stop");
+  const newBtn = h("button", { type: "button", class: "btn btn-quiet small", hidden: true, title: "Start a fresh conversation in this mode", onclick: () => newConversation() }, "New conversation");
+  const resumeCmd = h("code", { class: "resume-cmd" });
+  const copyBtn = h("button", { type: "button", class: "btn btn-quiet small", onclick: () => copyResume() }, "Copy");
+  const resumeCost = h("span", { class: "muted tiny resume-cost" });
+  const resumeRow = h("div", { class: "resume-row", hidden: true },
+    h("span", { class: "muted small" }, "Continue in terminal"), resumeCmd, copyBtn, resumeCost);
+  const empty = emptyState();
   const modeBtns = Object.fromEntries(MODES.map((m) => [m.id,
     h("button", { type: "button", class: "seg-btn", "aria-pressed": "false", onclick: () => setMode(m.id) }, m.label)]));
   const inputLabel = h("label", { for: "chat-input", class: "sr-only" }, "Question");
@@ -117,22 +136,26 @@ export function mountChat(root, opts = {}) {
     input,
     h("div", { class: "composer-row" },
       h("div", { class: "verify-wrap" }, verifyLabel, verifyNote),
-      sendBtn,
+      h("div", { class: "composer-btns" }, stopBtn, sendBtn),
     ),
   );
 
   add(root,
     h("div", { class: "chat-head" },
       h("h2", { id: "chat-title" }, "Conversation"),
+      newBtn,
       h("button", { type: "button", class: "btn btn-icon chat-close", "aria-label": "Close the conversation", onclick: () => document.body.classList.remove("chat-open") }, icon("close")),
     ),
     workStrip,
     h("div", { class: "seg seg-wide", role: "group", "aria-label": "Mode" }, MODES.map((m) => modeBtns[m.id])),
-    h("div", { class: "thread-wrap" }, thread, emptyState()),
+    h("div", { class: "thread-wrap" }, thread, empty, live),
     editsBox,
+    resumeRow,
     form,
   );
-  els = { root, thread, ctxRow, prompts, input, verify, verifyLabel, verifyNote, sendBtn, modeBtns, inputLabel, workStrip, editsBox };
+  const wrap = root.querySelector(".thread-wrap");
+  for (const v of Object.values(views)) wrap.insertBefore(v.ol, empty); // threads survive a re-mount
+  els = { root, wrap, thread, fallbackThread: thread, empty, live, ctxRow, prompts, input, verify, verifyLabel, verifyNote, sendBtn, stopBtn, newBtn, resumeRow, resumeCmd, copyBtn, resumeCost, modeBtns, inputLabel, workStrip, editsBox };
   applyMode(state.mode || "ask");
   renderContext();
   renderEdits();
@@ -156,7 +179,7 @@ export function mountChat(root, opts = {}) {
     if ("mode" in patch && patch.mode !== mode) applyMode(patch.mode);
     if ("edits" in patch) renderEdits();
     if ("model" in patch) {
-      syncVerify();
+      syncSession();
       syncChangesFromModel(st.model?.changes || []);
     }
   });
@@ -166,8 +189,10 @@ export function mountChat(root, opts = {}) {
     document.body.classList.add("chat-open");
     openChangeCard(id);
   });
-  syncVerify();
+  syncSession();
+  for (const m of Object.keys(views)) renderSession(m);
   syncChangesFromModel(state.model?.changes || []);
+  window.addEventListener("pagehide", teardownChat);
 }
 
 function emptyState() {
@@ -176,14 +201,17 @@ function emptyState() {
     h("p", {}, h("strong", {}, "Explain"), " answers from the code: “Why does cancel return 409?” It cites the lines."),
     h("p", {}, h("strong", {}, "Change"), " asks for an edit: “only app admins may cancel runs”. It comes back as a checked change you accept or reject."),
     h("p", { class: "muted" }, "Click anything on the canvas to add it. ⌘↵ sends, Esc clears."),
+    h("p", { class: "muted small", id: "session-note" }, "Claude Code is not installed here; answers are one-shot."),
   );
 }
 
 function syncVerify() {
   const configured = !!state.model?.app?.configured;
-  els.verify.disabled = !configured || mode !== "ask";
-  if (!configured) els.verify.checked = false;
-  els.verifyNote.textContent = !configured ? "No app is hooked up (studio.toml)." : "";
+  const sess = useSession();
+  els.verify.disabled = !configured || mode !== "ask" || sess;
+  if (!configured || sess) els.verify.checked = false;
+  els.verifyLabel.title = sess ? "In a conversation Claude decides when to check the app (a tool option of the spec), so this toggle is not sent." : "";
+  els.verifyNote.textContent = !configured ? "No app is hooked up (studio.toml)." : sess ? "Claude decides when to verify." : "";
   els.verifyLabel.hidden = mode !== "ask";
   els.verifyNote.hidden = mode !== "ask";
 }
@@ -201,7 +229,7 @@ function applyMode(m) {
   els.sendBtn.textContent = def.send;
   els.input.placeholder = def.placeholder;
   els.inputLabel.textContent = def.label2;
-  syncVerify();
+  syncSession();
   renderPrompts();
 }
 
@@ -492,14 +520,16 @@ function toastError(text) {
 /** Open a change in the thread: a strip row, or the tray's Open. Drafting/checking
  *  changes keep polling and rendering into the same <li>; a ready one gets the full
  *  change-set card (and draws its diff on the canvas); an accepted one gets Rebuild. */
-async function openChangeCard(id) {
-  if (openId === id && openLi && openLi.isConnected) {
+async function openChangeCard(id, host = null) {
+  if (!host && openId === id && openLi && openLi.isConnected) {
     openLi.scrollIntoView({ block: "start", behavior: "smooth" });
     const known = changeRecords.get(id);
     if (known?.status === "ready" && state.change?.id !== id) api.change(id).then((c) => update({ change: c })).catch(() => {});
     return;
   }
-  const li = push(h("div", { class: "msg msg-bot is-loading" }, h("span", { class: "spinner", "aria-hidden": "true" }), "Opening the change…"));
+  const loading = h("div", { class: "msg msg-bot is-loading" }, h("span", { class: "spinner", "aria-hidden": "true" }), "Opening the change…");
+  const li = host || push(loading);
+  if (host) host.replaceChildren(loading);
   let c;
   try {
     c = await api.change(id);
@@ -526,11 +556,11 @@ async function openChangeCard(id) {
   } else {
     li.replaceChildren(closedMsg(c, c.superseded_by ? `Superseded by ${c.superseded_by}.` : `This change is ${c.status}.`));
   }
-  li.scrollIntoView({ block: "start" });
+  if (!host) li.scrollIntoView({ block: "start" });
 }
 
 function push(el) {
-  els.root.querySelector(".thread-empty")?.remove();
+  els.empty.hidden = true;
   const li = h("li", {}, el);
   els.thread.append(li);
   li.scrollIntoView({ block: "end", behavior: "auto" });
@@ -553,6 +583,13 @@ async function send() {
     return;
   }
   const selected = [...state.selection];
+  if (useSession()) {
+    if (clients[mode]?.busy) return;
+    els.input.value = "";
+    autoText = "";
+    await sendSession(text, selected);
+    return;
+  }
   els.input.value = "";
   autoText = "";
   push(userMsg(text, mode, selected));
@@ -772,6 +809,12 @@ async function sendEdits() {
   const text = (els.editsBox.querySelector("textarea")?.value || combinedRequest(edits)).trim();
   if (!text) return;
   const targets = edits.map((e) => e.target);
+  if (useSession()) {
+    setMode("change");
+    if (clients.change?.busy) return;
+    await sendSession(text, targets, edits);
+    return;
+  }
   push(userMsg(text, "change", targets));
   setMode("change");
   const id = await doChange(text, targets);
@@ -1196,4 +1239,361 @@ function fallbackRebuildCard(rb, ids, stop) {
       : null,
     rb.commit ? h("p", { class: "muted small" }, "Commit ", h("code", {}, String(rb.commit.sha || "").slice(0, 10)), rb.commit.message ? `: ${rb.commit.message}` : "") : null,
   );
+}
+
+
+// ---------------------------------------------------------------- session mode (Claude Code)
+
+function useSession() {
+  return state.model?.app?.session === true && !sessionBroken;
+}
+
+export function teardownChat() {
+  for (const c of Object.values(clients)) c?.dispose();
+  clients = {};
+}
+
+function viewFor(m) {
+  if (!views[m]) {
+    const label = MODES.find((x) => x.id === m)?.label || "Conversation";
+    const ol = h("ol", { class: "thread", role: "log", "aria-live": "off", "aria-label": `${label} conversation`, hidden: true });
+    els.wrap.insertBefore(ol, els.empty);
+    views[m] = { ol, dom: new Map() };
+  }
+  return views[m];
+}
+
+function clientFor(m) {
+  if (!clients[m]) clients[m] = new SessionClient(m, onSessionUpdate);
+  return clients[m];
+}
+
+/** The panel chrome that depends on session mode, the active mode and its turn state. */
+function syncSession() {
+  if (!els.root) return;
+  const on = useSession();
+  els.fallbackThread.hidden = on;
+  for (const [m, v] of Object.entries(views)) v.ol.hidden = !on || m !== mode;
+  els.thread = on ? viewFor(mode).ol : els.fallbackThread;
+  els.thread.hidden = false;
+  els.root.querySelector("#session-note").hidden = on;
+  const c = on ? clients[mode] : null;
+  const busy = !!c?.busy;
+  const def = MODES.find((x) => x.id === mode);
+  els.newBtn.hidden = !on;
+  els.newBtn.disabled = !c;
+  els.stopBtn.hidden = !busy;
+  els.sendBtn.disabled = busy;
+  els.sendBtn.setAttribute("aria-disabled", busy ? "true" : "false");
+  els.input.placeholder = busy ? "Claude is working. Stop it to send something else." : def.placeholder;
+  els.resumeRow.hidden = !(c && c.resumeCommand);
+  if (c && c.resumeCommand) {
+    els.resumeCmd.textContent = c.resumeCommand;
+    els.resumeCmd.title = c.cwd ? `Run this in ${c.cwd}` : "";
+    els.resumeCost.textContent = c.cost > 0 ? `Conversation ${money(c.cost)}` : "";
+  }
+  els.empty.hidden = els.thread.children.length > 0;
+  syncVerify();
+}
+
+function onSessionUpdate(c) {
+  if (!els.root || !views[c.mode]) {
+    if (els.root) viewFor(c.mode);
+    else return;
+  }
+  renderSession(c.mode);
+  if (c.mode === mode) syncSession();
+}
+
+async function sendSession(text, selected, edits = null) {
+  const m = mode;
+  const c = clientFor(m);
+  viewFor(m);
+  editsInFlight = edits;
+  try {
+    await c.send(text, selected, state.change?.id || null);
+  } catch (e) {
+    if (e.status === 503) {
+      // No claude binary after all: this and later messages use the one-shot calls.
+      sessionBroken = true;
+      clients[m] = null;
+      syncSession();
+      els.input.value = text;
+      await send();
+      return;
+    }
+    addError(c.thread, e.status === 409 ? "Claude is still answering the last message. Wait for it, or stop it first." : e.message);
+    if (e.status !== 409 && !els.input.value.trim()) els.input.value = text;
+    renderSession(m);
+    syncSession();
+  }
+}
+
+async function stopTurn() {
+  const c = clients[mode];
+  if (!c) return;
+  try {
+    await c.stop();
+  } catch (e) {
+    addError(c.thread, `Could not stop the turn: ${e.message}`);
+    renderSession(mode);
+  }
+}
+
+async function newConversation() {
+  const c = clients[mode];
+  if (!c) return;
+  if (c.busy) {
+    try {
+      await c.stop();
+    } catch (e) {
+      /* the session is dropped either way */
+    }
+  }
+  c.dispose();
+  clients[mode] = null;
+  const v = views[mode];
+  if (v) {
+    v.ol.replaceChildren();
+    v.dom.clear();
+  }
+  editsInFlight = null;
+  syncSession();
+  els.input.focus();
+}
+
+async function copyResume() {
+  const text = els.resumeCmd.textContent;
+  let ok = false;
+  try {
+    await navigator.clipboard.writeText(text);
+    ok = true;
+  } catch (e) {
+    const ta = h("textarea", { class: "sr-only", "aria-hidden": "true" }, text);
+    document.body.append(ta);
+    ta.select();
+    try {
+      ok = document.execCommand("copy");
+    } catch (e2) {
+      ok = false;
+    }
+    ta.remove();
+  }
+  els.copyBtn.textContent = ok ? "Copied" : "Select and copy";
+  setTimeout(() => {
+    if (els.copyBtn) els.copyBtn.textContent = "Copy";
+  }, 1600);
+}
+
+const money = (usd) => (usd > 0 && usd < 0.005 ? "<$0.01" : `$${Number(usd).toFixed(2)}`);
+const seconds = (s) => (s < 10 ? `${s.toFixed(1)} s` : `${Math.round(s)} s`);
+
+/** Markdown (markdown.js) as DOM; text is escaped by inline(). */
+function markdownEl(text) {
+  const root = h("div", { class: "md" });
+  const list = (l) => {
+    const el = h(l.ordered ? "ol" : "ul", {});
+    for (const it of l.items) {
+      const li = h("li", {});
+      li.innerHTML = inlineMd(it.text);
+      if (it.children) li.append(list(it.children));
+      el.append(li);
+    }
+    return el;
+  };
+  for (const b of parseMd(text)) {
+    if (b.type === "heading") {
+      const p = h("p", { class: "md-h" });
+      p.innerHTML = inlineMd(b.text);
+      root.append(p);
+    } else if (b.type === "para") {
+      const p = h("p", {});
+      p.innerHTML = inlineMd(b.text);
+      root.append(p);
+    } else if (b.type === "list") root.append(list(b));
+    else if (b.type === "code") root.append(h("pre", { class: "code-block" }, b.text));
+    else if (b.type === "hr") root.append(h("hr", {}));
+  }
+  return root;
+}
+
+/** Targets a tool result names: structured citations when the summary parses, else
+ *  target-looking tokens, else rule ids the model knows ("R47"). */
+function targetsIn(summary) {
+  const out = [];
+  try {
+    const j = JSON.parse(summary);
+    for (const c of j.citations || []) if (c && c.target) out.push(String(c.target));
+  } catch (e) {
+    /* a truncated or plain-text summary */
+  }
+  for (const m of String(summary).matchAll(/"target"\s*:\s*"([^"]+)"/g)) out.push(m[1]);
+  for (const m of String(summary).matchAll(/\b(?:rule|cell|scenario|invariant|machine|endpoint|table):[^\s"'`,;)\]}]+/g)) out.push(m[0]);
+  const known = new Set((state.model?.rules || []).map((r) => r.id));
+  for (const m of String(summary).matchAll(/\bR\d+\b/g)) if (known.has(m[0])) out.push(`rule:${m[0]}`);
+  return [...new Set(out)];
+}
+
+function changeIdIn(summary) {
+  try {
+    const j = JSON.parse(summary);
+    if (j && j.id) return String(j.id);
+  } catch (e) {
+    /* truncated */
+  }
+  const m = /"id"\s*:\s*"([^"]+)"/.exec(summary) || /\b(c\d+)\b/.exec(summary);
+  return m ? m[1] : null;
+}
+
+const ERROR_TEXT = {
+  usage_limit: "Claude's usage limit is reached. Try again after it resets, or continue in the terminal.",
+  timeout: "This turn took too long and was stopped. Ask something narrower, or continue in the terminal.",
+};
+
+function errorEl(it, c, isLast) {
+  const text = ERROR_TEXT[it.errorKind] || (it.errorKind === "cli" ? `Claude Code reported a problem: ${it.message || "it failed"}` : it.message || "Something went wrong.");
+  const detail = ERROR_TEXT[it.errorKind] && it.message ? it.message : null;
+  const canRetry = isLast && !c.busy && c.thread.lastUser;
+  return h("div", { class: "msg msg-error", role: "alert" },
+    icon("triangle"), " ", text,
+    detail ? h("p", { class: "small sess-detail" }, detail) : null,
+    canRetry
+      ? h("div", { class: "row-actions" },
+          h("button", { type: "button", class: "btn btn-quiet small", onclick: () => {
+            const lu = c.thread.lastUser;
+            if (lu && !c.busy) sendSession(lu.text, lu.selected);
+          } }, "Retry"))
+      : null,
+  );
+}
+
+function toolEl(it, wasOpen) {
+  const status = it.result ? (it.result.ok ? "ok" : "failed") : it.stopped ? "stopped" : "running";
+  const word = { ok: "ok", failed: "failed", stopped: "stopped", running: "" }[status];
+  const lead = status === "running"
+    ? h("span", { class: "spinner", "aria-hidden": "true" })
+    : icon(status === "failed" ? "triangle" : status === "ok" ? "check" : "dash");
+  const det = h("details", { class: ["tool", `tool-${status}`] },
+    h("summary", {},
+      lead,
+      h("span", { class: "tool-label" }, it.label),
+      word ? h("span", { class: "tool-state" }, word) : h("span", { class: "sr-only" }, "running"),
+    ),
+    h("div", { class: "tool-body" },
+      it.input ? h("p", { class: "small" }, h("span", { class: "muted" }, "Input "), h("code", {}, it.input)) : null,
+      it.result && it.result.summary ? h("p", { class: "small" }, h("span", { class: "muted" }, "Result "), it.result.summary) : null,
+      !it.input && !(it.result && it.result.summary) ? h("p", { class: "small muted" }, "No details.") : null,
+    ),
+  );
+  det.open = !!wasOpen;
+  return det;
+}
+
+function citesEl(targets) {
+  const spec = targets.filter((t) => !parseCode(t));
+  return h("div", { class: "cites sess-cites" },
+    h("div", { class: "cites-head" },
+      h("span", { class: "small strong" }, `Rests on ${plural(targets.length, "citation")}`),
+      spec.length ? h("button", { type: "button", class: "btn btn-link small", onclick: () => highlight(spec) }, "Show on the canvas") : null,
+    ),
+    h("ul", { class: "cite-list" }, targets.map((t) => h("li", {}, contextChip(t)))),
+  );
+}
+
+/** Bring one thread item's <li> up to date. The signature keeps an unchanged item
+ *  (an open tool card, a mounted change card) untouched between polls. */
+function updateItem(li, it, c, isLast) {
+  const sig = it.kind === "tool" ? `${it.result ? it.result.ok + it.result.summary : ""}|${it.stopped}`
+    : it.kind === "text" ? `${it.partial}|${it.text}`
+    : it.kind === "error" ? `${isLast}|${c.busy}`
+    : it.kind === "user" ? `${it.pending}|${it.text}`
+    : "1";
+  if (li._sig === sig) return;
+  li._sig = sig;
+  if (it.kind === "user") {
+    li.replaceChildren(userMsg(it.text, c.mode, it.selected || []));
+  } else if (it.kind === "text") {
+    const el = h("div", { class: ["msg", "msg-bot", "sess-text", it.partial && "is-partial"] }, markdownEl(it.text));
+    li.replaceChildren(el);
+    if (!it.partial && !li._announced) {
+      li._announced = true;
+      els.live.textContent = it.text;
+    }
+  } else if (it.kind === "tool") {
+    const wasOpen = li.querySelector("details.tool")?.open;
+    const kids = [toolEl(it, wasOpen)];
+    const name = it.name.replace(/^mcp__lattice__/, "");
+    if (it.result && it.result.ok && name === "spec_ask") {
+      const targets = targetsIn(it.result.summary);
+      if (targets.length) {
+        kids.push(citesEl(targets));
+        if (!it.highlighted) {
+          it.highlighted = true;
+          const cited = targets.filter((t) => !parseCode(t));
+          if (cited.length) highlight(cited);
+        }
+      }
+    }
+    if (it.result && it.result.ok && name === "change_propose") {
+      const id = it.cardId || changeIdIn(it.result.summary);
+      if (id) {
+        if (!it.cardId) {
+          it.cardId = id;
+          li._host = h("div", { class: "sess-card" });
+          openChangeCard(id, li._host);
+          if (editsInFlight) {
+            markSent(editsInFlight, id);
+            editsInFlight = null;
+          }
+        }
+        kids.push(li._host);
+      }
+    } else if (li._host) kids.push(li._host);
+    li.replaceChildren(...kids);
+  } else if (it.kind === "result") {
+    const bits = [seconds(it.seconds), money(it.cost), plural(it.turns || 1, "turn")];
+    li.replaceChildren(h("p", { class: "muted tiny sess-foot" }, it.ok ? bits.join(" · ") : `Ended with an error · ${bits.slice(0, 2).join(" · ")}`));
+  } else if (it.kind === "error") {
+    li.replaceChildren(errorEl(it, c, isLast));
+  } else if (it.kind === "stopped") {
+    li.replaceChildren(h("p", { class: "muted small sess-stopped" }, "Stopped"));
+  }
+}
+
+/** Redraw one mode's thread from its client's items, in place and keyed. */
+function renderSession(m) {
+  const v = views[m];
+  const c = clients[m];
+  if (!v || !c) return;
+  const wrap = els.wrap;
+  const atEnd = !wrap || wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 90;
+  const items = c.thread.items;
+  const keep = new Set();
+  items.forEach((it, i) => {
+    keep.add(it.key);
+    let li = v.dom.get(it.key);
+    if (!li) {
+      li = h("li", { class: `sess-item sess-${it.kind}` });
+      v.dom.set(it.key, li);
+      v.ol.append(li);
+    }
+    updateItem(li, it, c, items.slice(i + 1).every((x) => x.kind === "result"));
+  });
+  for (const [k, li] of v.dom) {
+    if (!keep.has(k)) {
+      li.remove();
+      v.dom.delete(k);
+    }
+  }
+  const last = items[items.length - 1];
+  let working = v.ol.querySelector(":scope > .sess-working");
+  const show = c.busy && !(last && last.kind === "text" && last.partial);
+  if (show) {
+    if (!working) {
+      working = h("li", { class: "sess-working" }, h("div", { class: "msg msg-bot is-loading" }, h("span", { class: "spinner", "aria-hidden": "true" }), "Claude is working…"));
+    }
+    v.ol.append(working);
+  } else working?.remove();
+  if (m === mode) els.empty.hidden = v.ol.children.length > 0;
+  if (atEnd && wrap) wrap.scrollTop = wrap.scrollHeight;
 }
