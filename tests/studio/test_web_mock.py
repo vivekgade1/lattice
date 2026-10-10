@@ -233,7 +233,9 @@ def check_change(c: dict[str, Any]) -> None:
     assert "error" in c
     assert c["status"] in CHANGE_STATUSES
     assert "parent" in c and (c["parent"] is None or isinstance(c["parent"], str))
-    assert "superseded_by" in c and (c["superseded_by"] is None or isinstance(c["superseded_by"], str))
+    assert "superseded_by" in c and (
+        c["superseded_by"] is None or isinstance(c["superseded_by"], str)
+    )
     need(c["rules"], {"added": list, "changed": list, "removed": list}, "rules")
     for ch in c["rules"]["changed"]:
         need(ch, {"old": str, "new": str}, "rules.changed")
@@ -348,7 +350,10 @@ def test_pick_ask_fixture_by_keyword() -> None:
     assert pick_ask_fixture("Can eve cancel a run?") == "ask-yes"
     assert pick_ask_fixture("Are failed runs retried?") == "ask-not-specified"
     assert pick_ask_fixture("What does an inactive user get?") == "ask-verified-disagrees"
-    assert pick_ask_fixture("Can two ticks run concurrently for the same config?") == "ask-inconclusive"
+    assert (
+        pick_ask_fixture("Can two ticks run concurrently for the same config?")
+        == "ask-inconclusive"
+    )
     assert pick_ask_fixture("anything else") == "ask-not-specified"
 
 
@@ -536,7 +541,11 @@ def test_followup_supersedes_its_parent(base: str) -> None:
     # c0 is the pre-seeded ready change; answer its conflict as a follow-up.
     status, out = post(
         base + "/api/changes",
-        {"request": "Q13 answered: no, executors may never cancel.", "parent": "c0", "selected": []},
+        {
+            "request": "Q13 answered: no, executors may never cancel.",
+            "parent": "c0",
+            "selected": [],
+        },
     )
     assert status == 200
     cid = out["id"]

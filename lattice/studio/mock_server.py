@@ -172,7 +172,14 @@ class MockState:
                     self._supersede_parent(c)
                 elif c["polls"] > POLLS_DRAFTING:
                     c["status"] = "checking"
-            if c["status"] in ("drafting", "checking", "cancelled", "failed", "accepted", "rejected"):
+            if c["status"] in (
+                "drafting",
+                "checking",
+                "cancelled",
+                "failed",
+                "accepted",
+                "rejected",
+            ):
                 return {
                     "id": cid,
                     "request": c["request"],
