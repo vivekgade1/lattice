@@ -242,6 +242,42 @@ SCENARIOS = (
         Step("POST", "/api/ask", json={"question": "Can a user star a note?"},
              expect_body={"kind": "not_specified", "citations": [], "verified": None}),
     )),
+    Scenario("projects_lists_the_served_project", steps=(
+        Step("GET", "/api/projects", expect_body=[
+            {"name": "notes", "git_head": SEED_HEAD[:7], "spec": True,
+             "app_configured": False, "last_check": None, "default": True,
+             "capabilities": {"rebuild": False}},
+        ]),
+        Step("GET", "/p/notes/api/projects", expect_body=[{"name": "notes", "default": True}]),
+    )),
+    Scenario("a_project_prefix_serves_the_same_project", steps=(
+        Step("GET", "/p/notes/api/model", expect_body={
+            "project": {"name": "notes", "git_head": SEED_HEAD[:7]},
+            "markdown": SEED_MD, "rules": SEED_RULES, "changes": []}),
+        Step("POST", "/p/notes/api/changes", json={"request": STARRED},
+             expect_body={"id": "c1"}),
+        READY_STARRED,
+        Step("GET", "/p/notes/api/changes/c1", params={"wait": 30},
+             expect_body={"id": "c1", "status": "ready", "request": STARRED}),
+        refused("GET", "/p/notes/api/changes/c1", 422,
+                "wait must be a number of seconds, 0 to 60", params={"wait": "soon"}),
+        Step("GET", "/p/notes/api/model",
+             expect_body={"changes": [{"id": "c1", "request": STARRED, "status": "ready"}]}),
+        accept("c1", commit=STARRED_COMMIT),
+        Step("GET", "/p/notes/api/model", expect_body={
+            "markdown": STARRED_MD, "project": {"git_head": STARRED_COMMIT[:7]},
+            "changes": [{"id": "c1", "status": "accepted"}]}),
+        refused("GET", "/p/notes/api/nope", 404, "no such route"),
+    )),
+    Scenario("an_unknown_project_is_404", steps=(
+        refused("GET", "/p/nope/api/model", 404, "no such project"),
+        refused("GET", "/p/nope/api/changes/c1", 404, "no such project", params={"wait": 1}),
+        refused("POST", "/p/nope/api/changes", 404, "no such project",
+                json={"request": STARRED}),
+        refused("DELETE", "/p/nope/api/changes/c1", 404, "no such project"),
+        refused("GET", "/p/nope/", 404, "no such project"),
+        model(changes=[]),
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -279,6 +315,14 @@ UNCHECKED = (
               "sessions, the change impact against a configured app, and accept outside git or "
               "on a git failure need an app, the claude binary or a broken repository; they "
               "stay with tests/studio/test_server.py and test_session.py."),
+    Unchecked("R28: `capabilities.session` depends on whether the claude binary is on the "
+              "host's PATH, so the scenarios state only `capabilities.rebuild`; a project's "
+              "`last_check` after a check needs an app (R24)."),
+    Unchecked("R29: only the routes the scenarios walk are checked under the prefix (model, "
+              "changes, wait, accept, an unknown route); the session routes need the claude "
+              "binary (R25)."),
+    Unchecked("R31: the harness serves one project directory, so two projects' change sets "
+              "cannot be compared here; tests/studio/test_projects.py checks the isolation."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

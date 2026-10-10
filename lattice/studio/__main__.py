@@ -1,5 +1,6 @@
-"""``python -m lattice.studio PROJECT_DIR [--port N] [--model M]``: the real Studio server
-(lattice.studio.server). ``python -m lattice.studio --mock [FIXTURE_DIR] [--port N]``:
+"""``python -m lattice.studio [DIR ...] [--default NAME] [--port N] [--model M]``: the real
+Studio server (lattice.studio.server; several projects: lattice.studio.hub).
+``python -m lattice.studio --mock [FIXTURE_DIR] [--port N]``:
 the fixture-backed mock server (lattice.studio.mock_server)."""
 
 from __future__ import annotations

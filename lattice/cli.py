@@ -1,6 +1,6 @@
 """The ``lattice`` command: a thin dispatcher over the existing ``python -m`` entry points.
 
-    lattice studio [DIR ...] [--port N] [--model M] [--mock [FIXTURES]]   # lattice.studio
+    lattice studio [DIR ...] [--default NAME] [--port N] [--model M] [--mock [FIXTURES]]
     lattice check [--project DIR] [lattice.spec check flags]              # lattice.spec check
     lattice spec  check|fidelity|draft|lint|probe|review|ask ...          # lattice.spec
     lattice import ...                                                    # lattice.importer
@@ -28,7 +28,7 @@ USAGE = """\
 usage: lattice [--version] [--help] <command> [args ...]
 
 commands:
-  studio    [DIR ...] [--port N] [--model M] [--mock [FIXTURES]]   run Lattice Studio
+  studio    [DIR ...] [--default NAME] [--port N] [--mock [FIXTURES]]   run Lattice Studio
   check     [--project DIR] [--layers ABCDRX ...]   check an app against its spec
                                                    (harness from DIR/studio.toml)
   spec      check|fidelity|draft|lint|probe|review|ask ...   the spec tools
@@ -119,10 +119,21 @@ def _project_at(d: Path) -> Project | None:
     has_toml = toml.is_file()
     if not has_toml and not ((d / SPEC_FILE).is_file() and (d / TRACE_FILE).is_file()):
         return None
-    app = (_read_toml(toml).get("app") if has_toml else None) or {}
+    data = _read_toml(toml) if has_toml else {}
+    app = data.get("app") or {}
     if not isinstance(app, dict):
         app = {}
-    return Project(d.name, d, bool(app.get("app") and app.get("db")), has_toml)
+    return Project(project_name(d, data), d, bool(app.get("app") and app.get("db")), has_toml)
+
+
+def project_name(d: Path, toml: dict | None = None) -> str:
+    """``[project] name`` of ``d/studio.toml`` when it is a non-empty string, else the
+    directory's name."""
+    if toml is None:
+        toml = _read_toml(d / STUDIO_TOML)
+    proj = toml.get("project")
+    name = proj.get("name") if isinstance(proj, dict) else None
+    return name.strip() if isinstance(name, str) and name.strip() else d.name
 
 
 def _subdirs(d: Path) -> list[Path]:
@@ -132,18 +143,19 @@ def _subdirs(d: Path) -> list[Path]:
         return []
 
 
-def discover_projects(roots: Iterable[Path | str] = ()) -> list[Project]:
+def discover_projects(roots: Iterable[Path | str] = (), cwd: Path | None = None) -> list[Project]:
     """The Studio projects under ``roots`` (default: the cwd): each root itself and its
     children one level down; with no roots also ``cwd/dogfood/*``. A directory is a
     project when it has ``studio.toml``, or ``spec.py`` and ``spec.trace.json``. A
     broken ``studio.toml`` still counts, as not configured. Deduplicated, in order."""
     given = [Path(r) for r in roots]
+    here = Path.cwd() if cwd is None else Path(cwd)
     candidates: list[Path] = []
-    for root in given or [Path.cwd()]:
+    for root in given or [here]:
         candidates.append(root)
         candidates.extend(_subdirs(root))
     if not given:
-        candidates.extend(_subdirs(Path.cwd() / "dogfood"))
+        candidates.extend(_subdirs(here / "dogfood"))
     seen: set[Path] = set()
     found: list[Project] = []
     for d in candidates:

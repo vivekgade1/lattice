@@ -2,7 +2,9 @@
 ``lattice/studio/API.md`` (v1 and its v1.1 additions), over one project directory.
 
 Run it with ``uv run --extra db python -m lattice.studio PROJECT_DIR [--port N]
-[--model sonnet]``. It binds to 127.0.0.1 only.
+[--model sonnet]``. It binds to 127.0.0.1 only. With no directory, or several, one server
+holds many projects (lattice/studio/hub.py, API.md v1.6): ``GET /api/projects``, every
+route also under ``/p/<name>/api/...``, the bare ``/api/...`` for the default project.
 
 **The project directory** holds ``REQUIREMENTS.md``, ``spec.py`` (defines ``SPEC``),
 ``spec.trace.json`` and, optionally, ``studio.toml``::
@@ -79,7 +81,7 @@ from datetime import UTC, datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qs, unquote, urlparse
 
 from lattice.llm.client import Generator
@@ -103,6 +105,9 @@ from lattice.studio.session import (
     SessionManager,
     claude_available,
 )
+
+if TYPE_CHECKING:
+    from lattice.studio.hub import StudioHub
 
 HERE = Path(__file__).resolve().parent
 WEB_DIR = HERE / "web"
@@ -178,6 +183,9 @@ class StudioConfig:
         return {k: v for k, v in self.check.items() if k != "layers"}
 
 
+_IMPORT_LOCK = threading.Lock()
+
+
 class Harness:
     """The app hookup of ``[app]``, resolved lazily (imports happen on first use)."""
 
@@ -188,21 +196,76 @@ class Harness:
         cwd = config.app.get("cwd")
         self.cwd = (root / cwd).resolve() if cwd else None
 
+    def import_dirs(self) -> list[Path]:
+        return [
+            self.root,
+            *((self.root / p).resolve() for p in self.config.app.get("sys_path") or []),
+        ]
+
+    def _foreign(self, mod: str) -> bool:
+        """Whether ``sys.modules`` holds another directory's module `mod` while this
+        project has its own file of that name."""
+        cur = sys.modules.get(mod)
+        f = getattr(cur, "__file__", None)
+        if cur is None or not f:
+            return False
+        dirs = self.import_dirs()
+        if not any(
+            (d / f"{mod}.py").is_file() or (d / mod / "__init__.py").is_file() for d in dirs
+        ):
+            return False
+        return not any(Path(f).resolve().is_relative_to(d) for d in dirs)
+
+    @contextlib.contextmanager
+    def _own_modules(self) -> Iterator[None]:
+        """One server may hold several projects whose harness modules share a name
+        (``harness``). While resolving, another project's same-named top-level module is
+        taken out of ``sys.modules`` (and put back after), so this project's own file is
+        imported. A harness's later lazy imports of same-named modules can still cross."""
+        refs = [
+            v
+            for k, v in self.config.app.items()
+            if k in ("app", "db", "login", "runtime", "services")
+        ]
+        mods = {str(r).partition(":")[0].split(".")[0] for r in refs if ":" in str(r)}
+        foreign = [m for m in mods if self._foreign(m)]
+        if not foreign:
+            yield
+            return
+        with _IMPORT_LOCK:
+
+            def owned(k: str) -> bool:
+                return any(k == m or k.startswith(m + ".") for m in foreign)
+
+            saved = {k: v for k, v in sys.modules.items() if owned(k)}
+            old_path = list(sys.path)
+            for k in saved:
+                del sys.modules[k]
+            sys.path[:0] = [str(d) for d in self.import_dirs()]
+            try:
+                yield
+            finally:
+                sys.path[:] = old_path
+                for k in [k for k in sys.modules if owned(k)]:
+                    del sys.modules[k]
+                sys.modules.update(saved)
+
     def resolve(self) -> dict[str, Any]:
         if self._resolved is None:
             from lattice.spec.__main__ import _runtime, _services, load
 
             a = self.config.app
-            self._resolved = {
-                "app_factory": load(a["app"]),
-                "db_factory": load(a["db"]),
-                "login": load(a["login"]) if a.get("login") else None,
-                "login_path": a.get("login_path") or None,
-                "runtime": _runtime(a.get("runtime") or None),
-                "services": _services(a.get("services") or None),
-                "database": a.get("database") or "sqlite",
-                "database_url": a.get("database_url") or None,
-            }
+            with self._own_modules():
+                self._resolved = {
+                    "app_factory": load(a["app"]),
+                    "db_factory": load(a["db"]),
+                    "login": load(a["login"]) if a.get("login") else None,
+                    "login_path": a.get("login_path") or None,
+                    "runtime": _runtime(a.get("runtime") or None),
+                    "services": _services(a.get("services") or None),
+                    "database": a.get("database") or "sqlite",
+                    "database_url": a.get("database_url") or None,
+                }
         return self._resolved
 
     def check_kwargs(self) -> dict[str, Any]:
@@ -781,8 +844,10 @@ class Studio:
         generator: Generator | None = None,
         generator_factory: Callable[[str], Generator] | None = None,
         claude_bin: str | None = None,
+        name: str | None = None,
     ) -> None:
         self.root = root.resolve()
+        self.name = name or self.root.name
         self.config = StudioConfig.load(self.root)
         self.model = model or self.config.llm.get("model") or DEFAULT_MODEL
         self._generator = generator
@@ -895,10 +960,10 @@ class Studio:
             t0 = time.perf_counter()
             snap = self._read(h)
             lint_items = [f.to_dict() for f in lint(snap.spec, snap.trace)]
-            data = review_data(snap.spec, snap.trace, f"{self.root.name} spec review", lint_items)
+            data = review_data(snap.spec, snap.trace, f"{self.name} spec review", lint_items)
             views = jsonable(data)
             core = {
-                "project": {"name": self.root.name, "root": str(self.root), "git_head": ""},
+                "project": {"name": self.name, "root": str(self.root), "git_head": ""},
                 "rules": rules_json(snap.trace, data),
                 "markdown": snap.markdown,
                 "views": views,
@@ -1136,7 +1201,7 @@ class Studio:
 
         # 3. check it
         t = time.perf_counter()
-        title = f"{self.root.name} spec review"
+        title = f"{self.name} spec review"
         base_lint = {(x["code"], x.get("element"), x["message"]) for x in self._base_lint()}
         new_lint = [f.to_dict() for f in lint(new_spec, new_trace)]
         lint_out = [
@@ -1373,9 +1438,39 @@ class Handler(BaseHTTPRequestHandler):
         elif out is not None:
             self._json(out)
 
-    def do_GET(self) -> None:  # noqa: N802
+    def _split(self) -> tuple[str, str | None] | None:
+        """The path with a ``/p/<name>`` prefix stripped, and the project's name (None:
+        the default project). An unknown project answers 404 here (None)."""
         path = urlparse(self.path).path
-        st = self.server.studio
+        if not path.startswith("/p/"):
+            return path, None
+        seg, _, rest = path.removeprefix("/p/").partition("/")
+        name = unquote(seg)
+        if name not in self.server.hub:
+            self._json({"detail": "no such project"}, 404)
+            return None
+        return "/" + rest, name
+
+    def _project(self, name: str | None) -> Studio | None:
+        """The project's Studio, or None once an error is answered."""
+        try:
+            return self.server.hub.get(name)
+        except ApiError as e:
+            self._json({"detail": e.detail}, e.status)
+            return None
+
+    def do_GET(self) -> None:  # noqa: N802
+        split = self._split()
+        if split is None:
+            return None
+        path, name = split
+        if path == "/api/projects":
+            return self._dispatch(self.server.hub.list)
+        if not path.startswith("/api/"):
+            return self._static(path)
+        st = self._project(name)
+        if st is None:
+            return None
         if path == "/api/model":
             return self._dispatch(st.get_model)
         if path.startswith("/api/changes/") and "/" not in path.removeprefix("/api/changes/"):
@@ -1409,8 +1504,13 @@ class Handler(BaseHTTPRequestHandler):
         return self._static(path)
 
     def do_POST(self) -> None:  # noqa: N802
-        path = urlparse(self.path).path
-        st = self.server.studio
+        split = self._split()
+        if split is None:
+            return
+        path, name = split
+        st = self._project(name)
+        if st is None:
+            return
 
         def route() -> Any:
             body = self._body()
@@ -1437,8 +1537,13 @@ class Handler(BaseHTTPRequestHandler):
         self._dispatch(route)
 
     def do_DELETE(self) -> None:  # noqa: N802
-        path = urlparse(self.path).path
-        st = self.server.studio
+        split = self._split()
+        if split is None:
+            return None
+        path, name = split
+        st = self._project(name)
+        if st is None:
+            return None
         if path.startswith("/api/changes/") and "/" not in path.removeprefix("/api/changes/"):
             cid = path.removeprefix("/api/changes/")
             return self._dispatch(lambda: st.cancel(cid))
@@ -1472,21 +1577,39 @@ class Handler(BaseHTTPRequestHandler):
 
 
 class StudioServer(ThreadingHTTPServer):
+    """The HTTP server over a :class:`~lattice.studio.hub.StudioHub` (one project or
+    many). ``studio`` is the default project's Studio."""
+
     daemon_threads = True
     # The browser fetches every ES module at once; the default backlog of 5 resets some.
     request_queue_size = 128
 
     def __init__(
-        self, addr: tuple[str, int], studio: Studio, web_dir: Path = WEB_DIR, verbose: bool = False
+        self,
+        addr: tuple[str, int],
+        studio: Studio | StudioHub,
+        web_dir: Path = WEB_DIR,
+        verbose: bool = False,
     ) -> None:
+        from lattice.studio.hub import StudioHub
+
         super().__init__(addr, Handler)
-        self.studio = studio
-        studio.base_url = f"http://{self.server_address[0]}:{self.server_address[1]}"
+        if isinstance(studio, StudioHub):
+            self.hub = studio
+        else:  # one project, served as before v1.6 (bare --studio-url)
+            st = studio
+            self.hub = StudioHub([(st.name, st.root)], lambda _r, _n: st, prefixed=False)
+            self.hub.get()
+        self.hub.set_base_url(f"http://{self.server_address[0]}:{self.server_address[1]}")
         self.web_dir = web_dir
         self.verbose = verbose
 
+    @property
+    def studio(self) -> Studio:
+        return self.hub.get()
+
     def server_close(self) -> None:
-        self.studio.close_sessions()
+        self.hub.close()
         super().server_close()
 
 
@@ -1503,34 +1626,80 @@ def make_server(
 ) -> StudioServer:
     """A Studio server for `project` on 127.0.0.1:`port` (0 picks a free one); not yet
     serving. `generator` (tests: a ScriptedGenerator) replaces the Claude CLI client."""
+    from lattice.cli import project_name
+
+    root = Path(project).resolve()
     studio = Studio(
-        Path(project),
+        root,
         model=model,
         generator=generator,
         generator_factory=generator_factory,
         claude_bin=claude_bin,
+        name=project_name(root),
     )
     return StudioServer(("127.0.0.1", port), studio, web_dir, verbose)
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(
-        prog="python -m lattice.studio", description="Lattice Studio over a project directory"
-    )
-    ap.add_argument("project", type=Path)
-    ap.add_argument("--port", type=int, default=8765)
-    ap.add_argument("--model", default=None, help="the LLM (default: studio.toml, else sonnet)")
-    ap.add_argument("--quiet", action="store_true", help="no request log")
-    ap.add_argument(
-        "--stub-llm",
-        action="store_true",
-        help="TEST ONLY: a fixed offline generator instead of Claude (StubGenerator)",
-    )
-    args = ap.parse_args(argv)
-    root = args.project.resolve()
+def make_hub_server(
+    projects: Sequence[tuple[str, Path]],
+    port: int = 0,
+    *,
+    default: str | None = None,
+    model: str | None = None,
+    generator: Generator | None = None,
+    generator_factory: Callable[[str], Generator] | None = None,
+    claude_bin: str | None = None,
+    web_dir: Path = WEB_DIR,
+    verbose: bool = False,
+    prefixed: bool = True,
+) -> StudioServer:
+    """A Studio server over many `projects` (``(name, root)``, see lattice.studio.hub),
+    each with its own Studio built on first use; ``default`` (else the first) answers
+    the bare ``/api/...`` routes. `generator` is shared by every project (tests only);
+    `generator_factory` builds one per project."""
+    from lattice.studio.hub import StudioHub
+
+    def factory(root: Path, name: str) -> Studio:
+        return Studio(
+            root,
+            model=model,
+            generator=generator,
+            generator_factory=generator_factory,
+            claude_bin=claude_bin,
+            name=name,
+        )
+
+    hub = StudioHub(projects, factory, default=default, prefixed=prefixed, claude_bin=claude_bin)
+    return StudioServer(("127.0.0.1", port), hub, web_dir, verbose)
+
+
+NO_PROJECTS = """studio: no Lattice projects found in {where}.
+A project is a directory with spec.py and spec.trace.json, or a studio.toml. Add a
+studio.toml to a project directory, e.g.
+
+    [app]
+    app = "harness:make_app"   # optional: hooks an app up for checks
+    db = "harness:build_db"
+
+then run `lattice studio DIR`, or list it in {registry}:
+
+    [[project]]
+    path = "/path/to/project"
+"""
+
+
+def _single(args: argparse.Namespace) -> StudioServer | int:
+    """One DIR: the project as before v1.6 (bare --studio-url), plus /api/projects."""
+    from lattice.cli import project_name
+
+    root = args.dirs[0].resolve()
     missing = [n for n in PROJECT_FILES if not (root / n).is_file()]
     if missing:
         print(f"studio: {root} has no {', '.join(missing)}", file=sys.stderr)
+        return 2
+    if args.default is not None and args.default != project_name(root):
+        print(f"studio: --default {args.default}: the project is {project_name(root)}",
+              file=sys.stderr)  # fmt: skip
         return 2
     srv = make_server(
         root,
@@ -1551,6 +1720,74 @@ def main(argv: Sequence[str] | None = None) -> int:
         file=sys.stderr,
         flush=True,
     )
+    return srv
+
+
+def _many(args: argparse.Namespace) -> StudioServer | int:
+    """No DIR (discovery) or several: one server, a Studio per project."""
+    from lattice.studio.hub import discover, registry_path
+
+    projects = discover(args.dirs)
+    if not projects:
+        where = (
+            ", ".join(str(d) for d in args.dirs) if args.dirs else f"{Path.cwd()} (and dogfood/*)"
+        )
+        print(NO_PROJECTS.format(where=where, registry=registry_path()), file=sys.stderr)
+        return 2
+    names = [n for n, _ in projects]
+    if args.default is not None and args.default not in names:
+        print(f"studio: --default {args.default}: no such project (have {', '.join(names)})",
+              file=sys.stderr)  # fmt: skip
+        return 2
+    srv = make_hub_server(
+        projects,
+        args.port,
+        default=args.default,
+        model=args.model,
+        generator_factory=(lambda _m: StubGenerator()) if args.stub_llm else None,
+        verbose=not args.quiet,
+    )
+    base = f"http://127.0.0.1:{srv.server_address[1]}"
+    w = max(len(n) for n in names)
+    lines = [f"Lattice Studio on {base}/ -- {len(projects)} project(s)"
+             + (" [STUB LLM: test only]" if args.stub_llm else "")]  # fmt: skip
+    for name, root in projects:
+        mark = "*" if name == srv.hub.default else " "
+        lines.append(f" {mark} {name:<{w}}  {base}/p/{name}/api/model  {root}")
+    lines.append("   (* = the default project, served at the bare /api/...)")
+    print("\n".join(lines), file=sys.stderr, flush=True)
+    return srv
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(
+        prog="python -m lattice.studio",
+        description="Lattice Studio over one project directory, or many (API.md v1.6)",
+    )
+    ap.add_argument(
+        "dirs",
+        nargs="*",
+        type=Path,
+        metavar="DIR",
+        help="project directories (default: discover from the cwd, cwd/dogfood/* and "
+        "~/.config/lattice/projects.toml)",
+    )
+    ap.add_argument("--default", default=None, help="the project the bare /api/... serves")
+    ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--model", default=None, help="the LLM (default: studio.toml, else sonnet)")
+    ap.add_argument("--quiet", action="store_true", help="no request log")
+    ap.add_argument(
+        "--stub-llm",
+        action="store_true",
+        help="TEST ONLY: a fixed offline generator instead of Claude (StubGenerator)",
+    )
+    args = ap.parse_args(argv)
+    if len(args.dirs) == 1:
+        srv = _single(args)
+    else:
+        srv = _many(args)
+    if isinstance(srv, int):
+        return srv
 
     def on_term(_sig: int, _frame: object) -> None:
         # chat turns run `claude` in their own process groups: a plain SIGTERM would skip

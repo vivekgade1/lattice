@@ -4,7 +4,7 @@ Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project direc
 
 ## The model
 
-- GET /api/model answers 200 with the project (`name`: the directory's name; `git_head`: the short id of the repository's HEAD), the rules of the trace with their status and links, the full REQUIREMENTS.md text, the data model's tables, `app` (`configured`, `check_running`, `last_check`) and the change records (`id`, `request`, `status`).
+- GET /api/model answers 200 with the project (`name`: `[project] name` of its studio.toml, else the directory's name; `git_head`: the short id of the repository's HEAD), the rules of the trace with their status and links, the full REQUIREMENTS.md text, the data model's tables, `app` (`configured`, `check_running`, `last_check`) and the change records (`id`, `request`, `status`).
 - A change that is drafting, ready, rejected, cancelled or failed never writes the project's files: GET /api/model keeps answering the same markdown and `git_head` until a change is accepted.
 
 ## Change sets
@@ -48,3 +48,10 @@ Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project direc
 - The chat runs on Claude Code sessions (POST /api/session and the routes under it).
 - A change's impact is checked against the configured app when `studio.toml` hooks one up.
 - Outside a git repository, accept writes the files and answers `commit: null` with a note; a git failure answers 500 after the files are written.
+
+## Projects
+
+- GET /api/projects answers 200 with every project the server serves, in order: `name`, `root`, `git_head`, `spec` (whether `spec.py` and `spec.trace.json` are present), `app_configured`, `last_check` (null until a check has run) and `default`. A server over one directory lists that one project, as the default.
+- Every /api/ route is also served under /p/<name>/api/... for a served project: /p/<name>/api/model answers what the bare /api/model answers for the default project, and a change made through one path is the same change through the other.
+- A /p/<name>/ path whose name is no served project answers 404 ("no such project").
+- Projects served by one server do not share change sets: each project numbers its own changes from `c1`, and a change made in one project is not visible in another.

@@ -1,6 +1,9 @@
 # Lattice Studio project: Lattice Studio's own server, specified in Lattice (dogfooding).
 # The app is the real server (python -m lattice.studio, TEST-ONLY stub LLM) on a fresh git
 # copy of project_seed/, per scenario; see harness.py. ./check.sh runs the same check.
+[project]
+name = "lattice-studio"   # the name Studio serves it under (/p/lattice-studio/api/...)
+
 [app]
 app = "harness:make_app"
 db = "harness:build_db"

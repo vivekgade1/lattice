@@ -39,6 +39,10 @@ API v1.5 adds the chat as a Claude Code session (``/api/session``): the mock rep
 four polls, and ``mock/session-error.jsonl`` (a usage-limit error) for a message that
 contains "limit". ``GET /api/model`` has ``app.session: true``.
 
+API v1.6 adds ``GET /api/projects`` and ``/p/<name>/api/...``: two projects with separate
+state, ``job-scheduler-studio`` (the fixtures, the default, also at the bare ``/api/...``)
+and ``lattice-studio`` (the fixtures cut to ``SECOND_PROJECT_RULES`` rules, no changes).
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -69,6 +73,11 @@ from lattice.studio.session import (
 HERE = Path(__file__).resolve().parent
 WEB_DIR = HERE / "web"
 FIXTURE_DIR = HERE / "mock"
+
+# API v1.6: the mock's projects (GET /api/projects, /p/<name>/api/...).
+DEFAULT_PROJECT = "job-scheduler-studio"
+SECOND_PROJECT = "lattice-studio"
+SECOND_PROJECT_RULES = 12
 
 # How many polls of GET /api/changes/{id} a change spends in each state.
 POLLS_DRAFTING = 2
@@ -744,10 +753,30 @@ class MockSessions:
 class MockState:
     """The mutable state behind the mock API: change sets, the check run, the git head."""
 
-    def __init__(self, fixture_dir: Path) -> None:
+    def __init__(
+        self,
+        fixture_dir: Path,
+        name: str | None = None,
+        root: str | None = None,
+        rules: int | None = None,
+        seed_change: bool = True,
+    ) -> None:
         self.fixture_dir = fixture_dir
         self.lock = threading.Lock()
         self.model: dict[str, Any] = self._load("model")
+        if name is not None:
+            self.model["project"]["name"] = name
+        if root is not None:
+            self.model["project"]["root"] = root
+        if rules is not None:  # a smaller project: the first `rules` rules only
+            self.model["rules"] = self.model["rules"][:rules]
+            keep = {r["id"] for r in self.model["rules"]}
+            views = self.model["views"]
+            views["rule_rows"] = [r for r in views.get("rule_rows", []) if r["id"] in keep]
+            counts = views.setdefault("counts", {})
+            for k in ("checked", "unchecked", "context", "untraced", "probe_gap"):
+                counts[k] = sum(1 for r in self.model["rules"] if r.get("status") == k)
+            views["title"] = f"{self.model['project']['name']} spec review"
         self.changes: dict[str, dict[str, Any]] = {}
         self.check_polls_left: int | None = None
         self._next_id = 1
@@ -758,7 +787,8 @@ class MockState:
         self._next_rebuild = 1
         self.built_in: str | None = None  # the change a passed rebuild built, for the Code lens
         self.sessions = MockSessions(fixture_dir)
-        self._seed_initial_change()
+        if seed_change:
+            self._seed_initial_change()
 
     def _load(self, name: str) -> Any:
         return json.loads((self.fixture_dir / f"{name}.json").read_text(encoding="utf-8"))
@@ -1337,11 +1367,28 @@ class Handler(BaseHTTPRequestHandler):
             return sessions.events(parts[0], after)
         raise SessionError(404, "no such route")
 
+    def _split(self) -> tuple[str, MockState] | None:
+        """The path without its ``/p/<name>`` prefix and the project's state (the default
+        project's without one); an unknown project answers 404 (None)."""
+        path = urlparse(self.path).path
+        if not path.startswith("/p/"):
+            return path, self.server.state
+        seg, _, rest = path.removeprefix("/p/").partition("/")
+        state = self.server.states.get(unquote(seg))
+        if state is None:
+            self._error(HTTPStatus.NOT_FOUND, "no such project")
+            return None
+        return "/" + rest, state
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
-        path = parsed.path
         query = {k: v[-1] for k, v in parse_qs(parsed.query, keep_blank_values=True).items()}
-        state = self.server.state
+        split = self._split()
+        if split is None:
+            return None
+        path, state = split
+        if path == "/api/projects":
+            return self._json(self.server.projects())
         if path == "/api/model":
             return self._json(state.get_model())
         if path == "/api/session" or path.startswith("/api/session/"):
@@ -1420,8 +1467,10 @@ class Handler(BaseHTTPRequestHandler):
         return self._static(path)
 
     def do_POST(self) -> None:  # noqa: N802
-        path = urlparse(self.path).path
-        state = self.server.state
+        split = self._split()
+        if split is None:
+            return None
+        path, state = split
         body = self._body()
         if body is None:
             return self._error(HTTPStatus.BAD_REQUEST, "the body must be a JSON object")
@@ -1478,8 +1527,10 @@ class Handler(BaseHTTPRequestHandler):
         return self._error(HTTPStatus.NOT_FOUND, "no such route")
 
     def do_DELETE(self) -> None:  # noqa: N802
-        path = urlparse(self.path).path
-        state = self.server.state
+        split = self._split()
+        if split is None:
+            return None
+        path, state = split
         if path.startswith("/api/changes/"):
             cid = path.removeprefix("/api/changes/")
             if not cid or "/" in cid:
@@ -1542,8 +1593,43 @@ class MockServer(ThreadingHTTPServer):
     ) -> None:
         super().__init__(addr, Handler)
         self.web_dir = web_dir
-        self.state = MockState(fixture_dir)
+        # two projects (API v1.6): the fixtures as job-scheduler-studio (the default, also
+        # served at the bare /api/...), and a smaller lattice-studio
+        self.states: dict[str, MockState] = {
+            DEFAULT_PROJECT: MockState(fixture_dir, name=DEFAULT_PROJECT),
+            SECOND_PROJECT: MockState(
+                fixture_dir,
+                name=SECOND_PROJECT,
+                root="/Users/owner/lattice/dogfood/studio",
+                rules=SECOND_PROJECT_RULES,
+                seed_change=False,
+            ),
+        }
+        self.state = self.states[DEFAULT_PROJECT]
         self.verbose = verbose
+
+    def projects(self) -> list[dict[str, Any]]:
+        """``GET /api/projects``."""
+        out = []
+        for name, st in self.states.items():
+            with st.lock:
+                m = st.model
+                last = m["app"].get("last_check")
+                out.append(
+                    {
+                        "name": name,
+                        "root": m["project"]["root"],
+                        "git_head": m["project"]["git_head"],
+                        "spec": True,
+                        "app_configured": bool(m["app"].get("configured")),
+                        "last_check": (
+                            {"verdict": last.get("verdict"), "at": last.get("at")} if last else None
+                        ),
+                        "capabilities": {"session": True, "rebuild": name == DEFAULT_PROJECT},
+                        "default": name == DEFAULT_PROJECT,
+                    }
+                )
+        return out
 
 
 def make_server(

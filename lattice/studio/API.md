@@ -1,6 +1,6 @@
-# Lattice Studio API contract (v1.5)
+# Lattice Studio API contract (v1.6)
 
-`lattice studio PROJECT_DIR [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API. It polls; there are no websockets.
+`lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
 **A project directory** holds:
 - `REQUIREMENTS.md`: the owner's text;
@@ -263,3 +263,38 @@ A list of the session records (the shape of the POST answer, plus `created` on t
 
 ### Configuration
 `studio.toml` `[llm]`: `session_timeout` (seconds a turn may run, default 900; a turn that exceeds it is killed and ends with `error` kind `timeout`), `claude_bin` (the Claude Code binary, default `claude`), `model` (as for the other chat).
+
+## v1.6 additions (many projects behind one server)
+
+One server holds many projects. Each project has its own change sets, chat sessions, checks and model cache (a `Studio`, built the first time one of its API routes is called), so nothing crosses projects: change ids start at `c1` per project.
+
+### Discovery
+- `lattice studio DIR` (one directory): that project, exactly as before v1.6 (it must hold `REQUIREMENTS.md`, `spec.py` and `spec.trace.json`; the chat's `--studio-url` stays the bare server URL). `/api/projects` and `/p/<name>/api/...` are served too.
+- `lattice studio DIR DIR ...`: each `DIR` that is a project, in order; a `DIR` that is not one contributes its project children (one level down).
+- `lattice studio` (no directory): the cwd itself, its children one level down, then `cwd/dogfood/*` (as `lattice projects` lists them), then the registry `$XDG_CONFIG_HOME/lattice/projects.toml` (default `~/.config/lattice/projects.toml`; `LATTICE_PROJECTS_REGISTRY` names another file):
+  ```toml
+  [[project]]
+  path = "/path/to/project"   # relative paths resolve against the registry file
+  ```
+  A missing or broken registry is ignored.
+
+A project is a directory with `studio.toml`, or `spec.py` and `spec.trace.json` (a broken `studio.toml` still counts; that project's routes answer 500 until it is fixed). Duplicates (by resolved path) are dropped. A project's **name** is `[project] name` in its `studio.toml`, else the directory's name, made unique with `-2`, `-3`, ... The **default project** is the first one found, or `--default NAME`. No project found: the server exits 2 and says how to add a `studio.toml`.
+
+### GET /api/projects
+```json
+[{"name": "lattice-studio", "root": "/abs/path/dogfood/studio", "git_head": "2373833",
+  "spec": true, "app_configured": true,
+  "last_check": null | {"verdict": "pass|fail", "at": "iso"},
+  "capabilities": {"session": true, "rebuild": false},
+  "default": true}]
+```
+In discovery order. Cheap: it reads each `studio.toml` and runs `git rev-parse --short HEAD` (5 s timeout; `""` outside git); it never builds a project. `spec`: `spec.py` and `spec.trace.json` are present. `app_configured`: `[app] app` and `[app] db` are set. `last_check`: the project's last full check, `null` until one has run in this server (a project not opened yet has none). `capabilities.session`: the `claude` binary is runnable (as `app.session`); `capabilities.rebuild`: the server can rebuild (always `false` on the real server; the mock says `true` for its default project).
+
+### Prefix routing
+Every `/api/...` route is also served under `/p/<name>/api/...` (the prefix is stripped, the query string kept, e.g. `/p/lattice-studio/api/changes/c1?wait=30`). An unknown `<name>` answers `404 {"detail": "no such project"}` on any method. The bare `/api/...` routes are the default project's. `GET /api/model`'s `project.name` is the project's name. Static files are unchanged (also served under `/p/<name>/`).
+
+### Sessions and MCP
+A project's chat sessions run the `lattice` MCP server with `--studio-url http://127.0.0.1:PORT/p/<name>` (bare in one-directory mode), so its `change_propose` lands in that project's change sets.
+
+### The mock
+`python -m lattice.studio --mock` serves two projects: `job-scheduler-studio` (the fixtures, the default, also at the bare `/api/...`, with the pre-seeded change `c0`) and `lattice-studio` (the same fixtures cut to 12 rules, no changes). Their state is separate; the code, graph, flow and rebuild fixtures are the job scheduler's for both.

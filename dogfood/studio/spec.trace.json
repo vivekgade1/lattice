@@ -9,7 +9,7 @@
     },
     {
       "id": "R2",
-      "text": "GET /api/model answers 200 with the project (`name`: the directory's name; `git_head`: the short id of the repository's HEAD), the rules of the trace with their status and links, the full REQUIREMENTS.md text, the data model's tables, `app` (`configured`, `check_running`, `last_check`) and the change records (`id`, `request`, `status`).",
+      "text": "GET /api/model answers 200 with the project (`name`: `[project] name` of its studio.toml, else the directory's name; `git_head`: the short id of the repository's HEAD), the rules of the trace with their status and links, the full REQUIREMENTS.md text, the data model's tables, `app` (`configured`, `check_running`, `last_check`) and the change records (`id`, `request`, `status`).",
       "section": "Lattice Studio server: requirements > The model",
       "line": 7
     },
@@ -162,6 +162,30 @@
       "text": "Outside a git repository, accept writes the files and answers `commit: null` with a note; a git failure answers 500 after the files are written.",
       "section": "Lattice Studio server: requirements > Not covered here",
       "line": 50
+    },
+    {
+      "id": "R28",
+      "text": "GET /api/projects answers 200 with every project the server serves, in order: `name`, `root`, `git_head`, `spec` (whether `spec.py` and `spec.trace.json` are present), `app_configured`, `last_check` (null until a check has run) and `default`. A server over one directory lists that one project, as the default.",
+      "section": "Lattice Studio server: requirements > Projects",
+      "line": 54
+    },
+    {
+      "id": "R29",
+      "text": "Every /api/ route is also served under /p/<name>/api/... for a served project: /p/<name>/api/model answers what the bare /api/model answers for the default project, and a change made through one path is the same change through the other.",
+      "section": "Lattice Studio server: requirements > Projects",
+      "line": 55
+    },
+    {
+      "id": "R30",
+      "text": "A /p/<name>/ path whose name is no served project answers 404 (\"no such project\").",
+      "section": "Lattice Studio server: requirements > Projects",
+      "line": 56
+    },
+    {
+      "id": "R31",
+      "text": "Projects served by one server do not share change sets: each project numbers its own changes from `c1`, and a change made in one project is not visible in another.",
+      "section": "Lattice Studio server: requirements > Projects",
+      "line": 57
     }
   ],
   "links": {
@@ -239,6 +263,15 @@
     ],
     "R23": [
       "scenario:static_files_stay_in_the_web_directory"
+    ],
+    "R28": [
+      "scenario:projects_lists_the_served_project"
+    ],
+    "R29": [
+      "scenario:a_project_prefix_serves_the_same_project"
+    ],
+    "R30": [
+      "scenario:an_unknown_project_is_404"
     ]
   },
   "unchecked": {
@@ -246,7 +279,8 @@
     "R24": "POST /api/check needs a configured app; tests/studio/test_server.py covers it",
     "R25": "the chat sessions need the claude binary; tests/studio/test_session.py covers them",
     "R26": "the change impact needs a configured app; tests/studio/test_server.py covers it",
-    "R27": "accept outside git or on a git failure needs a different repository; tests/studio/test_server.py covers the first"
+    "R27": "accept outside git or on a git failure needs a different repository; tests/studio/test_server.py covers the first",
+    "R31": "the harness serves one project directory; tests/studio/test_projects.py covers isolation between two projects"
   },
   "context": [
     "R1"
