@@ -68,6 +68,19 @@ firing conditions and their known limits:
   runs.
 * **L010 question** -- an unanswered question with a blank default, or a question
   whose ``rules`` is empty or names an id that is not one of the trace's rules.
+* **L011 conflicting expectations** (`conflicts`) -- two steps, in two scenarios with
+  the same ``given`` (compared as canonical JSON; none and empty are the same), that
+  send the same request and expect different statuses. Same request: the same caller,
+  method and path template (as L006), the same concrete path (query string aside), and
+  -- unless the two statuses are an access answer (401/403) against a 2xx -- the same
+  ``json`` and ``params``. Each step must be the scenario's first step on that template
+  and run on the setup alone: no step before it in its scenario is an ``Await`` or a
+  write expecting a 2xx (a write the spec refuses changes nothing). Each pair is one
+  finding naming both scenarios, with the owner's question ("Which holds?") as its fix.
+  Limits: a write expecting a 2xx on another resource still silences the pair (precision
+  first); two requests whose bodies differ only by a value that decides validation
+  (422 vs 201) are not compared; a contradiction spread across different setups is not
+  seen.
 
 CLI (``main``): ``lint --spec MOD:SPEC|FILE.py [--trace PATH] [--db MOD:fn]
 [--login MOD:fn] [--json]``; prints the findings grouped by code with their fixes (or
@@ -103,6 +116,7 @@ CODES: Mapping[str, str] = {
     "L008": "background rule without an Await",
     "L009": "vacuous scenario",
     "L010": "question without a default or rules",
+    "L011": "conflicting expectations",
 }
 
 _SIGNAL = re.compile(r"\b(never|at most|only|unique\w*|duplicat\w*|exactly|must|every|all)\b", re.I)
@@ -731,6 +745,100 @@ def _l010(trace: Trace) -> list[LintFinding]:
     return out
 
 
+# ---- L011 ----------------------------------------------------------------------------------
+
+ACCESS_STATUSES = frozenset({401, 403})
+
+
+@dataclass(frozen=True)
+class Conflict:
+    """Two steps (``scenario``, 1-based ``step``) expecting different statuses for the
+    same request after the same setup (L011)."""
+
+    scenario_a: str
+    step_a: int
+    status_a: int
+    scenario_b: str
+    step_b: int
+    status_b: int
+    endpoint: str  # METHOD /template
+    user: str | None
+
+    @property
+    def targets(self) -> tuple[str, str]:
+        return f"scenario:{self.scenario_a}", f"scenario:{self.scenario_b}"
+
+
+def _canonical_json(value: Any) -> str:
+    return json.dumps(value or None, sort_keys=True, default=str)
+
+
+def _setup_steps(spec: Spec) -> list[tuple[Scenario, int, Step, str]]:
+    """Every step that runs on its scenario's setup alone and is the first on its
+    template there: (scenario, step number, step, template)."""
+    contracts = _contract_templates(spec)
+    out = []
+    for scenario in spec.scenarios:
+        seen: set[tuple[Any, ...]] = set()
+        for i, step in _steps(scenario):
+            if isinstance(step, Await):
+                break
+            key = (step.user, step.method.upper(), template_of(step.path, contracts))
+            if key not in seen:
+                seen.add(key)
+                out.append((scenario, i, step, key[2]))
+            if _is_write(step) and _ok(step.expect_status):
+                break  # every later step runs on a changed state
+    return out
+
+
+def conflicts(spec: Spec) -> list[Conflict]:
+    """The L011 pairs of `spec` (see the module docstring), in scenario order."""
+    groups: dict[tuple[Any, ...], list[tuple[Scenario, int, Step]]] = {}
+    for scenario, i, step, template in _setup_steps(spec):
+        key = (_canonical_json(scenario.given), step.user, step.method.upper(), template,
+               step.path.split("?")[0])  # fmt: skip
+        groups.setdefault(key, []).append((scenario, i, step))
+    out: list[Conflict] = []
+    for key, steps in groups.items():
+        for n, (sa, ia, a) in enumerate(steps):
+            for sb, ib, b in steps[n + 1:]:
+                if sa.name == sb.name or a.expect_status == b.expect_status:
+                    continue
+                statuses = {a.expect_status, b.expect_status}
+                access = bool(statuses & ACCESS_STATUSES) and any(_ok(x) for x in statuses)
+                same_body = (_canonical_json(a.json) == _canonical_json(b.json)
+                             and _canonical_json(a.params) == _canonical_json(b.params))
+                if not (same_body or access):
+                    continue
+                out.append(Conflict(sa.name, ia, a.expect_status, sb.name, ib, b.expect_status,
+                                    f"{key[2]} {key[3]}", a.user))  # fmt: skip
+    return out
+
+
+def _l011(spec: Spec, trace: Trace) -> list[LintFinding]:
+    by_element = _rules_by_element(trace)
+    out = []
+    for c in conflicts(spec):
+        ta, tb = c.targets
+        rules_a = by_element.get(ta, [])
+        rules_b = by_element.get(tb, [])
+        who = c.user or "no token"
+        says_a = f" ({', '.join(rules_a)})" if rules_a else ""
+        says_b = f" ({', '.join(rules_b)})" if rules_b else ""
+        out.append(LintFinding(
+            "L011", (rules_a or rules_b or [None])[0], ta,
+            f"{ta} step {c.step_a} expects {c.status_a} but {tb} step {c.step_b} expects "
+            f"{c.status_b} for the same request ({c.endpoint} as {who}) after the same "
+            "setup: both cannot hold",
+            f"Which holds? {c.endpoint} as {who} answers {c.status_a}{says_a}, or "
+            f"{c.status_b}{says_b}? Keep the scenario that states the answer the owner "
+            f"confirms and delete or rewrite the other ({ta} or {tb}), and fix the rule "
+            "that says otherwise.",
+        ))  # fmt: skip
+    return out
+
+
 # ---- L009: vacuity -------------------------------------------------------------------------
 
 
@@ -839,6 +947,7 @@ def lint(
     else:
         found += _l009(spec, trace, vacuity, notes)
     found += _l010(trace)
+    found += _l011(spec, trace)
     return sorted(found, key=lambda f: f.code)
 
 
@@ -942,10 +1051,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 __all__ = [
     "CODES",
+    "Conflict",
     "LintConfig",
     "LintError",
     "LintFinding",
     "VacuityConfig",
+    "conflicts",
     "lint",
     "main",
     "render",

@@ -181,7 +181,7 @@ The module must also import cleanly: a `Schema` or `ApiProfile` that is inconsis
 
 ## The trace *(from the code)*
 
-{{moddoc:lattice.spec.rules|A **trace**|}}
+{{moddoc:lattice.spec.rules|A **trace**|An incremental draft}}
 
 You write the trace's `links`, `unchecked`, `context` and `questions`; `source` and
 `rules` are filled in from the numbered rules. Every rule id appears in exactly one of

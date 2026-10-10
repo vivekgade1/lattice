@@ -25,6 +25,11 @@ result says the link is a gap), "unchecked" (`Trace.unchecked` gives a reason),
 "context" (`Trace.context`), "untraced" (none of the above -- `Trace.untraced()`), or
 "probe gap" (it is linked, but a probe result for it is `"gap"`: the check that was
 supposed to catch a violation of this rule does not).
+
+`review_change_markdown` renders the page for an incremental draft
+(`lattice.spec.incremental.draft_since`) instead: only the change -- the rules added,
+changed (old -> new text) and removed, the spec elements added, removed and modified,
+the L011 conflicts with their question, and the impact on the current app by label.
 """
 
 from __future__ import annotations
@@ -45,7 +50,7 @@ from lattice.spec.authoring import requirements_markdown
 from lattice.spec.model import Await, Machine, Spec, Step, Unchecked
 from lattice.spec.rules import Rule, Trace
 
-__all__ = ["review_markdown", "review_html", "main"]
+__all__ = ["review_change_markdown", "review_markdown", "review_html", "main"]
 
 _STATUSES = ("checked", "unchecked", "context", "untraced", "probe_gap")
 _STATUS_ICON = {
@@ -550,6 +555,166 @@ def review_markdown(
     lines += _md_access(data)
     lines += _md_section6(data)
     lines += _md_back_translation(data)
+    return "\n".join(lines).rstrip() + "\n"
+
+
+# ---- the change review ------------------------------------------------------------------
+
+
+def _as_dict(item: Any) -> dict[str, Any]:
+    if isinstance(item, Mapping):
+        return dict(item)
+    to_dict = getattr(item, "to_dict", None)
+    return to_dict() if callable(to_dict) else dict(vars(item))
+
+
+def _element_lines(spec: Spec, target: str) -> list[str]:
+    """What an element states, one line each (a scenario's steps, an invariant's
+    sentence, a machine's moves)."""
+    kind, _, name = target.partition(":")
+    if kind == "scenario":
+        sc = next((s for s in spec.scenarios if s.name == name), None)
+        if sc is None:
+            return []
+        given = [f"given {_short_value(dict(sc.given))}"] if sc.given else []
+        return given + [f"{i}. {_step_line(st)}" for i, st in enumerate(sc.steps, 1)]
+    if kind == "invariant":
+        inv = next((i for i in spec.invariants if i.name == name), None)
+        return [f"{inv.sentence} (`{inv.expr}`)"] if inv else []
+    if kind == "machine":
+        table, _, column = name.partition(".")
+        for m in spec.machines:
+            found = spec.table(m.table)
+            if m.column == column and (m.table == table or (found and found[0] == table)):
+                return [_machine_moves(m)]
+    if kind == "service":
+        svc = next((s for s in spec.services if s.name == name), None)
+        return [svc.doc] if svc and svc.doc else []
+    return []
+
+
+def _links_of(trace: Trace, rule_id: str) -> str:
+    if trace.links.get(rule_id):
+        return ", ".join(f"`{t}`" for t in trace.links[rule_id])
+    if rule_id in trace.unchecked:
+        return f"unchecked: {trace.unchecked[rule_id]}"
+    if rule_id in trace.context:
+        return "context"
+    return "not traced"
+
+
+def review_change_markdown(
+    base_spec: Spec,
+    new_spec: Spec,
+    base_trace: Trace,
+    new_trace: Trace,
+    diff: Any,
+    lint: Sequence[Any] | None = None,
+    impact: Sequence[Any] | None = None,
+    *,
+    title: str = "Change review",
+) -> str:
+    """The page the owner reads to approve an incremental draft
+    (:func:`lattice.spec.incremental.draft_since`): only the change. The rules added,
+    changed (old -> new text) and removed; the spec elements added, removed and modified
+    (compared structurally); the L011 conflicts of `lint` (findings or their dicts; the
+    other codes are left to :func:`review_markdown`) with their question; and `impact`
+    (:class:`lattice.spec.incremental.ImpactItem`s or dicts) grouped by label.
+    Deterministic."""
+    from lattice.spec.incremental import IMPACT_LABELS, changed_targets
+
+    elements = changed_targets(base_spec, new_spec)
+    conflicts = [d for d in map(_as_dict, lint or ()) if d.get("code") == "L011"]
+    items = [_as_dict(i) for i in impact or ()]
+    n_el = sum(len(v) for v in elements.values())
+    lines = [f"# {title}", "", "## Summary", ""]
+    lines.append(
+        f"- Rules: {len(diff.added)} added, {len(diff.changed)} changed, "
+        f"{len(diff.removed)} removed ({len(diff.unchanged)} unchanged)."
+    )
+    lines.append(
+        f"- Spec elements: {len(elements['added'])} added, {len(elements['removed'])} "
+        f"removed, {len(elements['modified'])} modified."
+    )
+    lines.append(f"- Conflicts: {len(conflicts)}.")
+    if impact is not None:
+        counts = Counter(i.get("label") for i in items)
+        shown = ", ".join(f"{counts[k]} {k.replace('_', ' ')}" for k in IMPACT_LABELS
+                          if counts[k])  # fmt: skip
+        lines.append(f"- Impact on the current app: {shown or 'nothing fails'}.")
+    lines.append("")
+
+    lines += ["## Rules", ""]
+    if diff.added:
+        lines += ["### Added", ""]
+        for n in diff.added:
+            r = diff.new(n)
+            was = f" (replaces {new_trace.replaces[n]})" if n in new_trace.replaces else ""
+            lines.append(f"- **{n}**{was}: {r.text}")
+            lines.append(f"  - checked by: {_links_of(new_trace, n)}")
+        lines.append("")
+    if diff.changed:
+        lines += ["### Changed", ""]
+        for o, n in diff.changed:
+            lines.append(f"- **{o} → {n}**")
+            lines.append(f"  - was: {diff.old(o).text}")
+            lines.append(f"  - now: {diff.new(n).text}")
+            lines.append(f"  - checked by: {_links_of(base_trace, o)} → {_links_of(new_trace, n)}")
+        lines.append("")
+    if diff.removed:
+        lines += ["### Removed", ""]
+        for o in diff.removed:
+            reason = new_trace.retired.get(o)
+            tail = f" — retired: {reason}" if reason else ""
+            lines.append(f"- **{o}**: {diff.old(o).text}{tail}")
+            lines.append(f"  - was checked by: {_links_of(base_trace, o)}")
+        lines.append("")
+    if diff.empty:
+        lines += ["No rule changed.", ""]
+
+    lines += ["## Spec elements", ""]
+    if not n_el:
+        lines += ["No element changed.", ""]
+    for key, spec, heading in (("added", new_spec, "Added"), ("modified", new_spec, "Modified"),
+                               ("removed", base_spec, "Removed")):  # fmt: skip
+        if not elements[key]:
+            continue
+        lines += [f"### {heading}", ""]
+        for target in elements[key]:
+            lines.append(f"- `{target}`")
+            if key == "modified":
+                before = _element_lines(base_spec, target)
+                after = _element_lines(new_spec, target)
+                lines += [f"  - before: {x}" for x in before if x not in after]
+                lines += [f"  - now: {x}" for x in after if x not in before]
+            else:
+                lines += [f"  - {x}" for x in _element_lines(spec, target)]
+        lines.append("")
+
+    lines += ["## Conflicts", ""]
+    if not conflicts:
+        lines += ["None found.", ""]
+    for c in conflicts:
+        lines.append(f"- {c.get('message', '')}")
+        lines.append(f"  - **{c.get('fix', '')}**")
+    if conflicts:
+        lines.append("")
+
+    if impact is not None:
+        lines += ["## Impact on the current app", ""]
+        if not items:
+            lines += ["Every check of the new spec passes on the current app.", ""]
+        for label in IMPACT_LABELS:
+            group = [i for i in items if i.get("label") == label]
+            if not group:
+                continue
+            lines += [f"### {label.replace('_', ' ').capitalize()} ({len(group)})", ""]
+            for i in group:
+                rules = ", ".join(i.get("rules") or []) or "no rule"
+                lines.append(f"- `{i.get('target')}` ({rules})")
+                for f in i.get("findings") or []:
+                    lines.append(f"  - {f.get('summary', '')}")
+            lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
 

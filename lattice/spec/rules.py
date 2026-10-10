@@ -25,6 +25,16 @@ A link target is ``<kind>:<name>`` with kind one of ``scenario``, ``invariant``,
 `Unchecked` note; ``context`` lists rules that state no checkable behaviour (an
 introduction, the stack). Every rule is in exactly one of links, unchecked or context --
 `Trace.untraced()` lists the ones that are in none.
+
+An incremental draft (`lattice.spec.incremental.draft_since`: the requirements edited
+since a base spec) records what the change did to the base trace: ``replaces`` maps a
+new rule id to the old rule id (of the base trace) whose checks it rewrites;
+``retired`` maps an old rule id the change removed to the reason; ``retired_targets``
+lists the base spec's elements (``kind:name``) the change deleted -- e.g.
+``"replaces": {"R5": "R4"}, "retired": {"R6": "removed from the requirements"},
+"retired_targets": ["scenario:old_rule_case"]``. All three are empty for a draft from
+scratch, and a trace JSON without them (written before they existed) loads with them
+empty.
 """
 
 from __future__ import annotations
@@ -99,6 +109,10 @@ class Trace:
     unchecked: dict[str, str] = field(default_factory=dict)
     context: list[str] = field(default_factory=list)
     questions: list[Question] = field(default_factory=list)
+    # incremental drafts only (see the module docstring); keyed by new / old rule ids
+    replaces: dict[str, str] = field(default_factory=dict)
+    retired: dict[str, str] = field(default_factory=dict)
+    retired_targets: list[str] = field(default_factory=list)
 
     def untraced(self) -> list[Rule]:
         """Rules that no spec element checks, no unchecked reason covers, and that are
@@ -122,6 +136,9 @@ class Trace:
             unchecked=dict(d.get("unchecked", {})),
             context=list(d.get("context", [])),
             questions=[Question(**q) for q in d.get("questions", [])],
+            replaces={str(k): str(v) for k, v in (d.get("replaces") or {}).items()},
+            retired={str(k): str(v) for k, v in (d.get("retired") or {}).items()},
+            retired_targets=[str(t) for t in d.get("retired_targets") or []],
         )
 
     def save(self, path: Path | str) -> None:

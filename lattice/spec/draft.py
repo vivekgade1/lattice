@@ -19,6 +19,10 @@ CLI (:func:`main`)::
 
     draft REQUIREMENTS.md --context CONTEXT.md --out spec_gen.py [--model opus]
         [--max-repairs 3] [--revise --feedback lint.json]
+    draft NEW.md --since OLD.md --base BASE.py [--context CTX.md] --out NEW.py
+        [--impact --app mod:factory --db mod:build_db ...]
+
+(the second form drafts only the change: :mod:`lattice.spec.incremental`)
 
 writes the module, its trace (``spec_gen.trace.json``, :func:`lattice.spec.rules.
 trace_path`) and ``spec_gen.draft.json`` (usage, rounds, problems, transcript). Exit 0
@@ -40,7 +44,7 @@ import sys
 import tempfile
 import traceback
 import uuid
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -257,12 +261,16 @@ def _rules_block(rules: Sequence[Rule]) -> str:
 
 
 def _trace_json(trace: Trace) -> str:
-    body = {
+    body: dict[str, Any] = {
         "links": trace.links,
         "unchecked": trace.unchecked,
         "context": trace.context,
         "questions": [dataclasses.asdict(q) for q in trace.questions],
     }
+    # an incremental draft's record of the change (empty, and left out, otherwise)
+    for key in ("replaces", "retired", "retired_targets"):
+        if getattr(trace, key):
+            body[key] = getattr(trace, key)
     return json.dumps(body, indent=2, ensure_ascii=False)
 
 
@@ -645,6 +653,11 @@ class DraftResult:
     transcript: list[dict[str, Any]] = field(default_factory=list)
     model: str = ""
     spec: Spec | None = field(default=None, repr=False)
+    # an incremental draft (lattice.spec.incremental.draft_since) only: the rule diff
+    # (a RuleDiff), the base spec's elements added / removed / modified, and notes
+    diff: Any = None
+    changed_targets: dict[str, list[str]] | None = None
+    notes: list[str] = field(default_factory=list)
 
     @property
     def valid(self) -> bool:
@@ -662,7 +675,11 @@ def _loop(
     module_source: str | None = None,
     trace: Trace | None = None,
     keep_questions: Sequence[str] = (),
+    post: Callable[[Spec | None, Trace, Mapping[str, Any] | None], list[str]] | None = None,
 ) -> DraftResult:
+    """The draft / repair loop. `post` (optional) checks each answer further: it gets
+    the imported SPEC (or None), the trace and the raw trace object, may complete the
+    trace in place, and answers more problems."""
     system = system_prompt()
     usage = DraftUsage()
     transcript: list[dict[str, Any]] = []
@@ -700,6 +717,8 @@ def _loop(
             notes.append("trace")
         module_source = new_module
         spec, current_trace, problems = evaluate(module_source, raw, rules, source)
+        if post is not None:
+            problems += post(spec, current_trace, raw)
         kept = {q.id for q in current_trace.questions}
         problems += [
             f"trace: question {q} was dropped; keep it (set its answer if settled)"
@@ -814,6 +833,21 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--effort", default="high", help="CLI effort level ('' for none)")
     p.add_argument("--max-tokens", type=int, default=64000)
     p.add_argument("--timeout", type=float, default=1200.0, help="seconds per model call")
+    inc = p.add_argument_group(
+        "incremental", "draft only the change since OLD.md (lattice.spec.incremental)"
+    )
+    inc.add_argument("--since", type=Path, help="the old requirements the base spec drafts")
+    inc.add_argument("--base", type=Path, help="the base spec module (its trace beside it)")
+    inc.add_argument("--impact", action="store_true", help="run the new spec on the app")
+    inc.add_argument("--app", help="--impact: module:factory, (db_path) -> app")
+    inc.add_argument("--db", help="--impact: module:build_db, (path) or (variant, path)")
+    inc.add_argument("--login", help="--impact: module:fn, (client, handle) -> token")
+    inc.add_argument("--runtime", help="--impact: module:RUNTIME, 'process' or 'go'")
+    inc.add_argument("--services", help="--impact: module:SERVICES")
+    inc.add_argument("--database", default="sqlite",
+                     choices=("sqlite", "postgres", "mysql", "clickhouse"))  # fmt: skip
+    inc.add_argument("--database-url", help="--impact: an existing database server")
+    inc.add_argument("--race", action="store_true", help="--impact: layer X too")
     return p
 
 
@@ -840,6 +874,13 @@ def main(argv: list[str], *, generator: Generator | None = None) -> int:
     if args.revise and args.feedback is None:
         print("draft: --revise needs --feedback FILE", file=sys.stderr)
         return 2
+    if args.since is not None or args.base is not None:
+        if args.since is None or args.base is None or args.revise:
+            print("draft: --since OLD.md needs --base BASE.py (and no --revise)", file=sys.stderr)
+            return 2
+        from lattice.spec.incremental import run_cli
+
+        return run_cli(args, generator if generator is not None else _client(args))
     try:
         requirements = args.requirements.read_text()
         context = args.context.read_text() if args.context else ""
