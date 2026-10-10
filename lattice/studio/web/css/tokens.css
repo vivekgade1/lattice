@@ -1,0 +1,212 @@
+/* Lattice Studio design tokens: the single source of colour, type, space, shape.
+   Principle: structure by space and weight, not by borders and fills.
+   Dark values are applied by the OS preference unless [data-theme="light"],
+   or forced with [data-theme="dark"]. Every other stylesheet uses var(--token) only. */
+
+:root {
+  /* paper, surfaces, ink, hairlines */
+  --paper: #faf9f7;
+  --surface: #f3f1ed;
+  --raised: #ffffff;
+  --ink: #1b1a18;
+  --ink-2: #67635c;
+  --ink-3: #8e8a82; /* decoration and disabled only, not for text */
+  --hairline: #e8e5df;
+  --hairline-strong: #d3cfc7;
+
+  /* the one accent (muted indigo) */
+  --accent: #4a55b4;
+  --accent-soft: #eceefa;
+  --on-accent: #ffffff;
+
+  /* ok / warn / bad / gap: mark colour, text colour (>= 4.5:1), soft tint */
+  --ok: #3f7a5a;
+  --ok-text: #2f6247;
+  --ok-soft: #e7f0ea;
+  --warn: #9a6b16;
+  --warn-text: #7f5710;
+  --warn-soft: #f6eddb;
+  --bad: #b04566;
+  --bad-text: #9a3553;
+  --bad-soft: #f7e6eb;
+  --gap: #7a5bb0;
+  --gap-text: #624896;
+  --gap-soft: #eee9f6;
+
+  /* diff marks: thin left bar + soft tint */
+  --pending: var(--warn);
+  --pending-text: var(--warn-text);
+  --pending-soft: var(--warn-soft);
+  /* diff marks (spec): modified amber, added green bar, removed red strike, impact dashed amber */
+  --added: var(--ok);
+  --added-soft: var(--ok-soft);
+  --removed: var(--bad);
+  --removed-soft: color-mix(in srgb, var(--bad-soft) 50%, var(--paper));
+  --impact: var(--pending);
+  --impact-soft: var(--pending-soft);
+
+  /* code view and rebuild */
+  --code-covered: var(--ok);
+  --code-failing: var(--bad);
+  --code-untested: var(--hairline-strong);
+  --rebuild-running: var(--accent);
+  --rebuild-passed: var(--ok);
+  --rebuild-failed: var(--bad);
+  --verify-observed: var(--accent);
+
+  /* layers (spec 3.4), text-grade */
+  --layer-a: var(--accent);
+  --layer-b: #0f6f80;
+  --layer-c: var(--gap-text);
+  --layer-d: var(--ok-text);
+
+  /* ---- aliases kept for existing markup, JS and CSS ---- */
+  --bg-canvas: var(--paper);
+  --bg-surface: var(--surface);
+  --bg-raised: var(--raised);
+  --border: var(--hairline);
+  --border-strong: var(--hairline-strong);
+  --text: var(--ink);
+  --text-2: var(--ink-2);
+  --accent-bg: var(--accent-soft);
+
+  --verified: var(--ok);
+  --verified-text: var(--ok-text);
+  --verified-bg: var(--ok-soft);
+  --inferred: var(--warn);
+  --inferred-text: var(--warn-text);
+  --proposed: var(--gap);
+  --proposed-text: var(--gap-text);
+  --proposed-bg: var(--gap-soft);
+  --unchecked: var(--ink-3);
+  --unchecked-text: var(--ink-2);
+
+  --pass: var(--ok);
+  --silent: var(--bad-text);
+  --silent-bg: var(--bad-soft);
+  --loud: var(--warn);
+  --loud-text: var(--warn-text);
+  --loud-bg: var(--warn-soft);
+  --equal-rule: var(--ink-2);
+  --none: var(--ink-3);
+
+  --pending-bg: var(--pending-soft);
+
+  --s2xx-bg: var(--ok-soft);
+  --s2xx-text: var(--ok-text);
+  --s4xx-bg: color-mix(in srgb, var(--ink) 6%, var(--paper));
+  --s4xx-text: var(--ink);
+  --s5xx-bg: var(--warn-soft);
+  --s5xx-text: var(--warn-text);
+
+  --add-bg: var(--ok-soft);
+  --del-bg: var(--bad-soft);
+  --mark: color-mix(in srgb, var(--accent) 16%, transparent);
+
+  /* type */
+  --font-ui: "Geist", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-28: 28px;
+  --lh-body: 1.5;
+  --measure: 68ch;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-strong: 600;
+
+  /* space: 4-pt scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* shape and depth */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-control: var(--radius-md);
+  --radius-surface: var(--radius-lg);
+  --elev-1: 0 1px 0 var(--hairline);
+  --elev-2: 0 8px 28px rgba(27, 26, 24, 0.12), 0 1px 3px rgba(27, 26, 24, 0.06);
+  --shadow-popover: var(--elev-2);
+
+  /* motion */
+  --t-fast: 150ms;
+
+  /* layout */
+  --topbar-h: 48px;
+  --nav-w: 232px;
+  --chat-w: 380px;
+  --tray-h: 44px;
+  --tray-h-open: 280px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #131312;
+    --surface: #1a1a18;
+    --raised: #20201d;
+    --ink: #eceae5;
+    --ink-2: #a9a59c;
+    --ink-3: #7d7970;
+    --hairline: #2a2926;
+    --hairline-strong: #3a3834;
+    --accent: #9aa3f0;
+    --accent-soft: #22254a;
+    --on-accent: #131312;
+    --ok: #5fae83;
+    --ok-text: #86d0a8;
+    --ok-soft: #1a2b22;
+    --warn: #cf9a3c;
+    --warn-text: #e8bc6a;
+    --warn-soft: #2e2616;
+    --bad: #d56b8a;
+    --bad-text: #ee98b0;
+    --bad-soft: #33191f;
+    --gap: #a58bdb;
+    --gap-text: #bba6ea;
+    --gap-soft: #2a2340;
+    --layer-b: #5cc0d1;
+    --elev-2: 0 8px 28px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #131312;
+  --surface: #1a1a18;
+  --raised: #20201d;
+  --ink: #eceae5;
+  --ink-2: #a9a59c;
+  --ink-3: #7d7970;
+  --hairline: #2a2926;
+  --hairline-strong: #3a3834;
+  --accent: #9aa3f0;
+  --accent-soft: #22254a;
+  --on-accent: #131312;
+  --ok: #5fae83;
+  --ok-text: #86d0a8;
+  --ok-soft: #1a2b22;
+  --warn: #cf9a3c;
+  --warn-text: #e8bc6a;
+  --warn-soft: #2e2616;
+  --bad: #d56b8a;
+  --bad-text: #ee98b0;
+  --bad-soft: #33191f;
+  --gap: #a58bdb;
+  --gap-text: #bba6ea;
+  --gap-soft: #2a2340;
+  --layer-b: #5cc0d1;
+  --elev-2: 0 8px 28px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}

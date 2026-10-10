@@ -1,0 +1,220 @@
+/* Intent views: rules, access, data, lifecycle, invariants, scenarios, services, gaps.
+   Structure by whitespace and weight, not boxes. Tokens only, no colour literals.
+   Selectors start with .view so they win over the base rules in app.css. */
+
+/* ---- hover and focus actions (Ask, Change, Edit, Code) ---- */
+
+.view { --acts-room: 120px; }
+.view .acts-host { position: relative; }
+.view .acts {
+  position: absolute; top: var(--space-2); right: var(--space-2);
+  display: inline-flex; gap: 2px; padding: 2px;
+  background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-control);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--t-fast) ease;
+  z-index: 3;
+}
+.view .acts-host:is(:hover, :focus-within, :focus):not(:has(.acts-host:hover)) > .acts,
+.view .cell-bar .acts { opacity: 1; pointer-events: auto; }
+@media (hover: none) {
+  .view .acts { opacity: 1; pointer-events: auto; position: static; margin-top: var(--space-2); border-color: transparent; background: transparent; }
+}
+.view .act {
+  display: inline-flex; align-items: center; gap: 4px;
+  min-width: 26px; min-height: 24px; justify-content: center;
+  padding: 2px 5px; border: 0; border-radius: var(--radius-sm);
+  background: transparent; color: var(--ink-2); cursor: pointer;
+  font-size: var(--fs-12); line-height: 20px; font-weight: var(--fw-medium);
+}
+.view .act:hover { background: var(--surface); color: var(--ink); }
+.view .act:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.view .act .icon { width: 14px; height: 14px; }
+
+.view .empty-note { padding: var(--space-6) 0; color: var(--ink-2); max-width: var(--measure); }
+.view .empty-note p { margin: 0 0 var(--space-2); }
+.view .unlinked { color: var(--ink-2); }
+.view .rule-links { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+
+/* diff marks, same everywhere in these views */
+.view .diff-sign { margin-right: var(--space-2); font-weight: var(--fw-strong); font-family: var(--font-mono); }
+.view .diff-added { background-color: var(--added-soft); box-shadow: inset 2px 0 0 var(--added); }
+.view .diff-added .diff-sign { color: var(--ok-text); }
+.view .diff-changed, .view .diff-modified { background-color: var(--pending-soft); box-shadow: inset 2px 0 0 var(--pending); }
+.view .diff-removed { background-color: transparent; box-shadow: inset 2px 0 0 var(--removed); }
+.view .diff-removed .diff-sign { color: var(--bad-text); }
+.view .diff-removed del, .view .diff-removed .rule-body { text-decoration: line-through; color: var(--ink-2); }
+.view .is-impact { outline: 1px dashed var(--impact); outline-offset: -1px; }
+.view .badge-added { color: var(--ok-text); background: var(--added-soft); }
+.view .badge-removed { color: var(--bad-text); border-color: var(--removed); }
+
+/* ---- rules ---- */
+
+.view-rules .cov-bar { height: 4px; margin-bottom: var(--space-4); }
+.view-rules .rules-filter { background: transparent; padding: 0; margin-bottom: var(--space-4); gap: var(--space-1); }
+.view-rules .rules-filter .seg-btn { border-radius: 999px; }
+.view-rules .rules-filter .seg-btn[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); box-shadow: none; }
+.view-rules .rule {
+  display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 0 var(--space-3);
+  padding: var(--space-3) var(--acts-room) var(--space-3) var(--space-3);
+  margin: 0 0 0 calc(var(--space-3) * -1);
+  border-bottom: 0; border-left: 2px solid transparent; border-radius: 0 var(--radius-control) var(--radius-control) 0;
+  box-shadow: none;
+}
+.view-rules .rule:hover { background: var(--surface); }
+.view-rules .rule.diff-added { background-color: var(--added-soft); border-left-color: var(--added); }
+.view-rules .rule.diff-changed { background-color: var(--pending-soft); border-left-color: var(--pending); }
+.view-rules .rule.diff-removed { border-left-color: var(--removed); }
+.view-rules .rule .acts { top: var(--space-2); }
+.view-rules .rule > .acts { grid-column: -2 / -1; justify-self: start; }
+.view-rules .rule-id { padding-top: 2px; font-family: var(--font-mono); font-size: var(--fs-12); color: var(--ink-2); }
+.view-rules .rule-main { min-width: 0; }
+.view-rules .rule-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-1); }
+.view-rules .rule-meta:empty { display: none; }
+.view-rules .rule-body { max-width: var(--measure); }
+.view-rules .rule-body p { margin: 0; }
+.view-rules .rule-detail { grid-column: 1 / -1; margin-top: var(--space-3); padding: var(--space-3) 0 0 calc(48px + var(--space-3)); border-top: 1px solid var(--hairline); }
+.view-rules .rule.st-context .rule-body { color: var(--ink-2); }
+.view-rules .rule-body.is-old { color: var(--ink-2); text-decoration: line-through; text-decoration-color: var(--ink-3); }
+.view-rules .rule-new { display: flex; gap: var(--space-2); max-width: var(--measure); margin-top: var(--space-1); }
+.view-rules .rule-new .diff-sign { margin: 0; color: var(--pending-text); }
+.view-rules .rules-scope { margin: 0 0 var(--space-4); color: var(--ink-2); }
+.view-rules .rules-doc.is-scoped > :is(h2, h3, h4, h5, h6, hr, pre, .md-plain),
+.view-rules .rules-doc.is-scoped li:not(:has(.rule:not([hidden]))),
+.view-rules .rules-doc.is-scoped :is(ul, ol):not(:has(.rule:not([hidden]))) { display: none; }
+
+/* status chips: icon + word, light tint */
+.view .badge-rule { background: transparent; padding: 0 var(--space-2) 0 0; }
+.view .badge-rule.st-checked { color: var(--ok-text); background: transparent; }
+.view .badge-rule.st-probe-gap { color: var(--warn-text); background: var(--warn-soft); padding: 0 var(--space-2); }
+.view .badge-rule.st-untraced { color: var(--gap-text); background: var(--gap-soft); padding: 0 var(--space-2); }
+.view .badge-rule.st-unchecked { color: var(--ink-2); border: 0; }
+.view .badge-rule.st-context { color: var(--ink-2); border: 0; font-weight: var(--fw-regular); }
+.view .badge-rule.st-notbuilt { color: var(--pending-text); background: var(--pending-soft); padding: 0 var(--space-2); }
+.view .trace-it { min-height: 24px; padding: 0 var(--space-2); font-size: var(--fs-12); color: var(--gap-text); }
+.view .trace-it:hover:not(:disabled) { background: var(--gap-soft); color: var(--gap-text); }
+
+/* ---- access ---- */
+
+.view-access { position: relative; }
+.view-access .legend { margin-bottom: var(--space-6); color: var(--ink-2); }
+.view-access .matrix-group h2 { margin-top: var(--space-8); font-size: var(--fs-14); font-weight: var(--fw-medium); color: var(--ink-2); }
+.view-access .matrix { border-collapse: collapse; }
+.view-access .matrix th, .view-access .matrix td { padding: var(--space-3) var(--space-3); border: 0; }
+.view-access .matrix thead th { color: var(--ink-2); font-weight: var(--fw-medium); border-bottom: 1px solid var(--hairline); background: var(--paper); }
+.view-access .matrix-caller { min-width: 112px; }
+.view-access .matrix-endpoint { background: var(--paper); font-weight: var(--fw-regular); min-width: 0; }
+.view-access .matrix tbody tr:hover :is(th, td) { background: var(--surface); }
+.view-access .mcell { font-family: var(--font-ui); font-size: var(--fs-13); border-radius: var(--radius-sm); position: relative; }
+.view-access .mcell:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.view-access .mcell.s2xx, .view-access .mcell.s4xx, .view-access .mcell.s5xx { background: transparent; }
+.view-access .mcell.s2xx .cell-val { color: var(--ok-text); background: var(--ok-soft); }
+.view-access .mcell.s4xx .cell-val { color: var(--ink); background: var(--surface); }
+.view-access .mcell.s5xx .cell-val { color: var(--bad-text); background: var(--bad-soft); }
+.view-access .cell-val { display: inline-block; padding: 0 var(--space-2); border-radius: 999px; font-family: var(--font-mono); font-size: var(--fs-12); line-height: 20px; }
+.view-access .mcell.pending { background: var(--pending-soft); box-shadow: inset 2px 0 0 var(--pending); }
+.view-access .cell-old { color: var(--ink-2); }
+.view-access .cell-new { font-weight: var(--fw-strong); }
+.view-access .mcell.is-impact { outline-offset: -3px; }
+.view-access .cell-empty { display: grid; place-items: center; min-height: 24px; }
+.view-access .cell-empty > * { grid-area: 1 / 1; }
+.view-access .cell-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); }
+.view-access .cell-make {
+  border: 0; background: transparent; color: var(--accent); cursor: pointer;
+  font-size: var(--fs-12); line-height: 20px; padding: 0 var(--space-1); border-radius: var(--radius-sm);
+  opacity: 0;
+}
+.view-access .mcell:is(:hover, :focus-within, :focus) .cell-make { opacity: 1; }
+.view-access .mcell:is(:hover, :focus-within, :focus) .cell-dot { opacity: 0; }
+.view-access .cell-make:focus-visible { outline: 2px solid var(--accent); }
+.view-access .cell-bar {
+  position: absolute; transform: translateX(-50%); z-index: 5;
+  background: var(--raised); border-radius: var(--radius-control); box-shadow: var(--shadow-popover);
+}
+.view-access .cell-bar .acts { position: static; border: 0; background: transparent; }
+
+/* ---- data and lifecycle: flat sections ---- */
+
+.view .entities { display: block; }
+.view .entity, .view .machine {
+  padding: var(--space-5) 0 var(--space-4); border-top: 1px solid var(--hairline);
+  background: transparent; margin: 0;
+}
+.view .entity:first-child, .view .machine:first-of-type { border-top: 0; padding-top: 0; }
+.view .entity-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-3); padding-right: var(--acts-room); }
+.view .entity-head h2 { margin: 0; font-size: var(--fs-16); line-height: 24px; }
+.view .entity > .acts, .view .machine > .acts { top: var(--space-4); }
+.view .cols { margin: 0; }
+.view .col { border-top: 0; padding: var(--space-2) var(--acts-room) var(--space-2) var(--space-2); margin: 0 calc(var(--space-2) * -1); border-radius: var(--radius-control); grid-template-columns: minmax(120px, 200px) 90px minmax(0, 1fr); align-items: baseline; }
+.view .col:hover { background: var(--surface); }
+.view .col .col-chips { grid-column: auto; align-items: center; }
+.view .col > .acts { top: 50%; transform: translateY(-50%); }
+.view .cchip { background: transparent; padding: 0; margin-right: var(--space-2); }
+.view .cchip-key { color: var(--accent); background: transparent; }
+.view .cchip-private { color: var(--bad-text); background: transparent; font-weight: var(--fw-medium); }
+.view .cchip-bound, .view .cchip-enum { color: var(--ink-2); }
+.view .machine .machine-sentence { margin-top: 0; }
+.view .machine .pending-text del { color: var(--ink-2); }
+.view .transitions { margin-top: var(--space-3); }
+.view .transitions summary { cursor: pointer; color: var(--ink-2); }
+
+/* ---- invariants, services, gaps: quiet rows ---- */
+
+.view .rows .row { padding: var(--space-3) var(--acts-room) var(--space-3) var(--space-3); margin: 0 calc(var(--space-3) * -1); border: 0; border-radius: var(--radius-control); }
+.view .rows .row:hover { background: var(--surface); }
+.view .rows .row > .acts { top: var(--space-3); }
+.view .row-meta { margin-top: var(--space-1); }
+.view .row-title { font-weight: var(--fw-medium); }
+.view .unchecked-row { border-left: 2px solid var(--ink-3); }
+.view .gap-section { margin-top: var(--space-10); }
+.view .gap-section h2 { font-size: var(--fs-16); margin-bottom: var(--space-1); }
+.view .toc a { background: transparent; border: 1px solid var(--hairline); }
+.view .toc .count { margin-left: var(--space-1); }
+
+/* ---- scenarios ---- */
+
+.view-scenarios .toolbar { margin-bottom: var(--space-3); gap: var(--space-3); }
+.view-scenarios .toolbar .seg { background: transparent; padding: 0; }
+.view-scenarios .toolbar .seg-btn { border-radius: 999px; }
+.view-scenarios .toolbar .seg-btn[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); box-shadow: none; }
+.view-scenarios .by-rule select {
+  min-height: 32px; padding: 0 var(--space-2); border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-control); background: var(--paper); color: var(--ink);
+}
+.view-scenarios .scen {
+  padding: var(--space-4) var(--acts-room) var(--space-4) var(--space-3);
+  margin: 0 calc(var(--space-3) * -1); border-top: 1px solid var(--hairline); border-radius: 0;
+}
+.view-scenarios .scen:first-child { border-top: 0; }
+.view-scenarios .scen:hover { background: var(--surface); }
+.view-scenarios .scen-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
+.view-scenarios .scen-name { margin: 0; font-size: var(--fs-14); font-family: var(--font-mono); font-weight: var(--fw-medium); }
+.view-scenarios .scen > .acts { top: var(--space-3); }
+.view-scenarios .step { border-top: 0; padding: var(--space-1) 0; }
+.view-scenarios .scen:is(:hover, :focus) { box-shadow: none; }
+.view-scenarios .scen.diff-added { box-shadow: inset 2px 0 0 var(--added); }
+.view-scenarios .scen.diff-modified { box-shadow: inset 2px 0 0 var(--pending); }
+
+/* ---- narrow widths: no horizontal page scroll ---- */
+
+/* beside the code pane (lens Both) the view is narrow too: actions flow under the content */
+.lens-both .view { --acts-room: var(--space-3); }
+.lens-both .view .acts-host > .acts { position: static; display: none; transform: none; margin-top: var(--space-2); border-color: transparent; background: transparent; padding: 0; }
+.lens-both .view .acts-host:is(:hover, :focus-within, :focus):not(:has(.acts-host:hover)) > .acts { display: flex; }
+
+@media (max-width: 900px) {
+  .view { --acts-room: var(--space-3); }
+  .view .acts-host > .acts { position: static; display: none; transform: none; margin-top: var(--space-2); border-color: transparent; background: transparent; padding: 0; }
+  .view .acts-host:is(:hover, :focus-within, :focus):not(:has(.acts-host:hover)) > .acts { display: flex; }
+  .view .col { grid-template-columns: minmax(0, 1fr) auto; padding-right: var(--space-2); }
+  .view .col .col-chips { grid-column: 1 / -1; }
+  .view-rules .rule { grid-template-columns: minmax(0, 1fr); }
+  .view-rules .rule-id { padding-bottom: var(--space-1); }
+  .view-rules .rule-detail { padding-left: 0; }
+}
+
+@media (max-width: 760px) {
+  /* the matrix scrolls inside its region; keep the endpoint path readable instead of
+     breaking it letter by letter */
+  .view-access .matrix-endpoint { min-width: 200px; }
+  .view-access .matrix-endpoint .path { overflow-wrap: normal; word-break: normal; white-space: nowrap; }
+}

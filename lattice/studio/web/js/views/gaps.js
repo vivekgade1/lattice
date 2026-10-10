@@ -6,6 +6,7 @@ import { tid, targetChip, targetAttrs } from "../targets.js";
 import { unifiedDiff } from "../diff.js";
 import { ruleStatusChip } from "../badges.js";
 import { changeBanner } from "../overlay.js";
+import { actions } from "./rules.js";
 
 export function render(model, root, ctx) {
   const v = model.views || {};
@@ -35,26 +36,28 @@ export function render(model, root, ctx) {
 
   // Open questions
   add(root, section("gap-questions", "Open questions", `${open.length} of ${questions.length} unanswered. Until you answer, the spec uses the default shown.`,
-    open.length ? h("ol", { class: "rows" }, open.map((q) => questionRow(q, ctx))) : h("p", { class: "empty" }, "No open questions."),
+    open.length ? h("ol", { class: "rows" }, open.map((q) => questionRow(q, ctx))) : h("p", { class: "empty" }, "No open questions. Ask the conversation if something looks unclear."),
     answered.length ? h("details", {}, h("summary", {}, `Answered (${answered.length})`), h("ol", { class: "rows" }, answered.map((q) => questionRow(q, ctx)))) : null,
   ));
 
   // Probe gaps
   add(root, section("gap-probe", "Probe gaps", "A planted bug in the app passed every linked check. Each patch shows the bug that got through; the rule needs a sharper scenario.",
     probe.length ? h("ol", { class: "rows" }, probe.map((g) =>
-      h("li", { class: "row", id: tid(`gap:probe:${g.rule_id}`) },
+      h("li", { ...targetAttrs(`rule:${g.rule_id}`), id: tid(`gap:probe:${g.rule_id}`), class: "row acts-host" },
         h("div", { class: "row-main" }, ruleStatusChip("probe_gap"), targetChip(`rule:${g.rule_id}`), h("p", { class: "sentence" }, g.rule_text)),
         h("details", {}, h("summary", {}, "The patch that slipped through"), unifiedDiff(g.patch_summary, { label: `Probe patch for ${g.rule_id}` })),
+        actions(ctx, `rule:${g.rule_id}`, { label: g.rule_id }),
       ))) : h("p", { class: "empty" }, "No probe gaps: every planted bug was caught."),
   ));
 
   // Unchecked
   add(root, section("gap-unchecked", "Not checked by Lattice", "These requirements are true to the text but nothing tests them. Promote one to a rule if a check is possible.",
     unTrace.length ? h("ol", { class: "rows" }, unTrace.map((u) =>
-      h("li", { class: "row unchecked-row", id: tid(`gap:unchecked:${u.rule_id}`) },
+      h("li", { ...targetAttrs(`rule:${u.rule_id}`), id: tid(`gap:unchecked:${u.rule_id}`), class: "row unchecked-row acts-host" },
         h("div", { class: "row-main" }, ruleStatusChip("unchecked"), targetChip(`rule:${u.rule_id}`), h("p", { class: "sentence" }, u.rule_text)),
         h("p", { class: "muted" }, h("strong", {}, "Why: "), u.reason),
         h("div", { class: "row-actions" }, h("button", { type: "button", class: "btn btn-quiet", onclick: () => ctx.prefillChange(`Make ${u.rule_id} checkable: ${u.rule_text}`, [`rule:${u.rule_id}`]) }, icon("sparkle"), "Promote to rule")),
+        actions(ctx, `rule:${u.rule_id}`, { label: u.rule_id }),
       ))) : null,
     unNotes.length ? h("div", {}, h("h3", {}, "Parts of rules the spec cannot express"), h("ul", { class: "rows" }, unNotes.map((n) =>
       h("li", { class: "row unchecked-row" },
@@ -67,7 +70,14 @@ export function render(model, root, ctx) {
   // Untraced
   add(root, section("gap-untraced", "Untraced rules", "Rules with no linked check and no reason given.",
     untraced.length ? h("ol", { class: "rows" }, untraced.map((r) =>
-      h("li", { class: "row" }, h("div", { class: "row-main" }, ruleStatusChip("untraced"), targetChip(`rule:${r.id}`), h("p", { class: "sentence" }, r.text))),
+      h("li", { ...targetAttrs(`rule:${r.id}`), class: "row acts-host" },
+        h("div", { class: "row-main" }, ruleStatusChip("untraced"), targetChip(`rule:${r.id}`), h("p", { class: "sentence" }, r.text)),
+        h("div", { class: "row-actions" }, h("button", { type: "button", class: "btn btn-quiet trace-it", onclick: (e) => {
+          e.stopPropagation();
+          ctx.prefillChange(`Trace ${r.id} to a check`, [`rule:${r.id}`]);
+        } }, icon("sparkle"), "Trace it")),
+        actions(ctx, `rule:${r.id}`, { label: r.id }),
+      ),
     )) : h("p", { class: "empty" }, "None: every rule links to a check or says why it cannot."),
   ));
 
@@ -115,7 +125,7 @@ function section(id, title, lede, ...body) {
 }
 
 function questionRow(q, ctx) {
-  return h("li", { ...targetAttrs(`question:${q.id}`), class: "row q-row" },
+  return h("li", { ...targetAttrs(`question:${q.id}`), class: "row q-row acts-host" },
     h("div", { class: "row-main" }, h("span", { class: "q-id" }, q.id), h("p", { class: "sentence" }, q.text)),
     q.answer
       ? h("p", {}, h("strong", {}, "Answer: "), q.answer)
@@ -127,5 +137,6 @@ function questionRow(q, ctx) {
         ctx.prefillChange(`Answer ${q.id}: ${q.text} — `, (q.rules || []).map((r) => `rule:${r}`));
       } }, "Answer as a change") : null,
     ),
+    actions(ctx, `question:${q.id}`, { label: q.id, edit: false, code: false }),
   );
 }

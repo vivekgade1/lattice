@@ -1,0 +1,113 @@
+/* conversation: the panel (chat.js) and the inline editors (edit.js). Tokens only, no colour literals. */
+
+/* ---- open work strip: quiet rows, no borders */
+.work-strip { padding: 0 var(--space-4) var(--space-3); }
+.work-strip .change-list { gap: 0; }
+.work-none { margin: 0; }
+.change-row-main { padding: var(--space-1) var(--space-2); }
+.change-row-main .badge { flex: none; }
+.change-row .btn { flex: none; }
+
+/* ---- mode switch */
+.chat .seg-wide { margin-bottom: var(--space-3); }
+
+/* ---- thread */
+.thread > li { margin-bottom: var(--space-5); }
+.thread-empty p { margin: 0 0 var(--space-2); }
+.msg-bot .row-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+.rejected-cites s { color: var(--ink-2); }
+.chip-kind-code .chip-name { font-family: var(--font-mono); }
+
+/* ---- context chips and suggested prompts */
+.ctx-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: var(--space-2); }
+.ctx-row:empty { display: none; }
+.chip-add {
+  display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+  background: transparent; border: 1px dashed var(--hairline-strong); color: var(--ink-2);
+  border-radius: var(--radius-control); padding: 1px 8px; font-size: var(--fs-12);
+}
+.chip-add:hover { color: var(--accent); border-color: var(--accent); }
+.prompt-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-2); }
+.prompt-row:empty { display: none; }
+.prompt {
+  background: transparent; border: 0; padding: 2px 0; margin-right: var(--space-2);
+  color: var(--ink-2); font-size: var(--fs-12); cursor: pointer; text-decoration: underline;
+  text-decoration-color: var(--hairline-strong); text-underline-offset: 3px;
+}
+.prompt:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* ---- pending inline edits */
+.edits-box {
+  margin: 0 var(--space-4) var(--space-3); padding: var(--space-3);
+  background: var(--pending-soft); border-left: 2px solid var(--pending);
+  border-radius: 0 var(--radius-surface) var(--radius-surface) 0;
+}
+.edits-box[hidden] { display: none; }
+.edits-head { margin: 0 0 var(--space-2); font-size: var(--fs-13); }
+.edits-list { list-style: none; margin: 0 0 var(--space-2); padding: 0; }
+.edits-list li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); font-size: var(--fs-12); padding: 2px 0; }
+.edits-what { font-family: var(--font-mono); overflow-wrap: anywhere; min-width: 0; }
+.edits-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+.edits-box .chip-x { color: var(--ink-2); }
+
+/* ---- the popover editor */
+.edit-pop {
+  position: fixed; z-index: 60; width: min(340px, calc(100vw - 16px));
+  background: var(--raised); color: var(--ink); border: 1px solid var(--hairline);
+  border-radius: var(--radius-surface); box-shadow: var(--shadow-popover); padding: var(--space-3) var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.edit-title { margin: 0; font-weight: var(--fw-medium); font-size: var(--fs-13); overflow-wrap: anywhere; }
+.edit-label { display: block; margin-bottom: var(--space-1); font-size: var(--fs-12); color: var(--ink-2); font-weight: var(--fw-medium); }
+.edit-choices { display: flex; flex-direction: column; gap: 2px; }
+.edit-choice { display: flex; align-items: baseline; gap: var(--space-2); padding: var(--space-1) var(--space-2); border-radius: var(--radius-control); cursor: pointer; }
+.edit-choice:hover { background: var(--surface); }
+.edit-choice input { accent-color: var(--accent); }
+.edit-choice-name { font-weight: var(--fw-medium); font-size: var(--fs-13); }
+.edit-number, .edit-select, .edit-text, .edit-request {
+  width: 100%; padding: var(--space-1) var(--space-2); border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-control); background: var(--raised); color: inherit; font: inherit; font-size: var(--fs-13);
+}
+.edit-number { width: 96px; font-family: var(--font-mono); }
+.edit-text, .edit-request { resize: vertical; line-height: 1.4; }
+.edit-pop :is(input, select, textarea, button):focus-visible,
+.edits-box :is(input, select, textarea, button):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.edit-toggle { display: flex; align-items: center; gap: var(--space-2); font-size: var(--fs-13); margin-top: var(--space-1); }
+.edit-toggle input { accent-color: var(--accent); }
+.edit-note { margin: 0; min-height: 16px; }
+.edit-actions { display: flex; justify-content: flex-end; gap: var(--space-2); }
+
+/* an unsaved or unsent edit shows amber in place until its change is accepted or rejected */
+.edit-pending { position: relative; }
+.edit-pending::after {
+  content: attr(data-edit); position: absolute; top: -9px; right: 4px; z-index: 1;
+  background: var(--pending-soft); color: var(--pending-text); border: 1px solid var(--pending);
+  border-radius: var(--radius-sm); padding: 0 6px; font-size: var(--fs-12); line-height: 16px;
+  font-family: var(--font-mono); white-space: nowrap; pointer-events: none;
+}
+
+/* ---- rebuild: accepted prompt, card, rounds */
+.rebuild-prompt { margin-top: var(--space-3); }
+.rebuild-line { margin: 0 0 var(--space-2); }
+.rebuild-host { margin-top: var(--space-2); }
+.rebuild-card { border-left: 2px solid var(--rebuild-running); padding: var(--space-2) 0 var(--space-2) var(--space-4); }
+.rebuild-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2); }
+.rebuild-title { flex: 1 1 100%; margin: 0; font-weight: var(--fw-medium); font-size: var(--fs-13); }
+.rebuild-rounds { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.rebuild-round { display: flex; gap: var(--space-2); align-items: flex-start; animation: round-in var(--t-fast) ease; }
+.rebuild-round p { margin: 0; }
+.round-mark { flex: none; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; color: var(--ink-2); }
+.rebuild-round.is-running .round-mark { color: var(--rebuild-running); }
+.rebuild-round.is-pass .round-mark { color: var(--rebuild-passed); }
+.rebuild-round.is-fail .round-mark { color: var(--rebuild-failed); }
+.round-findings { list-style: none; margin: var(--space-1) 0 0; padding: 0; }
+.round-findings li { margin: 2px 0; }
+.rebuild-targets { list-style: none; margin: var(--space-3) 0 0; padding: 0; font-size: var(--fs-13); color: var(--ink-2); }
+.rebuild-targets li { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+.rebuild-targets li.is-done { color: var(--rebuild-passed); }
+.rebuild-outcome { margin-top: var(--space-2); }
+@keyframes round-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rebuild-round { animation: none; }
+}

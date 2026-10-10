@@ -1,22 +1,26 @@
-// State machines: one SVG diagram per machine, laid out left to right in layers from
-// the initial state, with the transitions table as the accessible alternative (5.4, 9).
+// Lifecycle: one SVG diagram per state machine, laid out left to right in layers from
+// the initial state, with the transitions table as the accessible alternative.
 
 import { h, s, add } from "../util.js";
-import { targetAttrs, targetChip } from "../targets.js";
+import { targetAttrs } from "../targets.js";
 import { rulesByTarget, appResult, machineChange, changeBanner } from "../overlay.js";
 import { resultBadge, pendingBadge } from "../badges.js";
+import { actions, impactClass, ruleLinks, emptyState } from "./rules.js";
 
-export function render(model, root) {
+export function render(model, root, ctx) {
   const machines = model.views?.section6?.machines || [];
-  add(root, 
+  add(root,
     h("header", { class: "view-head" },
-      h("h1", {}, "State machines"),
+      h("h1", {}, "Lifecycle"),
       h("p", { class: "lede" }, "The status moves the spec allows. Any move not drawn is refused."),
     ),
     changeBanner(),
   );
   if (!machines.length) {
-    add(root, h("p", { class: "empty" }, "The spec declares no state machines."));
+    add(root, emptyState("The spec declares no lifecycles yet. Describe how something moves from state to state.", {
+      label: "Describe a lifecycle",
+      onclick: () => ctx.prefillChange("A lifecycle: ", []),
+    }));
     return;
   }
   const idx = rulesByTarget(model);
@@ -24,19 +28,21 @@ export function render(model, root) {
     const change = machineChange(target);
     const res = appResult(target);
     const m = parseMachine(sentence);
-    const rules = idx.get(target) || [];
-    add(root, 
-      h("section", { ...targetAttrs(target), class: ["card", "machine", change && "diff-modified"], "aria-label": `State machine ${name}` },
-        h("header", { class: "card-head" },
+    add(root,
+      h("section", { ...targetAttrs(target), class: ["machine", "acts-host", change && "diff-modified", !change && impactClass(target)], "aria-label": `Lifecycle ${name}` },
+        h("header", { class: "entity-head" },
           h("h2", {}, name),
-          res !== undefined ? resultBadge(res) : null,
+          res !== undefined && res !== null ? resultBadge(res) : null,
           change ? pendingBadge("Changed by pending edit") : null,
+          ruleLinks(idx, target),
         ),
-        h("p", { class: "machine-sentence" }, sentence),
-        change && change.new ? h("p", { class: "machine-sentence pending-text" }, h("strong", {}, "After the change: "), change.new) : null,
+        actions(ctx, target, { label: `lifecycle ${name}` }),
+        change && change.new
+          ? h("p", { class: "machine-sentence pending-text" },
+              h("del", {}, sentence), h("span", { class: "cell-arrow", "aria-hidden": "true" }, " → "), h("strong", {}, change.new))
+          : h("p", { class: "machine-sentence" }, sentence),
         h("div", { class: "scroll-x diagram-wrap", tabindex: "0", role: "region", "aria-label": `${name} diagram` }, diagram(m, name)),
         transitionsTable(m, name),
-        rules.length ? h("div", { class: "chip-row" }, h("span", { class: "muted small" }, "Rules:"), rules.map((r) => targetChip(`rule:${r}`))) : null,
       ),
     );
   }

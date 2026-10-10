@@ -61,10 +61,10 @@ export function labelOf(target) {
   const name = nameOf(target);
   if (kind === "cell") {
     const [row, col] = name.split("|");
-    return `${row} · ${col}`;
+    return `${row} ${col}`;
   }
   if (kind === "rule") return name;
-  return `${KIND_LABEL[kind] || kind} · ${name}`;
+  return `${KIND_LABEL[kind] || kind} ${name}`;
 }
 
 /** A clickable chip for a target; click highlights it on the views. */
@@ -85,7 +85,7 @@ export function targetChip(target, opts = {}) {
       },
     },
     h("span", { class: "chip-kind" }, KIND_LABEL[kind] || kind || "link"),
-    h("span", { class: "chip-name" }, kind === "cell" ? nameOf(target).replace("|", " · ") : nameOf(target)),
+    h("span", { class: "chip-name" }, kind === "cell" ? nameOf(target).replace("|", " ") : nameOf(target)),
   );
 }
 
