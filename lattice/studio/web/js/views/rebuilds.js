@@ -16,6 +16,7 @@ const STATUS = {
   passed: { label: "Passed", icon: "check" },
   gave_up: { label: "Gave up", icon: "diamond" },
   stopped: { label: "Stopped", icon: "dash" },
+  interrupted: { label: "Interrupted", icon: "dash" },
 };
 const LAYERS = ["A", "B", "C", "D", "X"];
 

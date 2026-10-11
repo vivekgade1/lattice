@@ -808,3 +808,174 @@ def test_plan_view_is_wired() -> None:
     )
     bundle = (WEB_DIR / "vendor" / "graph.js").read_text()
     assert "lg-k-plan" in bundle and "These" not in "" and "lg-ps-" in bundle
+
+
+# ---------------------------------------------------------------- resume and repair (v1.10, v1.11)
+
+SECOND = "/p/lattice-studio"
+
+
+def test_mock_exposes_each_resume_and_repair_state(base: str) -> None:
+    """The states the plan view draws, as the mock serves them: an interrupted plan
+    (continue), one waiting to land, one that ran out of repair attempts (repair, with a
+    repair node), one with a node that gave up (retry), and a run caught mid-repair."""
+    second = base + SECOND
+    states = {
+        p["id"]: p
+        for p in get_json(second + "/api/plans")[1]
+        if p["id"] in {"p1", "p2", "p3", "p4"}
+    }
+    assert {i: (p["status"], p["resume"]["kind"]) for i, p in states.items()} == {
+        "p1": ("interrupted", "continue"),
+        "p2": ("partial", "land"),
+        "p3": ("partial", "repair"),
+        "p4": ("partial", "retry"),
+    }
+    p1 = get_json(second + "/api/plan/p1")[1]
+    assert p1["interrupted"] and p1["interrupted_reason"] == "studio_restarted"
+    assert p1["resume"]["will_skip"] and p1["resume"]["will_run"]
+    assert isinstance(p1["resume"]["from_level"], int)  # 0-based, as in the note's prose
+    assert any(n["status"] == "interrupted" for n in p1["nodes"])
+
+    p3 = get_json(second + "/api/plan/p3")[1]
+    assert p3["error"]["kind"] == "repair_exhausted" and p3["resume"]["available"]
+    node = next(n for n in p3["nodes"] if n["kind"] == "repair")
+    assert node["id"] == "repair-l1" and node["repair"] is True and node["level"] == 1
+    run = next(x for x in p3["level_runs"] if x.get("repair_pending"))
+    assert [r["outcome"] for r in run["repairs"]] == ["failed", "failed"]
+    last = run["repairs"][-1]
+    assert {a["by"] for a in last["attributed"].values()} == {"scope", "repair_node"}
+    assert set(last["still_failing"]) == set(p3["error"]["targets"])
+    assert all(n["usage"]["tokens_out"] for n in last["nodes"])
+    assert any(n.get("repair_usage") for n in p3["nodes"]) and p3["repair_attempts"] == 2
+    assert p3["planner_usage"]["calls"] == 1
+    assert p3["totals"]["tokens_out"] >= p3["planner_usage"]["tokens_out"]
+    assert any(e.get("repair") for e in p3["timeline"])
+    assert run["gate"]["mode"] == "regression" and run["gate"]["selected"] == 12
+
+    p4 = get_json(second + "/api/plan/p4")[1]
+    gave_up = [n for n in p4["nodes"] if n["status"] == "gave_up"]
+    assert len(gave_up) == 1 and gave_up[0]["error"]["message"]
+    blocked = [n for n in p4["nodes"] if n["status"] == "blocked"]
+    assert blocked and all(n["blocked_by"] == [gave_up[0]["id"]] for n in blocked)
+    assert "retries" in p4["resume"]["note"] and p4["resume"]["available"]
+
+    # land: refused while the target is checked out, the second send confirms
+    status, body = post(second + "/api/plan/p2/land", {})
+    assert status == 409 and body["code"] == "branch_checked_out"
+    assert post(second + "/api/plan/p2/land", {"confirm_unsafe_branch": True})[0] == 200
+
+    # resume the exhausted plan: the repair node lands with the level, the plan passes
+    assert post(second + "/api/plan/p3/run", {})[1]["status"] == "running"
+    for _ in range(4 * len(p3["levels"]) + 3):
+        p3 = get_json(second + "/api/plan/p3")[1]
+    assert p3["status"] == "passed" and p3["baseline"]["reused"] is True
+    assert next(n for n in p3["nodes"] if n["id"] == "repair-l1")["status"] == "passed"
+    assert p3["final_gate"]["failing"] == []
+
+
+def test_mock_plan_is_caught_mid_repair(base: str) -> None:
+    """A fresh run repairs level 1 over one poll: a `repairing` node, an open repair entry."""
+    assert post(base + "/api/plan", {"scope": "all"})[1]["id"] == "p1"
+    rec = get_json(base + "/api/plan/p1")[1]
+    assert rec["planner_usage"]["tokens_out"] and rec["resume"]["available"] is False
+    post(base + "/api/plan/p1/approve", {})
+    post(base + "/api/plan/p1/run", {})
+    mid = None
+    for _ in range(3 * len(rec["levels"]) + 3):
+        rec = get_json(base + "/api/plan/p1")[1]
+        if any(n["status"] == "repairing" for n in rec["nodes"]):
+            mid = rec
+            break
+    assert mid is not None and mid["status"] == "running"
+    run = next(x for x in mid["level_runs"] if x.get("repairs"))
+    assert run["status"] == "running" and run["repairs"][-1]["outcome"] is None
+    assert run["repairs"][-1]["attempt"] == 1 and run["repairs"][-1]["of"] == 2
+    assert run["gate"]["mode"] == "regression" and run["gate"]["in_scope_failing"]
+    assert mid["repair_attempts"] == 1 and mid["gate_config"]["level_repair_attempts"] == 2
+    assert any(e.get("repair") for e in mid["timeline"])
+    projects = get_json(base + "/api/projects")[1]
+    assert projects[0]["plan_defaults"]["max_parallel"] == 2
+
+
+def test_plan_view_has_the_resume_and_repair_words() -> None:
+    """The plan view's strings and calls for v1.10 and v1.11 (no browser here: the browser
+    check is in the node report), plus the pure helpers run in node when it is installed."""
+    js = WEB_DIR / "js"
+    src = (js / "views" / "plan.js").read_text()
+    for needle in (
+        "Skipped: ",
+        "Will run: ",
+        "Retry failed nodes",
+        "Fix with the agent again",
+        "Continue from",
+        "Land anyway",
+        "confirm_unsafe_branch",
+        "planLand",
+        "repair_exhausted",
+        "Repair history",
+        "+${more} more",
+        "plan_defaults",
+        "planner_usage",
+        "repair_usage",
+        "baseline?.reused",
+        "ev.repair",
+        "What happened",
+        "not charged",
+    ):
+        assert needle in src, needle
+    api = (js / "api.js").read_text()
+    assert "/land`" in api and "planRun: (id, body = {})" in api
+    css = (WEB_DIR / "css" / "studio2.css").read_text()
+    for cls in (".pv-resume", ".pv-repair", ".lg-ps-repairing", ".pv-tag", ".pv-refusal"):
+        assert cls in css, cls
+    assert not re.search(r"\.(pv|lg-ps)-[a-z-]+[^{]*\{[^}]*#[0-9a-fA-F]{3,8}\b", css)
+    if shutil.which("node") is None:
+        return
+    names = ("serverLevels", "resumeLabel", "gateWords", "gateConfigWords", "capList")
+    parts = []
+    for name in names:
+        m = re.search(rf"export function {name}\b.*?\n}}\n", src, re.S)
+        assert m, name
+        parts.append(m.group(0).replace("export ", ""))
+    script = (
+        'const plural = (n, one, many = one + "s") => `${n} ${n === 1 ? one : many}`;\n'
+        "const MAX_LISTED = 5;\n"
+        + "\n".join(parts)
+        + """
+const out = {
+  levels: serverLevels('Level 1 passed its check; level 0 and Level 12 and levels_gate'),
+  continue: resumeLabel({kind: 'continue', from_level: 1}),
+  first: resumeLabel({kind: 'continue', from_level: 0}),
+  land: resumeLabel({kind: 'land', from_level: 2}),
+  retry: resumeLabel({kind: 'retry', from_level: 1}),
+  repair: resumeLabel({kind: 'repair', from_level: 1}),
+  bare: resumeLabel({kind: 'continue', from_level: null}),
+  gate: gateWords({mode: 'regression', selected: 120}),
+  one: gateWords({mode: 'full', selected: 1}),
+  noSel: gateWords({mode: 'full', selected: null}),
+  cap: capList(['a','b','c','d','e','f','g']),
+  cfg: gateConfigWords({level_gate: 'regression', level_repair_attempts: 2,
+                        scoped_gate: ['--layers']}),
+  none: gateConfigWords({level_gate: 'full', level_repair_attempts: 0}),
+};
+console.log(JSON.stringify(out));
+"""
+    )
+    r = subprocess.run(
+        ["node", "--input-type=commonjs", "-e", script], capture_output=True, text=True
+    )
+    assert r.returncode == 0, r.stderr
+    out = json.loads(r.stdout)
+    assert out["levels"] == "Level 2 passed its check; level 1 and Level 13 and levels_gate"
+    assert out["continue"] == "Continue from level 2" and out["first"] == "Continue from level 1"
+    assert out["land"] == "Land level 3" and out["retry"] == "Retry failed nodes"
+    assert out["repair"] == "Fix with the agent again" and out["bare"] == "Continue"
+    assert (
+        out["gate"] == "regression check · 120 scenarios"
+        and out["one"] == "full check · 1 scenario"
+    )
+    assert out["noSel"] == "full check"
+    assert out["cap"] == {"shown": ["a", "b", "c", "d", "e"], "more": 2}
+    assert "up to 2 repair attempts" in out["cfg"] and "own scope" in out["cfg"]
+    assert "stops the plan" in out["none"]

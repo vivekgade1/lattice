@@ -8,17 +8,24 @@
 // A plan is a record on the server (GET /api/plan/{id}); this module keeps the one in view in
 // state.planRun = {id, record} and polls it every second while it is planning or running.
 // Polls end by themselves when the project switches (api.epoch) or the view goes away.
+//
+// v1.10 (resume) and v1.11 (level repair): a plan that stopped (interrupted, partial, failed,
+// stopped) shows what happened, what a run will skip and run, and ONE button by resume.kind
+// (continue, land, retry, repair). A level that failed its check after the merge shows who is
+// held responsible, the targets still failing and the repair attempts.
 
-import { h, icon, add, plural } from "../util.js";
+import { h, icon, add, plural, fmtTime } from "../util.js";
 import { api, sleep } from "../api.js";
-import { state, update, subscribe, canPlan, PLAN_WHY } from "../store.js";
+import { state, update, subscribe, canPlan, currentProject, PLAN_WHY } from "../store.js";
 import { mountGraph } from "../graph.js";
 import { rebuildCard, pollRebuild, buildRefusal } from "./rebuilds.js";
 import { toast } from "../tray.js";
 
 const LIVE = new Set(["planning", "running"]);
 const EDITABLE = new Set(["ready", "approved"]);
-const RESUMABLE = new Set(["partial", "failed", "stopped"]);
+const RESUMABLE = new Set(["interrupted", "partial", "failed", "stopped"]);
+const UNSAFE_CODES = new Set(["branch_checked_out", "branch_protected"]); // a refusal the owner may confirm
+const MAX_LISTED = 5; // targets shown before "+N more"
 const MAX_CAP = 8;
 const DEFAULT_CAP = 2;
 
@@ -31,6 +38,7 @@ const PLAN_STATUS = {
   partial: { word: "Partly built", icon: "triangle" },
   failed: { word: "Failed", icon: "diamond" },
   stopped: { word: "Stopped", icon: "dash" },
+  interrupted: { word: "Interrupted", icon: "dash" },
 };
 const NODE_STATUS = {
   pending: { word: "Waiting", icon: "pending" },
@@ -41,6 +49,8 @@ const NODE_STATUS = {
   merge_conflict: { word: "Merge conflict", icon: "triangle" },
   regressed: { word: "Regressed", icon: "triangle" },
   stopped: { word: "Stopped", icon: "dash" },
+  repairing: { word: "Repairing", icon: null },
+  interrupted: { word: "Interrupted", icon: "dash" },
 };
 const TIER = {
   fast: { word: "Fast", icon: "sparkle", hint: "a small, quick model for mechanical work" },
@@ -187,9 +197,15 @@ export async function createPlan(body) {
 
 // ------------------------------------------------------------------ words
 
+/** A node's title; a repair node's title ("Repair of level 1") counts levels from 0 too. */
+function nodeTitle(n) {
+  const t = n.title || n.id;
+  return n.kind === "repair" ? serverLevels(t) : t;
+}
+
 function titleOf(rec, id) {
   const n = (rec.nodes || []).find((x) => x.id === id);
-  return n ? n.title || n.id : id;
+  return n ? nodeTitle(n) : id;
 }
 
 function overlapWords(o) {
@@ -241,7 +257,7 @@ function fallbackWords(rec) {
 
 function rulesWord(n) {
   const r = n.scope?.rules;
-  if (Array.isArray(r)) return plural(r.length, "rule");
+  if (Array.isArray(r)) return r.length || n.kind !== "repair" ? plural(r.length, "rule") : "";
   if (n.scope === "all" || n.scope?.kind === "all") return "all rules";
   return n.gate?.rules && Array.isArray(n.gate.rules) ? plural(n.gate.rules.length, "rule") : "";
 }
@@ -258,6 +274,7 @@ function nodeFacts(n) {
   if (tokens) bits.push(`${kfmt(tokens)} tokens`);
   if (n.wall_s) bits.push(secs(n.wall_s));
   if (n.lines_changed) bits.push(`${num(n.lines_changed)} lines`);
+  if (n.repairs) bits.push(plural(n.repairs, "repair"));
   return bits.join(" · ");
 }
 
@@ -267,6 +284,7 @@ function nodeStatusWord(n) {
     const r = n.live?.rounds;
     return r ? `Running · round ${r}` : "Running";
   }
+  if (n.status === "repairing" && n.repairs) return `Repairing · repair ${n.repairs}`;
   return (NODE_STATUS[n.status] || NODE_STATUS.pending).word;
 }
 
@@ -276,6 +294,8 @@ function nodeNext(rec, n) {
   const t = (id) => titleOf(rec, id);
   if (n.status === "passed") return n.nothing_to_build ? "Its checks already pass on the target branch, so no agent ran for it." : "";
   if (n.status === "running" || (n.status === "pending" && live)) return "";
+  if (n.status === "repairing") return "The merged level failed its check, so this node is getting a repair round. The plan goes on when the level passes.";
+  if (n.status === "interrupted") return "Studio stopped while this node was running. Next: continue the plan; it picks the node up where it stopped when its working copy is still there, else builds it again from the level's start.";
   if (n.status === "gave_up") {
     const why = n.error?.message || n.error?.kind;
     const rounds = n.rounds ? ` after ${plural(n.rounds, "round")}` : "";
@@ -286,10 +306,193 @@ function nodeNext(rec, n) {
     return `It did not start because ${by || "a node it waits for"} did not pass. Next: run again; it retries ${by || "that node"} first, then this one.`;
   }
   if (n.status === "merge_conflict") return "Its changes conflicted with another node's at the end of its level, so they were left out. Next: run again; it builds this node again on top of what was merged.";
-  if (n.status === "regressed") return "The full check after its level found checks that used to pass now failing, so nothing from the level was merged. Next: run again to retry it.";
+  if (n.status === "regressed") {
+    if (rec.error?.kind === "repair_exhausted" && (rec.error.nodes || []).includes(n.id)) {
+      return "The merged level still failed its check after the repair attempts, so this node was not landed. Next: fix with the agent again; the node is not built over.";
+    }
+    return "The full check after its level found checks that used to pass now failing, so nothing from the level was merged. Next: run again to retry it.";
+  }
   if (n.status === "stopped") return "The plan was stopped before this node finished. Next: run again to continue from here.";
   if (n.status === "pending") return "It never started. Next: run again.";
   return "";
+}
+
+// ------------------------------------------------------------------ resume and repair words
+
+/** The server counts levels from 0 in its prose (resume.note, error.message, timeline events),
+ *  like level_runs[].level and resume.from_level; the views say Level 1, 2, ... */
+export function serverLevels(text) {
+  return String(text || "").replace(/\b(level)\s+(\d+)\b/gi, (_, w, n) => `${w} ${Number(n) + 1}`);
+}
+
+const levelNo = (i) => Number(i) + 1;
+
+/** The one button of a stopped plan, by resume.kind (from_level is 0-based). */
+export function resumeLabel(resume) {
+  const L = resume && Number.isInteger(resume.from_level) ? ` level ${resume.from_level + 1}` : "";
+  switch (resume && resume.kind) {
+    case "land": return `Land${L || " the level"}`;
+    case "retry": return "Retry failed nodes";
+    case "repair": return "Fix with the agent again";
+    default: return L ? `Continue from${L}` : "Continue";
+  }
+}
+
+/** "regression check · 12 scenarios": how a level's check ran (gate.mode, gate.selected). */
+export function gateWords(gate) {
+  if (!gate) return "";
+  const n = gate.selected;
+  const sel = n !== null && n !== undefined && Number.isFinite(Number(n)) ? ` · ${plural(Number(n), "scenario")}` : "";
+  return `${gate.mode === "regression" ? "regression" : "full"} check${sel}`;
+}
+
+/** How the level checks and repairs are set up (gate_config of a plan, plan_defaults of a project). */
+export function gateConfigWords(cfg) {
+  if (!cfg) return "";
+  const out = [cfg.level_gate === "regression"
+    ? "Each level is checked against what passed before and the scenarios built so far; the last level runs the full check."
+    : "Each level ends with the full check."];
+  const n = Number(cfg.level_repair_attempts);
+  if (cfg.level_repair_attempts !== undefined && Number.isFinite(n)) {
+    out.push(n > 0 ? `A level that fails it gets up to ${plural(n, "repair attempt")}.` : "A level that fails it stops the plan.");
+  }
+  const scoped = cfg.scoped_gate_args || cfg.scoped_gate;
+  if (Array.isArray(scoped) && scoped.length) out.push("Nodes are checked on their own scope plus what passed before.");
+  return out.join(" ");
+}
+
+/** The first `n` of a list and how many were left out. */
+export function capList(items, n = MAX_LISTED) {
+  const all = Array.isArray(items) ? items : [];
+  return { shown: all.slice(0, n), more: Math.max(0, all.length - n) };
+}
+
+function planError(r) {
+  const e = r.error || {};
+  const k = e.kind || "";
+  if (k === "baseline") return "The first check of the target branch could not run, so nothing was built. Fix the gate commands, then run again.";
+  if (k === "repair_exhausted") return `Level ${levelNo(e.level)} still fails its check after the repair attempts.`;
+  return sentence(serverLevels(e.message || e.detail || "The plan stopped with an error."));
+}
+
+/** A refusal in the server's words, without the API hint (the page offers that choice itself). */
+export function refusalWords(text) {
+  const t = serverLevels(text).replace(/\s*\(or send confirm_unsafe_branch[^)]*\)\s*$/i, "");
+  return /[.!?]$/.test(t) ? t : `${t}.`;
+}
+
+function interruptedWhy(r) {
+  const k = String(r.interrupted_reason || "");
+  if (!k || k === "studio_restarted") return "Studio was restarted while the plan was running";
+  return sentence(k.replace(/_/g, " ")).replace(/\.$/, "");
+}
+
+/** What happened to a plan that stopped, in one sentence. */
+function happenedWords(r) {
+  if (r.status === "interrupted" || r.interrupted) return `${interruptedWhy(r)}.`;
+  if (r.error) return planError(r);
+  const v = r.resume;
+  if (v && v.kind === "land" && Number.isInteger(v.from_level)) {
+    return `Level ${v.from_level + 1} passed its check but is not on ${r.target_branch || "the target branch"} yet.`;
+  }
+  return {
+    stopped: "The plan was stopped.",
+    partial: "The plan ended with some nodes not built.",
+    failed: "The plan did not build anything.",
+  }[r.status] || "";
+}
+
+function nodeTitles(rec, ids) {
+  const { shown, more } = capList((ids || []).map((id) => titleOf(rec, id)), 8);
+  return shown.length ? shown.join(", ") + (more ? ` and ${more} more` : "") : "";
+}
+
+const REPAIR_OUTCOME = {
+  passed: "Fixed it",
+  failed: "Still failing",
+  verify_failed: "The repair did not pass its own check",
+};
+const REPAIR_BY = {
+  scope: "its rules link the failing check",
+  files: "its commit changed the failing file",
+  repair_node: "no node owns it, so a repair node takes it",
+};
+
+/** The level run a repair banner describes: the exhausted one, else the one being repaired. */
+function repairRun(r) {
+  const runs = (r.level_runs || []).filter((x) => !x.superseded && (x.repairs || []).length);
+  if (r.error?.kind === "repair_exhausted") {
+    return runs.filter((x) => x.level === r.error.level).pop() || runs.filter((x) => x.repair_pending).pop() || null;
+  }
+  const repairing = (r.nodes || []).filter((n) => n.status === "repairing").map((n) => n.id);
+  return runs.filter((x) => x.status === "running" || (x.nodes || []).some((id) => repairing.includes(id))).pop() || null;
+}
+
+function sumUsage(list) {
+  const out = { tokens: 0, cost: 0, any: false };
+  for (const u of list) {
+    if (!u) continue;
+    out.any = true;
+    out.tokens += usageIn(u) + (u.tokens_out || 0);
+    out.cost += Number(u.cost_usd_list_estimate) || 0;
+  }
+  return out;
+}
+
+/** What the repair rounds cost: the nodes' repair_usage, else the usage of each repair entry. */
+function repairUsage(r) {
+  const direct = sumUsage((r.nodes || []).map((n) => n.repair_usage));
+  if (direct.any) return direct;
+  return sumUsage((r.level_runs || []).flatMap((lr) => (lr.repairs || []).flatMap((x) => (x.nodes || []).map((n) => n.usage))));
+}
+
+function repairBanner(r) {
+  const lr = repairRun(r);
+  if (!lr) return null;
+  const reps = lr.repairs || [];
+  const last = reps[reps.length - 1] || {};
+  const exhausted = r.error?.kind === "repair_exhausted";
+  const attributed = Object.assign({}, ...reps.map((x) => x.attributed || {}));
+  const stillFailing = exhausted && (r.error.targets || []).length ? r.error.targets
+    : (last.still_failing || []).length ? last.still_failing
+    : (last.targets || lr.gate?.failing || []);
+  const { shown, more } = capList(stillFailing);
+  const held = [...new Set(stillFailing.flatMap((t) => attributed[t]?.nodes || []))];
+  const heldIds = held.length ? held : (exhausted && r.error.nodes) || lr.merged || [];
+  const attempt = last.attempt && last.of && last.attempt <= last.of ? `${last.attempt} of ${last.of}` : last.attempt ? String(last.attempt) : "";
+  const head = exhausted
+    ? `Level ${levelNo(lr.level)} still fails after ${plural(reps.length, "repair attempt")}`
+    : `Level ${levelNo(lr.level)} failed its check after merging, and is being repaired`;
+  const box = h("section", { class: ["pv-repair", exhausted && "is-exhausted"], "aria-label": "Level repair", role: exhausted ? null : "status" });
+  box.append(h("p", { class: "pv-repair-head" },
+    exhausted ? icon("triangle") : h("span", { class: "spinner", "aria-hidden": "true" }), h("strong", {}, head)));
+  const facts = [];
+  if (heldIds.length) facts.push(h("span", {}, "Held responsible: ", h("strong", {}, nodeTitles(r, heldIds))));
+  if (attempt) facts.push(h("span", {}, exhausted ? `Last attempt ${attempt}` : `Attempt ${attempt}`));
+  if (facts.length) box.append(h("p", { class: "pv-repair-facts small" }, facts.map((f, i) => [i ? " · " : "", f])));
+  if (shown.length) {
+    box.append(h("p", { class: "pv-repair-sub muted small" }, exhausted ? "Still failing" : "Failing on the merged result"),
+      h("ul", { class: "pv-repair-targets" }, [
+        ...shown.map((t) => h("li", {}, h("span", { class: "s2-mono" }, t),
+          attributed[t]?.nodes?.length
+            ? h("span", { class: "muted small" }, ` held on ${nodeTitles(r, attributed[t].nodes)}${REPAIR_BY[attributed[t].by] ? `: ${REPAIR_BY[attributed[t].by]}` : ""}`)
+            : null)),
+        more ? h("li", { class: "muted small" }, `+${more} more`) : null,
+      ]));
+  }
+  box.append(h("p", { class: "pv-repair-sub muted small" }, "Repair history"),
+    h("ol", { class: "pv-repair-hist" }, reps.map((x) => {
+      const toks = sumUsage((x.nodes || []).map((n) => n.usage));
+      const wall = Number(x.wall_s) || (x.nodes || []).reduce((a, n) => a + (Number(n.wall_s) || 0), 0);
+      const bits = [REPAIR_OUTCOME[x.outcome] || "Running"];
+      if ((x.nodes || []).length) bits.push(nodeTitles(r, x.nodes.map((n) => n.id)));
+      if (toks.tokens) bits.push(`${kfmt(toks.tokens)} tokens`);
+      if (wall) bits.push(secs(wall));
+      if (x.outcome === "failed" && (x.still_failing || []).length) bits.push(`${plural(x.still_failing.length, "check")} still failing`);
+      const of = x.of && x.attempt <= x.of ? ` of ${x.of}` : "";
+      return h("li", {}, h("span", { class: "pv-level-n" }, `Attempt ${x.attempt}${of}`), h("span", {}, bits.join(" · ")));
+    })));
+  return box;
 }
 
 // ------------------------------------------------------------------ small pieces
@@ -311,7 +514,7 @@ function tierMark(tier) {
   return h("span", { class: "pv-tier", title: t.hint }, icon(t.icon), t.word);
 }
 
-const kindWord = { scaffold: "Shared infrastructure", area: "Area", merge: "Merge", integration: "Final integration" };
+const kindWord = { scaffold: "Shared infrastructure", area: "Area", merge: "Merge", integration: "Final integration", repair: "Repair of a level" };
 
 /** Replace `el`'s children and keep keyboard focus on the same control (data-fk). */
 function redraw(el, fn) {
@@ -323,14 +526,25 @@ function redraw(el, fn) {
 
 // ------------------------------------------------------------------ step 1: plan the build
 
-const pui = { base: null, scope: "all", areas: new Set(), cap: DEFAULT_CAP, fallback: false, error: null, creating: false };
+const pui = { base: null, scope: "all", areas: new Set(), cap: DEFAULT_CAP, capSet: false, fallback: false, error: null, creating: false };
+
+/** The project's own default capacity (GET /api/projects[].plan_defaults, API v1.11). */
+function planDefaults() {
+  return currentProject()?.plan_defaults || null;
+}
+
+function defaultCap() {
+  const n = Number(planDefaults()?.max_parallel);
+  return Number.isInteger(n) && n >= 1 && n <= MAX_CAP ? n : DEFAULT_CAP;
+}
 
 function resetPlanner() {
   if (pui.base === api.base()) return;
   pui.base = api.base();
   pui.scope = "all";
   pui.areas = new Set();
-  pui.cap = DEFAULT_CAP;
+  pui.cap = defaultCap();
+  pui.capSet = false;
   pui.fallback = false;
   pui.error = null;
   pui.creating = false;
@@ -354,6 +568,7 @@ export function plannerCard(getCtx, { pickBranch } = {}) {
   let branchLabel = null;
   let capOut = null;
   let errEl = null;
+  let defaultsEl = null;
 
   if (!canPlan()) {
     add(el, h("h2", { id: "pv-start-title", class: "s2-section-title" }, "Plan the build"),
@@ -411,6 +626,12 @@ export function plannerCard(getCtx, { pickBranch } = {}) {
   function sync() {
     if (!el.isConnected && !areaBox) return;
     const c = getCtx();
+    if (!pui.capSet) pui.cap = defaultCap(); // until the owner picks one, the project's default
+    if (defaultsEl) {
+      const words = gateConfigWords(planDefaults());
+      defaultsEl.textContent = words;
+      defaultsEl.hidden = !words;
+    }
     if (areaBox && areasFor !== c.areas) {
       areasFor = c.areas;
       areaList();
@@ -452,6 +673,7 @@ export function plannerCard(getCtx, { pickBranch } = {}) {
   branchLabel = h("span", { class: "s2-mono" }, "…");
   capOut = h("output", { class: "bv-rounds", "aria-live": "polite" }, String(pui.cap));
   errEl = h("p", { class: "bv-field-err small", role: "alert", hidden: true });
+  defaultsEl = h("p", { class: "muted small pv-gates", hidden: true });
   const fb = h("input", { type: "checkbox", id: "pv-fallback", "data-fk": "fallback", onchange: (e) => { pui.fallback = e.target.checked; } });
   fb.checked = pui.fallback;
   createBtn = h("button", { type: "button", class: "btn btn-primary", disabled: true, onclick: create }, icon("play"), h("span", {}, "Create plan"));
@@ -468,14 +690,15 @@ export function plannerCard(getCtx, { pickBranch } = {}) {
     h("div", { class: "pv-row", role: "group", "aria-label": "Run at most this many nodes at once" },
       h("span", { class: "muted" }, "Run at most"),
       h("button", { type: "button", class: "btn btn-icon", "aria-label": "Fewer nodes at once", "data-fk": "cap-minus",
-        onclick: () => { pui.cap = Math.max(1, pui.cap - 1); sync(); } }, icon("minus")),
+        onclick: () => { pui.cap = Math.max(1, pui.cap - 1); pui.capSet = true; sync(); } }, icon("minus")),
       capOut,
       h("button", { type: "button", class: "btn btn-icon", "aria-label": "More nodes at once", "data-fk": "cap-plus",
-        onclick: () => { pui.cap = Math.min(MAX_CAP, pui.cap + 1); sync(); } }, icon("plus")),
+        onclick: () => { pui.cap = Math.min(MAX_CAP, pui.cap + 1); pui.capSet = true; sync(); } }, icon("plus")),
       h("span", {}, "nodes at once"),
       h("span", { class: "muted small" }, "A machine limit. What can run together is decided by the plan.")),
     h("label", { class: "toggle pv-fallback", for: "pv-fallback" }, fb,
       h("span", {}, "Use the safe sequential plan (no planner agent)")),
+    defaultsEl,
     h("div", { class: "pv-row" }, createBtn),
     why, errEl);
 
@@ -529,7 +752,7 @@ export function openPlan(id) {
 
 // ------------------------------------------------------------------ the plan view
 
-const vui = { base: null, selected: null, feedback: "", listOpen: true, issues: null, note: null, busy: false, confirm: false, branches: null, newBranch: "" };
+const vui = { base: null, selected: null, feedback: "", listOpen: true, issues: null, note: null, busy: false, confirm: false, branches: null, newBranch: "", refusal: null, historyOpen: false };
 
 function resetView() {
   if (vui.base === api.base()) return;
@@ -541,6 +764,7 @@ function resetView() {
   vui.busy = false;
   vui.confirm = false;
   vui.branches = null;
+  vui.refusal = null;
 }
 
 export function renderPlanView(root, ctx = {}) {
@@ -565,6 +789,7 @@ export function renderPlanView(root, ctx = {}) {
     levels: h("section", { class: "pv-levels", "aria-label": "Levels" }),
     side: h("aside", { class: "pv-side", "aria-label": "Selected node" }),
     list: h("section", { class: "pv-list", "aria-label": "The plan as a list" }),
+    history: h("section", { class: "pv-history", "aria-label": "What happened" }),
     plan: h("section", { class: "pv-planedit", "aria-label": "Plan settings" }),
   };
   const graphHost = h("div", { class: "pv-graph", "aria-label": "Plan graph" });
@@ -580,7 +805,8 @@ export function renderPlanView(root, ctx = {}) {
     sections.actions,
     h("div", { class: "pv-main" }, h("div", { class: "pv-graph-col" }, sections.graph, sections.levels), sections.side),
     sections.plan,
-    sections.list);
+    sections.list,
+    sections.history);
 
   const rec = () => state.planRun?.id === id ? state.planRun.record : null;
   const live = () => !!rec() && LIVE.has(rec().status);
@@ -639,7 +865,15 @@ export function renderPlanView(root, ctx = {}) {
         h("div", {}, h("dt", {}, "Levels"), h("dd", {}, String(shape.levels ?? (r.levels || []).length))),
         h("div", {}, h("dt", {}, "Widest level"), h("dd", {}, `${widest} at once`)),
         h("div", {}, h("dt", {}, "At most at once"), h("dd", {}, String(r.max_parallel || "?")))));
-      if (r.status !== "ready" && r.status !== "approved" && r.status !== "planning") el.append(totalsBlock(r));
+      if (r.status !== "ready" && r.status !== "approved" && r.status !== "planning") {
+        el.append(totalsBlock(r));
+        const split = costSplit(r);
+        if (split) el.append(split);
+        if (r.gate_config) el.append(h("p", { class: "muted small pv-gates" }, gateConfigWords(r.gate_config)));
+        if (r.baseline?.reused) {
+          el.append(h("p", { class: "muted small pv-gates" }, icon("info"), " The first check reused the recorded result for this commit, so it did not run again."));
+        }
+      }
     });
   }
 
@@ -653,6 +887,20 @@ export function renderPlanView(root, ctx = {}) {
       h("div", {}, h("dt", {}, "Time"), h("dd", {}, secs(t.wall_s))),
       h("div", {}, h("dt", {}, "Lines changed"), h("dd", {}, num(t.lines_changed))),
       h("div", {}, h("dt", {}, "Estimated API value"), h("dd", {}, `${money(t.cost_usd_list_estimate)} `, h("span", { class: "muted small" }, "not charged"))));
+  }
+
+  /** What the late findings cost, apart from the build itself: the planner and the repair rounds. */
+  function costSplit(r) {
+    const planner = sumUsage([r.planner_usage || r.planner?.usage]);
+    const repairs = repairUsage(r);
+    const rows = [];
+    const row = (label, u, extra) => h("div", {}, h("dt", {}, `${label}, estimated API value`),
+      h("dd", {}, `${money(u.cost)} `, h("span", { class: "muted small" }, `not charged · ${kfmt(u.tokens)} tokens${extra || ""}`)));
+    if (planner.tokens || planner.cost) rows.push(row("Planner", planner));
+    if (repairs.tokens || repairs.cost || r.repair_attempts) {
+      rows.push(row("Repairs", repairs, r.repair_attempts ? ` · ${plural(r.repair_attempts, "attempt")}` : ""));
+    }
+    return rows.length ? h("dl", { class: "pv-totals pv-split", "aria-label": "What the planner and the repairs cost, included above" }, rows) : null;
   }
 
   // ---- approve, run, stop
@@ -687,6 +935,8 @@ export function renderPlanView(root, ctx = {}) {
       }
       const invalid = r.validation && r.validation.ok === false;
       const row = h("div", { class: "pv-act-row" });
+      // v1.10: a stopped plan says what happened and offers the one action resume.kind names
+      const banner = RESUMABLE.has(r.status) && r.resume ? resumeBanner(r) : null;
       if (r.status === "ready" || r.status === "approved") {
         const approved = r.status === "approved";
         row.append(
@@ -702,20 +952,22 @@ export function renderPlanView(root, ctx = {}) {
           }, icon("play"), "Run plan"));
       } else if (r.status === "running") {
         row.append(h("button", { type: "button", class: "btn", "data-fk": "stop", disabled: vui.busy, onclick: stop }, "Stop the plan"));
-      } else if (RESUMABLE.has(r.status)) {
+      } else if (RESUMABLE.has(r.status) && !banner) {
         row.append(h("button", {
           type: "button", class: "btn btn-primary", "data-fk": "again", disabled: vui.busy,
           onclick: () => act(async () => { await api.planRun(id); await reloadPlan(); followPlan(id); }, "Could not run the plan again"),
         }, icon("play"), "Run again"));
       }
-      if (RESUMABLE.has(r.status)) {
+      if (RESUMABLE.has(r.status) && !banner) {
         const stuck = (r.nodes || []).filter((n) => n.status !== "passed");
         const done = (r.nodes || []).length - stuck.length;
         el.append(h("p", { class: "pv-stuck", role: "status" }, icon("triangle"), " ",
           `${plural(done, "node")} passed. Did not finish: `,
-          stuck.map((n, i) => [i ? "; " : "", h("strong", {}, n.title || n.id), ` (${nodeStatusWord(n).toLowerCase()})`])));
+          stuck.map((n, i) => [i ? "; " : "", h("strong", {}, nodeTitle(n)), ` (${nodeStatusWord(n).toLowerCase()})`])));
       }
-      el.append(row);
+      sections.actions.classList.toggle("is-stopped", Boolean(banner)); // CSS: above the totals
+      if (banner) el.append(banner);
+      if (row.childElementCount) el.append(row);
       const words = h("p", { class: "muted small", id: "pv-run-why" });
       if (r.status === "ready") words.textContent = invalid ? "Fix the problems above, then approve. " : "Review the plan, change what you like, then approve it. ";
       if (r.status === "approved") words.textContent = "Approved. ";
@@ -731,21 +983,97 @@ export function renderPlanView(root, ctx = {}) {
         words.textContent = `Every node passed and was merged onto ${r.target_branch}. ` +
           (cur && cur === r.target_branch ? `${cur} is your checked-out branch, so it was fast-forwarded.` : "Your checked-out branch was not changed.");
       }
-      el.append(words);
+      if (!banner) el.append(words);
       if (vui.note && (r.status === "ready")) el.append(h("p", { class: "pv-note", role: "status" }, icon("info"), " ", vui.note));
-      if (r.error) {
+      if (r.error && !banner) {
         el.append(h("div", { class: "bv-note is-error", role: "alert" }, icon("triangle"),
           h("p", {}, planError(r))));
       }
+      const repair = repairBanner(r);
+      if (repair) el.append(repair);
       for (const w of r.warnings || []) el.append(h("p", { class: "muted small" }, icon("info"), " ", String(w)));
     });
   }
 
-  function planError(r) {
-    const e = r.error || {};
-    const k = e.kind || "";
-    if (k === "baseline") return "The first check of the target branch could not run, so nothing was built. Fix the gate commands, then run again.";
-    return sentence(e.message || e.detail || "The plan stopped with an error.");
+  // ---- resume (v1.10): the banner of a plan that stopped, and its one button
+  /** Run, continue, retry, repair or land, by resume.kind. A 409 is shown in the banner; the
+   *  owner may then confirm an unsafe branch with a second, explicit click. */
+  async function resumeNow(r, confirm = false) {
+    if (vui.busy) return;
+    const land = r.resume?.kind === "land";
+    vui.busy = true;
+    vui.refusal = null;
+    drawAll();
+    try {
+      const body = confirm ? { confirm_unsafe_branch: true } : {};
+      if (land) await api.planLand(id, body);
+      else await api.planRun(id, body);
+      const now = await reloadPlan();
+      if (ep === api.epoch() && now && LIVE.has(now.status)) followPlan(id);
+    } catch (e) {
+      if (ep !== api.epoch()) return;
+      if (e.status === 409) {
+        vui.refusal = {
+          plan: id, code: e.code, message: refusalWords(e.detail || e.message),
+          unsafe: UNSAFE_CODES.has(e.code) && !confirm, confirming: false,
+        };
+        reloadPlan().catch(() => {});
+      } else {
+        toast(`Could not ${land ? "land the level" : "run the plan"}: ${e.message}`);
+      }
+    } finally {
+      vui.busy = false;
+      if (ep === api.epoch()) drawAll();
+    }
+  }
+
+  function refusalBox(r) {
+    const ref = vui.refusal && vui.refusal.plan === id ? vui.refusal : null;
+    if (!ref) return null;
+    const box = h("div", { class: "pv-refusal", role: "alert" },
+      h("p", {}, icon("triangle"), h("span", {}, ref.message)));
+    if (ref.unsafe && !ref.confirming) {
+      box.append(h("div", { class: "pv-act-row" }, h("button", {
+        type: "button", class: "btn btn-quiet", "data-fk": "land-anyway", disabled: vui.busy,
+        onclick: () => { ref.confirming = true; drawActions(); },
+      }, "Land anyway")));
+    } else if (ref.unsafe) {
+      box.append(h("div", { class: "pv-confirm" },
+        h("p", {}, `This moves ${r.target_branch} forward inside your own working copy. Nothing is rewritten, and the working copy must have no uncommitted changes. Land it there?`),
+        h("div", { class: "pv-act-row" },
+          h("button", { type: "button", class: "btn", "data-fk": "land-confirm", disabled: vui.busy, onclick: () => resumeNow(r, true) },
+            `Yes, update ${r.target_branch}`),
+          h("button", { type: "button", class: "btn btn-quiet", "data-fk": "land-cancel", onclick: () => { ref.confirming = false; drawActions(); } }, "Not now"))));
+    }
+    return box;
+  }
+
+  function resumeBanner(r) {
+    const v = r.resume;
+    const stopped = r.status === "stopped" || r.status === "interrupted";
+    const box = h("div", { class: ["pv-resume", `is-${r.status}`, stopped && "is-quiet"], role: "status", "data-kind": v.kind || "none" });
+    const when = r.interrupted_at ? h("span", { class: "muted small" }, ` ${fmtTime(r.interrupted_at)}`) : null;
+    box.append(h("p", { class: "pv-resume-what" }, icon(stopped ? "dash" : "triangle"),
+      h("span", {}, h("strong", {}, happenedWords(r)), when)));
+    const exhausted = v.kind === "repair" && v.available && r.error?.kind === "repair_exhausted";
+    const cap = r.gate_config?.level_repair_attempts;
+    const note = exhausted
+      ? `Fixing it merges the level's nodes onto the current ${r.target_branch} and gives the agent another bounded pass${cap ? ` (up to ${plural(cap, "attempt")})` : ""}. No node starts over.`
+      : serverLevels(v.note);
+    if (note) box.append(h("p", { class: "pv-resume-note" }, note));
+    if (v.available) {
+      const skip = nodeTitles(r, v.will_skip);
+      const run = nodeTitles(r, v.will_run);
+      box.append(h("p", { class: "pv-resume-list" }, h("span", { class: "muted" }, "Skipped: "), skip || "nothing"),
+        h("p", { class: "pv-resume-list" }, h("span", { class: "muted" }, "Will run: "), run || "nothing"));
+      box.append(h("div", { class: "pv-act-row" }, h("button", {
+        type: "button", class: "btn btn-primary", "data-fk": "resume", "data-resume": v.kind, disabled: vui.busy,
+        onclick: () => resumeNow(r),
+      }, icon(v.kind === "land" ? "check" : "play"), resumeLabel(v))));
+    }
+    const refusal = refusalBox(r);
+    if (refusal) box.append(refusal);
+    return box;
   }
 
   async function stop() {
@@ -756,8 +1084,11 @@ export function renderPlanView(root, ctx = {}) {
   function graphNodes(r) {
     const sizes = (r.levels || []).map((l) => l.length);
     const nodes = (r.nodes || []).map((n) => ({
-      id: n.id, kind: "plan", label: n.title || n.id, sub: n.why || "", column: n.level || 0,
-      plan: { tier: n.tier, status: n.status, statusLabel: nodeStatusWord(n), rules: rulesWord(n), facts: nodeFacts(n) },
+      id: n.id, kind: "plan", label: nodeTitle(n), sub: n.why || "", column: n.level || 0,
+      plan: {
+        tier: n.tier, status: n.status, statusLabel: nodeStatusWord(n), facts: nodeFacts(n),
+        rules: n.kind === "repair" ? ["Repair", rulesWord(n)].filter(Boolean).join(" · ") : rulesWord(n),
+      },
     }));
     const columns = sizes.map((c, i) => ({
       label: `Level ${i + 1}`,
@@ -817,22 +1148,36 @@ export function renderPlanView(root, ctx = {}) {
       const t = (nid) => titleOf(r, nid);
       el.append(h("h2", { class: "s2-section-title" }, "Levels"));
       const rows = (r.levels || []).map((_, i) => {
-        const run = (r.level_runs || []).filter((x) => x.level === i).pop();
+        const run = (r.level_runs || []).filter((x) => x.level === i && !x.superseded).pop()
+          || (r.level_runs || []).filter((x) => x.level === i).pop();
         let words;
         if (!run) words = h("span", { class: "muted" }, live() ? "waiting" : "did not run");
-        else if (run.status === "running") words = h("span", {}, h("span", { class: "spinner", "aria-hidden": "true" }), " running");
-        else {
+        else if (run.status === "running") {
+          const fixing = (run.repairs || []).length;
+          words = h("span", {}, h("span", { class: "spinner", "aria-hidden": "true" }),
+            fixing ? ` repairing after the check failed (attempt ${run.repairs[fixing - 1].attempt})` : " running");
+        } else if (run.status === "interrupted") {
+          words = h("span", { class: "muted" }, "interrupted: Studio stopped while this level ran");
+        } else {
           const merged = (run.merged || []).map(t);
           const bits = [`merged: ${merged.length ? merged.join(", ") : "nothing"}`];
           if ((run.merge_conflicts || []).length) bits.push(`merge conflicts: ${run.merge_conflicts.map(t).join(", ")}`);
           const regs = run.regressions || [];
+          const check = run.gate ? gateWords(run.gate) : "full check";
           bits.push(run.status === "passed" || !regs.length
-            ? `full check: ${run.gate ? "passed" : run.status === "failed" ? "not reached" : "passed"}`
-            : `full check: ${plural(regs.length, "regression")} (${regs.slice(0, 3).join(", ")}${regs.length > 3 ? ", …" : ""})`);
+            ? `${check}: ${run.gate ? "passed" : run.status === "failed" ? "not reached" : "passed"}`
+            : `${check}: ${plural(regs.length, "regression")} (${regs.slice(0, 3).join(", ")}${regs.length > 3 ? ", …" : ""})`);
+          if (run.status === "passed" && (run.repairs || []).length) bits.push(`repaired in ${plural(run.repairs.length, "attempt")}`);
+          if (run.status === "failed" && run.repair_pending) bits.push("repair attempts used up");
           words = h("span", { class: run.status === "failed" ? "is-bad" : "" }, bits.join(" · "));
         }
         return h("li", {}, h("span", { class: "pv-level-n" }, `Level ${i + 1}`), words);
       });
+      if (r.final_gate) {
+        const failing = (r.final_gate.failing || []).length;
+        rows.push(h("li", {}, h("span", { class: "pv-level-n" }, "Before the last level"),
+          h("span", { class: "muted" }, `full check of the whole spec: ${failing ? `${plural(failing, "check")} still failing` : "everything passes"}`)));
+      }
       el.append(h("ol", { class: "pv-level-list" }, rows));
     });
   }
@@ -854,12 +1199,27 @@ export function renderPlanView(root, ctx = {}) {
           const f = nodeFacts(n);
           return h("li", { class: [vui.selected === n.id && "is-selected"] },
             h("button", { type: "button", class: "pv-list-btn", "data-fk": `node:${n.id}`, "aria-pressed": vui.selected === n.id ? "true" : "false", onclick: () => select(vui.selected === n.id ? null : n.id) },
-              h("span", { class: "pv-list-title" }, n.title || n.id),
+              h("span", { class: "pv-list-title" }, nodeTitle(n)),
               h("span", { class: "muted small" }, [rulesWord(n), deps.length ? `waits for ${deps.join(", ")}` : "waits for nothing"].filter(Boolean).join(" · "))),
             tierMark(n.tier), nodeChip(n), f ? h("span", { class: "muted small" }, f) : null);
         })));
       }
       el.append(det);
+    });
+  }
+
+  // ---- what happened: the timeline of the plan (resume and repair entries are tagged)
+  function drawHistory() {
+    const r = rec();
+    redraw(sections.history, (el) => {
+      const events = (r && r.timeline) || [];
+      if (!events.length) return;
+      el.append(h("details", { class: "pv-timeline", open: vui.historyOpen ? "" : null, ontoggle: (e) => { vui.historyOpen = e.target.open; } },
+        h("summary", {}, `What happened (${plural(events.length, "event")})`),
+        h("ol", {}, events.slice(-60).map((ev) => h("li", {},
+          h("span", { class: "pv-ev-at muted small" }, fmtTime(ev.at)),
+          h("span", {}, serverLevels(ev.event)),
+          ev.repair ? h("span", { class: "pv-tag" }, "repair") : null)))));
     });
   }
 
@@ -876,7 +1236,7 @@ export function renderPlanView(root, ctx = {}) {
         return;
       }
       el.append(
-        h("h2", { class: "pv-side-title" }, n.title || n.id),
+        h("h2", { class: "pv-side-title" }, nodeTitle(n)),
         h("p", { class: "pv-side-meta" }, h("span", { class: "muted" }, kindWord[n.kind] || n.kind), " · ", rulesWord(n), " · ", tierMark(n.tier), " ", nodeChip(n)),
         n.why ? h("p", {}, n.why) : null);
       const next = nodeNext(r, n);
@@ -910,6 +1270,8 @@ export function renderPlanView(root, ctx = {}) {
         usageIn(n.usage) || n.usage?.tokens_out ? [h("dt", {}, "Tokens"), h("dd", {}, `${num(usageIn(n.usage))} in, ${num(n.usage.tokens_out)} out`)] : null,
         n.wall_s ? [h("dt", {}, "Time"), h("dd", {}, secs(n.wall_s))] : null,
         n.rounds ? [h("dt", {}, "Rounds"), h("dd", {}, String(n.rounds))] : null,
+        n.attempts > 1 ? [h("dt", {}, "Attempts"), h("dd", {}, String(n.attempts))] : null,
+        n.repairs ? [h("dt", {}, "Repairs"), h("dd", {}, `${plural(n.repairs, "round")}${n.repair_usage ? `, ${kfmt(sumUsage([n.repair_usage]).tokens)} tokens, ${money(n.repair_usage.cost_usd_list_estimate)} estimated API value, not charged` : ""}`)] : null,
         n.lines_changed ? [h("dt", {}, "Lines changed"), h("dd", {}, `${num(n.lines_changed)} in ${plural((n.files_changed || []).length, "file")}`)] : null,
         n.branch ? [h("dt", {}, "Branch"), h("dd", { class: "s2-mono" }, n.branch)] : null,
         n.merged ? [h("dt", {}, "Merged"), h("dd", {}, `into ${r.target_branch}`)] : null));
@@ -1110,6 +1472,7 @@ export function renderPlanView(root, ctx = {}) {
     drawSide();
     drawPlanEdit();
     drawList();
+    drawHistory();
   }
 
   // ---- loading

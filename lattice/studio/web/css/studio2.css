@@ -190,7 +190,7 @@ button.map-badge:hover { color: var(--ink); text-decoration-color: currentColor;
 .rb-status.is-running { color: var(--rebuild-running); }
 .rb-status.is-passed { color: var(--rebuild-passed); }
 .rb-status.is-failed, .rb-status.is-gave_up { color: var(--rebuild-failed); }
-.rb-status.is-stopped, .rb-status.is-queued { color: var(--ink-2); }
+.rb-status.is-stopped, .rb-status.is-queued, .rb-status.is-interrupted { color: var(--ink-2); }
 .rb-rounds { list-style: none; margin: 0 0 var(--space-5); padding: 0; }
 .rb-round { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: var(--space-3); padding: var(--space-3) 0; border-top: 1px solid var(--hairline); }
 .rb-round-n { font-weight: var(--fw-medium); color: var(--ink-2); font-size: var(--fs-13); }
@@ -530,3 +530,53 @@ button.map-badge:hover { color: var(--ink); text-decoration-color: currentColor;
   .pv-graph { height: 380px; }
 }
 .pv-stuck { display: flex; flex-wrap: wrap; gap: var(--space-1); align-items: baseline; margin: 0; font-size: var(--fs-13); color: var(--warn-text); }
+
+/* ------------------------------------------------------------------ Resume and repair (API v1.10, v1.11) */
+.pv-chip.is-interrupted { color: var(--ink-2); }
+.pv-node-status.is-interrupted { color: var(--ink-2); }
+.pv-node-status.is-repairing { color: var(--accent); }
+.pv-actions.is-stopped { order: -1; }
+.pv-resume { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-left: 3px solid var(--warn); background: var(--warn-soft); border-radius: var(--radius-sm); font-size: var(--fs-13); min-width: 0; }
+.pv-resume.is-quiet { border-left-color: var(--hairline-strong); background: var(--surface); }
+.pv-resume p { margin: 0; overflow-wrap: anywhere; }
+.pv-resume-what { display: flex; gap: var(--space-2); align-items: flex-start; }
+.pv-resume-what .icon { flex: none; margin-top: 3px; }
+.pv-resume-list { color: var(--ink); }
+.pv-refusal { display: grid; gap: var(--space-2); padding: var(--space-2) var(--space-3); border-left: 3px solid var(--bad); background: var(--bad-soft); color: var(--bad-text); border-radius: var(--radius-sm); }
+.pv-refusal p { display: flex; gap: var(--space-2); align-items: flex-start; }
+.pv-refusal .icon { flex: none; margin-top: 3px; }
+.pv-confirm { display: grid; gap: var(--space-2); color: var(--ink); }
+.pv-repair { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); font-size: var(--fs-13); background: var(--paper); min-width: 0; }
+.pv-repair.is-exhausted { border-left-color: var(--warn); }
+.pv-repair p { margin: 0; overflow-wrap: anywhere; }
+.pv-repair-head { display: flex; gap: var(--space-2); align-items: center; }
+.pv-repair-head .icon { flex: none; }
+.pv-repair-sub { margin-top: var(--space-1); }
+.pv-repair-targets { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.pv-repair-targets li { overflow-wrap: anywhere; }
+.pv-repair-hist { list-style: none; margin: 0; padding: 0; }
+.pv-repair-hist li { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: var(--space-3); padding: var(--space-1) 0; border-top: 1px solid var(--hairline); overflow-wrap: anywhere; }
+.pv-gates { margin: 0; max-width: var(--measure); }
+.pv-gates .icon { width: 12px; height: 12px; vertical-align: -1px; }
+.pv-split dt { color: var(--ink-2); }
+.pv-timeline > summary { cursor: pointer; font-weight: var(--fw-medium); margin-bottom: var(--space-2); }
+.pv-timeline ol { list-style: none; margin: 0; padding: 0; font-size: var(--fs-13); }
+.pv-timeline li { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); align-items: baseline; padding: var(--space-1) 0; border-top: 1px solid var(--hairline); overflow-wrap: anywhere; }
+.pv-ev-at { flex: none; min-width: 9em; }
+.pv-tag { padding: 0 6px; border-radius: 999px; border: 1px solid var(--hairline-strong); font-size: var(--fs-12); color: var(--ink-2); }
+.pv-history:empty { display: none; }
+.pv-history { max-width: 880px; }
+/* the graph bundle knows no "repairing" or "interrupted" node: quiet, same family as running and stopped */
+.lg-ps-repairing { border-color: var(--accent); border-style: dashed; }
+.lg-ps-repairing .lg-pstatus { color: var(--accent); }
+.lg-ps-repairing .lg-pstatus svg { display: none; }
+.lg-ps-repairing .lg-pstatus::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--hairline-strong); border-top-color: var(--accent); animation: lg-rot 0.9s linear infinite; }
+.lg-ps-interrupted .lg-pstatus { color: var(--ink-2); }
+.lg-ps-interrupted .lg-pstatus svg { display: none; }
+.lg-ps-interrupted .lg-pstatus::before { content: ""; width: 10px; height: 2px; background: currentColor; }
+.lg-ps-interrupted { border-style: dashed; }
+@media (prefers-reduced-motion: reduce) { .lg-ps-repairing .lg-pstatus::before { animation: none; } }
+@media (max-width: 520px) {
+  .pv-repair-hist li { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .pv-ev-at { min-width: 0; flex-basis: 100%; }
+}
