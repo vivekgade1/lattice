@@ -56,6 +56,14 @@ area results updated; a second build of a built area answers 409 "nothing to bui
 
 API v1.9 adds build plans (``MockPlans``): ``POST /api/plan``, ``GET /api/plan/{id}``,
 ``GET /api/plans``, ``POST /api/plan/{id}/revise|approve|run``, ``DELETE /api/plan/{id}``.
+API v1.10 (durable state, resume): the mock keeps its state in memory, but every plan
+carries ``resume``, ``interrupted``, ``interrupted_at``, ``attempts`` and ``timeline``, and
+the second project (``lattice-studio``) starts with two fixture plans: ``p1`` was
+``interrupted`` while level 2 ran (``POST .../run`` resumes it), ``p2`` passed level 1's
+full gate but could not land because the target is checked out in the owner's working copy
+(``resume.kind: "land"``; ``POST /api/plan/p2/land`` answers 409 ``branch_checked_out``
+unless the body confirms with ``confirm_unsafe_branch: true``). ``POST .../land`` is 409
+``nothing_to_land`` on any other plan; ``DELETE /api/plan/{id}?forget=true`` drops a plan.
 Planning takes one poll; the planner ``agent`` gives a mock agent plan (a scaffold over the
 infrastructure areas, the accounts area, every other area depending on it with its tables
 and one package, huge areas split in two), ``fallback`` the real fallback; both go through
@@ -1711,6 +1719,8 @@ class MockPlans:
                 "finished_ts": None,
                 "error": None,
                 "metrics": None,
+                "attempts": 0,
+                "timeline": [],
             }
             for n in v["nodes"]
         ]
@@ -1789,6 +1799,16 @@ class MockPlans:
                 "warnings": [],
                 "metrics": None,
                 "totals": plan_mod._usage_totals(),
+                "attempts": 0,
+                "timeline": [
+                    {"at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"), "event": "planning"}
+                ],
+                "interrupted": False,
+                "interrupted_at": None,
+                "interrupted_reason": None,
+                "anchors": {},
+                "pids": [],
+                "_checked_out": None,
                 "_scope": scope,
                 "_planner": planner,
                 "_overrides": {},
@@ -1797,9 +1817,155 @@ class MockPlans:
             }
             return {"id": pid, "status": "planning"}
 
+    def _view(self, rec: dict[str, Any]) -> dict[str, Any]:
+        out = copy.deepcopy({k: v for k, v in rec.items() if not k.startswith("_")})
+        out["resume"] = plan_mod.resume_view(
+            out, checked_out_at=rec.get("_checked_out"),
+            owner_worktree=self.state.model["project"]["root"], fast_forward=True,
+        )  # fmt: skip
+        return out
+
+    # -- API v1.10: fixtures, resume and land
     @staticmethod
-    def _view(rec: dict[str, Any]) -> dict[str, Any]:
-        return copy.deepcopy({k: v for k, v in rec.items() if not k.startswith("_")})
+    def _now() -> str:
+        return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    def _finish_node(self, rec: dict[str, Any], n: dict[str, Any], now: float) -> None:
+        k = len(n["scope"]["rules"]) or 1
+        sha = hashlib.sha1(f"{rec['id']}:{n['id']}".encode()).hexdigest()
+        n.update(
+            status="passed",
+            commit=sha,
+            finished_ts=now + 60 * k,
+            rounds=n["rounds"] + 2,
+            wall_s=round(n["wall_s"] + float(60 * k), 2),
+            lines_changed=n["lines_changed"] + 40 * k,
+            files_changed=[f"internal/{n['id']}/handlers.go"],
+        )
+        plan_mod._sum_into(n["usage"], plan_mod._node_usage({
+            "input_tokens": 9000 * k, "output_tokens": 1500 * k,
+            "cache_read_input_tokens": 60000 * k, "cost_usd_list_estimate": 0.12 * k}))  # fmt: skip
+        rec["anchors"][n["id"]] = sha
+
+    def _level_run(self, rec: dict[str, Any], L: int, ids: list[str]) -> dict[str, Any]:
+        lr = {"level": L, "run": rec["runs"], "base": rec["target_tip"], "nodes": list(ids),
+              "status": "running", "merged": [], "merge_conflicts": [], "tip": None,
+              "gate": None, "regressions": [], "blame": [], "started": self._now(),
+              "finished": None}  # fmt: skip
+        rec["level_runs"].append(lr)
+        return lr
+
+    def _gate(self, rec: dict[str, Any], L: int, lr: dict[str, Any], ids: list[str]) -> str:
+        tip = hashlib.sha1(f"{rec['id']}:L{L}:{rec['runs']}".encode()).hexdigest()
+        lr.update(merged=list(ids), tip=tip, gated=True, finished=self._now(),
+                  gate={"sha": tip, "verdict": "fail", "counts": {"D": 0}, "failing": [],
+                        "regressions": [], "newly_fixed": [], "gates": []})  # fmt: skip
+        rec["anchors"][f"L{L}"] = tip
+        return tip
+
+    def _land(self, rec: dict[str, Any], lr: dict[str, Any], by: str) -> None:
+        nodes = {n["id"]: n for n in rec["nodes"]}
+        for nid in lr["merged"]:
+            nodes[nid].update(merged=True, status="passed", error=None)
+        if lr.get("error"):
+            lr["land_error"] = lr.pop("error")
+        lr.update(status="passed", landed=True, landed_at=self._now(), landed_by=by)
+        rec["target_tip"] = lr["tip"]
+        self.state.branch_heads[rec["target_branch"]] = lr["tip"]
+        rec["timeline"].append({"at": self._now(), "event": f"level {lr['level']} landed on "
+                                f"{rec['target_branch']} at {lr['tip'][:10]} ({by})"})  # fmt: skip
+
+    def seed_fixtures(self) -> None:
+        """Two plans of the second project (see the module docstring): ``p1`` interrupted
+        while level 2 ran, ``p2`` waiting to land (target checked out by the owner)."""
+        now = datetime.now(UTC).timestamp()
+        for kind in ("interrupted", "land"):
+            pid = self.create({"scope": "all"})["id"]
+            rec = self.plans[pid]
+            self._plan_now(rec)
+            levels = rec["levels"]
+            stop_at = min(2, len(levels) - 1) if kind == "interrupted" else min(1, len(levels) - 1)
+            base = self.state.branch_heads["main"]
+            rec.update(approved=self._now(), runs=1, attempts=1, started=self._now(),
+                       target_tip=base)  # fmt: skip
+            rec["baseline"] = {"sha": base, "verdict": "fail", "counts": {"D": 0},
+                               "failing": [], "findings": []}  # fmt: skip
+            nodes = {n["id"]: n for n in rec["nodes"]}
+            for L in range(stop_at):
+                lr = self._level_run(rec, L, levels[L])
+                for nid in levels[L]:
+                    n = nodes[nid]
+                    n.update(build_id=f"b{100 + self._builds}", attempts=1,
+                             branch=f"rebuild/{pid}-{nid}", started_ts=now)  # fmt: skip
+                    n["builds"] = [n["build_id"]]
+                    self._builds += 1
+                    self._finish_node(rec, n, now)
+                self._gate(rec, L, lr, levels[L])
+                self._land(rec, lr, "run")
+            ids = levels[stop_at]
+            lr = self._level_run(rec, stop_at, ids)
+            for nid in ids:
+                n = nodes[nid]
+                n.update(build_id=f"b{100 + self._builds}", attempts=1,
+                         branch=f"rebuild/{pid}-{nid}", started_ts=now)  # fmt: skip
+                n["builds"] = [n["build_id"]]
+                self._builds += 1
+            if kind == "interrupted":
+                for nid in ids:
+                    nodes[nid]["status"] = "interrupted"
+                lr.update(status="interrupted", finished=self._now())
+                rec.update(status="interrupted", interrupted=True, interrupted_at=self._now(),
+                           interrupted_reason="studio_restarted", finished=self._now())  # fmt: skip
+                rec["timeline"].append(
+                    {"at": self._now(), "event": "interrupted while running: Studio restarted"}
+                )
+            else:
+                err = {
+                    "kind": "branch_checked_out",
+                    "message": f"{rec['target_branch']} was "
+                    f"checked out in {self.state.model['project']['root']} during the build",
+                }
+                for nid in ids:
+                    self._finish_node(rec, nodes[nid], now)
+                    nodes[nid].update(status="regressed", error=err)
+                self._gate(rec, stop_at, lr, ids)
+                lr.update(status="failed", error=err, landed=False)
+                rec.update(status=plan_mod.final_status(rec), finished=self._now(),
+                           _checked_out=self.state.model["project"]["root"])  # fmt: skip
+            tot = plan_mod._usage_totals()
+            for n in rec["nodes"]:
+                plan_mod._sum_into(tot, n["usage"])
+                tot["rounds"] += n["rounds"]
+                tot["lines_changed"] += n["lines_changed"]
+            rec["totals"] = tot
+
+    def land(self, pid: str, body: dict[str, Any]) -> dict[str, Any]:
+        with self.state.lock:
+            rec = self._rec(pid)
+            if rec["status"] in ("planning", "running"):
+                raise MockRefusal(409, f"plan {pid} is {rec['status']}")
+            lw = plan_mod.land_waiting(rec)
+            if lw is None:
+                raise MockRefusal(409, f"nothing is waiting to land in plan {pid}",
+                                  "nothing_to_land")  # fmt: skip
+            if rec.get("_checked_out") and body.get("confirm_unsafe_branch") is not True:
+                raise MockRefusal(409, f"{rec['target_branch']} is checked out in your working "
+                                  f"copy {rec['_checked_out']}; switch it away and press Land (or "
+                                  "send confirm_unsafe_branch: true to fast-forward it there, "
+                                  "with a clean worktree)", "branch_checked_out")  # fmt: skip
+            real = next(x for x in reversed(rec["level_runs"]) if x["level"] == lw["level"])
+            self._land(rec, real, "resume")
+            rec["_checked_out"] = None
+            rec["status"] = plan_mod.final_status(rec)
+            return {"id": pid, "status": rec["status"], "landed": True, "remerge": False,
+                    "target_tip": rec["target_tip"]}  # fmt: skip
+
+    def forget(self, pid: str) -> dict[str, Any]:
+        with self.state.lock:
+            rec = self._rec(pid)
+            refs = [f"refs/lattice/plans/{pid}/{k}" for k in rec.get("anchors") or {}]
+            del self.plans[pid]
+            return {"id": pid, "status": "forgotten", "refs_removed": refs}
 
     def _plan_now(self, rec: dict[str, Any]) -> None:
         doc = (
@@ -1842,7 +2008,10 @@ class MockPlans:
             }
             rec["totals"] = tot
             return
-        ids = rec["levels"][cur["level"]]
+        ids = [i for i in rec["levels"][cur["level"]] if nodes[i]["status"] != "passed"]
+        if not ids:  # resumed: this level passed and landed before (v1.10)
+            cur.update(level=cur["level"] + 1, phase="start")
+            return
         if cur["phase"] == "start":
             for nid in ids:
                 n = nodes[nid]
@@ -1851,9 +2020,10 @@ class MockPlans:
                 n.update(
                     status="running",
                     build_id=bid,
-                    builds=[bid],
+                    builds=[*n["builds"], bid],
                     started_ts=now,
                     branch=f"rebuild/{rec['id']}-{nid}",
+                    attempts=n.get("attempts", 0) + 1,
                 )
             rec["level_runs"].append(
                 {
@@ -1874,6 +2044,8 @@ class MockPlans:
         elif cur["phase"] == "running":
             for nid in ids:
                 n = nodes[nid]
+                if n["status"] != "running":
+                    continue
                 k = len(n["scope"]["rules"]) or 1
                 sha = hashlib.sha1(f"{rec['id']}:{nid}".encode()).hexdigest()
                 n.update(
@@ -1946,8 +2118,11 @@ class MockPlans:
                             "created",
                             "finished",
                             "totals",
+                            "interrupted",
+                            "attempts",
                         )
                     },
+                    "resume": self._view(r)["resume"],
                     "nodes": [{"id": n["id"], "status": n["status"]} for n in r["nodes"]],
                 }
                 for r in self.plans.values()
@@ -1968,15 +2143,26 @@ class MockPlans:
             rec["approved"] = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
             return {"id": pid, "status": "approved", "version": rec["version"]}
 
-    def run(self, pid: str) -> dict[str, Any]:
+    def run(self, pid: str, body: dict[str, Any] | None = None) -> dict[str, Any]:
+        body = body or {}
         with self.state.lock:
             rec = self._rec(pid)
-            if rec["status"] not in ("approved", "partial", "failed", "stopped"):
+            if rec["status"] not in ("approved", "partial", "failed", "stopped", "interrupted"):
                 hint = ": approve it first" if rec["status"] == "ready" else ""
                 raise MockRefusal(409, f"plan {pid} is {rec['status']}, not approved{hint}")
             busy = next((p for p in self.plans.values() if p["status"] == "running"), None)
             if busy is not None:
                 raise MockRefusal(409, f"a build plan is running in this project ({busy['id']})")
+            if rec["status"] != "approved":
+                view = self._view(rec)["resume"]
+                if not view["available"]:
+                    raise MockRefusal(409, view["note"], "nothing_to_resume")
+                if view["kind"] == "land":
+                    self.land(pid, body)  # 409 while the target is checked out
+                for n in rec["nodes"]:
+                    if n["status"] not in ("passed", "pending"):
+                        n.update(status="pending", blocked_by=[], error=None)
+            rec.update(interrupted=False)
             rec.update(
                 status="running",
                 runs=rec["runs"] + 1,
@@ -1995,6 +2181,8 @@ class MockPlans:
                 "findings": [],
             }
             rec["_cursor"] = {"level": 0, "phase": "start"}
+            rec["attempts"] = rec["runs"]
+            rec["timeline"].append({"at": self._now(), "event": f"run {rec['runs']} started"})
             return {"id": pid, "status": "running"}
 
     def stop(self, pid: str) -> dict[str, Any]:
@@ -2243,7 +2431,9 @@ class Handler(BaseHTTPRequestHandler):
                 if len(parts) == 2 and parts[1] == "approve":
                     return self._json(state.plans.approve(parts[0]))
                 if len(parts) == 2 and parts[1] == "run":
-                    return self._json(state.plans.run(parts[0]))
+                    return self._json(state.plans.run(parts[0], body))
+                if len(parts) == 2 and parts[1] == "land":
+                    return self._json(state.plans.land(parts[0], body))
                 if len(parts) == 2 and parts[1] == "revise":
                     return self._json(state.plans.revise(parts[0], body))
             except MockRefusal as e:
@@ -2321,7 +2511,10 @@ class Handler(BaseHTTPRequestHandler):
             pid = path.removeprefix("/api/plan/")
             if not pid or "/" in pid:
                 return self._error(HTTPStatus.NOT_FOUND, "no such route")
+            forget = (parse_qs(urlparse(self.path).query).get("forget") or ["false"])[-1]
             try:
+                if forget.lower() in ("true", "1"):
+                    return self._json(state.plans.forget(pid))
                 return self._json(state.plans.stop(pid))
             except MockRefusal as e:
                 return self._json(e.body(), e.status)
@@ -2384,6 +2577,7 @@ class MockServer(ThreadingHTTPServer):
             ),
         }
         self.state = self.states[DEFAULT_PROJECT]
+        self.states[SECOND_PROJECT].plans.seed_fixtures()  # API v1.10: resume fixtures
         self.verbose = verbose
 
     def projects(self) -> list[dict[str, Any]]:
@@ -2410,6 +2604,7 @@ class MockServer(ThreadingHTTPServer):
                             "build_plan": True,
                         },
                         "default": name == DEFAULT_PROJECT,
+                        "state_warnings": [],  # API v1.10: the mock keeps its state in memory
                     }
                 )
         return out

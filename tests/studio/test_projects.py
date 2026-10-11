@@ -43,6 +43,7 @@ PROJECT_KEYS = {
     "last_check",
     "capabilities",
     "default",
+    "state_warnings",  # API v1.10
 }
 
 

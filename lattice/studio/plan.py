@@ -98,6 +98,8 @@ from lattice.studio.rebuild import (
     MAX_WAIT,
     Rebuilder,
     RebuildError,
+    _checked_out,
+    _current_branch,
     _git,
     _junk_pathspecs,
     _now,
@@ -105,6 +107,7 @@ from lattice.studio.rebuild import (
     _zero_usage,
 )
 from lattice.studio.session import DEFAULT_MAX_TOKENS, Transcript, _kill_group
+from lattice.studio.state import StateStore, kill_orphan, proc_info
 
 __all__ = [
     "PlanError",
@@ -112,7 +115,9 @@ __all__ = [
     "build_planner_argv",
     "fallback_plan",
     "planner_prompt",
+    "land_waiting",
     "resolve_plan_scope",
+    "resume_view",
     "validate_plan",
 ]
 
@@ -122,10 +127,15 @@ TIERS = ("fast", "mid", "frontier")
 KINDS = ("scaffold", "area", "merge", "integration")
 DEFAULT_MODELS = {"fast": "haiku", "mid": "sonnet", "frontier": "opus"}
 MAX_PARALLEL = 8
-STATUSES = ("planning", "ready", "approved", "running", "passed", "partial", "failed", "stopped")
+STATUSES = ("planning", "ready", "approved", "running", "passed", "partial", "failed", "stopped",
+            "interrupted")  # fmt: skip
 TRANSIENT = ("planning", "running")
-RESUMABLE = ("partial", "failed", "stopped")
+RESUMABLE = ("partial", "failed", "stopped", "interrupted")
 RERUN = ("pending", "gave_up", "blocked", "merge_conflict", "regressed", "stopped")
+# a level that passed its full gate but whose tip could not be added to the target (v1.10)
+LAND_KINDS = ("branch_checked_out", "branch_moved", "tree_dirty")
+REF_PREFIX = "refs/lattice/plans"
+WORKTREE_MARK = "/.lattice/rebuilds/"  # where Studio's own worktrees live (WORKTREE_DIR)
 PLANNER_TOOLS = ("Read", "Grep", "Glob")
 PLANNER_DENIED = ("Bash", "Edit", "Write", "MultiEdit", "NotebookEdit", "WebFetch", "WebSearch")
 _ID = re.compile(r"^[a-z0-9][a-z0-9_-]{0,47}$")
@@ -805,6 +815,156 @@ def parse_planner_text(text: str) -> dict[str, Any]:
     return data
 
 
+# ---- resume (API v1.10) ----------------------------------------------------------------------
+
+
+def land_waiting(rec: Mapping[str, Any]) -> dict[str, Any] | None:
+    """The level run that passed its full gate but whose gated tip was never added to the
+    target branch (``branch_checked_out``, ``branch_moved``, ``tree_dirty``), when it is
+    the latest run of its level and has not landed since; else None."""
+    latest: dict[int, Mapping[str, Any]] = {}
+    for lr in rec.get("level_runs") or []:
+        latest[int(lr.get("level", -1))] = lr
+    nodes = {n["id"]: n for n in rec.get("nodes") or []}
+    for L in sorted(latest):
+        lr = latest[L]
+        err = lr.get("error") or {}
+        gate = lr.get("gate") or {}
+        if (
+            lr.get("status") == "failed"
+            and lr.get("tip")
+            and not lr.get("regressions")
+            and not gate.get("regressions")
+            and err.get("kind") in LAND_KINDS
+            and not lr.get("landed_at")
+            and lr.get("merged")
+            and not all(nodes.get(i, {}).get("merged") for i in lr["merged"])
+        ):
+            return dict(lr)
+    return None
+
+
+def final_status(rec: Mapping[str, Any]) -> str:
+    """A plan's end state from its nodes: passed (all), partial (some), failed (none)."""
+    nodes = rec.get("nodes") or []
+    if nodes and all(n["status"] == "passed" for n in nodes):
+        return "passed"
+    return "partial" if any(n["status"] == "passed" for n in nodes) else "failed"
+
+
+def _ids(names: Sequence[str]) -> str:
+    names = list(names)
+    if len(names) <= 1:
+        return "".join(names)
+    return ", ".join(names[:-1]) + " and " + names[-1]
+
+
+def resume_view(
+    rec: Mapping[str, Any],
+    *,
+    checked_out_at: str | None = None,
+    owner_worktree: str | None = None,
+    fast_forward: bool | None = None,
+    max_attempts: int = 3,
+) -> dict[str, Any]:
+    """``resume`` of a plan record (API v1.10): whether ``POST .../run`` (or ``.../land``)
+    can go on from where the plan stopped, which nodes it keeps and which it runs, and one
+    plain sentence for the owner. `checked_out_at`: where the target branch is checked out
+    now (None: nowhere); `owner_worktree`: the owner's main worktree; `fast_forward`:
+    whether the waiting level's tip still fast-forwards the target (None: unknown)."""
+    status = str(rec.get("status"))
+    nodes = list(rec.get("nodes") or [])
+    by = {n["id"]: n for n in nodes}
+    order = [i for lvl in rec.get("levels") or [] for i in lvl] or [n["id"] for n in nodes]
+    target = rec.get("target_branch") or "the target branch"
+    lw = land_waiting(rec)
+    landing = set(lw["merged"]) if lw else set()
+    will_skip = [i for i in order if i in by and (by[i]["status"] == "passed" or i in landing)]
+    will_run = [i for i in order if i in by and i not in will_skip]
+    failed = [i for i in will_run if by[i]["status"] in ("gave_up", "merge_conflict", "regressed")]
+    out: dict[str, Any] = {"available": False, "kind": None, "from_level": None,
+                           "will_skip": will_skip, "will_run": will_run, "note": ""}  # fmt: skip
+    if status not in RESUMABLE:
+        notes = {
+            "passed": "Nothing to resume: every node passed and landed.",
+            "running": "The plan is running.",
+            "planning": "The plan is being planned.",
+            "ready": "The plan has not run yet: approve it, then run it.",
+            "approved": "The plan has not run yet: run it.",
+        }
+        out["note"] = notes.get(status, "")
+        return out
+    if not nodes or not rec.get("approved"):
+        out["note"] = ("The plan stopped before it was approved: revise it (feedback plans it "
+                       "again), approve it, then run it.")  # fmt: skip
+        return out
+    kept = len(will_skip) - len(landing)
+    if kept == 0:
+        kept_txt = "no node had passed yet"
+    else:
+        kept_txt = f"the {kept} node{'s' if kept != 1 else ''} that passed"
+        kept_txt += " are kept" if kept != 1 else " is kept"
+    if lw is not None:
+        L = int(lw["level"])
+        err = lw.get("error") or {}
+        head = f"Level {L} passed its check but could not be added to {target}"
+        if checked_out_at is not None:
+            mine = owner_worktree is not None and checked_out_at == owner_worktree
+            where = "your working copy" if mine else checked_out_at
+            note = (f"{head} because that branch is checked out in {where}. Switch it away "
+                    "and press Land.")  # fmt: skip
+        elif err.get("kind") == "tree_dirty":
+            note = (f"{head} because your working copy had uncommitted changes. Press Land "
+                    "once it is clean.")  # fmt: skip
+        elif fast_forward is False:
+            note = (f"{head}, and {target} has moved since. Land merges the level's nodes onto "
+                    "its new tip and re-runs the full check; no agent runs again.")  # fmt: skip
+        elif err.get("kind") == "branch_checked_out":
+            note = (f"{head} because that branch was checked out at the time. It is free now: "
+                    "press Land.")  # fmt: skip
+        else:
+            note = f"{head} because {target} moved during the run. Press Land to add it now."
+        out.update(available=True, kind="land", from_level=L, note=note)
+        return out
+    levels = [int(by[i].get("level", 0)) for i in will_run]
+    L = min(levels) if levels else None
+    if not will_run:
+        out["note"] = "Nothing to resume: every node passed."
+        return out
+    if failed:
+        capped = [i for i in failed if int(by[i].get("attempts") or 0) >= max_attempts]
+        if capped:
+            a = max(int(by[i].get("attempts") or 0) for i in capped)
+            out.update(kind="retry", from_level=L,
+                       note=(f"Node {_ids(capped)} already had {a} attempts (the cap is "
+                             f"[rebuild] max_attempts = {max_attempts}); revise the plan or "
+                             "raise the cap to try again."))  # fmt: skip
+            return out
+        what = {"gave_up": "gave up", "merge_conflict": "did not merge cleanly",
+                "regressed": "broke a check that passed before"}  # fmt: skip
+        parts = [f"{i} {what[by[i]['status']]}" for i in failed]
+        nxt = max(int(by[i].get("attempts") or 0) for i in failed) + 1
+        note = (f"Node {_ids(parts)}. Run retries {'it' if len(failed) == 1 else 'them'} "
+                f"(attempt {nxt} of {max_attempts}) with the earlier findings, from level {L}; "
+                f"{kept_txt}.")  # fmt: skip
+        out.update(available=True, kind="retry", from_level=L, note=note)
+        return out
+    if status == "interrupted":
+        running = [i for i in will_run if by[i]["status"] == "interrupted"]
+        note = (
+            f"Studio stopped while level {L} was running"
+            + (f" (node {_ids(running)})" if running else "")
+            + f". Run continues from level {L}; {kept_txt}"
+            + (" and not run again." if kept else ".")
+        )
+    elif status == "stopped":
+        note = f"The plan was stopped at level {L}. Run continues from there; {kept_txt}."
+    else:
+        note = f"Run continues from level {L}; {kept_txt}."
+    out.update(available=True, kind="continue", from_level=L, note=note)
+    return out
+
+
 # ---- the plan record -------------------------------------------------------------------------
 
 
@@ -827,6 +987,10 @@ class _Plan:
     final: tuple[str, dict[str, Any] | None] | None = None  # published once the run is over
     argvs: list[list[str]] = field(default_factory=list)
     t_run: float = 0.0
+    # resume (API v1.10)
+    land_only: bool = False  # POST .../land that must re-merge: no level runs after it
+    confirm_land: bool = False  # the run/land request confirmed the owner's checked-out branch
+    run_started_ts: float = 0.0  # wall clock, so a restart can add the lost run time
 
 
 def _usage_totals() -> dict[str, Any]:
@@ -863,6 +1027,7 @@ class PlanManager:
         data_model: Callable[[], Mapping[str, Any] | None] | None = None,
         env: Mapping[str, str] | None = None,
         log: Callable[[str], None] | None = None,
+        store: StateStore | None = None,
     ) -> None:
         self.rb = rebuilder
         self.cfg = rebuilder.cfg
@@ -872,6 +1037,140 @@ class PlanManager:
         self.lock = rebuilder.lock  # one lock for builds and plans (see Rebuilder)
         self.plans: dict[str, _Plan] = {}
         self.next_id = 1
+        self.store = store
+        if store is not None:
+            self._load()
+
+    # -- durable state (API v1.10, lattice/studio/state.py)
+    def _alloc(self) -> str:
+        if self.store is not None:
+            return f"p{self.store.allocate('plans')}"
+        pid = f"p{self.next_id}"
+        self.next_id += 1
+        return pid
+
+    def _private(self, plan: _Plan) -> dict[str, Any]:
+        return {"scope": plan.scope, "branch": plan.branch, "confirm": plan.confirm,
+                "models": plan.models, "planner": plan.planner, "doc": plan.doc,
+                "overrides": plan.overrides, "created_target": plan.created_target,
+                "run_started_ts": plan.run_started_ts}  # fmt: skip
+
+    def _save(self, plan: _Plan) -> None:
+        """Write the plan through to the store: on every status transition and after every
+        level, node and round event."""
+        if self.store is None:
+            return
+        with self.lock:
+            pid = plan.record["id"]
+            if self.plans.get(pid) is not plan:
+                return
+            try:
+                self.store.save("plans", pid, plan.record, self._private(plan))
+            except OSError as exc:
+                self.log(f"plan {pid}: the state file could not be written: {exc}")
+
+    def _event(self, plan: _Plan, event: str, node: dict[str, Any] | None = None) -> None:
+        """With the lock held: one timeline entry (the plan's, and the node's)."""
+        at = _now()
+        plan.record.setdefault("timeline", []).append({"at": at, "event": event})
+        if node is not None:
+            node.setdefault("timeline", []).append({"at": at, "event": event})
+
+    def _load(self) -> None:
+        """Every plan of the store; one that was planning or running when Studio stopped
+        is reconciled to ``interrupted`` (completed levels and nodes kept)."""
+        assert self.store is not None
+        for rec, priv in self.store.load("plans"):
+            for k, v in (("timeline", []), ("attempts", rec.get("runs") or 0), ("pids", []),
+                         ("interrupted", False), ("interrupted_at", None),
+                         ("interrupted_reason", None), ("anchors", {}), ("level_runs", []),
+                         ("nodes", []), ("levels", []), ("warnings", []), ("runs", 0),
+                         ("totals", _usage_totals())):  # fmt: skip
+                rec.setdefault(k, copy.deepcopy(v))
+            for n in rec["nodes"]:
+                n.setdefault("attempts", len(n.get("builds") or []))
+                n.setdefault("timeline", [])
+            scope = priv.get("scope") or self._scope_of(rec)
+            plan = _Plan(record=rec, scope=scope, branch=priv.get("branch", rec.get("branch")),
+                         confirm=bool(priv.get("confirm")),
+                         models=dict(priv.get("models") or rec.get("models") or {}),
+                         planner=str(priv.get("planner") or "agent"), doc=priv.get("doc"),
+                         overrides=dict(priv.get("overrides") or {}),
+                         created_target=bool(priv.get("created_target")),
+                         run_started_ts=float(priv.get("run_started_ts") or 0.0))  # fmt: skip
+            plan.done.set()
+            self.plans[str(rec["id"])] = plan
+            if rec.get("status") in TRANSIENT:
+                self._reconcile(plan)
+
+    def _scope_of(self, rec: Mapping[str, Any]) -> dict[str, Any]:
+        sc = dict(rec.get("scope") or {"kind": "all", "areas": [], "rules": [], "title": "All"})
+        kind = sc.get("kind")
+        if kind == "areas":
+            sc["slug"] = areas_mod.slug("areas-" + "-".join(sc.get("areas") or []), 80)
+        elif kind == "rules":
+            sc["slug"] = areas_mod.scope_slug({"kind": "rules", "rules": sc.get("rules") or []})
+        else:
+            sc["slug"] = "all"
+        return sc
+
+    def _reconcile(self, plan: _Plan) -> None:
+        rec = plan.record
+        killed = []
+        for info in rec.get("pids") or []:
+            if kill_orphan(info, self.log):
+                killed.append({k: info.get(k) for k in ("pid", "pgid", "role", "command")})
+        was = rec["status"]
+        now = _now()
+        rec.update(status="interrupted", interrupted=True, interrupted_at=now,
+                   interrupted_reason="studio_restarted", pids=[])  # fmt: skip
+        rec["finished"] = rec.get("finished") or now
+        if was == "running" and plan.run_started_ts:
+            lost = max(0.0, time.time() - plan.run_started_ts)
+            rec["totals"]["wall_s"] = round(float(rec["totals"].get("wall_s") or 0.0) + lost, 2)
+            plan.run_started_ts = 0.0
+        for n in rec["nodes"]:
+            if n["status"] == "running":
+                n["status"] = "interrupted"
+                n.pop("live", None)
+                n["timeline"].append({"at": now, "event": "interrupted: Studio restarted"})
+        for lr in rec["level_runs"]:
+            if lr.get("status") == "running":
+                lr["status"] = "interrupted"
+                lr["finished"] = now
+        if killed:
+            rec["orphans_killed"] = killed
+        msg = f"interrupted while {was}: Studio restarted"
+        if killed:
+            msg += f" ({len(killed)} orphan process group(s) terminated)"
+        rec["timeline"].append({"at": now, "event": msg})
+        self.log(f"plan {rec['id']}: {msg}")
+        self._save(plan)
+
+    def _pid_sink(self, plan: _Plan) -> Callable[[dict[str, Any], bool], None]:
+        """With the lock held (the Rebuilder calls it so): the plan's own child processes
+        (its integration gates) in its record, so a restart can terminate orphans."""
+
+        def sink(info: dict[str, Any], add: bool) -> None:
+            pids = plan.record.setdefault("pids", [])
+            if add:
+                pids.append(info)
+            else:
+                plan.record["pids"] = [p for p in pids if p.get("pid") != info.get("pid")]
+            self._save(plan)
+
+        return sink
+
+    def _anchor(self, plan: _Plan, name: str, sha: str) -> None:
+        """Pin `sha` as ``refs/lattice/plans/<plan>/<name>`` so the plan's work outlives
+        its worktrees and git gc (removed only by ``DELETE ...?forget=true``)."""
+        ref = f"{REF_PREFIX}/{plan.record['id']}/{name}"
+        r = _git(self.rb.repo(), "update-ref", ref, sha)
+        with self.lock:
+            if r.returncode == 0:
+                plan.record.setdefault("anchors", {})[name] = sha
+            else:
+                plan.record["warnings"].append(f"could not pin {ref}: {_short(r.stderr, 200)}")
 
     # -- POST /api/plan
     def create(self, body: Mapping[str, Any]) -> dict[str, str]:
@@ -907,8 +1206,7 @@ class PlanManager:
             raise PlanError(422, "confirm_unsafe_branch must be true or false")
         target = self._check_branch(body.get("branch"), confirm)
         with self.lock:
-            pid = f"p{self.next_id}"
-            self.next_id += 1
+            pid = self._alloc()
             record: dict[str, Any] = {
                 "id": pid,
                 "project": self.rb.name,
@@ -948,10 +1246,18 @@ class PlanManager:
                 "warnings": [],
                 "metrics": None,
                 "totals": _usage_totals(),
+                "attempts": 0,
+                "timeline": [{"at": _now(), "event": "planning"}],
+                "interrupted": False,
+                "interrupted_at": None,
+                "interrupted_reason": None,
+                "anchors": {},
+                "pids": [],
             }
             plan = _Plan(record=record, scope=scope, branch=body.get("branch"), confirm=confirm,
                          models=dict(models), planner=planner)  # fmt: skip
             self.plans[pid] = plan
+            self._save(plan)
             plan.thread = threading.Thread(target=self._plan_thread, args=(plan,), daemon=True,
                                            name=f"studio-plan-{pid}")  # fmt: skip
             plan.thread.start()
@@ -983,19 +1289,52 @@ class PlanManager:
                 plan.done.wait(0.1)
         with self.lock:
             self._refresh(plan)
-            return copy.deepcopy(plan.record)
+            out = copy.deepcopy(plan.record)
+            out["resume"] = self._resume(plan)  # computed when read, never stored
+            return out
 
     def list(self) -> list[dict[str, Any]]:
         with self.lock:
             out = []
             for p in self.plans.values():
                 self._refresh(p)
-                r = p.record
-                out.append({k: copy.deepcopy(r[k]) for k in (
+                r = {**p.record, "resume": self._resume(p)}
+                out.append({k: copy.deepcopy(r.get(k)) for k in (
                     "id", "status", "source", "version", "scope", "target_branch",
-                    "max_parallel", "levels", "created", "finished", "totals")})  # fmt: skip
+                    "max_parallel", "levels", "created", "finished", "totals", "interrupted",
+                    "attempts", "resume")})  # fmt: skip
                 out[-1]["nodes"] = [{"id": n["id"], "status": n["status"]} for n in r["nodes"]]
             return out
+
+    def _resume(self, plan: _Plan) -> dict[str, Any]:
+        """With the lock held: the plan's ``resume`` (API v1.10), from the record and the
+        repository as it is now (where the target is checked out, whether a waiting
+        level still fast-forwards it)."""
+        rec = plan.record
+        checked = owner = None
+        ff: bool | None = None
+        if rec.get("status") in RESUMABLE and rec.get("target_branch"):
+            try:
+                repo = self.rb.repo()
+                name = str(rec["target_branch"])
+                owner = str(repo)
+                where = _checked_out(repo).get(name)
+                checked = str(Path(where).resolve()) if where else None
+                lw = land_waiting(rec)
+                if lw is not None:
+                    ff = self._fast_forwards(repo, name, str(lw["tip"]))
+            except (RebuildError, OSError, subprocess.SubprocessError):
+                pass
+        return resume_view(rec, checked_out_at=checked, owner_worktree=owner, fast_forward=ff,
+                           max_attempts=self.cfg.max_attempts)  # fmt: skip
+
+    @staticmethod
+    def _fast_forwards(repo: Path, name: str, tip: str) -> bool | None:
+        r = _git(repo, "rev-parse", "-q", "--verify", f"refs/heads/{name}")
+        if r.returncode != 0:
+            return None
+        cur = r.stdout.strip()
+        return cur == tip or _git(repo, "merge-base", "--is-ancestor", cur, tip).returncode == 0
 
     def _refresh(self, plan: _Plan) -> None:
         """With the lock held: live usage of the running nodes into the record."""
@@ -1036,6 +1375,8 @@ class PlanManager:
                     plan.record["planner"]["wall_s"] + time.monotonic() - t0, 2
                 )
                 plan.proc = None
+                self._event(plan, plan.record["status"])
+                self._save(plan)
             plan.done.set()
 
     def _plan(self, plan: _Plan, feedback: str | None, previous: Any) -> None:
@@ -1136,6 +1477,8 @@ class PlanManager:
                 "finished_ts": None,
                 "error": None,
                 "metrics": None,
+                "attempts": 0,
+                "timeline": [],
             })  # fmt: skip
         rec["nodes"] = nodes
 
@@ -1190,6 +1533,7 @@ class PlanManager:
             return None, f"could not start {self.rb.claude_bin}: {exc}"
         with self.lock:
             plan.proc = proc
+            self._pid_sink(plan)(proc_info(proc.pid, "planner", str(argv[0])), True)
         if plan.stop.is_set():
             _kill_group(proc, signal.SIGTERM)
         t = Transcript()
@@ -1224,6 +1568,7 @@ class PlanManager:
             drainer.join(2)
             with self.lock:
                 plan.proc = None
+                self._pid_sink(plan)({"pid": proc.pid}, False)
         events = t.events_after(0)
         result = next((e for e in reversed(events) if e["type"] == "result"), None)
         errors = [e for e in events if e["type"] == "error"]
@@ -1282,7 +1627,8 @@ class PlanManager:
         with self.lock:
             plan = self._get(pid)
             status = plan.record["status"]
-            if status not in ("ready", "approved"):
+            replan = status == "interrupted" and not plan.record["runs"]  # cut off while planning
+            if status not in ("ready", "approved") and not (replan and feedback is not None):
                 raise PlanError(409, f"plan {pid} is {status}; only a ready or approved plan "
                                 "can be revised")  # fmt: skip
             if feedback is not None:
@@ -1297,6 +1643,8 @@ class PlanManager:
                     daemon=True,
                     name=f"studio-plan-{pid}-revise",
                 )
+                self._event(plan, "revising (feedback)")
+                self._save(plan)
                 plan.thread.start()
                 return {"id": pid, "status": "planning"}
         assert isinstance(edits, Mapping)
@@ -1391,6 +1739,8 @@ class PlanManager:
             self._apply(plan, v)
             plan.record["status"] = "ready"
             plan.record["approved"] = None
+            self._event(plan, f"revised (version {plan.record['version']})")
+            self._save(plan)
             return copy.deepcopy(plan.record)
 
     # -- POST /api/plan/{id}/approve
@@ -1402,42 +1752,217 @@ class PlanManager:
                 raise PlanError(409, f"plan {pid} is {status}, not ready")
             plan.record["status"] = "approved"
             plan.record["approved"] = _now()
+            self._event(plan, f"approved (version {plan.record['version']})")
+            self._save(plan)
             return {"id": pid, "status": "approved", "version": plan.record["version"]}
 
     # -- POST /api/plan/{id}/run
-    def run(self, pid: str) -> dict[str, Any]:
+    def run(self, pid: str, body: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        """Run an approved plan, or resume a ``partial``, ``failed``, ``stopped`` or
+        ``interrupted`` one from where it stopped (API v1.10): levels that passed their
+        full gate and landed are skipped with their nodes; a level that passed its gate
+        but never landed is landed first (fast-forward, else re-merged and re-gated with
+        no agent); an interrupted node continues its build; a node that gave up, did not
+        merge or regressed is retried with its earlier findings (``[rebuild]
+        max_attempts``)."""
+        body = dict(body or {})
+        unknown = set(body) - {"confirm_unsafe_branch"}
+        if unknown:
+            raise PlanError(422, f"unknown field(s): {', '.join(sorted(unknown))}")
+        confirm = body.get("confirm_unsafe_branch", False)
+        if not isinstance(confirm, bool):
+            raise PlanError(422, "confirm_unsafe_branch must be true or false")
         ok, why = self.rb.available()
         if not ok:
             raise PlanError(503, f"build plans are not available: {why}")
         with self.lock:
             plan = self._get(pid)
-            status = plan.record["status"]
+            rec = plan.record
+            status = rec["status"]
             if status not in ("approved", *RESUMABLE):
                 hint = ": approve it first" if status == "ready" else ""
                 raise PlanError(409, f"plan {pid} is {status}, not approved{hint}")
+            resume = status in RESUMABLE
+            if resume:
+                if not rec.get("approved") or not rec["nodes"]:
+                    raise PlanError(409, f"plan {pid} is {status} and was never approved: revise "
+                                    "it, approve it, then run it")  # fmt: skip
+                view = self._resume(plan)
+                if not view["available"]:
+                    raise PlanError(409, view["note"] or f"plan {pid} has nothing to resume",
+                                    "nothing_to_resume")  # fmt: skip
             if self.rb.plan_active:
                 raise PlanError(409, f"a build plan is running in this project "
                                 f"({self.rb.plan_active})")  # fmt: skip
             busy = self.rb.running()
             if busy:
                 raise PlanError(409, f"a rebuild is already running in this project ({busy})")
-            self.rb.plan_active = pid
-            plan.stop.clear()
-            plan.done.clear()
-            rec = plan.record
-            rec["status"] = "running"
-            rec["runs"] += 1
-            rec["started"] = rec["started"] or _now()
-            rec["finished"] = None
-            rec["error"] = None
+        if resume and (plan.created_target or rec.get("target_tip")):
+            # the target exists by now: refuse at once what the run would refuse
+            self._check_branch({"name": rec["target_branch"], "create": False},
+                               plan.confirm or confirm)  # fmt: skip
+        with self.lock:
+            if self.rb.plan_active or rec["status"] != status:
+                raise PlanError(409, f"plan {pid} changed meanwhile; try again")
+            self._start_run(plan, confirm=confirm, land_only=False, resume=resume)
+        self.log(f"plan {pid}: running (run {rec['runs']}{', resumed' if resume else ''})")
+        return {"id": pid, "status": "running"}
+
+    def _start_run(self, plan: _Plan, *, confirm: bool, land_only: bool, resume: bool) -> None:
+        """With the lock held: take the build slot and start the runner thread."""
+        rec = plan.record
+        pid = rec["id"]
+        lw = land_waiting(rec)
+        landing = set(lw["merged"]) if lw else set()
+        self.rb.plan_active = pid
+        plan.stop.clear()
+        plan.done.clear()
+        plan.land_only = land_only
+        plan.confirm_land = confirm
+        plan.run_started_ts = time.time()
+        prev = rec["status"]
+        rec["status"] = "running"
+        rec["runs"] += 1
+        rec["attempts"] = rec["runs"]
+        rec["started"] = rec["started"] or _now()
+        rec["finished"] = None
+        rec["error"] = None
+        rec["interrupted"] = False
+        if not land_only:
             for n in rec["nodes"]:
+                if n["id"] in landing:
+                    continue
+                if n["status"] in ("gave_up", "merge_conflict", "regressed"):
+                    n["previous_findings"] = self._findings_of(n)
                 if n["status"] in RERUN:
                     n.update(status="pending", blocked_by=[], error=None)
-            plan.thread = threading.Thread(target=self._execute, args=(plan,), daemon=True,
-                                           name=f"studio-plan-{pid}-run")  # fmt: skip
-            plan.thread.start()
-        self.log(f"plan {pid}: running (run {rec['runs']})")
-        return {"id": pid, "status": "running"}
+        what = "land" if land_only else ("resume" if resume else "run")
+        self._event(plan, f"{what} {rec['runs']} started (was {prev})")
+        self._save(plan)
+        plan.thread = threading.Thread(target=self._execute, args=(plan,), daemon=True,
+                                       name=f"studio-plan-{pid}-{what}")  # fmt: skip
+        plan.thread.start()
+
+    def _findings_of(self, n: Mapping[str, Any]) -> list[str]:
+        """With the lock held: what a node's last attempt ended with (its error, and the
+        findings of its build's last round), for the retry's brief."""
+        out = []
+        err = n.get("error") or {}
+        if err.get("message"):
+            out.append(f"{err.get('kind') or 'error'}: {_short(err['message'], 300)}")
+        run = self.rb.runs.get(n.get("build_id") or "")
+        if run is not None and run.record.get("rounds"):
+            check = run.record["rounds"][-1].get("check") or {}
+            for f in (check.get("findings") or [])[:20]:
+                out.append(_short(f.get("title") or "", 240))
+        return out
+
+    # -- POST /api/plan/{id}/land
+    def land(self, pid: str, body: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        """Add a level that passed its full gate but never landed to the target branch,
+        without running any agent: a fast-forward to its pinned gated tip when the target
+        has not moved past it (the owner's checked-out branch only with
+        ``confirm_unsafe_branch`` and a clean worktree, as in v1.8); else its node commits
+        are merged onto the new tip and the full gate re-runs in the background (no agent).
+        409 when nothing is waiting to land."""
+        body = dict(body or {})
+        unknown = set(body) - {"confirm_unsafe_branch"}
+        if unknown:
+            raise PlanError(422, f"unknown field(s): {', '.join(sorted(unknown))}")
+        confirm = body.get("confirm_unsafe_branch", False)
+        if not isinstance(confirm, bool):
+            raise PlanError(422, "confirm_unsafe_branch must be true or false")
+        with self.lock:
+            plan = self._get(pid)
+            rec = plan.record
+            if rec["status"] in TRANSIENT:
+                raise PlanError(409, f"plan {pid} is {rec['status']}")
+            lw = land_waiting(rec)
+            if lw is None:
+                raise PlanError(409, f"nothing is waiting to land in plan {pid}",
+                                "nothing_to_land")  # fmt: skip
+            if self.rb.plan_active:
+                raise PlanError(409, f"a build plan is running in this project "
+                                f"({self.rb.plan_active})")  # fmt: skip
+            busy = self.rb.running()
+            if busy:
+                raise PlanError(409, f"a rebuild is already running in this project ({busy})")
+            self.rb.plan_active = pid  # the slot, while the branch moves
+        try:
+            out = self._land_ff(plan, lw, confirm)
+        finally:
+            with self.lock:
+                if self.rb.plan_active == pid and rec["status"] not in TRANSIENT:
+                    self.rb.plan_active = None
+        if isinstance(out, dict):
+            raise PlanError(409, out["message"], out["kind"])
+        if out == "landed":
+            with self.lock:
+                rec["status"] = final_status(rec)
+                rec["finished"] = _now()
+                self._save(plan)
+                return {"id": pid, "status": rec["status"], "landed": True, "remerge": False,
+                        "target_tip": rec["target_tip"]}  # fmt: skip
+        with self.lock:  # not a fast-forward any more: re-merge and re-gate, in the background
+            if self.rb.plan_active:
+                raise PlanError(409, f"a build plan is running in this project "
+                                f"({self.rb.plan_active})")  # fmt: skip
+            self._start_run(plan, confirm=confirm, land_only=True, resume=True)
+        self.log(f"plan {pid}: landing level {lw['level']} by a re-merge and the full gate")
+        return {"id": pid, "status": "running", "landed": False, "remerge": True,
+                "target_tip": rec["target_tip"]}  # fmt: skip
+
+    def _land_ff(self, plan: _Plan, lw: Mapping[str, Any], confirm: bool) -> str | dict[str, str]:
+        """Fast-forward the target to the waiting level's gated tip: ``"landed"``,
+        ``"not_ff"`` (the target moved: a re-merge is needed), or a refusal
+        ``{kind, message}`` (the branch is checked out, the tree dirty, the tip gone)."""
+        rec = plan.record
+        repo = self.rb.repo()
+        name = str(rec["target_branch"])
+        tip = str(lw["tip"])
+        r = _git(repo, "rev-parse", "-q", "--verify", f"refs/heads/{name}")
+        if r.returncode != 0:
+            return {"kind": "no_branch", "message": f"no branch {name}"}
+        cur = r.stdout.strip()
+        if _git(repo, "cat-file", "-e", f"{tip}^{{commit}}").returncode != 0:
+            return {"kind": "no_ref", "message": f"the gated tip {tip[:10]} of level "
+                    f"{lw['level']} is gone"}  # fmt: skip
+        if cur != tip:
+            if _git(repo, "merge-base", "--is-ancestor", cur, tip).returncode != 0:
+                return "not_ff"
+            where = _checked_out(repo).get(name)
+            current = _current_branch(repo)
+            if where is not None and name != current:
+                msg = f"{name} is checked out in {where}; switch that worktree to another branch"
+                return {"kind": "branch_checked_out", "message": msg + " and press Land"}
+            if name == current and not confirm:
+                return {"kind": "branch_checked_out", "message": f"{name} is checked out in your "
+                        f"working copy {repo}; switch it away and press Land (or send "
+                        "confirm_unsafe_branch: true to fast-forward it there, with a clean "
+                        "worktree)"}  # fmt: skip
+            moved = self.rb._advance_to(repo, name, cur, tip, name == current)
+            if moved is not None:
+                return moved
+        L = int(lw["level"])
+        with self.lock:
+            for x in rec["level_runs"]:
+                if x is not None and x.get("level") == L and x.get("tip") == tip and \
+                        x.get("status") == "failed":  # fmt: skip
+                    x["land_error"] = x.pop("error", None)
+                    x.update(status="passed", landed=True, landed_at=_now(), landed_by="resume")
+            nodes = {n["id"]: n for n in rec["nodes"]}
+            for nid in lw["merged"]:
+                n = nodes.get(nid)
+                if n is not None:
+                    n.update(status="passed", merged=True, error=None)
+                    self._event(plan, f"node {nid} landed with level {L}", n)
+            rec["target_tip"] = tip
+            self._event(plan, f"level {L} landed on {name} at {tip[:10]} (resume, no agent)")
+            self._save(plan)
+        self._results(name, tip, tip, set((lw.get("gate") or {}).get("failing") or []),
+                      f"plan {rec['id']} level {L} (landed)")  # fmt: skip
+        self.log(f"plan {rec['id']}: level {L} landed on {name} at {tip[:10]}")
+        return "landed"
 
     # -- DELETE /api/plan/{id}
     def stop(self, pid: str, join: float = 30.0) -> dict[str, Any]:
@@ -1448,6 +1973,8 @@ class PlanManager:
                 raise PlanError(409, f"cannot stop a plan that is {status}")
             plan.stop.set()
             plan.record["status"] = "stopped"
+            self._event(plan, f"stopped (was {status})")
+            self._save(plan)
             proc = plan.proc
             irun = plan.irun
             live = [n["build_id"] for n in plan.record["nodes"]
@@ -1465,8 +1992,34 @@ class PlanManager:
             for n in plan.record["nodes"]:
                 if n["status"] == "running":
                     n["status"] = "stopped"
+            self._save(plan)
         self.log(f"plan {pid}: stopped")
         return {"id": pid, "status": "stopped"}
+
+    # -- DELETE /api/plan/{id}?forget=true
+    def forget(self, pid: str) -> dict[str, Any]:
+        """Stop the plan if it runs, then drop it: its record, its state file and its git
+        anchors ``refs/lattice/plans/<id>/*`` (its node branches stay). Its id is never
+        handed out again."""
+        with self.lock:
+            plan = self._get(pid)
+            live = plan.record["status"] in TRANSIENT
+        if live:
+            with contextlib.suppress(PlanError):
+                self.stop(pid)
+        refs: list[str] = []
+        with contextlib.suppress(RebuildError):
+            repo = self.rb.repo()
+            listing = _git(repo, "for-each-ref", "--format=%(refname)", f"{REF_PREFIX}/{pid}/")
+            for ref in listing.stdout.split():
+                if _git(repo, "update-ref", "-d", ref).returncode == 0:
+                    refs.append(ref)
+        with self.lock:
+            self.plans.pop(pid, None)
+            if self.store is not None:
+                self.store.delete("plans", pid)
+        self.log(f"plan {pid}: forgotten ({len(refs)} anchor ref(s) removed)")
+        return {"id": pid, "status": "forgotten", "refs_removed": refs}
 
     def close(self) -> None:
         with self.lock:
@@ -1490,8 +2043,7 @@ class PlanManager:
                                        "message": f"{type(exc).__name__}: {exc}"})  # fmt: skip
         finally:
             if plan.irun is not None:
-                self.rb.remove_worktree(plan.irun)
-                plan.irun = None
+                self._drop_irun(plan, plan.irun)
             with self.lock:
                 if self.rb.plan_active == rec["id"]:
                     self.rb.plan_active = None
@@ -1499,10 +2051,12 @@ class PlanManager:
                 rec["totals"]["wall_s"] = round(
                     rec["totals"]["wall_s"] + time.monotonic() - plan.t_run, 2
                 )
+                plan.run_started_ts = 0.0
                 self._totals(plan)
                 early = {"kind": "internal", "message": "the run ended early"}
                 status, error = plan.final or ("failed", early)
                 stopped = rec["status"] == "stopped"
+                self._save(plan)
             if not stopped:
                 with contextlib.suppress(Exception):
                     self._plan_hook(plan, status)
@@ -1511,6 +2065,8 @@ class PlanManager:
                     rec["status"] = status
                     if error is not None:
                         rec["error"] = error
+                self._event(plan, rec["status"])
+                self._save(plan)
             plan.done.set()
             self.log(f"plan {rec['id']}: {rec['status']}")
 
@@ -1520,18 +2076,95 @@ class PlanManager:
         with self.lock:
             plan.final = (status, dict(error) if error is not None else None)
 
+    def _irun(self, plan: _Plan, sha: str, label: str, stop: threading.Event) -> Any:
+        """A detached integration worktree of the plan, its gate processes recorded in the
+        plan's ``pids`` and its path in ``integration_worktree`` (a restart removes it)."""
+        irun = self.rb.integration_worktree(sha, label, stop)
+        irun.pid_sink = self._pid_sink(plan)
+        with self.lock:
+            plan.record["integration_worktree"] = str(irun.worktree)
+            self._save(plan)
+        return irun
+
+    def _drop_irun(self, plan: _Plan, irun: Any) -> None:
+        self.rb.remove_worktree(irun)
+        with self.lock:
+            if plan.irun is irun:
+                plan.irun = None
+            if plan.record.get("integration_worktree") == str(irun.worktree):
+                plan.record["integration_worktree"] = None
+            self._save(plan)
+
+    def _drop_stale(self, plan: _Plan) -> None:
+        """The integration worktree an interrupted run left (Studio's own, recorded)."""
+        stale = plan.record.get("integration_worktree")
+        if stale:
+            path = Path(str(stale))
+            if path.is_dir() and (WORKTREE_MARK in path.as_posix()
+                                  or path.name.startswith("lattice-rebuild-")):  # fmt: skip
+                import shutil
+
+                shutil.rmtree(path, ignore_errors=True)
+            with contextlib.suppress(RebuildError):
+                _git(self.rb.repo(), "worktree", "prune")
+            with self.lock:
+                plan.record["integration_worktree"] = None
+
+    def _advance_level(
+        self,
+        plan: _Plan,
+        L: int,
+        lr: dict[str, Any],
+        outcome: Mapping[str, Any],
+        repo: Path,
+        name: str,
+        old_tip: str,
+        checked_out_main: bool,
+        by: str,
+    ) -> str | None:
+        """Move the target to a level's gated tip (the only tip it ever moves to). None
+        when it could not (the level then waits to land: v1.10's ``POST .../land``)."""
+        new_tip = str(outcome["tip"])
+        moved = self.rb._advance_to(repo, name, old_tip, new_tip, checked_out_main)
+        merged = list(outcome["merged"])
+        with self.lock:
+            if moved is not None:
+                lr["status"] = "failed"
+                lr["error"] = moved
+                lr["landed"] = False
+                for n in merged:
+                    n["status"] = "regressed"
+                    n["error"] = moved
+                self._event(plan, f"level {L} passed its full gate at {new_tip[:10]} but did "
+                            f"not land on {name}: {moved['message']}")  # fmt: skip
+            else:
+                plan.record["target_tip"] = new_tip
+                lr.update(landed=True, landed_at=_now(), landed_by=by)
+                for n in merged:
+                    n.update(merged=True, status="passed", error=None)
+                    self._event(plan, f"node {n['id']} landed with level {L}", n)
+                self._event(plan, f"level {L} landed on {name} at {new_tip[:10]}")
+            self._save(plan)
+        if moved is not None:
+            return None
+        self._results(name, new_tip, new_tip, set(outcome["failing"]),
+                      f"plan {plan.record['id']} level {L}")  # fmt: skip
+        return new_tip
+
     def _levels(self, plan: _Plan) -> None:
         rec = plan.record
         pid = rec["id"]
         rb = self.rb
         repo = rb.repo()
+        self._drop_stale(plan)
         spec = plan.branch
         if plan.created_target:
             spec = {"name": rec["target_branch"], "create": False}
         try:
-            target = rb._target(repo, spec, plan.confirm)
+            target = rb._target(repo, spec, plan.confirm or plan.confirm_land)
         except RebuildError as e:
-            self._end(plan, "failed", {"kind": e.code or "branch", "message": e.detail})
+            self._end(plan, final_status(rec) if rec["runs"] > 1 else "failed",
+                      {"kind": e.code or "branch", "message": e.detail})  # fmt: skip
             return
         name, branch_tip = target["name"], target["tip"]
         if target["created"]:
@@ -1540,8 +2173,24 @@ class PlanManager:
         with self.lock:
             rec.update(target_branch=name, owner_head=owner_head, target_tip=branch_tip)
             rec["created_branch"] = plan.created_target
+            self._save(plan)
+        # resume (v1.10): a level that passed its full gate but never landed lands first
+        lw = land_waiting(rec)
+        remerge = None
+        if lw is not None:
+            out = self._land_ff(plan, lw, plan.confirm or plan.confirm_land)
+            if isinstance(out, dict):
+                self._end(plan, final_status(rec), out)
+                return
+            if out == "not_ff":
+                remerge = lw
+            else:
+                branch_tip = str(lw["tip"])
+        if plan.land_only and remerge is None:
+            self._end(plan, final_status(rec))
+            return
         # the start baseline: the full gate on the target's tip
-        irun = rb.integration_worktree(branch_tip, f"{pid}-start-{rec['runs']}", plan.stop)
+        irun = self._irun(plan, branch_tip, f"{pid}-start-{rec['runs']}", plan.stop)
         plan.irun = irun
         try:
             if (
@@ -1562,8 +2211,7 @@ class PlanManager:
             t0 = time.monotonic()
             gates, counts, findings = rb.gate_round(irun, 0)
         finally:
-            rb.remove_worktree(irun)
-            plan.irun = None
+            self._drop_irun(plan, irun)
         if plan.stop.is_set():
             return
         broken = [f"`{g['command']}` exited {g['exit_code']}" for g in gates
@@ -1583,9 +2231,48 @@ class PlanManager:
                 "findings": [{"title": f["title"], "target": f.get("target") or ""}
                              for f in findings],
             }  # fmt: skip
+            self._event(plan, f"start baseline on {name} at {start_sha[:10]}: "
+                        f"{len(last_failing)} failing")  # fmt: skip
+            self._save(plan)
         self._results(name, start_sha, branch_tip, last_failing, f"plan {pid} start")
         nodes = {n["id"]: n for n in rec["nodes"]}
         failed_level = False
+        if remerge is not None:
+            # the target moved past the waiting level's tip: its node commits are merged onto
+            # the new tip and only the full gate runs again (no agent)
+            L = int(remerge["level"])
+            again = [nodes[i] for i in remerge["merged"] if nodes[i].get("commit")]
+            lr = {"level": L, "run": rec["runs"], "base": last_good,
+                  "nodes": [n["id"] for n in again], "status": "running", "merged": [],
+                  "merge_conflicts": [], "tip": None, "gate": None, "regressions": [],
+                  "blame": [], "started": _now(), "finished": None, "remerge": True}  # fmt: skip
+            with self.lock:
+                rec["level_runs"].append(lr)
+                self._event(plan, f"level {L}: re-merging {', '.join(lr['nodes'])} onto "
+                            f"{name} at {last_good[:10]} (no agent)")  # fmt: skip
+                self._save(plan)
+            outcome = self._merge_level(plan, L, lr, again, [], last_good, last_failing)
+            if plan.stop.is_set():
+                return
+            if outcome is not None and outcome.get("tip"):
+                new = self._advance_level(plan, L, lr, outcome, repo, name, branch_tip,
+                                          target["checked_out_main"], "resume")  # fmt: skip
+                if new is not None:
+                    branch_tip = last_good = new
+                    last_failing = set(outcome["failing"])
+                    last = outcome["last"]
+                else:
+                    failed_level = True
+            else:
+                failed_level = True
+            with self.lock:
+                if lr["status"] == "running":
+                    lr["status"] = "failed" if failed_level else "passed"
+                lr["finished"] = _now()
+                self._save(plan)
+            if failed_level or plan.land_only:
+                self._end(plan, final_status(rec))
+                return
         for L, ids in enumerate(rec["levels"]):
             if plan.stop.is_set():
                 return
@@ -1601,6 +2288,7 @@ class PlanManager:
                         n["blocked_by"] = bad
                         continue
                     todo.append(n)
+                self._save(plan)
             if not todo:
                 continue
             lr: dict[str, Any] = {"level": L, "run": rec["runs"], "base": last_good,
@@ -1610,6 +2298,8 @@ class PlanManager:
                                   "finished": None}  # fmt: skip
             with self.lock:
                 rec["level_runs"].append(lr)
+                self._event(plan, f"level {L} started ({', '.join(lr['nodes'])})")
+                self._save(plan)
             self._run_level(plan, L, todo, last_good, name, last)
             if plan.stop.is_set():
                 return
@@ -1622,28 +2312,14 @@ class PlanManager:
                 if outcome is not None and outcome.get("failed"):
                     failed_level = True
                 elif outcome is not None and outcome.get("tip"):
-                    new_tip = outcome["tip"]
-                    moved = rb._advance_to(repo, name, branch_tip, new_tip,
-                                           target["checked_out_main"])  # fmt: skip
-                    if moved is not None:
-                        with self.lock:
-                            lr["status"] = "failed"
-                            lr["error"] = moved
-                            for n in passed:
-                                if n["status"] == "passed":
-                                    n["status"] = "regressed"
-                                    n["error"] = moved
+                    new = self._advance_level(plan, L, lr, outcome, repo, name, branch_tip,
+                                              target["checked_out_main"], "run")  # fmt: skip
+                    if new is None:
                         failed_level = True
                     else:
-                        branch_tip = last_good = new_tip
-                        last_failing = outcome["failing"]
+                        branch_tip = last_good = new
+                        last_failing = set(outcome["failing"])
                         last = outcome["last"]
-                        with self.lock:
-                            rec["target_tip"] = new_tip
-                            for n in outcome["merged"]:
-                                n["merged"] = True
-                        self._results(name, new_tip, new_tip, last_failing,
-                                      f"plan {pid} level {L}")  # fmt: skip
                 for n in todo:
                     run = rb.runs.get(n.get("build_id") or "")
                     if run is not None and n["status"] in ("passed", "regressed", "merge_conflict"):
@@ -1652,6 +2328,7 @@ class PlanManager:
                 if lr["status"] == "running":
                     lr["status"] = "failed" if failed_level else "passed"
                 lr["finished"] = _now()
+                self._save(plan)
             if failed_level:
                 break
         with self.lock:
@@ -1670,6 +2347,7 @@ class PlanManager:
         with self.lock:
             self.rb.results[name] = {"sha": sha, "tip": tip, "failing": sorted(failing),
                                      "source": source, "at": _now()}  # fmt: skip
+            self.rb._save_results()
 
     def _note(self, plan: _Plan, node: Mapping[str, Any], L: int) -> str:
         rec = plan.record
@@ -1732,34 +2410,120 @@ class PlanManager:
                 scope = {"kind": kind if kind != "all" else areas_mod.ALL, "id": n["id"],
                          "title": n["title"], "rules": rules, "targets": targets}  # fmt: skip
                 with self.lock:
+                    prev, prev_bid = n["status"], n.get("build_id")
                     n["started_ts"] = time.time()
                     n["status"] = "running"
+                    attempt = int(n.get("attempts") or 0) + 1
+                    self._save(plan)
+                # an interrupted node (v1.10) continues its own build when its worktree,
+                # branch and base are still those of this level; else it starts afresh
+                cont = self._continuable(prev, prev_bid, tip, n)
+                if cont is not None:
+                    try:
+                        self.rb.continue_build(cont, plan_id=rec["id"], attempt=attempt)
+                    except RebuildError as e:
+                        self.log(f"plan {rec['id']}: node {n['id']} cannot continue {cont}: "
+                                 f"{e.detail}; starting afresh")  # fmt: skip
+                        self._abandon(plan, n, cont)
+                        cont = None
+                if cont is not None:
+                    with self.lock:
+                        n["attempts"] = attempt
+                        self._event(plan, f"node {n['id']} resumed its build {cont} "
+                                    f"(attempt {attempt})", n)  # fmt: skip
+                        self._save(plan)
+                    running[n["id"]] = cont
+                    continue
+                note = self._note(plan, n, L)
+                earlier = n.get("previous_findings") or []
+                if earlier:
+                    note += ("\n\nA previous attempt ended with these findings:\n"
+                             + "\n".join(f"- {x}" for x in earlier))  # fmt: skip
                 try:
                     rid = self.rb.start_node(
                         plan_id=rec["id"], node_id=n["id"], scope=scope, tip=tip,
                         target_branch=name, baseline=last, model=n["model"],
-                        always_run=n["kind"] == "scaffold", note=self._note(plan, n, L),
+                        always_run=n["kind"] == "scaffold", note=note, attempt=attempt,
                     )  # fmt: skip
                 except RebuildError as e:
                     with self.lock:
                         n["status"] = "gave_up"
                         n["error"] = {"kind": "start", "message": e.detail}
                         n["finished_ts"] = time.time()
+                        self._save(plan)
                     continue
                 with self.lock:
                     if rid is None:
                         n.update(status="passed", nothing_to_build=True, finished_ts=time.time())
+                        self._event(plan, f"node {n['id']} passed: nothing to build", n)
+                        self._save(plan)
                         continue
                     n["build_id"] = rid
                     n["builds"].append(rid)
                     n["branch"] = self.rb.runs[rid].branch
                     n["nothing_to_build"] = False
+                    n["attempts"] = attempt
+                    self._event(plan, f"node {n['id']} started as {rid} (attempt {attempt})", n)
+                    self._save(plan)
                 running[n["id"]] = rid
             for nid, rid in list(running.items()):
                 run = self.rb.node_run(rid)
                 if run.done.wait(0.05):
                     self._collect(by[nid], rid)
                     del running[nid]
+
+    def _continuable(
+        self, prev: str, prev_bid: str | None, tip: str, n: Mapping[str, Any]
+    ) -> str | None:
+        """The build an interrupted node can continue: still interrupted, made from this
+        level's tip, its worktree and branch still there."""
+        if prev != "interrupted" or not prev_bid:
+            return None
+        run = self.rb.runs.get(prev_bid)
+        if run is None or run.record.get("status") != "interrupted" or run.base != tip:
+            if run is not None:
+                self._abandon(self._plan_of(n), n, prev_bid)
+            return None
+        branch_ok = (
+            bool(run.branch)
+            and _git(run.repo, "rev-parse", "-q", "--verify", f"refs/heads/{run.branch}").returncode
+            == 0
+        )
+        if not branch_ok or not (run.worktree.is_dir() and (run.worktree / ".git").exists()):
+            self._abandon(self._plan_of(n), n, prev_bid)
+            return None
+        return prev_bid
+
+    def _plan_of(self, n: Mapping[str, Any]) -> _Plan | None:
+        with self.lock:
+            for plan in self.plans.values():
+                if any(x is n for x in plan.record["nodes"]):
+                    return plan
+        return None
+
+    def _abandon(self, plan: _Plan | None, n: dict[str, Any], rid: str) -> None:
+        """An interrupted build that cannot go on: its usage and rounds still count for the
+        node (nothing is lost), its worktree (Studio's own) is removed, its branch kept."""
+        run = self.rb.runs.get(rid)
+        if run is None:
+            return
+        with self.lock:
+            r = run.record
+            if r.get("abandoned"):
+                return
+            _sum_into(n["usage"], _node_usage(r.get("usage") or {}))
+            n["rounds"] += len(r.get("rounds") or [])
+            n["wall_s"] = round(n["wall_s"] + float((r.get("usage") or {}).get("wall_s") or 0), 2)
+            r["abandoned"] = True
+            r.setdefault("timeline", []).append({"at": _now(), "event": "abandoned: the node "
+                                                 "starts afresh from its level's tip"})  # fmt: skip
+        if run.worktree.is_dir():
+            self.rb.remove_worktree(run)
+        else:
+            self.rb._save(run)
+        if plan is not None:
+            with self.lock:
+                self._event(plan, f"node {n['id']}: build {rid} abandoned (starts afresh)", n)
 
     def _collect(self, n: dict[str, Any], rid: str) -> None:
         run = self.rb.node_run(rid)
@@ -1776,6 +2540,9 @@ class PlanManager:
                     lines += sum(int(b) for b in bits[:2] if b.isdigit())
                     files.append(bits[2])
         u = _node_usage(r.get("usage") or {})
+        plan = self._plan_of(n)
+        if commit and plan is not None:
+            self._anchor(plan, str(n["id"]), commit)
         with self.lock:
             n["status"] = st
             n["commit"] = commit
@@ -1785,9 +2552,13 @@ class PlanManager:
             _sum_into(prev, u)
             n["rounds"] += len(r.get("rounds") or [])
             n["wall_s"] = round(n["wall_s"] + float((r.get("usage") or {}).get("wall_s") or 0), 2)
-            n["lines_changed"] = lines if commit else n["lines_changed"]
+            n["lines_changed"] = n["lines_changed"] + lines  # every attempt's lines add up
             n["files_changed"] = files if commit else n["files_changed"]
             n.pop("live", None)
+            if plan is not None:
+                self._event(plan, f"node {n['id']} {st} ({rid}, {len(r.get('rounds') or [])} "
+                            "round(s))", n)  # fmt: skip
+                self._save(plan)
 
     def _merge_level(
         self,
@@ -1804,7 +2575,7 @@ class PlanManager:
         or None (nothing merged)."""
         rb = self.rb
         pid = plan.record["id"]
-        irun = rb.integration_worktree(base, f"{pid}-L{L}-{plan.record['runs']}", plan.stop)
+        irun = self._irun(plan, base, f"{pid}-L{L}-{plan.record['runs']}", plan.stop)
         plan.irun = irun
         wt = irun.worktree
         try:
@@ -1852,6 +2623,7 @@ class PlanManager:
             with self.lock:
                 lr["gate"] = gate
                 lr["regressions"] = regressions
+                self._save(plan)
             if regressions or broken:
                 blame = self._blame(regressions, merged)
                 why = (f"the full gate on the merged tip regressed: {', '.join(regressions)}"
@@ -1863,14 +2635,18 @@ class PlanManager:
                     for n in merged:
                         n["status"] = "regressed"
                         n["error"] = {"kind": "regression", "message": why}
+                    self._event(plan, f"level {L} failed its full gate: {why}")
+                    self._save(plan)
                 return {"failed": True}
+            self._anchor(plan, f"L{L}", tip)  # the gated tip outlives the worktree (v1.10)
             with self.lock:
                 lr["tip"] = tip
+                lr["gated"] = True
+                self._save(plan)
             return {"tip": tip, "failing": failing, "merged": merged,
                     "last": {"findings": findings, "gates": gates, "counts": counts}}  # fmt: skip
         finally:
-            rb.remove_worktree(irun)
-            plan.irun = None
+            self._drop_irun(plan, irun)
 
     def _blame(self, regressions: Sequence[str], merged: Sequence[Mapping[str, Any]]) -> list[dict]:
         owners = areas_mod.target_rules(self._trace())
@@ -1912,7 +2688,7 @@ class PlanManager:
         if not hook or not tip:
             return
         rb = self.rb
-        irun = rb.integration_worktree(tip, f"{rec['id']}-metrics", threading.Event())
+        irun = self._irun(plan, tip, f"{rec['id']}-metrics", threading.Event())
         try:
             tot = rec["totals"]
             llm = {
@@ -1971,7 +2747,7 @@ class PlanManager:
                 if rc != 0:
                     rec["warnings"].append(f"the metrics hook exited {rc}: {_short(output, 300)}")
         finally:
-            rb.remove_worktree(irun)
+            self._drop_irun(plan, irun)
 
 
 def zero_usage() -> dict[str, Any]:  # re-exported for the mock server
