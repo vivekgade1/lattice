@@ -30,7 +30,8 @@ usage: lattice [--version] [--help] <command> [args ...]
 commands:
   studio    [DIR ...] [--default NAME] [--port N] [--mock [FIXTURES]]   run Lattice Studio
   check     [--project DIR] [--layers ABCDRX ...]   check an app against its spec
-                                                   (harness from DIR/studio.toml)
+            [--only SELECTOR ...]                  (harness from DIR/studio.toml; --only:
+                                                   these scenarios in layers D and X)
   spec      check|fidelity|draft|lint|probe|review|ask ...   the spec tools
   import    ...                                    import an existing app into a spec
   mcp       serve|guard ...                        the MCP server / PreToolUse guard
@@ -267,6 +268,8 @@ def _check(args: list[str]) -> int:
             "--project DIR  the project (default: the cwd); --spec, --app, --db, --login,\n"
             "               --runtime, --services, --database, --layers ... default to\n"
             "               DIR/spec.py and the [app] / [check] tables of DIR/studio.toml.\n"
+            "--only SEL ... layers D and X on the scenarios selected (scenario:NAME, NAME,\n"
+            "               a glob, rule:ID from DIR/spec.trace.json); see below.\n"
         )
         from lattice.spec.__main__ import main as spec_main
 

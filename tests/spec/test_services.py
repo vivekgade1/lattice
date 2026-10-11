@@ -223,6 +223,9 @@ def test_an_await_fails_when_the_service_does_nothing(tmp_path):
     assert "[D silent] service worker (the_worker_finishes_a_queued_run / step 2)" in text
     assert "service worker did not bring about" in text
     assert all(_gone(p) for p in _pids(pidfile))
+    # the timings put the wait where it went: the Await ran out its within_s
+    (s,) = report.timings["scenarios"]
+    assert s["awaits"] == 1 and 0.6 <= s["await_s"] <= s["steps_s"] + 1e-3
 
 
 def test_a_service_ignoring_sigterm_is_killed(tmp_path):

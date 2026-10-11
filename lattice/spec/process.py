@@ -90,7 +90,10 @@ class ProcessApp:
     ``inherit_env`` is False), plus ``port_env`` = the chosen port and ``db_env`` = the
     database path; ``health_path``: answers 200 once the app serves, within
     ``startup_timeout`` seconds; ``stop_timeout``: SIGTERM's grace before SIGKILL;
-    ``request_timeout``: per request, seconds."""
+    ``request_timeout``: per request, seconds. ``timings`` (runtime state): the seconds
+    of the last start -- ``process_spawn_s`` (choosing a port, ``Popen``),
+    ``health_wait_s`` (until ``health_path`` answered 200: the app's own start-up),
+    ``start_attempts`` -- and of the last stop, ``process_stop_s``."""
 
     argv: Sequence[str]
     db_path: Path | str | None = None
@@ -111,6 +114,7 @@ class ProcessApp:
     _proc: subprocess.Popen[bytes] | None = field(default=None, init=False, repr=False)
     _stderr: IO[bytes] | None = field(default=None, init=False, repr=False)
     _lock: threading.Lock = field(default_factory=threading.Lock, init=False, repr=False)
+    timings: dict[str, float] = field(default_factory=dict, init=False, repr=False)
 
     @property
     def running(self) -> bool:
@@ -144,10 +148,20 @@ class ProcessApp:
         with self._lock:
             if self._proc is not None:
                 return self.base_url
+            spawn = health = 0.0
             for attempt in range(PORT_RETRIES):
                 try:
+                    t0 = time.perf_counter()
                     self._spawn()
-                    self._wait_healthy()
+                    t1 = time.perf_counter()
+                    spawn += t1 - t0
+                    try:
+                        self._wait_healthy()
+                    finally:
+                        health += time.perf_counter() - t1
+                        self.timings.update(process_spawn_s=round(spawn, 4),
+                                            health_wait_s=round(health, 4),
+                                            start_attempts=attempt + 1)  # fmt: skip
                     return self.base_url
                 except ProcessStartError as err:
                     in_use = "address already in use" in str(err).lower()
@@ -218,7 +232,11 @@ class ProcessApp:
     def stop(self) -> None:
         """Terminate the process group (SIGTERM, then SIGKILL) and reap it."""
         with self._lock:
+            started = self.running
+            t0 = time.perf_counter()
             self._stop_locked()
+            if started:
+                self.timings["process_stop_s"] = round(time.perf_counter() - t0, 4)
 
     def _stop_locked(self) -> None:
         proc = self._proc

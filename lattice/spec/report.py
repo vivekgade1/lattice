@@ -99,7 +99,13 @@ class Report:
     layer found anything. ``cases`` maps each case run (layers B and D) to ``{layer,
     endpoint, verdict, reason, request}``; ``notes`` say what was skipped or could not
     run; ``unchecked`` lists the spec's requirements no layer checks. ``rules`` (layer R
-    only): every rule item's verdict (:class:`lattice.spec.probes.RuleResult`)."""
+    only): every rule item's verdict (:class:`lattice.spec.probes.RuleResult`).
+    ``timings`` (set by ``check``): where the seconds went -- ``total_s``, ``layers``
+    (seconds per layer run), ``setup`` (a server database's container start, seed build
+    and clones), ``invariants_s`` (layer C's SQL, inside the layers' seconds) and
+    ``scenarios`` (layer D, one entry per scenario run:
+    :class:`lattice.spec.check.ScenarioClock`). ``selection`` (``check(only=...)``
+    only): the selectors, the scenario names they chose, and the spec's scenario count."""
 
     layers: str
     findings: list[CheckFinding] = field(default_factory=list)
@@ -111,6 +117,8 @@ class Report:
     rules: Any = None
     # layer X only: every race run (its label, kind, steps, copies, tries, outcome)
     races: list[dict[str, Any]] | None = None
+    timings: dict[str, Any] | None = None
+    selection: dict[str, Any] | None = None
 
     def apply_baseline(self, baseline: Sequence[Accepted]) -> None:
         """Move the findings ``baseline`` matches to ``accepted``; record unused entries."""
@@ -155,6 +163,10 @@ class Report:
             out["rules"] = self.rules.to_dict()
         if self.races is not None:
             out["races"] = self.races
+        if self.selection is not None:
+            out["selection"] = self.selection
+        if self.timings is not None:
+            out["timings"] = self.timings
         return out
 
     def to_json(self, indent: int | None = 2) -> str:
@@ -197,7 +209,49 @@ class Report:
             lines.append("")
             lines.append("notes:")
             lines.extend(f"  - {x}" for x in self.notes)
+        if self.timings is not None:
+            lines.append("")
+            lines.extend(timing_lines(self.timings))
         return "\n".join(lines)
+
+
+SLOWEST = 5  # scenarios the text summary names
+
+
+def _secs(value: float) -> str:
+    return f"{value:.1f}s" if value >= 10 else f"{value:.2f}s"
+
+
+def timing_lines(timings: Mapping[str, Any], slowest: int = SLOWEST) -> list[str]:
+    """The text summary's timings: the layers on one line, then the slowest scenarios
+    with where their seconds went."""
+    layers = timings.get("layers") or {}
+    per = ", ".join(f"{k} {_secs(v)}" for k, v in layers.items())
+    setup = timings.get("setup") or {}
+    extra = ""
+    if "database_server_s" in setup:
+        extra = f"; database server {_secs(setup['database_server_s'])}"
+    lines = [f"timings: total {_secs(timings.get('total_s', 0.0))} ({per or 'no layer'}){extra}"]
+    scenarios = list(timings.get("scenarios") or ())
+    if scenarios:
+        n = len(scenarios)
+        total = sum(s["seconds"] for s in scenarios)
+        mean = {k: sum(s.get(k, 0.0) for s in scenarios) / n
+                for k in ("app_start_s", "db_clone_s", "steps_s", "app_stop_s")}  # fmt: skip
+        lines.append(
+            f"scenarios: {n} in {_secs(total)}, {total / n:.2f}s each on average (start "
+            f"{mean['app_start_s']:.2f}, db {mean['db_clone_s']:.2f}, steps "
+            f"{mean['steps_s']:.2f}, stop {mean['app_stop_s']:.2f})"
+        )
+        top = sorted(scenarios, key=lambda s: s["seconds"], reverse=True)[:slowest]
+        lines.append(f"slowest {len(top)}:")
+        for s in top:
+            lines.append(
+                f"  {s['seconds']:.2f}s {s['name']} (start {s.get('app_start_s', 0.0):.2f}, "
+                f"db {s.get('db_clone_s', 0.0):.2f}, steps {s.get('steps_s', 0.0):.2f}, "
+                f"{s.get('requests', 0)} requests)"
+            )
+    return lines
 
 
 def _short(value: Any, limit: int = 160) -> str:
@@ -281,4 +335,4 @@ def _detail_lines(f: CheckFinding) -> list[str]:
     return out
 
 
-__all__ = ["LAYERS", "LAYER_NAMES", "CheckFinding", "Report"]
+__all__ = ["LAYERS", "LAYER_NAMES", "CheckFinding", "Report", "timing_lines"]

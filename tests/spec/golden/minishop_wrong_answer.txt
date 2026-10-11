@@ -1,0 +1,22 @@
+FAIL: 8 findings (A 0, B 8, C 0, D 0); 61 cases run
+
+rule (B: endpoint answers against the spec programs): GET /orders/{order_id} answers as its spec program 'orders'
+  [B silent] GET /orders/3 as ann (GET /orders/{order_id} | ann | order_id=3)
+    expected 404 {"detail": "Order not found"}; got 200 {"id": 3, "user_id": 2, "status": "pending", "total": 0.0}
+  [B silent] GET /orders/4 as ann (GET /orders/{order_id} | ann | order_id=4)
+    expected 404 {"detail": "Order not found"}; got 200 {"id": 4, "user_id": 3, "status": "pending", "total": 2.5}
+  [B silent] GET /orders/1 as ben (GET /orders/{order_id} | ben | order_id=1)
+    expected 404 {"detail": "Order not found"}; got 200 {"id": 1, "user_id": 1, "status": "pending", "total": 5.0}
+  [B silent] GET /orders/4 as ben (GET /orders/{order_id} | ben | order_id=4)
+    expected 404 {"detail": "Order not found"}; got 200 {"id": 4, "user_id": 3, "status": "pending", "total": 2.5}
+  [B silent] GET /orders/2 as ben (GET /orders/{order_id} | ben | order_id=2)
+    expected 404 {"detail": "Order not found"}; got 200 {"id": 2, "user_id": 1, "status": "paid", "total": 4.0}
+  [B silent] GET /orders/1 as ada (GET /orders/{order_id} | ada | order_id=1)
+    expected 404 {"detail": "Order not found"}; got 200 {"id": 1, "user_id": 1, "status": "pending", "total": 5.0}
+  [B silent] GET /orders/3 as ada (GET /orders/{order_id} | ada | order_id=3)
+    expected 404 {"detail": "Order not found"}; got 200 {"id": 3, "user_id": 2, "status": "pending", "total": 0.0}
+  [B silent] GET /orders/2 as ada (GET /orders/{order_id} | ada | order_id=2)
+    expected 404 {"detail": "Order not found"}; got 200 {"id": 2, "user_id": 1, "status": "paid", "total": 4.0}
+
+not checked (stated in the spec, not checkable yet):
+  - a shipped order cannot be changed

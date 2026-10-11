@@ -240,3 +240,16 @@ def test_the_cli_checks_a_process_app(app, capsys):
     assert code == 1, out.err
     assert '"one_live_run_per_config"' in out.out
     assert live_processes() == []
+
+
+def test_timings_split_a_process_scenarios_start(app):
+    """Each scenario's seconds name the process's spawn, health wait and stop; ``only``
+    runs the one scenario selected."""
+    report = run(app(), "CD", only=["a_run_is_read"])
+    assert report.verdict == "pass", report.render()
+    (s,) = report.timings["scenarios"]
+    assert s["name"] == "a_run_is_read" and s["requests"] == 3
+    assert s["health_wait_s"] > 0 and s["process_spawn_s"] > 0
+    assert s["process_spawn_s"] + s["health_wait_s"] <= s["app_start_s"] + 1e-3
+    assert 0 < s["process_stop_s"] <= s["app_stop_s"] + 1e-3
+    assert s["seconds"] <= report.timings["layers"]["D"] + 1e-3

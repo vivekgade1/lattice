@@ -525,6 +525,8 @@ class InvariantMonitor:
         self._seed: dict[str, set[str]] = {}
         # a transport probe's checks run under it (layer X's clients run at once)
         self.lock = threading.Lock()
+        # seconds spent running the invariants' SQL (the report's timings)
+        self.seconds = 0.0
 
     @classmethod
     def for_spec(cls, spec: Spec, dialect: str = "sqlite") -> InvariantMonitor:
@@ -540,15 +542,19 @@ class InvariantMonitor:
     def violations(self, db: DbRef) -> dict[str, list[dict[str, Any]]]:
         if not self.invariants:
             return {}
-        with open_db(db) as conn:
-            out = {}
-            for inv, sql in self.invariants:
-                try:
-                    rows = conn.query_dicts(sql)
-                except DB_ERRORS as err:
-                    rows = [{"error": f"the invariant's SQL failed: {err}"}]
-                out[inv.name] = rows
-            return out
+        started = time.perf_counter()
+        try:
+            with open_db(db) as conn:
+                out = {}
+                for inv, sql in self.invariants:
+                    try:
+                        rows = conn.query_dicts(sql)
+                    except DB_ERRORS as err:
+                        rows = [{"error": f"the invariant's SQL failed: {err}"}]
+                    out[inv.name] = rows
+                return out
+        finally:
+            self.seconds += time.perf_counter() - started
 
     def violation_keys(self, db: DbRef) -> dict[str, set[str]]:
         return {n: {_row_key(r) for r in rows} for n, rows in self.violations(db).items()}
@@ -1487,6 +1493,82 @@ def run_await(
         service.stop()
 
 
+class ScenarioClock:
+    """Where one scenario's seconds go (the report's ``timings.scenarios[]``).
+
+    ``seconds``: the whole scenario, wall clock. Its parts, in order: ``db_clone_s``
+    (``make_db``: a server database's clone, a SQLite seed file), ``given_s`` (the
+    ``given`` rows), ``app_start_s`` (the app factory, the runtime's ``open`` and the
+    client's ``__enter__``: a process app's spawn and health wait), ``steps_s`` (the
+    steps, logins and ``Await`` steps included), ``app_stop_s`` (the runtime's dispose
+    hooks: a process app's SIGTERM and reap) and ``db_release_s`` (dropping a server
+    clone). Included in those, not added to them: ``login_s`` (getting tokens),
+    ``await_s`` (``Await`` steps: a background service polled until its effect shows or
+    ``within_s`` runs out), ``invariants_s`` (layer C's SQL, after every request) and,
+    for a process app, ``process_spawn_s`` / ``health_wait_s`` (of ``app_start_s``) and
+    ``process_stop_s`` (of ``app_stop_s``). ``requests``: the steps' requests sent;
+    ``logins``: the tokens got; ``awaits``: the ``Await`` steps run. Measuring costs a
+    few ``perf_counter`` calls per step."""
+
+    PARTS = ("db_clone_s", "given_s", "app_start_s", "steps_s", "app_stop_s", "db_release_s")
+
+    def __init__(self, name: str, monitor: InvariantMonitor | None = None) -> None:
+        self.name = name
+        self.monitor = monitor
+        self.values: dict[str, float] = dict.fromkeys(self.PARTS, 0.0)
+        self.values |= {"login_s": 0.0, "await_s": 0.0, "invariants_s": 0.0}
+        self.requests = 0
+        self.logins = 0
+        self.awaits = 0
+        self._started = time.perf_counter()
+        self._inv0 = monitor.seconds if monitor is not None else 0.0
+        self.seconds: float | None = None
+
+    def part(self, key: str) -> _Lap:
+        return _Lap(self, key)
+
+    def add(self, key: str, seconds: float) -> None:
+        self.values[key] = self.values.get(key, 0.0) + seconds
+
+    def timed(self, key: str, fn: Callable[..., Any]) -> Callable[..., Any]:
+        def run(*args: Any) -> Any:
+            with self.part(key):
+                return fn(*args)
+
+        return run
+
+    def process(self, app: Any) -> None:
+        """A process app's own start and stop seconds (``ProcessApp.timings``)."""
+        found = getattr(app, "timings", None)
+        if isinstance(found, Mapping):
+            for key in ("process_spawn_s", "health_wait_s", "process_stop_s"):
+                if key in found:
+                    self.values[key] = float(found[key])
+
+    def stop(self) -> dict[str, Any]:
+        if self.seconds is None:
+            self.seconds = time.perf_counter() - self._started
+            if self.monitor is not None:
+                self.values["invariants_s"] = self.monitor.seconds - self._inv0
+        out: dict[str, Any] = {"name": self.name, "seconds": round(self.seconds, 4)}
+        out |= {k: round(v, 4) for k, v in self.values.items()}
+        out |= {"requests": self.requests, "logins": self.logins, "awaits": self.awaits}
+        return out
+
+
+class _Lap:
+    __slots__ = ("clock", "key", "t0")
+
+    def __init__(self, clock: ScenarioClock, key: str) -> None:
+        self.clock, self.key, self.t0 = clock, key, 0.0
+
+    def __enter__(self) -> None:
+        self.t0 = time.perf_counter()
+
+    def __exit__(self, *exc: object) -> None:
+        self.clock.add(self.key, time.perf_counter() - self.t0)
+
+
 def _run_scenario(
     spec: Spec,
     scenario: Scenario,
@@ -1497,14 +1579,17 @@ def _run_scenario(
     login: Login | None,
     runtime: AppRuntime | None = None,
     services: Services | None = None,
+    clock: ScenarioClock | None = None,
 ) -> None:
     """One scenario on a fresh seeded database (see the module docstring). ``runtime``:
     the app's transport, auth driver and dispose hooks (default: FastAPI's TestClient,
     a bearer header, the engine's dispose). ``services``: how the services its
-    ``Await`` steps name start."""
+    ``Await`` steps name start. ``clock``: where its seconds go (:class:`ScenarioClock`)."""
     from fastapi.testclient import TestClient
 
     rule = f"scenario: {scenario.name}"
+    if clock is None:
+        clock = ScenarioClock(scenario.name, monitor)
 
     def fail(label: str, step: Step | Await | None, verdict: str, details: dict[str, Any]) -> None:
         report.findings.append(
@@ -1520,11 +1605,13 @@ def _run_scenario(
         )
 
     with tempfile.TemporaryDirectory(prefix="lattice-check-d-") as name, ExitStack() as cleanup:
-        db = make_db("seed", Path(name) / "scenario.db")
-        cleanup.callback(release_db, make_db, db)
+        with clock.part("db_clone_s"):
+            db = make_db("seed", Path(name) / "scenario.db")
+        cleanup.callback(clock.timed("db_release_s", release_db), make_db, db)
         if scenario.given:
             try:
-                _insert_given(spec, db, scenario.given)
+                with clock.part("given_s"):
+                    _insert_given(spec, db, scenario.given)
             except DB_ERRORS as err:
                 # the app's own schema refuses the scenario's starting state (e.g. a unique
                 # index the spec no longer has): a finding about this scenario, not a crash
@@ -1547,109 +1634,123 @@ def _run_scenario(
         elif monitor is not None:
             factory, runtime = monitor.watch(app_factory, runtime)  # type: ignore[arg-type]
         try:
-            app = factory(db)
+            with clock.part("app_start_s"):
+                app = factory(db)
         except Exception as err:  # noqa: BLE001 -- an app that does not start is loud
             fail(
                 f"{scenario.name} / start", None, "loud", {"error": f"{type(err).__name__}: {err}"}
             )
             return
         try:
-            serving = (
-                TestClient(app, raise_server_exceptions=False)
-                if runtime is None
-                else runtime.open(app)
-            )
-            with serving as client:
-                tokens: dict[str, str] = {}
-                for i, step in enumerate(scenario.steps, 1):
-                    label = f"{scenario.name} / step {i}"
-                    if isinstance(step, Await):
-                        if not _await_step(spec, step, label, db, report, monitor,
-                                           start_violations, services or {},
-                                           fail):  # fmt: skip
-                            return
-                        continue
-                    headers = {}
-                    if step.user is not None:
-                        if step.user not in tokens:
-                            if monitor is not None:
-                                monitor.label = f"{scenario.name} / login as {step.user}"
-                            try:
-                                if runtime is not None:
-                                    tokens[step.user] = runtime.auth.token(client, step.user,
-                                                                           login)  # fmt: skip
-                                elif login is None:
-                                    raise RuntimeError("no login given")
-                                else:
-                                    tokens[step.user] = login(client, step.user)
-                            except Exception as err:  # noqa: BLE001 -- loud: cannot run
-                                fail(
-                                    label,
-                                    step,
-                                    "loud",
-                                    {"error": f"cannot log in as {step.user!r}: {err}"},
-                                )
-                                report.cases[label] = {
-                                    "layer": "D",
-                                    "endpoint": rule,
-                                    "verdict": "loud",
-                                    "reason": str(err),
-                                    "request": _step_request(step),
-                                }
-                                return
-                        if runtime is not None:
-                            headers = dict(runtime.auth.present(client, tokens[step.user]))
-                        else:
-                            headers["Authorization"] = f"Bearer {tokens[step.user]}"
-                    if monitor is not None:
-                        monitor.label = label
-                        monitor.requests[label] = _step_request(step)
-                        monitor.endpoints[label] = f"{step.method} {step.path}"
-                    response = client.request(
-                        step.method,
-                        step.path,
-                        params=dict(step.params) if step.params else None,
-                        json=step.json,
-                        headers=headers,
+            with ExitStack() as serve:
+                with clock.part("app_start_s"):
+                    serving = (
+                        TestClient(app, raise_server_exceptions=False)
+                        if runtime is None
+                        else runtime.open(app)
                     )
-                    body = _body(response)
-                    problems = []
-                    if response.status_code != step.expect_status:
-                        problems.append(
-                            f"status: expected {step.expect_status}, got {response.status_code}"
+                    client = serve.enter_context(serving)
+                clock.process(app)
+                with clock.part("steps_s"):
+                    tokens: dict[str, str] = {}
+                    for i, step in enumerate(scenario.steps, 1):
+                        label = f"{scenario.name} / step {i}"
+                        if isinstance(step, Await):
+                            clock.awaits += 1
+                            with clock.part("await_s"):
+                                goes_on = _await_step(spec, step, label, db, report, monitor,
+                                                      start_violations, services or {},
+                                                      fail)  # fmt: skip
+                            if not goes_on:
+                                return
+                            continue
+                        headers = {}
+                        if step.user is not None:
+                            if step.user not in tokens:
+                                if monitor is not None:
+                                    monitor.label = f"{scenario.name} / login as {step.user}"
+                                clock.logins += 1
+                                try:
+                                    with clock.part("login_s"):
+                                        if runtime is not None:
+                                            tokens[step.user] = runtime.auth.token(
+                                                client, step.user, login
+                                            )
+                                        elif login is None:
+                                            raise RuntimeError("no login given")
+                                        else:
+                                            tokens[step.user] = login(client, step.user)
+                                except Exception as err:  # noqa: BLE001 -- loud: cannot run
+                                    fail(
+                                        label,
+                                        step,
+                                        "loud",
+                                        {"error": f"cannot log in as {step.user!r}: {err}"},
+                                    )
+                                    report.cases[label] = {
+                                        "layer": "D",
+                                        "endpoint": rule,
+                                        "verdict": "loud",
+                                        "reason": str(err),
+                                        "request": _step_request(step),
+                                    }
+                                    return
+                            if runtime is not None:
+                                headers = dict(runtime.auth.present(client, tokens[step.user]))
+                            else:
+                                headers["Authorization"] = f"Bearer {tokens[step.user]}"
+                        if monitor is not None:
+                            monitor.label = label
+                            monitor.requests[label] = _step_request(step)
+                            monitor.endpoints[label] = f"{step.method} {step.path}"
+                        clock.requests += 1
+                        response = client.request(
+                            step.method,
+                            step.path,
+                            params=dict(step.params) if step.params else None,
+                            json=step.json,
+                            headers=headers,
                         )
-                    if step.expect_body is not None and not subset(step.expect_body, body):
-                        problems.append(f"body: expected {step.expect_body!r} within {body!r}")
-                    if step.expect_db:
-                        problems += _expect_db(spec, db, step.expect_db)
-                    verdict = "correct"
-                    if problems:
-                        verdict = "loud" if response.status_code >= 500 else "silent"
-                    report.cases[label] = {
-                        "layer": "D",
-                        "endpoint": f"{step.method} {step.path}",
-                        "verdict": verdict,
-                        "reason": "; ".join(problems),
-                        "request": _step_request(step),
-                    }
-                    if problems:
-                        fail(
-                            label,
-                            step,
-                            verdict,
-                            {
-                                "problems": problems,
-                                "expected": {
-                                    "status": step.expect_status,
-                                    "body": step.expect_body,
-                                    "db": step.expect_db,
+                        body = _body(response)
+                        problems = []
+                        if response.status_code != step.expect_status:
+                            problems.append(
+                                f"status: expected {step.expect_status}, got {response.status_code}"
+                            )
+                        if step.expect_body is not None and not subset(step.expect_body, body):
+                            problems.append(f"body: expected {step.expect_body!r} within {body!r}")
+                        if step.expect_db:
+                            problems += _expect_db(spec, db, step.expect_db)
+                        verdict = "correct"
+                        if problems:
+                            verdict = "loud" if response.status_code >= 500 else "silent"
+                        report.cases[label] = {
+                            "layer": "D",
+                            "endpoint": f"{step.method} {step.path}",
+                            "verdict": verdict,
+                            "reason": "; ".join(problems),
+                            "request": _step_request(step),
+                        }
+                        if problems:
+                            fail(
+                                label,
+                                step,
+                                verdict,
+                                {
+                                    "problems": problems,
+                                    "expected": {
+                                        "status": step.expect_status,
+                                        "body": step.expect_body,
+                                        "db": step.expect_db,
+                                    },
+                                    "actual": {"status": response.status_code, "body": body},
                                 },
-                                "actual": {"status": response.status_code, "body": body},
-                            },
-                        )
-                        return
+                            )
+                            return
         finally:
-            _close(runtime, app)
+            with clock.part("app_stop_s"):
+                _close(runtime, app)
+            clock.process(app)
 
 
 def _await_step(
@@ -1831,6 +1932,8 @@ def check(
     services: Services | None = None,
     database: str = "sqlite",
     database_url: str | None = None,
+    only: Sequence[str] | None = None,
+    trace: Any = None,
 ) -> Report:
     """Check the app built by ``app_factory(db_path)`` against ``spec`` in ``layers``
     (letters of ABCDRX; see the module docstring). Layer X: ``x_k`` copies per
@@ -1858,7 +1961,13 @@ def check(
     ``clickhouse`` (they get the canonical URL of a database on a server, see
     :mod:`lattice.spec.db`): a throwaway Docker container, or the server at
     ``database_url`` (or ``$LATTICE_<DIALECT>_URL``) -- :mod:`lattice.spec.dbserver`.
-    Raises :class:`CheckError` when the check cannot run."""
+    ``only``: selectors (:mod:`lattice.spec.selection`) restricting layers D and X to
+    the scenarios they name (None: every scenario); ``trace``: the project trace
+    (a ``Trace``, its JSON mapping or file) that ``rule:<id>`` selectors read. The
+    report's ``timings`` say where the seconds went (per layer; per scenario of D:
+    :class:`ScenarioClock`). Raises :class:`CheckError` when the check cannot run
+    (:class:`lattice.spec.selection.SelectionError`: a selector matching nothing)."""
+    started = time.perf_counter()
     try:
         dialect = check_dialect(database)
     except ValueError as err:
@@ -1872,6 +1981,21 @@ def check(
     if login is None and login_path is not None and spec.users:
         login = form_login(login_path, dict(spec.users))
     report = Report(layers=run, unchecked=[u.text for u in spec.unchecked])
+    report.timings = {"total_s": 0.0, "layers": {}, "setup": {}, "scenarios": []}
+    scenario_spec = spec
+    if only is not None:
+        from lattice.spec.selection import select_scenarios
+
+        names = select_scenarios(spec, only, trace)
+        chosen = set(names)
+        scenario_spec = replace(spec, scenarios=tuple(s for s in spec.scenarios
+                                                      if s.name in chosen))  # fmt: skip
+        report.selection = {"selectors": list(only), "scenarios": names,
+                            "of": len(spec.scenarios)}  # fmt: skip
+        report.notes.append(
+            f"--only: layers D and X ran {len(names)} of the spec's {len(spec.scenarios)} "
+            "scenarios; layers A, B, C and R are not narrowed"
+        )
     if runtime is None:
         from lattice.spec.process import process_runtime, returns_process_app
 
@@ -1880,7 +2004,7 @@ def check(
     harness: dict[str, Any] = dict(getattr(runtime, "services", None) or {})
     harness.update(services or {})
     if "D" in run:
-        missing = missing_services(spec, harness)
+        missing = missing_services(scenario_spec, harness)
         if missing:
             raise CheckError(
                 f"the spec's scenarios await service(s) {', '.join(missing)}, which the "
@@ -1889,7 +2013,9 @@ def check(
             )
 
     if "A" in run:
+        t0 = time.perf_counter()
         _layer_a(spec, report, app_dir, package, policy, runtime, go_src)
+        report.timings["layers"]["A"] = round(time.perf_counter() - t0, 4)
     opts = {
         "login": login, "mint_token": mint_token, "runtime": runtime, "harness": harness,
         "cases_for": cases_for, "extra_cases": extra_cases, "rules": rules,
@@ -1897,6 +2023,7 @@ def check(
         "max_rows": max_rows, "sessions": sessions, "scheme": scheme,
         "rule_items": rule_items, "probe_options": probe_options, "x_k": x_k,
         "x_repeats": x_repeats, "x_budget": x_budget, "x_timeout": x_timeout,
+        "scenario_spec": scenario_spec,
     }  # fmt: skip
     if dialect == "sqlite":
         _run_layers(spec, report, run, app_factory, as_db_factory(db_factory), opts)
@@ -1905,6 +2032,9 @@ def check(
     order = {layer: i for i, layer in enumerate(LAYERS)}
     report.findings.sort(key=lambda f: order[f.layer])
     report.apply_baseline((*spec.approved, *baseline))
+    report.timings["layers"] = {x: report.timings["layers"][x] for x in LAYERS
+                                if x in report.timings["layers"]}  # fmt: skip
+    report.timings["total_s"] = round(time.perf_counter() - started, 4)
     return report
 
 
@@ -1932,18 +2062,28 @@ def _on_server(
     run = "".join(x for x in run if x not in "BR")
     if not any(x in run for x in "CDX"):
         return
+    setup = report.timings["setup"] if report.timings is not None else {}
+    t0 = time.perf_counter()
     try:
         server, owned = server_for(dialect, database_url)
     except DbServerError as err:
         raise CheckError(str(err)) from err
+    setup["database_server_s"] = round(time.perf_counter() - t0, 4)
     dbs = ServerDatabases(server, db_factory)
     try:
         _run_layers(spec, report, run, app_factory, dbs, opts)
         report.notes.append(dbs.timing_note())
     finally:
+        for variant, seconds in dbs.seed_seconds.items():
+            setup[f"seed_build_s.{variant}"] = round(seconds, 4)
+        if dbs.timings:
+            setup["db_clones"] = len(dbs.timings)
+            setup["db_clone_mean_s"] = round(sum(dbs.timings) / len(dbs.timings), 4)
+        t0 = time.perf_counter()
         dbs.close()
         # an owned server's container is removed; a given server's admin connection closed
         server.stop()
+        setup["database_teardown_s"] = round(time.perf_counter() - t0, 4)
         if not owned:
             report.notes.append(f"databases created on {server.describe()} were dropped")
 
@@ -1959,7 +2099,18 @@ def _run_layers(
     """Layers B, C, D, R and X (those of ``run``) on the databases ``make_db`` makes."""
     login = opts["login"]
     mint_token, runtime, harness = opts["mint_token"], opts["runtime"], opts["harness"]
+    # layers D and X run the selected scenarios (check(only=...)); the others the spec's
+    scenario_spec: Spec = opts.get("scenario_spec") or spec
     dialect = db_dialect(make_db)
+    timings = report.timings if report.timings is not None else {"layers": {}, "scenarios": []}
+    lap = time.perf_counter()
+
+    def layer_done(x: str) -> None:
+        nonlocal lap
+        now = time.perf_counter()
+        timings["layers"][x] = round(timings["layers"].get(x, 0.0) + now - lap, 4)
+        lap = now
+
     monitor: InvariantMonitor | None = None
     if "C" in run:
         monitor = InvariantMonitor.for_spec(spec, dialect)
@@ -1978,6 +2129,7 @@ def _run_layers(
                 release_db(make_db, seed_db)
         if "B" not in run and "D" not in run and "R" not in run:
             report.notes.append("layer C ran on the seed only: run it with B or D")
+        layer_done("C")
     if "B" in run:
         _layer_b(
             spec,
@@ -1996,12 +2148,16 @@ def _run_layers(
             max_rows=opts["max_rows"],
             runtime=runtime,
         )
+        layer_done("B")
     if "D" in run:
-        if not spec.scenarios:
+        if not scenario_spec.scenarios:
             report.notes.append("layer D: the spec has no scenarios")
-        for scenario in spec.scenarios:
+        for scenario in scenario_spec.scenarios:
+            clock = ScenarioClock(scenario.name, monitor)
             _run_scenario(spec, scenario, report, app_factory, make_db, monitor, login, runtime,
-                          harness)  # fmt: skip
+                          harness, clock)  # fmt: skip
+            timings["scenarios"].append(clock.stop())
+        layer_done("D")
     if "R" in run:
         _layer_r(
             spec,
@@ -2017,11 +2173,12 @@ def _run_layers(
             runtime=runtime,
             options=opts["probe_options"],
         )
+        layer_done("R")
     if "X" in run:
         from lattice.spec.race import layer_x
 
         layer_x(
-            spec,
+            scenario_spec,
             report,
             app_factory,
             make_db,
@@ -2033,8 +2190,10 @@ def _run_layers(
             budget=opts["x_budget"],
             timeout=opts["x_timeout"],
         )
+        layer_done("X")
     if monitor is not None:
         report.findings.extend(monitor.findings)
+        timings["invariants_s"] = round(monitor.seconds, 4)
 
 
 __all__ = [

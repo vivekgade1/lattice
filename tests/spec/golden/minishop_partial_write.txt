@@ -1,0 +1,9 @@
+FAIL: 1 finding (A 1, B 0, C 0, D 0); 61 cases run
+
+rule (A: static checks on the app's code): partial writes: a commit that a later failure of the same request can follow
+  [A silent] PY807 routes.py:67 POST /orders/{order_id}/items
+    POST /orders/{order_id}/items (add_item) commits at line 67 (commit()) and can still fail afterwards at line 69 (raise): a refused request leaves the earlier writes in the database
+    fix: check everything that can refuse the request first, then write and call `session.commit()` once at the end; don't call a helper that commits before the last check (use `session.add`/`session.flush()` instead)
+
+not checked (stated in the spec, not checkable yet):
+  - a shipped order cannot be changed
