@@ -33,6 +33,20 @@ highest id found among the files (``.bad-*`` included) when the store opens.
 command line, a ``match`` string). When a record is found ``running`` after a restart its
 orphans are terminated only if the pid exists AND its start time AND its command line
 match (:func:`kill_orphan`); a pid alone is never enough.
+
+**Per-tip gate results (API v1.11)**: ``<state dir>/results/<sha>.json``, one file per
+commit a gate ran on (``{tip, kind: full|regression, failing, passing, findings, ...}``,
+written by :meth:`StateStore.result_put`), so a tip's verdicts are never recomputed: the
+next level's regression set, a plan's start baseline and ``GET /api/areas`` read them.
+
+**Process trees (API v1.11)**: a gate runs in its own session, but the app processes and
+services the Lattice check starts run in sessions of their own, and a Docker container is
+not a process at all. While a gate runs, Studio records its descendants (``role:
+gate-child``, :func:`descendants`); stopping a gate (:func:`terminate_tree`) sends SIGTERM
+to its group, waits so the check's ``atexit`` cleanup runs, SIGKILLs the group, then
+terminates every recorded descendant still alive (pid, start time and command line
+matching, as for orphans), and removes the containers labelled with the gate's owner token
+(``LATTICE_CONTAINER_OWNER``, :func:`remove_owned_containers`): never any other container.
 """
 
 from __future__ import annotations
@@ -41,6 +55,7 @@ import contextlib
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import threading
@@ -54,9 +69,12 @@ __all__ = [
     "SCHEMA",
     "StateStore",
     "atomic_write",
+    "descendants",
     "kill_orphan",
     "proc_info",
+    "remove_owned_containers",
     "state_dir_for",
+    "terminate_tree",
 ]
 
 SCHEMA = 1
@@ -66,6 +84,10 @@ EXCLUDE_LINE = "/.lattice/state/"
 _ID = re.compile(r"^([pbc])(\d+)\.json(?:\.bad-.*)?$")
 _PS = re.compile(r"^\s*(\d+)\s+(\S+\s+\S+\s+\d+\s+[\d:]+\s+\d+)\s+(.*)$")
 KILL_GRACE = 3.0
+_PS_ALL = re.compile(r"^\s*(\d+)\s+(\d+)\s+(\d+)\s+(\S+\s+\S+\s+\d+\s+[\d:]+\s+\d+)\s+(.*)$")
+_SHA = re.compile(r"^[0-9a-f]{7,64}$")
+DOCKER_ENV = "LATTICE_STUDIO_DOCKER"  # the docker CLI Studio sweeps containers with (tests: a fake)
+OWNER_ENV = "LATTICE_CONTAINER_OWNER"  # the label value lattice.spec.dbserver puts on containers
 
 
 def _now() -> str:
@@ -235,7 +257,9 @@ def orphan_matches(info: Mapping[str, Any]) -> bool:
     return command == info.get("command") or (bool(match) and match in command)
 
 
-def kill_orphan(info: Mapping[str, Any], log: Callable[[str], None] | None = None) -> bool:
+def kill_orphan(
+    info: Mapping[str, Any], log: Callable[[str], None] | None = None, grace: float = KILL_GRACE
+) -> bool:
     """Terminate the process group of a recorded child left running by a Studio that died,
     only when :func:`orphan_matches`. True when it was killed."""
     if not orphan_matches(info):
@@ -246,7 +270,7 @@ def kill_orphan(info: Mapping[str, Any], log: Callable[[str], None] | None = Non
         return False
     with contextlib.suppress(ProcessLookupError, PermissionError):
         os.killpg(pgid, signal.SIGTERM)
-    deadline = time.monotonic() + KILL_GRACE
+    deadline = time.monotonic() + grace
     while time.monotonic() < deadline and _ps(pid) is not None:
         time.sleep(0.05)
     if _ps(pid) is not None:
@@ -256,6 +280,140 @@ def kill_orphan(info: Mapping[str, Any], log: Callable[[str], None] | None = Non
         log(f"state: killed orphan process group {pgid} ({info.get('role')}: "
             f"{str(info.get('command') or '')[:120]})")  # fmt: skip
     return True
+
+
+def ps_table() -> dict[int, tuple[int, int, str, str]]:
+    """Every process: pid -> (ppid, pgid, start time, command line), from one ``ps``."""
+    try:
+        r = subprocess.run(["ps", "-A", "-ww", "-o", "pid=,ppid=,pgid=,lstart=,command="],
+                           capture_output=True, text=True, timeout=15)  # fmt: skip
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    out: dict[int, tuple[int, int, str, str]] = {}
+    for line in r.stdout.splitlines():
+        m = _PS_ALL.match(line)
+        if m:
+            out[int(m.group(1))] = (int(m.group(2)), int(m.group(3)),
+                                    " ".join(m.group(4).split()), m.group(5).strip())  # fmt: skip
+    return out
+
+
+def descendants(pid: int, table: Mapping[int, tuple[int, int, str, str]] | None = None
+                ) -> list[dict[str, Any]]:  # fmt: skip
+    """The live descendants of `pid` (children, grandchildren, ...), each as a
+    :func:`proc_info`-shaped record (``role: gate-child``, ``match`` = its command line)."""
+    tab = ps_table() if table is None else table
+    kids: dict[int, list[int]] = {}
+    for p, (ppid, _pg, _st, _cmd) in tab.items():
+        kids.setdefault(ppid, []).append(p)
+    out, todo, seen = [], list(kids.get(int(pid), [])), {int(pid)}
+    while todo:
+        p = todo.pop(0)
+        if p in seen or p not in tab:
+            continue
+        seen.add(p)
+        ppid, pgid, started, command = tab[p]
+        out.append({"pid": p, "pgid": pgid, "started": started, "command": command,
+                    "match": command, "role": "gate-child", "parent": ppid,
+                    "at": _now()})  # fmt: skip
+        todo.extend(kids.get(p, []))
+    return out
+
+
+def _alive(info: Mapping[str, Any]) -> bool:
+    return orphan_matches(info)
+
+
+def terminate_tree(
+    proc: subprocess.Popen[Any] | None,
+    children: list[Mapping[str, Any]],
+    *,
+    grace: float = 5.0,
+    log: Callable[[str], None] | None = None,
+) -> list[dict[str, Any]]:
+    """Stop a gate's whole process tree: SIGTERM to its process group (`proc` runs in its
+    own session), up to `grace` seconds for it to exit (the Lattice check's ``atexit``
+    cleanup stops its apps, services and containers), SIGKILL to the group, then every
+    recorded descendant (`children`) still alive -- pid, start time and command line
+    matching, never a pid alone -- SIGTERM to its own group (or itself), and SIGKILL after
+    `grace`. Answers the descendants it had to kill."""
+    own = os.getpgid(0)
+    if proc is not None and proc.poll() is None:
+        with contextlib.suppress(ProcessLookupError, PermissionError):
+            os.killpg(proc.pid, signal.SIGTERM)
+        with contextlib.suppress(subprocess.TimeoutExpired):
+            proc.wait(max(0.0, grace))
+        if proc.poll() is None:
+            with contextlib.suppress(ProcessLookupError, PermissionError):
+                os.killpg(proc.pid, signal.SIGKILL)
+            with contextlib.suppress(subprocess.TimeoutExpired):
+                proc.wait(5)
+    left = [c for c in children if _alive(c)]
+    killed: list[dict[str, Any]] = []
+
+    def signal_one(c: Mapping[str, Any], sig: int) -> None:
+        pgid = int(c.get("pgid") or 0)
+        pid = int(c["pid"])
+        if pgid > 1 and pgid != own:
+            with contextlib.suppress(ProcessLookupError, PermissionError):
+                os.killpg(pgid, sig)
+        with contextlib.suppress(ProcessLookupError, PermissionError):
+            os.kill(pid, sig)
+
+    for c in left:
+        signal_one(c, signal.SIGTERM)
+        killed.append({k: c.get(k) for k in ("pid", "pgid", "role", "command")})
+    deadline = time.monotonic() + max(0.0, grace)
+    while left and time.monotonic() < deadline:
+        left = [c for c in left if _alive(c)]
+        if left:
+            time.sleep(0.05)
+    for c in left:
+        if _alive(c):
+            signal_one(c, signal.SIGKILL)
+    if killed and log is not None:
+        log(
+            f"state: terminated {len(killed)} process(es) a stopped gate left: "
+            + ", ".join(f"{k['pid']} {str(k.get('command') or '')[:60]}" for k in killed)
+        )
+    return killed
+
+
+def docker_bin() -> str | None:
+    d = os.environ.get(DOCKER_ENV) or "docker"
+    return d if (os.path.isabs(d) and os.path.exists(d)) or shutil.which(d) else None
+
+
+def remove_owned_containers(
+    token: str | None, log: Callable[[str], None] | None = None
+) -> list[str]:
+    """Remove the containers labelled ``lattice.owner=<token>`` whose names start
+    ``lattice-`` (the throwaway database servers one gate run of this Studio started:
+    ``lattice.spec.dbserver`` labels them from ``$LATTICE_CONTAINER_OWNER``). Never any
+    other container; no Docker: nothing. Answers the names removed."""
+    if not token or not re.fullmatch(r"[A-Za-z0-9._-]{1,128}", token):
+        return []
+    d = docker_bin()
+    if d is None:
+        return []
+    try:
+        r = subprocess.run([d, "ps", "-a", "--filter", f"label=lattice.owner={token}",
+                            "--format", "{{.Names}}"],
+                           capture_output=True, text=True, timeout=30)  # fmt: skip
+    except (OSError, subprocess.SubprocessError):
+        return []
+    removed = []
+    for name in r.stdout.split():
+        if not name.startswith("lattice-"):
+            continue
+        with contextlib.suppress(OSError, subprocess.SubprocessError):
+            rr = subprocess.run([d, "rm", "-f", "-v", name], capture_output=True, text=True,
+                                timeout=60)  # fmt: skip
+            if rr.returncode == 0:
+                removed.append(name)
+    if removed and log is not None:
+        log(f"state: removed container(s) a stopped gate left: {', '.join(removed)}")
+    return removed
 
 
 # ---- the store ------------------------------------------------------------------------------
@@ -310,7 +468,9 @@ class StateStore:
 
     def _sweep_tmp(self) -> None:
         """Temporary files of writes a crash interrupted (the record itself is intact)."""
-        for d in (self.root, *(self.root / k for k in KINDS)):
+        for d in (self.root, self.root / "results", *(self.root / k for k in KINDS)):
+            if not d.is_dir():
+                continue
             for p in d.glob(".*.tmp-*"):
                 with contextlib.suppress(OSError):
                     p.unlink()
@@ -373,6 +533,29 @@ class StateStore:
         with self.lock:
             self._meta[key] = json.loads(json.dumps(value, default=str))
             self._write_meta()
+
+    # -- per-tip gate results (API v1.11)
+    def result_get(self, tip: str) -> dict[str, Any] | None:
+        """The gate results recorded for commit `tip` (None: never gated)."""
+        if not _SHA.match(str(tip or "")):
+            return None
+        path = self.root / "results" / f"{tip}.json"
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            return None
+        except (OSError, ValueError, UnicodeDecodeError) as exc:
+            self._quarantine(path, f"unreadable result file ({type(exc).__name__}: {exc})")
+            return None
+        return data if isinstance(data, dict) else None
+
+    def result_put(self, tip: str, data: Mapping[str, Any]) -> None:
+        if not _SHA.match(str(tip or "")):
+            return
+        doc = {"schema": SCHEMA, "written_by": self.written_by, **dict(data), "tip": tip}
+        raw = json.dumps(doc, indent=1, default=str, ensure_ascii=False).encode("utf-8")
+        with self._lock_for(f"results/{tip}"):
+            atomic_write(self.root / "results" / f"{tip}.json", raw)
 
     # -- records
     def save(

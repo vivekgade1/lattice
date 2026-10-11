@@ -10,7 +10,9 @@ a server the caller already has; and the per-scenario databases cloned on it.
   dialect's image with no volume (the data directory is a tmpfs), its port published on
   a random free port of 127.0.0.1, waited on until a connection answers ``SELECT 1``,
   and removed (``docker rm -f -v``) when the check ends, when it fails to start, and by
-  an ``atexit`` guard. Container names start ``lattice-``.
+  an ``atexit`` guard. Container names start ``lattice-``; with ``$LATTICE_CONTAINER_OWNER``
+  set the container also carries the label ``lattice.owner=<value>`` (Lattice Studio's
+  per-gate token, so a stopped gate's container is removed and nothing else).
 
 On a given server the checker only creates and drops databases with names of its own
 (``lattice_<run>_...``), so it never touches another database. The URL names an account
@@ -80,6 +82,9 @@ PASSWORD = "lattice"  # noqa: S105 -- a throwaway container's, on 127.0.0.1 only
 ADMIN_DB = {"postgres": "postgres", "mysql": "mysql", "clickhouse": "default"}
 START_TIMEOUT = 120.0
 NAME_PREFIX = "lattice-"
+# a label value for the containers this process starts (``lattice.owner=<value>``): Lattice
+# Studio sets it per gate run, so it removes exactly the containers a stopped gate left
+OWNER_ENV = "LATTICE_CONTAINER_OWNER"
 
 
 class DbServerError(RuntimeError):
@@ -186,7 +191,11 @@ def start_container(
     name = f"{NAME_PREFIX}{dialect}-{secrets.token_hex(4)}"
     opts, args = _run_args(dialect)
     cport = PORTS[dialect]
-    cmd = ["run", "-d", "--name", name, "--label", "lattice.spec=throwaway",
+    labels = ["--label", "lattice.spec=throwaway"]
+    owner = os.environ.get(OWNER_ENV, "")
+    if re.fullmatch(r"[A-Za-z0-9._-]{1,128}", owner):  # who to clean up after (Studio's gates)
+        labels += ["--label", f"lattice.owner={owner}"]
+    cmd = ["run", "-d", "--name", name, *labels,
            "-p", f"127.0.0.1::{cport}", *opts, image or IMAGES[dialect], *args]  # fmt: skip
     with _LIVE_LOCK:
         _LIVE.add(name)

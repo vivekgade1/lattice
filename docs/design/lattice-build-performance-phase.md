@@ -1,6 +1,9 @@
 # Phase (planned): build performance in Studio
 
 Status: **planned, not started** (recorded 2026-10-10 during the first real Streak build, plan p2/p3).
+Update 2026-10-11: P0 profile and G1 timings done; S2a built (API v1.11: scoped node gates,
+the regression level gate, the level repair loop, stop/budget hygiene, planner/areas from
+per-tip results): `docs/results/2026-10-11-perf-studio-results.md`.
 Do it after plan p3 finishes and the durable-state work (branch `studio-state`) is merged.
 
 ## Why

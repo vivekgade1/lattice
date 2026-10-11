@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.10)
+# Lattice Studio API contract (v1.11)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -576,3 +576,76 @@ A stub round may carry `"run": "<shell command>"`: run in the worktree's project
 
 ### The mock
 The mock keeps its state in memory but serves every v1.10 field. Its second project (`lattice-studio`) starts with two fixture plans: `p1` `interrupted` while level 2 ran (`run` resumes it, the passed levels skipped), and `p2` waiting to land (`resume.kind: "land"`, the target checked out in the owner's working copy): `POST /api/plan/p2/land` answers 409 `branch_checked_out` unless the body confirms. `DELETE /api/plan/{id}?forget=true` drops a plan.
+
+
+## v1.11 additions (build performance: scoped gates, the regression level gate, the level repair loop)
+
+A Streak level took 35-45 minutes, mostly gate time: the full gate (`./check.sh`, ABCDX) ran three times per level, and 95% of its layer D waited out 30 s `Await`s on a service not built yet (`docs/results/2026-10-11-gate-timings.md`). v1.11 runs a node's gate on its scope plus the regression set, ends a level with a regression gate, repairs a level whose merged result fails instead of stopping the plan, records every gate's verdicts per commit, and kills a stopped gate's whole process tree. Code: `lattice/studio/rebuild.py`, `plan.py`, `state.py`, `hub.py`; `lattice spec check --await-cap`. Every new key is optional; without them Studio behaves as v1.10, except the repair loop (default 2 attempts; `level_repair_attempts = 0` is v1.10's stop) and the reuse of a tip's recorded results.
+
+### Configuration: `[rebuild]` additions
+```toml
+[rebuild]
+scoped_gate_args = ["--layers", "CD", "--x-repeats", "1", "--await-cap", "5"]  # default: none (gates as configured)
+level_gate = "full"            # "full" (default) | "regression"
+level_repair_attempts = 2      # repair rounds after a failing level gate (0: stop as in v1.10)
+node_timeout = 1800            # seconds one plan node's agent step may run (default round_timeout)
+node_max_tokens = 0            # output tokens one node's agent may spend in all (0/absent: no cap)
+stop_grace = 5                 # seconds a stopped gate's group gets after SIGTERM before SIGKILL
+```
+The scoped args are appended to the **first** gate command (the Lattice check; it must forward `"$@"` last, as Streak's `check.sh` does), followed by `--only-file <selection>`; the other gates run as they are.
+
+### `lattice spec check --await-cap SECONDS`
+Caps every `Await.within_s` at SECONDS (the report notes `--await-cap N: every Await waited at most Ns (k step(s) capped); ...`); an effect that does not appear within the cap still fails the scenario. Opt-in: without it nothing changes. `check(..., await_cap=N)` is the API. The check CLI now also exits through `SystemExit` on SIGTERM, so its `atexit` guards stop app processes and services and remove containers; with `$LATTICE_CONTAINER_OWNER` set, `lattice.spec.dbserver` labels its containers `lattice.owner=<value>`.
+
+### Scoped node gates and the selection file
+With `scoped_gate_args`, a plan node other than the integration node runs its gates (the agent's runs and every round) as `<first gate> <scoped_gate_args> --only-file <worktree>/.lattice-scope/selection.json`. The selection is a JSON array of `scenario:<name>` selectors: **the scenarios of the node's scope** (every scenario its rules link to in the trace) **UNION the scenarios that passed at the start of its level** (the regression set, from the level start's per-tip result). An in-scope failing scenario missing from it is a bug (Studio asserts). `.lattice-scope/` is git-ignored through `info/exclude` and never committed. The exact scoped command is the brief's gate and the agent's only Bash allowlist entry (`Bash(<command>:*)`), and the brief gains a **Budget** section: `You have N minutes for this node. Run the scoped gate `...`, not the full one ...` (N from `node_timeout`; plus the output budget with `node_max_tokens`). Studio judges as before (every in-scope target passes, no regression), from the scoped gate's findings; a scenario the selection leaves out is never counted as fixed. The node's build record carries:
+```json
+"scoped_gate": {"command": "./check.sh --layers CD ... --only-file /…/.lattice-scope/selection.json",
+                "selection_file": "/…/.lattice-scope/selection.json", "args": ["--layers", "CD", ...],
+                "scenarios": 31, "in_scope": ["scenario:…", ...], "regression_set": ["scenario:…", ...]}
+```
+(`null` when the node runs unscoped), and `gates` is the scoped list.
+
+### Level gates
+`level_gate = "full"`: v1.10's full gate after every level. `level_gate = "regression"`: the first gate on `<passing before the level> ∪ <the scenarios of every scope landed so far, this level's included>` (written to the integration worktree's `.lattice-scope/level-selection.json`), **with the full layers** (no scoped args, no await cap), so the failing, not-yet-built scenarios of later nodes cost nothing; a scenario it does not select keeps its failing verdict (`carried`). **The last level, and any level holding the integration node, always run the unscoped full gate**; with `regression`, before the last level runs the plan also runs the full gate on its tip (`final_gate: {sha, failing, at, gates}`) unless that tip already has a full result, so the integration node decides from every check. `level_runs[].gate` adds `mode` (`full|regression`), `selected` (count, or null) and `in_scope_failing`.
+
+A level now fails on **regressions** (a check failing that did not fail on the last good tip) **and** on a merged node's own target that passed its node gate but fails on the merged tip (race-only, or cross-area). Gates that cannot run still stop the plan.
+
+### Per-tip results
+After every start baseline, level gate and final gate (and a stand-alone scoped build's baseline and passing round), Studio records `<state dir>/results/<sha>.json` (in memory without a store):
+```json
+{"tip": "<sha>", "kind": "full|regression", "failing": ["scenario:…", "title:…"], "passing": ["scenario:…"],
+ "carried": ["scenario:…"], "selected": ["scenario:…"] | null, "findings": [{"title", "target", "key"?, "file"?}],
+ "counts": {}, "gates": [{"command", "exit_code", "seconds"}], "gate_cmds": ["./check.sh"], "source": "plan p1 level 0 (regression gate)", "at": "..."}
+```
+`passing` is every known scenario (the trace's, the JSON report's `timings.scenarios`, earlier passing ones, the selection) that does not fail: the next level's regression set. A tip's verdicts are never recomputed: a plan's start baseline on a tip with a recorded full or regression result of the same gate commands reuses it (`baseline.reused: true`). `GET /api/areas[?branch=B]` reads `failing`/`status` from the result of B's tip first (so landed levels report `built`), then v1.8's sources.
+
+### The level repair loop
+When a level gate fails on something a node can fix (not when gates could not run), the plan goes on: each failing check is **attributed** (a) to the merged nodes whose scope links it (the integration node only if no other does), else (b) to the merged nodes whose commit touched the finding's `file` (a path equal to it or a directory above it), else (c) to a dedicated **repair node** `repair-l<L>` (kind `repair`, `repair: true`, scoped to those checks, started from the failing merged tip, its commit merged after the level's nodes). Then up to `level_repair_attempts` attempts, each: the responsible nodes get one repair round (concurrently) in their worktree on their branch (made again from the branch if gone), continuing their agent session with `--resume` when the record has one (else a fresh session whose brief is the node's brief plus the repair brief: "The merged result fails these checks that passed in isolation ... Fix the code, never the spec or the gate."), judged by their own gate (scoped: their scope + the regression set) on the attributed checks plus their own targets; a pass commits on the node's branch (`build: <title> (repair <n> after the level gate)`); then the level merges again from its base and its gate runs again. Passes: the level lands (v1.10 rules). Still failing after the cap: the level's nodes stay `regressed`, the level run gets `repair_pending: true` and `error: {kind: "repair_exhausted", level, nodes, targets, message}`, the plan ends **`partial`** with that error, and `resume.kind` is `repair`: `POST /api/plan/{id}/run` merges the level's nodes onto the current tip and does another bounded pass (a new level run `repair_resume: true, repair_pass: n`; the old one `superseded: true`), no node starting over; at `max_attempts` passes `resume.available` is false. Repair usage (tokens, cost, rounds, wall) adds to the node (`usage`, `rounds`, `wall_s`, plus `repair_usage`) and the plan totals.
+
+Repair-loop states:
+
+| where | field | values |
+|---|---|---|
+| node | `status` | adds `repairing` (a repair round runs); `passed` after a verified repair; `regressed` while the level fails |
+| node | `repairs` | repair rounds run for it |
+| build record | `repairs`, `timeline[].repair` | repair rounds of the node's build; its timeline entries `repair: true` |
+| level run | `repairs[]` | `{attempt, of, run, at, tip (the failing merged tip), targets, attributed: {target: {by: scope|files|repair_node, nodes}}, nodes: [{id, build_id, verify: pass|fail|error, commit, rounds, usage}], outcome: passed|failed|verify_failed, still_failing?}` |
+| level run | `repair_pending`, `repair_resume`, `repair_pass`, `superseded` | exhaustion and resumed passes |
+| plan | `repair_attempts` | attempts in all; `error.kind: repair_exhausted`; `resume.kind: repair` |
+| plan | `timeline[].repair` | `true` on the loop's entries |
+
+### Planner and areas
+- `planner_usage: {tokens_in (cache included), tokens_out, cache_read_input_tokens, cache_creation_input_tokens, cost_usd_list_estimate, wall_s, calls}` on every plan; `totals` include the planner from the moment planning ends. A planner call cut off without a result event keeps the usage its stream showed.
+- The planner message marks each area `built: true|false|null` (every check of it passes at the target's tip, from the per-tip results; null: never gated). After planning (and after a revision), a node with nothing failing in its scope at the target's tip is `passed` with `nothing_to_build` and `dropped_at_planning: <sha>` and never runs an agent; the scaffold too: a scaffold with rules runs only when its own checks fail, a scaffold with no rules only while something fails in the plan scope (the v1.9 "the scaffold always runs" rule is gone). The same rule applies when a level starts.
+- Plan records add `gate_config: {scoped_gate_args, level_gate, level_repair_attempts, node_timeout, node_max_tokens}` (once run), `final_gate`, `repair_attempts`, `planner_usage`.
+
+### Stop and budget hygiene
+- A gate runs in its own session; while it runs Studio records its descendants in `pids` (`role: gate-child`, pid + start time + command line; exited ones dropped), and the gate's own entry carries `containers: <owner token>` (`$LATTICE_CONTAINER_OWNER` of that gate run). On DELETE of a build or plan, on a gate timeout, and on a restart's reconciliation: SIGTERM to the gate's group, up to `stop_grace` seconds for the check's own cleanup, SIGKILL, then every recorded descendant still alive (matched by pid, start time and command line; an app in its own session ignoring SIGTERM is SIGKILLed after the grace), then `docker ps -a --filter label=lattice.owner=<token>` and `docker rm -f -v` of each listed `lattice-*` container: never any other. Descendants a gate left after exiting on its own are terminated too. A gate's result may add `stopped: true` and `containers_removed`.
+- An agent stopped by `node_timeout` (plan nodes; stand-alone builds keep `round_timeout`) or `node_max_tokens` keeps the usage its stream showed (each assistant message's usage, once per message id) instead of 0: the round gets `status: "timeout"`, `error: {kind: "timeout", reason: "node_timeout|round_timeout|node_max_tokens", message}`, `agent.partial: true`, and its files stay (the gates still run on them).
+
+### `plan_defaults` on GET /api/projects
+`{"max_parallel": 2, "models": {"fast", "mid", "frontier"}, "scoped_gate": [args] | null, "level_gate": "full|regression", "node_timeout": 1800.0, "level_repair_attempts": 2}` from the project's `[rebuild]`.
+
+### The mock
+Projects carry `plan_defaults` (scoped gate, regression level gate); plans carry `planner_usage` and, once run, `gate_config`; level gates carry `mode`/`selected`/`in_scope_failing`. A mock run's level 1 (in a plan of three or more levels) fails its gate once and is repaired over one poll (a node `repairing`, `repairs` on the level run and the node, timeline `repair: true`) before it lands. The second project gets a third fixture plan `p3` whose level 1 ran out of repair attempts (`partial`, `error.kind: repair_exhausted`, `resume.kind: repair`); `POST /api/plan/p3/run` repairs it again over one poll and goes on.
