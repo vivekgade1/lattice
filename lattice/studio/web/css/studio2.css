@@ -436,3 +436,97 @@ button.map-badge:hover { color: var(--ink); text-decoration-color: currentColor;
 }
 .rb-more { grid-column: 2 / -1; font-size: var(--fs-13); }
 .rb-more summary { cursor: pointer; color: var(--accent); margin: var(--space-1) 0; }
+
+/* ------------------------------------------------------------------ Build plans (API v1.9) */
+.pv-start { margin-bottom: var(--space-8); max-width: 720px; }
+.pv-start-body { display: grid; gap: var(--space-3); }
+.pv-fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.pv-fieldset legend { padding: 0; margin-bottom: var(--space-1); font-size: var(--fs-13); color: var(--ink-2); }
+.pv-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); font-size: var(--fs-13); }
+.pv-area-box { margin: var(--space-2) 0 0 var(--space-6); }
+.pv-areas { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.pv-areas label { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; font-size: var(--fs-13); }
+.pv-areas input { accent-color: var(--accent); }
+.pv-fallback { font-size: var(--fs-13); }
+.pv-why { margin: 0; }
+.pv-plans { margin-top: var(--space-6); }
+.bv-or { margin-top: var(--space-8); }
+
+.pv-head { margin-bottom: var(--space-4); }
+.pv-crumb { margin: 0 0 var(--space-1); font-size: var(--fs-13); }
+.pv-sub { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-1); align-items: center; font-size: var(--fs-13); }
+.pv-chip { font-size: var(--fs-13); }
+.pv-chip.is-ready, .pv-chip.is-approved { color: var(--ink); }
+.pv-chip.is-partial { color: var(--warn-text); }
+.pv-body { display: grid; gap: var(--space-5); min-width: 0; }
+.pv-meta { display: grid; gap: var(--space-3); max-width: 880px; }
+.pv-planning { margin: 0; padding: var(--space-4); border-left: 3px solid var(--rebuild-running); background: var(--accent-soft); border-radius: var(--radius-sm); }
+.pv-source { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); }
+.pv-badge { display: inline-flex; align-items: center; gap: 6px; padding: 1px 10px; border-radius: 999px; border: 1px solid var(--hairline-strong); font-size: var(--fs-13); font-weight: var(--fw-medium); }
+.pv-source.is-fallback .pv-badge { border-color: var(--warn); background: var(--warn-soft); color: var(--warn-text); }
+.pv-source-why { font-size: var(--fs-13); color: var(--ink-2); max-width: var(--measure); }
+.pv-fixes { font-size: var(--fs-13); }
+.pv-fixes summary { cursor: pointer; color: var(--ink-2); }
+.pv-fixes ul { margin: var(--space-2) 0 0; padding-left: var(--space-5); }
+.pv-shape, .pv-totals { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin: 0; font-size: var(--fs-13); }
+.pv-shape dt, .pv-totals dt { color: var(--ink-2); font-size: var(--fs-12); }
+.pv-shape dd, .pv-totals dd { margin: 0; font-weight: var(--fw-medium); font-variant-numeric: tabular-nums; }
+.pv-actions { display: grid; gap: var(--space-2); max-width: 880px; }
+.pv-actions:empty { display: none; }
+.pv-act-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pv-actions p { margin: 0; }
+.pv-note { display: flex; gap: var(--space-2); align-items: flex-start; padding: var(--space-2) var(--space-3); border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: var(--radius-sm); font-size: var(--fs-13); margin: 0; }
+.pv-note .icon { flex: none; margin-top: 3px; }
+
+.pv-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); gap: var(--space-6); align-items: start; min-width: 0; }
+.pv-graph-col { min-width: 0; }
+.pv-graph { position: relative; height: 460px; border: 1px solid var(--hairline); border-radius: var(--radius-lg); overflow: hidden; background: var(--paper); }
+.pv-legend { margin: var(--space-2) 0 0; }
+.pv-side { min-width: 0; padding: var(--space-4); border: 1px solid var(--hairline); border-radius: var(--radius-lg); background: var(--surface); }
+.pv-side-title { margin: 0 0 var(--space-1); font-size: var(--fs-16); font-weight: var(--fw-medium); overflow-wrap: anywhere; }
+.pv-side-meta { margin: 0 0 var(--space-3); font-size: var(--fs-13); display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-2); align-items: center; }
+.pv-next { display: flex; gap: var(--space-2); align-items: flex-start; margin: 0 0 var(--space-3); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); font-size: var(--fs-13); }
+.pv-next.is-warn { border-left: 3px solid var(--warn); background: var(--warn-soft); color: var(--warn-text); }
+.pv-next.is-quiet { border-left: 3px solid var(--hairline-strong); background: var(--paper); }
+.pv-next .icon { flex: none; margin-top: 3px; }
+.pv-edges { list-style: none; margin: 0 0 var(--space-3); padding: 0; font-size: var(--fs-13); }
+.pv-edges li { padding: 2px 0; }
+.pv-dashed { color: var(--ink-2); }
+.pv-serial { margin: var(--space-2) 0; padding: var(--space-2) var(--space-3); background: var(--paper); border-radius: var(--radius-sm); }
+.pv-tier { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-13); font-weight: var(--fw-medium); color: var(--ink-2); }
+.pv-tier .icon, .pv-node-status .icon { width: 12px; height: 12px; }
+.pv-node-status { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-13); font-weight: var(--fw-medium); color: var(--ink-2); }
+.pv-node-status.is-passed { color: var(--ok-text); }
+.pv-node-status.is-running { color: var(--rebuild-running); }
+.pv-node-status.is-gave_up, .pv-node-status.is-regressed { color: var(--bad-text); }
+.pv-node-status.is-blocked, .pv-node-status.is-merge_conflict { color: var(--warn-text); }
+.pv-form { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-2) var(--space-3); align-items: center; font-size: var(--fs-13); margin-bottom: var(--space-3); }
+.pv-cap { display: inline-flex; align-items: center; gap: var(--space-2); }
+.pv-deps { list-style: none; margin: 0 0 var(--space-2); padding: 0; font-size: var(--fs-13); max-height: 220px; overflow: auto; }
+.pv-deps li { padding: 2px 0; }
+.pv-deps label { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; }
+.pv-deps input { accent-color: var(--accent); }
+.pv-planedit { max-width: 880px; display: grid; gap: var(--space-2); }
+.pv-planedit:empty { display: none; }
+.pv-feedback { width: 100%; max-width: 640px; padding: var(--space-2); border: 1px solid var(--hairline-strong); border-radius: var(--radius-control); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-13); }
+.pv-fb-label { font-size: var(--fs-13); color: var(--ink-2); margin-top: var(--space-2); }
+.pv-levels:empty { display: none; }
+.pv-levels { margin-top: var(--space-4); }
+.pv-level-list { list-style: none; margin: 0; padding: 0; font-size: var(--fs-13); }
+.pv-level-list li { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: var(--space-3); padding: var(--space-1) 0; border-top: 1px solid var(--hairline); }
+.pv-level-n { font-weight: var(--fw-medium); color: var(--ink-2); }
+.pv-level-list .is-bad { color: var(--bad-text); }
+.pv-list-det > summary { cursor: pointer; font-weight: var(--fw-medium); margin-bottom: var(--space-2); }
+.pv-list-level { margin: var(--space-3) 0 var(--space-1); font-size: var(--fs-13); font-weight: var(--fw-medium); }
+.pv-list-nodes { list-style: none; margin: 0; padding: 0; }
+.pv-list-nodes li { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; padding: var(--space-2) var(--space-2); border-top: 1px solid var(--hairline); }
+.pv-list-nodes li.is-selected { background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
+.pv-list-btn { display: grid; gap: 0; text-align: left; border: 0; background: none; padding: 0; font: inherit; color: var(--ink); cursor: pointer; flex: 1 1 260px; min-width: 0; }
+.pv-list-btn:hover .pv-list-title { text-decoration: underline; }
+.pv-list-title { font-weight: var(--fw-medium); }
+
+@media (max-width: 1480px) {
+  .pv-main { grid-template-columns: minmax(0, 1fr); }
+  .pv-graph { height: 380px; }
+}
+.pv-stuck { display: flex; flex-wrap: wrap; gap: var(--space-1); align-items: baseline; margin: 0; font-size: var(--fs-13); color: var(--warn-text); }

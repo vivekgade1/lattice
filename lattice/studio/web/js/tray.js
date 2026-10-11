@@ -8,6 +8,7 @@
 import { h, clear, add, icon, plural } from "./util.js";
 import { api } from "./api.js";
 import { state, update, subscribe, canRebuild, REBUILD_WHY } from "./store.js";
+import { planLive, planWords } from "./views/plan.js";
 
 /** The one human status of a change: drafting, checking, ready, accepted · not built,
  *  rebuilding, built, gave up, failed, rejected, cancelled. */
@@ -80,7 +81,9 @@ function barText(changes) {
   const n = summarize(changes);
   const parts = [];
   const lb = liveBuild();
-  if (lb) parts.push(buildWords(lb));
+  const lp = planLive();
+  if (lp) parts.push(planWords(lp));
+  else if (lb) parts.push(buildWords(lb));
   if (n.ready) parts.push(`${plural(n.ready, "change")} ready`);
   if (n.working) parts.push(`${n.working} drafting`);
   if (n.notBuilt) parts.push(`${n.notBuilt} accepted, not built`);
@@ -220,16 +223,22 @@ export function mountTray(root, opts = {}) {
     const active = changes.filter((c) => ACTIVE.has(changeStatus(c)));
     const history = changes.filter((c) => !ACTIVE.has(changeStatus(c)));
     const lb = liveBuild();
+    const lp = planLive();
     add(root,
       h("button", {
         type: "button", class: "tray-bar", id: "tray-toggle",
         "aria-expanded": open ? "true" : "false", "aria-controls": "tray-body",
         onclick: () => update({ trayOpen: !state.trayOpen }),
       },
-        h("span", { class: "tray-count" }, lb ? h("span", { class: "spinner", "aria-hidden": "true" }) : icon(active.length ? "pending" : "dash"), h("span", {}, barText(changes))),
+        h("span", { class: "tray-count" }, lb || lp ? h("span", { class: "spinner", "aria-hidden": "true" }) : icon(active.length ? "pending" : "dash"), h("span", {}, barText(changes))),
         h("span", { class: "tray-chev muted" }, open ? "Hide" : "Show"),
       ),
       open ? h("div", { class: "tray-body", id: "tray-body" },
+        lp ? h("ul", { class: "tray-list" }, h("li", { class: "tray-row tray-live", "data-plan": lp.id },
+          h("span", { class: "tray-id" }, lp.id),
+          h("span", { class: "tray-request" }, `${planWords(lp)} · onto ${lp.target_branch || "the target branch"}`),
+          h("span", { class: "tray-status" }, h("span", { class: "spinner", "aria-hidden": "true" }), " Building"),
+          h("span", { class: "tray-actions" }, h("button", { type: "button", class: "btn btn-quiet", onclick: () => update({ view: "build", planView: lp.id }) }, "Open plan")))) : null,
         lb ? h("ul", { class: "tray-list" }, h("li", { class: "tray-row tray-live", "data-build": lb.id || "" },
           h("span", { class: "tray-id" }, lb.id || "build"),
           h("span", { class: "tray-request" }, `${buildWords(lb)}${lb.branch ? ` · onto ${lb.branch}` : ""}`),
@@ -237,13 +246,13 @@ export function mountTray(root, opts = {}) {
           h("span", { class: "tray-actions" }, h("button", { type: "button", class: "btn btn-quiet", onclick: () => update({ view: "build" }) }, "Open build")))) : null,
         changes.length
           ? h("ul", { class: "tray-list" }, [...active, ...history].map(row))
-          : lb ? null : h("p", { class: "muted" }, "No changes yet. Ask for one in the conversation and it appears here."),
+          : lb || lp ? null : h("p", { class: "muted" }, "No changes yet. Ask for one in the conversation and it appears here."),
       ) : null,
     );
   }
 
   subscribe((st, patch) => {
-    if ("model" in patch || "trayOpen" in patch || "changesSeen" in patch || "buildRun" in patch) render();
+    if ("model" in patch || "trayOpen" in patch || "changesSeen" in patch || "buildRun" in patch || ("planRun" in patch || "planActive" in patch)) render();
   });
   render();
 }

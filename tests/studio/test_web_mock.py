@@ -770,3 +770,41 @@ console.log(JSON.stringify(out));
     assert "Commit or stash your working changes, then try again." in msgs
     assert "The checks in this area already pass." in msgs
     assert all(m.endswith(".") and "409" not in m for m in msgs)
+
+
+# ---------------------------------------------------------------- build plans (v1.9)
+
+
+def test_plan_view_is_wired() -> None:
+    """The plan view: gated on capabilities.build_plan, mounted by the Build view, followed
+    by the tray and navigator, and the bundle has a plan node renderer."""
+    js = WEB_DIR / "js"
+    plan = (js / "views" / "plan.js").read_text()
+    for needle in (
+        "export function plannerCard",
+        "export function renderPlanView",
+        "export async function watchPlans",
+        "planApprove",
+        "planRun",
+        "Approve this plan",
+        "Run plan",
+        "Run again",
+        "Nothing is built until you run it",
+        "These run at the same time",
+        "These run one after another",
+        "Planned by an agent",
+        "Safe sequential plan",
+        "not charged",
+    ):
+        assert needle in plan or needle in (js / "api.js").read_text(), needle
+    assert (
+        "build_plan" in (js / "store.js").read_text()
+        and "export function canPlan" in (js / "store.js").read_text()
+    )
+    assert "renderPlanView" in (js / "views" / "areas.js").read_text()
+    assert (
+        "planWords" in (js / "tray.js").read_text()
+        and "plans.watchPlans" in (js / "app.js").read_text()
+    )
+    bundle = (WEB_DIR / "vendor" / "graph.js").read_text()
+    assert "lg-k-plan" in bundle and "These" not in "" and "lg-ps-" in bundle

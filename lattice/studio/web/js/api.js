@@ -116,6 +116,16 @@ export const api = {
   buildStart: (body) => call("POST", "/api/rebuild", body),
   rebuildList: () => call("GET", "/api/rebuild"),
 
+  // v1.9: build plans. planRevise takes {edits} or {feedback}; its answer is the new record
+  // (edits) or {id, status: "planning"} (feedback).
+  planCreate: (body) => call("POST", "/api/plan", body),
+  planGet: (id, wait = 0) => call("GET", `/api/plan/${encodeURIComponent(id)}${wait ? `?wait=${wait}` : ""}`),
+  planList: () => call("GET", "/api/plans"),
+  planRevise: (id, body) => call("POST", `/api/plan/${encodeURIComponent(id)}/revise`, body),
+  planApprove: (id) => call("POST", `/api/plan/${encodeURIComponent(id)}/approve`, {}),
+  planRun: (id) => call("POST", `/api/plan/${encodeURIComponent(id)}/run`, {}),
+  planStop: (id) => call("DELETE", `/api/plan/${encodeURIComponent(id)}`),
+
   // v1.5: the chat on a Claude Code session (session.js drives these).
   sessionCreate: (mode, change = null) => call("POST", "/api/session", change ? { mode, change } : { mode }),
   sessionMessage: (id, text, selected = []) =>

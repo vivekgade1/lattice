@@ -25,6 +25,13 @@ const PATHS = {
   stage: "M2 3h7l5 5-5 5H2l5-5-5-5Z",
   machine: "M8 2a6 6 0 1 1-5.6 8.2l1.4-.5A4.5 4.5 0 1 0 3.5 8H5L2.5 11 0 8h2A6 6 0 0 1 8 2Z",
   invariant: "M3 3h10v1.5H3zM3 7.25h10v1.5H3zM3 11.5h10V13H3z",
+  // build plan nodes: tier, status
+  bolt: "M9.5 1 3 9h4l-1 6 6.5-8.5H8.5L9.5 1Z",
+  bars: "M2 9.5h3V14H2V9.5Zm4.5-4h3V14h-3V5.5ZM11 2h3v12h-3V2Z",
+  star: "M8 1l2.1 4.6 5 .6-3.7 3.4 1 5L8 12.1 3.6 14.6l1-5L.9 6.2l5-.6L8 1Z",
+  clock: "M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm.75 3v3.7l2.6 1.5-.75 1.3L7.25 8.6V4h1.5Z",
+  lock: "M5 6V4.5a3 3 0 0 1 6 0V6h1v8H4V6h1Zm1.5 0h3V4.5a1.5 1.5 0 0 0-3 0V6Z",
+  plan: "M2 3h5v3H2V3Zm7 0h5v3H9V3ZM2 10h5v3H2v-3Zm7 0h5v3H9v-3ZM7 4.25h2v1.5H7zM7 11.25h2v1.5H7z",
   caller: "M3 2h4v1.5H4.5v9H7V14H3V2Zm5 5.25h5.2L11 5l1-1 4 4-4 4-1-1 2.2-2.25H8v-1.5Z",
 };
 

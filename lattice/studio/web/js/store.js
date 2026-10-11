@@ -24,6 +24,10 @@ export const state = {
   // v1.8 build from the spec
   buildArea: null, // an area id the Build view should open preselected (set by "Build…" links)
   buildRun: null, // the scoped build in view: {phase: starting|live|done|stopped|error, id, title, branch, record, message}
+  // v1.9 build plans
+  planView: null, // id of the plan open in the Build view, or null (the plans list and the start form)
+  planRun: null, // the plan in view: {id, record}; kept fresh by views/plan.js
+  planActive: null, // the plan record that is planning or running (the tray follows it), or null
   // v1.6 projects
   projects: null, // GET /api/projects (array) or null before it loaded / when it failed
   project: null, // the project the owner picked (name), or null for the server's default
@@ -52,6 +56,16 @@ export function canBuild() {
   if (!p) return true;
   return Boolean(p.capabilities && p.capabilities.build_from_spec === true);
 }
+
+/** Whether this project can plan builds (capabilities.build_plan, API v1.9). Unknown counts
+ *  as true when there is no project list; an older server (the flag is absent) as false. */
+export function canPlan() {
+  const p = currentProject();
+  if (!p) return true;
+  return Boolean(p.capabilities && p.capabilities.build_plan === true);
+}
+
+export const PLAN_WHY = "Build plans need a git repository and a [rebuild] section in studio.toml with at least one gate command, on a Studio server that supports API v1.9.";
 
 export const BUILD_WHY = "Build from the spec needs a git repository and a [rebuild] section in studio.toml with at least one gate command.";
 

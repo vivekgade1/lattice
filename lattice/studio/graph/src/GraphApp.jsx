@@ -3,13 +3,15 @@
  *   nodes:  [{ id, kind, label, sub?, trust?, trustLabel?, badges?: [{label, tone}], more?: {label, title},
  *              target?, column?, group?, w?, h? }]
  *           kind:  rule | endpoint | table | service | machine | invariant | scenario | code
- *                  | state | stage | caller
+ *                  | state | stage | caller | plan
+ *           plan:  (kind "plan" only) { tier: fast|mid|frontier, status: pending|running|passed|gave_up|
+ *                  blocked|merge_conflict|regressed|stopped, statusLabel?, rules?: "5 rules", facts?: "12k tokens" }
  *           trust: checked | unchecked | context | untraced | probe_gap | not_built | failing
  *           tone:  ok | warn | bad | gap | accent | neutral
  *   edges:  [{ id, source, target, kind?, label?, state? }]   state: active | failing | dashed
  *   layout: "dagre" (direction LR | TB) | "columns" (node.column, node.group) | "wrap"
  *           | "layers" (node.column = layer, top to bottom, wrapping at the canvas width)
- *   columns: [{label}]  groups: {id: {label}}
+ *   columns: [{label, sub?}]  groups: {id: {label}}
  *   readableZoom: the smallest zoom the first view may use (default 0.85: 13px labels
  *                 stay >= 11px); past it the view starts top-left and pans instead of fitting
  *   selected: [id], marked: [id]
@@ -35,7 +37,7 @@ const TRUST = {
   failing: { word: "failing", icon: "diamond" },
 };
 const DIFF_WORD = { modified: "changed", added: "added", removed: "removed", impact: "impacted" };
-const KINDS = ["rule", "endpoint", "table", "service", "machine", "invariant", "scenario", "code", "state", "stage", "caller"];
+const KINDS = ["rule", "endpoint", "table", "service", "machine", "invariant", "scenario", "code", "state", "stage", "caller", "plan"];
 const READABLE = 0.85;
 
 const Ctx = createContext(null);
@@ -150,13 +152,67 @@ const GroupNode = ({ data }) => (
   </div>
 );
 const HeadNode = ({ data }) => (
-  <div className={"lg-colhead" + (data.side ? " is-side" : "")} style={{ width: data.w }} aria-hidden="true">{data.label}</div>
+  <div className={"lg-colhead" + (data.side ? " is-side" : "")} style={{ width: data.w }} aria-hidden="true">
+    {data.label}
+    {data.sub && <span className="lg-colsub">{data.sub}</span>}
+  </div>
 );
+
+/* A build-plan node: title, rule count and tier (icon + word), then the status (icon + word)
+   and, once it ran, its tokens, time and lines. */
+const PLAN_TIER = { fast: { word: "Fast", icon: "bolt" }, mid: { word: "Mid", icon: "bars" }, frontier: { word: "Frontier", icon: "star" } };
+const PLAN_STATUS = {
+  pending: { word: "Waiting", icon: "clock" },
+  running: { word: "Running", icon: "spin" },
+  passed: { word: "Passed", icon: "check" },
+  gave_up: { word: "Gave up", icon: "cross" },
+  blocked: { word: "Blocked", icon: "lock" },
+  merge_conflict: { word: "Merge conflict", icon: "triangle" },
+  regressed: { word: "Regressed", icon: "triangle" },
+  stopped: { word: "Stopped", icon: "dash" },
+};
+const PlanNode = ({ data }) => {
+  const { n, selected, marked, tabbable } = data;
+  const cb = useContext(Ctx);
+  const p = n.plan || {};
+  const tier = PLAN_TIER[p.tier] || PLAN_TIER.mid;
+  const st = PLAN_STATUS[p.status] || PLAN_STATUS.pending;
+  const word = p.statusLabel || st.word;
+  const { w, h } = sizeOf(n);
+  const aria = `${n.label}, ${p.rules ? p.rules + ", " : ""}${tier.word} model, ${word}${p.facts ? ", " + p.facts : ""}`;
+  const cls = ["lg-node", "lg-k-plan", `lg-ps-${p.status || "pending"}`, selected ? "is-selected" : "", marked ? "is-marked" : ""].filter(Boolean).join(" ");
+  return (
+    <>
+      <Handles />
+      <button
+        type="button" className={cls} style={{ width: w, height: h }} tabIndex={tabbable ? 0 : -1}
+        data-lg-id={n.id} aria-label={aria} aria-pressed={selected} title={n.sub ? `${n.label}: ${n.sub}` : n.label}
+        onClick={(e) => cb.click(n.id, e)} onDoubleClick={(e) => { e.preventDefault(); cb.open(n.id); }}
+        onKeyDown={(e) => cb.key(n.id, e)} onFocus={() => cb.focus(n.id)}
+      >
+        <span className="lg-row"><span className="lg-label">{n.label}</span></span>
+        <span className="lg-row lg-meta">
+          {p.rules && <span>{p.rules}</span>}
+          <span className="lg-fill" />
+          <span className="lg-tier"><Icon name={tier.icon} size={12} />{tier.word}</span>
+        </span>
+        <span className="lg-row lg-meta">
+          <span className="lg-pstatus">
+            {st.icon === "spin" ? <span className="lg-spin" aria-hidden="true" /> : <Icon name={st.icon} size={12} />}
+            {word}
+          </span>
+          <span className="lg-fill" />
+          {p.facts && <span className="lg-sub">{p.facts}</span>}
+        </span>
+      </button>
+    </>
+  );
+};
 
 const NODE_TYPES = {
   rule: RuleNode, endpoint: EndpointNode, table: TableNode, service: ServiceNode, machine: MachineNode,
   invariant: InvariantNode, scenario: ScenarioNode, code: CodeNode, state: StateNode, stage: StageNode,
-  caller: CallerNode, group: GroupNode, colhead: HeadNode,
+  caller: CallerNode, plan: PlanNode, group: GroupNode, colhead: HeadNode,
 };
 
 /* ---------------------------------------------------------------- canvas */

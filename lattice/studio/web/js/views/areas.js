@@ -11,6 +11,7 @@
 import { h, icon, add, plural } from "../util.js";
 import { api, sleep } from "../api.js";
 import { state, update, subscribe, currentProject, canBuild, BUILD_WHY } from "../store.js";
+import { plannerCard, renderPlanView, planLive } from "./plan.js";
 import { rebuildCard, pollRebuild, buildRefusal } from "./rebuilds.js";
 import { RULE_STATUS, ruleStatusChip } from "../badges.js";
 import { targetChip } from "../targets.js";
@@ -97,6 +98,8 @@ function isLive(run) {
 
 /** The reason no build can start right now, or "". */
 function busyReason() {
+  const plan = planLive();
+  if (plan) return `A build plan is running (${plan.id}). Wait for it to finish, or stop it.`;
   const run = state.buildRun;
   if (run?.phase === "starting") return "A build is starting. Wait for its first check, or stop it.";
   if (isLive(run)) return `A build is running${run.id ? ` (${run.id})` : ""}. Wait for it to finish, or stop it.`;
@@ -286,12 +289,37 @@ export function render(model, root, ctx) {
     return;
   }
 
+  if (state.planView) {
+    renderPlanView(root, { openCode: ctx.openCode, back: () => update({ planView: null }) });
+    return;
+  }
+
   const ep = api.epoch();
+  const planner = plannerCard(() => {
+    const b = cache.branches;
+    const sel = b ? selection(b) : null;
+    return {
+      areas: cache.areas,
+      loading: !b || !cache.areas,
+      busy: busyReason(),
+      branch: sel ? {
+        label: sel.kind === "new" ? sel.name || "New branch…" : sel.name,
+        body: sel.body, error: sel.error, unsafe: sel.unsafe, confirmed: ui.confirm,
+      } : null,
+    };
+  }, {
+    pickBranch: () => {
+      ui.open = true;
+      drawControls();
+      root.querySelector("#bv-branch-panel")?.scrollIntoView({ block: "nearest" });
+      root.querySelector('[data-fk="branch-btn"]')?.focus();
+    },
+  });
   const controls = h("section", { class: "bv-controls", "aria-label": "Build settings" });
   const runSlot = h("section", { class: "bv-run", "aria-label": "Current build", "aria-live": "polite" });
   const listSlot = h("section", { class: "bv-areas", "aria-label": "Areas" });
   const histSlot = h("section", { class: "bv-history", "aria-label": "Recent builds" });
-  add(root, controls, runSlot, listSlot, histSlot);
+  add(root, planner.el, h("h2", { class: "s2-section-title bv-or" }, "Or build one area at a time"), controls, runSlot, listSlot, histSlot);
 
   const stale = (tok) => tok !== loadToken || ep !== api.epoch() || !root.isConnected;
   const why = h("p", { class: "bv-why muted small", id: "bv-why" });
@@ -324,6 +352,7 @@ export function render(model, root, ctx) {
         btn.removeAttribute("aria-describedby");
       }
     }
+    planner.sync();
     const check = root.querySelector("[data-check]");
     if (check) {
       const configured = !!state.model?.app?.configured;

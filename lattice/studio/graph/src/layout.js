@@ -13,6 +13,7 @@ const SIZE = {
   state: [148, 44],
   stage: [236, 60],
   caller: [148, 60],
+  plan: [304, 84],
 };
 export const sizeOf = (n) => {
   const [w, h] = SIZE[n.kind] || [208, 48];
@@ -20,6 +21,7 @@ export const sizeOf = (n) => {
 };
 
 const HEAD_H = 28; // column header band
+const HEAD_H_SUB = 46; // ... with a caption line (a column may carry `sub`)
 const GROUP_PAD = 8; // inside a group container
 const GROUP_HEAD = 24; // group label band
 const ROW_GAP = 10;
@@ -110,7 +112,8 @@ function columnsLayout(nodes, edges, columns = [], groups = {}) {
   }
   const pos = {};
   const extras = [];
-  const top = (columns.length ? HEAD_H + 12 : 0) + 16;
+  const headH = columns.some((c) => c && c.sub) ? HEAD_H_SUB : HEAD_H;
+  const top = (columns.length ? headH + 12 : 0) + 16;
 
   const stack = (c, list) => {
     let y = top;
@@ -162,7 +165,7 @@ function columnsLayout(nodes, edges, columns = [], groups = {}) {
     }
   }
   columns.forEach((col, i) => {
-    if (col && byCol.has(i)) extras.push({ id: `head:${i}`, type: "colhead", x: colX[i], y: 12, w: colW[i], h: HEAD_H, label: col.label });
+    if (col && byCol.has(i)) extras.push({ id: `head:${i}`, type: "colhead", x: colX[i], y: 12, w: colW[i], h: headH, label: col.label, sub: col.sub });
   });
   return { pos, extras };
 }

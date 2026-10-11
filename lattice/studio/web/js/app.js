@@ -41,6 +41,7 @@ import * as gaps from "./views/gaps.js";
 import * as checks from "./views/checks.js";
 import * as rebuilds from "./views/rebuilds.js";
 import * as areas from "./views/areas.js";
+import * as plans from "./views/plan.js";
 
 // Grouped navigator. `attn(m)` returns a short reason when the item needs attention (it
 // draws the dot); `count(m)` shows a number only where it helps.
@@ -70,6 +71,7 @@ const VIEWS = GROUPS.flatMap((g) => g.views.map((v) => ({ ...v, group: g.id, len
 const HOME = "map";
 
 function buildLive() {
+  if (plans.planLive()) return true;
   const r = state.buildRun;
   return !!r && (r.phase === "starting" || (r.phase === "live" && !["passed", "gave_up", "stopped"].includes(r.record?.status)));
 }
@@ -530,7 +532,7 @@ async function switchProject(name, opts = {}) {
     project: name, model: null, connected: true, loadError: null, switching: true,
     selection: [], marked: [], focusTarget: null, change: null, rebuild: null, codeTarget: null,
     edits: [], rulesScope: null, checkRunning: false, overlay: false, view,
-    buildArea: null, buildRun: null,
+    buildArea: null, buildRun: null, planView: null, planRun: null, planActive: null,
   });
   history.replaceState(null, "", hashFor(state.view, name));
   startPollers();
@@ -542,6 +544,7 @@ function startPollers() {
   pollModel(ep);
   pollBuilding(ep);
   areas.watchBuilds(ep);
+  plans.watchPlans(ep);
 }
 
 async function boot() {
@@ -578,14 +581,14 @@ window.addEventListener("studio:run-check", () => {
 subscribe((st, patch) => {
   const keys = Object.keys(patch);
   if (keys.some((k) => ["model", "connected", "checkRunning", "overlay", "loadError", "projects", "project"].includes(k))) renderTopbar();
-  if (keys.some((k) => ["model", "view"].includes(k)) || ("buildRun" in patch && buildLive() !== navBuildLive)) {
+  if (keys.some((k) => ["model", "view"].includes(k)) || (("buildRun" in patch || "planActive" in patch) && buildLive() !== navBuildLive)) {
     navBuildLive = buildLive();
     renderNav();
   }
   if ("view" in patch) document.body.classList.remove("nav-open");
   if ("view" in patch && st.view !== "rules" && !("rulesScope" in patch)) st.rulesScope = null;
   if ("view" in patch && location.hash !== hashFor(st.view, st.project)) history.replaceState(null, "", hashFor(st.view, st.project));
-  if (keys.some((k) => ["model", "view", "change", "overlay", "marked", "loadError", "lens", "projects"].includes(k))) {
+  if (keys.some((k) => ["model", "view", "change", "overlay", "marked", "loadError", "lens", "projects", "planView"].includes(k))) {
     const keep = !("view" in patch) && !st.focusTarget;
     renderMain(keep);
   } else if ("selection" in patch || "codeTarget" in patch) {

@@ -99,6 +99,22 @@
 .lg-k-caller { border-style: dashed; background: var(--surface); }
 .lg-k-caller.is-marked { background: var(--accent-soft); }
 
+/* build plan nodes: tier and status always carry an icon and a word */
+.lg-k-plan { gap: 3px; padding: 6px 10px; }
+.lg-tier, .lg-pstatus { display: inline-flex; align-items: center; gap: 4px; flex: none; font-weight: var(--fw-medium); }
+.lg-tier { color: var(--ink-2); }
+.lg-ps-passed .lg-pstatus { color: var(--ok-text); }
+.lg-ps-running .lg-pstatus { color: var(--rebuild-running); }
+.lg-ps-running { border-color: var(--rebuild-running); }
+.lg-ps-gave_up .lg-pstatus, .lg-ps-regressed .lg-pstatus { color: var(--bad-text); }
+.lg-ps-gave_up, .lg-ps-regressed { border-color: var(--bad); }
+.lg-ps-blocked .lg-pstatus, .lg-ps-merge_conflict .lg-pstatus { color: var(--warn-text); }
+.lg-ps-blocked, .lg-ps-merge_conflict { border-style: dashed; border-color: var(--warn); }
+.lg-ps-pending .lg-pstatus, .lg-ps-stopped .lg-pstatus { color: var(--ink-2); }
+.lg-spin { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--hairline-strong); border-top-color: var(--rebuild-running); animation: lg-rot 0.9s linear infinite; }
+@keyframes lg-rot { to { transform: rotate(360deg); } }
+.lg-colsub { display: block; font-weight: var(--fw-regular); color: var(--ink-3); line-height: 14px; white-space: normal; }
+
 /* group containers and column heads */
 .lg-group {
   box-sizing: border-box; border: 1px solid var(--hairline); border-radius: 10px; background: var(--surface);
@@ -141,3 +157,6 @@
 @media (prefers-reduced-motion: reduce) {
   .lg-root *, .lg-root *::before, .lg-root *::after { animation: none !important; transition: none !important; }
 }
+
+/* build plans: a serialised edge (waits only because of shared writes) stays dashed, even selected */
+.lg-root .lg-edge-k-serialised .react-flow__edge-path { stroke-dasharray: 5 4; }
