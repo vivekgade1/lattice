@@ -183,6 +183,14 @@ PLAN_TIP = "a1d0deb92dd178e4c7bff136bf65b8fe7e93ea76"
 NOT_APPROVED = "plan p1 is ready, not approved: approve it first"
 NO_TOUCH = {"tables": [], "packages": [], "files": []}
 NOTES_FILE = {"tables": [], "packages": [], "files": ["notes.py"]}
+RETRY_NOTE = (
+    "Node w-broken gave up. Run retries it (attempt 2 of 3) with the earlier "
+    "findings, from level 0; the 1 node that passed is kept."
+)
+CAPPED_NOTE = (
+    "Node w-broken already had 3 attempts (the cap is [rebuild] max_attempts = 3); "
+    "revise the plan or raise the cap to try again."
+)
 ALL_RULES = ["R1", "R2", "R3", "R4"]
 
 
@@ -836,6 +844,104 @@ SCENARIOS = (
         Step("GET", "/api/branches", expect_body={"branches": [{"name": "main"}]}),
         UNCHANGED,
     )),
+    # ---- durable state and resume (API.md v1.10); restarts themselves are Unchecked (R63)
+    Scenario("a_plan_is_listed_with_its_resume_state", steps=(
+        post_plan({"scope": {"rules": ["R3"]}}),
+        planned("p1", "ready", interrupted=False, interrupted_at=None, attempts=0,
+                resume={"available": False, "kind": None, "from_level": None, "will_skip": [],
+                        "will_run": ["slow", "integration"],
+                        "note": "The plan has not run yet: approve it, then run it."}),
+        Step("GET", "/api/plans", expect_body=[
+            {"id": "p1", "status": "ready", "interrupted": False, "attempts": 0,
+             "resume": {"available": False, "kind": None},
+             "nodes": [{"id": "slow", "status": "pending"},
+                       {"id": "integration", "status": "pending"}]}]),
+        post_plan({"scope": {"areas": ["writing-notes"]}, "planner": "fallback"}, pid="p2"),
+        planned("p2", "ready"),
+        Step("GET", "/api/plans", expect_body=[{"id": "p1", "status": "ready"},
+                                               {"id": "p2", "status": "ready"}]),
+        Step("GET", "/api/plan/p1", expect_body={"id": "p1", "status": "ready", "version": 1}),
+    )),
+    Scenario("land_is_409_when_nothing_waits", steps=(
+        post_plan({"scope": "all"}),
+        planned("p1", "ready"),
+        coded("POST", "/api/plan/p1/land", 409, "nothing_to_land", json={}),
+        refused("POST", "/api/plan/p1/land", 409, "nothing is waiting to land in plan p1",
+                json={}),
+        *approve_and_run(),
+        planned("p1", "passed", target_tip=PLAN_TIP,
+                resume={"available": False, "kind": None,
+                        "note": "Nothing to resume: every node passed and landed."}),
+        refused("POST", "/api/plan/p1/land", 409, "nothing is waiting to land in plan p1",
+                json={}),
+        refused("POST", "/api/plan/p9/land", 404, "no plan p9", json={}),
+        refused("POST", "/api/plan/p1/run", 409, "plan p1 is passed, not approved", json={}),
+        UNCHANGED,
+    )),
+    Scenario("forget_drops_a_plan_and_its_anchors", steps=(
+        post_plan({"scope": "all"}),
+        planned("p1", "ready"),
+        *approve_and_run(),
+        planned("p1", "passed", target_tip=PLAN_TIP, anchors={"L1": PLAN_TIP}),
+        refused("DELETE", "/api/plan/p1", 409, "cannot stop a plan that is passed"),
+        refused("DELETE", "/api/plan/p1", 422, "forget must be true or false",
+                params={"forget": "maybe"}),
+        Step("DELETE", "/api/plan/p1", params={"forget": "true"}, expect_body={
+            "id": "p1", "status": "forgotten", "refs_removed": [
+                "refs/lattice/plans/p1/L0", "refs/lattice/plans/p1/L1",
+                "refs/lattice/plans/p1/reading", "refs/lattice/plans/p1/scaffold",
+                "refs/lattice/plans/p1/writing"]}),
+        refused("GET", "/api/plan/p1", 404, "no plan p1"),
+        Step("GET", "/api/plans", expect_body=[]),
+        refused("DELETE", "/api/plan/p1", 404, "no plan p1", params={"forget": "true"}),
+        post_plan({"scope": {"areas": ["writing-notes"]}, "planner": "fallback"}, pid="p2"),
+        # the node branches stay, and the target keeps the landed work
+        Step("GET", "/api/branches", expect_body={"branches": [
+            {"name": "build/notes", "head": PLAN_TIP}, {"name": "main", "head": SEED_HEAD},
+            {"name": "rebuild/p1-reading"}, {"name": "rebuild/p1-scaffold"},
+            {"name": "rebuild/p1-writing"}]}),
+        UNCHANGED,
+    )),
+    Scenario("a_partial_plan_retries_up_to_the_cap", steps=(
+        post_plan({"scope": {"rules": ["R1", "R3", "R4"]}}),
+        planned("p1", "ready", levels=[["w-broken", "r-ok"], ["t-dep"], ["integration"]]),
+        *approve_and_run(),
+        planned("p1", "partial", attempts=1,
+                nodes=[{"id": "w-broken", "status": "gave_up", "attempts": 1, "builds": ["b1"]},
+                       {"id": "r-ok", "status": "passed", "attempts": 1, "builds": ["b2"]},
+                       {"id": "t-dep", "status": "blocked", "attempts": 0},
+                       {"id": "integration", "status": "blocked", "attempts": 0}],
+                resume={"available": True, "kind": "retry", "from_level": 0,
+                        "will_skip": ["r-ok"], "will_run": ["w-broken", "t-dep", "integration"],
+                        "note": RETRY_NOTE}),
+        plan_step("p1", "run", id="p1", status="running"),
+        planned("p1", "partial", attempts=2,
+                nodes=[{"id": "w-broken", "status": "gave_up", "attempts": 2, "rounds": 6,
+                        "builds": ["b1", "b3"]},
+                       {"id": "r-ok", "status": "passed", "attempts": 1, "builds": ["b2"]},
+                       {"id": "t-dep", "status": "blocked"},
+                       {"id": "integration", "status": "blocked"}]),
+        plan_step("p1", "run", id="p1", status="running"),
+        planned("p1", "partial", attempts=3,
+                nodes=[{"id": "w-broken", "status": "gave_up", "attempts": 3},
+                       {"id": "r-ok", "attempts": 1, "builds": ["b2"]},
+                       {"id": "t-dep"}, {"id": "integration"}],
+                resume={"available": False, "kind": "retry", "note": CAPPED_NOTE}),
+        refused("POST", "/api/plan/p1/run", 409, CAPPED_NOTE, json={}),
+        UNCHANGED,
+    )),
+    Scenario("a_stopped_plan_offers_to_continue", steps=(
+        post_plan({"scope": {"rules": ["R3"]}}),
+        planned("p1", "ready", levels=[["slow"], ["integration"]]),
+        *approve_and_run(),
+        Step("DELETE", "/api/plan/p1", expect_body={"id": "p1", "status": "stopped"}),
+        Step("GET", "/api/plan/p1", expect_body={"id": "p1", "status": "stopped", "resume": {
+            "available": True, "kind": "continue", "from_level": 0, "will_skip": [],
+            "will_run": ["slow", "integration"],
+            "note": "The plan was stopped at level 0. Run continues from there; no node had "
+                    "passed yet."}}),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -914,6 +1020,18 @@ UNCHECKED = (
               "real trace. Here the timing of a stop is not pinned: the plan is stopped, "
               "whether its node had started or not. PLAN_TIP was recorded from the real "
               "server and checked by hand with `git log --graph build/notes`."),
+    Unchecked("R63 (durable state across a restart) is not expressible here: a scenario cannot "
+              "kill the server and start it again on the same state directory, check out the "
+              "target branch in the owner's worktree in the middle of a run, or read the "
+              "repository. tests/studio/test_resume.py covers it with a real Studio server "
+              "killed with SIGKILL mid-plan (the plan comes back interrupted, its orphan agent "
+              "is terminated, the resume runs no passed node again), the land of a level that "
+              "could not land (no agent) and the re-merge after the target moved, the orphan "
+              "match (pid AND start time AND command line), the attempts cap and a build "
+              "continued from its next round; tests/studio/test_state_store.py covers atomic "
+              "writes, quarantine, id counters, round trips, git-ignore and two projects. "
+              "R58-R62 are checked only on plans that never met a restart (`interrupted` is "
+              "false, `kind` is never `land` here)."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

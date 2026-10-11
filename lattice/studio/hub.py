@@ -246,6 +246,11 @@ class StudioHub:
                 "build_plan": can_rebuild,
             },
             "default": name == self.default,
+            # API v1.10: problems found loading the project's durable state (filled once
+            # the project is used: its Studio, and its state, load on first use)
+            "state_warnings": (
+                list(st.store.warnings) if st is not None and getattr(st, "store", None) else []
+            ),
         }
 
     def list(self) -> list[dict[str, Any]]:

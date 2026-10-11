@@ -113,6 +113,7 @@ from lattice.studio.session import (
     error_kind,
     write_configs,
 )
+from lattice.studio.state import StateStore, kill_orphan, proc_info
 
 __all__ = [
     "RebuildConfig",
@@ -133,7 +134,10 @@ OUTPUT_TAIL = 20_000
 MAX_WAIT = 60.0
 STUB_FILE = "stub-rebuild.json"
 STUB_HOLD_MAX = 60.0
-FINISHED = ("passed", "gave_up", "stopped")
+FINISHED = ("passed", "gave_up", "stopped", "interrupted")
+LIVE = ("queued", "baseline", "running")  # a record found in one of these after a restart
+DEFAULT_MAX_ATTEMPTS = 3
+STUB_LOG_ENV = "LATTICE_STUB_AGENT_LOG"  # TEST ONLY: the stub agent logs each invocation
 SPEC_FILES = ("REQUIREMENTS.md", "spec.py", "spec.trace.json")
 WORKTREE_DIR = ".lattice/rebuilds"
 EXCLUDE_LINE = "/.lattice/rebuilds/"
@@ -274,6 +278,15 @@ class RebuildConfig:
     @property
     def gate_timeout(self) -> float:
         return float(self.table.get("gate_timeout") or DEFAULT_GATE_TIMEOUT)
+
+    @property
+    def max_attempts(self) -> int:
+        """``[rebuild] max_attempts`` (API v1.10): how many times one build, or one plan
+        node, may be started (resumed, continued or retried) before a resume answers 409."""
+        try:
+            return max(1, int(self.table.get("max_attempts") or DEFAULT_MAX_ATTEMPTS))
+        except (TypeError, ValueError):
+            return DEFAULT_MAX_ATTEMPTS
 
     @property
     def model(self) -> str | None:
@@ -776,6 +789,13 @@ class _Run:
     stub_key: str | None = None  # TEST ONLY: the stub's scopes key (the node id)
     plan_note: str = ""  # appended to round 1's brief
     always_run: bool = False  # a scaffold node runs even with no in-scope failing check
+    # durable state and resume (API v1.10)
+    start_round: int = 1  # a continued build starts at the round after its last completed one
+    wall_offset: float = 0.0  # wall time of the earlier attempts of a continued build
+    attempt: int = 1  # which start of this build (or plan node) this is
+    skip_prelude: bool = False  # a continued scoped build whose baseline is already done
+    worktree_path: str = ""  # where the worktree is (the record says null once removed)
+    pid_sink: Callable[[dict[str, Any], bool], None] | None = None  # a plan's integration run
 
 
 class Rebuilder:
@@ -795,6 +815,7 @@ class Rebuilder:
         python: str | None = None,
         log: Callable[[str], None] | None = None,
         trailer: str = "",
+        store: StateStore | None = None,
     ) -> None:
         self.project = Path(project).resolve()
         self.cfg = RebuildConfig(self.project, dict(table or {}))
@@ -815,6 +836,10 @@ class Rebuilder:
         self.results: dict[str, dict[str, Any]] = {}
         # the build plan holding the project's build slot while it runs (API v1.9)
         self.plan_active: str | None = None
+        # durable state (API v1.10): records written through, loaded and reconciled here
+        self.store = store
+        if store is not None:
+            self._load()
 
     # -- capability
     def available(self) -> tuple[bool, str]:
@@ -830,6 +855,198 @@ class Rebuilder:
                 if run.record["status"] not in FINISHED:
                     return rid
         return None
+
+    # -- durable state (API v1.10, lattice/studio/state.py)
+    def _alloc(self) -> str:
+        """A new build id; with a store, persisted before it is handed out (ids never
+        repeat after a restart)."""
+        if self.store is not None:
+            return f"b{self.store.allocate('builds')}"
+        rid = f"b{self.next_id}"
+        self.next_id += 1
+        return rid
+
+    def _release(self, rid: str) -> None:
+        """A refused build leaves no record and no id (as before v1.10)."""
+        n = int(rid[1:])
+        if self.store is not None:
+            self.store.delete("builds", rid)
+            self.store.release("builds", n)
+        elif self.next_id == n + 1:
+            self.next_id -= 1
+
+    def _private(self, run: _Run) -> dict[str, Any]:
+        """What a build needs to go on after a restart, beyond its public record."""
+        return {
+            "changes": run.changes,
+            "repo": str(run.repo),
+            "worktree": run.worktree_path or str(run.worktree),
+            "project_rel": run.project_rel,
+            "base": run.base,
+            "branch": run.branch,
+            "gates": run.gates,
+            "targets": run.targets,
+            "scope": run.scope,
+            "baseline_ids": list(run.baseline_ids),
+            "integration": run.integration,
+            "integration_tip": run.integration_tip,
+            "created_integration": run.created_integration,
+            "target_main": run.target_main,
+            "merge_owner_head": run.merge_owner_head,
+            "owner_head": run.owner_head,
+            "session_id": run.session_id,
+            "plan_id": run.plan_id,
+            "plan_node": run.plan_node,
+            "stub_key": run.stub_key,
+            "plan_note": run.plan_note,
+            "always_run": run.always_run,
+            "attempt": run.attempt,
+        }
+
+    def _save(self, run: _Run) -> None:
+        """Write the build's record through to the store (every status transition, round
+        and process change). A plan's integration runs are not records."""
+        if self.store is None:
+            return
+        with self.lock:
+            rid = run.record.get("id")
+            if not rid or self.runs.get(rid) is not run:
+                return
+            try:
+                self.store.save("builds", rid, run.record, self._private(run))
+            except OSError as exc:
+                self.log(f"rebuild {rid}: the state file could not be written: {exc}")
+
+    def _save_results(self) -> None:
+        if self.store is not None:
+            with self.lock:
+                with contextlib.suppress(OSError):
+                    self.store.meta_set("results", self.results)
+
+    def _load(self) -> None:
+        """Every build record of the store; a record that was live when Studio stopped is
+        reconciled (``interrupted``, its orphan process groups terminated)."""
+        assert self.store is not None
+        repo = _toplevel(self.cfg.repo_dir) or self.cfg.repo_dir
+        for rec, priv in self.store.load("builds"):
+            run = self._run_from(rec, priv, repo)
+            self.runs[str(rec["id"])] = run
+            if rec.get("status") in LIVE:
+                self._reconcile(run)
+        for run in self.runs.values():
+            self._derive_builds(run.record)
+        res = self.store.meta_get("results", {})
+        self.results = dict(res) if isinstance(res, dict) else {}
+
+    def _run_from(self, rec: dict[str, Any], priv: Mapping[str, Any], repo: Path) -> _Run:
+        for k, v in (("pids", []), ("attempts", 1), ("timeline", []), ("interrupted", False),
+                     ("interrupted_at", None), ("interrupted_reason", None),
+                     ("session_id", None), ("rounds", []), ("warnings", []),
+                     ("changes", []), ("usage", _zero_usage())):  # fmt: skip
+            rec.setdefault(k, copy.deepcopy(v))
+        wt = str(priv.get("worktree") or rec.get("worktree") or "")
+        run = _Run(
+            record=rec,
+            changes=list(priv.get("changes") or []),
+            repo=Path(str(priv.get("repo") or repo)),
+            worktree=Path(wt) if wt else self.project / ".lattice-missing-worktree",
+            project_rel=str(priv.get("project_rel") or "."),
+            base=str(priv.get("base") or rec.get("base") or ""),
+            branch=str(priv.get("branch") or rec.get("branch") or ""),
+            gates=list(priv.get("gates") or rec.get("gates") or []),
+            targets=list(
+                priv.get("targets")
+                or [
+                    {"id": t["id"], "label": t.get("label", "")}
+                    for t in rec["targets"]
+                    if isinstance(t, dict) and "id" in t
+                ]
+                if isinstance(rec.get("targets"), list)
+                else []
+            ),
+            trace_json="",
+            scope=priv.get("scope"),
+            baseline_ids=dict.fromkeys(priv.get("baseline_ids") or []),
+            integration=priv.get("integration"),
+            integration_tip=priv.get("integration_tip"),
+            created_integration=bool(priv.get("created_integration")),
+            target_main=bool(priv.get("target_main")),
+            merge_owner_head=bool(priv.get("merge_owner_head")),
+            owner_head=priv.get("owner_head"),
+            session_id=priv.get("session_id") or rec.get("session_id"),
+            plan_id=priv.get("plan_id") or (rec.get("plan") or {}).get("id"),
+            plan_node=priv.get("plan_node") or (rec.get("plan") or {}).get("node"),
+            stub_key=priv.get("stub_key"),
+            plan_note=str(priv.get("plan_note") or ""),
+            always_run=bool(priv.get("always_run")),
+            attempt=int(priv.get("attempt") or rec.get("attempts") or 1),
+            worktree_path=wt,
+        )
+        run.done.set()
+        run.baseline_done.set()
+        return run
+
+    def _reconcile(self, run: _Run) -> None:
+        """A record that was queued, baseline or running when Studio stopped: it becomes
+        ``interrupted`` (its completed rounds kept; an unfinished round dropped, its usage
+        stays in the record's total), and the process groups it recorded are terminated
+        when they still run (pid AND start time AND command line, see state.kill_orphan)."""
+        rec = run.record
+        killed = []
+        for info in rec.get("pids") or []:
+            if kill_orphan(info, self.log):
+                killed.append({k: info.get(k) for k in ("pid", "pgid", "role", "command")})
+        now = _now()
+        rec["status"] = "interrupted"
+        rec["interrupted"] = True
+        rec["interrupted_at"] = now
+        rec["interrupted_reason"] = "studio_restarted"
+        rec["finished"] = rec.get("finished") or now
+        rec["rounds"] = [r for r in rec.get("rounds") or [] if r.get("check") is not None]
+        rec["pids"] = []
+        if killed:
+            rec["orphans_killed"] = killed
+        msg = "interrupted: Studio restarted while it ran"
+        if killed:
+            msg += f" ({len(killed)} orphan process group(s) terminated)"
+        rec["timeline"].append({"at": now, "event": msg})
+        self.log(f"rebuild {rec['id']}: {msg}")
+        self._save(run)
+
+    def _derive_builds(self, rec: Mapping[str, Any]) -> None:
+        """``model.changes[].build`` from the records (the latest record of a change wins)."""
+        state = {"passed": "built", "gave_up": "gave_up", "stopped": "not_built",
+                 "interrupted": "interrupted"}.get(str(rec.get("status")))  # fmt: skip
+        if state is None:
+            return
+        for cid in rec.get("changes") or []:
+            b: dict[str, Any] = {"state": state, "rebuild_id": rec["id"]}
+            if state != "not_built" and rec.get("branch"):
+                b["branch"] = rec["branch"]
+            if state == "built" and rec.get("commit"):
+                b["commit"] = rec["commit"]["sha"]
+            self.builds[str(cid)] = b
+
+    def _event(self, run: _Run, event: str) -> None:
+        with self.lock:
+            run.record.setdefault("timeline", []).append({"at": _now(), "event": event})
+
+    def _track(self, run: _Run, proc: subprocess.Popen[Any], role: str, match: str) -> None:
+        """Record a child process group (its start time and command line) so a Studio
+        that restarts after a crash can recognise and terminate it."""
+        info = proc_info(proc.pid, role, match)
+        with self.lock:
+            run.record.setdefault("pids", []).append(info)
+            if run.pid_sink is not None:
+                run.pid_sink(info, True)
+            self._save(run)
+
+    def _untrack(self, run: _Run, pid: int) -> None:
+        with self.lock:
+            run.record["pids"] = [p for p in run.record.get("pids") or [] if p.get("pid") != pid]
+            if run.pid_sink is not None:
+                run.pid_sink({"pid": pid}, False)
+            self._save(run)
 
     # -- areas (API v1.8)
     def trace_data(self) -> dict[str, Any]:
@@ -981,12 +1198,11 @@ class Rebuilder:
             else:
                 branch = self._branch_name(repo, str(changes[0]["id"]))
                 start_at = owner_head
-            rid = f"b{self.next_id}"
-            self.next_id += 1
+            rid = self._alloc()
             worktree = self._worktree_dir(repo, rid)
             r = _git(repo, "worktree", "add", "-q", "-b", branch, str(worktree), start_at)
             if r.returncode != 0:
-                self.next_id -= 1
+                self._release(rid)
                 if created:
                     _git(repo, "update-ref", "-d", f"refs/heads/{integration}", str(tip))
                 raise RebuildError(500, f"git worktree add failed: {r.stderr.strip()}")
@@ -1014,6 +1230,13 @@ class Rebuilder:
                 "usage": _zero_usage(),
                 "warnings": [],
                 "error": None,
+                "pids": [],
+                "attempts": 1,
+                "timeline": [{"at": _now(), "event": "started"}],
+                "interrupted": False,
+                "interrupted_at": None,
+                "interrupted_reason": None,
+                "session_id": None,
             }
             if resolved is not None:
                 record.update(
@@ -1047,12 +1270,14 @@ class Rebuilder:
                 owner_head=owner_head,
                 target_main=bool(target.get("checked_out_main")),
                 merge_owner_head=bool(target.get("merge_owner_head")),
+                worktree_path=str(worktree),
             )
             if resolved is None:
                 run.baseline_done.set()
             self.runs[rid] = run
             for cid in record["changes"]:
                 self.builds[cid] = {"state": "rebuilding", "rebuild_id": rid, "branch": branch}
+            self._save(run)
             run.thread = threading.Thread(
                 target=self._run, args=(run,), daemon=True, name=f"studio-rebuild-{rid}"
             )
@@ -1070,8 +1295,7 @@ class Rebuilder:
                     self.runs.pop(rid, None)
                     for cid in record["changes"]:
                         self.builds.pop(cid, None)
-                    if self.next_id == int(rid[1:]) + 1:
-                        self.next_id -= 1  # the refused build leaves no record and no id
+                    self._release(rid)  # the refused build leaves no record and no id
                 raise RebuildError(409, "nothing to build: the checks in this scope already pass")
         return {"id": rid}
 
@@ -1214,6 +1438,7 @@ class Rebuilder:
         max_rounds: int | None = None,
         always_run: bool = False,
         note: str = "",
+        attempt: int = 1,
     ) -> str | None:
         """Start one node of build plan `plan_id` as a scoped build on its own branch
         (``rebuild/<plan>-<node>``) in its own worktree made from `tip`, concurrently with
@@ -1253,11 +1478,11 @@ class Rebuilder:
             return None
         with self.lock:
             branch = self._branch_name(repo, f"{plan_id}-{node_id}")
-            rid = f"b{self.next_id}"
-            self.next_id += 1
+            rid = self._alloc()
             worktree = self._worktree_dir(repo, rid)
             r = _git(repo, "worktree", "add", "-q", "-b", branch, str(worktree), tip)
             if r.returncode != 0:
+                self._release(rid)
                 raise RebuildError(500, f"git worktree add failed: {r.stderr.strip()}")
             trace_path = worktree / project_rel / "spec.trace.json"
             trace_json = trace_path.read_text(encoding="utf-8") if trace_path.is_file() else ""
@@ -1304,6 +1529,18 @@ class Rebuilder:
                 "merged_head": None,
                 "metrics": None,
                 "plan": {"id": plan_id, "node": node_id},
+                "pids": [],
+                "attempts": attempt,
+                "timeline": [
+                    {
+                        "at": _now(),
+                        "event": f"started (plan {plan_id}, node {node_id}, attempt {attempt})",
+                    }
+                ],
+                "interrupted": False,
+                "interrupted_at": None,
+                "interrupted_reason": None,
+                "session_id": None,
             }
             run = _Run(
                 record=record,
@@ -1325,9 +1562,12 @@ class Rebuilder:
                 stub_key=node_id,
                 plan_note=note,
                 always_run=always_run,
+                attempt=attempt,
+                worktree_path=str(worktree),
             )
             run.baseline_done.set()
             self.runs[rid] = run
+            self._save(run)
             run.thread = threading.Thread(
                 target=self._run, args=(run,), daemon=True, name=f"studio-plan-{plan_id}-{rid}"
             )
@@ -1375,6 +1615,7 @@ class Rebuilder:
         with self.lock:
             if "worktree" in run.record:
                 run.record["worktree"] = None
+            self._save(run)
 
     def node_hook(self, rid: str, cwd: Path) -> None:
         """A plan node's deferred metrics hook, run in the plan's integration worktree
@@ -1416,6 +1657,8 @@ class Rebuilder:
             run.record["status"] = "stopped"
             for cid in run.record["changes"]:
                 self.builds[cid] = {"state": "not_built", "rebuild_id": rid}
+            run.record.setdefault("timeline", []).append({"at": _now(), "event": "stopped"})
+            self._save(run)
             proc = run.proc
         if proc is not None:
             _kill_group(proc, signal.SIGTERM)
@@ -1423,6 +1666,108 @@ class Rebuilder:
             run.thread.join(join)
         self.log(f"rebuild {rid}: stopped")
         return {"id": rid, "status": "stopped"}
+
+    # -- POST /api/rebuild/{id}/continue (API v1.10)
+    def continue_build(
+        self, rid: str, *, plan_id: str | None = None, attempt: int | None = None
+    ) -> dict[str, Any]:
+        """Continue an ``interrupted`` build from where it stopped: in its worktree (made
+        again on its branch when it is gone), from the round after its last completed one
+        -- the agent's session resumed (``--resume``) when the record has its id, else a
+        fresh session whose brief carries the last round's findings; a build interrupted
+        before any round (or during its baseline) starts over. Raises RebuildError: 404,
+        409 (not interrupted; a plan node outside its plan; the build slot taken; the
+        attempts cap ``[rebuild] max_attempts``), 503 unavailable."""
+        ok, why = self.available()
+        if not ok:
+            raise RebuildError(503, f"rebuild is not available: {why}")
+        with self.lock:
+            run = self.runs.get(rid)
+            if run is None:
+                raise RebuildError(404, f"no rebuild {rid}")
+            rec = run.record
+            if rec["status"] != "interrupted":
+                raise RebuildError(409, f"rebuild {rid} is {rec['status']}; only an interrupted "
+                                   "rebuild can be continued")  # fmt: skip
+            node_of = (rec.get("plan") or {}).get("id")
+            if plan_id is None:
+                if node_of:
+                    raise RebuildError(409, f"rebuild {rid} is a node of plan {node_of}: resume "
+                                       f"the plan (POST /api/plan/{node_of}/run)")  # fmt: skip
+                if self.plan_active:
+                    raise RebuildError(
+                        409, f"a build plan is running in this project ({self.plan_active})"
+                    )
+                busy = self.running()
+                if busy:
+                    raise RebuildError(
+                        409, f"a rebuild is already running in this project ({busy})"
+                    )
+                done = int(rec.get("attempts") or 1)
+                cap = self.cfg.max_attempts
+                if done >= cap:
+                    raise RebuildError(409, f"rebuild {rid} already had {done} attempts (the cap "
+                                       f"is [rebuild] max_attempts = {cap}); start a new build "
+                                       "instead")  # fmt: skip
+            elif self.plan_active != plan_id:
+                raise RebuildError(409, f"plan {plan_id} does not hold the build slot")
+            repo = run.repo
+            wt = run.worktree
+            if not (wt.is_dir() and (wt / ".git").exists()):
+                has_branch = (
+                    bool(run.branch)
+                    and _git(
+                        repo, "rev-parse", "-q", "--verify", f"refs/heads/{run.branch}"
+                    ).returncode
+                    == 0
+                )
+                wt = self._worktree_dir(repo, rid)
+                if has_branch:
+                    r = _git(repo, "worktree", "add", "-q", str(wt), run.branch)
+                else:
+                    run.branch = run.branch or self._branch_name(repo, rid)
+                    r = _git(repo, "worktree", "add", "-q", "-b", run.branch, str(wt), run.base)
+                if r.returncode != 0:
+                    raise RebuildError(500, f"git worktree add failed: {r.stderr.strip()}")
+                run.worktree = wt
+                run.worktree_path = str(wt)
+                rec["worktree"] = str(wt)
+                rec["branch"] = run.branch
+            trace_path = wt / run.project_rel / "spec.trace.json"
+            run.trace_json = trace_path.read_text(encoding="utf-8") if trace_path.is_file() else ""
+            completed = [r for r in rec.get("rounds") or [] if r.get("check") is not None]
+            rec["rounds"] = completed
+            scoped_alone = run.scope is not None and run.plan_node is None
+            if scoped_alone and not rec.get("baseline"):
+                run.skip_prelude, start = False, 1  # interrupted during its baseline
+            else:
+                run.skip_prelude, start = scoped_alone, len(completed) + 1
+            rec["max_rounds"] = max(int(rec.get("max_rounds") or 1), start)
+            run.start_round = start
+            run.session_id = rec.get("session_id") or run.session_id
+            run.attempt = attempt if attempt is not None else int(rec.get("attempts") or 1) + 1
+            rec["attempts"] = run.attempt
+            run.wall_offset = float((rec.get("usage") or {}).get("wall_s") or 0.0)
+            run.t0 = time.monotonic()
+            run.stop = threading.Event()
+            run.done = threading.Event()
+            run.baseline_done = threading.Event()
+            run.baseline_done.set()
+            run.tmp = None
+            rec.update(status="queued", interrupted=False, finished=None, error=None, pids=[])
+            how = (f"from round {start}" + (" (session resumed)" if start > 1 and run.session_id
+                                            else " (fresh session)"))  # fmt: skip
+            rec.setdefault("timeline", []).append(
+                {"at": _now(), "event": f"continued {how}, attempt {run.attempt}"}
+            )
+            for cid in rec.get("changes") or []:
+                self.builds[cid] = {"state": "rebuilding", "rebuild_id": rid, "branch": run.branch}
+            self._save(run)
+            run.thread = threading.Thread(target=self._run, args=(run,), daemon=True,
+                                          name=f"studio-rebuild-{rid}-continue")  # fmt: skip
+            run.thread.start()
+        self.log(f"rebuild {rid}: continued {how} in {wt}")
+        return {"id": rid, "status": "running", "from_round": start, "attempts": run.attempt}
 
     def close(self) -> None:
         """Stop every running rebuild (the server is shutting down)."""
@@ -1469,19 +1814,22 @@ class Rebuilder:
             with self.lock:
                 if run.record["finished"] is None:
                     run.record["finished"] = _now()
-                run.record["usage"]["wall_s"] = round(time.monotonic() - run.t0, 2)
+                run.record["usage"]["wall_s"] = round(
+                    run.wall_offset + time.monotonic() - run.t0, 2
+                )
+                self._save(run)
             run.baseline_done.set()
             run.done.set()
 
     def _loop(self, run: _Run) -> None:
         rec = run.record
+        prelude = run.scope is not None and run.plan_node is None and not run.skip_prelude
         with self.lock:
             if run.stop.is_set():
                 return
-            rec["status"] = (
-                "baseline" if run.scope is not None and run.plan_node is None else "running"
-            )
-        if run.scope is not None and run.plan_node is None:
+            rec["status"] = "baseline" if prelude else "running"
+            self._save(run)
+        if prelude:
             go_on = self._prelude(run)
             run.baseline_done.set()
             if not go_on or run.stop.is_set():
@@ -1490,11 +1838,18 @@ class Rebuilder:
                 if run.stop.is_set():
                     return
                 rec["status"] = "running"
+                self._save(run)
         prev_tree = self._tree(run)
         last_check: dict[str, Any] | None = None
         last_gates: list[dict[str, Any]] = []
         last_rnd: dict[str, Any] = {}
-        for n in range(1, int(rec["max_rounds"]) + 1):
+        if run.start_round > 1 and rec["rounds"]:
+            # a continued build (API v1.10): the next round starts from the last completed
+            # one, its findings in the brief (and the agent's session resumed when known)
+            last_rnd = rec["rounds"][-1]
+            last_check = last_rnd.get("check")
+            last_gates = list(last_rnd.get("gates") or [])
+        for n in range(run.start_round, int(rec["max_rounds"]) + 1):
             if run.stop.is_set():
                 return
             t_round = time.monotonic()
@@ -1508,6 +1863,7 @@ class Rebuilder:
             }
             with self.lock:
                 rec["rounds"].append(rnd)
+                self._save(run)
             prompt = self._prompt(run, n, last_check, last_gates, last_rnd)
             agent = self._agent_step(run, n, prompt)
             # record what the agent step cost BEFORE any later step can raise (B3)
@@ -1571,7 +1927,8 @@ class Rebuilder:
                     wall_s=round(time.monotonic() - t_round, 2),
                     **extra,
                 )
-                rec["usage"]["wall_s"] = round(time.monotonic() - run.t0, 2)
+                rec["usage"]["wall_s"] = round(run.wall_offset + time.monotonic() - run.t0, 2)
+                self._save(run)
             self.log(
                 f"rebuild {rec['id']}: round {n} {check['verdict']} "
                 f"({len(findings)} finding(s), {len(files)} file(s) changed)"
@@ -1679,6 +2036,7 @@ class Rebuilder:
                 rec["merged_head"] = run.owner_head
         base = _git_ok(wt, "rev-parse", "HEAD")
         run.base = base
+        run.skip_prelude = False
         trace_path = wt / run.project_rel / "spec.trace.json"
         run.trace_json = trace_path.read_text(encoding="utf-8") if trace_path.is_file() else ""
         with self.lock:
@@ -1728,7 +2086,8 @@ class Rebuilder:
         with self.lock:
             rec["baseline"] = baseline
             rec["targets"] = [{**t, "done": False} for t in run.targets]
-            rec["usage"]["wall_s"] = round(time.monotonic() - run.t0, 2)
+            rec["usage"]["wall_s"] = round(run.wall_offset + time.monotonic() - run.t0, 2)
+            self._save(run)
         if broken or not gates:
             what = "; ".join(broken) or "no gate ran"
             with self.lock:
@@ -1803,6 +2162,7 @@ class Rebuilder:
                 "source": source,
                 "at": _now(),
             }
+            self._save_results()
 
     def _discard(self, run: _Run) -> None:
         """Nothing to build: remove the worktree, the build branch, and an integration
@@ -1815,6 +2175,7 @@ class Rebuilder:
         with self.lock:
             run.record["status"] = "stopped"
             run.record["finished"] = _now()
+            self._save(run)
 
     def _fail_round(self, run: _Run, err: dict[str, str]) -> None:
         """A step crashed (Studio's own bug): the open round gets ``error`` and the agent's
@@ -1838,6 +2199,7 @@ class Rebuilder:
             rnd["finished"] = rnd.get("finished") or _now()
             if not rnd.get("files_changed"):
                 rnd["files_changed"] = files
+            self._save(run)
 
     def _finish(self, run: _Run, status: str) -> None:
         """With the lock held: the end state and the changes' build."""
@@ -1846,7 +2208,8 @@ class Rebuilder:
             return  # DELETE won the race: the record stays stopped
         rec["status"] = status
         rec["finished"] = _now()
-        state = {"passed": "built", "gave_up": "gave_up", "stopped": "not_built"}[status]
+        state = {"passed": "built", "gave_up": "gave_up", "stopped": "not_built",
+                 "interrupted": "interrupted"}[status]  # fmt: skip
         for cid in rec["changes"]:
             b: dict[str, Any] = {"state": state, "rebuild_id": rec["id"]}
             if status != "stopped":
@@ -1857,6 +2220,8 @@ class Rebuilder:
         if status == "passed":
             for t in rec["targets"]:
                 t["done"] = True
+        rec.setdefault("timeline", []).append({"at": rec["finished"], "event": status})
+        self._save(run)
 
     # -- steps
     def _agent_step(self, run: _Run, n: int, prompt: str) -> dict[str, Any]:
@@ -1879,9 +2244,37 @@ class Rebuilder:
             if isinstance(scoped, dict):
                 rounds = scoped.get("rounds") or []
         step = rounds[n - 1] if n - 1 < len(rounds) else {}
+        log_path = (self._env if self._env is not None else os.environ).get(STUB_LOG_ENV)
+        if log_path:  # TEST ONLY: which builds ran the agent, so tests can count them
+            line = {"build": run.record["id"], "round": n, "plan": run.plan_id,
+                    "node": run.plan_node, "key": run.stub_key or (
+                        areas_mod.scope_slug(run.scope) if run.scope else None)}  # fmt: skip
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(line) + "\n")
         hold = min(float(step.get("hold") or 0), STUB_HOLD_MAX)
         if hold and run.stop.wait(hold):
             return {"summary": ""}
+        if step.get("run"):  # TEST ONLY: a child process group, as the real agent is one
+            cmd = str(step["run"])
+            proc = subprocess.Popen(["/bin/sh", "-c", cmd], cwd=str(run.worktree / run.project_rel),
+                                    env=self._child_env(run, n), stdin=subprocess.DEVNULL,
+                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                    start_new_session=True)  # fmt: skip
+            with self.lock:
+                run.proc = proc  # type: ignore[assignment]
+            self._track(run, proc, "agent", cmd)
+            try:
+                while proc.poll() is None:
+                    if run.stop.wait(0.1):
+                        _kill_group(proc, signal.SIGTERM)  # type: ignore[arg-type]
+                        proc.wait(10)
+                        break
+            finally:
+                with self.lock:
+                    run.proc = None
+                self._untrack(run, proc.pid)
+            if run.stop.is_set():
+                return {"summary": ""}
         written = []
         for rel, content in (step.get("files") or {}).items():
             p = run.worktree / run.project_rel / rel
@@ -1945,6 +2338,7 @@ class Rebuilder:
             }
         with self.lock:
             run.proc = proc
+        self._track(run, proc, "agent", str(argv[0]))
         if run.stop.is_set():
             _kill_group(proc, signal.SIGTERM)
         stderr: list[str] = []
@@ -1978,8 +2372,11 @@ class Rebuilder:
             drainer.join(2)
             with self.lock:
                 run.proc = None
+            self._untrack(run, proc.pid)
         if t.claude_session_id:
             run.session_id = t.claude_session_id
+            with self.lock:
+                run.record["session_id"] = t.claude_session_id
         events = t.events_after(0)
         texts = [e["text"] for e in events if e["type"] == "text" and not e.get("partial")]
         result = next((e for e in reversed(events) if e["type"] == "result"), None)
@@ -2073,6 +2470,7 @@ class Rebuilder:
             )
             with self.lock:
                 run.proc = proc
+            self._track(run, proc, "gate", cmd)
             try:
                 output, _ = proc.communicate(timeout=self.cfg.gate_timeout)
                 rc = proc.returncode
@@ -2086,6 +2484,7 @@ class Rebuilder:
             finally:
                 with self.lock:
                     run.proc = None
+                self._untrack(run, proc.pid)
             out.append(
                 {
                     "command": cmd,
@@ -2309,7 +2708,7 @@ class Rebuilder:
             "cache_read_input_tokens": int(u.get("cache_read_input_tokens") or 0),
             "cache_creation_input_tokens": int(u.get("cache_creation_input_tokens") or 0),
             "cost_usd_list_estimate": float(u.get("cost_usd_list_estimate") or 0.0),
-            "wall_s": round(time.monotonic() - run.t0, 2),
+            "wall_s": round(run.wall_offset + time.monotonic() - run.t0, 2),
             "rounds": rounds,
             "llm_calls": rounds if self.cfg.agent == "claude" else 0,
             "target_branch": rec.get("target_branch") or run.integration,
@@ -2321,6 +2720,8 @@ class Rebuilder:
             f"agent {self.cfg.agent}, model {rec['model']}; target branch "
             f"{rec.get('target_branch') or run.integration}"
         )
+        if run.attempt > 1:
+            note = f"resumed (attempt {run.attempt}); " + note
         if cwd is None:
             cwd = run.worktree / run.project_rel
         fd, tmp = tempfile.mkstemp(prefix="lattice-build-llm-", suffix=".json")
@@ -2364,6 +2765,7 @@ class Rebuilder:
                 }
                 if rc != 0:
                     rec["warnings"].append(f"the metrics hook exited {rc}: {_short(output, 300)}")
+                self._save(run)
         finally:
             with contextlib.suppress(OSError):
                 os.unlink(tmp)
@@ -2385,6 +2787,7 @@ class Rebuilder:
             run.record["worktree"] = None
             if branch_gone:
                 run.record["branch"] = None
+            self._save(run)
 
 
 def _targets(changes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:

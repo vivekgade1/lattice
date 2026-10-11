@@ -342,6 +342,42 @@
       "text": "An unknown plan answers 404 (\"no plan <id>\"); when a plan is created, a malformed scope answers 422, an unknown area or rule 404 (\"no area <id>\", \"no rule <id>\"), a `max_parallel` outside 1 to 8 422, and a target branch is refused with the codes of scoped builds.",
       "section": "Lattice Studio server: requirements > Build plans",
       "line": 92
+    },
+    {
+      "id": "R58",
+      "text": "GET /api/plans and GET /api/plan/{id} answer every plan created since the project's state began, each with `interrupted` (false unless a restart cut it off), `attempts` (its runs so far) and `resume` (`available`, `kind`, `from_level`, `will_skip`, `will_run`, `note`); a plan that has not run has nothing to resume.",
+      "section": "Lattice Studio server: requirements > Durable state and resume",
+      "line": 96
+    },
+    {
+      "id": "R59",
+      "text": "POST /api/plan/{id}/land answers 409 with the code `nothing_to_land` (\"nothing is waiting to land in plan <id>\") when no level of the plan passed its full gate without landing, and 404 (\"no plan <id>\") for an unknown plan.",
+      "section": "Lattice Studio server: requirements > Durable state and resume",
+      "line": 97
+    },
+    {
+      "id": "R60",
+      "text": "DELETE /api/plan/{id}?forget=true drops a plan that is not running and answers {\"id\", \"status\": \"forgotten\", \"refs_removed\"}, the git anchors it removed (`refs/lattice/plans/<id>/L<n>` for each gated level tip, `refs/lattice/plans/<id>/<node>` for each node commit); the plan then answers 404, is no longer listed, and its id is never handed out again. A `forget` other than true or false answers 422, and DELETE without `forget` keeps stopping a plan as before (409 on a finished one).",
+      "section": "Lattice Studio server: requirements > Durable state and resume",
+      "line": 98
+    },
+    {
+      "id": "R61",
+      "text": "A plan that ended `partial` because a node gave up offers a retry (`resume.kind` `retry`, the passed nodes in `will_skip`): POST /api/plan/{id}/run runs the nodes that did not pass again without running the passed ones, each start counting in the node's `attempts`; once a node has had `[rebuild] max_attempts` (3) attempts, `resume.available` is false and a further run answers 409 naming the cap.",
+      "section": "Lattice Studio server: requirements > Durable state and resume",
+      "line": 99
+    },
+    {
+      "id": "R62",
+      "text": "A stopped plan offers to continue: `resume.kind` `continue` from the level it stopped at.",
+      "section": "Lattice Studio server: requirements > Durable state and resume",
+      "line": 100
+    },
+    {
+      "id": "R63",
+      "text": "Plans, build records and change sets are kept on disk in the project's state directory (git-ignored) and survive a restart of Studio: a plan, build or change that was running when Studio stopped is `interrupted` after the restart (its orphan processes terminated), resumes from where it stopped without running passed nodes again, and a level that passed its full gate but could not land is landed by POST /api/plan/{id}/land without running any agent.",
+      "section": "Lattice Studio server: requirements > Durable state and resume",
+      "line": 101
     }
   ],
   "links": {
@@ -529,6 +565,21 @@
     ],
     "R57": [
       "scenario:plan_refusals"
+    ],
+    "R58": [
+      "scenario:a_plan_is_listed_with_its_resume_state"
+    ],
+    "R59": [
+      "scenario:land_is_409_when_nothing_waits"
+    ],
+    "R60": [
+      "scenario:forget_drops_a_plan_and_its_anchors"
+    ],
+    "R61": [
+      "scenario:a_partial_plan_retries_up_to_the_cap"
+    ],
+    "R62": [
+      "scenario:a_stopped_plan_offers_to_continue"
     ]
   },
   "unchecked": {
@@ -537,7 +588,8 @@
     "R25": "the chat sessions need the claude binary; tests/studio/test_session.py covers them",
     "R26": "the change impact needs a configured app; tests/studio/test_server.py covers it",
     "R27": "accept outside git or on a git failure needs a different repository; tests/studio/test_server.py covers the first",
-    "R31": "the harness serves one project directory; tests/studio/test_projects.py covers isolation between two projects"
+    "R31": "the harness serves one project directory; tests/studio/test_projects.py covers isolation between two projects",
+    "R63": "restarts are not expressible in the DSL (a scenario cannot kill and restart the server); tests/studio/test_resume.py and test_state_store.py cover them"
   },
   "context": [
     "R1"

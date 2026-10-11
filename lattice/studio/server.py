@@ -109,13 +109,14 @@ from lattice.spec.report import _detail_lines
 from lattice.spec.review import AccessGroup, ReviewData, _build
 from lattice.spec.rules import Trace, extract_rules
 from lattice.studio.plan import PlanError, PlanManager
-from lattice.studio.rebuild import MAX_ROUNDS_LIMIT, Rebuilder, RebuildError
+from lattice.studio.rebuild import MAX_ROUNDS_LIMIT, WORKTREE_DIR, Rebuilder, RebuildError
 from lattice.studio.session import (
     DEFAULT_SESSION_TIMEOUT,
     SessionError,
     SessionManager,
     claude_available,
 )
+from lattice.studio.state import StateStore, state_dir_for
 
 if TYPE_CHECKING:
     from lattice.studio.hub import StudioHub
@@ -176,6 +177,7 @@ class StudioConfig:
     llm: dict[str, Any] = dataclasses.field(default_factory=dict)
     rebuild: dict[str, Any] = dataclasses.field(default_factory=dict)
     mcp: dict[str, Any] = dataclasses.field(default_factory=dict)
+    state: dict[str, Any] = dataclasses.field(default_factory=dict)
 
     @classmethod
     def load(cls, root: Path) -> StudioConfig:
@@ -189,6 +191,7 @@ class StudioConfig:
             dict(data.get("llm") or {}),
             dict(data.get("rebuild") or {}) if isinstance(data.get("rebuild"), dict) else {},
             dict(data.get("mcp") or {}) if isinstance(data.get("mcp"), dict) else {},
+            dict(data.get("state") or {}) if isinstance(data.get("state"), dict) else {},
         )
 
     @property
@@ -832,6 +835,7 @@ def empty_change(cid: str, request: str, parent: str | None) -> dict[str, Any]:
         "parent": parent,
         "status": "drafting",
         "error": None,
+        "error_kind": None,  # v1.10: "interrupted" when a restart cut the draft off
         "markdown_diff": "",
         "rules": {"added": [], "changed": [], "removed": []},
         "targets": {"added": [], "removed": [], "modified": []},
@@ -866,6 +870,7 @@ class Studio:
         generator_factory: Callable[[str], Generator] | None = None,
         claude_bin: str | None = None,
         name: str | None = None,
+        state: bool = True,
     ) -> None:
         self.root = root.resolve()
         self.name = name or self.root.name
@@ -898,6 +903,106 @@ class Studio:
             s = str(Path(p).resolve())
             if s not in sys.path:
                 sys.path.insert(0, s)
+        # durable state (API v1.10, lattice/studio/state.py): loaded on the project's first
+        # use (this Studio is built then), live records reconciled
+        self.store: StateStore | None = None
+        if state and self.config.state.get("enabled", True) is not False:
+            try:
+                d = state_dir_for(self.root, self.name, self.config.state, self.config.rebuild)
+                self.store = StateStore(d, log=log)
+            except OSError as exc:
+                log(f"state: no durable state for {self.name}: {exc}")
+        if self.store is not None:
+            self._load_changes()
+            self.plans  # noqa: B018 -- builds the Rebuilder and the plans: both load and reconcile
+            self._scan_worktrees()
+
+    # -- durable state
+    def _change_private(self, cid: str) -> dict[str, Any]:
+        priv = self.private.get(cid) or {}
+        out: dict[str, Any] = {"project_hash": priv.get("project_hash"),
+                               "selected": priv.get("selected") or []}  # fmt: skip
+        base = priv.get("base")
+        if base:
+            out["base"] = {"markdown": base["markdown"], "module": base["module"],
+                           "trace": base["trace"].to_json()}  # fmt: skip
+        for k in ("new_md", "new_module"):
+            if k in priv:
+                out[k] = priv[k]
+        if "new_trace" in priv:
+            out["new_trace"] = priv["new_trace"].to_json()
+        return out
+
+    def _save_change(self, cid: str) -> None:
+        """With or without the lock: the change's record and proposal, written through."""
+        if self.store is None:
+            return
+        with self.lock:
+            if cid not in self.changes:
+                return
+            try:
+                self.store.save("changes", cid, self.changes[cid], self._change_private(cid))
+            except OSError as exc:
+                log(f"{cid}: the state file could not be written: {exc}")
+
+    def _load_changes(self) -> None:
+        assert self.store is not None
+        for rec, priv in self.store.load("changes"):
+            cid = str(rec["id"])
+            p: dict[str, Any] = {"project_hash": priv.get("project_hash"),
+                                 "selected": list(priv.get("selected") or []),
+                                 "done": threading.Event()}  # fmt: skip
+            p["done"].set()
+            try:
+                if priv.get("base"):
+                    b = priv["base"]
+                    p["base"] = {"markdown": b["markdown"], "module": b["module"],
+                                 "trace": Trace.from_json(b["trace"])}  # fmt: skip
+                for k in ("new_md", "new_module"):
+                    if k in priv:
+                        p[k] = priv[k]
+                if priv.get("new_trace"):
+                    p["new_trace"] = Trace.from_json(priv["new_trace"])
+            except Exception as exc:  # noqa: BLE001 -- the record stays readable
+                self.store.warn(self.store.path("changes", cid),
+                                f"the proposal of {cid} does not load ({exc})")  # fmt: skip
+            for k, v in (("error_kind", None), ("superseded_by", None)):
+                rec.setdefault(k, v)
+            self.changes[cid] = rec
+            self.private[cid] = p
+            if rec.get("status") in LIVE_STATUSES:
+                was = rec["status"]
+                rec.update(status="failed", error_kind="interrupted",
+                           error=f"interrupted: Studio restarted while this change was {was}; "
+                           "post a follow-up on it (parent) to draft it again",
+                           interrupted_at=now_iso(),
+                           interrupted_reason="studio_restarted")  # fmt: skip
+                log(f"{cid}: interrupted while {was} (Studio restarted)")
+                self._save_change(cid)
+
+    def _scan_worktrees(self) -> None:
+        """Worktrees under ``<repo>/.lattice/rebuilds/`` that no record refers to: reported
+        in ``state_warnings``, never removed (they may be someone's work)."""
+        if self.store is None or self._rebuilder is None:
+            return
+        rb = self._rebuilder
+        try:
+            repo = rb.repo()
+        except RebuildError:
+            return
+        parent = repo / WORKTREE_DIR
+        if not parent.is_dir():
+            return
+        with rb.lock:
+            known = {str(Path(r.worktree_path or r.worktree).resolve()) for r in rb.runs.values()
+                     if r.worktree_path or r.record.get("worktree")}  # fmt: skip
+            if self._plans is not None:
+                known |= {str(Path(p.record["integration_worktree"]).resolve())
+                          for p in self._plans.plans.values()
+                          if p.record.get("integration_worktree")}  # fmt: skip
+        for d in sorted(parent.iterdir()):
+            if d.is_dir() and str(d.resolve()) not in known:
+                self.store.warn(d, "a worktree no Studio record refers to (left alone)")
 
     # -- the generator
     @property
@@ -958,6 +1063,7 @@ class Studio:
                     protected=[str(p) for p in protected if isinstance(p, str)],
                     log=log,
                     trailer=COMMIT_TRAILER,
+                    store=self.store,
                 )
             return self._rebuilder
 
@@ -1023,7 +1129,8 @@ class Studio:
         rb = self.rebuilder
         with self.lock:
             if self._plans is None:
-                self._plans = PlanManager(rb, data_model=self._data_model, log=log)
+                self._plans = PlanManager(rb, data_model=self._data_model, log=log,
+                                          store=self.store)  # fmt: skip
             return self._plans
 
     def _data_model(self) -> dict[str, Any] | None:
@@ -1203,38 +1310,59 @@ class Studio:
     # -- changes
     def new_change(self, body: Mapping[str, Any]) -> dict[str, str]:
         request = str(body.get("request") or "").strip()
+        parent_id = body.get("parent")
+        redraft = None  # v1.10: a follow-up on a change a restart interrupted drafts it again
+        if parent_id is not None:
+            with self.lock:
+                par = self.changes.get(str(parent_id))
+                interrupted = par is not None and par.get("error_kind") == "interrupted"
+                if interrupted and par["status"] == "failed":
+                    if self.private[str(parent_id)].get("base"):
+                        redraft = par
+        if not request and redraft is not None:
+            request = str(redraft["request"])
         if not request:
             raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, "request is empty")
         selected = [str(s) for s in body.get("selected") or []]
-        parent_id = body.get("parent")
         snap = self.snapshot()
         with self.lock:
+            project_hash = snap.hash
             if parent_id is not None:
                 parent_id = str(parent_id)
                 parent = self.changes.get(parent_id)
                 if parent is None:
                     raise ApiError(HTTPStatus.NOT_FOUND, f"no change {parent_id}")
-                if parent["status"] != "ready":
+                pp = self.private[parent_id]
+                if redraft is not None:
+                    base = dict(pp["base"])  # the interrupted change's own base
+                    if pp.get("project_hash"):
+                        project_hash = pp["project_hash"]
+                    selected = selected or list(pp.get("selected") or [])
+                elif parent["status"] != "ready":
                     raise ApiError(
                         HTTPStatus.CONFLICT, f"change {parent_id} is {parent['status']}, not ready"
                     )
-                pp = self.private[parent_id]
-                base = {
-                    "markdown": pp["new_md"],
-                    "module": pp["new_module"],
-                    "trace": pp["new_trace"],
-                }
+                else:
+                    base = {
+                        "markdown": pp["new_md"],
+                        "module": pp["new_module"],
+                        "trace": pp["new_trace"],
+                    }
             else:
                 base = {"markdown": snap.markdown, "module": snap.module, "trace": snap.trace}
-            cid = f"c{self.next_id}"
-            self.next_id += 1
+            if self.store is not None:
+                cid = f"c{self.store.allocate('changes')}"
+            else:
+                cid = f"c{self.next_id}"
+                self.next_id += 1
             self.changes[cid] = empty_change(cid, request, parent_id)
             self.private[cid] = {
-                "project_hash": snap.hash,
+                "project_hash": project_hash,
                 "base": base,
                 "selected": selected,
                 "done": threading.Event(),  # set once the background job has finished
             }
+            self._save_change(cid)
         threading.Thread(
             target=self._run_change, args=(cid,), name=f"studio-{cid}", daemon=True
         ).start()
@@ -1262,6 +1390,7 @@ class Studio:
             if c["status"] not in LIVE_STATUSES:
                 return False
             c.update(fields)
+            self._save_change(cid)
             return True
 
     def _run_change(self, cid: str) -> None:
@@ -1285,6 +1414,7 @@ class Studio:
         with self.lock:
             c = self.changes[cid]
             c["timings"] = timings
+            self._save_change(cid)
             if c["status"] not in LIVE_STATUSES:
                 log(f"{cid}: finished after it was {c['status']}; result dropped")
                 return
@@ -1293,6 +1423,11 @@ class Studio:
             if parent is not None and parent["status"] == "ready":
                 parent["status"] = "rejected"
                 parent["superseded_by"] = cid
+            elif parent is not None and parent.get("error_kind") == "interrupted":
+                parent["superseded_by"] = cid  # re-drafted (v1.10)
+            self._save_change(cid)
+            if parent is not None:
+                self._save_change(parent["id"])
         log(f"{cid}: ready in {timings['total_s']}s {timings}")
 
     def _pipeline(self, cid: str, timings: dict[str, float]) -> None:
@@ -1442,6 +1577,7 @@ class Studio:
                     "change still drafting or checking can be cancelled",
                 )
             c["status"] = "cancelled"
+            self._save_change(cid)
         log(f"{cid}: cancelled")
         return {"ok": True, "status": "cancelled"}
 
@@ -1453,6 +1589,7 @@ class Studio:
             if c["status"] == "accepted":
                 raise ApiError(HTTPStatus.CONFLICT, f"change {cid} is already accepted")
             c["status"] = "rejected"
+            self._save_change(cid)
         log(f"{cid}: rejected")
         return {"ok": True}
 
@@ -1473,6 +1610,7 @@ class Studio:
             (self.root / TRACE_FILE).write_text(priv["new_trace"].to_json(), encoding="utf-8")
             c["status"] = "accepted"
             self._cache = None
+            self._save_change(cid)
             request = " ".join(c["request"].split())
         message = f"spec: {request}\n\n{COMMIT_TRAILER}\n"
         if not is_git_repo(self.root):
@@ -1723,14 +1861,19 @@ class Handler(BaseHTTPRequestHandler):
                 return st.plan_call(lambda: st.plans.create(body))
             if path.startswith("/api/plan/"):
                 parts = path.removeprefix("/api/plan/").split("/")
-                if len(parts) == 2 and parts[1] in ("revise", "approve", "run"):
+                if len(parts) == 2 and parts[1] in ("revise", "approve", "run", "land"):
                     pm = st.plans
                     calls = {
                         "revise": lambda: pm.revise(parts[0], body),
                         "approve": lambda: pm.approve(parts[0]),
-                        "run": lambda: pm.run(parts[0]),
+                        "run": lambda: pm.run(parts[0], body),
+                        "land": lambda: pm.land(parts[0], body),
                     }
                     return st.plan_call(calls[parts[1]])
+            if path.startswith("/api/rebuild/"):
+                parts = path.removeprefix("/api/rebuild/").split("/")
+                if len(parts) == 2 and parts[1] == "continue":
+                    return st.plan_call(lambda: st.rebuilder.continue_build(parts[0]))
             if path == "/api/session":
                 return Reply(st.sessions.create(body), 201)
             if path.startswith("/api/session/"):
@@ -1766,6 +1909,11 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(lambda: st.stop_rebuild(rid))
         if path.startswith("/api/plan/") and "/" not in path.removeprefix("/api/plan/"):
             pid = path.removeprefix("/api/plan/")
+            raw = (parse_qs(urlparse(self.path).query).get("forget") or ["false"])[-1]
+            if raw.lower() not in ("true", "false", "1", "0", ""):
+                return self._json({"detail": "forget must be true or false"}, 422)
+            if raw.lower() in ("true", "1"):
+                return self._dispatch(lambda: st.plan_call(lambda: st.plans.forget(pid)))
             return self._dispatch(lambda: st.plan_call(lambda: st.plans.stop(pid)))
         return self._json({"detail": "no such route"}, 404)
 

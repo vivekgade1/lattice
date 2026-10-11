@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.9)
+# Lattice Studio API contract (v1.10)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -505,3 +505,74 @@ Per node: its builds' usage summed (`usage`), `wall_s`, `rounds`, `lines_changed
 ### The mock
 `POST /api/plan` validates like the real server and plans over one poll: the planner `agent` gives a mock agent plan (a scaffold over the infrastructure areas, the accounts area, the other areas as siblings with one package each, integration), `fallback` the real fallback; both go through the real validator. `approve`, `revise` (edits only; `feedback` re-plans the same way) and `DELETE` behave as on the real server. A run advances one step per `GET /api/plan/{id}` poll: a level's nodes start, then pass (with synthetic usage), then the level merges and its full gate passes; the plan ends `passed`.
 
+
+## v1.10 additions (durable state and resume)
+
+Before v1.10 plans, build records and change sets lived only in memory: a restart or a crash lost them, and a plan stopped by a level that passed its full gate but could not land re-ran that level's agents. v1.10 keeps them on disk and resumes from where they stopped. Code: `lattice/studio/state.py` (the store), on `rebuild.py`, `plan.py` and `server.py`. Everything in v1.9 holds; with the store off (`[state] enabled = false`, or a Studio built without one) Studio behaves as v1.9.
+
+### Configuration: `[state]` in `studio.toml`
+```toml
+[state]
+dir = ".lattice/state/notes"   # optional, relative to the project dir
+enabled = true                 # false: in memory only, as before v1.10
+[rebuild]
+max_attempts = 3               # starts of one build or plan node (continue, retry) before 409
+```
+Default directory: `<repo root>/.lattice/state/<project name>/`, the repo root being the git top level of `[rebuild] repo` (default the project dir), else the project dir. Inside a repository it is git-ignored through `.git/info/exclude` (`/.lattice/state/`) before the first file is written; never `.gitignore`, never the tracked tree. Two projects never share a directory.
+
+### Layout and guarantees
+```
+<state dir>/meta.json         {"schema": 1, "written_by": "lattice-studio 0.1.0", "counters": {"plans": 3, "builds": 7, "changes": 2}, "results": {...}}
+<state dir>/plans/p1.json     {"schema": 1, "written_by": ..., "kind": "plans", "id": "p1", "saved_at": ..., "record": <the API record>, "private": {...}}
+<state dir>/builds/b1.json    (same envelope; "private": what a build needs to go on: worktree, scope, baseline ids, session id, ...)
+<state dir>/changes/c1.json   (same envelope; "private": the proposal and its base, so a ready change can be accepted after a restart)
+```
+- **Atomic writes**: temporary file in the same directory, `fsync`, `os.replace`, `fsync` of the directory. A crash leaves the old file or the new one, never a torn one. Written through on every status transition and after every round, level and node event.
+- **Tolerant reads**: unknown fields are kept; missing ones defaulted. A file that does not parse, or whose record id is not its name, is moved aside to `<name>.bad-<ts>`; a warning goes to `GET /api/projects` `state_warnings` (`[{at, file, message, moved_to}]`) and startup goes on.
+- **Ids never repeat** after a restart: counters persisted, and raised to the highest id among the files (`.bad-*` included). A refused build still leaves no record and no id (v1.8).
+- **Loaded lazily** when the project is first used (its Studio is built then; a one-project server builds it at startup). Every field an API answer shows survives a restart unchanged, except live process handles.
+
+### Reconciliation on load
+A record found live is reconciled once: a plan `planning`/`running` -> `interrupted` (its running nodes -> `interrupted`, a running level run -> `interrupted`, the lost run time added to `totals.wall_s`); a build `queued`/`baseline`/`running` -> `interrupted` (an unfinished round dropped, its usage kept in the total); a change `drafting`/`checking` -> `failed` with `error_kind: "interrupted"` (its `request` kept). Each gets `interrupted: true`, `interrupted_at`, `interrupted_reason: "studio_restarted"` and a `timeline` entry. Records keep the process groups they spawn (`pids: [{pid, pgid, started, command, match, role, at}]`, agents, gates, the planner); an orphan group is terminated (SIGTERM, then SIGKILL) only when the pid exists AND its start time AND its command line match (or still contain `match`, for a `/bin/sh -c` that exec'd); never by pid alone. Killed ones are listed in `orphans_killed`. Worktrees referenced by interrupted records are kept for resume; ones under `.lattice/rebuilds/` no record refers to are reported in `state_warnings` and never removed.
+
+A change interrupted while drafting is re-drafted by `POST /api/changes {"parent": "<its id>", "request": ""}`: on the interrupted change's own base, with its request when `request` is empty; when ready, the interrupted change's `superseded_by` names it.
+
+### New and extended fields
+- **Plan**: `status` may be `interrupted`; `interrupted`, `interrupted_at`, `interrupted_reason`; `attempts` (= `runs`); `timeline: [{at, event}]`; `anchors: {"<node>": sha, "L<n>": sha}`; `pids`; `integration_worktree`; `orphans_killed`; `resume` (below). Each node: `status` may be `interrupted`; `attempts` (starts of its agent build); `timeline`; `previous_findings` (what its last attempt ended with, put in the retry's brief). Each level run: `gated` (its full gate passed), `landed`, `landed_at`, `landed_by: "run" | "resume"`, `land_error` (why it did not land at first), `remerge: true` (a re-merge onto a moved target). `GET /api/plans` items add `interrupted`, `attempts` and `resume`.
+- **Build record**: `status` may be `interrupted`; `pids`, `attempts`, `timeline`, `interrupted*`, `session_id` (the agent's Claude session), `orphans_killed`, `abandoned` (an interrupted node build replaced by a fresh one; its usage still counts for the node).
+- **Change record**: `error_kind` (null, or `interrupted`), `interrupted_at`, `interrupted_reason`.
+- `model.changes[].build.state` may be `interrupted` (a rebuild of the change was interrupted; it can be continued, or the change rebuilt).
+
+`resume` on a plan (computed when read, from the record and the repository as it is now):
+```json
+{"available": true, "kind": "continue|land|retry", "from_level": 1,
+ "will_skip": ["scaffold", "auth"], "will_run": ["account", "...", "integration"],
+ "note": "Level 1 passed its check but could not be added to build/streak because that branch is checked out in your working copy. Switch it away and press Land."}
+```
+`kind`: `land` when a level passed its full gate but never landed; `retry` when a node gave up, did not merge or regressed; else `continue`. `available: false` (with the reason in `note`) for a plan that has not run, runs, passed, was never approved, or whose failed nodes reached `max_attempts`.
+
+### Durable git anchors
+Each node commit is pinned as `refs/lattice/plans/<plan>/<node>` and each gated level tip as `refs/lattice/plans/<plan>/L<n>`, so a plan's work outlives its worktrees and `git gc`. They are removed only by `DELETE /api/plan/{id}?forget=true`.
+
+### POST /api/plan/{id}/run (resume)
+Body (optional): `{"confirm_unsafe_branch": bool}`. Runs an `approved` plan, or resumes a `partial`, `failed`, `stopped` or `interrupted` one that was approved before (else 409 `plan p1 is <status> and was never approved: ...`; `resume.available: false` -> 409 with `resume.note`, code `nothing_to_resume`). The target branch is checked at once (v1.8 codes, e.g. 409 `branch_checked_out`). Then, in order:
+1. levels that passed their full gate and landed are skipped, their nodes' results kept;
+2. a level that passed its full gate but did not land (`branch_checked_out`, `branch_moved`, `tree_dirty`) lands first: a fast-forward of the target to its pinned gated tip when the tip still descends from the target's tip (the owner's checked-out branch only with `confirm_unsafe_branch` and a clean worktree, by `merge --ff-only`), `landed_by: "resume"`, no node runs again; when the target moved past it, its node commits are merged onto the new tip (a new level run, `remerge: true`) and only the full gate runs: no regression -> the target moves; regressions -> the plan stops with the findings;
+3. an `interrupted` node continues its own build when its worktree and branch still exist and it was made from this level's tip: from the round after its last completed one, with `--resume <session id>` when the record has one, else a fresh session whose brief carries the last round's findings; otherwise it starts afresh from the level's tip (the old build `abandoned`, its usage kept);
+4. a node that gave up, did not merge or regressed is retried with a brief that adds "A previous attempt ended with these findings: ..."; each start counts in its `attempts`; at `[rebuild] max_attempts` (default 3) `run` answers 409 (`Node <id> already had <n> attempts (the cap is [rebuild] max_attempts = <n>); ...`);
+5. metrics accumulate across attempts (usage, wall time, rounds, lines per node and in the totals); a resumed node's metrics hook note starts `resumed (attempt <n>); `. Merged history is never rewritten; the integration node runs last.
+
+### POST /api/plan/{id}/land
+Body (optional): `{"confirm_unsafe_branch": bool}`. Only step 2 above, never an agent: a fast-forward answers at once `{"id", "status": "partial|passed|failed", "landed": true, "remerge": false, "target_tip"}`; a re-merge runs in the background (`{"id", "status": "running", "landed": false, "remerge": true, "target_tip"}`; the plan then ends `partial`/`passed`, or with the regression). 409: `nothing is waiting to land in plan <id>` (code `nothing_to_land`), the branch still checked out (`branch_checked_out`, with the worktree in the message), a dirty worktree (`tree_dirty`), a running plan or build.
+
+### DELETE /api/plan/{id}?forget=true
+Stops the plan if it is planning or running, then drops its record, its state file and its anchors -> `{"id", "status": "forgotten", "refs_removed": ["refs/lattice/plans/p1/L0", ...]}`; its node branches stay; its id is never reused. Without `forget` (or `forget=false`) `DELETE` keeps v1.9's stop semantics. `forget` other than true/false: 422.
+
+### POST /api/rebuild/{id}/continue
+Continues an `interrupted` stand-alone build (v1.7 rebuild or v1.8 scoped build) by the rules of step 3 (a build interrupted during its baseline runs it again) -> `{"id", "status": "running", "from_round": n, "attempts": n}`. 409: not interrupted (`rebuild b1 is <status>; only an interrupted rebuild can be continued`), a plan node (`... resume the plan (POST /api/plan/<id>/run)`), the build slot taken, `max_attempts` reached; 404 unknown; 503 unavailable. An accepted change never built stays `build.state: not_built` across a restart.
+
+### TEST ONLY: the stub agent
+A stub round may carry `"run": "<shell command>"`: run in the worktree's project dir as its own process group (recorded in `pids`, killed on DELETE), the round goes on when it exits. With `LATTICE_STUB_AGENT_LOG=<file>` in Studio's environment every stub agent round appends `{"build", "round", "plan", "node", "key"}` to that file.
+
+### The mock
+The mock keeps its state in memory but serves every v1.10 field. Its second project (`lattice-studio`) starts with two fixture plans: `p1` `interrupted` while level 2 ran (`run` resumes it, the passed levels skipped), and `p2` waiting to land (`resume.kind: "land"`, the target checked out in the owner's working copy): `POST /api/plan/p2/land` answers 409 `branch_checked_out` unless the body confirms. `DELETE /api/plan/{id}?forget=true` drops a plan.
