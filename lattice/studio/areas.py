@@ -187,13 +187,14 @@ def findings_from_json(data: Mapping[str, Any]) -> tuple[dict[str, int], list[di
         head = " ".join(
             str(x) for x in (f.get("layer"), f.get("verdict"), f.get("case") or f.get("rule")) if x
         )
-        findings.append(
-            {
-                "title": _short(f"{head}: {what}" if what else head),
-                "target": normalize_target(f.get("rule")),
-                "key": str(f.get("key") or ""),
-            }
-        )
+        item = {
+            "title": _short(f"{head}: {what}" if what else head),
+            "target": normalize_target(f.get("rule")),
+            "key": str(f.get("key") or ""),
+        }
+        if f.get("file"):  # a static finding's file (layer A): attributes a level failure
+            item["file"] = str(f["file"])
+        findings.append(item)
     return counts, findings
 
 

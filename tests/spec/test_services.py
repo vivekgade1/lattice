@@ -409,3 +409,45 @@ def test_the_cli_takes_services(capsys):
 def test_the_cli_without_services_cannot_run(capsys):
     assert main(_cli()) == 2
     assert "worker" in capsys.readouterr().err
+
+
+# ---- --await-cap (2026-10-11, the in-loop gate's cap on Await) -----------------------------
+
+
+def test_await_cap_ends_a_long_wait_early_and_still_fails(tmp_path):
+    pidfile = tmp_path / "pids"
+    spec = replace(SPEC, scenarios=(replace(SCENARIO, steps=(
+        racy.CREATE, Await("worker", DONE, within_s=30), *SCENARIO.steps[2:])),))  # fmt: skip
+    started = time.monotonic()
+    report = run(spec, services=services("noop", pidfile), await_cap=0.5)
+    assert time.monotonic() - started < 10  # not the spec's 30 s
+    (finding,) = of(report, "D")
+    assert finding.verdict == "silent"
+    assert "within 0.5s" in finding.details["problems"][0]
+    assert any(n.startswith("--await-cap 0.5:") and "1 step(s) capped" in n
+               for n in report.notes)  # fmt: skip
+    assert all(_gone(p) for p in _pids(pidfile))
+
+
+def test_await_cap_does_not_fail_a_service_that_works(tmp_path):
+    report = run(await_cap=3)
+    assert report.verdict == "pass", report.render()
+    assert any(n.startswith("--await-cap 3:") for n in report.notes)
+
+
+def test_without_await_cap_nothing_changes():
+    report = run()
+    assert not any("await-cap" in n for n in report.notes)
+
+
+@pytest.mark.parametrize("bad", [0, -1, True, "5"])
+def test_await_cap_must_be_positive(bad):
+    with pytest.raises(CheckError, match="await_cap must be a positive"):
+        run(await_cap=bad)
+
+
+def test_the_cli_takes_await_cap(capsys):
+    assert main(_cli("--services", "tests.spec.test_services:CLI_SERVICES", "--await-cap",
+                     "4", "--json")) == 0  # fmt: skip
+    out = capsys.readouterr().out
+    assert "--await-cap 4" in out

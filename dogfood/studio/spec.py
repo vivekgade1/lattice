@@ -45,11 +45,19 @@ What makes the answers exact:
   ``rules R1, R3`` covers R1 twice and R3 never (the fallback); the two areas in the other
   order are two siblings that each pass alone but clash once merged (``gate.sh`` fails
   ``scenario:no_token`` when ``left.txt`` and ``right.txt`` both exist: a regression at the
-  level's full gate); ``rules R1, R3, R4`` has a node that gives up (three rounds without
+  level's gate) and one of which writes a racy ``race.txt`` (``scenario:create_a_note``
+  fails only with layer X, so the scoped node gate ``--layers CD`` cannot see it); each
+  repairs its part in its round 2 (API.md v1.11: the level repair loop) and the level
+  lands at ``REPAIR_TIP``; ``rules R1, R3, R4`` has a node that gives up (three rounds without
   ``writing.txt``) with a dependent and a sibling; ``rules R3`` holds 30 seconds (stop).
   The merge commits are reproducible like the others: ``PLAN_TIP`` (recorded from the
   real server and checked by hand with ``git log --graph build/notes``) pins the level
   merges and their order.
+- build performance (API.md v1.11): the seed's ``[rebuild]`` sets ``scoped_gate_args``
+  (``--layers CD --x-repeats 1 --await-cap 5``) and ``level_gate = "regression"``, and
+  ``gate.sh`` takes those flags and ``--only-file`` like ``lattice spec check``: plan nodes
+  run their gate on their scope plus the regression set, levels end with the regression
+  gate, the last level with the full gate (``final_gate``).
 
 Studio has no database and no login: there are no tables, invariants, machines or users,
 and layers B, C and R have nothing to bind to (the harness's marker database is never
@@ -74,10 +82,10 @@ SEED_MD = """\
 - GET /notes/{id} answers the caller's own note; another user's note answers 404.
 - Requests without a token answer 401.
 """
-SEED_HEAD = "e691f93081fcab61d18b57f3524917fff139ad75"
+SEED_HEAD = "312d817f2070a61def4f7fec500e92b156456378"
 STARRED = "Notes can be starred."
 STARRED_MD = SEED_MD + f"- {STARRED}\n"
-STARRED_COMMIT = "0fa38224f24645e01755f2bd215a6bad6e8e09ff"
+STARRED_COMMIT = "09a13e96c48dd8019106af830c2edc679129b7eb"
 FIRST = "Starred notes come first."
 TRAILER = (
     "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
@@ -94,7 +102,7 @@ SEED_RULES = [
     {"id": "R4", "status": "checked", "links": ["scenario:no_token"]},
 ]
 NO_CHANGE = "change {} is {}, not ready"
-REBUILT_COMMIT = "e437e4e9d01713c40091cbf68a0f99bb9b4807dc"
+REBUILT_COMMIT = "04050993b71603e5a576e46373e3302ba1cfc388"
 REBUILT_MESSAGE = (
     f"build: {STARRED}\n\nRebuilt by Lattice Studio from the accepted change(s) c1; the "
     "gates passed in round 2 of 3.\n\nLattice-Rebuild: b1 (notes)\n"
@@ -172,14 +180,21 @@ READY_STARRED = wait(
 UNCHANGED = model(markdown=SEED_MD, project={"name": "notes", "git_head": SEED_HEAD[:7]})
 
 # ---- build from spec (API.md v1.8) ---------------------------------------------------------
-WRITING_COMMIT = "6bbdb4d23a3392e5b9f0c7eb550c4b2afbd8718d"
-READING_COMMIT = "7c15f8a9f651a271f1fffff919e4e0d0af9c0ffe"
+WRITING_COMMIT = "29f04ef7f63a95bc3ffaa5b98c7613bc79554325"
+READING_COMMIT = "cc93b8754f11b6a52e5acb76bb7ad5f5ea0be049"
 WRITING = {"kind": "area", "id": "writing-notes", "title": "Writing notes", "rules": ["R1", "R2"]}
 READING = {"kind": "area", "id": "reading-notes", "title": "Reading notes", "rules": ["R3", "R4"]}
 NOTHING = "nothing to build: the checks in this scope already pass"
 
 # ---- build plans (API.md v1.9) ---------------------------------------------------------------
-PLAN_TIP = "a1d0deb92dd178e4c7bff136bf65b8fe7e93ea76"
+PLAN_TIP = "645c77747c3acb2bc22b378dcb0efc8981f4370e"
+# API.md v1.11: the clash plan's level 0, first merged (w-clash + r-clash: the race and the
+# clash fail the level gate), then repaired by both nodes and merged again (recorded from the
+# real server and checked by hand with `git log --graph --all`, see the results doc)
+CLASH_FAILED_TIP = "6a1fac2dd0862c82966c989f4031b6244184c784"
+REPAIR_TIP = "12a5610056a17bdfce2cf8e92c92b55d3a3b9601"
+SCOPED_ARGS = ["--layers", "CD", "--x-repeats", "1", "--await-cap", "5"]
+T_TARGET, N_TARGET = "scenario:text_bounds", "scenario:no_token"
 NOT_APPROVED = "plan p1 is ready, not approved: approve it first"
 NO_TOUCH = {"tables": [], "packages": [], "files": []}
 NOTES_FILE = {"tables": [], "packages": [], "files": ["notes.py"]}
@@ -440,7 +455,12 @@ SCENARIOS = (
         Step("GET", "/api/projects", expect_body=[
             {"name": "notes", "git_head": SEED_HEAD[:7], "spec": True,
              "app_configured": False, "last_check": None, "default": True,
-             "capabilities": {"rebuild": True}},
+             "capabilities": {"rebuild": True},
+             "plan_defaults": {"max_parallel": 2, "level_gate": "regression",
+                               "scoped_gate": SCOPED_ARGS, "node_timeout": 1800.0,
+                               "level_repair_attempts": 2,
+                               "models": {"fast": "haiku", "mid": "sonnet",
+                                          "frontier": "opus"}}},
         ]),
         Step("GET", "/p/notes/api/projects", expect_body=[{"name": "notes", "default": True}]),
     )),
@@ -686,15 +706,27 @@ SCENARIOS = (
                 ],
                 level_runs=[
                     {"level": 0, "status": "passed", "base": SEED_HEAD, "merged": ["scaffold"],
-                     "gate": {"failing": [W_TARGET, R_TARGET], "regressions": []}},
+                     "gate": {"failing": [W_TARGET, R_TARGET], "regressions": [],
+                              "mode": "regression", "selected": 2}},
                     {"level": 1, "status": "passed", "merged": ["writing", "reading"],
                      "tip": PLAN_TIP, "gate": {"failing": [], "regressions": [],
-                                               "newly_fixed": [W_TARGET, R_TARGET]}},
+                                               "newly_fixed": [W_TARGET, R_TARGET],
+                                               "mode": "regression", "selected": 4}},
                     {"level": 2, "status": "passed", "merged": [], "gate": None},
                     {"level": 3, "status": "passed", "merged": [], "gate": None},
                 ],
+                final_gate={"sha": PLAN_TIP, "failing": []},
+                gate_config={"scoped_gate_args": SCOPED_ARGS, "level_gate": "regression",
+                             "level_repair_attempts": 2},
+                planner_usage={"calls": 1, "tokens_in": 0, "tokens_out": 0},
                 totals={"rounds": 3, "lines_changed": 3,
                         "shape": {"nodes": 5, "levels": 4, "max_level_width": 2}}),
+        # the writing node ran its gate scoped: its scope plus the scenarios passing at
+        # the start of its level (the regression set); the gate's flags come last
+        Step("GET", "/api/rebuild/b2", expect_body={
+            "id": "b2", "status": "passed", "plan": {"id": "p1", "node": "writing"},
+            "scoped_gate": {"args": SCOPED_ARGS, "in_scope": [W_TARGET, T_TARGET],
+                            "regression_set": [T_TARGET, N_TARGET], "scenarios": 3}}),
         Step("GET", "/api/branches", expect_body={"current_branch": "main", "branches": [
             {"name": "build/notes", "head": PLAN_TIP, "current": False, "is_integration": True},
             {"name": "main", "head": SEED_HEAD, "current": True},
@@ -702,6 +734,7 @@ SCENARIOS = (
             {"name": "rebuild/p1-writing"},
         ]}),
         areas((0, "built"), (0, "built"), (0, "built")),
+        areas((0, "built"), (0, "built"), (0, "built"), params={"branch": "build/notes"}),
         UNCHANGED,
         Step("GET", "/p/notes/api/plans", expect_body=[{"id": "p1", "status": "passed", "nodes": [
             {"id": "scaffold", "status": "passed"}, {"id": "writing", "status": "passed"},
@@ -768,29 +801,49 @@ SCENARIOS = (
                 levels=[["writing-notes"], ["integration"]]),
         plan_step("p1", "run", 409, detail=NOT_APPROVED),
     )),
-    Scenario("a_regression_at_the_full_gate_fails_the_level", steps=(
+    Scenario("a_level_gate_failure_is_repaired_and_lands", steps=(
         post_plan({"scope": {"areas": ["reading-notes", "writing-notes"]}}),
         planned("p1", "ready", levels=[["w-clash", "r-clash"], ["integration"]]),
         *approve_and_run(),
-        planned("p1", "failed", target_tip=SEED_HEAD,
-                nodes=[{"id": "w-clash", "status": "regressed", "merged": False},
-                       {"id": "r-clash", "status": "regressed", "merged": False},
-                       {"id": "integration", "status": "pending"}],
-                level_runs=[{"level": 0, "status": "failed", "merged": ["w-clash", "r-clash"],
-                             "tip": None, "regressions": ["scenario:no_token"],
-                             "blame": [{"target": "scenario:no_token", "nodes": ["r-clash"],
-                                        "by": "rules"}],
-                             "gate": {"failing": ["scenario:no_token"],
-                                      "regressions": ["scenario:no_token"],
-                                      "newly_fixed": [W_TARGET, R_TARGET]}}]),
-        # each node passed its own gate: the clash shows only once they are merged
+        # the merged level fails its gate: no_token passed before the level (the clash of
+        # left.txt and right.txt, a regression) and create_a_note passed in w-clash's scoped
+        # gate (--layers CD) but fails with the full layers (race.txt is racy). Each node
+        # repairs what its scope owns, the level merges again and lands.
+        planned("p1", "passed", target_tip=REPAIR_TIP, repair_attempts=1, error=None,
+                nodes=[{"id": "w-clash", "status": "passed", "merged": True, "repairs": 1,
+                        "rounds": 2},
+                       {"id": "r-clash", "status": "passed", "merged": True, "repairs": 1,
+                        "rounds": 2},
+                       {"id": "integration", "status": "passed", "nothing_to_build": True}],
+                level_runs=[{"level": 0, "status": "passed", "merged": ["w-clash", "r-clash"],
+                             "tip": REPAIR_TIP, "landed": True, "regressions": [],
+                             "gate": {"failing": [], "regressions": [], "mode": "regression"},
+                             "repairs": [{"attempt": 1, "of": 2, "tip": CLASH_FAILED_TIP,
+                                          "targets": [W_TARGET, N_TARGET],
+                                          "attributed": {
+                                              W_TARGET: {"by": "scope", "nodes": ["w-clash"]},
+                                              N_TARGET: {"by": "scope", "nodes": ["r-clash"]}},
+                                          "nodes": [{"id": "w-clash", "verify": "pass"},
+                                                    {"id": "r-clash", "verify": "pass"}],
+                                          "outcome": "passed"}]},
+                            {"level": 1, "status": "passed", "merged": [], "gate": None}],
+                final_gate={"sha": REPAIR_TIP, "failing": []},
+                resume={"available": False, "kind": None}),
+        # each node passed its own gate in round 1 and its repair round (2), on its branch
         Step("GET", "/api/rebuild/b1", expect_body={
-            "id": "b1", "status": "passed", "plan": {"id": "p1", "node": "w-clash"}}),
+            "id": "b1", "status": "passed", "plan": {"id": "p1", "node": "w-clash"},
+            "repairs": 1, "rounds": [{"n": 1, "check": {"verdict": "pass"}},
+                                     {"n": 2, "check": {"verdict": "pass"},
+                                      "agent_summary": "w-clash repair: race.txt is calm"}]}),
         Step("GET", "/api/rebuild/b2", expect_body={
-            "id": "b2", "status": "passed", "plan": {"id": "p1", "node": "r-clash"}}),
+            "id": "b2", "status": "passed", "plan": {"id": "p1", "node": "r-clash"},
+            "repairs": 1, "scoped_gate": {"in_scope": [R_TARGET, N_TARGET],
+                                          "regression_set": [T_TARGET, N_TARGET],
+                                          "scenarios": 3}}),
         Step("GET", "/api/branches", expect_body={"branches": [
-            {"name": "build/notes", "head": SEED_HEAD}, {"name": "main", "head": SEED_HEAD},
+            {"name": "build/notes", "head": REPAIR_TIP}, {"name": "main", "head": SEED_HEAD},
             {"name": "rebuild/p1-r-clash"}, {"name": "rebuild/p1-w-clash"}]}),
+        areas((0, "built"), (0, "built"), (0, "built")),
         UNCHANGED,
     )),
     Scenario("a_failed_node_blocks_its_dependents_not_its_siblings", steps=(
@@ -1032,6 +1085,28 @@ UNCHECKED = (
               "writes, quarantine, id counters, round trips, git-ignore and two projects. "
               "R58-R62 are checked only on plans that never met a restart (`interrupted` is "
               "false, `kind` is never `land` here)."),
+    Unchecked("R54 (a level that still fails after its repair attempts, or with the repair "
+              "loop off) needs a stub that never repairs or a second configuration of the "
+              "seed; tests/studio/test_level_repair.py covers the cap (never more attempts "
+              "than `level_repair_attempts`), the `partial` end with `resume.kind` `repair`, "
+              "the further repair pass on run, the dedicated repair node for a failure no "
+              "node owns and the loop off; tests/studio/test_build_plan.py the v1.9 stop."),
+    Unchecked("R65-R67 (build performance) are checked with the seed's gate.sh, which takes "
+              "the flags of `lattice spec check` but is a shell script: the real check's "
+              "`--await-cap` and `--only-file` are in tests/spec (test_services.py, "
+              "test_selection_timings.py), and the selection file's content (the worktree is "
+              "removed after a pass) through the record's `scoped_gate`. The attribution by "
+              "files, the reuse of a gated tip's results as the next start baseline, the "
+              "planner's `built` areas and the nodes dropped at planning are in "
+              "tests/studio/test_scoped_gates.py and test_level_repair.py. CLASH_FAILED_TIP "
+              "and REPAIR_TIP were recorded from the real server and checked by hand with "
+              "`git log --graph --all`."),
+    Unchecked("R69 (stop and budget hygiene) is not observable over HTTP: a scenario cannot "
+              "see processes, containers or an agent's token stream. "
+              "tests/studio/test_stop_cleanup.py covers it with a gate whose app ignores "
+              "SIGTERM in its own session, a fake docker CLI (only the gate's labelled "
+              "container is removed) and a fake claude (a timeout and node_max_tokens keep "
+              "the usage seen)."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

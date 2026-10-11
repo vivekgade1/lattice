@@ -86,10 +86,17 @@
     "w-clash": {
       "rounds": [
         {
-          "summary": "w-clash: writing.txt and left.txt",
+          "summary": "w-clash: writing.txt, left.txt and a racy race.txt",
           "files": {
             "writing.txt": "written\n",
-            "left.txt": "left\n"
+            "left.txt": "left\n",
+            "race.txt": "racy\n"
+          }
+        },
+        {
+          "summary": "w-clash repair: race.txt is calm",
+          "files": {
+            "race.txt": "calm\n"
           }
         }
       ]
@@ -101,6 +108,12 @@
           "files": {
             "reading.txt": "read\n",
             "right.txt": "right\n"
+          }
+        },
+        {
+          "summary": "r-clash repair: removed right.txt",
+          "files": {
+            "right.txt": null
           }
         }
       ]

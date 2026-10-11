@@ -321,7 +321,7 @@
     },
     {
       "id": "R54",
-      "text": "When the full gate after a level fails a check that passed before the level (a regression), the level fails: its merged nodes become `regressed`, the level's record names the regressions and the nodes blamed, the plan ends `failed` (or `partial` once an earlier level landed), and the target branch stays at its last good tip.",
+      "text": "When a level's gate on the merged tip still fails after `[rebuild] level_repair_attempts` repair attempts, or fails with the repair loop off (0), the level fails: its merged nodes become `regressed`, the level's record names the regressions and the nodes blamed, the target branch stays at its last good tip, and the plan ends `partial` with `resume.kind` `repair` (another bounded repair pass on run), or with the loop off `failed` (or `partial` once an earlier level landed).",
       "section": "Lattice Studio server: requirements > Build plans",
       "line": 89
     },
@@ -378,6 +378,42 @@
       "text": "Plans, build records and change sets are kept on disk in the project's state directory (git-ignored) and survive a restart of Studio: a plan, build or change that was running when Studio stopped is `interrupted` after the restart (its orphan processes terminated), resumes from where it stopped without running passed nodes again, and a level that passed its full gate but could not land is landed by POST /api/plan/{id}/land without running any agent.",
       "section": "Lattice Studio server: requirements > Durable state and resume",
       "line": 101
+    },
+    {
+      "id": "R64",
+      "text": "GET /api/projects reports each project's `plan_defaults` from its `[rebuild]` settings: `max_parallel`, `models`, `scoped_gate` (the scoped gate's arguments, or null), `level_gate` (`full` or `regression`), `node_timeout` and `level_repair_attempts`.",
+      "section": "Lattice Studio server: requirements > Build performance",
+      "line": 105
+    },
+    {
+      "id": "R65",
+      "text": "With `[rebuild] scoped_gate_args`, a plan node other than the integration node runs its gate as the first gate command with those arguments and `--only-file` naming its selection: the scenarios of its scope plus the scenarios that passed at the start of its level (the regression set); its build record carries `scoped_gate` with `args`, `in_scope`, `regression_set` and the number of `scenarios`.",
+      "section": "Lattice Studio server: requirements > Build performance",
+      "line": 106
+    },
+    {
+      "id": "R66",
+      "text": "With `[rebuild] level_gate = \"regression\"` a level ends with the first gate on the scenarios that passed before the level and those of every scope landed so far, with the full layers, and a scenario it does not select keeps its failing verdict; the last level is decided by the full gate (`final_gate`); each level run's gate says its `mode` and how many scenarios it `selected`, and a plan whose nodes pass ends `passed` as before.",
+      "section": "Lattice Studio server: requirements > Build performance",
+      "line": 107
+    },
+    {
+      "id": "R67",
+      "text": "When a level's gate fails on the merged tip -- a check that passed before the level, or a node's own target that passed in its node gate -- the plan goes on: each failing check is attributed to the node whose scope links it (`attributed`), those nodes get a repair round with the level gate's findings, verified by their own gate, then the level merges again and its gate runs again; a level that passes after a repair lands, with `repairs` (`attempt`, `of`, `tip`, `targets`, `attributed`, `nodes`, `outcome`) on its level run, `repairs` on each repaired node and its build, and `repair_attempts` on the plan.",
+      "section": "Lattice Studio server: requirements > Build performance",
+      "line": 108
+    },
+    {
+      "id": "R68",
+      "text": "GET /api/areas reports a target branch's areas from the gate results recorded for its tip, so the areas of landed levels are `built`.",
+      "section": "Lattice Studio server: requirements > Build performance",
+      "line": 109
+    },
+    {
+      "id": "R69",
+      "text": "Stopping a plan or a build, or a gate that times out, ends the gate's whole process tree (the apps and services its check started included) and removes the database containers its check started and no other; an agent stopped by `node_timeout` or `node_max_tokens` keeps the usage it had spent in its round, which is marked `timeout`.",
+      "section": "Lattice Studio server: requirements > Build performance",
+      "line": 110
     }
   ],
   "links": {
@@ -554,9 +590,6 @@
     "R53": [
       "scenario:a_plan_runs_level_by_level"
     ],
-    "R54": [
-      "scenario:a_regression_at_the_full_gate_fails_the_level"
-    ],
     "R55": [
       "scenario:a_failed_node_blocks_its_dependents_not_its_siblings"
     ],
@@ -580,6 +613,24 @@
     ],
     "R62": [
       "scenario:a_stopped_plan_offers_to_continue"
+    ],
+    "R64": [
+      "scenario:projects_lists_the_served_project"
+    ],
+    "R65": [
+      "scenario:a_plan_runs_level_by_level",
+      "scenario:a_level_gate_failure_is_repaired_and_lands"
+    ],
+    "R66": [
+      "scenario:a_plan_runs_level_by_level",
+      "scenario:a_level_gate_failure_is_repaired_and_lands"
+    ],
+    "R67": [
+      "scenario:a_level_gate_failure_is_repaired_and_lands"
+    ],
+    "R68": [
+      "scenario:a_plan_runs_level_by_level",
+      "scenario:a_level_gate_failure_is_repaired_and_lands"
     ]
   },
   "unchecked": {
@@ -589,7 +640,9 @@
     "R26": "the change impact needs a configured app; tests/studio/test_server.py covers it",
     "R27": "accept outside git or on a git failure needs a different repository; tests/studio/test_server.py covers the first",
     "R31": "the harness serves one project directory; tests/studio/test_projects.py covers isolation between two projects",
-    "R63": "restarts are not expressible in the DSL (a scenario cannot kill and restart the server); tests/studio/test_resume.py and test_state_store.py cover them"
+    "R63": "restarts are not expressible in the DSL (a scenario cannot kill and restart the server); tests/studio/test_resume.py and test_state_store.py cover them",
+    "R54": "the repair loop's exhaustion and the loop off need a stub that never repairs or another configuration; tests/studio/test_level_repair.py and test_build_plan.py cover them",
+    "R69": "process trees, containers and agent timeouts are not observable over HTTP; tests/studio/test_stop_cleanup.py covers them with a fake docker and a fake claude"
   },
   "context": [
     "R1"

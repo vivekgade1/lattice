@@ -19,3 +19,7 @@ protected_branches = ["release"]
 # plan scope (see lattice/studio/plan.py); their nodes play stub-rebuild.json's rounds by
 # node id.
 planner = "stub"
+# API.md v1.11: plan nodes run the gate scoped (gate.sh takes the flags of `lattice spec
+# check`), and a level ends with the regression gate (the last level with the full gate).
+scoped_gate_args = ["--layers", "CD", "--x-repeats", "1", "--await-cap", "5"]
+level_gate = "regression"

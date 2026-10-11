@@ -742,7 +742,7 @@ def test_a_regression_at_the_full_gate_fails_the_level(repo: Path) -> None:
             }
         },
     )
-    pm = manager(repo)
+    pm = manager(repo, level_repair_attempts=0)  # the repair loop off: v1.9's stop (v1.11)
     rec = run(pm, ready(pm, {"scope": {"areas": ["writing", "reading"]}})["id"])
     assert rec["status"] == "failed"
     assert [n["status"] for n in rec["nodes"]] == ["regressed", "regressed", "pending"]

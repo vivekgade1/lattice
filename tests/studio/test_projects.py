@@ -44,6 +44,7 @@ PROJECT_KEYS = {
     "capabilities",
     "default",
     "state_warnings",  # API v1.10
+    "plan_defaults",  # API v1.11
 }
 
 

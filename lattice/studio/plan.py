@@ -46,18 +46,24 @@ branch and process group, see :meth:`Rebuilder.start_node`):
 2. per level, the nodes whose dependencies all passed start from the target tip AT THE
    START OF THE LEVEL (at most ``max_parallel`` at once); a node with a failed, blocked or
    conflicting dependency is ``blocked``; a node with no in-scope failing check is
-   ``passed`` with ``nothing_to_build`` (except the scaffold, which always runs). Each node
-   is judged by Studio: its in-scope failing checks pass and nothing that passed at the
-   level start regresses;
+   ``passed`` with ``nothing_to_build`` (a scaffold with no rules of its own runs while
+   anything fails in the plan scope, API v1.11). Each node is judged by Studio: its
+   in-scope failing checks pass and nothing that passed at the level start regresses (with
+   ``[rebuild] scoped_gate_args`` its gate runs on its scope plus that regression set);
 3. at the END of the level, the passed nodes' commits are merged into the level's start
    tip in plan node order in a temporary integration worktree with ``git merge --no-ff``
    (one merge commit per node, so each node stays one revertible unit and its branch is
    kept; a conflicting merge is aborted, the node is ``merge_conflict`` and its dependents
    are blocked), the nodes' metrics hooks run there (one ``metrics: plan`` commit), and the
    FULL gate runs on the merged tip. Any check failing there that did not fail on the last
-   good tip (which never fails more than the plan's start baseline) is a regression: the
-   level fails, its merged nodes are ``regressed`` (blamed by the rules the failing check
-   is linked to, else the level), and the plan stops. Otherwise the target branch is
+   good tip (which never fails more than the plan's start baseline) is a regression, and a
+   merged node's own target failing there fails the level too: the merged nodes are
+   ``regressed`` (blamed by the rules the failing check is linked to, else the level) and
+   the level repair loop runs (API v1.11: the responsible nodes repair, the level merges
+   and is gated again, at most ``[rebuild] level_repair_attempts`` times; then the plan
+   ends ``partial`` with ``resume.kind`` ``repair``). With ``level_gate = "regression"``
+   the level gate is the first gate on the scenarios passing before plus the landed scopes,
+   the last level the full gate. Otherwise the target branch is
    fast-forwarded to the merged tip (``update-ref`` with the old tip, or ``merge
    --ff-only`` in the owner's clean worktree when confirmed) -- only ever to a tip whose
    full gate showed no regression;
@@ -98,6 +104,7 @@ from lattice.studio.rebuild import (
     MAX_WAIT,
     Rebuilder,
     RebuildError,
+    StreamUsage,
     _checked_out,
     _current_branch,
     _git,
@@ -105,9 +112,12 @@ from lattice.studio.rebuild import (
     _now,
     _short,
     _zero_usage,
+    reap_orphans,
+    result_doc,
+    write_selection,
 )
 from lattice.studio.session import DEFAULT_MAX_TOKENS, Transcript, _kill_group
-from lattice.studio.state import StateStore, kill_orphan, proc_info
+from lattice.studio.state import StateStore, proc_info
 
 __all__ = [
     "PlanError",
@@ -734,9 +744,12 @@ def planner_prompt(
     issues: Sequence[str] = (),
     previous: Any = None,
     feedback: str | None = None,
+    built: Mapping[str, bool | None] | None = None,
 ) -> str:
     """The planner's message: the areas of the scope (rules clipped, scenario and failing
-    counts, endpoints and tables their rules mention), the data model, the file tree."""
+    counts, whether the area is already built on the target branch -- every in-scope check
+    passed at its tip, from the per-tip results; null: never gated -- endpoints and tables
+    their rules mention), the data model, the file tree."""
     texts = {str(r.get("id")): str(r.get("text") or "") for r in trace.get("rules") or []}
     tables = list((data_model or {}).get("tables") or [])
     keep = set(scope["rules"])
@@ -755,6 +768,7 @@ def planner_prompt(
             "scenarios": sum(1 for t in targets if t.startswith("scenario:")),
             "checks": len(targets),
             "failing": (failing or {}).get(a["id"]),
+            "built": (built or {}).get(a["id"]),
             "endpoints": list(dict.fromkeys(f"{m} {p}" for m, p in _ENDPOINT.findall(joined))),
             "tables": _area_tables(joined, tables),
             "huge": len(rules) > SPLIT_RULES
@@ -770,6 +784,9 @@ def planner_prompt(
         "",
         f"Project: {project}. Scope: {scope['title']} ({len(scope['rules'])} rule(s)). "
         f"Studio runs at most {max_parallel} node(s) of one level at a time.",
+        "",
+        "`built: true` on an area means every check of it already passes on the target "
+        "branch: plan no work for it (Studio drops a node with nothing failing in its scope).",
         "",
         "## Areas of the scope (JSON)",
         "",
@@ -844,6 +861,66 @@ def land_waiting(rec: Mapping[str, Any]) -> dict[str, Any] | None:
     return None
 
 
+def attribute_failures(
+    targets: Sequence[str],
+    merged: Sequence[Mapping[str, Any]],
+    node_targets: Mapping[str, Sequence[str]],
+    node_files: Mapping[str, Sequence[str]],
+    finding_files: Mapping[str, Sequence[str]],
+) -> tuple[dict[str, list[str]], list[str], dict[str, dict[str, Any]]]:
+    """Who repairs each check a level gate failed (API v1.11): (a) the merged nodes whose
+    scope links to it (the integration node only when no other does); else (b) the merged
+    nodes whose commit touched the finding's file (a path equal to it or a directory above
+    it); else (c) nobody: a dedicated repair node. Answers ``(by node id -> targets, in
+    the merged order; unowned targets; target -> {by: scope|files|repair_node, nodes})``."""
+    by: dict[str, list[str]] = {}
+    unowned: list[str] = []
+    how: dict[str, dict[str, Any]] = {}
+    order = [str(n["id"]) for n in merged]
+    kinds = {str(n["id"]): n.get("kind") for n in merged}
+    for t in targets:
+        hit = [
+            i for i in order if t in set(node_targets.get(i) or ()) and kinds[i] != "integration"
+        ]
+        why = "scope"
+        if not hit:
+            hit = [i for i in order if t in set(node_targets.get(i) or ())]
+        if not hit:
+            paths = [str(p).lstrip("./") for p in finding_files.get(t) or ()]
+            hit = [
+                i
+                for i in order
+                if any(_path_overlap(str(f), p) for f in node_files.get(i) or () for p in paths)
+            ]
+            why = "files"
+        if not hit:
+            unowned.append(t)
+            how[t] = {"by": "repair_node", "nodes": []}
+            continue
+        how[t] = {"by": why, "nodes": hit}
+        for i in hit:
+            by.setdefault(i, []).append(t)
+    return {i: by[i] for i in order if i in by}, unowned, how
+
+
+def _landable(outcome: Mapping[str, Any] | None) -> bool:
+    """A level's outcome whose gated tip may land (a failing outcome also names its tip)."""
+    return outcome is not None and bool(outcome.get("tip")) and not outcome.get("failed")
+
+
+def repair_waiting(rec: Mapping[str, Any]) -> dict[str, Any] | None:
+    """The latest level run whose repair attempts ran out (``repair_pending``) and that a
+    later run has not superseded: what ``resume.kind`` ``repair`` goes on from."""
+    latest: dict[int, Mapping[str, Any]] = {}
+    for lr in rec.get("level_runs") or []:
+        latest[int(lr.get("level", -1))] = lr
+    for L in sorted(latest):
+        lr = latest[L]
+        if lr.get("repair_pending") and not lr.get("superseded") and not lr.get("landed"):
+            return lr  # type: ignore[return-value]
+    return None
+
+
 def final_status(rec: Mapping[str, Any]) -> str:
     """A plan's end state from its nodes: passed (all), partial (some), failed (none)."""
     nodes = rec.get("nodes") or []
@@ -866,12 +943,14 @@ def resume_view(
     owner_worktree: str | None = None,
     fast_forward: bool | None = None,
     max_attempts: int = 3,
+    repair_attempts: int = 2,
 ) -> dict[str, Any]:
-    """``resume`` of a plan record (API v1.10): whether ``POST .../run`` (or ``.../land``)
-    can go on from where the plan stopped, which nodes it keeps and which it runs, and one
-    plain sentence for the owner. `checked_out_at`: where the target branch is checked out
-    now (None: nowhere); `owner_worktree`: the owner's main worktree; `fast_forward`:
-    whether the waiting level's tip still fast-forwards the target (None: unknown)."""
+    """``resume`` of a plan record (API v1.10; ``kind`` ``repair``, API v1.11): whether
+    ``POST .../run`` (or ``.../land``) can go on from where the plan stopped, which nodes
+    it keeps and which it runs, and one plain sentence for the owner. `checked_out_at`:
+    where the target branch is checked out now (None: nowhere); `owner_worktree`: the
+    owner's main worktree; `fast_forward`: whether the waiting level's tip still
+    fast-forwards the target (None: unknown)."""
     status = str(rec.get("status"))
     nodes = list(rec.get("nodes") or [])
     by = {n["id"]: n for n in nodes}
@@ -925,6 +1004,25 @@ def resume_view(
         else:
             note = f"{head} because {target} moved during the run. Press Land to add it now."
         out.update(available=True, kind="land", from_level=L, note=note)
+        return out
+    rw = repair_waiting(rec)
+    if rw is not None:
+        L = int(rw["level"])
+        names = [i for i in rw.get("merged") or [] if i in by]
+        err = rw.get("error") or {}
+        passes = int(rw.get("repair_pass") or 1)
+        targets = ", ".join(err.get("targets") or rw.get("regressions") or [])
+        if passes >= max_attempts:
+            out.update(kind="repair", from_level=L,
+                       note=(f"Level {L} still fails after {passes} repair passes (the cap is "
+                             f"[rebuild] max_attempts = {max_attempts}): {targets}. Revise the "
+                             "plan or raise the cap to try again."))  # fmt: skip
+            return out
+        note = (f"Level {L} still fails after its repairs (node {_ids(names)}): {targets}. Run "
+                f"repairs it again (up to {repair_attempts} attempt(s)) from its merged nodes; "
+                f"no node starts over, and {kept_txt}"
+                + (" and not run again." if kept else "."))  # fmt: skip
+        out.update(available=True, kind="repair", from_level=L, note=note)
         return out
     levels = [int(by[i].get("level", 0)) for i in will_run]
     L = min(levels) if levels else None
@@ -1069,12 +1167,17 @@ class PlanManager:
             except OSError as exc:
                 self.log(f"plan {pid}: the state file could not be written: {exc}")
 
-    def _event(self, plan: _Plan, event: str, node: dict[str, Any] | None = None) -> None:
-        """With the lock held: one timeline entry (the plan's, and the node's)."""
-        at = _now()
-        plan.record.setdefault("timeline", []).append({"at": at, "event": event})
+    def _event(
+        self, plan: _Plan, event: str, node: dict[str, Any] | None = None, repair: bool = False
+    ) -> None:
+        """With the lock held: one timeline entry (the plan's, and the node's); a repair
+        loop's entries carry ``repair: true`` (API v1.11)."""
+        entry: dict[str, Any] = {"at": _now(), "event": event}
+        if repair:
+            entry["repair"] = True
+        plan.record.setdefault("timeline", []).append(entry)
         if node is not None:
-            node.setdefault("timeline", []).append({"at": at, "event": event})
+            node.setdefault("timeline", []).append(dict(entry))
 
     def _load(self) -> None:
         """Every plan of the store; one that was planning or running when Studio stopped
@@ -1116,10 +1219,7 @@ class PlanManager:
 
     def _reconcile(self, plan: _Plan) -> None:
         rec = plan.record
-        killed = []
-        for info in rec.get("pids") or []:
-            if kill_orphan(info, self.log):
-                killed.append({k: info.get(k) for k in ("pid", "pgid", "role", "command")})
+        killed = reap_orphans(rec.get("pids") or [], self.cfg.stop_grace, self.log)
         was = rec["status"]
         now = _now()
         rec.update(status="interrupted", interrupted=True, interrupted_at=now,
@@ -1283,8 +1383,8 @@ class PlanManager:
         if wait > 0:
             deadline = time.monotonic() + min(wait, MAX_WAIT)
             while time.monotonic() < deadline:
-                with self.lock:
-                    if plan.record["status"] not in TRANSIENT:
+                with self.lock:  # the end-of-thread bookkeeping done too (planner usage)
+                    if plan.record["status"] not in TRANSIENT and plan.done.is_set():
                         break
                 plan.done.wait(0.1)
         with self.lock:
@@ -1326,7 +1426,8 @@ class PlanManager:
             except (RebuildError, OSError, subprocess.SubprocessError):
                 pass
         return resume_view(rec, checked_out_at=checked, owner_worktree=owner, fast_forward=ff,
-                           max_attempts=self.cfg.max_attempts)  # fmt: skip
+                           max_attempts=self.cfg.max_attempts,
+                           repair_attempts=max(1, self.cfg.level_repair_attempts))  # fmt: skip
 
     @staticmethod
     def _fast_forwards(repo: Path, name: str, tip: str) -> bool | None:
@@ -1375,9 +1476,26 @@ class PlanManager:
                     plan.record["planner"]["wall_s"] + time.monotonic() - t0, 2
                 )
                 plan.proc = None
+                self._planner_usage(plan)
+                self._totals(plan)
                 self._event(plan, plan.record["status"])
                 self._save(plan)
             plan.done.set()
+
+    def _planner_usage(self, plan: _Plan) -> None:
+        """With the lock held: ``planner_usage`` (API v1.11), the planner calls' tokens
+        (cache included), list-price estimate, wall time and number of calls."""
+        pl = plan.record["planner"]
+        u = pl.get("usage") or {}
+        plan.record["planner_usage"] = {
+            "tokens_in": int(u.get("tokens_in") or 0),
+            "tokens_out": int(u.get("tokens_out") or 0),
+            "cache_read_input_tokens": int(u.get("cache_read_input_tokens") or 0),
+            "cache_creation_input_tokens": int(u.get("cache_creation_input_tokens") or 0),
+            "cost_usd_list_estimate": round(float(u.get("cost_usd_list_estimate") or 0.0), 6),
+            "wall_s": round(float(pl.get("wall_s") or 0.0), 2),
+            "calls": int(pl.get("attempts") or 0),
+        }
 
     def _plan(self, plan: _Plan, feedback: str | None, previous: Any) -> None:
         areas = self.rb.area_list()
@@ -1442,6 +1560,7 @@ class PlanManager:
                 return
             plan.doc = copy.deepcopy(doc)
             self._apply(plan, v)
+            self._drop_built(plan)
             rec["source"] = source
             rec["fallback_reason"] = reason
             rec["status"] = "ready"
@@ -1482,6 +1601,86 @@ class PlanManager:
             })  # fmt: skip
         rec["nodes"] = nodes
 
+    # -- what is built already (API v1.11)
+    def _target_tip(self, plan: _Plan) -> str | None:
+        """The target branch's tip now (the `from` commit when the branch is still to be
+        created), or None."""
+        try:
+            repo = self.rb.repo()
+        except RebuildError:
+            return None
+        name = str(plan.record.get("target_branch") or "")
+        r = _git(repo, "rev-parse", "-q", "--verify", f"refs/heads/{name}")
+        if r.returncode == 0:
+            return r.stdout.strip()
+        frm = (plan.branch or {}).get("from") if isinstance(plan.branch, Mapping) else None
+        r = _git(repo, "rev-parse", "-q", "--verify", f"{frm or 'HEAD'}^{{commit}}")
+        return r.stdout.strip() if r.returncode == 0 else None
+
+    def _links(self) -> dict[str, list[str]]:
+        return {k: list(v) for k, v in (self._trace().get("links") or {}).items()}
+
+    def _node_targets(self, n: Mapping[str, Any], links: Mapping[str, list[str]]) -> list[str]:
+        """Every check a node's rules link to (its scope's targets)."""
+        return list(
+            dict.fromkeys(t for r in n["scope"].get("rules") or [] for t in links.get(r, []))
+        )
+
+    def _scope_failing(
+        self, plan: _Plan, failing: set[str], links: Mapping[str, list[str]]
+    ) -> bool:
+        """Whether anything fails in the plan's scope (any failure for the scope ``all``)."""
+        if plan.scope.get("kind") == "all":
+            return bool(failing)
+        mine = {t for r in plan.scope["rules"] for t in links.get(r, [])} | set(plan.scope["rules"])
+        return bool(mine & failing)
+
+    def _node_has_work(self, plan: _Plan, n: Mapping[str, Any], failing: set[str],
+                       links: Mapping[str, list[str]]) -> bool:  # fmt: skip
+        """Whether a node has something failing in its scope: the integration node, its
+        plan scope; a scaffold with no rules of its own, anything failing in the plan scope
+        (it builds what the other nodes plug into); any other node, its scope's checks."""
+        if n["kind"] == "integration":
+            return self._scope_failing(plan, failing, links)
+        rules = list(n["scope"].get("rules") or [])
+        if n["kind"] == "scaffold" and not rules:
+            return self._scope_failing(plan, failing, links)
+        mine = set(self._node_targets(n, links)) | set(rules)
+        return bool(mine & failing)
+
+    def _built_areas(
+        self, plan: _Plan, areas: Sequence[Mapping[str, Any]]
+    ) -> dict[str, bool | None]:
+        """Per area of the plan scope: built on the target branch (every check of it passed
+        at the tip, from the per-tip results), not built, or None (the tip never gated)."""
+        res = self.rb.tip_result(self._target_tip(plan))
+        out: dict[str, bool | None] = {}
+        for a in areas:
+            if a["id"] == areas_mod.ALL or a["id"] not in plan.scope["areas"]:
+                continue
+            if res is None:
+                out[a["id"]] = None
+            else:
+                out[a["id"]] = not (set(a.get("targets") or []) & set(res.get("failing") or []))
+        return out
+
+    def _drop_built(self, plan: _Plan) -> None:
+        """With the lock held, after planning or a revision: a node with nothing failing in
+        its scope at the target's tip (per-tip results) is ``passed`` with
+        ``nothing_to_build`` and never runs an agent -- the scaffold included (API v1.11).
+        Nothing is dropped when the tip was never gated."""
+        tip = self._target_tip(plan)
+        res = self.rb.tip_result(tip)
+        if res is None:
+            return
+        failing = set(res.get("failing") or [])
+        links = self._links()
+        for n in plan.record["nodes"]:
+            if n["status"] == "pending" and not self._node_has_work(plan, n, failing, links):
+                n.update(status="passed", nothing_to_build=True, dropped_at_planning=tip)
+                self._event(plan, f"node {n['id']}: nothing failing in its scope at "
+                            f"{str(tip)[:10]}; dropped (no agent)", n)  # fmt: skip
+
     def _file_tree(self) -> list[str]:
         try:
             repo = self.rb.repo()
@@ -1508,14 +1707,17 @@ class PlanManager:
         if self.cfg.planner == "stub":
             return self._stub(plan, retry=bool(issues))
         failing = None
+        built = None
         with contextlib.suppress(Exception):
             views = self.rb.areas(None, branch=plan.record["target_branch"])
             failing = {a["id"]: a.get("failing") for a in views}
+        with contextlib.suppress(Exception):
+            built = self._built_areas(plan, areas)
         text = planner_prompt(
             project=self.rb.name, scope=plan.scope, areas=areas, trace=trace,
             data_model=self.data_model(), file_tree=self._file_tree(),
             max_parallel=plan.record["max_parallel"], failing=failing, issues=issues,
-            previous=previous, feedback=feedback,
+            previous=previous, feedback=feedback, built=built,
         )  # fmt: skip
         argv = build_planner_argv(claude_bin=self.rb.claude_bin, text=text,
                                   model=self.cfg.planner_model, system=epg_prompt())  # fmt: skip
@@ -1537,6 +1739,7 @@ class PlanManager:
         if plan.stop.is_set():
             _kill_group(proc, signal.SIGTERM)
         t = Transcript()
+        seen = StreamUsage()
         stderr: list[str] = []
         drainer = threading.Thread(target=lambda: stderr.extend(proc.stderr or ()), daemon=True)
         drainer.start()
@@ -1560,6 +1763,7 @@ class PlanManager:
                     continue
                 if isinstance(rec, dict):
                     t.feed(rec)
+                    seen.feed(rec)
             proc.wait()
         finally:
             timer.cancel()
@@ -1580,6 +1784,9 @@ class PlanManager:
                  "cost_usd_list_estimate": result.get("cost_usd", 0.0)}  # fmt: skip
             with self.lock:
                 _sum_into(plan.record["planner"]["usage"], _node_usage(u))
+        elif seen.messages:  # no result (a timeout, a crash): the usage seen so far (v1.11)
+            with self.lock:
+                _sum_into(plan.record["planner"]["usage"], _node_usage(seen.totals()))
         if timed_out.is_set():
             return None, f"the planner did not answer within {self.cfg.planner_timeout:g}s"
         if errors:
@@ -1737,6 +1944,7 @@ class PlanManager:
                 plan.record["branch"] = edits["branch"]
                 plan.record["target_branch"] = target["name"]
             self._apply(plan, v)
+            self._drop_built(plan)
             plan.record["status"] = "ready"
             plan.record["approved"] = None
             self._event(plan, f"revised (version {plan.record['version']})")
@@ -1814,6 +2022,9 @@ class PlanManager:
         pid = rec["id"]
         lw = land_waiting(rec)
         landing = set(lw["merged"]) if lw else set()
+        rw = repair_waiting(rec)
+        if rw is not None:  # a repair pass goes on from the level's merged nodes (v1.11)
+            landing |= set(rw.get("merged") or [])
         self.rb.plan_active = pid
         plan.stop.clear()
         plan.done.clear()
@@ -1981,8 +2192,8 @@ class PlanManager:
                     if n["status"] == "running" and n.get("build_id")]  # fmt: skip
         if proc is not None:
             _kill_group(proc, signal.SIGTERM)
-        if irun is not None and irun.proc is not None:
-            _kill_group(irun.proc, signal.SIGTERM)
+        if irun is not None and irun.proc is not None and irun.proc_role != "gate":
+            _kill_group(irun.proc, signal.SIGTERM)  # a gate stops its own tree (v1.11)
         for rid in live:
             with contextlib.suppress(RebuildError):
                 self.rb.stop(rid)
@@ -2173,6 +2384,7 @@ class PlanManager:
         with self.lock:
             rec.update(target_branch=name, owner_head=owner_head, target_tip=branch_tip)
             rec["created_branch"] = plan.created_target
+            rec["gate_config"] = self._gate_config()
             self._save(plan)
         # resume (v1.10): a level that passed its full gate but never landed lands first
         lw = land_waiting(rec)
@@ -2189,39 +2401,49 @@ class PlanManager:
         if plan.land_only and remerge is None:
             self._end(plan, final_status(rec))
             return
-        # the start baseline: the full gate on the target's tip
-        irun = self._irun(plan, branch_tip, f"{pid}-start-{rec['runs']}", plan.stop)
-        plan.irun = irun
-        try:
-            if (
-                target["merge_owner_head"]
-                and _git(
-                    irun.worktree, "merge-base", "--is-ancestor", owner_head, "HEAD"
-                ).returncode
-                != 0
-            ):
-                r = _git(irun.worktree, "merge", "--no-edit", "-q", owner_head, timeout=300)
-                if r.returncode != 0:
-                    _git(irun.worktree, "merge", "--abort")
-                    self._end(plan, "failed", {"kind": "merge_conflict", "message":
-                              f"merging the owner's HEAD {owner_head[:10]} into {name} "
-                              f"conflicts: {_short(r.stdout or r.stderr, 400)}"})  # fmt: skip
-                    return
-            start_sha = _git(irun.worktree, "rev-parse", "HEAD").stdout.strip()
-            t0 = time.monotonic()
-            gates, counts, findings = rb.gate_round(irun, 0)
-        finally:
-            self._drop_irun(plan, irun)
-        if plan.stop.is_set():
-            return
-        broken = [f"`{g['command']}` exited {g['exit_code']}" for g in gates
-                  if g["exit_code"] not in (0, 1)]  # fmt: skip
-        if broken or not gates:
-            self._end(plan, "failed", {"kind": "baseline", "message": "the gates could not run "
-                      f"on the start tip: {'; '.join(broken) or 'no gate ran'}"})  # fmt: skip
-            return
-        last_failing = {areas_mod.finding_identity(f) for f in findings}
-        last = {"findings": findings, "gates": gates, "counts": counts}
+        # the start baseline: the full gate on the target's tip -- unless that tip was gated
+        # before (its per-tip results are reused: a tip is never gated twice, API v1.11)
+        need_merge = (
+            target["merge_owner_head"]
+            and _git(repo, "merge-base", "--is-ancestor", owner_head, branch_tip).returncode != 0
+        )
+        cached = None if need_merge else self._usable(rb.tip_result(branch_tip))
+        t0 = time.monotonic()
+        if cached is not None:
+            start_sha = branch_tip
+            gates, counts = list(cached.get("gates") or []), dict(cached.get("counts") or {})
+            findings = [dict(f) for f in cached.get("findings") or []]
+            start_res = cached
+        else:
+            irun = self._irun(plan, branch_tip, f"{pid}-start-{rec['runs']}", plan.stop)
+            plan.irun = irun
+            try:
+                if need_merge:
+                    r = _git(irun.worktree, "merge", "--no-edit", "-q", owner_head, timeout=300)
+                    if r.returncode != 0:
+                        _git(irun.worktree, "merge", "--abort")
+                        self._end(plan, "failed", {"kind": "merge_conflict", "message":
+                                  f"merging the owner's HEAD {owner_head[:10]} into {name} "
+                                  f"conflicts: {_short(r.stdout or r.stderr, 400)}"})  # fmt: skip
+                        return
+                start_sha = _git(irun.worktree, "rev-parse", "HEAD").stdout.strip()
+                gates, counts, findings = rb.gate_round(irun, 0)
+                report = list(irun.report_scenarios)
+            finally:
+                self._drop_irun(plan, irun)
+            if plan.stop.is_set():
+                return
+            broken = [f"`{g['command']}` exited {g['exit_code']}" for g in gates
+                      if g["exit_code"] not in (0, 1)]  # fmt: skip
+            if broken or not gates:
+                what = "; ".join(broken) or "no gate ran"
+                self._end(plan, "failed", {"kind": "baseline", "message":
+                          f"the gates could not run on the start tip: {what}"})  # fmt: skip
+                return
+            start_res = self._record_tip(start_sha, "full", gates, counts, findings, report,
+                                         f"plan {pid} start")  # fmt: skip
+        last_failing = set(start_res["failing"])
+        last = self._last(start_res, findings, gates, counts)
         last_good = start_sha
         with self.lock:
             rec["baseline"] = {
@@ -2230,13 +2452,16 @@ class PlanManager:
                 "failing": sorted(last_failing),
                 "findings": [{"title": f["title"], "target": f.get("target") or ""}
                              for f in findings],
+                "reused": cached is not None,
             }  # fmt: skip
+            how = " (recorded results of that tip, not gated again)" if cached is not None else ""
             self._event(plan, f"start baseline on {name} at {start_sha[:10]}: "
-                        f"{len(last_failing)} failing")  # fmt: skip
+                        f"{len(last_failing)} failing{how}")  # fmt: skip
             self._save(plan)
         self._results(name, start_sha, branch_tip, last_failing, f"plan {pid} start")
         nodes = {n["id"]: n for n in rec["nodes"]}
         failed_level = False
+        exhausted: dict[str, Any] | None = None
         if remerge is not None:
             # the target moved past the waiting level's tip: its node commits are merged onto
             # the new tip and only the full gate runs again (no agent)
@@ -2251,10 +2476,10 @@ class PlanManager:
                 self._event(plan, f"level {L}: re-merging {', '.join(lr['nodes'])} onto "
                             f"{name} at {last_good[:10]} (no agent)")  # fmt: skip
                 self._save(plan)
-            outcome = self._merge_level(plan, L, lr, again, [], last_good, last_failing)
+            outcome = self._merge_level(plan, L, lr, again, [], last_good, last_failing, last)
             if plan.stop.is_set():
                 return
-            if outcome is not None and outcome.get("tip"):
+            if _landable(outcome):
                 new = self._advance_level(plan, L, lr, outcome, repo, name, branch_tip,
                                           target["checked_out_main"], "resume")  # fmt: skip
                 if new is not None:
@@ -2273,6 +2498,60 @@ class PlanManager:
             if failed_level or plan.land_only:
                 self._end(plan, final_status(rec))
                 return
+        # resume (v1.11): a level whose repairs ran out repairs again, from its merged nodes
+        rw = repair_waiting(rec)
+        if rw is not None:
+            L = int(rw["level"])
+            again = [nodes[i] for i in rw["merged"] if i in nodes and nodes[i].get("commit")]
+            lr = {"level": L, "run": rec["runs"], "base": last_good,
+                  "nodes": [n["id"] for n in again], "status": "running", "merged": [],
+                  "merge_conflicts": [], "tip": None, "gate": None, "regressions": [],
+                  "blame": [], "started": _now(), "finished": None, "repair_resume": True,
+                  "repair_pass": int(rw.get("repair_pass") or 1) + 1}  # fmt: skip
+            with self.lock:
+                rw["superseded"] = True
+                rw["repair_pending"] = False
+                for n in again:
+                    n.update(status="passed", error=None)
+                rec["level_runs"].append(lr)
+                self._event(plan, f"level {L}: another repair pass (pass {lr['repair_pass']}) "
+                            f"of {', '.join(lr['nodes'])} onto {name} at {last_good[:10]}",
+                            None, repair=True)  # fmt: skip
+                self._save(plan)
+            ran = [n for n in again if n.get("build_id")]
+            outcome = self._level_end(plan, L, lr, again, ran, last_good, last_failing, last,
+                                      force_repair=True)  # fmt: skip
+            if plan.stop.is_set():
+                return
+            if _landable(outcome):
+                new = self._advance_level(plan, L, lr, outcome, repo, name, branch_tip,
+                                          target["checked_out_main"], "resume")  # fmt: skip
+                if new is not None:
+                    branch_tip = last_good = new
+                    last_failing = set(outcome["failing"])
+                    last = outcome["last"]
+                else:
+                    failed_level = True
+            else:
+                failed_level = True
+                if outcome is not None and outcome.get("exhausted"):
+                    exhausted = outcome["exhausted"]
+            for n in again:
+                run = rb.runs.get(n.get("build_id") or "")
+                if run is not None and run.worktree.is_dir():
+                    rb.remove_worktree(run)
+            with self.lock:
+                if lr["status"] == "running":
+                    lr["status"] = "failed" if failed_level else "passed"
+                lr["finished"] = _now()
+                self._save(plan)
+            if failed_level:
+                if exhausted is not None:
+                    self._end(plan, "partial", exhausted)
+                else:
+                    self._end(plan, final_status(rec))
+                return
+        n_levels = len(rec["levels"])
         for L, ids in enumerate(rec["levels"]):
             if plan.stop.is_set():
                 return
@@ -2291,6 +2570,17 @@ class PlanManager:
                 self._save(plan)
             if not todo:
                 continue
+            if L == n_levels - 1 and self.cfg.level_gate == "regression":
+                # the last level decides from the unscoped full gate (API v1.11)
+                full = self._final_full_gate(plan, last_good, last_failing, last)
+                if plan.stop.is_set():
+                    return
+                if full is None:
+                    self._end(plan, final_status(rec) if any(x["merged"] for x in rec["nodes"])
+                              else "failed", {"kind": "gate", "message": "the full gate could "
+                              f"not run on {last_good[:10]}"})  # fmt: skip
+                    return
+                last_failing, last = full
             lr: dict[str, Any] = {"level": L, "run": rec["runs"], "base": last_good,
                                   "nodes": [n["id"] for n in todo], "status": "running",
                                   "merged": [], "merge_conflicts": [], "tip": None, "gate": None,
@@ -2306,12 +2596,14 @@ class PlanManager:
             passed = [n for n in todo if n["status"] == "passed" and n.get("commit")]
             ran = [n for n in todo if n.get("build_id") and n["status"] in ("passed", "gave_up")]
             if passed or (ran and self.cfg.metrics_hook):
-                outcome = self._merge_level(plan, L, lr, passed, ran, last_good, last_failing)
+                outcome = self._level_end(plan, L, lr, passed, ran, last_good, last_failing, last)
                 if plan.stop.is_set():
                     return
                 if outcome is not None and outcome.get("failed"):
                     failed_level = True
-                elif outcome is not None and outcome.get("tip"):
+                    if outcome.get("exhausted"):
+                        exhausted = outcome["exhausted"]
+                elif _landable(outcome):
                     new = self._advance_level(plan, L, lr, outcome, repo, name, branch_tip,
                                               target["checked_out_main"], "run")  # fmt: skip
                     if new is None:
@@ -2320,7 +2612,9 @@ class PlanManager:
                         branch_tip = last_good = new
                         last_failing = set(outcome["failing"])
                         last = outcome["last"]
-                for n in todo:
+                for n in rec["nodes"]:
+                    if n.get("level") != L:
+                        continue
                     run = rb.runs.get(n.get("build_id") or "")
                     if run is not None and n["status"] in ("passed", "regressed", "merge_conflict"):
                         rb.remove_worktree(run)
@@ -2335,13 +2629,103 @@ class PlanManager:
             all_nodes = rec["nodes"]
             any_passed = any(n["status"] == "passed" for n in all_nodes)
             landed = any(n["merged"] for n in all_nodes)
-            if failed_level:
+            if exhausted is not None:
+                status = "partial"
+            elif failed_level:
                 status = "partial" if landed else "failed"
             elif all(n["status"] == "passed" for n in all_nodes):
                 status = "passed"
             else:
                 status = "partial" if any_passed else "failed"
-        self._end(plan, status)
+        self._end(plan, status, exhausted)
+
+    def _gate_config(self) -> dict[str, Any]:
+        """The gate settings a run used (API v1.11), for the UI and the results doc."""
+        return {"scoped_gate_args": self.cfg.scoped_gate_args,
+                "level_gate": self.cfg.level_gate,
+                "level_repair_attempts": self.cfg.level_repair_attempts,
+                "node_timeout": self.cfg.node_timeout,
+                "node_max_tokens": self.cfg.node_max_tokens}  # fmt: skip
+
+    def _usable(self, res: Mapping[str, Any] | None) -> dict[str, Any] | None:
+        """A recorded tip result the runner may reuse: a full or regression gate of the
+        same gate commands."""
+        if not res or res.get("kind") not in ("full", "regression"):
+            return None
+        if list(res.get("gate_cmds") or []) != list(self.cfg.gates):
+            return None
+        return dict(res)
+
+    def _record_tip(
+        self,
+        sha: str,
+        kind: str,
+        gates: Sequence[Mapping[str, Any]],
+        counts: Mapping[str, int],
+        findings: Sequence[Mapping[str, Any]],
+        report: Sequence[str],
+        source: str,
+        *,
+        selected: Sequence[str] | None = None,
+        last_failing: Sequence[str] = (),
+        prev_passing: Sequence[str] = (),
+    ) -> dict[str, Any]:
+        """Record (and answer) the per-tip result of a gate run on `sha` (API v1.11)."""
+        doc = result_doc(kind=kind, gates=gates, counts=counts, findings=findings,
+                         report=report, trace_json=self._trace(), gate_cmds=self.cfg.gates,
+                         source=source, selected=selected, last_failing=last_failing,
+                         prev_passing=prev_passing)  # fmt: skip
+        self.rb.put_tip_result(sha, doc)
+        return doc
+
+    @staticmethod
+    def _last(
+        res: Mapping[str, Any],
+        findings: Sequence[Mapping[str, Any]],
+        gates: Sequence[Mapping[str, Any]],
+        counts: Mapping[str, int],
+    ) -> dict[str, Any]:
+        """What the next level starts from: the gate's findings (a regression gate's
+        carried scenarios added as findings), its failing and passing sets."""
+        fs = [dict(f) for f in findings]
+        have = {areas_mod.finding_identity(f) for f in fs}
+        for t in res.get("carried") or []:
+            if t not in have:
+                fs.append({"title": f"{t} (failing before; not re-run by the regression gate)",
+                           "target": t})  # fmt: skip
+        return {"findings": fs, "gates": list(gates), "counts": dict(counts),
+                "failing": list(res.get("failing") or []),
+                "passing": list(res.get("passing") or [])}  # fmt: skip
+
+    def _final_full_gate(
+        self, plan: _Plan, tip: str, last_failing: set[str], last: Mapping[str, Any]
+    ) -> tuple[set[str], dict[str, Any]] | None:
+        """``level_gate = "regression"``: before the last level, the unscoped full gate on
+        the tip (unless that tip already has a full result), so the integration node
+        decides from every check (API v1.11). None: the gate could not run."""
+        res = self.rb.tip_result(tip)
+        if res is not None and res.get("kind") == "full" and self._usable(res):
+            fs, gs, cs = res.get("findings") or [], res.get("gates") or [], res.get("counts") or {}
+            return set(res["failing"]), self._last(res, fs, gs, cs)
+        rec = plan.record
+        irun = self._irun(plan, tip, f"{rec['id']}-final-{rec['runs']}", plan.stop)
+        plan.irun = irun
+        try:
+            gates, counts, findings = self.rb.gate_round(irun, len(rec["levels"]))
+            report = list(irun.report_scenarios)
+        finally:
+            self._drop_irun(plan, irun)
+        if plan.stop.is_set() or not gates or any(g["exit_code"] not in (0, 1) for g in gates):
+            return None
+        doc = self._record_tip(tip, "full", gates, counts, findings, report,
+                               f"plan {rec['id']} final full gate",
+                               prev_passing=last.get("passing") or [])  # fmt: skip
+        with self.lock:
+            rec["final_gate"] = {"sha": tip, "failing": doc["failing"], "at": _now(),
+                                 "gates": doc["gates"]}  # fmt: skip
+            self._event(plan, f"final full gate on {tip[:10]}: {len(doc['failing'])} failing")
+            self._save(plan)
+        return set(doc["failing"]), self._last(doc, findings, gates, counts)
 
     def _results(self, name: str, sha: str, tip: str, failing: set[str], source: str) -> None:
         with self.lock:
@@ -2439,11 +2823,20 @@ class PlanManager:
                 if earlier:
                     note += ("\n\nA previous attempt ended with these findings:\n"
                              + "\n".join(f"- {x}" for x in earlier))  # fmt: skip
+                failing_now = set(
+                    last.get("failing")
+                    or [areas_mod.finding_identity(f) for f in last.get("findings") or []]
+                )
+                # a scaffold with no rules of its own runs while something fails in the plan
+                # scope; one whose own checks all pass is dropped like any node (API v1.11)
+                always = (n["kind"] == "scaffold" and not rules
+                          and self._scope_failing(plan, failing_now, links))  # fmt: skip
                 try:
                     rid = self.rb.start_node(
                         plan_id=rec["id"], node_id=n["id"], scope=scope, tip=tip,
                         target_branch=name, baseline=last, model=n["model"],
-                        always_run=n["kind"] == "scaffold", note=note, attempt=attempt,
+                        always_run=always, note=note, attempt=attempt,
+                        passing=last.get("passing"), node_kind=n["kind"],
                     )  # fmt: skip
                 except RebuildError as e:
                     with self.lock:
@@ -2569,15 +2962,25 @@ class PlanManager:
         ran: list[dict[str, Any]],
         base: str,
         last_failing: set[str],
+        last: Mapping[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         """Merge the level's passed nodes into `base` (plan node order), run their metrics
-        hooks there, and run the full gate: ``{tip, failing, last, merged}``, ``{failed}``,
-        or None (nothing merged)."""
+        hooks there, and run the level gate: ``{tip, failing, last, merged}``, ``{failed,
+        repairable, failing_targets, tip, last, merged, findings}``, or None (nothing
+        merged). The level gate is the full gate, or with ``[rebuild] level_gate =
+        "regression"`` (API v1.11) the first gate on the scenarios that passed before the
+        level and those of every scope landed so far, with the full layers (the last level
+        and a level holding the integration node always run the full gate). The level
+        fails on a regression (a check failing that did not fail on `base`) and on a merged
+        node's own target that passed its node gate but fails here (race-only or
+        cross-area); its per-tip result is recorded either way."""
         rb = self.rb
-        pid = plan.record["id"]
-        irun = self._irun(plan, base, f"{pid}-L{L}-{plan.record['runs']}", plan.stop)
+        rec = plan.record
+        pid = rec["id"]
+        irun = self._irun(plan, base, f"{pid}-L{L}-{rec['runs']}", plan.stop)
         plan.irun = irun
         wt = irun.worktree
+        last = last or {}
         try:
             merged = []
             for n in passed:
@@ -2599,6 +3002,8 @@ class PlanManager:
             if self.cfg.metrics_hook:
                 cwd = wt / irun.project_rel
                 for n in ran:
+                    if n.get("build_id") not in rb.runs:
+                        continue
                     rb.node_hook(n["build_id"], cwd)
                     with self.lock:
                         n["metrics"] = copy.deepcopy(rb.runs[n["build_id"]].record.get("metrics"))
@@ -2608,45 +3013,436 @@ class PlanManager:
                          f"metrics: plan {pid} level {L}\n\nLattice-Plan: {pid}\n")  # fmt: skip
             if not merged or plan.stop.is_set():
                 return None
+            links = self._links()
+            final = L >= len(rec["levels"]) - 1 or any(n["kind"] == "integration" for n in merged)
+            mode = "full" if final else self.cfg.level_gate
+            selected: list[str] | None = None
+            if mode == "regression":
+                landed = [t for n in rec["nodes"] if n.get("merged") or n in merged
+                          for t in self._node_targets(n, links)]  # fmt: skip
+                selected = [t for t in dict.fromkeys([*(last.get("passing") or []), *landed])
+                            if t.startswith("scenario:")]  # fmt: skip
+                if selected and irun.gates:
+                    path = write_selection(wt, selected, "level-selection.json")
+                    irun.gates = [f"{irun.gates[0]} --only-file {shlex.quote(str(path))}",
+                                  *irun.gates[1:]]  # fmt: skip
+                else:
+                    mode, selected = "full", None
             gates, counts, findings = rb.gate_round(irun, L + 1)
             if plan.stop.is_set():
                 return None
-            failing = {areas_mod.finding_identity(f) for f in findings}
-            broken = [g for g in gates if g["exit_code"] not in (0, 1)]
-            regressions = sorted(failing - last_failing)
             tip = _git(wt, "rev-parse", "HEAD").stdout.strip()
+            broken = [g for g in gates if g["exit_code"] not in (0, 1)]
+            doc = self._record_tip(tip, mode, gates, counts, findings, list(irun.report_scenarios),
+                                   f"plan {pid} level {L} ({mode} gate)", selected=selected,
+                                   last_failing=sorted(last_failing),
+                                   prev_passing=last.get("passing") or [])  # fmt: skip
+            failing = set(doc["failing"])
+            regressions = sorted(failing - last_failing)
+            mine = {n["id"]: self._build_targets(n) for n in merged}
+            in_scope = sorted({t for ts in mine.values() for t in ts if t in failing})
             gate = {"sha": tip, "verdict": "pass" if not findings else "fail", "counts": counts,
                     "failing": sorted(failing), "regressions": regressions,
-                    "newly_fixed": sorted(last_failing - failing),
+                    "newly_fixed": sorted(last_failing - failing), "mode": mode,
+                    "selected": len(selected) if selected is not None else None,
+                    "in_scope_failing": in_scope,
                     "gates": [{"command": g["command"], "exit_code": g["exit_code"],
                                "seconds": g["seconds"]} for g in gates]}  # fmt: skip
             with self.lock:
                 lr["gate"] = gate
                 lr["regressions"] = regressions
                 self._save(plan)
-            if regressions or broken:
-                blame = self._blame(regressions, merged)
-                why = (f"the full gate on the merged tip regressed: {', '.join(regressions)}"
-                       if regressions else "the gates could not run on the merged tip")  # fmt: skip
+            bad = sorted(set(regressions) | set(in_scope))
+            if bad or broken:
+                blame = self._blame(bad, merged)
+                if broken:
+                    why = "the gates could not run on the merged tip"
+                elif regressions:
+                    why = f"the full gate on the merged tip regressed: {', '.join(regressions)}"
+                    if in_scope:
+                        why += f"; still failing in scope: {', '.join(in_scope)}"
+                else:
+                    why = ("checks that passed in their node's gate fail on the merged tip: "
+                           + ", ".join(in_scope))  # fmt: skip
                 with self.lock:
                     lr["blame"] = blame
                     lr["status"] = "failed"
-                    lr["error"] = {"kind": "regression" if regressions else "gate", "message": why}
+                    lr["error"] = {"kind": "gate" if broken else "regression", "message": why}
                     for n in merged:
                         n["status"] = "regressed"
                         n["error"] = {"kind": "regression", "message": why}
-                    self._event(plan, f"level {L} failed its full gate: {why}")
+                    self._event(plan, f"level {L} failed its gate: {why}")
                     self._save(plan)
-                return {"failed": True}
+                self._anchor(plan, f"L{L}-failed", tip)
+                return {"failed": True, "repairable": not broken and bool(bad),
+                        "failing_targets": bad, "regressions": regressions,
+                        "in_scope_failing": in_scope, "tip": tip, "merged": merged,
+                        "findings": [dict(f) for f in findings],
+                        "last": self._last(doc, findings, gates, counts)}  # fmt: skip
             self._anchor(plan, f"L{L}", tip)  # the gated tip outlives the worktree (v1.10)
             with self.lock:
                 lr["tip"] = tip
                 lr["gated"] = True
                 self._save(plan)
             return {"tip": tip, "failing": failing, "merged": merged,
-                    "last": {"findings": findings, "gates": gates, "counts": counts}}  # fmt: skip
+                    "last": self._last(doc, findings, gates, counts)}  # fmt: skip
         finally:
             self._drop_irun(plan, irun)
+
+    def _build_targets(self, n: Mapping[str, Any]) -> list[str]:
+        """The checks a merged node's build made pass (its in-scope targets)."""
+        run = self.rb.runs.get(n.get("build_id") or "")
+        if run is None:
+            return []
+        return [str(t["id"]) for t in run.targets]
+
+    # -- the level repair loop (API v1.11)
+    def _level_end(
+        self,
+        plan: _Plan,
+        L: int,
+        lr: dict[str, Any],
+        passed: list[dict[str, Any]],
+        ran: list[dict[str, Any]],
+        base: str,
+        last_failing: set[str],
+        last: Mapping[str, Any],
+        force_repair: bool = False,
+    ) -> dict[str, Any] | None:
+        """The level's merge and gate, then up to ``[rebuild] level_repair_attempts`` repair
+        rounds while the gate fails on something a node can fix: each failing check is
+        attributed (:func:`attribute_failures`), the responsible nodes continue their
+        sessions with the level gate's findings, each verified by its own gate, then the
+        level merges again and the gate runs again. Still failing: ``exhausted`` (the plan
+        ends ``partial``, ``resume.kind`` ``repair``)."""
+        rec = plan.record
+        outcome = self._merge_level(plan, L, lr, passed, ran, base, last_failing, last)
+        cap = self.cfg.level_repair_attempts
+        if cap <= 0 and force_repair:
+            cap = 1
+        tries = 0
+        while (outcome is not None and outcome.get("failed") and outcome.get("repairable")
+               and cap > 0 and not plan.stop.is_set()):  # fmt: skip
+            if tries >= cap:
+                names = [n["id"] for n in outcome["merged"]]
+                total = int(rec.get("repair_attempts") or 0)
+                err = {"kind": "repair_exhausted", "level": L, "nodes": names,
+                       "targets": list(outcome["failing_targets"]),
+                       "message": f"level {L} still fails after {tries} repair attempt(s) "
+                       f"({total} in all): {', '.join(outcome['failing_targets'])}; "
+                       f"nodes {', '.join(names)}"}  # fmt: skip
+                with self.lock:
+                    lr["repair_pending"] = True
+                    lr["error"] = err
+                    self._event(plan, err["message"], None, repair=True)
+                    self._save(plan)
+                return {**outcome, "exhausted": err}
+            tries += 1
+            again = self._repair_attempt(plan, L, lr, outcome, last_failing, last, tries, cap)
+            if plan.stop.is_set():
+                return None
+            if again is None:
+                continue  # a repair did not pass its own gate: the next attempt goes on
+            with self.lock:
+                for n in again:
+                    n.update(status="passed", error=None)
+            ran_again = [n for n in again if n.get("build_id") in self.rb.runs]
+            outcome = self._merge_level(plan, L, lr, again, ran_again, base, last_failing, last)
+            entry = lr["repairs"][-1]
+            with self.lock:
+                if _landable(outcome):
+                    entry["outcome"] = "passed"
+                    lr["status"] = "running"
+                    lr.pop("error", None)
+                    self._event(plan, f"level {L}: repair attempt {tries} passed the level gate "
+                                f"at {outcome['tip'][:10]}", None, repair=True)  # fmt: skip
+                else:
+                    entry["outcome"] = "failed"
+                    entry["still_failing"] = list((outcome or {}).get("failing_targets") or [])
+                    still = ", ".join(entry["still_failing"])
+                    self._event(plan, f"level {L}: repair attempt {tries} still fails: {still}",
+                                None, repair=True)  # fmt: skip
+                self._save(plan)
+        return outcome
+
+    def _repair_attempt(
+        self,
+        plan: _Plan,
+        L: int,
+        lr: dict[str, Any],
+        outcome: Mapping[str, Any],
+        last_failing: set[str],
+        last: Mapping[str, Any],
+        k: int,
+        cap: int,
+    ) -> list[dict[str, Any]] | None:
+        """One repair attempt: the responsible nodes' repair rounds (concurrently) and, for
+        failures no node owns, a dedicated repair node started from the failing merged tip.
+        Answers the nodes to merge again (plan order, the repair node last), or None when a
+        repair did not pass its own gate."""
+        rec = plan.record
+        pid = rec["id"]
+        links = self._links()
+        merged = list(outcome["merged"])
+        targets = list(outcome["failing_targets"])
+        files = {n["id"]: self._commit_files(n) for n in merged}
+        found = {areas_mod.finding_identity(f): f for f in outcome.get("findings") or []}
+        finding_files = {t: [str(f["file"])] for t, f in found.items() if f.get("file")}
+        by_node, unowned, how = attribute_failures(
+            targets, merged, {n["id"]: self._node_targets(n, links) for n in merged},
+            files, finding_files,
+        )  # fmt: skip
+        with self.lock:
+            rec["repair_attempts"] = int(rec.get("repair_attempts") or 0) + 1
+            entry: dict[str, Any] = {"attempt": k, "of": cap, "run": rec["runs"], "at": _now(),
+                                     "tip": outcome["tip"], "targets": targets,
+                                     "attributed": how, "nodes": [], "outcome": None}  # fmt: skip
+            lr.setdefault("repairs", []).append(entry)
+            self._event(plan, f"level {L}: repair attempt {k} of {cap}: "
+                        + "; ".join(f"{nid} on {', '.join(ts)}" for nid, ts in by_node.items())
+                        + (f"; a repair node on {', '.join(unowned)}" if unowned else ""),
+                        None, repair=True)  # fmt: skip
+            self._save(plan)
+        started: list[tuple[dict[str, Any], str, dict[str, Any]]] = []
+        for n in merged:
+            if n["id"] not in by_node:
+                continue
+            rid = n.get("build_id")
+            run = self.rb.runs.get(rid or "")
+            if run is None:
+                continue
+            mine = list(dict.fromkeys([*by_node[n["id"]], *self._build_targets(n)]))
+            labels = {t: _short(found[t]["title"], 200) if t in found else t for t in mine}
+            brief = self._repair_brief(plan, L, n, outcome, by_node[n["id"]], merged, files,
+                                       k, cap)  # fmt: skip
+            before = copy.deepcopy(run.record.get("usage") or {})
+            rounds_before = len(run.record.get("rounds") or [])
+            try:
+                self.rb.repair_build(rid, plan_id=pid, brief=brief,
+                                     targets=[{"id": t, "label": labels[t]} for t in mine],
+                                     baseline_ids=sorted(last_failing),
+                                     passing=last.get("passing"), attempt=k)  # fmt: skip
+            except RebuildError as e:
+                with self.lock:
+                    entry["nodes"].append({"id": n["id"], "build_id": rid, "verify": "error",
+                                           "error": e.detail})  # fmt: skip
+                continue
+            with self.lock:
+                n["status"] = "repairing"
+                n["repairs"] = int(n.get("repairs") or 0) + 1
+                self._event(plan, f"node {n['id']}: repair attempt {k} ({rid})", n, repair=True)
+                self._save(plan)
+            started.append((n, rid, {"usage": before, "rounds": rounds_before}))
+        extra: dict[str, Any] | None = None
+        if unowned:
+            extra = self._repair_node(plan, L, outcome, unowned, found, k, cap)
+        for n, rid, snap in started:
+            run = self.rb.node_run(rid)
+            while not run.done.wait(0.1):
+                if plan.stop.is_set():
+                    with contextlib.suppress(RebuildError):
+                        self.rb.stop(rid)
+                    run.done.wait(30)
+                    break
+            self._collect_repair(plan, n, rid, snap, entry)
+        if plan.stop.is_set():
+            return None
+        ok = all(x.get("verify") == "pass" for x in entry["nodes"])
+        if extra is not None:
+            ok = ok and extra.get("status") == "passed"
+        with self.lock:
+            if not ok:
+                entry["outcome"] = "verify_failed"
+                for n in merged:
+                    if n["status"] == "repairing":
+                        n["status"] = "regressed"
+                self._event(plan, f"level {L}: repair attempt {k}: a repair did not pass its own "
+                            "gate", None, repair=True)  # fmt: skip
+            self._save(plan)
+        if not ok or not entry["nodes"] and extra is None:
+            return None
+        again = [n for n in merged]
+        if extra is not None:
+            again.append(extra)
+        return again
+
+    def _commit_files(self, n: Mapping[str, Any]) -> list[str]:
+        run = self.rb.runs.get(n.get("build_id") or "")
+        if run is None or not n.get("commit"):
+            return list(n.get("files_changed") or [])
+        out = _git(run.repo, "diff", "--name-only", f"{run.base}..{n['commit']}").stdout
+        return [x for x in out.splitlines() if x.strip()]
+
+    def _repair_brief(
+        self,
+        plan: _Plan,
+        L: int,
+        n: Mapping[str, Any],
+        outcome: Mapping[str, Any],
+        mine: Sequence[str],
+        merged: Sequence[Mapping[str, Any]],
+        files: Mapping[str, list[str]],
+        k: int,
+        cap: int,
+    ) -> str:
+        found = {areas_mod.finding_identity(f): f for f in outcome.get("findings") or []}
+        reg = set(outcome.get("regressions") or [])
+        out = [
+            f"# Repair: level {L} of plan {plan.record['id']} (attempt {k} of {cap})",
+            "",
+            f"Your node `{n['id']}` passed its own gate and was merged with the other nodes "
+            f"of level {L}. The merged result fails these checks that passed in isolation "
+            f"(Studio ran the level gate on the merged tip {str(outcome['tip'])[:10]}):",
+            "",
+        ]
+        for t in mine:
+            what = "a regression: it passed before the level" if t in reg else (
+                "your target: it passed in your node's gate")  # fmt: skip
+            title = found[t]["title"] if t in found else t
+            out.append(f"- {t} ({what}): {title}")
+        others = [m for m in merged if m["id"] != n["id"]]
+        if others:
+            out += ["", "The other nodes merged with yours in this level (their code is in the "
+                    "merged result, not in your worktree):"]  # fmt: skip
+            for m in others:
+                fl = ", ".join(files.get(m["id"]) or []) or "no files"
+                out.append(f"- {m['id']}: {fl}")
+        rest = [t for t in outcome.get("failing_targets") or [] if t not in mine]
+        if rest:
+            out += ["", "Also failing, repaired by others: " + ", ".join(rest)]
+        out += ["", "Fix the code, never the spec or the gate. Studio verifies your change with "
+                "your node's gate, merges your commit with the level again and re-runs the "
+                "level gate."]  # fmt: skip
+        return "\n".join(out)
+
+    def _collect_repair(self, plan: _Plan, n: dict[str, Any], rid: str,
+                        snap: Mapping[str, Any], entry: dict[str, Any]) -> None:  # fmt: skip
+        """A repair round's result into the node: its usage (the difference: repair usage
+        adds to the node and plan totals), its rounds and wall time, its new commit."""
+        run = self.rb.node_run(rid)
+        with self.lock:
+            r = copy.deepcopy(run.record)
+        u_now, u_then = r.get("usage") or {}, snap.get("usage") or {}
+        delta = {k: (u_now.get(k) or 0) - (u_then.get(k) or 0)
+                 for k in ("input_tokens", "output_tokens", "cache_read_input_tokens",
+                           "cache_creation_input_tokens", "cost_usd_list_estimate")}  # fmt: skip
+        rounds = len(r.get("rounds") or []) - int(snap.get("rounds") or 0)
+        wall = float(u_now.get("wall_s") or 0) - float(u_then.get("wall_s") or 0)
+        ok = r["status"] == "passed"
+        commit = (r.get("commit") or {}).get("sha") if ok else None
+        if commit:
+            self._anchor(plan, str(n["id"]), commit)
+        with self.lock:
+            _sum_into(n["usage"], _node_usage(delta))
+            n["rounds"] += max(0, rounds)
+            n["wall_s"] = round(n["wall_s"] + max(0.0, wall), 2)
+            n.setdefault("repair_usage", _node_usage({}))
+            _sum_into(n["repair_usage"], _node_usage(delta))
+            if commit:
+                old = n.get("commit")
+                n["commit"] = commit
+                if old and old != commit:
+                    lines = 0
+                    ns = _git(run.repo, "diff", "--numstat", f"{old}..{commit}").stdout
+                    for line in ns.splitlines():
+                        bits = line.split("\t")
+                        if len(bits) == 3:
+                            lines += sum(int(b) for b in bits[:2] if b.isdigit())
+                    n["lines_changed"] += lines
+                n["status"] = "passed"
+            else:
+                n["status"] = "regressed"
+            entry["nodes"].append({"id": n["id"], "build_id": rid,
+                                   "verify": "pass" if ok else "fail", "commit": commit,
+                                   "rounds": max(0, rounds),
+                                   "usage": _node_usage(delta)})  # fmt: skip
+            res = "passed its gate" if ok else "failed"
+            self._event(plan, f"node {n['id']}: repair round {res} ({rid})", n, repair=True)
+            self._totals(plan)
+            self._save(plan)
+
+    def _repair_node(
+        self,
+        plan: _Plan,
+        L: int,
+        outcome: Mapping[str, Any],
+        unowned: Sequence[str],
+        found: Mapping[str, Mapping[str, Any]],
+        k: int,
+        cap: int,
+    ) -> dict[str, Any] | None:
+        """A dedicated repair node for failing checks no merged node owns: a build scoped to
+        those checks, started from the failing merged tip, its commit merged after the
+        level's nodes. Answers the node (passed or not), or None when it could not start."""
+        rec = plan.record
+        owners = areas_mod.target_rules(self._trace())
+        rules = list(dict.fromkeys(r for t in unowned for r in owners.get(t, [])))
+        nid = f"repair-l{L}"
+        nodes = {n["id"]: n for n in rec["nodes"]}
+        n = nodes.get(nid)
+        with self.lock:
+            if n is None:
+                n = {"id": nid, "title": f"Repair of level {L}", "kind": "repair",
+                     "scope": {"kind": "rules", "rules": rules}, "depends_on": [],
+                     "why": "checks that fail only in the merged level and no node owns",
+                     "tier": "frontier", "model": self.cfg.models.get("frontier", "opus"),
+                     "touches": {"tables": [], "packages": [], "files": []},
+                     "gate": {"kind": "scoped", "checks": list(unowned), "decided_by": "studio"},
+                     "level": L, "status": "pending", "build_id": None, "builds": [],
+                     "branch": None, "commit": None, "merged": False, "nothing_to_build": False,
+                     "blocked_by": [], "usage": _node_usage({}), "wall_s": 0.0, "rounds": 0,
+                     "lines_changed": 0, "files_changed": [], "started_ts": None,
+                     "finished_ts": None, "error": None, "metrics": None, "attempts": 0,
+                     "timeline": [], "repair": True}  # fmt: skip
+                rec["nodes"].append(n)
+                if nid not in rec["levels"][L]:
+                    rec["levels"][L].append(nid)
+            n["status"] = "running"
+            n["started_ts"] = time.time()
+            attempt = int(n.get("attempts") or 0) + 1
+            self._save(plan)
+        scope = {"kind": "rules", "id": nid, "title": n["title"], "rules": rules,
+                 "targets": list(unowned)}  # fmt: skip
+        brief = "\n".join([
+            f"## Repair node of level {L}, plan {rec['id']} (attempt {k} of {cap})", "",
+            "The level's nodes each passed their own gate, but the merged result fails these "
+            "checks, and no node's scope or files own them:", "",
+            *(f"- {t}: {found[t]['title'] if t in found else t}" for t in unowned), "",
+            "You start from the merged result. Fix the code, never the spec or the gate.",
+        ])  # fmt: skip
+        try:
+            rid = self.rb.start_node(plan_id=rec["id"], node_id=nid, scope=scope,
+                                     tip=str(outcome["tip"]), target_branch=rec["target_branch"],
+                                     baseline=outcome["last"], model=n["model"], note=brief,
+                                     attempt=attempt, passing=outcome["last"].get("passing"),
+                                     node_kind="repair")  # fmt: skip
+        except RebuildError as e:
+            with self.lock:
+                n.update(status="gave_up", error={"kind": "start", "message": e.detail})
+                self._save(plan)
+            return n
+        if rid is None:
+            with self.lock:
+                n.update(status="gave_up", error={"kind": "repair", "message":
+                         "the repair node found nothing failing in its scope"})  # fmt: skip
+                self._save(plan)
+            return n
+        with self.lock:
+            n["build_id"] = rid
+            n["builds"].append(rid)
+            n["branch"] = self.rb.runs[rid].branch
+            n["attempts"] = attempt
+            self._event(plan, f"node {nid} started as {rid} (repair of level {L})", n, repair=True)
+            self._save(plan)
+        run = self.rb.node_run(rid)
+        while not run.done.wait(0.1):
+            if plan.stop.is_set():
+                with contextlib.suppress(RebuildError):
+                    self.rb.stop(rid)
+                run.done.wait(30)
+                break
+        self._collect(n, rid)
+        return n
 
     def _blame(self, regressions: Sequence[str], merged: Sequence[Mapping[str, Any]]) -> list[dict]:
         owners = areas_mod.target_rules(self._trace())

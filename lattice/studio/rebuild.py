@@ -69,6 +69,13 @@ from a separate worktree, never touching the owner's branch unless confirmed (an
 by ``git merge --ff-only`` in a clean worktree). Extra ``[rebuild]`` keys: ``areas``,
 ``metrics_hook``, ``findings_json``, ``integration_branch``, ``protected_branches``.
 
+**Build performance (API.md v1.11)**: ``[rebuild] scoped_gate_args`` (a plan node's gate on
+its scope plus the regression set, :func:`build_selection`), ``level_gate``,
+``level_repair_attempts`` (:meth:`Rebuilder.repair_build`), ``node_timeout``,
+``node_max_tokens`` (the usage seen so far is kept, :class:`StreamUsage`) and
+``stop_grace``; per-tip gate results (:meth:`Rebuilder.tip_result`); a gate's whole process
+tree and its labelled containers go when it is stopped (:meth:`Rebuilder._run_gate`).
+
 **TEST ONLY: the stub agent** (``[rebuild] agent = "stub"``): round k writes the files of
 ``rounds[k-1]`` of ``stub-rebuild.json`` in the worktree's project dir
 (``{"rounds": [{"files": {"path": "content"}, "hold": 0, "summary": "...",
@@ -113,7 +120,16 @@ from lattice.studio.session import (
     error_kind,
     write_configs,
 )
-from lattice.studio.state import StateStore, kill_orphan, proc_info
+from lattice.studio.state import (
+    OWNER_ENV,
+    StateStore,
+    descendants,
+    kill_orphan,
+    proc_info,
+    ps_table,
+    remove_owned_containers,
+    terminate_tree,
+)
 
 __all__ = [
     "RebuildConfig",
@@ -137,13 +153,19 @@ STUB_HOLD_MAX = 60.0
 FINISHED = ("passed", "gave_up", "stopped", "interrupted")
 LIVE = ("queued", "baseline", "running")  # a record found in one of these after a restart
 DEFAULT_MAX_ATTEMPTS = 3
+DEFAULT_LEVEL_REPAIRS = 2
+DEFAULT_STOP_GRACE = 5.0
+SCOPE_DIR = ".lattice-scope"  # a node's selection file, in its worktree (git-ignored)
+SCOPE_EXCLUDE = "/.lattice-scope/"
+GATE_SCAN_S = 1.0  # how often a running gate's descendants are recorded
 STUB_LOG_ENV = "LATTICE_STUB_AGENT_LOG"  # TEST ONLY: the stub agent logs each invocation
 SPEC_FILES = ("REQUIREMENTS.md", "spec.py", "spec.trace.json")
 WORKTREE_DIR = ".lattice/rebuilds"
 EXCLUDE_LINE = "/.lattice/rebuilds/"
 AGENT_TOOLS = ("Read", "Grep", "Glob", "Edit", "Write", "Bash")
 # files the gates or the agent's tooling leave behind; never part of a round's diff or commit
-JUNK = ("__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache", ".venv", ".lattice")
+JUNK = ("__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache", ".venv", ".lattice",
+        ".lattice-scope")  # fmt: skip
 
 RULES = """\
 You are the coding agent of a Lattice Studio rebuild. The owner accepted a change to the \
@@ -350,6 +372,79 @@ class RebuildConfig:
             n = 2
         return min(8, max(1, n))
 
+    # -- build performance (API v1.11)
+    @property
+    def scoped_gate_args(self) -> list[str] | None:
+        """``[rebuild] scoped_gate_args`` (e.g. ``["--layers", "CD", "--x-repeats", "1",
+        "--await-cap", "5"]``): appended to the first gate command (the Lattice check,
+        which forwards ``"$@"`` last) for a plan node's gate runs, with ``--only-file
+        <selection>``. None (the default): every gate runs as configured, as before."""
+        a = self.table.get("scoped_gate_args")
+        if isinstance(a, list) and all(isinstance(x, str) for x in a):
+            return [str(x) for x in a]
+        return None
+
+    @property
+    def level_gate(self) -> str:
+        """``[rebuild] level_gate``: ``"full"`` (default: the full gate after every level)
+        or ``"regression"`` (the first gate on the scenarios that passed before the level
+        and those of every scope landed so far, full layers; the last level, and the
+        integration node, always run the unscoped full gate)."""
+        return "regression" if self.table.get("level_gate") == "regression" else "full"
+
+    @property
+    def level_repair_attempts(self) -> int:
+        """``[rebuild] level_repair_attempts`` (default 2; 0 turns the repair loop off):
+        repair rounds after a failing level gate before the plan stops ``partial``."""
+        v = self.table.get("level_repair_attempts")
+        if v is None:
+            return DEFAULT_LEVEL_REPAIRS
+        try:
+            return min(10, max(0, int(v)))
+        except (TypeError, ValueError):
+            return DEFAULT_LEVEL_REPAIRS
+
+    @property
+    def node_timeout(self) -> float:
+        """``[rebuild] node_timeout``: seconds one plan node's agent step may run (default
+        ``round_timeout``, 1800)."""
+        v = self.table.get("node_timeout")
+        try:
+            return float(v) if v else self.round_timeout
+        except (TypeError, ValueError):
+            return self.round_timeout
+
+    @property
+    def node_max_tokens(self) -> int | None:
+        """``[rebuild] node_max_tokens``: output tokens one node's agent may spend in all
+        (its rounds and repairs); reached, the step is stopped like a timeout. None: no
+        cap."""
+        v = self.table.get("node_max_tokens")
+        try:
+            return int(v) if v else None
+        except (TypeError, ValueError):
+            return None
+
+    @property
+    def stop_grace(self) -> float:
+        """``[rebuild] stop_grace``: seconds a stopped gate's process group gets after
+        SIGTERM before SIGKILL (the Lattice check's cleanup runs then; default 5)."""
+        try:
+            return max(0.0, float(self.table.get("stop_grace", DEFAULT_STOP_GRACE)))
+        except (TypeError, ValueError):
+            return DEFAULT_STOP_GRACE
+
+    def plan_defaults(self) -> dict[str, Any]:
+        """``plan_defaults`` of ``GET /api/projects`` (API v1.11)."""
+        return {
+            "max_parallel": self.max_parallel,
+            "models": self.models,
+            "scoped_gate": self.scoped_gate_args,
+            "level_gate": self.level_gate,
+            "node_timeout": self.node_timeout,
+            "level_repair_attempts": self.level_repair_attempts,
+        }
+
     def integration_branch(self, name: str) -> str:
         b = self.table.get("integration_branch")
         if isinstance(b, str) and b.strip():
@@ -494,6 +589,148 @@ def parse_gate_output(cmd: str, output: str, rc: int) -> tuple[dict[str, int], l
     if not counts:
         counts = {cmd: len(findings) if rc != 0 else 0}
     return counts, findings
+
+
+# ---- scoped gates and per-tip results (API v1.11) -------------------------------------------
+
+
+def _scenario(t: str) -> bool:
+    return str(t).startswith("scenario:")
+
+
+def trace_scenarios(trace: Mapping[str, Any]) -> list[str]:
+    """Every ``scenario:<name>`` the trace links to a rule, in order."""
+    out: dict[str, None] = {}
+    for targets in (trace.get("links") or {}).values():
+        for t in targets or []:
+            if _scenario(t):
+                out[str(t)] = None
+    return list(out)
+
+
+def report_scenarios(data: Mapping[str, Any] | None) -> list[str]:
+    """The scenarios a ``lattice.spec check --json`` report ran in layer D (its
+    ``timings.scenarios[].name``, else its ``selection.scenarios``)."""
+    if not isinstance(data, Mapping):
+        return []
+    tim = data.get("timings") if isinstance(data.get("timings"), Mapping) else {}
+    names = [str(x.get("name")) for x in tim.get("scenarios") or [] if isinstance(x, Mapping)]
+    if not names and isinstance(data.get("selection"), Mapping):
+        names = [str(x) for x in data["selection"].get("scenarios") or []]
+    return [f"scenario:{n}" for n in names if n]
+
+
+def passing_scenarios(failing: Sequence[str], universe: Sequence[str]) -> list[str]:
+    """The scenarios of `universe` that did not fail (the regression set)."""
+    bad = set(failing)
+    return [t for t in dict.fromkeys(universe) if _scenario(t) and t not in bad]
+
+
+def build_selection(
+    scope_targets: Sequence[str], failing_in_scope: Sequence[str], passing: Sequence[str]
+) -> dict[str, Any]:
+    """A node's scoped-gate selection: the scenarios of its scope (every scenario target its
+    rules link to) UNION the scenarios that passed at the start of its level (the
+    regression set). An in-scope failing scenario missing from it is a bug."""
+    scope = [t for t in dict.fromkeys(scope_targets) if _scenario(t)]
+    reg = [t for t in dict.fromkeys(passing) if _scenario(t)]
+    chosen = list(dict.fromkeys([*scope, *reg]))
+    missing = [t for t in failing_in_scope if _scenario(t) and t not in chosen]
+    assert not missing, f"in-scope targets missing from the selection: {missing}"
+    return {"scenarios": chosen, "in_scope": scope, "regression_set": reg}
+
+
+def result_doc(
+    *,
+    kind: str,
+    gates: Sequence[Mapping[str, Any]],
+    counts: Mapping[str, int],
+    findings: Sequence[Mapping[str, Any]],
+    report: Sequence[str],
+    trace_json: str | Mapping[str, Any],
+    gate_cmds: Sequence[str],
+    source: str,
+    selected: Sequence[str] | None = None,
+    last_failing: Sequence[str] = (),
+    prev_passing: Sequence[str] = (),
+) -> dict[str, Any]:
+    """A per-tip result (API v1.11): ``kind`` ``full`` (every scenario ran: what failed is
+    ``failing``) or ``regression`` (the first gate on the `selected` scenarios only; a
+    scenario not selected keeps its verdict of `last_failing`, i.e. it is carried as
+    failing). ``passing`` is every known scenario that does not fail (the trace's, the
+    report's, the earlier passing ones and the selected ones): the next level's regression
+    set."""
+    found = {areas_mod.finding_identity(f) for f in findings}
+    carried: set[str] = set()
+    if kind == "regression":
+        sel = set(selected or ())
+        carried = {t for t in last_failing if _scenario(t) and t not in sel}
+    failing = found | carried
+    if isinstance(trace_json, Mapping):
+        trace = trace_json
+    else:
+        try:
+            trace = json.loads(trace_json) if trace_json else {}
+        except json.JSONDecodeError:
+            trace = {}
+    universe = [*trace_scenarios(trace), *report, *prev_passing, *(selected or ()),
+                *(t for t in failing if _scenario(t))]  # fmt: skip
+    return {
+        "kind": kind,
+        "failing": sorted(failing),
+        "passing": passing_scenarios(sorted(failing), universe),
+        "carried": sorted(carried),
+        "selected": list(selected) if selected is not None else None,
+        "findings": [
+            {
+                "title": f.get("title") or "",
+                "target": f.get("target") or "",
+                **({"key": f["key"]} if f.get("key") else {}),
+                **({"file": f["file"]} if f.get("file") else {}),
+            }
+            for f in findings
+        ],  # fmt: skip
+        "counts": dict(counts),
+        "gates": [
+            {
+                "command": g.get("command"),
+                "exit_code": g.get("exit_code"),
+                "seconds": g.get("seconds"),
+            }
+            for g in gates
+        ],  # fmt: skip
+        "gate_cmds": list(gate_cmds),
+        "source": source,
+    }
+
+
+def full_result(
+    gates: Sequence[Mapping[str, Any]],
+    counts: Mapping[str, int],
+    findings: Sequence[Mapping[str, Any]],
+    report: Sequence[str],
+    trace_json: str,
+    gate_cmds: Sequence[str],
+    source: str,
+) -> dict[str, Any]:
+    return result_doc(kind="full", gates=gates, counts=counts, findings=findings, report=report,
+                      trace_json=trace_json, gate_cmds=gate_cmds, source=source)  # fmt: skip
+
+
+def scoped_command(gate: str, args: Sequence[str], selection_file: Path | str) -> str:
+    """The first gate's command with the scoped args and ``--only-file`` appended."""
+    extra = [*args, "--only-file", str(selection_file)]
+    return f"{gate} {' '.join(shlex.quote(a) for a in extra)}"
+
+
+def write_selection(worktree: Path, scenarios: Sequence[str], name: str = "selection.json") -> Path:
+    """The selection file (a JSON array of ``scenario:<name>`` selectors) in the worktree's
+    ``.lattice-scope/`` (git-ignored through ``info/exclude``)."""
+    d = worktree / SCOPE_DIR
+    d.mkdir(parents=True, exist_ok=True)
+    path = d / name
+    path.write_text(json.dumps(list(scenarios), indent=1) + "\n", encoding="utf-8")
+    return path
 
 
 # ---- the brief -----------------------------------------------------------------------------
@@ -796,6 +1033,12 @@ class _Run:
     skip_prelude: bool = False  # a continued scoped build whose baseline is already done
     worktree_path: str = ""  # where the worktree is (the record says null once removed)
     pid_sink: Callable[[dict[str, Any], bool], None] | None = None  # a plan's integration run
+    # build performance (API v1.11)
+    selection: dict[str, Any] | None = None  # a node's scoped-gate selection
+    repair_brief: str = ""  # a repair round's prompt (the level gate's findings)
+    node_kind: str = ""  # the plan node's kind (scaffold, area, integration, repair)
+    proc_role: str = ""  # "agent" | "gate": what run.proc is
+    report_scenarios: list[str] = field(default_factory=list)  # the last JSON report's D run
 
 
 class Rebuilder:
@@ -834,6 +1077,8 @@ class Rebuilder:
         self.builds: dict[str, dict[str, Any]] = {}  # change id -> build
         # per target branch, the latest gate results: {sha, tip, failing, source, at}
         self.results: dict[str, dict[str, Any]] = {}
+        # per commit, the gate results (API v1.11; durable in the store's results/)
+        self.tip_results: dict[str, dict[str, Any]] = {}
         # the build plan holding the project's build slot while it runs (API v1.9)
         self.plan_active: str | None = None
         # durable state (API v1.10): records written through, loaded and reconciled here
@@ -901,6 +1146,8 @@ class Rebuilder:
             "plan_note": run.plan_note,
             "always_run": run.always_run,
             "attempt": run.attempt,
+            "selection": run.selection,
+            "node_kind": run.node_kind,
         }
 
     def _save(self, run: _Run) -> None:
@@ -922,6 +1169,30 @@ class Rebuilder:
             with self.lock:
                 with contextlib.suppress(OSError):
                     self.store.meta_set("results", self.results)
+
+    # -- per-tip gate results (API v1.11)
+    def tip_result(self, tip: str | None) -> dict[str, Any] | None:
+        """The gate results recorded for commit `tip` (a full or regression gate), or None."""
+        if not tip:
+            return None
+        with self.lock:
+            res = self.tip_results.get(tip)
+            if res is None and self.store is not None:
+                res = self.store.result_get(tip)
+                if res is not None:
+                    self.tip_results[tip] = res
+            return copy.deepcopy(res) if res is not None else None
+
+    def put_tip_result(self, tip: str, data: Mapping[str, Any]) -> None:
+        """Record a gate's results for commit `tip` (never recomputed afterwards)."""
+        doc = {**copy.deepcopy(dict(data)), "tip": tip, "at": _now()}
+        with self.lock:
+            self.tip_results[tip] = doc
+            if self.store is not None:
+                try:
+                    self.store.result_put(tip, doc)
+                except OSError as exc:
+                    self.log(f"rebuild: the result file of {tip[:10]} could not be written: {exc}")
 
     def _load(self) -> None:
         """Every build record of the store; a record that was live when Studio stopped is
@@ -981,6 +1252,8 @@ class Rebuilder:
             always_run=bool(priv.get("always_run")),
             attempt=int(priv.get("attempt") or rec.get("attempts") or 1),
             worktree_path=wt,
+            selection=priv.get("selection"),
+            node_kind=str(priv.get("node_kind") or ""),
         )
         run.done.set()
         run.baseline_done.set()
@@ -992,10 +1265,7 @@ class Rebuilder:
         stays in the record's total), and the process groups it recorded are terminated
         when they still run (pid AND start time AND command line, see state.kill_orphan)."""
         rec = run.record
-        killed = []
-        for info in rec.get("pids") or []:
-            if kill_orphan(info, self.log):
-                killed.append({k: info.get(k) for k in ("pid", "pgid", "role", "command")})
+        killed = reap_orphans(rec.get("pids") or [], self.cfg.stop_grace, self.log)
         now = _now()
         rec["status"] = "interrupted"
         rec["interrupted"] = True
@@ -1031,10 +1301,23 @@ class Rebuilder:
         with self.lock:
             run.record.setdefault("timeline", []).append({"at": _now(), "event": event})
 
-    def _track(self, run: _Run, proc: subprocess.Popen[Any], role: str, match: str) -> None:
+    def _track(
+        self,
+        run: _Run,
+        proc: subprocess.Popen[Any],
+        role: str,
+        match: str,
+        containers: str | None = None,
+    ) -> None:
         """Record a child process group (its start time and command line) so a Studio
-        that restarts after a crash can recognise and terminate it."""
+        that restarts after a crash can recognise and terminate it (a gate's also carries
+        its container owner token, API v1.11)."""
         info = proc_info(proc.pid, role, match)
+        if containers:
+            info["containers"] = containers
+        self._track_info(run, info)
+
+    def _track_info(self, run: _Run, info: dict[str, Any]) -> None:
         with self.lock:
             run.record.setdefault("pids", []).append(info)
             if run.pid_sink is not None:
@@ -1081,9 +1364,12 @@ class Rebuilder:
             r = _git(repo, "rev-parse", "-q", "--verify", f"refs/heads/{target}")
             tip = r.stdout.strip() if r.returncode == 0 else None
             current = _current_branch(repo)
+        tres = self.tip_result(tip)
         with self.lock:
             res = self.results.get(target)
             failing = set(res["failing"]) if res and tip and res["tip"] == tip else None
+            if tres is not None and isinstance(tres.get("failing"), list):
+                failing = set(tres["failing"])  # the tip's own gate results win (API v1.11)
             building = {
                 str(r.scope["id"])
                 for r in self.runs.values()
@@ -1439,6 +1725,8 @@ class Rebuilder:
         always_run: bool = False,
         note: str = "",
         attempt: int = 1,
+        passing: Sequence[str] | None = None,
+        node_kind: str = "area",
     ) -> str | None:
         """Start one node of build plan `plan_id` as a scoped build on its own branch
         (``rebuild/<plan>-<node>``) in its own worktree made from `tip`, concurrently with
@@ -1447,7 +1735,13 @@ class Rebuilder:
         plan ran (``{"findings": [{title, target, ...}], "gates": [...], "counts": {}}``);
         the node's targets are its in-scope failing checks. None: nothing to build (no
         in-scope failing check and not `always_run`); nothing was created. The node's
-        commit is left on its branch: the plan merges it, the target is not advanced here."""
+        commit is left on its branch: the plan merges it, the target is not advanced here.
+        With ``[rebuild] scoped_gate_args`` (API v1.11) and `passing` (the scenarios that
+        passed at the level start), a node other than the integration node runs its gates
+        scoped: the first gate with the args and ``--only-file`` of its selection (its
+        scope's scenarios and the regression set), written to the worktree's
+        ``.lattice-scope/selection.json``; the brief and the agent's allowlist name that
+        exact command."""
         with self.lock:
             if self.plan_active != plan_id:
                 raise RebuildError(409, f"plan {plan_id} does not hold the build slot")
@@ -1487,6 +1781,20 @@ class Rebuilder:
             trace_path = worktree / project_rel / "spec.trace.json"
             trace_json = trace_path.read_text(encoding="utf-8") if trace_path.is_file() else ""
             rounds = int(max_rounds or self.cfg.max_rounds)
+            gates = list(self.cfg.gates)
+            selection = None
+            scoped_info = None
+            args = self.cfg.scoped_gate_args
+            if args is not None and passing is not None and node_kind != "integration" and gates:
+                selection = build_selection(resolved.get("targets") or [],
+                                            [t["id"] for t in targets], passing)  # fmt: skip
+                _ensure_excluded(repo, SCOPE_EXCLUDE, "Lattice Studio scoped-gate selections")
+                path = write_selection(worktree, selection["scenarios"])
+                gates[0] = scoped_command(gates[0], args, path)
+                scoped_info = {"command": gates[0], "selection_file": str(path),
+                               "args": list(args), "scenarios": len(selection["scenarios"]),
+                               "in_scope": selection["in_scope"],
+                               "regression_set": selection["regression_set"]}  # fmt: skip
             base = {
                 "at": _now(),
                 "seconds": 0.0,
@@ -1509,7 +1817,8 @@ class Rebuilder:
                 "finished": None,
                 "rounds": [],
                 "targets": [{**t, "done": False} for t in targets],
-                "gates": list(self.cfg.gates),
+                "gates": list(gates),
+                "scoped_gate": scoped_info,
                 "base": tip,
                 "branch": branch,
                 "worktree": str(worktree),
@@ -1550,7 +1859,7 @@ class Rebuilder:
                 project_rel=project_rel,
                 base=tip,
                 branch=branch,
-                gates=list(self.cfg.gates),
+                gates=gates,
                 targets=targets,
                 trace_json=trace_json,
                 scope=resolved,
@@ -1564,6 +1873,8 @@ class Rebuilder:
                 always_run=always_run,
                 attempt=attempt,
                 worktree_path=str(worktree),
+                selection=selection,
+                node_kind=node_kind,
             )
             run.baseline_done.set()
             self.runs[rid] = run
@@ -1659,7 +1970,8 @@ class Rebuilder:
                 self.builds[cid] = {"state": "not_built", "rebuild_id": rid}
             run.record.setdefault("timeline", []).append({"at": _now(), "event": "stopped"})
             self._save(run)
-            proc = run.proc
+            # a gate is stopped by its own loop (its whole tree, API v1.11); an agent here
+            proc = run.proc if run.proc_role != "gate" else None
         if proc is not None:
             _kill_group(proc, signal.SIGTERM)
         if run.thread is not None and run.thread is not threading.current_thread():
@@ -1768,6 +2080,95 @@ class Rebuilder:
             run.thread.start()
         self.log(f"rebuild {rid}: continued {how} in {wt}")
         return {"id": rid, "status": "running", "from_round": start, "attempts": run.attempt}
+
+    # -- the level repair loop of a build plan (API v1.11)
+    def repair_build(
+        self,
+        rid: str,
+        *,
+        plan_id: str,
+        brief: str,
+        targets: Sequence[Mapping[str, Any]],
+        baseline_ids: Sequence[str],
+        passing: Sequence[str] | None,
+        attempt: int,
+    ) -> dict[str, Any]:
+        """One repair round of plan node build `rid` after its level's gate failed on the
+        merged tip: in its worktree on its branch (made again from the branch when it is
+        gone), continuing the agent's session (``--resume``) when the record has one (else
+        a fresh session whose brief is the node's brief plus `brief`), judged on `targets`
+        (the failing checks attributed to the node plus its own targets) with no
+        regression against `baseline_ids` (the level start's failing checks), through the
+        node's scoped gate on its scope and `passing` (the regression set) when
+        ``scoped_gate_args`` is set. A pass commits on top of the node's commit; the plan
+        then merges again and re-runs the level gate. Answers at once; the round runs in
+        the background (``node_run(rid).done``)."""
+        with self.lock:
+            run = self.runs.get(rid)
+            if run is None:
+                raise RebuildError(404, f"no rebuild {rid}")
+            rec = run.record
+            if self.plan_active != plan_id or (rec.get("plan") or {}).get("id") != plan_id:
+                raise RebuildError(409, f"plan {plan_id} does not hold the build slot")
+            if rec["status"] not in ("passed", "gave_up"):
+                raise RebuildError(409, f"rebuild {rid} is {rec['status']}; only a passed or "
+                                   "gave-up node build can be repaired")  # fmt: skip
+            repo = run.repo
+            wt = run.worktree
+            if not (wt.is_dir() and (wt / ".git").exists()):
+                wt = self._worktree_dir(repo, rid)
+                r = _git(repo, "worktree", "add", "-q", str(wt), run.branch)
+                if r.returncode != 0:
+                    raise RebuildError(500, f"git worktree add failed: {r.stderr.strip()}")
+                run.worktree = wt
+                run.worktree_path = str(wt)
+                rec["worktree"] = str(wt)
+            trace_path = wt / run.project_rel / "spec.trace.json"
+            run.trace_json = trace_path.read_text(encoding="utf-8") if trace_path.is_file() else ""
+            run.targets = [{"id": str(t["id"]), "label": str(t.get("label") or t["id"])}
+                           for t in targets]  # fmt: skip
+            run.baseline_ids = dict.fromkeys(str(b) for b in baseline_ids)
+            gates = list(self.cfg.gates)
+            run.selection = None
+            args = self.cfg.scoped_gate_args
+            scoped = args is not None and passing is not None and run.node_kind != "integration"
+            if scoped and gates:
+                assert args is not None and passing is not None
+                ids = [t["id"] for t in run.targets]
+                scope_targets = list((run.scope or {}).get("targets") or [])
+                run.selection = build_selection([*scope_targets, *ids], ids, passing)
+                _ensure_excluded(repo, SCOPE_EXCLUDE, "Lattice Studio scoped-gate selections")
+                path = write_selection(wt, run.selection["scenarios"])
+                gates[0] = scoped_command(gates[0], args, path)
+            run.gates = gates
+            run.repair_brief = brief
+            completed = [r for r in rec.get("rounds") or [] if r.get("check") is not None]
+            rec["rounds"] = completed
+            start = len(completed) + 1
+            run.start_round = start
+            rec["max_rounds"] = start  # one round per repair attempt
+            run.session_id = rec.get("session_id") or run.session_id
+            run.wall_offset = float((rec.get("usage") or {}).get("wall_s") or 0.0)
+            run.t0 = time.monotonic()
+            run.stop = threading.Event()
+            run.done = threading.Event()
+            run.baseline_done = threading.Event()
+            run.baseline_done.set()
+            run.tmp = None
+            rec["gates"] = list(gates)
+            rec["repairs"] = int(rec.get("repairs") or 0) + 1
+            rec.update(status="queued", finished=None, error=None, pids=[])
+            rec["targets"] = [{**t, "done": False} for t in run.targets]
+            how = "session resumed" if run.session_id else "fresh session"
+            rec.setdefault("timeline", []).append({"at": _now(), "repair": True, "event":
+                f"repair attempt {attempt}: round {start} ({how}) on "
+                f"{len(run.targets)} target(s)"})  # fmt: skip
+            self._save(run)
+            run.thread = threading.Thread(target=self._run, args=(run,), daemon=True,
+                                          name=f"studio-repair-{rid}-{attempt}")  # fmt: skip
+            run.thread.start()
+        self.log(f"rebuild {rid}: repair attempt {attempt} from round {start} ({how})")
+        return {"id": rid, "status": "running", "round": start}
 
     def close(self) -> None:
         """Stop every running rebuild (the server is shutting down)."""
@@ -1914,6 +2315,8 @@ class Rebuilder:
                 "counts": counts,
                 "findings": [_public_finding(f, run.scope is not None) for f in findings],
             }
+            if (agent.get("error") or {}).get("kind") == "timeout":
+                extra["status"] = "timeout"  # its partial usage is in `agent`, its files kept
             with self.lock:
                 rnd.update(
                     finished=_now(),
@@ -1978,7 +2381,9 @@ class Rebuilder:
                 context_files=self._context_files(run),
                 changes=run.changes,
             )
-            return text + ("\n\n" + run.plan_note if run.plan_note else "")
+            text += "\n\n" + run.plan_note if run.plan_note else ""
+            budget = self._budget_note(run)
+            return text + ("\n\n" + budget if budget else "")
 
         def again() -> str:
             assert last_check is not None
@@ -1994,11 +2399,32 @@ class Rebuilder:
                     )
             return text
 
+        if run.repair_brief:  # a repair round after a failing level gate (API v1.11)
+            return run.repair_brief if run.session_id else first() + "\n\n" + run.repair_brief
         if n == 1 or last_check is None:
             return first()
         if not run.session_id:
             return first() + "\n\n" + again()
         return again()
+
+    def _budget_note(self, run: _Run) -> str:
+        """A plan node's turn budget (API v1.11): its minutes, and the gate to run."""
+        if run.plan_node is None:
+            return ""
+        minutes = max(1, round(self.cfg.node_timeout / 60))
+        out = ["## Budget", "", f"You have {minutes} minutes for this node."]
+        if run.selection is not None and run.gates:
+            out.append(
+                f"Run the scoped gate `{run.gates[0]}`, not the full one: it checks this "
+                f"node's scope and the {len(run.selection['regression_set'])} scenario(s) "
+                "that pass now. Studio runs the full gate itself when the level ends."
+            )
+        else:
+            out.append("Run the gates above, as given; do not start other long-running commands.")
+        cap = self.cfg.node_max_tokens
+        if cap:
+            out.append(f"Your output budget for this node is {cap} tokens in all.")
+        return "\n".join(out)
 
     def _context_files(self, run: _Run) -> list[str]:
         rel = "" if run.project_rel == "." else run.project_rel + "/"
@@ -2098,6 +2524,9 @@ class Rebuilder:
                 self._finish(run, "gave_up")
             return False
         self._record_results(run, base, set(seen), f"{rec['id']} baseline", tip=run.integration_tip)
+        self.put_tip_result(base, full_result(gates, counts, findings, run.report_scenarios,
+                                              run.trace_json, self.cfg.gates,
+                                              f"{rec['id']} baseline"))  # fmt: skip
         if not run.targets:
             run.nothing_to_build = True
             self._discard(run)
@@ -2136,6 +2565,9 @@ class Rebuilder:
         still = [t for t in target_ids if t in cur]
         regressions = [i for i in cur if i not in run.baseline_ids]
         fixed = [i for i in run.baseline_ids if i not in cur]
+        if run.selection is not None:  # a scoped gate says nothing of unselected scenarios
+            chosen = set(run.selection["scenarios"])
+            fixed = [i for i in fixed if not i.startswith("scenario:") or i in chosen]
         complete = bool(gates) and all(g["exit_code"] in (0, 1) for g in gates)
         passed = complete and not still and not regressions
         extra = {
@@ -2262,6 +2694,7 @@ class Rebuilder:
                                     start_new_session=True)  # fmt: skip
             with self.lock:
                 run.proc = proc  # type: ignore[assignment]
+                run.proc_role = "agent"
             self._track(run, proc, "agent", cmd)
             try:
                 while proc.poll() is None:
@@ -2338,6 +2771,7 @@ class Rebuilder:
             }
         with self.lock:
             run.proc = proc
+            run.proc_role = "agent"
         self._track(run, proc, "agent", str(argv[0]))
         if run.stop.is_set():
             _kill_group(proc, signal.SIGTERM)
@@ -2345,12 +2779,17 @@ class Rebuilder:
         drainer = threading.Thread(target=lambda: stderr.extend(proc.stderr or ()), daemon=True)
         drainer.start()
         timed_out = threading.Event()
+        over_budget = threading.Event()
+        limit = self.cfg.node_timeout if run.plan_node is not None else self.cfg.round_timeout
+        seen = StreamUsage()
+        cap = self.cfg.node_max_tokens if run.plan_node is not None else None
+        spent = int(run.record.get("usage", {}).get("output_tokens") or 0)
 
         def on_timeout() -> None:
             timed_out.set()
             _kill_group(proc, signal.SIGTERM)
 
-        timer = threading.Timer(self.cfg.round_timeout, on_timeout)
+        timer = threading.Timer(limit, on_timeout)
         timer.daemon = True
         timer.start()
         try:
@@ -2364,6 +2803,10 @@ class Rebuilder:
                     continue
                 if isinstance(rec, dict):
                     t.feed(rec)
+                    seen.feed(rec)
+                    if cap and not over_budget.is_set() and spent + seen.output_tokens() > cap:
+                        over_budget.set()
+                        _kill_group(proc, signal.SIGTERM)
             proc.wait()
         finally:
             timer.cancel()
@@ -2394,12 +2837,24 @@ class Rebuilder:
             "num_turns": res.get("num_turns", 0),
             "session_id": t.claude_session_id,
         }
+        if result is None and seen.messages:
+            # no result event (a timeout, the token cap, a crash): the usage the stream
+            # showed so far, from the assistant messages, instead of 0 (API v1.11)
+            out["usage"].update(seen.totals())
+            out["usage"]["partial"] = True
         if run.stop.is_set():
             return out
-        if timed_out.is_set():
+        if over_budget.is_set():
             out["error"] = {
                 "kind": "timeout",
-                "message": f"the agent did not finish within {self.cfg.round_timeout:g}s",
+                "reason": "node_max_tokens",
+                "message": f"the agent passed [rebuild] node_max_tokens = {cap} output tokens",
+            }
+        elif timed_out.is_set():
+            out["error"] = {
+                "kind": "timeout",
+                "reason": "node_timeout" if run.plan_node is not None else "round_timeout",
+                "message": f"the agent did not finish within {limit:g}s",
             }
         elif errors:
             out["error"] = {
@@ -2456,44 +2911,108 @@ class Rebuilder:
         for cmd in run.gates:
             if run.stop.is_set():
                 break
-            t0 = time.perf_counter()
-            proc = subprocess.Popen(
-                ["/bin/sh", "-c", cmd],
-                cwd=str(run.worktree),
-                env=env,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                errors="replace",
-                start_new_session=True,
-            )
-            with self.lock:
-                run.proc = proc
-            self._track(run, proc, "gate", cmd)
-            try:
-                output, _ = proc.communicate(timeout=self.cfg.gate_timeout)
-                rc = proc.returncode
-            except subprocess.TimeoutExpired:
-                _kill_group(proc, signal.SIGKILL)
-                output, _ = proc.communicate()
-                output = (
-                    output or ""
-                ) + f"\n[studio] the gate timed out after {self.cfg.gate_timeout:g}s\n"
-                rc = 124
-            finally:
-                with self.lock:
-                    run.proc = None
-                self._untrack(run, proc.pid)
-            out.append(
-                {
-                    "command": cmd,
-                    "exit_code": rc,
-                    "seconds": round(time.perf_counter() - t0, 2),
-                    "output_tail": (output or "")[-OUTPUT_TAIL:],
-                }
-            )
+            out.append(self._run_gate(run, cmd, env))
         return out
+
+    def _run_gate(self, run: _Run, cmd: str, env: Mapping[str, str]) -> dict[str, Any]:
+        """One gate command in its own session (API v1.11): its descendants are recorded
+        while it runs (``pids``, role ``gate-child``); a stop or a timeout terminates the
+        whole tree (:func:`lattice.studio.state.terminate_tree`: SIGTERM to the group,
+        ``[rebuild] stop_grace`` seconds for the check's own cleanup, SIGKILL, then every
+        recorded descendant still alive), and the containers the gate's check started
+        (labelled with this run's owner token) are removed; so are any it left after
+        exiting on its own."""
+        token = f"studio-{os.getpid()}-{uuid.uuid4().hex[:12]}"
+        t0 = time.perf_counter()
+        proc = subprocess.Popen(
+            ["/bin/sh", "-c", cmd],
+            cwd=str(run.worktree),
+            env={**env, OWNER_ENV: token},
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            errors="replace",
+            start_new_session=True,
+        )
+        with self.lock:
+            run.proc = proc
+            run.proc_role = "gate"
+        self._track(run, proc, "gate", cmd, containers=token)
+        chunks: list[str] = []
+        drainer = threading.Thread(target=lambda: chunks.extend(proc.stdout or ()), daemon=True)
+        drainer.start()
+        children: dict[int, dict[str, Any]] = {}
+
+        def scan() -> None:
+            table = ps_table()
+            for pid, c in list(children.items()):  # exited ones are no longer anyone's
+                live = table.get(pid)
+                if live is None or live[2] != c.get("started"):
+                    del children[pid]
+                    self._untrack(run, pid)
+            for c in descendants(proc.pid, table):
+                if c["pid"] not in children:
+                    children[c["pid"]] = c
+                    self._track_info(run, c)
+
+        deadline = time.monotonic() + self.cfg.gate_timeout
+        next_scan = time.monotonic() + 0.3
+        why = None
+        rc: int | None = None
+        try:
+            while True:
+                try:
+                    rc = proc.wait(0.2)
+                    break
+                except subprocess.TimeoutExpired:
+                    pass
+                now = time.monotonic()
+                if run.stop.is_set():
+                    why = "stopped"
+                elif now >= deadline:
+                    why = "timeout"
+                if why:
+                    scan()
+                    terminate_tree(proc, list(children.values()), grace=self.cfg.stop_grace,
+                                   log=self.log)  # fmt: skip
+                    rc = proc.poll()
+                    break
+                if now >= next_scan:
+                    scan()
+                    next_scan = now + GATE_SCAN_S
+            if why is None and children:
+                # the gate exited on its own: whatever it started and left running goes too
+                terminate_tree(None, list(children.values()), grace=self.cfg.stop_grace,
+                               log=self.log)  # fmt: skip
+        finally:
+            drainer.join(10)
+            output = "".join(chunks)
+            if why == "timeout":
+                output += f"\n[studio] the gate timed out after {self.cfg.gate_timeout:g}s\n"
+                rc = 124
+            elif rc is None:
+                rc = proc.poll() if proc.poll() is not None else -signal.SIGKILL
+            removed: list[str] = []
+            if why is not None or rc not in (0, 1):
+                removed = remove_owned_containers(token, self.log)
+            with self.lock:
+                run.proc = None
+                run.proc_role = ""
+            for pid in list(children):
+                self._untrack(run, pid)
+            self._untrack(run, proc.pid)
+        res: dict[str, Any] = {
+            "command": cmd,
+            "exit_code": rc,
+            "seconds": round(time.perf_counter() - t0, 2),
+            "output_tail": (output or "")[-OUTPUT_TAIL:],
+        }
+        if why == "stopped":
+            res["stopped"] = True
+        if removed:
+            res["containers_removed"] = removed
+        return res
 
     def _gate_round(
         self, run: _Run, n: int
@@ -2508,6 +3027,7 @@ class Rebuilder:
             else None
         )
         before = _stat(jpath) if jpath is not None else None
+        run.report_scenarios = []
         gates = self._gates(run, n)
         counts: dict[str, int] = {}
         findings: list[dict[str, Any]] = []
@@ -2532,6 +3052,7 @@ class Rebuilder:
                     data = json.loads(jpath.read_text(encoding="utf-8"))
                 except (OSError, json.JSONDecodeError):
                     data = None
+            run.report_scenarios = report_scenarios(data) if isinstance(data, dict) else []
             if isinstance(data, dict) and isinstance(data.get("findings"), list):
                 counts, jf = areas_mod.findings_from_json(data)
                 # keep the gates that did not complete: the report alone would hide them
@@ -2562,6 +3083,8 @@ class Rebuilder:
         else:
             last = rec["rounds"][-1] if rec["rounds"] else {}
             title = f"build: {run.scope['title']}" + (f"; {requests}" if requests else "")
+            if run.repair_brief:  # a repair round after a failing level gate (API v1.11)
+                title += f" (repair {rec.get('repairs') or 1} after the level gate)"
             lines = [
                 title,
                 "",
@@ -2609,6 +3132,15 @@ class Rebuilder:
             moved = self._advance(run, sha)
             if moved is None:
                 self._record_results(run, sha, set(failing or ()), f"{rec['id']} round {n}")
+            last = rec["rounds"][-1] if rec["rounds"] else {}
+            if failing is not None:
+                fs = [{"title": f["title"], "target": f.get("target") or ""}
+                      for f in (last.get("check") or {}).get("findings") or []
+                      if f.get("target") not in ("spec", "agent")]  # fmt: skip
+                self.put_tip_result(sha, full_result(last.get("gates") or [], last.get("check",
+                                    {}).get("counts") or {}, fs, run.report_scenarios,
+                                    run.trace_json, self.cfg.gates,
+                                    f"{rec['id']} round {n}"))  # fmt: skip
             hint = f"The build is on {run.integration} (now at {sha[:10]}) and {run.branch}; " + (
                 "your checkout was fast-forwarded to it."
                 if run.target_main
@@ -2790,6 +3322,25 @@ class Rebuilder:
             self._save(run)
 
 
+def reap_orphans(
+    pids: Sequence[Mapping[str, Any]], grace: float, log: Callable[[str], None]
+) -> list[dict[str, Any]]:
+    """A restart's reconciliation (API v1.10, extended in v1.11): terminate the recorded
+    process groups still running (pid AND start time AND command line), gates first with
+    `grace` seconds for the check's own cleanup, then their recorded descendants, then
+    remove the containers labelled with the gates' owner tokens. The killed ones."""
+    killed = []
+    order = sorted(pids, key=lambda i: {"gate": 0, "agent": 1}.get(str(i.get("role")), 2))
+    for info in order:
+        g = grace if info.get("role") == "gate" else 3.0
+        if kill_orphan(info, log, grace=g):
+            killed.append({k: info.get(k) for k in ("pid", "pgid", "role", "command")})
+    for info in pids:
+        for name in remove_owned_containers(info.get("containers"), log):
+            killed.append({"container": name, "role": "container"})
+    return killed
+
+
 def _targets(changes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     seen: set[str] = set()
@@ -2801,6 +3352,45 @@ def _targets(changes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
             seen.add(item["target"])
             out.append({"id": item["target"], "label": item.get("message") or item["target"]})
     return out
+
+
+class StreamUsage:
+    """The usage a ``claude -p --output-format stream-json`` stream shows before its
+    result event: each assistant message's ``usage`` (the last one seen per message id:
+    the CLI repeats a message once per content block), summed."""
+
+    def __init__(self) -> None:
+        self.messages: dict[str, dict[str, int]] = {}
+        self._anon = 0
+
+    def feed(self, rec: Mapping[str, Any]) -> None:
+        if rec.get("type") != "assistant" or rec.get("parent_tool_use_id"):
+            return
+        msg = rec.get("message") if isinstance(rec.get("message"), Mapping) else {}
+        u = msg.get("usage") if isinstance(msg.get("usage"), Mapping) else None
+        if not u:
+            return
+        mid = str(msg.get("id") or "")
+        if not mid:
+            self._anon += 1
+            mid = f"anon-{self._anon}"
+        self.messages[mid] = {
+            k: int(u.get(k) or 0)
+            for k in ("input_tokens", "output_tokens", "cache_read_input_tokens",
+                      "cache_creation_input_tokens")
+        }  # fmt: skip
+
+    def output_tokens(self) -> int:
+        return sum(m["output_tokens"] for m in self.messages.values())
+
+    def totals(self) -> dict[str, int]:
+        out = dict.fromkeys(("input_tokens", "output_tokens", "cache_read_input_tokens",
+                             "cache_creation_input_tokens"), 0)  # fmt: skip
+        for m in self.messages.values():
+            for k in out:
+                out[k] += m[k]
+        out["num_turns"] = len(self.messages)
+        return out
 
 
 USAGE_KEYS = (
@@ -2889,8 +3479,11 @@ def _tree_diff(wt: Path, a: str, b: str) -> list[str]:
     return [x for x in out.splitlines() if x.strip()]
 
 
-def _ensure_excluded(repo: Path) -> None:
-    """``/.lattice/rebuilds/`` in the repository's ``info/exclude`` (not .gitignore)."""
+def _ensure_excluded(
+    repo: Path, line: str = EXCLUDE_LINE, comment: str = "Lattice Studio rebuild worktrees"
+) -> None:
+    """`line` (default ``/.lattice/rebuilds/``) in the repository's ``info/exclude`` (not
+    .gitignore; shared by every worktree)."""
     common = _git_ok(repo, "rev-parse", "--git-common-dir")
     path = Path(common) if os.path.isabs(common) else repo / common
     exclude = path / "info" / "exclude"
@@ -2898,13 +3491,13 @@ def _ensure_excluded(repo: Path) -> None:
         text = exclude.read_text(encoding="utf-8") if exclude.is_file() else ""
     except OSError:
         text = ""
-    if EXCLUDE_LINE in text.splitlines():
+    if line in text.splitlines():
         return
     exclude.parent.mkdir(parents=True, exist_ok=True)
     with exclude.open("a", encoding="utf-8") as f:
         if text and not text.endswith("\n"):
             f.write("\n")
-        f.write(f"# Lattice Studio rebuild worktrees\n{EXCLUDE_LINE}\n")
+        f.write(f"# {comment}\n{line}\n")
 
 
 def load_table(project: Path) -> dict[str, Any]:

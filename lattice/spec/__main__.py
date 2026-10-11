@@ -5,7 +5,8 @@
         [--login-path /login] [--mint-token mod:fn] [--json] \\
         [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process | go] \\
         [--services mod:SERVICES] [--database sqlite|postgres|mysql|clickhouse] \\
-        [--database-url URL] [--only SELECTOR ...] [--only-file PATH] [--trace PATH]
+        [--database-url URL] [--only SELECTOR ...] [--only-file PATH] [--trace PATH] \\
+        [--await-cap SECONDS]
 
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
@@ -29,8 +30,10 @@ restrict layers D and X to the scenarios the selectors name: ``scenario:NAME``, 
 the rule; the trace is ``--trace``, default ``<spec module>.trace.json`` next to the spec
 module) -- ``lattice.spec.selection``; a selector matching no scenario is exit 2. The
 report (text and ``--json``) carries ``timings``: seconds per layer, and per scenario of
-layer D where they went (``lattice.spec.check.ScenarioClock``). Exit code: 0 pass, 1
-fail, 2 the check could not run.
+layer D where they went (``lattice.spec.check.ScenarioClock``). ``--await-cap SECONDS``
+caps every ``Await``'s ``within_s`` (opt-in, for in-loop gates: a scenario waiting on a
+service that is not built yet fails after SECONDS instead of the spec's wait). Exit code:
+0 pass, 1 fail, 2 the check could not run.
 
 ::
 
@@ -51,9 +54,10 @@ suite could not run.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import importlib
 import sys
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from typing import Any
 
 from lattice.spec.check import CheckError, check
@@ -137,6 +141,13 @@ def _parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="the project trace rule:ID selectors read (default: <spec module>.trace.json "
         "next to the spec module)",
+    )
+    c.add_argument(
+        "--await-cap",
+        type=float,
+        metavar="SECONDS",
+        help="every Await step waits at most SECONDS (its within_s capped; a note in the "
+        "report); an effect that does not show within the cap still fails the scenario",
     )
     c.add_argument("--json", action="store_true", help="print the report as JSON")
     f = sub.add_parser("fidelity", help="replay an app's fidelity scenarios through its runtime")
@@ -290,6 +301,34 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "fidelity":
         return fidelity(args)
+    with _cleanup_on_sigterm():
+        return _check_main(args)
+
+
+@contextlib.contextmanager
+def _cleanup_on_sigterm() -> Iterator[None]:
+    """While the check runs, SIGTERM exits through SystemExit, so ``finally`` blocks and
+    the ``atexit`` guards stop the app processes and services and remove the database
+    containers (Python's default SIGTERM ends the process without them: a stopped gate
+    left its apps and containers behind). The previous handler is restored after."""
+    import signal
+    import threading
+
+    if threading.current_thread() is not threading.main_thread():
+        yield
+        return
+
+    def on_term(signum: int, _frame: object) -> None:
+        raise SystemExit(128 + signum)
+
+    prev = signal.signal(signal.SIGTERM, on_term)
+    try:
+        yield
+    finally:
+        signal.signal(signal.SIGTERM, prev)
+
+
+def _check_main(args: argparse.Namespace) -> int:
     try:
         spec = load(args.spec)
         if not isinstance(spec, Spec) and callable(spec):
@@ -319,6 +358,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             database_url=args.database_url,
             only=only,
             trace=trace,
+            await_cap=args.await_cap,
         )
     except Exception as err:  # noqa: BLE001 -- any failure to run the check is exit 2
         print(f"error: {type(err).__name__}: {err}", file=sys.stderr)

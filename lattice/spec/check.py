@@ -1934,6 +1934,7 @@ def check(
     database_url: str | None = None,
     only: Sequence[str] | None = None,
     trace: Any = None,
+    await_cap: float | None = None,
 ) -> Report:
     """Check the app built by ``app_factory(db_path)`` against ``spec`` in ``layers``
     (letters of ABCDRX; see the module docstring). Layer X: ``x_k`` copies per
@@ -1963,7 +1964,10 @@ def check(
     ``database_url`` (or ``$LATTICE_<DIALECT>_URL``) -- :mod:`lattice.spec.dbserver`.
     ``only``: selectors (:mod:`lattice.spec.selection`) restricting layers D and X to
     the scenarios they name (None: every scenario); ``trace``: the project trace
-    (a ``Trace``, its JSON mapping or file) that ``rule:<id>`` selectors read. The
+    (a ``Trace``, its JSON mapping or file) that ``rule:<id>`` selectors read.
+    ``await_cap``: seconds every ``Await`` waits at most (its ``within_s`` capped; a
+    note in the report; an effect that does not show within the cap still fails the
+    scenario); None: as the spec says. The
     report's ``timings`` say where the seconds went (per layer; per scenario of D:
     :class:`ScenarioClock`). Raises :class:`CheckError` when the check cannot run
     (:class:`lattice.spec.selection.SelectionError`: a selector matching nothing)."""
@@ -1995,6 +1999,26 @@ def check(
         report.notes.append(
             f"--only: layers D and X ran {len(names)} of the spec's {len(spec.scenarios)} "
             "scenarios; layers A, B, C and R are not narrowed"
+        )
+    if await_cap is not None:
+        if isinstance(await_cap, bool) or not isinstance(await_cap, int | float) or \
+                not await_cap > 0:  # fmt: skip
+            raise CheckError(f"await_cap must be a positive number of seconds, not {await_cap!r}")
+        cap = float(await_cap)
+        capped = 0
+        scenarios = []
+        for sc in scenario_spec.scenarios:
+            steps = []
+            for st in sc.steps:
+                if isinstance(st, Await) and st.within_s > cap:
+                    st = replace(st, within_s=cap)
+                    capped += 1
+                steps.append(st)
+            scenarios.append(replace(sc, steps=tuple(steps)))
+        scenario_spec = replace(scenario_spec, scenarios=tuple(scenarios))
+        report.notes.append(
+            f"--await-cap {cap:g}: every Await waited at most {cap:g}s ({capped} step(s) "
+            "capped); an effect that does not show within the cap still fails its scenario"
         )
     if runtime is None:
         from lattice.spec.process import process_runtime, returns_process_app

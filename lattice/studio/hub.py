@@ -212,6 +212,7 @@ class StudioHub:
 
     def summary(self, name: str) -> dict[str, Any]:
         """One ``GET /api/projects`` item, from cheap fields only."""
+        from lattice.studio.rebuild import RebuildConfig
         from lattice.studio.rebuild import capability as rebuild_capability
         from lattice.studio.server import SPEC_FILE, TRACE_FILE
         from lattice.studio.session import claude_available
@@ -246,6 +247,8 @@ class StudioHub:
                 "build_plan": can_rebuild,
             },
             "default": name == self.default,
+            # API v1.11: the [rebuild] plan settings, so the UI shows the configured ones
+            "plan_defaults": RebuildConfig(p.root, rebuild).plan_defaults(),
             # API v1.10: problems found loading the project's durable state (filled once
             # the project is used: its Studio, and its state, load on first use)
             "state_warnings": (
