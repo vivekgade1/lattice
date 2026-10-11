@@ -78,7 +78,12 @@ first fails its gate on the merged tip and is repaired over one poll (``repairs`
 level run, ``repairs`` on the nodes, timeline entries with ``repair: true``) before it
 lands, and the second project gets a third fixture plan ``p3`` whose level 1 ran out of
 repair attempts (``status: partial``, ``error.kind: repair_exhausted``, ``resume.kind:
-repair``): ``POST /api/plan/p3/run`` repairs it again over one poll and goes on.
+repair``; one of its failing checks is owned by no node, so a ``kind: "repair"`` node
+``repair-l1`` took it and gave up): ``POST /api/plan/p3/run`` repairs it again over one
+poll and goes on. A fourth fixture ``p4`` is partial because a node gave up and blocked its
+dependents (``resume.kind: "retry"``). Repair entries carry per-node ``usage``, nodes carry
+``repair_usage``, a plan's ``totals`` include the planner, a resumed run's baseline is
+``reused`` and a run's last level is preceded by ``final_gate``.
 
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
@@ -1909,10 +1914,11 @@ class MockPlans:
                                 f"{rec['target_branch']} at {lr['tip'][:10]} ({by})"})  # fmt: skip
 
     def seed_fixtures(self) -> None:
-        """Two plans of the second project (see the module docstring): ``p1`` interrupted
-        while level 2 ran, ``p2`` waiting to land (target checked out by the owner)."""
+        """Four plans of the second project (see the module docstring): ``p1`` interrupted
+        while level 2 ran, ``p2`` waiting to land (target checked out by the owner), ``p3``
+        out of repair attempts, ``p4`` with a node that gave up and blocked the rest."""
         now = datetime.now(UTC).timestamp()
-        for kind in ("interrupted", "land", "repair"):
+        for kind in ("interrupted", "land", "repair", "retry"):
             pid = self.create({"scope": "all"})["id"]
             rec = self.plans[pid]
             self._plan_now(rec)
@@ -1959,6 +1965,8 @@ class MockPlans:
                 for nid in ids:
                     self._finish_node(rec, nodes[nid], now)
                 self._repair_exhausted(rec, stop_at, lr, ids)
+            elif kind == "retry":
+                self._gave_up(rec, stop_at, lr, ids, now)
             else:
                 err = {
                     "kind": "branch_checked_out",
@@ -1977,62 +1985,146 @@ class MockPlans:
                 plan_mod._sum_into(tot, n["usage"])
                 tot["rounds"] += n["rounds"]
                 tot["lines_changed"] += n["lines_changed"]
+            plan_mod._sum_into(tot, rec["planner"]["usage"])  # v1.11: the planner is in
+            tot["wall_s"] = round(sum(n["wall_s"] for n in rec["nodes"]), 2)
             rec["totals"] = tot
 
+    def _gave_up(self, rec: dict[str, Any], L: int, lr: dict[str, Any], ids: list[str],
+                 now: float) -> None:  # fmt: skip
+        """Level ``L``: its first node gave up, the others passed and landed, every later node
+        is blocked by it (``resume.kind: "retry"``)."""
+        nodes = {n["id"]: n for n in rec["nodes"]}
+        bad = ids[0]
+        for nid in ids[1:]:
+            self._finish_node(rec, nodes[nid], now)
+        err = {"kind": "gave_up", "message": "its checks still fail after 4 rounds: "
+               f"scenario:{bad}_rejects_a_duplicate"}  # fmt: skip
+        nodes[bad].update(status="gave_up", error=err, rounds=4, wall_s=240.0)
+        if len(ids) > 1:
+            self._gate(rec, L, lr, ids[1:])
+            self._land(rec, lr, "run")
+        else:
+            lr.update(status="failed", finished=self._now())
+        for later in rec["levels"][L + 1 :]:
+            for nid in later:
+                nodes[nid].update(status="blocked", blocked_by=[bad])
+        rec.update(status=plan_mod.final_status(rec), finished=self._now())
+
     def _repair_entry(self, rec: dict[str, Any], L: int, k: int, ids: list[str],
-                      tip: str, outcome: str | None) -> dict[str, Any]:  # fmt: skip
+                      tip: str, outcome: str | None,
+                      repair_node: str | None = None) -> dict[str, Any]:  # fmt: skip
         nodes = {n["id"]: n for n in rec["nodes"]}
         first = ids[0]
+        owners = [first] + ([repair_node] if repair_node else [])
         targets = [f"scenario:{first}_works_with_the_others"]
+        attributed = {targets[0]: {"by": "scope", "nodes": [first]}}
+        if repair_node:  # a failing check no merged node owns goes to the repair node
+            targets.append(f"scenario:{first}_cross_area")
+            attributed[targets[1]] = {"by": "repair_node", "nodes": [repair_node]}
         rec["repair_attempts"] = int(rec.get("repair_attempts") or 0) + 1
-        for nid in ids[:1]:
+        entry_nodes = []
+        for nid in owners:
             n = nodes[nid]
             n["repairs"] = int(n.get("repairs") or 0) + 1
             n["rounds"] += 1
-            plan_mod._sum_into(n["usage"], plan_mod._node_usage({
+            use = plan_mod._node_usage({
                 "input_tokens": 3000, "output_tokens": 600, "cache_read_input_tokens": 20000,
-                "cost_usd_list_estimate": 0.05}))  # fmt: skip
+                "cost_usd_list_estimate": 0.05})  # fmt: skip
+            plan_mod._sum_into(n["usage"], use)
+            n.setdefault("repair_usage", plan_mod._node_usage({}))
+            plan_mod._sum_into(n["repair_usage"], use)
             n.setdefault("timeline", []).append(
                 {"at": self._now(), "repair": True, "event": f"node {nid}: repair attempt {k}"}
             )
+            entry_nodes.append({"id": nid, "build_id": n.get("build_id"),
+                                "verify": "fail" if nid == repair_node and outcome != "passed"
+                                else "pass",
+                                "commit": hashlib.sha1(
+                                    f"{rec['id']}:{nid}:r{k}".encode()).hexdigest(),
+                                "rounds": 1, "usage": use})  # fmt: skip
         rec["timeline"].append({"at": self._now(), "repair": True,
-                                "event": f"level {L}: repair attempt {k} of 2: {first} on "
-                                f"{', '.join(targets)}"})  # fmt: skip
+                                "event": f"level {L}: repair attempt {k} of 2: "
+                                f"{', '.join(owners)} on {', '.join(targets)}"})  # fmt: skip
         return {"attempt": k, "of": 2, "run": rec["runs"], "at": self._now(), "tip": tip,
-                "targets": targets,
-                "attributed": {t: {"by": "scope", "nodes": [first]} for t in targets},
-                "nodes": [{"id": first, "build_id": nodes[first].get("build_id"),
-                           "verify": "pass", "commit": hashlib.sha1(
-                               f"{rec['id']}:{first}:r{k}".encode()).hexdigest(),
-                           "rounds": 1}],
+                "targets": targets, "attributed": attributed, "nodes": entry_nodes,
                 "outcome": outcome}  # fmt: skip
+
+    def _repair_node(self, rec: dict[str, Any], L: int, targets: list[str]) -> dict[str, Any]:
+        """A dedicated ``repair-l<L>`` node (v1.11) for checks no merged node owns."""
+        n = {
+            "id": f"repair-l{L}",
+            "title": f"Repair of level {L}",
+            "kind": "repair",
+            "scope": {"kind": "rules", "rules": []},
+            "depends_on": [],
+            "why": "checks that fail only in the merged level and no node owns",
+            "tier": "frontier",
+            "model": rec["models"]["frontier"],
+            "touches": {"tables": [], "packages": [], "files": []},
+            "gate": {"kind": "scoped", "checks": list(targets), "decided_by": "studio"},
+            "level": L,
+            "status": "gave_up",
+            "builds": [],
+            "branch": None,
+            "commit": None,
+            "merged": False,
+            "nothing_to_build": False,
+            "blocked_by": [],
+            "usage": plan_mod._node_usage({}),
+            "wall_s": 0.0,
+            "rounds": 0,
+            "lines_changed": 0,
+            "files_changed": [],
+            "started_ts": None,
+            "finished_ts": None,
+            "error": None,
+            "metrics": None,
+            "attempts": 1,
+            "timeline": [],
+            "repair": True,
+            "build_id": f"b{100 + self._builds}",
+        }
+        n["error"] = {"kind": "repair", "message": "the repair node could not make "
+                      f"{', '.join(targets)} pass"}  # fmt: skip
+        self._builds += 1
+        n["builds"] = [n["build_id"]]
+        n["branch"] = f"rebuild/{rec['id']}-{n['id']}"
+        rec["nodes"].append(n)
+        rec["levels"][L].append(n["id"])
+        return n
 
     def _repair_exhausted(self, rec: dict[str, Any], L: int, lr: dict[str, Any],
                           ids: list[str]) -> None:  # fmt: skip
         """A level whose gate failed on the merged tip after 2 repair attempts (v1.11)."""
+        ids = list(ids)  # the repair node joins the level's list below
         nodes = {n["id"]: n for n in rec["nodes"]}
         tip = hashlib.sha1(f"{rec['id']}:L{L}:failed".encode()).hexdigest()
-        target = f"scenario:{ids[0]}_works_with_the_others"
+        targets = [f"scenario:{ids[0]}_works_with_the_others", f"scenario:{ids[0]}_cross_area"]
         lr.update(merged=list(ids), tip=None, finished=self._now(), status="failed",
-                  regressions=[target], repair_pending=True,
-                  blame=[{"target": target, "nodes": [ids[0]], "by": "rules"}],
-                  gate={"sha": tip, "verdict": "fail", "counts": {"D": 1},
-                        "failing": [target], "regressions": [target], "newly_fixed": [],
-                        "gates": [], "mode": "regression", "selected": 12,
-                        "in_scope_failing": []})  # fmt: skip
-        lr["repairs"] = [self._repair_entry(rec, L, k, ids, tip, "failed") for k in (1, 2)]
+                  regressions=list(targets), repair_pending=True,
+                  blame=[{"target": targets[0], "nodes": [ids[0]], "by": "rules"},
+                         {"target": targets[1], "nodes": [], "by": "level"}],
+                  gate={"sha": tip, "verdict": "fail", "counts": {"D": 2},
+                        "failing": list(targets), "regressions": list(targets),
+                        "newly_fixed": [], "gates": [], "mode": "regression",
+                        "selected": 12, "in_scope_failing": []})  # fmt: skip
+        repair = self._repair_node(rec, L, targets[1:])  # no merged node owns the second
+        lr["repairs"] = [
+            self._repair_entry(rec, L, k, ids, tip, "failed", repair["id"]) for k in (1, 2)
+        ]
         for r in lr["repairs"]:
-            r["still_failing"] = [target]
-        err = {"kind": "repair_exhausted", "level": L, "nodes": list(ids), "targets": [target],
+            r["still_failing"] = list(targets)
+        err = {"kind": "repair_exhausted", "level": L, "nodes": list(ids),
+               "targets": list(targets),
                "message": f"level {L} still fails after 2 repair attempt(s) (2 in all): "
-               f"{target}; nodes {', '.join(ids)}"}  # fmt: skip
+               f"{', '.join(targets)}; nodes {', '.join(ids)}"}  # fmt: skip
         lr["error"] = err
         for nid in ids:
             nodes[nid].update(
                 status="regressed",
                 error={
                     "kind": "regression",
-                    "message": f"the full gate on the merged tip regressed: {target}",
+                    "message": f"the full gate on the merged tip regressed: {targets[0]}",
                 },
             )
         rec.update(status="partial", error=err, finished=self._now())
@@ -2078,6 +2170,9 @@ class MockPlans:
             rec["_planner"] = "fallback"
         rec["_doc"] = doc
         self._apply(rec, v)
+        tot = plan_mod._usage_totals()  # v1.11: the totals include the planner once it ended
+        plan_mod._sum_into(tot, rec["planner"]["usage"])
+        rec["totals"] = tot
         rec["source"] = "fallback" if rec["_planner"] == "fallback" else "agent"
         if rec["source"] == "fallback":
             rec["fallback_reason"] = "requested: the request asked for the fallback planner"
@@ -2114,7 +2209,14 @@ class MockPlans:
             tip = hashlib.sha1(f"{rec['id']}:L{L}:repaired".encode()).hexdigest()
             lr = self._level_run(rec, L, ids)
             lr.update(repair_resume=True, repair_pass=2)
-            lr["repairs"] = [self._repair_entry(rec, L, 3, ids, old["gate"]["sha"], "passed")]
+            repair = next((n for n in rec["nodes"] if n.get("kind") == "repair"
+                           and n["level"] == L), None)  # fmt: skip
+            lr["repairs"] = [self._repair_entry(rec, L, 3, ids, old["gate"]["sha"], "passed",
+                                                repair["id"] if repair else None)]  # fmt: skip
+            if repair is not None:  # its commit is merged after the level's nodes
+                commit = lr["repairs"][0]["nodes"][1]["commit"]
+                repair.update(status="passed", error=None, commit=commit)
+                ids = [*ids, repair["id"]]
             self._gate(rec, L, lr, ids)
             self._land(rec, lr, "resume")
             rec["error"] = None
@@ -2128,6 +2230,10 @@ class MockPlans:
             cur.update(level=cur["level"] + 1, phase="start")
             return
         if cur["phase"] == "start":
+            if cur["level"] == len(rec["levels"]) - 1 and len(rec["levels"]) > 1:
+                # v1.11: before the last level the plan runs the full gate on the target's tip
+                rec["final_gate"] = {"sha": rec["target_tip"], "failing": [], "at": self._now(),
+                                     "gates": []}  # fmt: skip
             for nid in ids:
                 n = nodes[nid]
                 bid = f"b{100 + self._builds}"
@@ -2315,6 +2421,7 @@ class MockPlans:
                 "counts": {"D": 0},
                 "failing": [],
                 "findings": [],
+                "reused": rec["runs"] > 1,  # v1.11: a resumed run starts on a recorded tip
             }
             rec["_cursor"] = {"level": 0, "phase": "start"}
             if rec["status"] == "running" and plan_mod.repair_waiting(rec) is not None:

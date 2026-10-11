@@ -123,7 +123,10 @@ export const api = {
   planList: () => call("GET", "/api/plans"),
   planRevise: (id, body) => call("POST", `/api/plan/${encodeURIComponent(id)}/revise`, body),
   planApprove: (id) => call("POST", `/api/plan/${encodeURIComponent(id)}/approve`, {}),
-  planRun: (id) => call("POST", `/api/plan/${encodeURIComponent(id)}/run`, {}),
+  // v1.10: `run` also resumes an interrupted, partial, failed or stopped plan; `land` only lands
+  // a level that passed its check (never an agent). body: {confirm_unsafe_branch?: bool}.
+  planRun: (id, body = {}) => call("POST", `/api/plan/${encodeURIComponent(id)}/run`, body),
+  planLand: (id, body = {}) => call("POST", `/api/plan/${encodeURIComponent(id)}/land`, body),
   planStop: (id) => call("DELETE", `/api/plan/${encodeURIComponent(id)}`),
 
   // v1.5: the chat on a Claude Code session (session.js drives these).
