@@ -1,0 +1,4 @@
+PASS: 0 findings (A 0, B 0, C 0, D 0); 61 cases run
+
+not checked (stated in the spec, not checkable yet):
+  - a shipped order cannot be changed

@@ -1,0 +1,10 @@
+FAIL: 1 finding (A 0, B 0, C 0, D 1); 61 cases run
+
+rule (D: scenarios): scenario: ann adds a line to a new order
+  [D silent] POST /orders/10/items as ann (ann adds a line to a new order / step 1)
+    expected 201 {"order_id": 10, "product_id": 2, "quantity": 3}; got 201 {"id": 4, "order_id": 10, "product_id": 2, "quantity": 1, "price": 4.0}
+    body: expected {'order_id': 10, 'product_id': 2, 'quantity': 3} within {'id': 4, 'order_id': 10, 'product_id': 2, 'quantity': 1, 'price': 4.0}
+    db order_items where {'order_id': 10, 'product_id': 2}: quantity is 1, expected 3
+
+not checked (stated in the spec, not checkable yet):
+  - a shipped order cannot be changed

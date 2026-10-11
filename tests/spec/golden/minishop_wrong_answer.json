@@ -1,0 +1,1186 @@
+{
+  "verdict": "fail",
+  "layers": "ABCD",
+  "counts": {
+    "A": 0,
+    "B": 8,
+    "C": 0,
+    "D": 0
+  },
+  "findings": [
+    {
+      "layer": "B",
+      "verdict": "silent",
+      "rule": "GET /orders/{order_id} answers as its spec program 'orders'",
+      "endpoint": "GET /orders/{order_id}",
+      "case": "GET /orders/{order_id} | ann | order_id=3",
+      "request": {
+        "method": "GET",
+        "path": "/orders/3",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      },
+      "details": {
+        "reason": "status differs",
+        "expected": {
+          "status": 404,
+          "body": {
+            "detail": "Order not found"
+          }
+        },
+        "actual": {
+          "status": 200,
+          "body": {
+            "id": 3,
+            "user_id": 2,
+            "status": "pending",
+            "total": 0.0
+          }
+        }
+      },
+      "db_diff": {},
+      "invariant_violations": [],
+      "code": null,
+      "file": null,
+      "line": null,
+      "key": "B:GET /orders/{order_id}:GET /orders/{order_id} | ann | order_id=3"
+    },
+    {
+      "layer": "B",
+      "verdict": "silent",
+      "rule": "GET /orders/{order_id} answers as its spec program 'orders'",
+      "endpoint": "GET /orders/{order_id}",
+      "case": "GET /orders/{order_id} | ann | order_id=4",
+      "request": {
+        "method": "GET",
+        "path": "/orders/4",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      },
+      "details": {
+        "reason": "status differs",
+        "expected": {
+          "status": 404,
+          "body": {
+            "detail": "Order not found"
+          }
+        },
+        "actual": {
+          "status": 200,
+          "body": {
+            "id": 4,
+            "user_id": 3,
+            "status": "pending",
+            "total": 2.5
+          }
+        }
+      },
+      "db_diff": {},
+      "invariant_violations": [],
+      "code": null,
+      "file": null,
+      "line": null,
+      "key": "B:GET /orders/{order_id}:GET /orders/{order_id} | ann | order_id=4"
+    },
+    {
+      "layer": "B",
+      "verdict": "silent",
+      "rule": "GET /orders/{order_id} answers as its spec program 'orders'",
+      "endpoint": "GET /orders/{order_id}",
+      "case": "GET /orders/{order_id} | ben | order_id=1",
+      "request": {
+        "method": "GET",
+        "path": "/orders/1",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      },
+      "details": {
+        "reason": "status differs",
+        "expected": {
+          "status": 404,
+          "body": {
+            "detail": "Order not found"
+          }
+        },
+        "actual": {
+          "status": 200,
+          "body": {
+            "id": 1,
+            "user_id": 1,
+            "status": "pending",
+            "total": 5.0
+          }
+        }
+      },
+      "db_diff": {},
+      "invariant_violations": [],
+      "code": null,
+      "file": null,
+      "line": null,
+      "key": "B:GET /orders/{order_id}:GET /orders/{order_id} | ben | order_id=1"
+    },
+    {
+      "layer": "B",
+      "verdict": "silent",
+      "rule": "GET /orders/{order_id} answers as its spec program 'orders'",
+      "endpoint": "GET /orders/{order_id}",
+      "case": "GET /orders/{order_id} | ben | order_id=4",
+      "request": {
+        "method": "GET",
+        "path": "/orders/4",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      },
+      "details": {
+        "reason": "status differs",
+        "expected": {
+          "status": 404,
+          "body": {
+            "detail": "Order not found"
+          }
+        },
+        "actual": {
+          "status": 200,
+          "body": {
+            "id": 4,
+            "user_id": 3,
+            "status": "pending",
+            "total": 2.5
+          }
+        }
+      },
+      "db_diff": {},
+      "invariant_violations": [],
+      "code": null,
+      "file": null,
+      "line": null,
+      "key": "B:GET /orders/{order_id}:GET /orders/{order_id} | ben | order_id=4"
+    },
+    {
+      "layer": "B",
+      "verdict": "silent",
+      "rule": "GET /orders/{order_id} answers as its spec program 'orders'",
+      "endpoint": "GET /orders/{order_id}",
+      "case": "GET /orders/{order_id} | ben | order_id=2",
+      "request": {
+        "method": "GET",
+        "path": "/orders/2",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      },
+      "details": {
+        "reason": "status differs",
+        "expected": {
+          "status": 404,
+          "body": {
+            "detail": "Order not found"
+          }
+        },
+        "actual": {
+          "status": 200,
+          "body": {
+            "id": 2,
+            "user_id": 1,
+            "status": "paid",
+            "total": 4.0
+          }
+        }
+      },
+      "db_diff": {},
+      "invariant_violations": [],
+      "code": null,
+      "file": null,
+      "line": null,
+      "key": "B:GET /orders/{order_id}:GET /orders/{order_id} | ben | order_id=2"
+    },
+    {
+      "layer": "B",
+      "verdict": "silent",
+      "rule": "GET /orders/{order_id} answers as its spec program 'orders'",
+      "endpoint": "GET /orders/{order_id}",
+      "case": "GET /orders/{order_id} | ada | order_id=1",
+      "request": {
+        "method": "GET",
+        "path": "/orders/1",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      },
+      "details": {
+        "reason": "status differs",
+        "expected": {
+          "status": 404,
+          "body": {
+            "detail": "Order not found"
+          }
+        },
+        "actual": {
+          "status": 200,
+          "body": {
+            "id": 1,
+            "user_id": 1,
+            "status": "pending",
+            "total": 5.0
+          }
+        }
+      },
+      "db_diff": {},
+      "invariant_violations": [],
+      "code": null,
+      "file": null,
+      "line": null,
+      "key": "B:GET /orders/{order_id}:GET /orders/{order_id} | ada | order_id=1"
+    },
+    {
+      "layer": "B",
+      "verdict": "silent",
+      "rule": "GET /orders/{order_id} answers as its spec program 'orders'",
+      "endpoint": "GET /orders/{order_id}",
+      "case": "GET /orders/{order_id} | ada | order_id=3",
+      "request": {
+        "method": "GET",
+        "path": "/orders/3",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      },
+      "details": {
+        "reason": "status differs",
+        "expected": {
+          "status": 404,
+          "body": {
+            "detail": "Order not found"
+          }
+        },
+        "actual": {
+          "status": 200,
+          "body": {
+            "id": 3,
+            "user_id": 2,
+            "status": "pending",
+            "total": 0.0
+          }
+        }
+      },
+      "db_diff": {},
+      "invariant_violations": [],
+      "code": null,
+      "file": null,
+      "line": null,
+      "key": "B:GET /orders/{order_id}:GET /orders/{order_id} | ada | order_id=3"
+    },
+    {
+      "layer": "B",
+      "verdict": "silent",
+      "rule": "GET /orders/{order_id} answers as its spec program 'orders'",
+      "endpoint": "GET /orders/{order_id}",
+      "case": "GET /orders/{order_id} | ada | order_id=2",
+      "request": {
+        "method": "GET",
+        "path": "/orders/2",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      },
+      "details": {
+        "reason": "status differs",
+        "expected": {
+          "status": 404,
+          "body": {
+            "detail": "Order not found"
+          }
+        },
+        "actual": {
+          "status": 200,
+          "body": {
+            "id": 2,
+            "user_id": 1,
+            "status": "paid",
+            "total": 4.0
+          }
+        }
+      },
+      "db_diff": {},
+      "invariant_violations": [],
+      "code": null,
+      "file": null,
+      "line": null,
+      "key": "B:GET /orders/{order_id}:GET /orders/{order_id} | ada | order_id=2"
+    }
+  ],
+  "cases": {
+    "GET /orders | ann | call": {
+      "layer": "B",
+      "endpoint": "GET /orders",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders | ben | call": {
+      "layer": "B",
+      "endpoint": "GET /orders",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders | ada | call": {
+      "layer": "B",
+      "endpoint": "GET /orders",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders | eve | call": {
+      "layer": "B",
+      "endpoint": "GET /orders",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders | no token | call": {
+      "layer": "B",
+      "endpoint": "GET /orders",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders",
+        "user": null,
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders | garbage token | call": {
+      "layer": "B",
+      "endpoint": "GET /orders",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders",
+        "user": null,
+        "token": "<given>",
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ann | order_id=1": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/1",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ann | order_id=3": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "silent",
+      "reason": "status differs",
+      "request": {
+        "method": "GET",
+        "path": "/orders/3",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ann | order_id=4": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "silent",
+      "reason": "status differs",
+      "request": {
+        "method": "GET",
+        "path": "/orders/4",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ann | order_id=2": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/2",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ann | missing": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/999999",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ann | malformed": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/not-an-int",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ben | order_id=1": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "silent",
+      "reason": "status differs",
+      "request": {
+        "method": "GET",
+        "path": "/orders/1",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ben | order_id=3": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/3",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ben | order_id=4": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "silent",
+      "reason": "status differs",
+      "request": {
+        "method": "GET",
+        "path": "/orders/4",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ben | order_id=2": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "silent",
+      "reason": "status differs",
+      "request": {
+        "method": "GET",
+        "path": "/orders/2",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ben | missing": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/999999",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ben | malformed": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/not-an-int",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ada | order_id=1": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "silent",
+      "reason": "status differs",
+      "request": {
+        "method": "GET",
+        "path": "/orders/1",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ada | order_id=3": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "silent",
+      "reason": "status differs",
+      "request": {
+        "method": "GET",
+        "path": "/orders/3",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ada | order_id=4": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/4",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ada | order_id=2": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "silent",
+      "reason": "status differs",
+      "request": {
+        "method": "GET",
+        "path": "/orders/2",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ada | missing": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/999999",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | ada | malformed": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/not-an-int",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | eve | order_id=1": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/1",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | eve | order_id=3": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/3",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | eve | order_id=4": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/4",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | eve | order_id=2": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/2",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | eve | missing": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/999999",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | eve | malformed": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/not-an-int",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | no token | call": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/1",
+        "user": null,
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "GET /orders/{order_id} | garbage token | call": {
+      "layer": "B",
+      "endpoint": "GET /orders/{order_id}",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "GET",
+        "path": "/orders/1",
+        "user": null,
+        "token": "<given>",
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ann | order_id=1": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/1/cancel",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ann | order_id=3": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/3/cancel",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ann | order_id=4": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/4/cancel",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ann | order_id=2": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/2/cancel",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ann | missing": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/999999/cancel",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ann | malformed": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/not-an-int/cancel",
+        "user": "ann",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ben | order_id=1": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/1/cancel",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ben | order_id=3": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/3/cancel",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ben | order_id=4": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/4/cancel",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ben | order_id=2": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/2/cancel",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ben | missing": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/999999/cancel",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ben | malformed": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/not-an-int/cancel",
+        "user": "ben",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ada | order_id=1": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/1/cancel",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ada | order_id=3": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/3/cancel",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ada | order_id=4": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/4/cancel",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ada | order_id=2": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/2/cancel",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ada | missing": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/999999/cancel",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | ada | malformed": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/not-an-int/cancel",
+        "user": "ada",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | eve | order_id=1": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/1/cancel",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | eve | order_id=3": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/3/cancel",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | eve | order_id=4": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/4/cancel",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | eve | order_id=2": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/2/cancel",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | eve | missing": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/999999/cancel",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | eve | malformed": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/not-an-int/cancel",
+        "user": "eve",
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | no token | call": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/1/cancel",
+        "user": null,
+        "token": null,
+        "params": null,
+        "json": null
+      }
+    },
+    "POST /orders/{order_id}/cancel | garbage token | call": {
+      "layer": "B",
+      "endpoint": "POST /orders/{order_id}/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/1/cancel",
+        "user": null,
+        "token": "<given>",
+        "params": null,
+        "json": null
+      }
+    },
+    "ann cancels her pending order / step 1": {
+      "layer": "D",
+      "endpoint": "POST /orders/1/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/1/cancel",
+        "user": "ann",
+        "params": null,
+        "json": null
+      }
+    },
+    "ann cancels her pending order / step 2": {
+      "layer": "D",
+      "endpoint": "POST /orders/1/cancel",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/1/cancel",
+        "user": "ann",
+        "params": null,
+        "json": null
+      }
+    },
+    "ann adds a line to a new order / step 1": {
+      "layer": "D",
+      "endpoint": "POST /orders/10/items",
+      "verdict": "correct",
+      "reason": "",
+      "request": {
+        "method": "POST",
+        "path": "/orders/10/items",
+        "user": "ann",
+        "params": null,
+        "json": {
+          "product_id": 2,
+          "quantity": 3
+        }
+      }
+    }
+  },
+  "notes": [],
+  "unchecked": [
+    "a shipped order cannot be changed"
+  ],
+  "accepted": [],
+  "stale_baseline": []
+}
