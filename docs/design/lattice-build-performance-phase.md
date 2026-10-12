@@ -1,6 +1,6 @@
 # Phase (planned): build performance in Studio
 
-Status: **planned, not started** (recorded 2026-10-10 during the first real Streak build, plan p2/p3).
+Status: **delivered 2026-10-11** (API v1.10 and v1.11; results in `docs/results/2026-10-11-perf-and-resume-results.md`, handoff `docs/HANDOFF-2026-10-11.md`). Recorded 2026-10-10 during the first real Streak build, plan p2/p3.
 Update 2026-10-11: P0 profile and G1 timings done; S2a built (API v1.11: scoped node gates,
 the regression level gate, the level repair loop, stop/budget hygiene, planner/areas from
 per-tip results): `docs/results/2026-10-11-perf-studio-results.md`.
