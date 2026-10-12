@@ -49,7 +49,7 @@ import_repos = [
     "python-jose>=3.5.0",
 ]
 # Phase 2 dev apps (bench/import_repos/{snippets,recipes,microblog,flasky}, plan
-# docs/superpowers/plans/2026-10-05-phase2-python-import.md W1-C) plus the libraries the
+# docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md W1-C) plus the libraries the
 # plan lists for the held-out apps (simplejwt, django-filter, flask-jwt-extended).
 # pygments: snippets; pillow: recipes' ImageField; flask-login, markdown, bleach: flasky;
 # alchemical, flask-marshmallow, marshmallow-sqlalchemy, flask-cors, flask-mail,
