@@ -146,6 +146,7 @@ RERUN = ("pending", "gave_up", "blocked", "merge_conflict", "regressed", "stoppe
 # a level that passed its full gate but whose tip could not be added to the target (v1.10)
 LAND_KINDS = ("branch_checked_out", "branch_moved", "tree_dirty")
 REF_PREFIX = "refs/lattice/plans"
+DRIFT_WARNING = "The spec on "  # API v1.12: the start of the spec-drift warning
 WORKTREE_MARK = "/.lattice/rebuilds/"  # where Studio's own worktrees live (WORKTREE_DIR)
 PLANNER_TOOLS = ("Read", "Grep", "Glob")
 PLANNER_DENIED = ("Bash", "Edit", "Write", "MultiEdit", "NotebookEdit", "WebFetch", "WebSearch")
@@ -1189,7 +1190,7 @@ class PlanManager:
                          ("interrupted", False), ("interrupted_at", None),
                          ("interrupted_reason", None), ("anchors", {}), ("level_runs", []),
                          ("nodes", []), ("levels", []), ("warnings", []), ("runs", 0),
-                         ("totals", _usage_totals())):  # fmt: skip
+                         ("totals", _usage_totals()), ("spec_drift", None)):  # fmt: skip
                 rec.setdefault(k, copy.deepcopy(v))
             for n in rec["nodes"]:
                 n.setdefault("attempts", len(n.get("builds") or []))
@@ -1341,6 +1342,7 @@ class PlanManager:
         if not isinstance(confirm, bool):
             raise PlanError(422, "confirm_unsafe_branch must be true or false")
         target = self._check_branch(body.get("branch"), confirm)
+        drift = self._drift_of(target["name"], None if not target["create"] else target["tip"])
         with self.lock:
             pid = self._alloc()
             record: dict[str, Any] = {
@@ -1389,7 +1391,9 @@ class PlanManager:
                 "interrupted_reason": None,
                 "anchors": {},
                 "pids": [],
+                "spec_drift": None,
             }
+            self._set_drift(record, drift)
             plan = _Plan(record=record, scope=scope, branch=body.get("branch"), confirm=confirm,
                          models=dict(models), planner=planner)  # fmt: skip
             self.plans[pid] = plan
@@ -1405,6 +1409,69 @@ class PlanManager:
             return self.rb._target(self.rb.repo(), spec, confirm, dry=True)
         except RebuildError as e:
             raise PlanError(e.status, e.detail, e.code) from None
+
+    # -- spec drift (API v1.12)
+    def _drift_of(self, name: str, tip: str | None = None) -> dict[str, Any] | None:
+        """The target's ``spec_drift`` (`tip`: the commit a target still to be created
+        starts from); None when it cannot be told."""
+        try:
+            return self.rb.spec_drift(name, tip)
+        except (RebuildError, OSError, subprocess.SubprocessError):
+            return None
+
+    def _set_drift(self, rec: dict[str, Any], drift: dict[str, Any] | None) -> bool:
+        """With the lock held (or on a record not shared yet): ``spec_drift`` and its
+        warning; True when either changed."""
+        before = (rec.get("spec_drift"), list(rec.get("warnings") or []))
+        warnings = [w for w in rec.get("warnings") or [] if not str(w).startswith(DRIFT_WARNING)]
+        if drift is not None:
+            try:
+                source = _current_branch(self.rb.repo()) or "HEAD"
+            except RebuildError:
+                source = "HEAD"
+            warnings.append(f"{DRIFT_WARNING}{source} differs from {rec.get('target_branch')} "
+                            f"in {', '.join(drift['files'])}: sync it first")  # fmt: skip
+        rec["spec_drift"] = drift
+        rec["warnings"] = warnings
+        return before != (drift, warnings)
+
+    def _refresh_drift(self, plan: _Plan) -> None:
+        """With the lock held: ``spec_drift`` as the repository is now, unless the plan is
+        running (a running plan's target moves under it)."""
+        rec = plan.record
+        if rec.get("status") == "running" or not rec.get("target_branch"):
+            return
+        name = str(rec["target_branch"])
+        try:
+            exists = _git(self.rb.repo(), "rev-parse", "-q", "--verify",
+                          f"refs/heads/{name}").returncode == 0  # fmt: skip
+        except (RebuildError, OSError, subprocess.SubprocessError):
+            return
+        tip = None if exists else self._target_tip(plan)
+        if not exists and tip is None:
+            return
+        if self._set_drift(rec, self._drift_of(name, tip)):
+            self._save(plan)
+
+    def _auto_sync(self, plan: _Plan) -> None:
+        """``[rebuild] sync_spec = "auto"``: sync the committed spec onto the target before
+        the run starts (so before its start baseline); a refusal is the run's 409. Nothing
+        to do when the target does not exist yet or its spec is the same."""
+        rec = plan.record
+        name = str(rec.get("target_branch") or "")
+        if not name or self._drift_of(name) is None:
+            return
+        try:
+            source = _current_branch(self.rb.repo()) or "HEAD"
+            out = self.rb.sync_spec(name)
+        except RebuildError as e:
+            raise PlanError(e.status, e.detail, e.code) from None
+        with self.lock:
+            self._event(plan, f"spec synced from {source} at {out['synced_from'][:7]} "
+                        f"({', '.join(out['files'])})")  # fmt: skip
+            self._set_drift(rec, None)
+            self._save(plan)
+        self.log(f"plan {rec['id']}: spec synced onto {name} at {out['commit'][:10]}")
 
     # -- GET
     def _get(self, pid: str) -> _Plan:
@@ -1425,6 +1492,7 @@ class PlanManager:
                 plan.done.wait(0.1)
         with self.lock:
             self._refresh(plan)
+            self._refresh_drift(plan)
             out = copy.deepcopy(plan.record)
             out["resume"] = self._resume(plan)  # computed when read, never stored
             return out
@@ -2045,6 +2113,8 @@ class PlanManager:
             # the target exists by now: refuse at once what the run would refuse
             self._check_branch({"name": rec["target_branch"], "create": False},
                                plan.confirm or confirm)  # fmt: skip
+        if self.cfg.sync_spec == "auto":
+            self._auto_sync(plan)  # API v1.12: before the start baseline
         with self.lock:
             if self.rb.plan_active or rec["status"] != status:
                 raise PlanError(409, f"plan {pid} changed meanwhile; try again")

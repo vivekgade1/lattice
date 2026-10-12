@@ -414,6 +414,42 @@
       "text": "Stopping a plan or a build, or a gate that times out, ends the gate's whole process tree (the apps and services its check started included) and removes the database containers its check started and no other; an agent stopped by `node_timeout` or `node_max_tokens` keeps the usage it had spent in its round, which is marked `timeout`.",
       "section": "Lattice Studio server: requirements > Build performance",
       "line": 110
+    },
+    {
+      "id": "R70",
+      "text": "GET /api/branches gives every local branch that is neither protected nor the current one a `spec`: `in_sync`, `files` (the spec files -- REQUIREMENTS.md, spec.py, spec.trace.json and the `[mcp] protected` files -- whose content committed on the branch differs from the content committed at HEAD; uncommitted edits never count) and `head` (HEAD's commit); the current branch and protected branches have `spec` null.",
+      "section": "Lattice Studio server: requirements > Spec sync",
+      "line": 114
+    },
+    {
+      "id": "R71",
+      "text": "POST /api/branches/{name}/sync-spec makes one commit on the branch, `spec: sync from <current branch> <sha7>` with the trailer `Lattice-Spec-Sync: <HEAD's commit>`, holding exactly the files that differ as committed at HEAD and nothing else, and moves the branch to it only if the branch has not moved meanwhile; it answers `branch`, `synced_from` (HEAD's commit), `files`, `commit` and `previous_tip`. The owner's branch, checkout and working copy never change, and the branch's spec is then in sync.",
+      "section": "Lattice Studio server: requirements > Spec sync",
+      "line": 115
+    },
+    {
+      "id": "R72",
+      "text": "A sync is refused, changing nothing, with 409 and the code `branch_protected` for a protected branch, `branch_checked_out` for a branch checked out in any worktree, `build_running` while a build or a plan runs, and `nothing_to_sync` when the spec is the same; with 404 `no_branch` for an unknown branch, 422 `branch_name_invalid` for a malformed name, and 422 for an unknown field in the body.",
+      "section": "Lattice Studio server: requirements > Spec sync",
+      "line": 116
+    },
+    {
+      "id": "R73",
+      "text": "A plan carries `spec_drift` -- `head` and `files` when the spec committed on its target branch differs from HEAD's, else null -- computed when the plan is created and again whenever it is read while not running, and while it differs the plan's warnings say \"The spec on <current branch> differs from <target> in <files>: sync it first\".",
+      "section": "Lattice Studio server: requirements > Spec sync",
+      "line": 117
+    },
+    {
+      "id": "R74",
+      "text": "With `[rebuild] sync_spec = \"auto\"`, POST /api/plan/{id}/run first syncs the spec onto the plan's target branch when it differs (a refusal is the run's 409), before the plan's start baseline, which then runs on the sync commit, and the plan's timeline records \"spec synced from <branch> at <sha7> (<files>)\"; with the default `\"off\"` a run syncs nothing.",
+      "section": "Lattice Studio server: requirements > Spec sync",
+      "line": 118
+    },
+    {
+      "id": "R75",
+      "text": "The Build view and the plan view show a quiet banner while the chosen target's spec, or a plan's target's, is behind (\"The spec on <branch> is newer than <target> (<files>).\") with one primary button, Sync spec, that syncs it and reloads; a refusal is shown inline, and the banner is hidden while a plan runs.",
+      "section": "Lattice Studio server: requirements > Spec sync",
+      "line": 119
     }
   ],
   "links": {
@@ -631,6 +667,26 @@
     "R68": [
       "scenario:a_plan_runs_level_by_level",
       "scenario:a_level_gate_failure_is_repaired_and_lands"
+    ],
+    "R70": [
+      "scenario:the_committed_spec_is_synced_onto_the_target_branch",
+      "scenario:spec_sync_refusals"
+    ],
+    "R71": [
+      "scenario:the_committed_spec_is_synced_onto_the_target_branch",
+      "scenario:a_plan_run_syncs_the_spec_first_when_configured"
+    ],
+    "R72": [
+      "scenario:spec_sync_refusals",
+      "scenario:spec_sync_is_refused_while_a_plan_runs",
+      "scenario:the_committed_spec_is_synced_onto_the_target_branch"
+    ],
+    "R73": [
+      "scenario:the_committed_spec_is_synced_onto_the_target_branch",
+      "scenario:a_plan_run_syncs_the_spec_first_when_configured"
+    ],
+    "R74": [
+      "scenario:a_plan_run_syncs_the_spec_first_when_configured"
     ]
   },
   "unchecked": {
@@ -642,7 +698,8 @@
     "R31": "the harness serves one project directory; tests/studio/test_projects.py covers isolation between two projects",
     "R63": "restarts are not expressible in the DSL (a scenario cannot kill and restart the server); tests/studio/test_resume.py and test_state_store.py cover them",
     "R54": "the repair loop's exhaustion and the loop off need a stub that never repairs or another configuration; tests/studio/test_level_repair.py and test_build_plan.py cover them",
-    "R69": "process trees, containers and agent timeouts are not observable over HTTP; tests/studio/test_stop_cleanup.py covers them with a fake docker and a fake claude"
+    "R69": "process trees, containers and agent timeouts are not observable over HTTP; tests/studio/test_stop_cleanup.py covers them with a fake docker and a fake claude",
+    "R75": "the web UI is not observable over HTTP; tests/studio/test_spec_sync.py checks the banner's code statically and the browser check is recorded in docs/results/2026-10-11-spec-sync-results.md"
   },
   "context": [
     "R1"

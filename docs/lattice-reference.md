@@ -197,6 +197,13 @@ tests/                                    ~5,400 tests; `uv run pytest -q`; `liv
 
 `lattice --version`, `lattice --help` and `lattice <command> --help` exit 0; an unknown command exits 2.
 
+**Studio config keys** (`studio.toml`; the full list, per API version, is in `lattice/studio/API.md`). Keys a build branch's spec depends on:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `[rebuild] protected_branches` | `["main", "master"]` | branches Studio never builds onto without confirmation, and never syncs the spec onto |
+| `[rebuild] sync_spec` | `"off"` | `"auto"`: `POST /api/plan/{id}/run` first commits the spec files as committed at HEAD (`REQUIREMENTS.md`, `spec.py`, `spec.trace.json`, `[mcp] protected`) onto the plan's target branch when they differ, before the start baseline; `"off"`: only on request (`POST /api/branches/{name}/sync-spec`, the Build view's Sync spec button). API.md v1.12 (2026-10-11) |
+
 **Narrowing and timing a check** (`lattice check` / `python -m lattice.spec check`; `lattice/spec/selection.py`, 2026-10-11):
 - `--only SELECTOR [SELECTOR ...]` (repeatable) and `--only-file PATH` (a JSON array of selectors, or one per line, `#` comments) run layers **D and X** on the selected scenarios only (and layer C's invariants after their requests); layers A, B, C (seed) and R are not narrowed. Selectors: `scenario:NAME`, a bare `NAME`, a glob on names (`fnmatch`: `auth_*`, `scenario:*login*`; a colon with another prefix is part of the name), `rule:ID` (the scenarios the trace links to the rule, globs on ids too; the trace is `--trace PATH`, default `<spec module>.trace.json` next to the spec module, i.e. `spec.trace.json`). Every selector must match a scenario: an unknown one exits 2 naming the nearest scenario names (or rule ids); an empty list, a `rule:` with no trace, or a rule linking no scenario also exit 2. Order is the spec's. Without `--only` the report is unchanged but for the new `timings` key (golden test `tests/spec/test_selection_timings.py`). With it, the JSON has `selection: {selectors, scenarios, of}` and a note. `check(..., only=[...], trace=...)` is the API.
 - `--await-cap SECONDS` (2026-10-11, opt-in; `check(..., await_cap=N)`) caps every `Await`'s `within_s` at SECONDS and notes it in the report (`--await-cap N: every Await waited at most Ns ...`); an effect that does not show within the cap still fails the scenario. Meant for in-loop gates (Studio's `[rebuild] scoped_gate_args`, API.md v1.11), where a scenario awaiting a service not built yet would otherwise wait out its 30 s. On SIGTERM the check CLI exits through `SystemExit`, so its cleanup stops app processes and services and removes containers; `$LATTICE_CONTAINER_OWNER` labels its containers `lattice.owner=<value>`.

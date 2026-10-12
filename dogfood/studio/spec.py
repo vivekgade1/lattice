@@ -58,6 +58,15 @@ What makes the answers exact:
   ``gate.sh`` takes those flags and ``--only-file`` like ``lattice spec check``: plan nodes
   run their gate on their scope plus the regression set, levels end with the regression
   gate, the last level with the full gate (``final_gate``).
+- spec sync (API.md v1.12): the seed's ``[rebuild]`` sets ``sync_spec = "auto"``. Adding that
+  line to the committed seed changed the seed commit, so every recorded commit id above
+  (``SEED_HEAD`` to ``REPAIR_TIP``) was re-recorded from the real server on 2026-10-11 and
+  checked by hand with ``git log --graph --all --name-status`` (same parents, files and order
+  as before; see docs/results/2026-10-11-spec-sync-results.md). A scoped build makes a build
+  branch at the seed, accepting the starred change moves main's spec on, and the build branch's
+  spec is then behind: ``SYNC_COMMIT`` (parent ``WRITING_COMMIT``, modifying REQUIREMENTS.md and
+  spec.trace.json only, message ``spec: sync from main <sha7>`` with the
+  ``Lattice-Spec-Sync`` trailer) is recorded the same way.
 
 Studio has no database and no login: there are no tables, invariants, machines or users,
 and layers B, C and R have nothing to bind to (the harness's marker database is never
@@ -82,10 +91,10 @@ SEED_MD = """\
 - GET /notes/{id} answers the caller's own note; another user's note answers 404.
 - Requests without a token answer 401.
 """
-SEED_HEAD = "312d817f2070a61def4f7fec500e92b156456378"
+SEED_HEAD = "6ad9f48ca3578194cc702af980b84da259a86d16"
 STARRED = "Notes can be starred."
 STARRED_MD = SEED_MD + f"- {STARRED}\n"
-STARRED_COMMIT = "09a13e96c48dd8019106af830c2edc679129b7eb"
+STARRED_COMMIT = "f372a593ce33766b430348683f614469494eec06"
 FIRST = "Starred notes come first."
 TRAILER = (
     "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
@@ -102,7 +111,7 @@ SEED_RULES = [
     {"id": "R4", "status": "checked", "links": ["scenario:no_token"]},
 ]
 NO_CHANGE = "change {} is {}, not ready"
-REBUILT_COMMIT = "04050993b71603e5a576e46373e3302ba1cfc388"
+REBUILT_COMMIT = "37163703f2580004853d91dc422f824f4c172f62"
 REBUILT_MESSAGE = (
     f"build: {STARRED}\n\nRebuilt by Lattice Studio from the accepted change(s) c1; the "
     "gates passed in round 2 of 3.\n\nLattice-Rebuild: b1 (notes)\n"
@@ -180,19 +189,19 @@ READY_STARRED = wait(
 UNCHANGED = model(markdown=SEED_MD, project={"name": "notes", "git_head": SEED_HEAD[:7]})
 
 # ---- build from spec (API.md v1.8) ---------------------------------------------------------
-WRITING_COMMIT = "29f04ef7f63a95bc3ffaa5b98c7613bc79554325"
-READING_COMMIT = "cc93b8754f11b6a52e5acb76bb7ad5f5ea0be049"
+WRITING_COMMIT = "c15cbb303a97efa936a6018111f52b3926a6f845"
+READING_COMMIT = "04e0ae929beb561410a4d2cef4873fdc568f6776"
 WRITING = {"kind": "area", "id": "writing-notes", "title": "Writing notes", "rules": ["R1", "R2"]}
 READING = {"kind": "area", "id": "reading-notes", "title": "Reading notes", "rules": ["R3", "R4"]}
 NOTHING = "nothing to build: the checks in this scope already pass"
 
 # ---- build plans (API.md v1.9) ---------------------------------------------------------------
-PLAN_TIP = "645c77747c3acb2bc22b378dcb0efc8981f4370e"
+PLAN_TIP = "569ffcaf70f9190700b918ad8546610c158d9ffd"
 # API.md v1.11: the clash plan's level 0, first merged (w-clash + r-clash: the race and the
 # clash fail the level gate), then repaired by both nodes and merged again (recorded from the
 # real server and checked by hand with `git log --graph --all`, see the results doc)
-CLASH_FAILED_TIP = "6a1fac2dd0862c82966c989f4031b6244184c784"
-REPAIR_TIP = "12a5610056a17bdfce2cf8e92c92b55d3a3b9601"
+CLASH_FAILED_TIP = "e4b250526acd7a24c98f9d7f71f689d59b266cb0"
+REPAIR_TIP = "85edcac51d657a188f63822c38bd087417b4fb4f"
 SCOPED_ARGS = ["--layers", "CD", "--x-repeats", "1", "--await-cap", "5"]
 T_TARGET, N_TARGET = "scenario:text_bounds", "scenario:no_token"
 NOT_APPROVED = "plan p1 is ready, not approved: approve it first"
@@ -207,6 +216,30 @@ CAPPED_NOTE = (
     "revise the plan or raise the cap to try again."
 )
 ALL_RULES = ["R1", "R2", "R3", "R4"]
+
+# ---- spec sync (API.md v1.12) -----------------------------------------------------------------
+# the sync commit of STARRED_COMMIT's spec onto WRITING_COMMIT (the same on build/notes and on
+# feature/w: same parent, tree, message and fixed dates), recorded from the real server
+SYNC_COMMIT = "94da6cdf11f0b765bf8c687052d5be6ed3821854"
+SYNC_FILES = ["REQUIREMENTS.md", "spec.trace.json"]
+SYNC_DRIFT = {"head": STARRED_COMMIT, "files": SYNC_FILES}
+BEHIND = {"in_sync": False, "files": SYNC_FILES, "head": STARRED_COMMIT}
+IN_SYNC = {"in_sync": True, "files": [], "head": STARRED_COMMIT}
+NOTHING_TO_SYNC = ("the spec on {} is the same as on main at " + STARRED_COMMIT[:7]
+                   + ": nothing to sync")
+
+
+def drift_warning(target):
+    return (f"The spec on main differs from {target} in REQUIREMENTS.md, spec.trace.json: "
+            "sync it first")
+
+
+def sync(name, status=200, **body):
+    return Step("POST", f"/api/branches/{name}/sync-spec", json={}, expect_status=status,
+                expect_body=body or None)  # fmt: skip
+
+
+ACCEPT_STARRED = (post_change(STARRED), READY_STARRED, accept("c1", commit=STARRED_COMMIT))
 
 
 def post_plan(body, pid="p1"):
@@ -995,6 +1028,77 @@ SCENARIOS = (
                     "passed yet."}}),
         UNCHANGED,
     )),
+    # ---- spec sync (API.md v1.12): the seed's [rebuild] sync_spec is "auto"
+    Scenario("the_committed_spec_is_synced_onto_the_target_branch", steps=(
+        build({"area": "writing-notes"}),
+        rebuilt("b1", "passed", target_branch="build/notes", commit={"sha": WRITING_COMMIT}),
+        *ACCEPT_STARRED,
+        # main's spec moved on; the build branches keep the seed's
+        Step("GET", "/api/branches", expect_body={"current_branch": "main", "branches": [
+            {"name": "build/notes", "head": WRITING_COMMIT, "spec": BEHIND},
+            {"name": "main", "head": STARRED_COMMIT, "spec": None},
+            {"name": "rebuild/writing-notes-1", "head": WRITING_COMMIT, "spec": BEHIND},
+        ]}),
+        post_plan({"scope": {"areas": ["writing-notes"]}, "planner": "fallback"}),
+        planned("p1", "ready", target_branch="build/notes", spec_drift=SYNC_DRIFT,
+                warnings=[drift_warning("build/notes")]),
+        sync("build/notes", branch="build/notes", synced_from=STARRED_COMMIT, files=SYNC_FILES,
+             commit=SYNC_COMMIT, previous_tip=WRITING_COMMIT),
+        Step("GET", "/api/branches", expect_body={"current_branch": "main", "branches": [
+            {"name": "build/notes", "head": SYNC_COMMIT, "spec": IN_SYNC},
+            {"name": "main", "head": STARRED_COMMIT, "spec": None},
+            {"name": "rebuild/writing-notes-1", "head": WRITING_COMMIT, "spec": BEHIND},
+        ]}),
+        planned("p1", "ready", spec_drift=None, warnings=[]),
+        coded("POST", "/api/branches/build/notes/sync-spec", 409, "nothing_to_sync", json={}),
+        refused("POST", "/api/branches/build%2Fnotes/sync-spec", 409,
+                NOTHING_TO_SYNC.format("build/notes"), json={}),
+        # the owner's branch and working copy never move
+        model(markdown=STARRED_MD, project={"name": "notes", "git_head": STARRED_COMMIT[:7]}),
+    )),
+    Scenario("spec_sync_refusals", steps=(
+        coded("POST", "/api/branches/main/sync-spec", 409, "branch_checked_out", json={}),
+        coded("POST", "/api/branches/release/sync-spec", 409, "branch_protected", json={}),
+        coded("POST", "/api/branches/nope/sync-spec", 404, "no_branch", json={}),
+        refused("POST", "/api/branches/nope/sync-spec", 404, "no branch nope", json={}),
+        coded("POST", "/api/branches/bad..name/sync-spec", 422, "branch_name_invalid", json={}),
+        refused("POST", "/api/branches/main/sync-spec", 422, "unknown field(s): force",
+                json={"force": True}),
+        Step("GET", "/api/branches", expect_body={"branches": [
+            {"name": "main", "head": SEED_HEAD, "spec": None}]}),
+        UNCHANGED,
+    )),
+    Scenario("spec_sync_is_refused_while_a_plan_runs", steps=(
+        build({"area": "writing-notes"}),
+        rebuilt("b1", "passed", commit={"sha": WRITING_COMMIT}),
+        post_plan({"scope": {"rules": ["R3"]}}),
+        planned("p1", "ready", levels=[["slow"], ["integration"]], spec_drift=None),
+        *approve_and_run(),
+        coded("POST", "/api/branches/build/notes/sync-spec", 409, "build_running", json={}),
+        Step("DELETE", "/api/plan/p1", expect_body={"id": "p1", "status": "stopped"}),
+        coded("POST", "/api/branches/build/notes/sync-spec", 409, "nothing_to_sync", json={}),
+        Step("GET", "/api/branches", expect_body={"branches": [
+            {"name": "build/notes", "head": WRITING_COMMIT, "spec": {"in_sync": True}},
+            {"name": "main"}, {"name": "rebuild/writing-notes-1"}]}),
+        UNCHANGED,
+    )),
+    Scenario("a_plan_run_syncs_the_spec_first_when_configured", steps=(
+        build({"area": "writing-notes"}, branch={"name": "feature/w", "create": True}),
+        rebuilt("b1", "passed", target_branch="feature/w", commit={"sha": WRITING_COMMIT}),
+        *ACCEPT_STARRED,
+        post_plan({"scope": {"areas": ["writing-notes"]}, "planner": "fallback",
+                   "branch": {"name": "feature/w"}}),
+        planned("p1", "ready", target_branch="feature/w", spec_drift=SYNC_DRIFT,
+                warnings=[drift_warning("feature/w")]),
+        *approve_and_run(),
+        # the start baseline ran on the sync commit: the spec was synced before it
+        planned("p1", "passed", target_branch="feature/w", baseline={"sha": SYNC_COMMIT},
+                spec_drift=None, warnings=[]),
+        Step("GET", "/api/branches", expect_body={"branches": [
+            {"name": "feature/w", "spec": IN_SYNC}, {"name": "main", "head": STARRED_COMMIT},
+            {"name": "rebuild/writing-notes-1", "spec": BEHIND}]}),
+        model(markdown=STARRED_MD, project={"name": "notes", "git_head": STARRED_COMMIT[:7]}),
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1107,6 +1211,20 @@ UNCHECKED = (
               "SIGTERM in its own session, a fake docker CLI (only the gate's labelled "
               "container is removed) and a fake claude (a timeout and node_max_tokens keep "
               "the usage seen)."),
+    Unchecked("R70-R74 (spec sync) are checked with the seed's `sync_spec = \"auto\"` and "
+              "a build branch left behind by an accepted change. Not observable here, and "
+              "covered by tests/studio/test_spec_sync.py: that uncommitted edits of the owner's "
+              "working copy are neither compared nor synced (a scenario cannot edit the working "
+              "copy), `[mcp] protected` files (the seed has none), a branch checked out in a "
+              "linked worktree (here only the owner's own checkout), the compare-and-swap "
+              "refusal when the branch moves during a sync, the removal of the sync's "
+              "temporary worktree, the default `off`, and an auto sync refused as the run's "
+              "409. SYNC_COMMIT pins the commit's parent, tree and message; it was recorded "
+              "from the real server and checked by hand with `git log --name-status`."),
+    Unchecked("R75 (the Sync spec banner of the Build view and the plan view) is web UI, not "
+              "observable over HTTP; tests/studio/test_spec_sync.py checks its code and the "
+              "mock's fields, and the browser check is in "
+              "docs/results/2026-10-11-spec-sync-results.md."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

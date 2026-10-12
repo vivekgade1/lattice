@@ -11,7 +11,7 @@
 import { h, icon, add, plural } from "../util.js";
 import { api, sleep } from "../api.js";
 import { state, update, subscribe, currentProject, canBuild, BUILD_WHY } from "../store.js";
-import { plannerCard, renderPlanView, planLive } from "./plan.js";
+import { plannerCard, renderPlanView, planLive, planRunning, specSyncBanner } from "./plan.js";
 import { rebuildCard, pollRebuild, buildRefusal } from "./rebuilds.js";
 import { RULE_STATUS, ruleStatusChip } from "../badges.js";
 import { targetChip } from "../targets.js";
@@ -315,11 +315,12 @@ export function render(model, root, ctx) {
       root.querySelector('[data-fk="branch-btn"]')?.focus();
     },
   });
+  const syncSlot = h("section", { class: "bv-sync", "aria-label": "Spec of the target branch", "aria-live": "polite", hidden: true });
   const controls = h("section", { class: "bv-controls", "aria-label": "Build settings" });
   const runSlot = h("section", { class: "bv-run", "aria-label": "Current build", "aria-live": "polite" });
   const listSlot = h("section", { class: "bv-areas", "aria-label": "Areas" });
   const histSlot = h("section", { class: "bv-history", "aria-label": "Recent builds" });
-  add(root, planner.el, h("h2", { class: "s2-section-title bv-or" }, "Or build one area at a time"), controls, runSlot, listSlot, histSlot);
+  add(root, syncSlot, planner.el, h("h2", { class: "s2-section-title bv-or" }, "Or build one area at a time"), controls, runSlot, listSlot, histSlot);
 
   const stale = (tok) => tok !== loadToken || ep !== api.epoch() || !root.isConnected;
   const why = h("p", { class: "bv-why muted small", id: "bv-why" });
@@ -397,6 +398,7 @@ export function render(model, root, ctx) {
     if (warnEl) warnEl.hidden = !(sel.unsafe);
     const label = root.querySelector("[data-branch-label]");
     if (label) label.textContent = sel.kind === "new" ? sel.name || "New branch…" : sel.name;
+    drawSync();
     syncBusy();
   }
 
@@ -522,6 +524,25 @@ export function render(model, root, ctx) {
       allEl,
     );
     syncBranchText();
+  }
+
+  // ---- v1.12: the chosen target's committed spec is behind the current branch's
+  let syncKey = ""; // what the banner shows ("" none, null: redraw whatever the list says)
+  function drawSync() {
+    const b = cache.branches;
+    const sel = b ? selection(b) : null;
+    const spec = sel?.kind === "existing" ? sel.info?.spec : null;
+    const show = Boolean(spec && spec.in_sync === false && !planRunning());
+    const key = show ? `${sel.name}|${(spec.files || []).join(",")}|${spec.head}` : "";
+    if (key === syncKey) return;
+    syncKey = key;
+    syncSlot.replaceChildren();
+    syncSlot.hidden = !show;
+    if (!show) return;
+    syncSlot.append(specSyncBanner({
+      target: sel.name, source: b.current_branch, files: spec.files,
+      onSynced: () => { syncKey = null; return loadAll(); }, // redrawn from the new branch list
+    }));
   }
 
   function chip(text, ico) {
@@ -772,6 +793,7 @@ export function render(model, root, ctx) {
       return;
     }
     if ("checkRunning" in patch) syncBusy();
+    if ("planActive" in patch) drawSync(); // hidden while a plan runs
     if ("buildRun" in patch) {
       drawRun();
       syncBusy();

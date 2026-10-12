@@ -773,9 +773,11 @@ def test_branches_listing(repo: Path) -> None:
     assert got["default_target"] == "build/notes"
     assert got["branches"] == [
         {"name": "feature", "head": head, "current": False, "protected": False,
-         "checked_out": None, "ahead_of_base": 0, "is_integration": False},
+         "checked_out": None, "ahead_of_base": 0, "is_integration": False,
+         "spec": {"in_sync": True, "files": [], "head": head}},  # API v1.12
         {"name": "main", "head": head, "current": True, "protected": True,
-         "checked_out": str(repo.resolve()), "ahead_of_base": 0, "is_integration": False},
+         "checked_out": str(repo.resolve()), "ahead_of_base": 0, "is_integration": False,
+         "spec": None},
     ]  # fmt: skip
     finish(rb, rb.start([], scope={"area": "writing"})["id"])
     by = {b["name"]: b for b in rb.branches()["branches"]}
