@@ -303,16 +303,6 @@ def test_the_gates_have_a_decision_log_row() -> None:
     assert "L892" in row and "L893" in row and "validation_status" in row
 
 
-def test_an_unvalidated_style_never_reaches_go_settings() -> None:
-    from lattice.gogen.endpoints import _settings
-    from lattice.runtime import LatticeInternalError
-
-    result = check_source(F.PROGRAM, F.PROFILES["drf"])
-    assert result.program is not None
-    with pytest.raises(LatticeInternalError, match="error_body"):
-        _settings(tuple(lower_api(result.program)))
-
-
 def test_the_importers_declared_deviations_follow_the_convention() -> None:
     """The importer's policy deviations (lattice.importer.policy) predict the answer in
     the profile's convention: a refused page bound / null is the validation status."""

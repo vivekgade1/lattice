@@ -112,12 +112,11 @@ def _leaks(module: n.T2Module) -> list[str]:  # noqa: C901 - one case per kind o
 
 
 def _programs():
-    from tests.gogen.test_t2_go import PROGRAMS
     from tests.semantics_v11.cases import CASES
     from tests.t2ir.corpus import all_t2_programs
 
     yield from all_t2_programs()
-    for case in (*CASES, *PROGRAMS):
+    for case in CASES:
         yield case.name, checked(case.source).program
 
 

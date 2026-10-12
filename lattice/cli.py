@@ -5,7 +5,6 @@
     lattice spec  check|fidelity|draft|lint|probe|review|ask ...          # lattice.spec
     lattice import ...                                                    # lattice.importer
     lattice mcp   serve|guard ...                                         # lattice.mcp
-    lattice gogen build ...                                               # the Go code generator
     lattice projects [DIR ...]                                            # discover projects
 
 Every ``lattice X ...`` is the same as ``python -m lattice.X ...`` (argv forwarded
@@ -35,7 +34,6 @@ commands:
   spec      check|fidelity|draft|lint|probe|review|ask ...   the spec tools
   import    ...                                    import an existing app into a spec
   mcp       serve|guard ...                        the MCP server / PreToolUse guard
-  gogen     build SOURCE --profile M:A --out DIR   build a program into a Go binary
   projects  [DIR ...]                              list Studio projects found
 
 `lattice <command> --help` shows a command's options. `lattice X ...` is the same as
@@ -44,7 +42,7 @@ commands:
 # lattice.spec.__main__ dispatches these itself; listed for `lattice spec --help`
 SPEC_COMMANDS = ("check", "fidelity", "draft", "lint", "probe", "review", "ask")
 
-COMMANDS = ("studio", "check", "spec", "import", "mcp", "gogen", "projects")
+COMMANDS = ("studio", "check", "spec", "import", "mcp", "projects")
 
 STUDIO_TOML = "studio.toml"
 SPEC_FILE = "spec.py"
@@ -325,10 +323,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         from lattice.studio.__main__ import main as target
     elif cmd == "import":
         from lattice.importer.cli import main as target
-    elif cmd == "mcp":
-        from lattice.mcp.__main__ import main as target
     else:
-        from lattice.gogen.__main__ import main as target
+        from lattice.mcp.__main__ import main as target
     return _run(target, rest)
 
 

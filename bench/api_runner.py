@@ -758,56 +758,6 @@ def _lattice_cases(
     return CaseResults(cases=tuple(results), started=True)
 
 
-def run_cases_go(
-    binary: Path,
-    task: ApiTask,
-    *,
-    db_builder: DbBuilder,
-    workdir: Path | None = None,
-    wrap: Callable[[Any, Path, HttpCase], Any] | None = None,
-) -> CaseResults:
-    """Run ``task``'s cases against a Go binary built by
-    ``lattice.gogen.build.build_go_app``, with the semantics of ``run_cases_fastapi``
-    and ``run_cases_lattice``: every case on a fresh copy of the pristine DB, judged by
-    ``evaluate_http_case``, through the same in-process client (``_run_case_in_process``,
-    here over ``lattice.gogen.proxy``'s ASGI proxy). ``queries`` is the sum of the
-    responses' ``X-Lattice-Sql-Count`` (the server runs with LATTICE_TRACE_SQL=1; a
-    followed redirect counts both requests, as the trace callback does).
-
-    ``wrap(app, db_path, case)``, when given, wraps each case's ASGI app (a test's
-    recording shim). A binary that does not start is a loud start error."""
-    import tempfile
-
-    from lattice.gogen.proxy import go_app_factory
-
-    with tempfile.TemporaryDirectory(prefix="lattice-go-cases-") as tmp:
-        work = Path(workdir) if workdir is not None else Path(tmp)
-        work.mkdir(parents=True, exist_ok=True)
-        pristine = work / _PRISTINE
-        pristine.unlink(missing_ok=True)
-        db_builder(pristine)
-        counter = [0]
-        factory = go_app_factory(binary, sql_counter=counter)
-        results: list[CaseResult] = []
-        for index, case in enumerate(task.cases):
-            db_path = work / f"case_{index:02d}.db"
-            _fresh_copy(pristine, db_path)
-            app = factory(db_path)
-            try:
-                try:
-                    app.server.start()
-                except Exception as exc:
-                    error = _render_start_error(exc)
-                    return CaseResults(cases=(), started=False, start_error=error)
-                served = app if wrap is None else wrap(app, db_path, case)
-                results.append(_run_case_in_process(served, case, db_path, counter))
-            finally:
-                app.close()
-                for suffix in ("", "-journal", "-wal", "-shm"):
-                    Path(f"{db_path}{suffix}").unlink(missing_ok=True)
-        return CaseResults(cases=tuple(results), started=True)
-
-
 Classification = Literal["correct", "silent", "loud"]
 
 

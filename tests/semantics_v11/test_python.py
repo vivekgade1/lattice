@@ -1,7 +1,7 @@
 import pytest
 
 from tests.semantics_v11.cases import CASES, Err, Exc, run_python
-from tests.semantics_v11.gorun import strict
+from tests.semantics_v11.strict import strict
 
 
 @pytest.mark.parametrize("case", CASES, ids=lambda c: c.name)
