@@ -1,4 +1,4 @@
-"""Phase 1's dry run (docs/superpowers/specs/2026-10-04-phase1-loop-experiment.md, P1-E):
+"""Phase 1's dry run (docs/archive/superpowers/specs/2026-10-04-phase1-loop-experiment.md, P1-E):
 arms S and S* end to end with a scripted model, at no cost.
 
 * arm S on t39: a drafted spec with one correct and one wrong scenario (the wrong one is

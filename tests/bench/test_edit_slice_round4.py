@@ -1,5 +1,5 @@
 """N4's fresh held-out set (t25-t30, benchmark hygiene:
-``docs/superpowers/specs/2026-09-27-lattice-surface-design.md`` §5), written before any
+``docs/archive/superpowers/specs/2026-09-27-lattice-surface-design.md`` §5), written before any
 normalisation work was visible to their author: three more tickets on the template
 (t25-t27) and three on the held-out repos (t28-t30, spread across TaskFlow and
 JustNotes). Held out like t13-t24: no Lattice reference is written for any of them.

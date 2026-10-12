@@ -1,4 +1,4 @@
-"""Phase 0 exit (docs/superpowers/plans/2026-10-04-phase0-spec-checker.md).
+"""Phase 0 exit (docs/archive/superpowers/plans/2026-10-04-phase0-spec-checker.md).
 
 (1) The multi-vendor spec checks clean against the original app, with the app's accepted
 baseline; (2) every t31-t44 reference passes against its ticket's spec delta and every

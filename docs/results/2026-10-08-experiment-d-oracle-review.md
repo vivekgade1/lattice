@@ -3,7 +3,7 @@
 Sections 1–9 cover Sonnet. Section 10 covers Haiku, with the same steps and the same corrections. Section 9
 gives the S+ self-review failures for both models.
 
-Pre-registration: `docs/superpowers/specs/2026-10-07-experiment-d-spec-authoring.md` ("Oracle review"),
+Pre-registration: `docs/archive/superpowers/specs/2026-10-07-experiment-d-spec-authoring.md` ("Oracle review"),
 in the frozen checkout `lattice-expD-frozen` at `647ba94`. Precedent: `docs/results/2026-10-05-phase1-oracle-review-sonnet.md`.
 The rule applied is the project's: **the oracle never compares what a ticket's text doesn't state.**
 

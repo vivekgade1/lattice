@@ -1,7 +1,7 @@
 # Vendored conduit-drf
 
 Phase 2 **held-out** app H3 (Django 4.2 + DRF, simplejwt; plan
-`docs/superpowers/plans/2026-10-05-phase2-python-import.md`, §6 and Wave 4). Vendored after
+`docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md`, §6 and Wave 4). Vendored after
 the importer was frozen at `1cda54a`, by an agent that has not seen the importer's output
 for any app.
 

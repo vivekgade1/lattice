@@ -12,10 +12,10 @@ The Go target (sub-project 5, in progress) makes a checked Lattice program compi
 
 ## 2. What Lattice is (read these first, in order)
 
-1. `docs/lattice-vision.md`: the idea, what's built, design principles, roadmap.
+1. `docs/archive/lattice-vision.md`: the idea, what's built, design principles, roadmap.
 2. `docs/lattice-language-rules.md`: **binding**. One meaning for every target, gates instead of removals, a decision log, CI checks. Every UI decision must follow R1–R14.
-3. `docs/superpowers/specs/2026-09-28-lattice-go-target-design.md`: the Go target design. The UI target should reuse its architecture: the shared T2 IR, the semantics table, `p8_target` gates, and differential equivalence gates.
-4. `docs/superpowers/plans/2026-09-28-lattice-go-target-5a.md` and its ledger `.superpowers/sdd/2026-09-28-lattice-go-target-5a/progress.md` (git-ignored, in the go-target worktree): Go progress and every ruling made so far.
+3. `docs/archive/superpowers/specs/2026-09-28-lattice-go-target-design.md`: the Go target design. The UI target should reuse its architecture: the shared T2 IR, the semantics table, `p8_target` gates, and differential equivalence gates.
+4. `docs/archive/superpowers/plans/2026-09-28-lattice-go-target-5a.md` and its ledger `.superpowers/sdd/2026-09-28-lattice-go-target-5a/progress.md` (git-ignored, in the go-target worktree): Go progress and every ruling made so far.
 5. `docs/results/2026-09-26-bench-smoke.md`: the evidence so far. Read it honestly. Lattice's measured wins come from **guarantees enforced by the language** (policy bugs such as the page cap, and shorter programs, which make it cheaper per correct answer). Silent-bug reduction on *edits* is **not yet shown**.
 
 Key code:
@@ -37,7 +37,7 @@ Key code:
 
 - **Language rules (binding).** Anything JS can't reproduce is either a per-target gate (L89x-style, with a decision-log row and an exit condition) or, if the targets would diverge, a documented language-wide rule. **Never cut the language down to fit JS** (R5).
 - **Evidence first (vision §3, R8).** Every UI construct must be justified by a measurable win for LLM-written code, not by appeal.
-- **Workflow.** The user uses the superpowers skills: brainstorming → spec in `docs/superpowers/specs/` → the user's approval → plan in `docs/superpowers/plans/` → subagent-driven execution with task reviews. Record decisions as rulings. The user expects honest, critical assessment, not cheerleading.
+- **Workflow.** The user uses the superpowers skills: brainstorming → spec in `docs/archive/superpowers/specs/` → the user's approval → plan in `docs/archive/superpowers/plans/` → subagent-driven execution with task reviews. Record decisions as rulings. The user expects honest, critical assessment, not cheerleading.
 - **Benchmarks report more than accuracy:** tokens, cost per correct task, program size, rounds and timing (user memory `benchmark-metrics`).
 
 ## 5. The three readings of "UI support"
@@ -80,7 +80,7 @@ The Go runtime (`lattice/gogen/rt/*.go` and its Python-generated testdata) is th
    - generate code directly from `EndpointPlan`;
    - or emit OpenAPI plus zod and reuse existing tooling;
    - or run the JS T2 runtime for validation.
-4. Present the design in sections. Write the spec (`docs/superpowers/specs/<date>-lattice-ui-<scope>-design.md`) with: a decision-log section for every JS rule or gate; an equivalence gate (for A: every request the server accepts, the client accepts, and vice versa, on the generated suites; for B: Python ≡ Go ≡ JS on the semantics suite and T2 programs); and benchmark criteria fixed before any live run.
+4. Present the design in sections. Write the spec (`docs/archive/superpowers/specs/<date>-lattice-ui-<scope>-design.md`) with: a decision-log section for every JS rule or gate; an equivalence gate (for A: every request the server accepts, the client accepts, and vice versa, on the generated suites; for B: Python ≡ Go ≡ JS on the semantics suite and T2 programs); and benchmark criteria fixed before any live run.
 5. Only after the user approves the spec: a plan, then execution.
 
 ## 8. Open questions for the user

@@ -4,12 +4,12 @@
 > unless it says so.
 >
 > **Background:**
-> - `docs/handoff-2026-09-30.md`: where the project stands.
+> - `docs/archive/handoff-2026-09-30.md`: where the project stands.
 > - `docs/results/2026-09-26-bench-smoke.md`: all measured results.
 > - `reports/Spec driven LLM code checkers.md`: the external landscape (2026-10-04
 >   research, every claim sourced).
 >
-> **Supersedes:** `docs/lattice-vision.md`'s goal of Lattice as the language LLMs write
+> **Supersedes:** `docs/archive/lattice-vision.md`'s goal of Lattice as the language LLMs write
 > application code in. Lattice becomes the language the *application's intent* is written
 > in. Code is still written by LLMs, in mainstream languages, and checked against that
 > intent.
@@ -414,7 +414,7 @@ hold before the next starts.
   - The model's own drafts are the weak point.
 - **Phase 2:** built, but its held-out exit was missed twice.
   - Import continues as **rules-first assist**, without the 90% gate.
-- **Next:** spec authoring, per `docs/superpowers/plans/2026-10-05-pivot-spec-authoring.md`.
+- **Next:** spec authoring, per `docs/archive/superpowers/plans/2026-10-05-pivot-spec-authoring.md`.
   - Phases 3–5 come after it.
 
 ### Phase 2: import for Python projects

@@ -1,6 +1,6 @@
 """Deterministic SQLite commerce DB for the API benchmark.
 
-See docs/superpowers/specs/2026-09-27-lattice-api-design.md sections 3 and
+See docs/archive/superpowers/specs/2026-09-27-lattice-api-design.md sections 3 and
 5.1. This module owns the data layer only: `build_db` writes a byte-identical
 SQLite file for a given seed, the module-level `Schema` constants describe
 the tables in Lattice's type system (with owner/private metadata for the

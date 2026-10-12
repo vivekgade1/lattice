@@ -1,6 +1,6 @@
 # Phase 1 oracle review: Sonnet (arms P, Q, S; S* rescored)
 
-Pre-registration: `docs/superpowers/specs/2026-10-04-phase1-loop-experiment.md` ("Oracle review", decision rule 6),
+Pre-registration: `docs/archive/superpowers/specs/2026-10-04-phase1-loop-experiment.md` ("Oracle review", decision rule 6),
 in the frozen checkout `lattice-phase1-frozen` at `7574876`. Precedent: option 1 main experiment's oracle review,
 `docs/results/2026-09-26-bench-smoke.md`. The rule applied is the project's: **the oracle never compares what a
 ticket's text doesn't state.**

@@ -1,7 +1,7 @@
 # Vendored project-management-api
 
 Phase 2 **held-out** app H2 (Flask 3 + Flask-SQLAlchemy 3, PyJWT, bcrypt; plan
-`docs/superpowers/plans/2026-10-05-phase2-python-import.md`, §6 and Wave 4). Vendored after
+`docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md`, §6 and Wave 4). Vendored after
 the importer was frozen at `1cda54a`, by an agent that has not seen the importer's output
 for any app.
 

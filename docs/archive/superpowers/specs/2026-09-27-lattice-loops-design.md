@@ -1,6 +1,6 @@
 # Lattice sub-project 1b — Loop-shaped constructs and real-app gaps (design, for review)
 
-> Status: DRAFT for review · 2026-09-27. Part of the import → Lattice → emit roadmap (`docs/lattice-vision.md` §6). Builds on the language spec (`2026-09-26-lattice-design.md`), the API spec (`2026-09-27-lattice-api-design.md`) and sub-project 1 (`2026-09-27-lattice-realapps-design.md`, done: template proof 44/53 + named deviations).
+> Status: DRAFT for review · 2026-09-27. Part of the import → Lattice → emit roadmap (`docs/archive/lattice-vision.md` §6). Builds on the language spec (`2026-09-26-lattice-design.md`), the API spec (`2026-09-27-lattice-api-design.md`) and sub-project 1 (`2026-09-27-lattice-realapps-design.md`, done: template proof 44/53 + named deviations).
 
 ## 1. Goal
 

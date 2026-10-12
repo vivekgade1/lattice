@@ -1,7 +1,7 @@
 # Vendored flasky (`app/api` only)
 
 Phase 2 **dev** app (Flask + Flask-SQLAlchemy + Flask-HTTPAuth; plan
-`docs/superpowers/plans/2026-10-05-phase2-python-import.md`, W1-C). Used to build and tune
+`docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md`, W1-C). Used to build and tune
 the Flask front end; not a held-out app.
 
 - **Upstream:** https://github.com/miguelgrinberg/flasky

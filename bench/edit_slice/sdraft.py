@@ -1,4 +1,4 @@
-"""Phase 1's spec arms (docs/superpowers/specs/2026-10-04-phase1-loop-experiment.md):
+"""Phase 1's spec arms (docs/archive/superpowers/specs/2026-10-04-phase1-loop-experiment.md):
 the spec step of arm S, the simulated approval, and the spec check of arms S and S*.
 
 * :func:`draft_prompt` -- (system, user) asking the model for the ticket's requirement as

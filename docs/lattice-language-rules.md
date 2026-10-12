@@ -1,6 +1,6 @@
 # Lattice — Language Rules
 
-> Status: binding · 2026-09-28 · Applies to every change to the Lattice language, its checker, its IRs and its code targets. Companion to `docs/lattice-vision.md` (§3 design principles) and the semantics table in `lattice/targets.py`.
+> Status: binding · 2026-09-28 · Applies to every change to the Lattice language, its checker, its IRs and its code targets. Companion to `docs/archive/lattice-vision.md` (§3 design principles) and the semantics table in `lattice/targets.py`.
 
 Lattice has more than one code target (Python today, Go next, others later). The risk with several targets is a slow slide towards the lowest common denominator: each new feature is cut down to what every target can do, until the language can express less than any of its targets. These rules prevent that. They also keep the guarantees, which are the reason Lattice exists.
 

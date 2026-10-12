@@ -1,6 +1,6 @@
 # Vendored Multi-Vendor Inventory & Order Booking System
 
-Held-out repo #3, vendored for option 1 (`docs/option1-handoff.md`): a harder ticket
+Held-out repo #3, vendored for option 1 (`docs/archive/option1-handoff.md`): a harder ticket
 family (aggregations with traps; ownership inherited through parent tables) on an app
 with a real role column and multi-hop ownership. Different from
 `fastapi/full-stack-fastapi-template` (`bench/template_app/`), `bench/import_repos/taskflow`

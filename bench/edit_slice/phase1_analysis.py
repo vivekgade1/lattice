@@ -1,5 +1,5 @@
 """Phase 1's pre-registered analysis, applied mechanically
-(docs/superpowers/specs/2026-10-04-phase1-loop-experiment.md, "Pre-registered hypotheses
+(docs/archive/superpowers/specs/2026-10-04-phase1-loop-experiment.md, "Pre-registered hypotheses
 and analysis"): arms P, Q, S, S* on t31-t44 of the multi-vendor app.
 
 * **H1 (Sonnet), S vs P:** one-sided Fisher exact on silent vs not-silent runs

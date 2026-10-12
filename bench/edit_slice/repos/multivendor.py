@@ -1064,7 +1064,7 @@ ROUTES: dict[str, tuple[RouteSpec, tuple[tuple[str, str], ...]]] = {
     ),
 }  # fmt: skip
 
-# ---- the mechanism gate (docs/superpowers/specs/2026-09-29-option1-pilot.md) ------------------
+# ---- the mechanism gate (docs/archive/superpowers/specs/2026-09-29-option1-pilot.md) ------------------
 #
 # trap case -> the Lattice guarantee that makes its violation impossible or refused:
 #   "L420"  join fan-out (a join multiplying the rows an aggregate sees)

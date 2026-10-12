@@ -2,7 +2,7 @@
 
 > **For agentic workers:** execute node by node with TDD. Agents never run tree-modifying git commands; the orchestrator commits after each node's gate.
 
-**Goal:** implement `docs/superpowers/specs/2026-09-27-lattice-importer-design.md`: FastAPI + SQLModel repo → verified Lattice import, with the close-the-gap loop reaching 100% where possible, and the evidence-source method chosen by experiment (spec §3.6).
+**Goal:** implement `docs/archive/superpowers/specs/2026-09-27-lattice-importer-design.md`: FastAPI + SQLModel repo → verified Lattice import, with the close-the-gap loop reaching 100% where possible, and the evidence-source method chosen by experiment (spec §3.6).
 
 **Architecture:** new package `lattice/importer/`, with modules as in spec §6. Verification is generalised from `bench/template_suite.py` + `tests/template/test_template_differential.py`. LLM calls reuse `lattice/llm/` (client, repair loop, API guide).
 

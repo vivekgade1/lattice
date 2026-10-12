@@ -1,6 +1,6 @@
 # Vendored FastAPI full-stack template backend
 
-Proof target for Lattice (spec: `docs/superpowers/specs/2026-09-27-lattice-realapps-design.md` §4).
+Proof target for Lattice (spec: `docs/archive/superpowers/specs/2026-09-27-lattice-realapps-design.md` §4).
 
 - **Upstream:** https://github.com/fastapi/full-stack-fastapi-template
 - **Commit:** `cb740b656d7a0a6c5e12c7bf8e50343ec94ee9c7`

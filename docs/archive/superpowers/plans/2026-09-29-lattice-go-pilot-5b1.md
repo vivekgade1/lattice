@@ -13,7 +13,7 @@
 
 **Tech Stack:** Python 3.14 (uv, pytest), Go 1.26, Claude CLI (`lattice/llm/cli_client.py`), `lattice.gogen` (build, proxy, rt).
 
-**Spec:** `docs/superpowers/specs/2026-09-29-lattice-go-pilot.md` (pre-registration; its decision rules are binding and may not change after Task 8's freeze). Background: `docs/superpowers/specs/2026-09-28-lattice-go-target-design.md` §5.
+**Spec:** `docs/archive/superpowers/specs/2026-09-29-lattice-go-pilot.md` (pre-registration; its decision rules are binding and may not change after Task 8's freeze). Background: `docs/archive/superpowers/specs/2026-09-28-lattice-go-target-design.md` §5.
 
 ## Global Constraints
 

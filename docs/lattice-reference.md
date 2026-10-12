@@ -2,15 +2,15 @@
 
 > One document to orient anyone (human or a fresh Claude session) on what Lattice is, what was built, what was measured, what was decided and why.
 >
-> **Update 2026-09-30:** option 1 is done. Its findings and everything built since this document was written are in `docs/handoff-2026-09-30.md`; read that next.
+> **Update 2026-09-30:** option 1 is done. Its findings and everything built since this document was written are in `docs/archive/handoff-2026-09-30.md`; read that next.
 >
 > Branch `lattice-design`, about 147 commits since the start of the project.
 >
 > The detailed sources are:
-> - the specs (`docs/superpowers/specs/`);
-> - the plans (`docs/superpowers/plans/`);
+> - the specs (`docs/archive/superpowers/specs/`);
+> - the plans (`docs/archive/superpowers/plans/`);
 > - the results log (`docs/results/2026-09-26-bench-smoke.md`, append-only, every round);
-> - the vision (`docs/lattice-vision.md`).
+> - the vision (`docs/archive/lattice-vision.md`).
 
 ---
 
@@ -29,7 +29,7 @@
    - a generated FastAPI app (proven equal to the runtime by differential tests).
    - A Go target has been specced (see §9).
 
-**Vision** (`docs/lattice-vision.md`): Lattice as *the native interface through which LLMs write and change software*, with six goals:
+**Vision** (`docs/archive/lattice-vision.md`): Lattice as *the native interface through which LLMs write and change software*, with six goals:
 - easy to write;
 - expressive;
 - correct by construction;
@@ -40,7 +40,7 @@
 **Where it stands after five benchmark rounds and a pre-registered confirmation (§6):**
 - The engineering works and is heavily tested (about 5,400 tests).
 - The central claim is **not supported by the evidence**. That claim was that LLM edits made through Lattice, or with Lattice's guarantees checked on Python, are safer than plain Python edits.
-- The next step is chosen: **option 1**, testing a harder task class (§10, and `docs/option1-handoff.md`).
+- The next step is chosen: **option 1**, testing a harder task class (§10, and `docs/archive/option1-handoff.md`).
 
 ---
 
@@ -285,4 +285,4 @@ Full tables are in `docs/results/2026-09-26-bench-smoke.md`. The unit is a run; 
 
 **Question:** is there a task class where frontier models *do* make silent mistakes editing ordinary code, and where Lattice (language or checks) measurably helps?
 
-The plan and constraints are in `docs/option1-handoff.md`.
+The plan and constraints are in `docs/archive/option1-handoff.md`.

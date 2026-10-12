@@ -454,7 +454,7 @@ was available offline.
 
 ## Thin slice — LLM edits through Lattice vs direct Python edits (baseline, 2026-09-27)
 
-Plan: `docs/superpowers/plans/2026-09-27-lattice-thin-slice.md`. Setup:
+Plan: `docs/archive/superpowers/plans/2026-09-27-lattice-thin-slice.md`. Setup:
 - **Tickets:** 6 realistic change tickets on the official FastAPI template, each with unstated traps (`bench/edit_slice/`).
 - **Arms:**
   - **P** edits the Python.
@@ -802,7 +802,7 @@ TaskFlow's verified/island route *membership* didn't move -- it's still bottlene
 ## Round 5 — pre-registered decision experiment: language vs checks (900 runs, Claude CLI, 2026-09-28)
 
 **Setup.**
-- Spec: `docs/superpowers/specs/2026-09-28-lattice-round5-decision-experiment.md`.
+- Spec: `docs/archive/superpowers/specs/2026-09-28-lattice-round5-decision-experiment.md`.
 - 5 arms × 30 tickets × 2 models × 3 reps, sent through `claude -p` with context isolated and the API key stripped.
 - About $59 at list prices, charged to the plan. Two usage-limit pauses; both resumed cleanly, with no error records.
 
@@ -863,7 +863,7 @@ A confirmatory round with more reps on the template tickets alone would settle t
 
 ## Confirmation run (pre-registered, 2026-09-29)
 
-Spec: `docs/superpowers/specs/2026-09-28-lattice-confirmation-run.md`.
+Spec: `docs/archive/superpowers/specs/2026-09-28-lattice-confirmation-run.md`.
 
 **Setup.**
 - The 15 unconfounded template tickets (t7–t18, t25–t27).
@@ -915,7 +915,7 @@ Their value as an *LLM editing interface* is not demonstrated.
 
 ## Option 1 pilot (pre-registered gates, 2026-09-29)
 
-Spec: `docs/superpowers/specs/2026-09-29-option1-pilot.md` (committed in `a1cc717` before any run). Arm P only, claude-sonnet-5, CLI, 3 reps × 8 tickets (t31–t38) on the new held-out multi-vendor app (`bench/import_repos/multivendor`). Family A = aggregations with traps (t31–t34); family O = ownership through parent tables (t35 control, t36–t38).
+Spec: `docs/archive/superpowers/specs/2026-09-29-option1-pilot.md` (committed in `a1cc717` before any run). Arm P only, claude-sonnet-5, CLI, 3 reps × 8 tickets (t31–t38) on the new held-out multi-vendor app (`bench/import_repos/multivendor`). Family A = aggregations with traps (t31–t34); family O = ownership through parent tables (t35 control, t36–t38).
 
 ### Results as scored by the pre-registered oracle
 
@@ -954,7 +954,7 @@ Corrected decision: **GO: O**, resting entirely on one ticket (t38) and one trap
 
 ## Option 1b: atomicity pilot (pre-registered gates, 2026-09-29)
 
-Spec: `docs/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md` (committed in `273d87f` before any run). Arm P only, claude-sonnet-5, **CLI only** (no API key; that transport has been refused in code since `9f1f857`), 3 reps × 6 tickets (t39–t44), each needing several writes to succeed or fail together.
+Spec: `docs/archive/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md` (committed in `273d87f` before any run). Arm P only, claude-sonnet-5, **CLI only** (no API key; that transport has been refused in code since `9f1f857`), 3 reps × 6 tickets (t39–t44), each needing several writes to succeed or fail together.
 
 | scoring | correct | silent [95% CI] | loud | silent-rate gate | mechanism gate | decision |
 |---|---|---|---|---|---|---|
@@ -995,7 +995,7 @@ Per the spec, a GO means pre-registering the main experiment (P / L / Q on t38�
 
 ## Option 1 main experiment: Lattice's atomicity guarantee as a check on Python (pre-registered, 2026-09-29)
 
-Spec: `docs/superpowers/specs/2026-09-29-option1-main-experiment.md`, committed in `66be834` before any run.
+Spec: `docs/archive/superpowers/specs/2026-09-29-option1-main-experiment.md`, committed in `66be834` before any run.
 
 - **Design:** arm P (plain Python) vs arm Q (Python plus pycheck findings, including the new PY807 partial-writes check) on t38–t44 of the multi-vendor app.
 - **Scale:** claude-sonnet-5 (primary) and claude-haiku-4-5, 6 reps: **168 runs, all through the CLI**, no API key.
@@ -1052,7 +1052,7 @@ The review also found a bug in `bench/edit_slice/rescore.py`: it rebuilt arm Q c
 
 ## Go target — equivalence gate (sub-project 5a, 2026-09-29)
 
-Plan: `docs/superpowers/plans/2026-09-28-lattice-go-target-5a.md`. Ledger and task reports:
+Plan: `docs/archive/superpowers/plans/2026-09-28-lattice-go-target-5a.md`. Ledger and task reports:
 `.superpowers/sdd/2026-09-28-lattice-go-target-5a/`. Branch `go-target`.
 
 ### What was built
@@ -1278,7 +1278,7 @@ Apple M5 Pro, arm64, macOS. `tests/fixtures/api/c01/lattice.py`, profile
 
 ## Go cost pilot (5b stage 1, pre-registered, 2026-09-29)
 
-Spec: `docs/superpowers/specs/2026-09-29-lattice-go-pilot.md`, pre-registered and frozen at
+Spec: `docs/archive/superpowers/specs/2026-09-29-lattice-go-pilot.md`, pre-registered and frozen at
 commit `d5df467` (parent `4b078d8`) immediately before the live run.
 
 **Setup.**
@@ -1394,7 +1394,7 @@ warranted on this evidence.
 
 ## Roadmap Phase 0: spec v0 and the four-layer checker on Python (2026-10-04)
 
-Plan: `docs/superpowers/plans/2026-10-04-phase0-spec-checker.md` (branch `roadmap`).
+Plan: `docs/archive/superpowers/plans/2026-10-04-phase0-spec-checker.md` (branch `roadmap`).
 Built: the spec model (`lattice/spec`: machines, invariants compiled to SQL, scenarios,
 unchecked requirements, validation S001-S016), pycheck PY808 (state machines), nested
 response models in the language (`Nested`, L835; Go gated, TS supported), the check
@@ -1465,7 +1465,7 @@ into a separately labelled post-hoc run.
 
 ## Roadmap Phase 1: the spec loop on Python (pre-registered, 2026-10-04/05)
 
-Spec: `docs/superpowers/specs/2026-10-04-phase1-loop-experiment.md`, frozen in `7574876`
+Spec: `docs/archive/superpowers/specs/2026-10-04-phase1-loop-experiment.md`, frozen in `7574876`
 before any run. Every run went through the CLI, plan-billed (no API key).
 
 **Arms** (t31–t44 multi-vendor, 6 reps each):
@@ -1685,7 +1685,7 @@ These need fixing before any layer R number is trusted.
 
 ## Experiment D: does a drafting checklist close the spec-authoring gap? (pre-registered, 2026-10-07)
 
-Spec: `docs/superpowers/specs/2026-10-07-experiment-d-spec-authoring.md`, frozen in
+Spec: `docs/archive/superpowers/specs/2026-10-07-experiment-d-spec-authoring.md`, frozen in
 `647ba94` before any run. 432 runs through the CLI on the user's plan; dollar figures are
 list-price equivalents only. Held-out tickets t45–t56, written after Phase 1. The arms:
 - **S**: the model drafts the spec;

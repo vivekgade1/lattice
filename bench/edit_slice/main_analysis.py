@@ -1,5 +1,5 @@
 """The option-1 main experiment's pre-registered tests, applied mechanically
-(docs/superpowers/specs/2026-09-29-option1-main-experiment.md): arm Q vs arm P, per model.
+(docs/archive/superpowers/specs/2026-09-29-option1-main-experiment.md): arm Q vs arm P, per model.
 
 * one-sided Fisher exact test on silent vs not-silent runs (Q fewer silent);
 * a per-ticket paired sign test on silent counts, ties dropped (Q fewer silent);

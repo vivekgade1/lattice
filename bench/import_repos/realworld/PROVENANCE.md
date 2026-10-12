@@ -2,7 +2,7 @@
 
 Phase 2 **held-out reserve** app (Flask + Flask-SQLAlchemy, flask-jwt-extended,
 flask-apispec / webargs / marshmallow, Flask-Bcrypt; plan
-`docs/superpowers/plans/2026-10-05-phase2-python-import.md`, §6 and Wave 4). Vendored after
+`docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md`, §6 and Wave 4). Vendored after
 the importer was frozen at `cad36e5`, by an agent that had not seen the importer's output
 for any app.
 

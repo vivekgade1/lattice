@@ -1,5 +1,5 @@
 """The four Phase 2 dev apps (``bench/import_repos/{snippets,recipes,microblog,flasky}``,
-plan ``docs/superpowers/plans/2026-10-05-phase2-python-import.md`` W1-C) run under test.
+plan ``docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md`` W1-C) run under test.
 
 Each app runs in its own subprocess (``python -m bench.import_repos._phase2_probe``):
 Django's settings, app registry and connections are process-global, so a process hosts

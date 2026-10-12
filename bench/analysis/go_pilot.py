@@ -1,6 +1,6 @@
 """The 5b stage-1 Go cost pilot's pre-registered analysis.
 
-Pre-registered in ``docs/superpowers/specs/2026-09-29-lattice-go-pilot.md``,
+Pre-registered in ``docs/archive/superpowers/specs/2026-09-29-lattice-go-pilot.md``,
 "Tests and decision" (binding). Turns run records (JSONL outcomes with the
 fields an API-bench CLI run writes: ``task_id``, ``arm``, ``requested_model``,
 ``model``, ``rep``, ``correct``, ``cost_usd``, ``cost_basis``, ``family``,
@@ -513,7 +513,7 @@ def render(records: Records) -> str:
     lines = [
         "## Go cost pilot (stage 1, pre-registered)",
         "",
-        "Spec: `docs/superpowers/specs/2026-09-29-lattice-go-pilot.md`.",
+        "Spec: `docs/archive/superpowers/specs/2026-09-29-lattice-go-pilot.md`.",
         "",
         "| model | arm | n | correct [95% CI] | silent [95% CI] | loud [95% CI] | $/correct |",
         "|---|---|---|---|---|---|---:|",

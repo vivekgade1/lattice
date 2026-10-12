@@ -1,6 +1,6 @@
 # Lattice UI, option A — a proven TypeScript client for API-profile apps (design, for review)
 
-> Status: DRAFT for review · 2026-09-29 · **Parked after approval:** implementation starts only after the option 1 experiment reports (memory `project-state`, `docs/option1-handoff.md`) and only if the project continues. On resume, rebase `ui-target` onto `go-target` first. Context: `docs/handoffs/2026-09-28-lattice-ui-react-handoff.md` (options A/B/C), `docs/lattice-language-rules.md` (binding), `docs/superpowers/specs/2026-09-28-lattice-go-target-design.md` (the multi-target pattern this follows).
+> Status: DRAFT for review · 2026-09-29 · **Parked after approval:** implementation starts only after the option 1 experiment reports (memory `project-state`, `docs/archive/option1-handoff.md`) and only if the project continues. On resume, rebase `ui-target` onto `go-target` first. Context: `docs/archive/handoffs/2026-09-28-lattice-ui-react-handoff.md` (options A/B/C), `docs/lattice-language-rules.md` (binding), `docs/archive/superpowers/specs/2026-09-28-lattice-go-target-design.md` (the multi-target pattern this follows).
 
 ## 1. Goal
 

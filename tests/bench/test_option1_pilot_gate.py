@@ -1,4 +1,4 @@
-"""The option-1 pilot's gates (docs/superpowers/specs/2026-09-29-option1-pilot.md),
+"""The option-1 pilot's gates (docs/archive/superpowers/specs/2026-09-29-option1-pilot.md),
 applied mechanically to run records."""
 
 from __future__ import annotations

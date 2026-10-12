@@ -1,6 +1,6 @@
 # Lattice sub-project 2 — Importer: FastAPI + SQLModel → Lattice (design, for review)
 
-> Status: APPROVED 2026-09-27 (with the close-the-gap loop, §3.4) · 2026-09-27. Roadmap: `docs/lattice-vision.md` §4 and §6. Builds on sub-projects 1 and 1b. Their evidence (template proof 49/53, with the rest policy deviations; loop corpus 11/11 plus 1 island) is in `docs/results/2026-09-26-bench-smoke.md`.
+> Status: APPROVED 2026-09-27 (with the close-the-gap loop, §3.4) · 2026-09-27. Roadmap: `docs/archive/lattice-vision.md` §4 and §6. Builds on sub-projects 1 and 1b. Their evidence (template proof 49/53, with the rest policy deviations; loop corpus 11/11 plus 1 island) is in `docs/results/2026-09-26-bench-smoke.md`.
 
 ## 1. Goal
 

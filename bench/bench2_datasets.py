@@ -1,7 +1,7 @@
 """Deterministic bench2 fixtures: trap & safety suite schemas, generation, loading.
 
 Separate registry from `bench.datasets` (the 130-task suite): new datasets, own
-seed space, own profile. See docs/superpowers/specs/2026-09-26-lattice-step2-design.md
+seed space, own profile. See docs/archive/superpowers/specs/2026-09-26-lattice-step2-design.md
 sections 4 and 6.3, and the implementation plan's Task 5.
 """
 

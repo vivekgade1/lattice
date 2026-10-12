@@ -1,6 +1,6 @@
 """The bench2 suite: 54 trap, control and safety tasks with polars reference solutions.
 
-Families (docs/superpowers/specs/2026-09-26-lattice-step2-design.md §4):
+Families (docs/archive/superpowers/specs/2026-09-26-lattice-step2-design.md §4):
 
 - ``n01``–``n08`` null_keys: grouping on a key with missing values, where the prompt
   requires the missing-key rows to form their own group (pandas ``groupby`` drops them).

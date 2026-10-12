@@ -1,6 +1,6 @@
 # Experiment D: does a drafting checklist close the spec-authoring gap? (pre-registration)
 
-> Plan: `docs/superpowers/plans/2026-10-05-pivot-spec-authoring.md`, item D. Branch
+> Plan: `docs/archive/superpowers/plans/2026-10-05-pivot-spec-authoring.md`, item D. Branch
 > `roadmap`.
 >
 > Status: **APPROVED by the user (2026-10-07), frozen with this commit before any run.** Every call goes through the CLI (`--backend cli`), plan-billed,

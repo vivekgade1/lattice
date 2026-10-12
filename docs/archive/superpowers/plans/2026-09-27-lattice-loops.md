@@ -2,7 +2,7 @@
 
 > **For agentic workers:** execute node by node. Each node is TDD: write a failing test for each rule or semantic, then implement, then run the full suite. Agents never run tree-modifying git commands; the orchestrator commits after each node passes its gate.
 
-**Goal:** implement spec `docs/superpowers/specs/2026-09-27-lattice-loops-design.md` (Part A constructs + Part B real-app gaps).
+**Goal:** implement spec `docs/archive/superpowers/specs/2026-09-27-lattice-loops-design.md` (Part A constructs + Part B real-app gaps).
 
 **Architecture:** each construct touches the same layers in the same order:
 1. catalog entry (`lattice/catalog.py`);

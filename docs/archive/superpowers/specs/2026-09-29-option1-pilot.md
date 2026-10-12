@@ -3,7 +3,7 @@
 > Status: PRE-REGISTERED 2026-09-29, before any model run on these tickets. It follows the
 > confirmation run (`docs/results/2026-09-26-bench-smoke.md`, "Confirmation run"), where
 > Sonnet editing plain Python was nearly perfect on CRUD tickets (89/90 correct, 1 silent),
-> and `docs/option1-handoff.md`, which asks for a cheap P-only pilot before any
+> and `docs/archive/option1-handoff.md`, which asks for a cheap P-only pilot before any
 > pre-registered comparison of arms.
 
 ## Question

@@ -1,5 +1,5 @@
 """End to end on a synthetic app with a role/permission table (spec
-docs/superpowers/specs/2026-09-29-lattice-role-sets-design.md, the importer part):
+docs/archive/superpowers/specs/2026-09-29-lattice-role-sets-design.md, the importer part):
 
 * an enum role column (``StrEnum``, stored by member name, which the profile decodes to
   the value: ``one_of_stored``) -> ``RoleColumn("kind", values={"member": "Member", ...})``;

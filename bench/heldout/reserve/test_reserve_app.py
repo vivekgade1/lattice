@@ -1,5 +1,5 @@
 """The Phase 2 held-out reserve app (``bench/import_repos/realworld``, plan
-``docs/superpowers/plans/2026-10-05-phase2-python-import.md`` Wave 4) run under test.
+``docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md`` Wave 4) run under test.
 
 A copy of ``bench/heldout/test_heldout_apps.py`` (itself a copy of
 ``tests/bench/test_phase2_apps.py``) with the reserve app and its worker,

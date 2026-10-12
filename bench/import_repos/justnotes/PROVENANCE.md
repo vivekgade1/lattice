@@ -1,7 +1,7 @@
 # Vendored JustNotes backend
 
 Held-out repo #1 for the Lattice importer (I6a; spec:
-`docs/superpowers/specs/2026-09-27-lattice-importer-design.md`). Different from
+`docs/archive/superpowers/specs/2026-09-27-lattice-importer-design.md`). Different from
 `fastapi/full-stack-fastapi-template` (`bench/template_app/`), which the importer's
 lifters are developed against. Never read by anything under `lattice/importer/`.
 

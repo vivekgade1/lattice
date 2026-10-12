@@ -1,7 +1,7 @@
 # Option 1 main experiment: does Lattice's atomicity guarantee, checked on Python, prevent silent partial writes? (pre-registered)
 
 > Status: PRE-REGISTERED 2026-09-29, committed before any model run of this experiment.
-> It follows the atomicity pilot (`docs/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md`;
+> It follows the atomicity pilot (`docs/archive/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md`;
 > results in `docs/results/2026-09-26-bench-smoke.md`, "Option 1b"). That pilot's
 > pre-registered verdict was SILENT-BUT-UNCOVERED; after correcting two oracle cases it
 > was GO. The user chose to go on from the corrected verdict.

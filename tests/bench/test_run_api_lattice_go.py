@@ -15,7 +15,7 @@ a loud, final failure (``failure="loud"``), never fed back for repair (the model
 cannot fix a gogen bug), and never a ``harness_error`` (which the pilot's analysis,
 ``bench.analysis.go_pilot``, excludes from cost and n -- excluding it here would
 silently drop a real B failure and bias the cost comparison toward B). See
-docs/superpowers/specs/2026-09-29-lattice-go-pilot.md, "Tests and decision", third
+docs/archive/superpowers/specs/2026-09-29-lattice-go-pilot.md, "Tests and decision", third
 pre-freeze revision. A missing/too-old Go toolchain, by contrast, is a genuine harness
 infrastructure failure and is left to propagate uncaught (never a silent skip).
 

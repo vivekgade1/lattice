@@ -716,7 +716,7 @@ ROUND4_NEW: tuple[str, ...] = tuple(t.id for t in (*ROUND4_TEMPLATE, *ROUND4_REP
 # every ticket, t1-t30: what `--tickets round4` runs (round3's t1-t24 plus the fresh set)
 ROUND4_TICKETS: tuple[Ticket, ...] = (*ALL_TICKETS, *ROUND4_TEMPLATE, *ROUND4_REPO_TICKETS)
 
-# ---- option 1's pilot set (t31-t38, docs/option1-handoff.md) on the multi-vendor app ----
+# ---- option 1's pilot set (t31-t38, docs/archive/option1-handoff.md) on the multi-vendor app ----
 #
 # Written in this order, as texts, before any reference, oracle case or Lattice check, and
 # approved as written on 2026-09-29. Two families: aggregations with traps (t31-t34) and

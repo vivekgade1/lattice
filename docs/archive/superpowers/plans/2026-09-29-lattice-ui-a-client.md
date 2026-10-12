@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-> **PARKED.** Do not start execution until the option 1 experiment has reported and the user has confirmed the project continues (memory `project-state`, `docs/option1-handoff.md`). On resume: `git -C .claude/worktrees/ui-target rebase go-target`, re-run the full suite, then start at Task 0.
+> **PARKED.** Do not start execution until the option 1 experiment has reported and the user has confirmed the project continues (memory `project-state`, `docs/archive/option1-handoff.md`). On resume: `git -C .claude/worktrees/ui-target rebase go-target`, re-run the full suite, then start at Task 0.
 
 **Goal:** Generate, from a checked Lattice API-profile program, a TypeScript client and React hooks whose request validation is proven identical to the server's by a differential gate.
 
@@ -10,7 +10,7 @@
 
 **Tech Stack:** Python 3.14 (existing repo), Node 22 (`node --test`, `--experimental-strip-types`), TypeScript ≥ 5.8 (`tsc --noEmit`, L4 only), React 19 and `@tanstack/react-query` 5 (peer dependencies of `hooks.ts`, L4 only), uvicorn (L3).
 
-**Spec:** `docs/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md`
+**Spec:** `docs/archive/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md`
 
 ## Global Constraints
 
@@ -48,7 +48,7 @@
 ```
 lattice/targets.py                          (modify) API_PARAM_RULES, PARAM_FEATURES, CLIENT_TARGETS, TS_REFUSAL
 docs/lattice-language-rules.md              (modify) client target, R7.5, R14, decision-log rows
-docs/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md  (modify) spec deltas
+docs/archive/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md  (modify) spec deltas
 lattice/tsgen/__init__.py                   generate_ts, compile_source_to_ts
 lattice/tsgen/__main__.py                   CLI
 lattice/tsgen/regex.py                      RE2-subset pattern -> JS source
@@ -87,7 +87,7 @@ tests/tsgen/test_types.py                   L4
 **Files:**
 - Modify: `lattice/targets.py`
 - Modify: `docs/lattice-language-rules.md`
-- Modify: `docs/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md`
+- Modify: `docs/archive/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md`
 - Test: `tests/tsgen/__init__.py` (empty), `tests/tsgen/test_governance.py`
 
 **Interfaces:**
@@ -209,8 +209,8 @@ Expected: 3 passed
 - [ ] **Step 7: Commit**
 
 ```bash
-git add lattice/targets.py docs/lattice-language-rules.md docs/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md tests/tsgen/__init__.py tests/tsgen/test_governance.py
-git commit -m "feat(targets): client target, API parameter rules P1-P14, L893 and decision-log rows" -- lattice/targets.py docs/lattice-language-rules.md docs/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md tests/tsgen/__init__.py tests/tsgen/test_governance.py
+git add lattice/targets.py docs/lattice-language-rules.md docs/archive/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md tests/tsgen/__init__.py tests/tsgen/test_governance.py
+git commit -m "feat(targets): client target, API parameter rules P1-P14, L893 and decision-log rows" -- lattice/targets.py docs/lattice-language-rules.md docs/archive/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md tests/tsgen/__init__.py tests/tsgen/test_governance.py
 ```
 
 ---
@@ -344,7 +344,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'lattice.tsgen'`
 `lattice/tsgen/__init__.py`:
 
 ```python
-"""TypeScript client target (spec docs/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md)."""
+"""TypeScript client target (spec docs/archive/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md)."""
 ```
 
 `lattice/tsgen/regex.py`:
@@ -1075,7 +1075,7 @@ Expected: FAIL (`lattice-rt.ts` does not exist).
 
 ```ts
 // lattice-rt.ts — the Lattice client runtime (spec
-// docs/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md §4). Vendored into every
+// docs/archive/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md §4). Vendored into every
 // generated client; no dependencies. A port of the server prelude's parameter parsing
 // (lattice/api/codegen.py _PRELUDE), as lattice/gogen/rt/params.go is for Go.
 
@@ -2805,7 +2805,7 @@ def hooks_ts(plans: Sequence[EndpointPlan]) -> str:
 `lattice/tsgen/__init__.py`:
 
 ```python
-"""TypeScript client target (spec docs/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md):
+"""TypeScript client target (spec docs/archive/superpowers/specs/2026-09-29-lattice-ui-a-client-design.md):
 a client whose request validation is proven identical to the server's."""
 
 from __future__ import annotations

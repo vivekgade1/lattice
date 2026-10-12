@@ -1,6 +1,6 @@
 # Go cost pilot 2: harder tasks and a practical cost bar (DRAFT pre-registration)
 
-> Status: **DRAFT for the user's review.** It becomes PRE-REGISTERED only at a freeze commit made immediately before the first live run, after the user approves this document, the task suite, the dry run and the cost estimate. Nothing below may change after that freeze. It follows pilot 1 (`docs/superpowers/specs/2026-09-29-lattice-go-pilot.md`; results in `docs/results/2026-09-26-bench-smoke.md`, "Go cost pilot"). Pilot 1's verdict was **STOP** under its own 0.6 bar, with an observed R = 0.69 [0.59, 0.80] and both arms 120/120 correct. This is a **new** experiment with its own bar, chosen before any of its data exists. It does not revise pilot 1's verdict.
+> Status: **DRAFT for the user's review.** It becomes PRE-REGISTERED only at a freeze commit made immediately before the first live run, after the user approves this document, the task suite, the dry run and the cost estimate. Nothing below may change after that freeze. It follows pilot 1 (`docs/archive/superpowers/specs/2026-09-29-lattice-go-pilot.md`; results in `docs/results/2026-09-26-bench-smoke.md`, "Go cost pilot"). Pilot 1's verdict was **STOP** under its own 0.6 bar, with an observed R = 0.69 [0.59, 0.80] and both arms 120/120 correct. This is a **new** experiment with its own bar, chosen before any of its data exists. It does not revise pilot 1's verdict.
 
 ## Why a second pilot
 

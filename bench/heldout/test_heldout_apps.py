@@ -1,5 +1,5 @@
 """The three Phase 2 held-out apps (``bench/import_repos/{drf_blog,projmgmt,conduit}``,
-plan ``docs/superpowers/plans/2026-10-05-phase2-python-import.md`` Wave 4) run under test.
+plan ``docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md`` Wave 4) run under test.
 
 A copy of ``tests/bench/test_phase2_apps.py`` (the dev apps' test) with the held-out apps
 and their worker, ``bench/heldout/_heldout_probe.py`` (a copy of

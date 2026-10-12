@@ -1,6 +1,6 @@
 """The option-1 pilot's gates, applied mechanically to arm P's run records.
 
-Pre-registered in ``docs/superpowers/specs/2026-09-29-option1-pilot.md``; the mechanism
+Pre-registered in ``docs/archive/superpowers/specs/2026-09-29-option1-pilot.md``; the mechanism
 tags are :data:`bench.edit_slice.repos.multivendor.MECHANISMS`. Per family:
 
 1. **silent-rate gate** -- at least 2 of its 12 runs silent (>= 15%);
@@ -8,7 +8,7 @@ tags are :data:`bench.edit_slice.repos.multivendor.MECHANISMS`. Per family:
    a tag other than ``none``; the gate passes when at least half the family's silent runs
    outside the control ticket (t35) are covered, and fails when there are none.
 
-The second, atomicity pilot (``docs/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md``)
+The second, atomicity pilot (``docs/archive/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md``)
 applies the same two gates to one family, T (t39-t44, 18 runs): at least 3 silent (the
 same >= 15%, :func:`min_silent`), and at least half of them covered.
 

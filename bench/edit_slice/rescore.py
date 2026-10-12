@@ -1,5 +1,5 @@
 """Re-score saved edit-slice rounds under the current oracle (N4, benchmark hygiene:
-``docs/superpowers/specs/2026-09-27-lattice-surface-design.md`` §5).
+``docs/archive/superpowers/specs/2026-09-27-lattice-surface-design.md`` §5).
 
 Round 3 (``docs/results/2026-09-26-bench-smoke.md``) marked every ``t14_email_change``
 and ``t17_page_size_preference`` run silent on cases the ticket text never determined

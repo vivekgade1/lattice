@@ -1,5 +1,5 @@
 """Exact role sets (``auth=Roles(...)``, ``auth=Authenticated``) and stored role values
-(``RoleColumn(values=...)``) -- spec docs/superpowers/specs/2026-09-29-lattice-role-sets-
+(``RoleColumn(values=...)``) -- spec docs/archive/superpowers/specs/2026-09-29-lattice-role-sets-
 design.md. The fixture is tests/api/rolesets.py; the generated FastAPI app is compared
 with the runtime in test_codegen_differential."""
 

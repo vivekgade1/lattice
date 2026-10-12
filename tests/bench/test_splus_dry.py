@@ -1,4 +1,4 @@
-"""Arm S+ (docs/superpowers/plans/2026-10-05-pivot-spec-authoring.md, item C): arm S with
+"""Arm S+ (docs/archive/superpowers/plans/2026-10-05-pivot-spec-authoring.md, item C): arm S with
 the generic edge-case checklist in the draft prompt and one self-review call.
 
 * the checklist is generic (no table, column, response model, role or user of the

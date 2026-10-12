@@ -1,6 +1,6 @@
 """Tests for the 5b stage-1 Go cost pilot's pre-registered analysis.
 
-Spec: docs/superpowers/specs/2026-09-29-lattice-go-pilot.md, "Tests and decision"
+Spec: docs/archive/superpowers/specs/2026-09-29-lattice-go-pilot.md, "Tests and decision"
 (binding). Interfaces per the task-6 brief.
 """
 

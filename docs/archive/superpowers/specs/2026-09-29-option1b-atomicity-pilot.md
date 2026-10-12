@@ -1,7 +1,7 @@
 # Option 1b: atomicity pilot (pre-registered)
 
 > Status: PRE-REGISTERED 2026-09-29, before any model run on these tickets. It follows the
-> first option-1 pilot (`docs/superpowers/specs/2026-09-29-option1-pilot.md`; results in
+> first option-1 pilot (`docs/archive/superpowers/specs/2026-09-29-option1-pilot.md`; results in
 > `docs/results/2026-09-26-bench-smoke.md`, "Option 1 pilot"). After its oracle was
 > corrected, that pilot left one real slip: t38, where a refused reorder left a partial
 > write, in all 3 reps. The user chose this small follow-up pilot over launching the

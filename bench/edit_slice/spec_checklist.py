@@ -1,4 +1,4 @@
-"""Arm S+'s drafting aids (docs/superpowers/plans/2026-10-05-pivot-spec-authoring.md,
+"""Arm S+'s drafting aids (docs/archive/superpowers/plans/2026-10-05-pivot-spec-authoring.md,
 item C): a generic edge-case checklist for spec drafts and the self-review request.
 
 FROZEN before any S+ run: any change to :data:`CHECKLIST`, :data:`CHECKLIST_SECTION` or

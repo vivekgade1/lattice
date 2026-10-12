@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.14 (uv, pytest), Go 1.26 (`net/http`, `database/sql`, `modernc.org/sqlite`, `golang.org/x/text/cases`), existing Lattice checker, `lattice.api.ir`, `tests/api/test_codegen_differential.py` registry.
 
-**Spec:** `docs/superpowers/specs/2026-09-28-lattice-go-target-design.md` (sub-project 5). This plan covers build-order steps 1–5 (through the equivalence gate). Steps 6–7 (benchmark, live runs) are plan 5b, written after this plan's gate passes.
+**Spec:** `docs/archive/superpowers/specs/2026-09-28-lattice-go-target-design.md` (sub-project 5). This plan covers build-order steps 1–5 (through the equivalence gate). Steps 6–7 (benchmark, live runs) are plan 5b, written after this plan's gate passes.
 
 ## Global Constraints
 
@@ -61,7 +61,7 @@
 ### Task 0: Correct the spec
 
 **Files:**
-- Modify: `docs/superpowers/specs/2026-09-28-lattice-go-target-design.md`
+- Modify: `docs/archive/superpowers/specs/2026-09-28-lattice-go-target-design.md`
 
 - [ ] **Step 1: Apply the corrections found while planning**
 
@@ -74,7 +74,7 @@ Edit §3.1, §3.2, §4, §6 so that:
 - [ ] **Step 2: Commit**
 
 ```bash
-git add docs/superpowers/specs/2026-09-28-lattice-go-target-design.md
+git add docs/archive/superpowers/specs/2026-09-28-lattice-go-target-design.md
 git commit -m "docs(spec): 5 — codes L890-L892, v1.1 rows found while planning, gate suites
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -2035,14 +2035,14 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 14: Record the result
 
 **Files:**
-- Modify: `docs/results/2026-09-26-bench-smoke.md` (append section "Go target — equivalence gate (5a)"), `docs/lattice-vision.md` (§2 status table row "Go target", §6 roadmap: sub-project 5 with 5a done, 5b next)
+- Modify: `docs/results/2026-09-26-bench-smoke.md` (append section "Go target — equivalence gate (5a)"), `docs/archive/lattice-vision.md` (§2 status table row "Go target", §6 roadmap: sub-project 5 with 5a done, 5b next)
 
 - [ ] **Step 1:** Append to the results file: programs and case counts compared, mismatches (0), exclusions with reasons (L890), semantics suite size and Python/Go pass counts, v1.1 behaviour changes (R623, ordered sets, ASCII regex classes, RE2-only), binary size of one built app (`ls -l`), and cold-start time (median of 20 starts of `GoServer` until `LISTENING`).
 - [ ] **Step 2:** Update the vision status row and roadmap.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add docs/results/2026-09-26-bench-smoke.md docs/lattice-vision.md
+git add docs/results/2026-09-26-bench-smoke.md docs/archive/lattice-vision.md
 git commit -m "docs(results): Go target equivalence gate (5a)
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

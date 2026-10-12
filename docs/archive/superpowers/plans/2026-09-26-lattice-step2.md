@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python ≥3.12, uv, polars, pandas, pytest, ruff, anthropic SDK.
 
-**Spec:** `docs/superpowers/specs/2026-09-26-lattice-step2-design.md`
+**Spec:** `docs/archive/superpowers/specs/2026-09-26-lattice-step2-design.md`
 
 ## Global Constraints
 

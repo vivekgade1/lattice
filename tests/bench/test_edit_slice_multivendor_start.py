@@ -1,5 +1,5 @@
 """Arm L's start state on the multi-vendor app (option 1's main experiment,
-docs/superpowers/specs/2026-09-29-option1-main-experiment.md): the importer's committed
+docs/archive/superpowers/specs/2026-09-29-option1-main-experiment.md): the importer's committed
 output (``bench/imports/multivendor``, from ``python -m lattice.importer ... --backend
 cli``, never edited by hand), emitted into the original app with the route-preserving
 merge (the import's verified routes are Lattice, its islands stay the original code).

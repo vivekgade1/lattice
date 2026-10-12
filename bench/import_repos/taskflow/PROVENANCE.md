@@ -1,7 +1,7 @@
 # Vendored TaskFlow API backend
 
 Held-out repo #2 for the Lattice importer (I6a; spec:
-`docs/superpowers/specs/2026-09-27-lattice-importer-design.md`). Different from
+`docs/archive/superpowers/specs/2026-09-27-lattice-importer-design.md`). Different from
 `fastapi/full-stack-fastapi-template` (`bench/template_app/`) and from
 `bench/import_repos/justnotes`. Never read by anything under `lattice/importer/`.
 

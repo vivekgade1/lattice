@@ -1,6 +1,6 @@
 # Lattice sub-project 5 — Go target and the Go benchmark (design, for review)
 
-> Status: DRAFT for review · 2026-09-28. Direction chosen by the user: add Go as a compiled target of the existing plan IRs and benchmark it against Go written directly by the model, on API-profile programs (main experiment) and T2 scripts (control). Scope **C**: benchmark-first, but built so a production Go target can follow without redesign. Database: SQLite, with performance measured under real HTTP load; Postgres is a separate later sub-project. Context: `docs/lattice-vision.md` §7, `docs/results/2026-09-26-bench-smoke.md`.
+> Status: DRAFT for review · 2026-09-28. Direction chosen by the user: add Go as a compiled target of the existing plan IRs and benchmark it against Go written directly by the model, on API-profile programs (main experiment) and T2 scripts (control). Scope **C**: benchmark-first, but built so a production Go target can follow without redesign. Database: SQLite, with performance measured under real HTTP load; Postgres is a separate later sub-project. Context: `docs/archive/lattice-vision.md` §7, `docs/results/2026-09-26-bench-smoke.md`.
 
 ## 1. Goal
 

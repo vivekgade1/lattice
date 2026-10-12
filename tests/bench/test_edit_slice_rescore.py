@@ -1,5 +1,5 @@
 """``bench/edit_slice/rescore.py``: re-scoring saved rounds under the current oracle
-(N4, benchmark hygiene: ``docs/superpowers/specs/2026-09-27-lattice-surface-design.md``
+(N4, benchmark hygiene: ``docs/archive/superpowers/specs/2026-09-27-lattice-surface-design.md``
 §5).
 
 * a saved arm P candidate that only ever failed t14's now-excluded boundary cases is

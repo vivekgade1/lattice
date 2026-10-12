@@ -1,7 +1,7 @@
 # Lattice: exact role sets and stored role values (design)
 
 > Status: approved by the user 2026-09-29, as a prerequisite for option 1's main
-> experiment (`docs/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md`, decision
+> experiment (`docs/archive/superpowers/specs/2026-09-29-option1b-atomicity-pilot.md`, decision
 > "GO"). Evidence (vision §3, "grow with evidence"): the held-out multi-vendor app
 > (`bench/import_repos/multivendor`) has a role/permission table that today's `auth=`
 > cannot express, so its routes stay islands and arm L would start unfaithful.

@@ -1,6 +1,6 @@
 # Vendored DRF tutorial ("snippets")
 
-Phase 2 **dev** app (Django + DRF; plan `docs/superpowers/plans/2026-10-05-phase2-python-import.md`,
+Phase 2 **dev** app (Django + DRF; plan `docs/archive/superpowers/plans/2026-10-05-phase2-python-import.md`,
 W1-C). Used to build and tune the Django front end; not a held-out app.
 
 - **Upstream:** https://github.com/encode/django-rest-framework/tree/main/docs/tutorial

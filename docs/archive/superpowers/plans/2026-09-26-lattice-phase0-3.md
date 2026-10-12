@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python ≥3.12, uv, polars, pyarrow, pandas (baseline arm only), anthropic SDK, pytest, hypothesis, ruff.
 
-**Spec:** `docs/superpowers/specs/2026-09-26-lattice-design.md`
+**Spec:** `docs/archive/superpowers/specs/2026-09-26-lattice-design.md`
 
 ## Global Constraints
 
@@ -281,7 +281,7 @@ def parse(source: str) -> ParseResult
 
 ### Task 9: Catalog, profile, check context, orchestrator skeleton, spec clarifications
 
-**Files:** Create `lattice/catalog.py`, `lattice/check/context.py`, stub `lattice/check/p4_types.py` + `lattice/check/p5_effects.py`; Replace `lattice/check/__init__.py`; Modify `docs/superpowers/specs/2026-09-26-lattice-design.md` (add §5.11 "Clarifications" with the five items from Global Constraints and adjust L303 wording); Test `tests/check/test_catalog.py`, `tests/check/test_context.py`
+**Files:** Create `lattice/catalog.py`, `lattice/check/context.py`, stub `lattice/check/p4_types.py` + `lattice/check/p5_effects.py`; Replace `lattice/check/__init__.py`; Modify `docs/archive/superpowers/specs/2026-09-26-lattice-design.md` (add §5.11 "Clarifications" with the five items from Global Constraints and adjust L303 wording); Test `tests/check/test_catalog.py`, `tests/check/test_context.py`
 
 **catalog.py (exact content):**
 ```python
