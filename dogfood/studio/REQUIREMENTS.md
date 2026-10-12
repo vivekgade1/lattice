@@ -132,3 +132,11 @@ Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project direc
 - GET /api/engines answers `engines` (each with `name`, `source` -- `builtin`, `project` or `module` --, `used`, `server` with its `image` or null, `adapter` and `requires`): SQLite and the built-in `postgres`, `mysql` and `clickhouse` first, then the engines of the project's `[engines] paths` and of its installed modules; `modules` (each with `name`, `version`, `sha256` and `status`) and `errors`. A project with no engines or modules of its own lists the built-ins, SQLite `used` (the default database), and no modules or errors.
 - There is no write route for engines: POST /api/engines and DELETE /api/engines answer 404.
 - The project's engine descriptors and installed modules are registered for its checks; every read re-hashes the modules, and one whose installed tree no longer matches its lock hash is listed `changed`, its engine is not registered and an error names it.
+
+## Improvement proposals
+
+- GET /api/improve answers `proposals` (each with `id`, `title`, `signal_key`, `evidence`, `score`, `unit`, `score_class`, `frequency`, `cost_per`, `kind`, `target_paths`, `why` and `status`), `events` (how many events the project's log holds), `method` and `blind_spots`; a project whose log is empty has no proposals.
+- There is no write route for proposals: POST /api/improve answers 404.
+- The owner's change decisions are logged: accepting or rejecting a change adds a `human` event and a `change` event to the project's log; GET /api/improve then counts them, proposes nothing for an accepted change, and proposes the rejected change sets as one cluster with no recorded cost (`change:rejected`, class C).
+- Every build and plan logs its improvement signals without blocking: gate runs with `layer_seconds` copied from the check's JSON timings, a `cause` on every give-up, stop and failed node, the owner's plan actions as timeline entries with `actor: "owner"`, the ledger line's own wall time, and a `signal_key` on every finding.
+- Proposals are ranked by frequency x cost, seconds before list-price dollars and never converted, with no model; items closed in the improvement ledger are left out; a proposal that touches the checker or the spec language is `needs_owner` and never drafted.

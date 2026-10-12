@@ -73,6 +73,7 @@ and layers B, C and R have nothing to bind to (the harness's marker database is 
 read). Self-contained on purpose: Studio loads this module in isolation.
 """
 
+from lattice.improve.analyze import BLIND_SPOTS, METHOD
 from lattice.profile import ApiProfile, NoRoles, Profile
 from lattice.spec import Scenario, Spec, Step, Unchecked
 
@@ -196,6 +197,15 @@ MCP_STUB = {"servers": [], "refreshed_at": None,
                     "MCP server is discovered or used."}  # fmt: skip
 SOURCE = {"server": "claude.ai Linear", "item": "PROJ-7", "url": "https://tracker.example.com/PROJ-7",
           "title": "Notes can be starred"}  # fmt: skip
+
+# ---- improvement proposals (API.md v1.15, spike 3) ---------------------------------------------
+# the method and blind spots are lattice.improve's own text; the seed's log starts empty
+IMPROVE_EMPTY = {"proposals": [], "events": 0, "method": METHOD, "blind_spots": BLIND_SPOTS}
+# a rejected change set: one class-C cluster (no recorded cost), the drafter its target
+REJECTED_PROPOSAL = {"signal_key": "change:rejected", "kind": "experiment", "status": "open",
+                     "score": None, "unit": None, "score_class": "C", "frequency": 1,
+                     "cost_per": None, "target_paths": ["lattice/spec/draft.py"],
+                     "title": "1 change set(s) rejected"}  # fmt: skip
 
 # ---- database engines and modules (API.md v1.14) ---------------------------------------------
 # the seed has no [app], no [engines] and no modules: the built-ins, SQLite used (the default)
@@ -1190,6 +1200,21 @@ SCENARIOS = (
         Step("GET", "/api/engines", expect_body=ENGINES_SEED),
         UNCHANGED,
     )),
+    Scenario("improvement_proposals_are_listed", steps=(
+        Step("GET", "/api/improve", expect_body=IMPROVE_EMPTY),
+        refused("POST", "/api/improve", 404, "no such route", json={}),
+        post_change(STARRED),
+        READY_STARRED,
+        Step("POST", "/api/changes/c1/reject", expect_body={"ok": True}),
+        # the owner's reject: a human event and a change event, one proposal
+        Step("GET", "/api/improve", expect_body={"events": 2, "proposals": [REJECTED_PROPOSAL],
+                                                 "method": METHOD}),
+        post_change(STARRED, cid="c2"),
+        wait("c2", "ready"),
+        accept("c2", commit=STARRED_COMMIT),
+        # an accept is logged (two more events) and proposes nothing
+        Step("GET", "/api/improve", expect_body={"events": 4, "proposals": [REJECTED_PROPOSAL]}),
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1339,6 +1364,17 @@ UNCHECKED = (
               "project engine used, an engine module listed, one byte of its tree changed: "
               "`changed`, its engine dropped, the error listed), tests/modules/test_modules.py "
               "the install, the lock and the checker's refusal."),
+    Unchecked("R88 (the improvement signals of builds and plans) needs a build whose gate writes a "
+              "check-shaped JSON report, a give-up and a stop, and the log file itself, which a "
+              "scenario cannot read; tests/studio/test_events.py checks each field "
+              "(layer_seconds, cause, actor, the ledger line's own wall time, signal_key) on a "
+              "stub plan of this seed, and docs/results/2026-10-12-spike3-results.md (I-2) runs "
+              "it three times."),
+    Unchecked("R89 (the ranking, the ledger and the needs_owner refusal) needs a log with "
+              "seconds, dollars, a closed item and a checker-targeted cluster, which the seed "
+              "never produces; tests/improve/test_analyze.py and test_cli.py check them on "
+              "hand-made logs (the I-4 refusal), tests/improve/test_import.py on Streak's real "
+              "plan records."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

@@ -116,6 +116,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from lattice.improve import signals as sig
+from lattice.improve.events import EventLog
 from lattice.llm.cli_client import cli_env
 from lattice.studio import areas as areas_mod
 from lattice.studio.session import (
@@ -732,6 +734,7 @@ def result_doc(
                 "command": g.get("command"),
                 "exit_code": g.get("exit_code"),
                 "seconds": g.get("seconds"),
+                **({"layer_seconds": g["layer_seconds"]} if g.get("layer_seconds") else {}),
             }
             for g in gates
         ],  # fmt: skip
@@ -751,6 +754,39 @@ def full_result(
 ) -> dict[str, Any]:
     return result_doc(kind="full", gates=gates, counts=counts, findings=findings, report=report,
                       trace_json=trace_json, gate_cmds=gate_cmds, source=source)  # fmt: skip
+
+
+_X_REPEATS_NOTE = re.compile(r"layer X: .*each up to (\d+) time")
+_X_REPEATS_ARG = re.compile(r"--x-repeats[= ](\d+)")
+
+
+def report_layer_seconds(data: Mapping[str, Any] | None) -> dict[str, float] | None:
+    """A ``lattice spec check --json`` report's seconds per layer (its ``timings.layers``,
+    copied as written: ``{A, B, C, D, X}`` for the layers that ran), or None (spike 3)."""
+    if not isinstance(data, Mapping) or not isinstance(data.get("timings"), Mapping):
+        return None
+    layers = data["timings"].get("layers")
+    if not isinstance(layers, Mapping):
+        return None
+    out = {str(k): float(v) for k, v in layers.items()
+           if isinstance(v, int | float) and not isinstance(v, bool)}  # fmt: skip
+    return out or None
+
+
+def report_x_repeats(data: Mapping[str, Any] | None, cmd: str = "") -> int | None:
+    """How many tries per race layer X ran with: the report's layer X note ("each up to N
+    time(s)"), else the most tries of a race, else ``--x-repeats`` in the command."""
+    if isinstance(data, Mapping):
+        for note in data.get("notes") or []:
+            m = _X_REPEATS_NOTE.search(str(note))
+            if m:
+                return int(m.group(1))
+        tries = [r.get("tries") for r in data.get("races") or [] if isinstance(r, Mapping)]
+        tries = [t for t in tries if isinstance(t, int) and t > 0]
+        if tries:
+            return max(tries)
+    found = _X_REPEATS_ARG.findall(cmd or "")
+    return int(found[-1]) if found else None
 
 
 def scoped_command(gate: str, args: Sequence[str], selection_file: Path | str) -> str:
@@ -1076,6 +1112,10 @@ class _Run:
     node_kind: str = ""  # the plan node's kind (scaffold, area, integration, repair)
     proc_role: str = ""  # "agent" | "gate": what run.proc is
     report_scenarios: list[str] = field(default_factory=list)  # the last JSON report's D run
+    # the improvement event log (spike 3): what a gate run is for (gate, mode, plan, level,
+    # sha, integration) and who stopped the run ("owner" | "studio")
+    gate_ctx: dict[str, Any] = field(default_factory=dict)
+    stopped_by: str | None = None
 
 
 class Rebuilder:
@@ -1096,6 +1136,7 @@ class Rebuilder:
         log: Callable[[str], None] | None = None,
         trailer: str = "",
         store: StateStore | None = None,
+        events: EventLog | None = None,
     ) -> None:
         self.project = Path(project).resolve()
         self.cfg = RebuildConfig(self.project, dict(table or {}))
@@ -1122,6 +1163,10 @@ class Rebuilder:
         self._spec_cache: dict[tuple[str, str, str, tuple[str, ...]], list[str]] = {}
         # durable state (API v1.10): records written through, loaded and reconciled here
         self.store = store
+        # the improvement event log (spike 3): <state dir>/events.jsonl; nothing without a store
+        self.events = events if events is not None else EventLog.in_dir(
+            store.root if store is not None else None, name, log=self.log)
+        self._unchecked_logged: str | None = None
         if store is not None:
             self._load()
 
@@ -2161,7 +2206,9 @@ class Rebuilder:
             return [list(a) for a in self.runs[rid].argvs]
 
     # -- DELETE /api/rebuild/{id}
-    def stop(self, rid: str, join: float = 15.0) -> dict[str, Any]:
+    def stop(self, rid: str, join: float = 15.0, by: str = "owner") -> dict[str, Any]:
+        """Stop a running build. `by`: ``"owner"`` (DELETE, a plan's stop: the build's
+        ``cause`` is ``stopped_by_owner``) or ``"studio"`` (the server is closing)."""
         with self.lock:
             run = self.runs.get(rid)
             if run is None:
@@ -2169,6 +2216,7 @@ class Rebuilder:
             status = run.record["status"]
             if status in FINISHED:
                 raise RebuildError(409, f"cannot stop a rebuild that is {status}")
+            run.stopped_by = by
             run.stop.set()
             run.record["status"] = "stopped"
             for cid in run.record["changes"]:
@@ -2179,6 +2227,8 @@ class Rebuilder:
             proc = run.proc if run.proc_role != "gate" else None
         if proc is not None:
             _kill_group(proc, signal.SIGTERM)
+        if by == "owner" and run.plan_id is None:
+            self.events.append("human", what="stop", actor="owner", build=rid)
         if run.thread is not None and run.thread is not threading.current_thread():
             run.thread.join(join)
         self.log(f"rebuild {rid}: stopped")
@@ -2386,7 +2436,7 @@ class Rebuilder:
             live = [rid for rid, r in self.runs.items() if r.record["status"] not in FINISHED]
         for rid in live:
             with contextlib.suppress(RebuildError):
-                self.stop(rid)
+                self.stop(rid, by="studio")
 
     # -- the thread
     def _child_env(self, run: _Run, n: int) -> dict[str, str]:
@@ -2428,9 +2478,101 @@ class Rebuilder:
                 run.record["usage"]["wall_s"] = round(
                     run.wall_offset + time.monotonic() - run.t0, 2
                 )
+                self._set_cause(run)
                 self._save(run)
+            self._log_end(run)
             run.baseline_done.set()
             run.done.set()
+
+    # -- the improvement event log (spike 3)
+    def _set_cause(self, run: _Run) -> None:
+        """With the lock held: the machine ``cause`` of a build that did not pass, on its
+        record and on its last timeline entry (:func:`lattice.improve.signals.build_cause`)."""
+        rec = run.record
+        cause = sig.build_cause(rec, stopped_by=run.stopped_by)
+        if cause is None:
+            rec.pop("cause", None)
+            return
+        rec["cause"] = cause
+        tl = rec.get("timeline") or []
+        if tl and tl[-1].get("event") == rec.get("status"):
+            tl[-1]["cause"] = cause
+
+    def _log_end(self, run: _Run) -> None:
+        """``node_ended`` (and the last round's finding classes when it did not pass) for a
+        finished build; a nothing-to-build build logs nothing."""
+        rec = run.record
+        if run.nothing_to_build or rec.get("status") not in FINISHED:
+            return
+        u = rec.get("usage") or {}
+        usage = {
+            "tokens_in": int(u.get("input_tokens") or 0)
+            + int(u.get("cache_read_input_tokens") or 0)
+            + int(u.get("cache_creation_input_tokens") or 0),
+            "tokens_out": int(u.get("output_tokens") or 0),
+            "cache_read_input_tokens": int(u.get("cache_read_input_tokens") or 0),
+            "cache_creation_input_tokens": int(u.get("cache_creation_input_tokens") or 0),
+            "cost_usd_list_estimate": round(float(u.get("cost_usd_list_estimate") or 0.0), 6),
+        }
+        ids = {"plan": run.plan_id, "node": run.plan_node, "build": rec["id"]}
+        self.events.append("node_ended", **ids, status=rec["status"], cause=rec.get("cause"),
+                           rounds=len(rec.get("rounds") or []), max_rounds=rec.get("max_rounds"),
+                           wall_s=u.get("wall_s"), usage=usage, attempt=run.attempt)  # fmt: skip
+        if rec["status"] == "passed" or not rec.get("rounds"):
+            return
+        keys: dict[str, int] = {}
+        for f in (rec["rounds"][-1].get("check") or {}).get("findings") or []:
+            k = f.get("signal_key")
+            if k:
+                keys[k] = keys.get(k, 0) + 1
+        for k, n in keys.items():
+            self.events.append("finding_class", **ids, signal_key=k, count=n,
+                               why=rec["status"])  # fmt: skip
+
+    def _log_gates(self, run: _Run, n: int, gates: Sequence[Mapping[str, Any]],
+                   counts: Mapping[str, int]) -> None:  # fmt: skip
+        """One ``gate_run`` per gate that ran to its end (a stopped gate logs nothing)."""
+        ctx = run.gate_ctx
+        role = ctx.get("gate") or ("build_baseline" if n == 0
+                                   else "node" if run.plan_node else "build")  # fmt: skip
+        mode = ctx.get("mode") or ("scoped" if run.selection is not None else "full")
+        sha = ctx.get("sha")
+        if sha is None and ctx.get("integration"):
+            r = _git(run.worktree, "rev-parse", "HEAD")
+            sha = r.stdout.strip() if r.returncode == 0 else None
+        selected = ctx.get("selected")
+        if selected is None and run.selection is not None:
+            selected = len(run.selection.get("scenarios") or [])
+        for i, g in enumerate(gates):
+            if g.get("stopped"):
+                continue
+            self.events.append(
+                "gate_run", gate=role, mode=mode, plan=run.plan_id or ctx.get("plan"),
+                node=run.plan_node, build=None if ctx.get("integration") else run.record["id"],
+                level=ctx.get("level"), round=n, command=g.get("command"),
+                exit_code=g.get("exit_code"), seconds=g.get("seconds"),
+                layer_seconds=g.get("layer_seconds"), x_repeats=g.get("x_repeats"),
+                counts=dict(counts) if i == 0 else None, selected=selected, reused=False,
+                sha=sha,
+            )  # fmt: skip
+
+    def _log_unchecked(self, data: Mapping[str, Any]) -> None:
+        """The report's ``unchecked`` entries as snapshot ``finding_class`` counts per reason
+        code, once per distinct list."""
+        items = [str(x) for x in data.get("unchecked") or []]
+        if not items:
+            return
+        key = json.dumps(sorted(items))
+        with self.lock:
+            if key == self._unchecked_logged:
+                return
+            self._unchecked_logged = key
+        by: dict[str, int] = {}
+        for x in items:
+            k = sig.unchecked_key(x)
+            by[k] = by.get(k, 0) + 1
+        for k, c in sorted(by.items()):
+            self.events.append("finding_class", signal_key=k, count=c, snapshot=True)
 
     def _loop(self, run: _Run) -> None:
         rec = run.record
@@ -2501,12 +2643,14 @@ class Rebuilder:
                         "title": "spec files were edited (restored from the base "
                         f"commit): {', '.join(edited)}",
                         "target": "spec",
+                        "signal_key": "studio:spec_edited",
                     }
                 )
             if agent.get("error"):
                 findings.append(
-                    {"title": f"the agent failed: {agent['error']['message']}", "target": "agent"}
-                )
+                    {"title": f"the agent failed: {agent['error']['message']}", "target": "agent",
+                     "signal_key": f"studio:agent_{agent['error'].get('kind') or 'error'}"}
+                )  # fmt: skip
             extra: dict[str, Any] = {}
             if run.scope is None:
                 findings += gate_findings
@@ -3131,13 +3275,34 @@ class Rebuilder:
                 _git_ok(run.worktree, "checkout", run.base, "--", p)
         return edited
 
-    def _gates(self, run: _Run, n: int) -> list[dict[str, Any]]:
+    def _gates(self, run: _Run, n: int, jpath: Path | None = None) -> list[dict[str, Any]]:
+        """Run the gates in order. With `jpath` (``[rebuild] findings_json``) the gate during
+        which that report was (re)written gets its ``layer_seconds`` and ``x_repeats``
+        (spike 3), and ``_report`` (the parsed report, popped by the caller)."""
         env = self._child_env(run, n)
         out = []
+        prev = _stat(jpath) if jpath is not None else None
         for cmd in run.gates:
             if run.stop.is_set():
                 break
-            out.append(self._run_gate(run, cmd, env))
+            g = self._run_gate(run, cmd, env)
+            if jpath is not None:
+                now = _stat(jpath)
+                if now is not None and now != prev:
+                    try:
+                        data = json.loads(jpath.read_text(encoding="utf-8"))
+                    except (OSError, json.JSONDecodeError):
+                        data = None
+                    if isinstance(data, dict):
+                        g["_report"] = data
+                        ls = report_layer_seconds(data)
+                        if ls is not None:
+                            g["layer_seconds"] = ls
+                        xr = report_x_repeats(data, cmd) if "X" in (ls or {}) else None
+                        if xr is not None:
+                            g["x_repeats"] = xr
+                prev = now
+            out.append(g)
         return out
 
     def _run_gate(self, run: _Run, cmd: str, env: Mapping[str, str]) -> dict[str, Any]:
@@ -3252,9 +3417,9 @@ class Rebuilder:
             if self.cfg.findings_json
             else None
         )
-        before = _stat(jpath) if jpath is not None else None
         run.report_scenarios = []
-        gates = self._gates(run, n)
+        gates = self._gates(run, n, jpath)
+        reports = [g.pop("_report") for g in gates if "_report" in g]
         counts: dict[str, int] = {}
         findings: list[dict[str, Any]] = []
         broken: list[dict[str, Any]] = []
@@ -3269,15 +3434,12 @@ class Rebuilder:
                     broken.append(fs[0])
             for k, v in c.items():
                 counts[k] = counts.get(k, 0) + v
+            for f in fs:
+                f["signal_key"] = sig.text_finding_key(
+                    f["title"], exit_code=g["exit_code"], fallback=bool(f.get("_fallback")))
             findings += fs
         if jpath is not None and gates:
-            after = _stat(jpath)
-            data = None
-            if after is not None and after != before:
-                try:
-                    data = json.loads(jpath.read_text(encoding="utf-8"))
-                except (OSError, json.JSONDecodeError):
-                    data = None
+            data = reports[-1] if reports else None
             run.report_scenarios = report_scenarios(data) if isinstance(data, dict) else []
             if isinstance(data, dict) and isinstance(data.get("findings"), list):
                 counts, jf = areas_mod.findings_from_json(data)
@@ -3290,6 +3452,9 @@ class Rebuilder:
                         f"[rebuild] findings_json {self.cfg.findings_json} was not written "
                         "by the gates; findings were parsed from their text output"
                     )
+            if isinstance(data, dict):
+                self._log_unchecked(data)
+        self._log_gates(run, n, gates, counts)
         return gates, counts, findings
 
     def _tree(self, run: _Run) -> str:
@@ -3466,7 +3631,10 @@ class Rebuilder:
             "cache_read_input_tokens": int(u.get("cache_read_input_tokens") or 0),
             "cache_creation_input_tokens": int(u.get("cache_creation_input_tokens") or 0),
             "cost_usd_list_estimate": float(u.get("cost_usd_list_estimate") or 0.0),
-            "wall_s": round(run.wall_offset + time.monotonic() - run.t0, 2),
+            # the build's own wall: a plan node's hook runs at its level's end, after the
+            # build finished (spike 3: the level's wall here mis-costed parallel nodes, I-19)
+            "wall_s": float(u["wall_s"]) if run.done.is_set() and u.get("wall_s") is not None
+            else round(run.wall_offset + time.monotonic() - run.t0, 2),
             "rounds": rounds,
             "llm_calls": rounds if self.cfg.agent == "claude" else 0,
             "target_branch": rec.get("target_branch") or run.integration,
@@ -3649,6 +3817,8 @@ def _add_usage(total: dict[str, Any], u: Mapping[str, Any]) -> None:
 
 def _public_finding(f: Mapping[str, Any], scoped: bool) -> dict[str, Any]:
     out = {"id": f["id"], "title": f["title"], "target": f.get("target") or ""}
+    if f.get("signal_key"):
+        out["signal_key"] = f["signal_key"]  # spike 3: <layer>:<class>, to cluster on
     if scoped:
         out["in_scope"] = bool(f.get("in_scope"))
         out["regression"] = bool(f.get("regression"))

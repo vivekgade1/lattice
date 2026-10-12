@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.14)
+# Lattice Studio API contract (v1.15)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -811,3 +811,42 @@ Not shown in the web UI: the UI has no place where the project's check settings 
 
 ### The mock
 `GET /api/engines` answers the real shape: SQLite (`used`) and the built-ins read from the real registry, the project engine `docs/examples/engines/mariadb.toml`, and two fixture modules, `acme-audit` (custom, `ok`) and `pg-tuned` (an engine module whose tree `changed`: its engine is not listed and `errors` names it). No write route.
+
+## v1.15 additions (improvement signals and proposals, spike 3)
+
+Lattice proposes its own improvements from what a project's builds log; the owner decides every one and nothing is merged automatically. Code: `lattice/improve/` (`events.py` the log, `signals.py` the machine codes, `analyze.py` the ranker, `importer.py`, `__main__.py` the CLI); Studio writes the log (`rebuild.py`, `plan.py`, `server.py`). Evidence: `docs/results/2026-10-12-i-r-improvement-ranking.md` (the method), `docs/results/2026-10-12-spike3-results.md`.
+
+### New record fields (additions; nothing else changes)
+- **`layer_seconds`** `{A, B, C, D, X}`: a gate's seconds per layer, copied as written from the `timings.layers` of the `lattice spec check --json` report the gate (re)wrote (`[rebuild] findings_json`); absent when the gate wrote none. On a round's and an integration run's `gates[]`, on `level_runs[].gate` (and its `gates[]`), on the plan's `baseline` and on per-tip results' `gates[]`. A gate with layer X also gets `x_repeats` (the report's "each up to N time(s)" note).
+- **`cause`**: why a build, or a plan node, did not pass. One of `spec_unsatisfiable` (the last round's findings carry the check's "spec problem:" line, `lattice/spec/preconditions.py`), `no_progress` (the same failing set in the last two rounds), `timeout`, `token_budget` (`node_max_tokens`), `regression` (a level gate failed on a check that passed before), `merge_conflict`, `usage_limit`, `stopped_by_owner`, `repair_exhausted` (every round used, none of the above), `other`. Precedence in that order after `stopped_by_owner` and `usage_limit` (`lattice/improve/signals.py` `build_cause`). On the build record (`cause`, and its last timeline entry), on the plan's node (`cause`, null when it passed) and on the node's timeline entry; a stop the server makes while closing is `other`.
+- **`actor: "owner"`** on the timeline entries of the owner's plan actions: approve, revise, run / resume / retry / land (`... N started`), stop. Change accept and reject and a spec sync have no timeline; they are log events only.
+- **`signal_key`** `<layer>:<class>` on every finding of a round (`check.findings[]`): a check finding's layer and a stable class (layer A its code, `D:status`, `D:body`, `D:db`, `D:spec_problem`, `C:invariant`, `X:race`, ...), a text finding `gate:finding` or `<layer>:<kind>`, a gate with no parsable finding `gate:exit_<rc>`, Studio's own `studio:spec_edited` / `studio:agent_<kind>`. A JSON finding with the spec-problem line also has `spec_problem: true`.
+- The metrics hook's ledger line (`--llm-json`, `metrics.llm.wall_s`) carries the **node's own wall time**: a plan node's hook runs at its level's end, and before v1.15 it reported the time until then (parallel nodes got their level's wall).
+
+### The event log
+`<state dir>/events.jsonl` (the durable state's directory, v1.10; git-ignored there), append-only, one JSON object per line, `{"v": 1, "ts", "project", "kind", "id", ...}`, fsynced per append. Kinds: `plan_started`, `plan_ended` (status, error kind, wall, totals), `node_ended` (plan, node, build, status, cause, rounds, own `wall_s`, `usage` with cache tokens and the list-price estimate), `gate_run` (gate `baseline|node|level|final|build|build_baseline`, mode, command, exit code, seconds, `layer_seconds`, `x_repeats`, counts, selected, `reused`, `sha` of integration runs), `human` (`what`, `actor: "owner"`, the plan, change or branch), `finding_class` (`signal_key`, `count`; `snapshot: true` for the report's `unchecked` entries per reason code), `change` (`decision` accepted/rejected, `source`). Studio writes at those points and never blocks on it: a failed write is a warning in Studio's log. No state directory (`[state] enabled = false`), no log. A reader skips a line that does not parse (a torn last line) and keeps unknown fields. `python -m lattice.improve import-plan RECORD.json` turns an existing plan record into events with the fields it has (old records: no `layer_seconds`, give-ups with cause `other`).
+
+### The improvement ledger
+`<state dir>/improvements.jsonl`: `{id, signal, status: open|closed, commit, ts}` lines the owner or a merge appends (`lattice improve ledger --signal KEY --status closed --id I-05 --commit SHA`). `signal` is an fnmatch pattern over cluster keys; the latest entry of a pattern wins. Closed clusters are not proposed.
+
+### GET /api/improve
+Read-only: there is no write route (`POST /api/improve` answers 404).
+```json
+{"proposals": [{"id": "imp-1c3e5a7b", "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]",
+                "signal_key": "gate:level_regression:X", "evidence": ["e-...", "e-..."],
+                "score": 600.0, "unit": "s", "score_class": "A", "frequency": 5, "cost_per": 120.0,
+                "kind": "change_set", "target_paths": ["studio.toml"], "why": "...", "status": "open",
+                "draftable": true,
+                "expected": {"x_repeats_from": 5, "x_repeats_to": 2, "x_seconds_now": 120.0,
+                             "saving_s_per_gate": 72.0, "drop": 0.6, "basis": "..."}}],
+ "events": 128,
+ "method": "Frequency x cost, the I-R method ...",
+ "blind_spots": ["human time: ...", "risk and correctness: ...", "recurrence: ...", "..."]}
+```
+The ranker (no model): clusters by `signal_key` or `cause` (gate runs as `gate:<role>:<layer>`, `total` without per-layer seconds; a start baseline on a commit that already had a gate run is `gate:baseline_rerun`; owner interventions `human:<what>` for resume, retry, land, stop, forget, revise, spec_sync; `change:rejected`), f = occurrences, c = the mean cost of one occurrence in wall seconds, or in list-price dollars only when the cluster recorded no seconds (never converted), score = f x c; class A (seconds) above B (dollars) above C (no cost, ordered by f). At most 5 proposals; `kind` is `change_set`, `module_draft` or `experiment`. A proposal whose `target_paths` touch the checker or the spec language (`lattice/spec/check.py`, `process.py`, `engines.py` and `engines/`, `model.py`, `docs/lattice-language-rules.md`) is **`status: "needs_owner"`**, `draftable: false`: never drafted automatically (the owner default: proposals target modules and docs first). `expected` (layer X proposals only) is the saving the logged signal predicts. The CLI equivalent: `lattice improve report [--project DIR] [--top N] [--json]`.
+
+### Studio UI
+None in this version: the proposals are API, CLI and mock only.
+
+### The mock
+`GET /api/improve` answers the real shape, ranked by `lattice.improve.analyze` itself from a fixture log (five regression level gates whose layer X took ~120 s, a full level gate, a start baseline that re-ran that gate's commit, a node that gave up on an unsatisfiable check, an owner's resume) and a fixture ledger closing the unsatisfiable-check cause and the full level gates: the X proposal comes first with its `expected` saving, and the layer A/B proposals are `needs_owner`. No write route.

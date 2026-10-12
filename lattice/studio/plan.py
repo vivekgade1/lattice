@@ -1170,16 +1170,38 @@ class PlanManager:
                 self.log(f"plan {pid}: the state file could not be written: {exc}")
 
     def _event(
-        self, plan: _Plan, event: str, node: dict[str, Any] | None = None, repair: bool = False
+        self, plan: _Plan, event: str, node: dict[str, Any] | None = None, repair: bool = False,
+        *, actor: str | None = None, cause: str | None = None,
     ) -> None:
         """With the lock held: one timeline entry (the plan's, and the node's); a repair
-        loop's entries carry ``repair: true`` (API v1.11)."""
+        loop's entries carry ``repair: true`` (API v1.11); an owner's action ``actor:
+        "owner"`` and a node's end its ``cause`` (spike 3)."""
         entry: dict[str, Any] = {"at": _now(), "event": event}
         if repair:
             entry["repair"] = True
+        if actor:
+            entry["actor"] = actor
+        if cause:
+            entry["cause"] = cause
         plan.record.setdefault("timeline", []).append(entry)
         if node is not None:
             node.setdefault("timeline", []).append(dict(entry))
+
+    # -- the improvement event log (spike 3, lattice/improve/events.py)
+    def _human(self, what: str, plan_id: str, **fields: Any) -> None:
+        """An owner's action as a log event (``human``, ``actor: "owner"``)."""
+        self.rb.events.append("human", what=what, actor="owner", plan=plan_id, **fields)
+
+    def _node_failed(self, plan: _Plan, n: dict[str, Any], status: str, cause: str,
+                     detail: str | None = None) -> None:  # fmt: skip
+        """With the lock held: a node that failed at the plan's level (start, merge, level
+        gate, land), not in its own build: its ``cause`` and a ``node_ended`` event (wall: the
+        node's own build time so far)."""
+        n["cause"] = cause
+        self.rb.events.append("node_ended", plan=plan.record["id"], node=n["id"],
+                              build=n.get("build_id"), status=status, cause=cause,
+                              cause_detail=detail, phase="plan", rounds=n.get("rounds"),
+                              wall_s=n.get("wall_s"), usage=dict(n.get("usage") or {}))  # fmt: skip
 
     def _load(self) -> None:
         """Every plan of the store; one that was planning or running when Studio stopped
@@ -1954,9 +1976,10 @@ class PlanManager:
                     daemon=True,
                     name=f"studio-plan-{pid}-revise",
                 )
-                self._event(plan, "revising (feedback)")
+                self._event(plan, "revising (feedback)", actor="owner")
                 self._save(plan)
                 plan.thread.start()
+                self._human("revise", pid, how="feedback")
                 return {"id": pid, "status": "planning"}
         assert isinstance(edits, Mapping)
         allowed = {"nodes", "remove_edges", "add_edges", "max_parallel", "branch",
@@ -2051,9 +2074,11 @@ class PlanManager:
             self._drop_built(plan)
             plan.record["status"] = "ready"
             plan.record["approved"] = None
-            self._event(plan, f"revised (version {plan.record['version']})")
+            self._event(plan, f"revised (version {plan.record['version']})", actor="owner")
             self._save(plan)
-            return copy.deepcopy(plan.record)
+            out = copy.deepcopy(plan.record)
+        self._human("revise", pid, how="edits")
+        return out
 
     # -- POST /api/plan/{id}/approve
     def approve(self, pid: str) -> dict[str, Any]:
@@ -2064,9 +2089,10 @@ class PlanManager:
                 raise PlanError(409, f"plan {pid} is {status}, not ready")
             plan.record["status"] = "approved"
             plan.record["approved"] = _now()
-            self._event(plan, f"approved (version {plan.record['version']})")
+            self._event(plan, f"approved (version {plan.record['version']})", actor="owner")
             self._save(plan)
-            return {"id": pid, "status": "approved", "version": plan.record["version"]}
+        self._human("approve", pid, version=plan.record["version"])
+        return {"id": pid, "status": "approved", "version": plan.record["version"]}
 
     # -- POST /api/plan/{id}/run
     def run(self, pid: str, body: Mapping[str, Any] | None = None) -> dict[str, Any]:
@@ -2119,6 +2145,8 @@ class PlanManager:
             if self.rb.plan_active or rec["status"] != status:
                 raise PlanError(409, f"plan {pid} changed meanwhile; try again")
             self._start_run(plan, confirm=confirm, land_only=False, resume=resume)
+        what = "retry" if status == "failed" else "resume" if resume else "run"
+        self._human(what, pid, run=rec["runs"], was=status)
         self.log(f"plan {pid}: running (run {rec['runs']}{', resumed' if resume else ''})")
         return {"id": pid, "status": "running"}
 
@@ -2152,10 +2180,13 @@ class PlanManager:
                 if n["status"] in ("gave_up", "merge_conflict", "regressed"):
                     n["previous_findings"] = self._findings_of(n)
                 if n["status"] in RERUN:
-                    n.update(status="pending", blocked_by=[], error=None)
+                    n.update(status="pending", blocked_by=[], error=None, cause=None)
         what = "land" if land_only else ("resume" if resume else "run")
-        self._event(plan, f"{what} {rec['runs']} started (was {prev})")
+        self._event(plan, f"{what} {rec['runs']} started (was {prev})", actor="owner")
         self._save(plan)
+        self.rb.events.append("plan_started", plan=pid, run=rec["runs"], resume=resume,
+                              land_only=land_only or None, was=prev,
+                              target_branch=rec.get("target_branch"))  # fmt: skip
         plan.thread = threading.Thread(target=self._execute, args=(plan,), daemon=True,
                                        name=f"studio-plan-{pid}-{what}")  # fmt: skip
         plan.thread.start()
@@ -2205,6 +2236,7 @@ class PlanManager:
             if busy:
                 raise PlanError(409, f"a rebuild is already running in this project ({busy})")
             self.rb.plan_active = pid  # the slot, while the branch moves
+        self._human("land", pid, level=lw.get("level"))
         try:
             out = self._land_ff(plan, lw, confirm)
         finally:
@@ -2271,7 +2303,7 @@ class PlanManager:
             for nid in lw["merged"]:
                 n = nodes.get(nid)
                 if n is not None:
-                    n.update(status="passed", merged=True, error=None)
+                    n.update(status="passed", merged=True, error=None, cause=None)
                     self._event(plan, f"node {nid} landed with level {L}", n)
             rec["target_tip"] = tip
             self._event(plan, f"level {L} landed on {name} at {tip[:10]} (resume, no agent)")
@@ -2282,7 +2314,9 @@ class PlanManager:
         return "landed"
 
     # -- DELETE /api/plan/{id}
-    def stop(self, pid: str, join: float = 30.0) -> dict[str, Any]:
+    def stop(self, pid: str, join: float = 30.0, by: str = "owner") -> dict[str, Any]:
+        """Stop a planning or running plan. `by`: ``"owner"`` (DELETE: a human event, its
+        nodes' cause ``stopped_by_owner``) or ``"studio"`` (the server is closing)."""
         with self.lock:
             plan = self._get(pid)
             status = plan.record["status"]
@@ -2290,8 +2324,10 @@ class PlanManager:
                 raise PlanError(409, f"cannot stop a plan that is {status}")
             plan.stop.set()
             plan.record["status"] = "stopped"
-            self._event(plan, f"stopped (was {status})")
+            self._event(plan, f"stopped (was {status})", actor="owner" if by == "owner" else None)
             self._save(plan)
+        if by == "owner":
+            self._human("stop", pid, was=status)
             proc = plan.proc
             irun = plan.irun
             live = [n["build_id"] for n in plan.record["nodes"]
@@ -2302,13 +2338,15 @@ class PlanManager:
             _kill_group(irun.proc, signal.SIGTERM)  # a gate stops its own tree (v1.11)
         for rid in live:
             with contextlib.suppress(RebuildError):
-                self.rb.stop(rid)
+                self.rb.stop(rid, by=by)
         if plan.thread is not None and plan.thread is not threading.current_thread():
             plan.thread.join(join)
         with self.lock:
             for n in plan.record["nodes"]:
                 if n["status"] == "running":
                     n["status"] = "stopped"
+                if n["status"] == "stopped":
+                    n["cause"] = "stopped_by_owner" if by == "owner" else "other"
             self._save(plan)
         self.log(f"plan {pid}: stopped")
         return {"id": pid, "status": "stopped"}
@@ -2321,6 +2359,7 @@ class PlanManager:
         with self.lock:
             plan = self._get(pid)
             live = plan.record["status"] in TRANSIENT
+        self._human("forget", pid, was=plan.record["status"])
         if live:
             with contextlib.suppress(PlanError):
                 self.stop(pid)
@@ -2343,7 +2382,7 @@ class PlanManager:
             live = [pid for pid, p in self.plans.items() if p.record["status"] in TRANSIENT]
         for pid in live:
             with contextlib.suppress(PlanError):
-                self.stop(pid)
+                self.stop(pid, by="studio")
 
     # -- the runner
     def _execute(self, plan: _Plan) -> None:
@@ -2384,6 +2423,11 @@ class PlanManager:
                         rec["error"] = error
                 self._event(plan, rec["status"])
                 self._save(plan)
+                final, err_kind = rec["status"], (rec.get("error") or {}).get("kind")
+                totals = dict(rec.get("totals") or {})
+            self.rb.events.append("plan_ended", plan=rec["id"], run=rec.get("runs"),
+                                  status=final, error_kind=err_kind if final != "passed" else None,
+                                  wall_s=totals.get("wall_s"), totals=totals)  # fmt: skip
             plan.done.set()
             self.log(f"plan {rec['id']}: {rec['status']}")
 
@@ -2452,13 +2496,18 @@ class PlanManager:
                 for n in merged:
                     n["status"] = "regressed"
                     n["error"] = moved
+                    self._node_failed(plan, n, "regressed", "other",
+                                      f"land: {moved.get('kind') or 'error'}")
+                self.rb.events.append("finding_class", plan=plan.record["id"], level=L,
+                                      signal_key=f"land:{moved.get('kind') or 'error'}",
+                                      count=1)  # fmt: skip
                 self._event(plan, f"level {L} passed its full gate at {new_tip[:10]} but did "
                             f"not land on {name}: {moved['message']}")  # fmt: skip
             else:
                 plan.record["target_tip"] = new_tip
                 lr.update(landed=True, landed_at=_now(), landed_by=by)
                 for n in merged:
-                    n.update(merged=True, status="passed", error=None)
+                    n.update(merged=True, status="passed", error=None, cause=None)
                     self._event(plan, f"node {n['id']} landed with level {L}", n)
                 self._event(plan, f"level {L} landed on {name} at {new_tip[:10]}")
             self._save(plan)
@@ -2520,8 +2569,11 @@ class PlanManager:
             gates, counts = list(cached.get("gates") or []), dict(cached.get("counts") or {})
             findings = [dict(f) for f in cached.get("findings") or []]
             start_res = cached
+            self.rb.events.append("gate_run", gate="baseline", mode="full", plan=pid,
+                                  seconds=0.0, reused=True, sha=start_sha)  # fmt: skip
         else:
             irun = self._irun(plan, branch_tip, f"{pid}-start-{rec['runs']}", plan.stop)
+            irun.gate_ctx = {"gate": "baseline", "mode": "full", "plan": pid, "integration": True}
             plan.irun = irun
             try:
                 if need_merge:
@@ -2560,6 +2612,9 @@ class PlanManager:
                              for f in findings],
                 "reused": cached is not None,
             }  # fmt: skip
+            ls = next((g["layer_seconds"] for g in gates if g.get("layer_seconds")), None)
+            if ls is not None and cached is None:
+                rec["baseline"]["layer_seconds"] = ls
             how = " (recorded results of that tip, not gated again)" if cached is not None else ""
             self._event(plan, f"start baseline on {name} at {start_sha[:10]}: "
                         f"{len(last_failing)} failing{how}")  # fmt: skip
@@ -2816,6 +2871,7 @@ class PlanManager:
             return set(res["failing"]), self._last(res, fs, gs, cs)
         rec = plan.record
         irun = self._irun(plan, tip, f"{rec['id']}-final-{rec['runs']}", plan.stop)
+        irun.gate_ctx = {"gate": "final", "mode": "full", "plan": rec["id"], "integration": True}
         plan.irun = irun
         try:
             gates, counts, findings = self.rb.gate_round(irun, len(rec["levels"]))
@@ -2950,6 +3006,7 @@ class PlanManager:
                         n["status"] = "gave_up"
                         n["error"] = {"kind": "start", "message": e.detail}
                         n["finished_ts"] = time.time()
+                        self._node_failed(plan, n, "gave_up", "other", "start")
                         self._save(plan)
                     continue
                 with self.lock:
@@ -3048,6 +3105,7 @@ class PlanManager:
             n["commit"] = commit
             n["finished_ts"] = time.time()
             n["error"] = r.get("error")
+            n["cause"] = r.get("cause") if st != "passed" else None  # spike 3
             prev = n["usage"]
             _sum_into(prev, u)
             n["rounds"] += len(r.get("rounds") or [])
@@ -3057,7 +3115,7 @@ class PlanManager:
             n.pop("live", None)
             if plan is not None:
                 self._event(plan, f"node {n['id']} {st} ({rid}, {len(r.get('rounds') or [])} "
-                            "round(s))", n)  # fmt: skip
+                            "round(s))", n, cause=n["cause"])  # fmt: skip
                 self._save(plan)
 
     def _merge_level(
@@ -3102,6 +3160,7 @@ class PlanManager:
                         why = _short(r.stdout.strip() or r.stderr.strip(), 400)
                         n["error"] = {"kind": "merge_conflict", "message": why}
                         lr["merge_conflicts"].append(n["id"])
+                        self._node_failed(plan, n, "merge_conflict", "merge_conflict")
                     continue
                 merged.append(n)
             with self.lock:
@@ -3135,6 +3194,9 @@ class PlanManager:
                                                  path), *irun.gates[1:]]  # fmt: skip
                 else:
                     mode, selected = "full", None
+            n_sel = len(selected) if selected is not None else None
+            irun.gate_ctx = {"gate": "level", "mode": mode, "plan": pid, "level": L,
+                             "integration": True, "selected": n_sel}  # fmt: skip
             gates, counts, findings = rb.gate_round(irun, L + 1)
             if plan.stop.is_set():
                 return None
@@ -3154,7 +3216,12 @@ class PlanManager:
                     "selected": len(selected) if selected is not None else None,
                     "in_scope_failing": in_scope,
                     "gates": [{"command": g["command"], "exit_code": g["exit_code"],
-                               "seconds": g["seconds"]} for g in gates]}  # fmt: skip
+                               "seconds": g["seconds"],
+                               **({"layer_seconds": g["layer_seconds"]}
+                                  if g.get("layer_seconds") else {})} for g in gates]}  # fmt: skip
+            ls = next((g["layer_seconds"] for g in gates if g.get("layer_seconds")), None)
+            if ls is not None:
+                gate["layer_seconds"] = ls  # spike 3: the check's own timings.layers
             with self.lock:
                 lr["gate"] = gate
                 lr["regressions"] = regressions
@@ -3178,6 +3245,13 @@ class PlanManager:
                     for n in merged:
                         n["status"] = "regressed"
                         n["error"] = {"kind": "regression", "message": why}
+                        self._node_failed(plan, n, "regressed",
+                                          "other" if broken else "regression")
+                    for f in findings:
+                        if areas_mod.finding_identity(f) in bad and f.get("signal_key"):
+                            self.rb.events.append("finding_class", plan=pid, level=L,
+                                                  signal_key=f["signal_key"], count=1,
+                                                  why="level_gate")  # fmt: skip
                     self._event(plan, f"level {L} failed its gate: {why}")
                     self._save(plan)
                 self._anchor(plan, f"L{L}-failed", tip)

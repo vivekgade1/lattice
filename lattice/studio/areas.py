@@ -29,6 +29,8 @@ import re
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 
+from lattice.improve import signals
+
 __all__ = [
     "ALL",
     "area_view",
@@ -191,7 +193,12 @@ def findings_from_json(data: Mapping[str, Any]) -> tuple[dict[str, int], list[di
             "title": _short(f"{head}: {what}" if what else head),
             "target": normalize_target(f.get("rule")),
             "key": str(f.get("key") or ""),
+            # spike 3: a stable class to cluster on, and the "spec problem" line survives the
+            # title's truncation
+            "signal_key": signals.check_finding_key(f),
         }
+        if signals.has_spec_problem(problems):
+            item["spec_problem"] = True
         if f.get("file"):  # a static finding's file (layer A): attributes a level failure
             item["file"] = str(f["file"])
         findings.append(item)
