@@ -1238,6 +1238,7 @@ class PlanManager:
             if lr.get("status") == "running":
                 lr["status"] = "interrupted"
                 lr["finished"] = now
+        self._reconcile_repair(rec, now)
         if killed:
             rec["orphans_killed"] = killed
         msg = f"interrupted while {was}: Studio restarted"
@@ -1246,6 +1247,40 @@ class PlanManager:
         rec["timeline"].append({"at": now, "event": msg})
         self.log(f"plan {rec['id']}: {msg}")
         self._save(plan)
+
+    @staticmethod
+    def _reconcile_repair(rec: dict[str, Any], now: str) -> None:
+        """A Studio that died in the middle of a level repair (API v1.11) left nodes
+        ``repairing`` and their level run ``failed``: neither is "running", so the plain
+        reconciliation would restart those nodes from round 1. Mark the level as waiting for
+        a repair pass instead (``repair_pending``, the state an exhausted repair leaves), so
+        Run repairs it again from its merged nodes -- their sessions continue, no completed
+        round runs again."""
+        repairing = {n["id"] for n in rec["nodes"] if n["status"] == "repairing"}
+        if not repairing:
+            return
+        latest: dict[int, dict[str, Any]] = {}
+        for lr in rec["level_runs"]:
+            latest[int(lr.get("level", -1))] = lr
+        for L in sorted(latest):
+            lr = latest[L]
+            merged = [i for i in lr.get("merged") or [] if i in repairing]
+            if not merged or lr.get("superseded") or lr.get("landed"):
+                continue
+            targets = list(lr.get("regressions") or (lr.get("gate") or {}).get("failing") or [])
+            lr["repair_pending"] = True
+            lr["finished"] = lr.get("finished") or now
+            lr["error"] = {"kind": "repair_interrupted", "level": L, "nodes": merged,
+                           "targets": targets,
+                           "message": f"Studio stopped while level {L} was being repaired "
+                           f"(node {', '.join(merged)})"}  # fmt: skip
+        for n in rec["nodes"]:
+            if n["id"] in repairing:
+                n["status"] = "interrupted"
+                n.pop("live", None)
+                n.setdefault("timeline", []).append(
+                    {"at": now, "event": "interrupted while repairing: Studio restarted",
+                     "repair": True})  # fmt: skip
 
     def _pid_sink(self, plan: _Plan) -> Callable[[dict[str, Any], bool], None]:
         """With the lock held (the Rebuilder calls it so): the plan's own child processes

@@ -2110,7 +2110,11 @@ class Rebuilder:
             rec = run.record
             if self.plan_active != plan_id or (rec.get("plan") or {}).get("id") != plan_id:
                 raise RebuildError(409, f"plan {plan_id} does not hold the build slot")
-            if rec["status"] not in ("passed", "gave_up"):
+            # a passed node build whose repair round was cut off by a Studio restart is
+            # ``interrupted`` but has its commit: its repair goes on (the round that never
+            # finished is run again, the session resumed)
+            resumable = rec["status"] == "interrupted" and bool(rec.get("commit"))
+            if rec["status"] not in ("passed", "gave_up") and not resumable:
                 raise RebuildError(409, f"rebuild {rid} is {rec['status']}; only a passed or "
                                    "gave-up node build can be repaired")  # fmt: skip
             repo = run.repo
