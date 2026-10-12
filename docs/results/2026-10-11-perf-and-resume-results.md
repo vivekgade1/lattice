@@ -122,9 +122,46 @@ build that has its commit. Removing either half fails the drill (2/2 mutants).
 10. Carried over from the handoff: MySQL ISO-Z timestamp adapter bug, DSL gaps, answered
     questions not marked answered; multi-project / contracts phase.
 
+## Follow-ups (same day, after the write-up above)
+
+The "Not verified" and "Improvements" lists above were worked off one after the other. Each
+item has its own commit, tests and (where it changes Studio) mutants.
+
+| Item | Result | Commit |
+|---|---|---|
+| Real-agent restart drill | **Passed, and found a gap.** A real `claude -p` (haiku, about $0.007 list estimate) killed mid-turn: session resumed ("continued from round 1 (session resumed)"), the passed node untouched, totals equal the node sum across the restart. The gap: the session id was recorded only when the agent *process exited*, so a Studio killed mid-turn restarted that round with a fresh session (the case that matters: scaffold's turn was 1,900 s). Now recorded on the agent's first message; continue resumes it at any round with a continuation note. Drill F (a fake `claude`) covers it with no tokens and fails on the old code. | a70699a |
+| Lint unsatisfiable `expect_db` | **L012**: a step expecting no row after an earlier step expected one, nothing able to remove it between. Exactly the two steps of Streak's original `device_registration`, nothing on the fixed spec. `check` also adds "spec problem: nothing before this step puts a row in ..." to a failing `expect_db` whose row nothing could have created (the logout-as-anon shape). 6 tests, 2/2 helper mutants. | e93faea |
+| Spec fixes reach the build branch | **API v1.12 spec sync.** `POST /api/branches/{name}/sync-spec` commits exactly the committed spec files of the owner's `HEAD` onto the target (temporary `--no-checkout` worktree, CAS `update-ref`; refusals checked out / protected / build running / nothing to sync); `GET /api/branches` carries `spec.in_sync`; plans record `spec_drift` and a warning; `[rebuild] sync_spec = "auto"` syncs before the start baseline; banner with a "Sync spec" button. 13 tests, dogfood R70-R75 (358 cases), **6/6 mutants** (re-run independently; SY-M1, uncommitted edits leaking in, is caught by tests only, as predicted). | 13d6533, 2c13b8b |
+| Separate args for level gates | `[rebuild] level_gate_args` on the regression level gate only (final full gate, node gates and integration unchanged). Measured below. | 9f3f6e6 |
+
+### What `--x-repeats` does to a level gate (Streak final tip, single runs, idle machine)
+
+| `--x-repeats` | total | layer X | findings |
+|---|---|---|---|
+| 5 (Streak's `check.sh` default) | 148.9 s | 120.0 s | 0 |
+| 2 | 87.1 s | 58.9 s | 0 |
+| 1 | 67.9 s | 39.4 s | 0 |
+
+All 60 races ran each time (the budget is races, not tries); fewer tries per race means a
+rarer race is less likely to be refuted at a *level* gate. The plan's final full gate keeps
+the configured repeats, so the final verdict does not lose coverage. `["--x-repeats", "2"]`
+saves about 62 s per level (42%); it is not set in Streak's `studio.toml` (the owner's file).
+
+### Checks on the merged tree (`roadmap` 2c13b8b)
+
+965 passed, 5 skipped; dogfood PASS, 358 cases; perf mutants 12/12, state 6/6, sync 6/6;
+restart drills A, B, C, F pass (R passes on request).
+
+### Still open
+
+Push (nothing has been pushed); the owner's uncommitted `studio.toml`; level numbering
+(0-based server prose vs 1-based UI); stale target labels in a gave-up build record;
+a first-baseline reuse for imported plans; a banner state "hidden while a plan runs" seen
+only in code, not in a browser; the multi-project / contracts phase.
+
 ## State at the end
 
-`roadmap` 1073e67 (nothing pushed). Streak: `main` a0db033 (two spec-only commits, plus the
+`roadmap` 2c13b8b (nothing pushed; 1073e67 at the time of the first write-up). Streak: `main` a0db033 (two spec-only commits, plus the
 owner's uncommitted `studio.toml`), `build/streak` a0679e9, plan p2 `passed` in
 `.lattice/state/streak/`. One kept node worktree (`rebuild/p2-account`). Studio on :8765
 restarted on the merged code.
