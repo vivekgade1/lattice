@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.11)
+# Lattice Studio API contract (v1.12)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -655,3 +655,60 @@ A Studio killed while a level was being repaired reconciles on load like any int
 
 ### The mock
 Projects carry `plan_defaults` (scoped gate, regression level gate); plans carry `planner_usage` and, once run, `gate_config`; level gates carry `mode`/`selected`/`in_scope_failing`. A mock run's level 1 (in a plan of three or more levels) fails its gate once and is repaired over one poll (a node `repairing`, `repairs` on the level run and the node, timeline `repair: true`) before it lands. The second project gets a third fixture plan `p3` whose level 1 ran out of repair attempts (`partial`, `error.kind: repair_exhausted`, `resume.kind: repair`); `POST /api/plan/p3/run` repairs it again over one poll and goes on. One of p3's failing checks is owned by no merged node, so it also carries a `kind: "repair"` node `repair-l1` (`gave_up`; `attributed` by `repair_node`). A fourth fixture `p4` is `partial` because a node gave up and blocked its dependents (`resume.kind: "retry"`). Repair entries carry per-node `usage`, nodes `repair_usage`, `totals` include the planner, a resumed run's `baseline.reused` is true and a run's last level is preceded by `final_gate`.
+
+## v1.12 additions (spec sync)
+
+Studio builds each plan node in a worktree cut from the **target branch's tip** and gates it with the spec files **committed on that branch**, while the owner corrects the spec on their working branch (an accepted change set, or a manual commit). Without a sync the build branch keeps the old spec and its nodes keep failing the old check (Streak's p2 run needed `git merge main` into `build/streak` by hand, twice). v1.12 shows the drift and syncs the spec files onto the build branch on request, or when a plan runs (opt-in). Code: `lattice/studio/rebuild.py` (`Rebuilder.spec_diff`, `spec_drift`, `sync_spec`), `plan.py`, `server.py`; UI: the Build view and the plan view.
+
+**What is compared.** The spec files a rebuild protects: `REQUIREMENTS.md`, `spec.py`, `spec.trace.json` and the `[mcp] protected` names (a directory means the files under it), under the project's directory in the repository. Their content **as committed** at the repository's `HEAD` (`git ls-tree HEAD`) against the same files committed on the branch; a file present on one side only counts as different. Uncommitted edits in the owner's working copy are never read, compared or synced.
+
+### Configuration: `[rebuild]` addition
+```toml
+[rebuild]
+sync_spec = "off"   # "off" (default) | "auto": POST /api/plan/{id}/run syncs the target first
+```
+
+### `spec` on GET /api/branches
+Every local branch that is neither protected (`[rebuild] protected_branches`) nor the current branch carries
+```json
+"spec": {"in_sync": false, "files": ["REQUIREMENTS.md", "spec.trace.json"], "head": "<HEAD sha>"}
+```
+(`files`: the spec files that differ, project-relative, sorted; `[]` when in sync). The current branch and protected branches have `"spec": null`.
+
+### POST /api/branches/{name}/sync-spec
+Body optional (`{}`; an unknown field answers 422). The branch name may hold slashes, raw (`/api/branches/build/notes/sync-spec`) or escaped (`build%2Fnotes`). Makes **one commit** on the branch whose tree is the branch's tree with exactly the differing spec files as committed at `HEAD` (a file absent at `HEAD` is deleted), in a temporary detached worktree with no checkout (only the spec files are written; removed afterwards). Author: the repository's identity, as Studio's other commits. Message:
+```
+spec: sync from <current branch> <sha7>
+
+The spec files <files> as committed on <current branch> at <sha10>, synced by Lattice Studio.
+
+Lattice-Spec-Sync: <full HEAD sha>
+```
+No other history is merged. The branch moves with the compare-and-swap `git update-ref refs/heads/<name> <new> <old tip>` of the plan's level end (`Rebuilder._advance_to`), after checking the new commit descends from the old tip. Answer:
+```json
+{"branch": "build/notes", "synced_from": "<HEAD sha>", "files": ["REQUIREMENTS.md"], "commit": "<new tip>", "previous_tip": "<old tip>"}
+```
+Refusals change nothing (`{"detail", "code"}`), checked in this order:
+
+| status | `code` | when |
+|---|---|---|
+| 422 | (none) | an unknown body field |
+| 422 | `branch_name_invalid` | not a valid branch name (`git check-ref-format --branch`, or a leading `-`) |
+| 409 | `branch_protected` | the name is in `[rebuild] protected_branches` (whether or not it exists) |
+| 404 | `no_branch` | no such local branch |
+| 409 | `branch_checked_out` | the branch is checked out in any worktree (the owner's included) |
+| 409 | `build_running` | a build or a plan holds the project's build slot (`plan_active`, or a running build) |
+| 409 | `nothing_to_sync` | the spec files are the same |
+| 409 | `branch_moved` / `branch_checked_out` | the compare-and-swap failed: the branch moved, or was checked out, during the sync (the commit is left unreferenced) |
+
+### `spec_drift` on a plan
+`spec_drift: {"head": "<HEAD sha>", "files": [...]} | null`: the target branch's spec against `HEAD`'s (a target still to be created: the commit it starts from). Computed when the plan is created and refreshed whenever the plan is read (`GET /api/plan/{id}`) while it is not running. While it is set, `warnings` holds `The spec on <current branch> differs from <target> in <files>: sync it first` (one entry, replaced or removed on refresh).
+
+### `sync_spec = "auto"`
+`POST /api/plan/{id}/run` (a first run or a resume) first syncs the target when its spec differs, with the same refusals (a refusal is the run's 409 with that `code`, and the plan stays as it was), **before** the run takes the build slot and so before the start baseline, which then runs on the sync commit. The plan's timeline records `spec synced from <current branch> at <sha7> (<files>)` and `spec_drift` becomes null. A target that does not exist yet, or whose spec is the same, is left alone. With `"off"` nothing is synced; the drift stays visible in `spec_drift` and the warning.
+
+### Studio UI
+The Build view (the chosen target branch) and the plan view show a quiet banner while the target's `spec.in_sync` is false (or `plan.spec_drift` is set): "The spec on <branch> is newer than <target> (<files>)." with one primary button **Sync spec** (`POST .../sync-spec`, then the branches or the plan are reloaded). A refusal is shown inline under the button; the banner is hidden while a plan runs.
+
+### The mock
+Every mock project has a fixture branch `build/spec-behind` whose spec is behind `main`'s (`REQUIREMENTS.md`, `spec.trace.json`): `GET /api/branches` gives it `spec.in_sync: false` (other non-protected, non-current branches are in sync; `main` has `spec: null`), and a plan onto it carries `spec_drift` and the warning. `POST /api/branches/{name}/sync-spec` answers the real server's fields and codes (`branch_name_invalid`, `branch_protected` for `main`, `no_branch`, `build_running` while a build or plan runs, `nothing_to_sync`) and moves the branch to a fake commit, after which the branch is in sync and plans onto it lose their drift. `sync_spec = "auto"` is not simulated.

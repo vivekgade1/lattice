@@ -113,6 +113,8 @@ export const api = {
   // lists every record of the project (the mock has no such route: err.unsupported).
   areas: (branch = null) => call("GET", `/api/areas${branch ? `?branch=${encodeURIComponent(branch)}` : ""}`),
   branches: () => call("GET", "/api/branches"),
+  // v1.12: one commit of the spec committed on the current branch onto a target branch
+  syncSpec: (name) => call("POST", `/api/branches/${encodeURIComponent(name)}/sync-spec`, {}),
   buildStart: (body) => call("POST", "/api/rebuild", body),
   rebuildList: () => call("GET", "/api/rebuild"),
 

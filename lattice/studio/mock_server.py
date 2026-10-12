@@ -85,6 +85,15 @@ dependents (``resume.kind: "retry"``). Repair entries carry per-node ``usage``, 
 ``repair_usage``, a plan's ``totals`` include the planner, a resumed run's baseline is
 ``reused`` and a run's last level is preceded by ``final_gate``.
 
+API v1.12 (spec sync): every project has a fixture target branch ``build/spec-behind`` whose
+committed spec is behind ``main``'s (``REQUIREMENTS.md`` and ``spec.trace.json``), so ``GET
+/api/branches`` gives it ``spec: {"in_sync": false, ...}`` (every other non-protected, non-
+current branch is in sync; ``main`` has ``spec: null``) and a plan onto it carries
+``spec_drift`` and the drift warning. ``POST /api/branches/{name}/sync-spec`` answers the real
+server's fields and refusal codes (``branch_name_invalid``, ``branch_protected`` for main,
+``no_branch``, ``build_running`` while a build or plan runs, ``nothing_to_sync``) and moves the
+branch to a fake commit. ``[rebuild] sync_spec = "auto"`` is not simulated (the mock is "off").
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -134,6 +143,10 @@ POLLS_REBUILD_QUEUED = 1
 POLLS_ROUND = 2
 REBUILD_FINISHED = ("passed", "gave_up", "stopped")
 LIVE_CHANGE_STATUSES = ("ready", "accepted")
+# API v1.12: a fixture target branch whose committed spec is behind main's
+SPEC_BEHIND_BRANCH = "build/spec-behind"
+SPEC_BEHIND_FILES = ["REQUIREMENTS.md", "spec.trace.json"]
+SPEC_DRIFT_WARNING = "The spec on "
 
 # Keyword -> ask fixture. The first rule whose words all appear in the question wins.
 ASK_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
@@ -844,6 +857,9 @@ class MockState:
         # build from spec (v1.8): simulated branches and per-branch failing targets
         self.branch_heads: dict[str, str] = {"main": self.model["project"]["git_head"]}
         self.branch_failing: dict[str, set[str]] = {}
+        # spec sync (v1.12): a fixture branch whose spec is behind main's
+        self.branch_heads[SPEC_BEHIND_BRANCH] = "5bc1e2d"
+        self.spec_behind: dict[str, list[str]] = {SPEC_BEHIND_BRANCH: list(SPEC_BEHIND_FILES)}
         self.sessions = MockSessions(fixture_dir)
         self.plans = MockPlans(self)
         if seed_change:
@@ -1454,13 +1470,64 @@ class MockState:
                     {"name": n, "head": h, "current": n == "main", "protected": n == "main",
                      "checked_out": self.model["project"]["root"] if n == "main" else None,
                      "ahead_of_base": 0 if n == "main" else 1,
-                     "is_integration": n == default or n in used}
+                     "is_integration": n == default or n in used,
+                     "spec": None if n == "main" else {
+                         "in_sync": not self.spec_behind.get(n),
+                         "files": list(self.spec_behind.get(n) or []),
+                         "head": self.branch_heads["main"]}}
                     for n, h in sorted(self.branch_heads.items())
                 ],
                 "current_branch": "main",
                 "protected": ["main", "master"],
                 "default_target": default,
             }  # fmt: skip
+
+    # spec sync (API v1.12)
+    def spec_drift(self, name: str) -> dict[str, Any] | None:
+        files = self.spec_behind.get(name)
+        return {"head": self.branch_heads["main"], "files": list(files)} if files else None
+
+    def drift_warnings(self, rec: dict[str, Any]) -> None:
+        """A plan record's ``spec_drift`` and its warning, as the repository is now."""
+        drift = self.spec_drift(str(rec.get("target_branch") or ""))
+        rec["spec_drift"] = drift
+        rec["warnings"] = [w for w in rec.get("warnings") or []
+                           if not str(w).startswith(SPEC_DRIFT_WARNING)]  # fmt: skip
+        if drift:
+            rec["warnings"].append(f"{SPEC_DRIFT_WARNING}main differs from {rec['target_branch']} "
+                                   f"in {', '.join(drift['files'])}: sync it first")  # fmt: skip
+
+    def sync_spec(self, name: str, body: dict[str, Any]) -> dict[str, Any]:
+        """``POST /api/branches/{name}/sync-spec``: the real server's refusals, in its order;
+        a sync moves the branch to a fake commit and clears its drift."""
+        if body:
+            raise MockRefusal(422, f"unknown field(s): {', '.join(sorted(body))}")
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/-]*", name) or ".." in name \
+                or name.endswith(("/", ".lock")):  # fmt: skip
+            raise MockRefusal(422, f"{name!r} is not a valid branch name", "branch_name_invalid")
+        with self.lock:
+            if name in ("main", "master"):
+                raise MockRefusal(409, f"branch {name} is protected; Studio never syncs the "
+                                  "spec onto a protected branch", "branch_protected")  # fmt: skip
+            if name not in self.branch_heads:
+                raise MockRefusal(404, f"no branch {name}", "no_branch")
+            busy = next((r["id"] for r in self.rebuilds.values()
+                         if r["status"] not in REBUILD_FINISHED), None) or next(
+                (p["id"] for p in self.plans.plans.values() if p["status"] == "running"), None)
+            if busy:
+                raise MockRefusal(409, f"a build is running in this project ({busy}); sync the "
+                                  "spec when it has finished", "build_running")  # fmt: skip
+            head = self.branch_heads["main"]
+            files = self.spec_behind.get(name)
+            if not files:
+                raise MockRefusal(409, f"the spec on {name} is the same as on main at "
+                                  f"{head[:7]}: nothing to sync", "nothing_to_sync")  # fmt: skip
+            prev = self.branch_heads[name]
+            new = hashlib.sha1(f"sync {name} {prev} {head}".encode()).hexdigest()[:7]
+            self.branch_heads[name] = new
+            del self.spec_behind[name]
+            return {"branch": name, "synced_from": head, "files": list(files), "commit": new,
+                    "previous_tip": prev}  # fmt: skip
 
     # POST /api/rebuild with a scope. Raises MockRefusal.
     def start_scoped(self, body: dict[str, Any]) -> dict[str, str]:
@@ -1843,6 +1910,7 @@ class MockPlans:
                 "interrupted_reason": None,
                 "anchors": {},
                 "pids": [],
+                "spec_drift": None,
                 "_checked_out": None,
                 "_scope": scope,
                 "_planner": planner,
@@ -1850,6 +1918,7 @@ class MockPlans:
                 "_doc": None,
                 "_cursor": None,
             }
+            self.state.drift_warnings(self.plans[pid])
             return {"id": pid, "status": "planning"}
 
     def _view(self, rec: dict[str, Any]) -> dict[str, Any]:
@@ -2338,6 +2407,8 @@ class MockPlans:
                 self._plan_now(rec)
             elif rec["status"] == "running":
                 self._step(rec)
+            if rec["status"] != "running":
+                self.state.drift_warnings(rec)  # API v1.12: refreshed when read
             return self._view(rec)
 
     def list(self) -> list[dict[str, Any]]:
@@ -2671,6 +2742,12 @@ class Handler(BaseHTTPRequestHandler):
             if not str(body.get("question", "")).strip():
                 return self._error(HTTPStatus.UNPROCESSABLE_ENTITY, "question is empty")
             return self._json(state.explain(body))
+        if path.startswith("/api/branches/") and path.endswith("/sync-spec"):
+            name = unquote(path.removeprefix("/api/branches/").removesuffix("/sync-spec"))
+            try:
+                return self._json(state.sync_spec(name, body))
+            except MockRefusal as e:
+                return self._json(e.body(), e.status)
         if path == "/api/plan" or path.startswith("/api/plan/"):
             parts = path.removeprefix("/api/plan").strip("/").split("/")
             try:

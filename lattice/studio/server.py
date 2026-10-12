@@ -60,6 +60,8 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
 - ``POST /api/plan``, ``GET /api/plan/{id}`` (``?wait=S``), ``GET /api/plans``,
   ``POST /api/plan/{id}/revise|approve|run``, ``DELETE /api/plan/{id}``: build plans, the
   build from spec as an agentic execution graph (lattice/studio/plan.py; API.md v1.9).
+- ``POST /api/branches/{name}/sync-spec``: one commit of the spec committed at HEAD onto a
+  target branch (``GET /api/branches`` ``spec`` says which differ; API.md v1.12).
 - ``POST /api/rebuild``, ``GET /api/rebuild/{id}`` (``?wait=S``), ``DELETE /api/rebuild/{id}``,
   ``GET /api/rebuild``: the rebuild loop of accepted changes (lattice/studio/rebuild.py, its
   ``[rebuild]`` table; API.md v1.7): a coding agent in a git worktree on its own branch, the
@@ -1870,6 +1872,10 @@ class Handler(BaseHTTPRequestHandler):
                         "land": lambda: pm.land(parts[0], body),
                     }
                     return st.plan_call(calls[parts[1]])
+            if path.startswith("/api/branches/") and path.endswith("/sync-spec"):
+                # API v1.12; the name may hold slashes, raw or %2F-escaped
+                branch = unquote(path.removeprefix("/api/branches/").removesuffix("/sync-spec"))
+                return st.plan_call(lambda: st.rebuilder.sync_spec(branch, body))
             if path.startswith("/api/rebuild/"):
                 parts = path.removeprefix("/api/rebuild/").split("/")
                 if len(parts) == 2 and parts[1] == "continue":

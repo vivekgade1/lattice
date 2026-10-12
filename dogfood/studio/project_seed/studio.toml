@@ -23,3 +23,6 @@ planner = "stub"
 # check`), and a level ends with the regression gate (the last level with the full gate).
 scoped_gate_args = ["--layers", "CD", "--x-repeats", "1", "--await-cap", "5"]
 level_gate = "regression"
+# API.md v1.12: a plan run first syncs the committed spec of HEAD onto its target branch when
+# they differ (one commit, before the start baseline).
+sync_spec = "auto"

@@ -546,6 +546,13 @@ button.map-badge:hover { color: var(--ink); text-decoration-color: currentColor;
 .pv-refusal p { display: flex; gap: var(--space-2); align-items: flex-start; }
 .pv-refusal .icon { flex: none; margin-top: 3px; }
 .pv-confirm { display: grid; gap: var(--space-2); color: var(--ink); }
+/* ------------------------------------------------------------------ Spec sync (API v1.12) */
+.bv-sync { margin-bottom: var(--space-5); }
+.sp-sync { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-left: 3px solid var(--hairline-strong); background: var(--surface); border-radius: var(--radius-sm); font-size: var(--fs-13); min-width: 0; }
+.sp-sync p { margin: 0; overflow-wrap: anywhere; }
+.sp-sync-what { display: flex; gap: var(--space-2); align-items: flex-start; }
+.sp-sync-what .icon { flex: none; margin-top: 3px; }
+.sp-sync-err { color: var(--bad-text); }
 .pv-repair { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); font-size: var(--fs-13); background: var(--paper); min-width: 0; }
 .pv-repair.is-exhausted { border-left-color: var(--warn); }
 .pv-repair p { margin: 0; overflow-wrap: anywhere; }

@@ -76,6 +76,13 @@ its scope plus the regression set, :func:`build_selection`), ``level_gate``,
 ``stop_grace``; per-tip gate results (:meth:`Rebuilder.tip_result`); a gate's whole process
 tree and its labelled containers go when it is stopped (:meth:`Rebuilder._run_gate`).
 
+**Spec sync (API.md v1.12)**: the spec files a rebuild protects (``SPEC_FILES`` plus
+``[mcp] protected``) as committed at the repository's ``HEAD`` are compared with a target
+branch's (:meth:`Rebuilder.spec_diff`, ``GET /api/branches`` ``spec``); ``POST
+/api/branches/{name}/sync-spec`` (:meth:`Rebuilder.sync_spec`) makes ONE commit of exactly
+those files on the branch, in a temporary detached worktree, and moves the branch with a
+compare-and-swap ``update-ref``. ``[rebuild] sync_spec = "auto"`` does it when a plan runs.
+
 **TEST ONLY: the stub agent** (``[rebuild] agent = "stub"``): round k writes the files of
 ``rounds[k-1]`` of ``stub-rebuild.json`` in the worktree's project dir
 (``{"rounds": [{"files": {"path": "content"}, "hold": 0, "summary": "...",
@@ -91,6 +98,7 @@ import contextlib
 import copy
 import json
 import os
+import posixpath
 import re
 import shlex
 import shutil
@@ -160,6 +168,8 @@ SCOPE_EXCLUDE = "/.lattice-scope/"
 GATE_SCAN_S = 1.0  # how often a running gate's descendants are recorded
 STUB_LOG_ENV = "LATTICE_STUB_AGENT_LOG"  # TEST ONLY: the stub agent logs each invocation
 SPEC_FILES = ("REQUIREMENTS.md", "spec.py", "spec.trace.json")
+SYNC_TRAILER = "Lattice-Spec-Sync"  # API v1.12: the trailer of a spec sync commit
+SYNC_PREFIX = "lattice-spec-sync-"  # its temporary worktree (removed afterwards)
 WORKTREE_DIR = ".lattice/rebuilds"
 EXCLUDE_LINE = "/.lattice/rebuilds/"
 AGENT_TOOLS = ("Read", "Grep", "Glob", "Edit", "Write", "Bash")
@@ -440,6 +450,12 @@ class RebuildConfig:
             return max(0.0, float(self.table.get("stop_grace", DEFAULT_STOP_GRACE)))
         except (TypeError, ValueError):
             return DEFAULT_STOP_GRACE
+
+    @property
+    def sync_spec(self) -> str:
+        """``[rebuild] sync_spec`` (API v1.12): ``"off"`` (default) or ``"auto"`` (``POST
+        /api/plan/{id}/run`` first syncs the committed spec onto the target branch)."""
+        return "auto" if self.table.get("sync_spec") == "auto" else "off"
 
     def plan_defaults(self) -> dict[str, Any]:
         """``plan_defaults`` of ``GET /api/projects`` (API v1.11)."""
@@ -1089,6 +1105,8 @@ class Rebuilder:
         self.tip_results: dict[str, dict[str, Any]] = {}
         # the build plan holding the project's build slot while it runs (API v1.9)
         self.plan_active: str | None = None
+        # (head, tip, project_rel, files) -> the spec files that differ (API v1.12)
+        self._spec_cache: dict[tuple[str, str, str, tuple[str, ...]], list[str]] = {}
         # durable state (API v1.10): records written through, loaded and reconciled here
         self.store = store
         if store is not None:
@@ -1409,6 +1427,7 @@ class Rebuilder:
                     "default_target": default}  # fmt: skip
         current = _current_branch(repo)
         checked = _checked_out(repo)
+        head = _git(repo, "rev-parse", "-q", "--verify", "HEAD^{commit}").stdout.strip()
         with self.lock:
             used = {r.integration for r in self.runs.values() if r.integration}
         listing = _git(
@@ -1416,14 +1435,14 @@ class Rebuilder:
         ).stdout
         out = []
         for line in listing.splitlines():
-            name, _, head = line.partition("\t")
+            name, _, head_sha = line.partition("\t")
             if not name:
                 continue
-            ahead = _git(repo, "rev-list", "--count", f"HEAD..{head}")
+            ahead = _git(repo, "rev-list", "--count", f"HEAD..{head_sha}")
             out.append(
                 {
                     "name": name,
-                    "head": head,
+                    "head": head_sha,
                     "current": name == current,
                     "protected": name in protected,
                     "checked_out": checked.get(name),
@@ -1431,6 +1450,9 @@ class Rebuilder:
                     if ahead.returncode == 0
                     else None,
                     "is_integration": name == default or name in used,
+                    "spec": self._spec_view(repo, head, head_of=name, tip=head_sha)
+                    if head and name not in protected and name != current
+                    else None,
                 }
             )
         return {
@@ -1439,6 +1461,168 @@ class Rebuilder:
             "protected": protected,
             "default_target": default,
         }
+
+    # -- spec sync (API v1.12): the committed spec of HEAD onto a target branch
+    def spec_names(self) -> list[str]:
+        """The spec files a rebuild protects, relative to the project dir: ``SPEC_FILES``
+        plus ``[mcp] protected`` (a sync copies exactly these; a directory means the files
+        under it)."""
+        out: list[str] = []
+        for raw in [*SPEC_FILES, *self.protected]:
+            n = posixpath.normpath(str(raw).replace("\\", "/"))
+            if n in (".", "") or n.startswith(("/", "../")) or n == "..":
+                continue
+            if n not in out:
+                out.append(n)
+        return out
+
+    def _spec_tree(self, repo: Path, rel: str, ref: str) -> dict[str, str]:
+        """``{project-relative path: "<mode> <blob>"}`` of the spec files committed at
+        `ref` (never the working copy)."""
+        prefix = "" if rel == "." else rel + "/"
+        paths = [prefix + n for n in self.spec_names()]
+        r = _git(repo, "ls-tree", "-r", "-z", "--full-tree", ref, "--", *paths)
+        if r.returncode != 0:
+            raise RebuildError(500, f"git ls-tree {ref[:10]}: {_short(r.stderr, 300)}")
+        out: dict[str, str] = {}
+        for entry in r.stdout.split("\0"):
+            meta, _, path = entry.partition("\t")
+            if not path or not path.startswith(prefix):
+                continue
+            mode, _kind, blob = (meta.split(" ") + ["", ""])[:3]
+            out[path[len(prefix):]] = f"{mode} {blob}"
+        return out
+
+    def spec_diff(self, repo: Path, head: str, tip: str) -> list[str]:
+        """The spec files (project-relative, sorted) whose committed content differs between
+        commits `head` and `tip`; a file present on one side only counts as different."""
+        rel = self.project.relative_to(repo).as_posix()
+        key = (head, tip, rel, tuple(self.spec_names()))
+        with self.lock:
+            hit = self._spec_cache.get(key)
+        if hit is not None:
+            return list(hit)
+        a, b = self._spec_tree(repo, rel, head), self._spec_tree(repo, rel, tip)
+        files = sorted(p for p in set(a) | set(b) if a.get(p) != b.get(p))
+        with self.lock:
+            if len(self._spec_cache) > 512:
+                self._spec_cache.clear()
+            self._spec_cache[key] = files
+        return list(files)
+
+    def _spec_view(self, repo: Path, head: str, *, head_of: str, tip: str) -> dict[str, Any] | None:
+        """``GET /api/branches`` ``spec`` of branch `head_of` at `tip`: ``{in_sync, files,
+        head}`` (None when it cannot be told)."""
+        try:
+            files = self.spec_diff(repo, head, tip)
+        except (RebuildError, OSError, subprocess.SubprocessError) as exc:
+            self.log(f"spec of {head_of}: {exc}")
+            return None
+        return {"in_sync": not files, "files": files, "head": head}
+
+    def spec_drift(self, name: str, tip: str | None = None) -> dict[str, Any] | None:
+        """``{"head", "files"}`` when the spec committed on branch `name` (or at commit
+        `tip`, a branch still to be created) differs from HEAD's; None when it is the same,
+        or the branch (or HEAD) does not exist."""
+        try:
+            repo = self.repo()
+        except RebuildError:
+            return None
+        head = _git(repo, "rev-parse", "-q", "--verify", "HEAD^{commit}").stdout.strip()
+        if tip is None:
+            r = _git(repo, "rev-parse", "-q", "--verify", f"refs/heads/{name}")
+            tip = r.stdout.strip() if r.returncode == 0 else None
+        if not head or not tip:
+            return None
+        files = self.spec_diff(repo, head, tip)
+        return {"head": head, "files": files} if files else None
+
+    def sync_spec(self, name: Any, body: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        """``POST /api/branches/{name}/sync-spec`` (API v1.12): ONE commit on branch `name`
+        holding exactly the spec files whose content at HEAD (as committed) differs, made in
+        a temporary detached worktree (removed afterwards) and landed by a compare-and-swap
+        ``update-ref`` (:meth:`_advance_to`); no other history is merged. Refuses (and then
+        changes nothing): 422 an unknown body field or a malformed name
+        (``branch_name_invalid``), 409 ``branch_protected``, 404 ``no_branch``, 409
+        ``branch_checked_out`` (in any worktree), ``build_running`` (a build or a plan holds
+        the build slot), ``nothing_to_sync`` (the spec is the same), ``branch_moved`` (the
+        branch moved meanwhile)."""
+        body = dict(body or {})
+        if body:
+            raise RebuildError(422, f"unknown field(s): {', '.join(sorted(body))}")
+        repo = self.repo()
+        if (
+            not isinstance(name, str)
+            or not name
+            or name.startswith("-")
+            or _git(repo, "check-ref-format", "--branch", name).returncode != 0
+        ):
+            raise RebuildError(422, f"{name!r} is not a valid branch name", "branch_name_invalid")
+        if name in self.cfg.protected_branches:
+            raise RebuildError(409, f"branch {name} is protected; Studio never syncs the "
+                               "spec onto a protected branch", "branch_protected")  # fmt: skip
+        r = _git(repo, "rev-parse", "-q", "--verify", f"refs/heads/{name}")
+        if r.returncode != 0:
+            raise RebuildError(404, f"no branch {name}", "no_branch")
+        tip = r.stdout.strip()
+        where = _checked_out(repo).get(name)
+        if where is not None:
+            raise RebuildError(409, f"branch {name} is checked out in {where}; Studio only "
+                               "syncs the spec onto a branch checked out nowhere",
+                               "branch_checked_out")  # fmt: skip
+        with self.lock:
+            busy = self.plan_active or self.running()
+        if busy:
+            raise RebuildError(409, f"a build is running in this project ({busy}); sync the "
+                               "spec when it has finished", "build_running")  # fmt: skip
+        head = _git_ok(repo, "rev-parse", "HEAD")
+        files = self.spec_diff(repo, head, tip)
+        source = _current_branch(repo) or "HEAD"
+        if not files:
+            raise RebuildError(409, f"the spec on {name} is the same as on {source} at "
+                               f"{head[:7]}: nothing to sync", "nothing_to_sync")  # fmt: skip
+        new = self._sync_commit(repo, tip, head, files, source)
+        moved = self._advance_to(repo, name, tip, new, False)
+        if moved is not None:
+            raise RebuildError(409, moved["message"], moved["kind"])
+        self.log(f"spec sync: {name} {tip[:10]} -> {new[:10]} ({', '.join(files)} from "
+                 f"{source} at {head[:10]})")  # fmt: skip
+        return {"branch": name, "synced_from": head, "files": files, "commit": new,
+                "previous_tip": tip}  # fmt: skip
+
+    def _sync_commit(self, repo: Path, tip: str, head: str, files: Sequence[str],
+                     source: str) -> str:  # fmt: skip
+        """The sync commit (parent `tip`): `tip`'s tree with `files` as committed at `head`,
+        made in a temporary worktree with no checkout (the index is `tip`'s tree; only the
+        spec files are written), which is removed afterwards. Author: the repository's
+        identity, as Studio's other commits."""
+        rel = self.project.relative_to(repo).as_posix()
+        prefix = "" if rel == "." else rel + "/"
+        paths = [prefix + f for f in files]
+        present = [p for p in paths if _git(repo, "cat-file", "-e", f"{head}:{p}").returncode == 0]
+        gone = [p for p in paths if p not in present]
+        message = (
+            f"spec: sync from {source} {head[:7]}\n\n"
+            f"The spec files {', '.join(files)} as committed on {source} at {head[:10]}, "
+            "synced by Lattice Studio.\n\n"
+            f"{SYNC_TRAILER}: {head}\n"
+        )
+        wt = Path(tempfile.mkdtemp(prefix=SYNC_PREFIX))
+        try:
+            _git_ok(repo, "worktree", "add", "-q", "--detach", "--no-checkout", str(wt), tip)
+            _git_ok(wt, "read-tree", tip)
+            if present:
+                _git_ok(wt, "checkout", head, "--", *present)
+            if gone:
+                _git_ok(wt, "rm", "-q", "--cached", "--ignore-unmatch", "--", *gone)
+            _git_ok(wt, "commit", "-q", "--no-verify", "-m", message)
+            return _git_ok(wt, "rev-parse", "HEAD")
+        except RuntimeError as exc:
+            raise RebuildError(500, f"the spec sync failed: {_short(str(exc), 400)}") from None
+        finally:
+            _git(repo, "worktree", "remove", "--force", str(wt))
+            shutil.rmtree(wt, ignore_errors=True)
+            _git(repo, "worktree", "prune")
 
     # -- POST /api/rebuild
     def start(

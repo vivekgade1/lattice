@@ -94,6 +94,57 @@ export function planLive() {
   return rec && LIVE.has(rec.status) ? rec : null;
 }
 
+/** True while a plan holds the build slot (planning does not). */
+export function planRunning() {
+  return state.planActive?.status === "running";
+}
+
+// ------------------------------------------------------------------ spec sync (v1.12)
+
+const SYNC_REFUSAL = {
+  branch_checked_out: "is checked out in a working tree. Switch that working tree to another branch, then sync.",
+  build_running: "cannot be synced while a build or plan runs. Sync it when that has finished.",
+  branch_protected: "is protected, so Studio does not change it.",
+  nothing_to_sync: "already has the same spec. Nothing to sync.",
+};
+
+/** The quiet banner of a target whose committed spec is behind the current branch's, with one
+ *  button that syncs it (POST /api/branches/{name}/sync-spec), then `onSynced()`. A refusal is
+ *  shown inline; nothing is asked twice. `target`: the branch; `source`: the current branch;
+ *  `files`: the spec files that differ. */
+export function specSyncBanner({ target, source, files, onSynced }) {
+  const id = `sp-sync-${String(target).replace(/[^A-Za-z0-9_-]/g, "-")}`;
+  const err = h("p", { class: "sp-sync-err small", role: "alert", hidden: true });
+  const btn = h("button", { type: "button", class: "btn btn-primary", "data-fk": "sync-spec", "aria-describedby": id }, icon("check"), h("span", {}, "Sync spec"));
+  btn.addEventListener("click", async () => {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    btn.lastChild.textContent = "Syncing…";
+    err.hidden = true;
+    const ep = api.epoch();
+    try {
+      const out = await api.syncSpec(target);
+      if (ep !== api.epoch()) return;
+      toast(`Synced the spec onto ${target}: ${plural((out.files || []).length, "file")}, one commit.`);
+      await onSynced?.(out);
+    } catch (e) {
+      if (ep !== api.epoch()) return;
+      const why = SYNC_REFUSAL[e.code];
+      err.textContent = why ? `${target} ${why}` : `The spec could not be synced: ${e.detail || e.message}`;
+      err.hidden = false;
+      btn.disabled = false;
+      btn.lastChild.textContent = "Sync spec";
+    }
+  });
+  const list = (files || []).join(", ");
+  return h("div", { class: "sp-sync", role: "status", "data-target": target },
+    h("p", { class: "sp-sync-what", id }, icon("info"),
+      h("span", {}, `The spec on ${source || "your branch"} is newer than ${target}`, list ? ` (${list})` : "", ".")),
+    h("p", { class: "muted small" }, `Builds on ${target} are checked against the spec committed there. Sync adds one commit to ${target} with the spec files as committed on ${source || "your branch"}; uncommitted edits are left out.`),
+    h("div", { class: "pv-act-row" }, btn),
+    err);
+}
+
 /** "Building: level 2 of 5 · 2 nodes running" */
 export function planWords(rec) {
   if (rec.status === "planning") return "Planning the build";
@@ -991,7 +1042,18 @@ export function renderPlanView(root, ctx = {}) {
       }
       const repair = repairBanner(r);
       if (repair) el.append(repair);
-      for (const w of r.warnings || []) el.append(h("p", { class: "muted small" }, icon("info"), " ", String(w)));
+      // v1.12: the target's spec is behind the current branch's (not while the plan runs)
+      const drift = r.spec_drift && r.status !== "running" ? r.spec_drift : null;
+      if (drift) {
+        el.append(specSyncBanner({
+          target: r.target_branch, source: vui.branches?.current_branch, files: drift.files,
+          onSynced: () => reloadPlan().catch(() => {}),
+        }));
+      }
+      for (const w of r.warnings || []) {
+        if (drift && String(w).startsWith("The spec on ")) continue; // the banner says it
+        el.append(h("p", { class: "muted small" }, icon("info"), " ", String(w)));
+      }
     });
   }
 
@@ -1504,6 +1566,7 @@ export function renderPlanView(root, ctx = {}) {
     if (ep !== api.epoch()) return;
     vui.branches = b;
     drawPlanEdit();
+    if (rec()?.spec_drift) drawActions(); // the sync banner names the current branch
   }).catch(() => {});
 
   const unsub = subscribe((st, patch) => {
