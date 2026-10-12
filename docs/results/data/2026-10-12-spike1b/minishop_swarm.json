@@ -1,0 +1,93 @@
+{
+  "planned": 30,
+  "per_class": {
+    "authz": 6,
+    "auth": 12,
+    "bounds": 7,
+    "mass": 2,
+    "state": 1,
+    "leak": 2
+  },
+  "variants": {
+    "authz": {
+      "detected": true,
+      "classes": [
+        "authz"
+      ],
+      "n": 1,
+      "ids": [
+        "authz-GET-orders-1-ben"
+      ]
+    },
+    "auth": {
+      "detected": true,
+      "classes": [
+        "auth",
+        "authz"
+      ],
+      "n": 6,
+      "ids": [
+        "auth-GET-orders-1-empty-bearer",
+        "auth-GET-orders-1-malformed-bearer",
+        "auth-GET-orders-1-no-token",
+        "auth-GET-orders-1-wrong-scheme",
+        "authz-GET-orders-1-anon",
+        "authz-POST-orders-1-cancel-anon"
+      ]
+    },
+    "bounds": {
+      "detected": true,
+      "classes": [
+        "bounds"
+      ],
+      "n": 1,
+      "ids": [
+        "bounds-POST-orders-1-items-quantity-just-under-ge"
+      ]
+    },
+    "mass": {
+      "detected": true,
+      "classes": [
+        "mass"
+      ],
+      "n": 1,
+      "ids": [
+        "mass-POST-orders-1-items-price"
+      ]
+    },
+    "state": {
+      "detected": true,
+      "classes": [
+        "state"
+      ],
+      "n": 1,
+      "ids": [
+        "state-POST-orders-1-cancel-repeat"
+      ]
+    },
+    "leak": {
+      "detected": true,
+      "classes": [
+        "bounds",
+        "leak"
+      ],
+      "n": 7,
+      "ids": [
+        "bounds-POST-orders-1-items-product-id-just-under-ge",
+        "bounds-POST-orders-1-items-product-id-wrong-type",
+        "bounds-POST-orders-1-items-quantity-huge",
+        "bounds-POST-orders-1-items-quantity-just-over-le",
+        "bounds-POST-orders-1-items-quantity-just-under-ge",
+        "bounds-POST-orders-1-items-quantity-wrong-type",
+        "leak-POST-orders-1-items"
+      ]
+    }
+  },
+  "clean": [
+    0,
+    0,
+    0
+  ],
+  "recall": "6/6",
+  "precision": 1.0
+}

@@ -1,0 +1,85 @@
+{
+ "hashes": {
+  "lattice/security/run.py": "27be18fbe24e5cdd",
+  "lattice/security/target.py": "e5358f5b5e3c7b0c",
+  "lattice/security/plan.py": "7d3b0862b2abe96b",
+  "lattice/security/__main__.py": "37faf041fd8a6f03",
+  "dogfood/security_mutants.py": "9426eb0eb0b16efc"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "39 passed in 1.05s",
+    "seconds": 1.6,
+    "tail": ".......................................                                  [100%]\n39 passed in 1.05s\n"
+   },
+   "verdict": "PASS (control)"
+  },
+  "SM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/security/test_plan.py::test_authz_covers_every_non_owner_refusal_cell"
+    ],
+    "summary": "1 failed, 38 passed in 1.24s",
+    "seconds": 2.0,
+    "tail": "....................F..................                                  [100%]\n=================================== FAILURES ===================================\n________________ test_authz_covers_every_non_owner_refusal_cell ________________\n\nattack_spec = Spec(profile=Profile(schemas={}, version='v1', outputs=None, api=ApiProfile(tables={'User': Schema(columns=(('id', <Sc...in_len=None, max_len=None, one_of=None, column=None, ref=None, example=None)), errors=(), response=None)), services=())\n\n    def test_authz_covers_every_non_owner_refusal_cell(attack_spec):\n        authz = generate(attack_spec, [\"authz\"])\n        # ann's order 1 read: ben and anon are refused in the spec, so both are attacked\n        ids = {a.id for a in authz}\n        assert \"authz-GET-orders-1-ben\" in ids\n>       assert \"authz-GET-orders-1-anon\" in ids\nE       AssertionError: assert 'authz-GET-orders-1-anon' in {'authz-GET-orders-1-ben', 'authz-POST-orders-1-cancel-ben', 'authz-POST-orders-1-items-ben'}\n\ntests/security/test_plan.py:28: AssertionError\n=========================== short test summary info ============================\nFAILED tests/security/test_plan.py::test_authz_covers_every_non_owner_refusal_cell\n1 failed, 38 passed in 1.24s\n"
+   },
+   "verdict": "caught"
+  },
+  "SM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/security/test_run.py::test_each_seeded_hole_is_confirmed[mass]"
+    ],
+    "summary": "1 failed, 38 passed in 1.24s",
+    "seconds": 2.0,
+    "tail": ".................................F.....                                  [100%]\n=================================== FAILURES ===================================\n___________________ test_each_seeded_hole_is_confirmed[mass] ___________________\n\nmake_target = <function make_target.<locals>.factory_for at 0x10e035900>\nattack_spec = Spec(profile=Profile(schemas={}, version='v1', outputs=None, api=ApiProfile(tables={'User': Schema(columns=(('id', <Sc...in_len=None, max_len=None, one_of=None, column=None, ref=None, example=None)), errors=(), response=None)), services=())\nvariant = 'mass'\n\n    @pytest.mark.parametrize(\"variant\", [\"authz\", \"auth\", \"bounds\", \"mass\", \"state\", \"leak\"])\n    def test_each_seeded_hole_is_confirmed(make_target, attack_spec, variant):\n        rep = _run(make_target, variant, generate(attack_spec))\n        classes = {f.cls for f in rep.confirmed}\n>       assert variant in classes, f\"{variant} not in {classes}\"\nE       AssertionError: mass not in set()\nE       assert 'mass' in set()\n\ntests/security/test_run.py:25: AssertionError\n=========================== short test summary info ============================\nFAILED tests/security/test_run.py::test_each_seeded_hole_is_confirmed[mass]\n1 failed, 38 passed in 1.24s\n"
+   },
+   "verdict": "caught"
+  },
+  "SM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/security/test_guardrails.py::test_non_loopback_host_is_refused[0.0.0.0]",
+     "tests/security/test_guardrails.py::test_non_loopback_host_is_refused[10.0.0.5]",
+     "tests/security/test_guardrails.py::test_non_loopback_host_is_refused[8.8.8.8]",
+     "tests/security/test_guardrails.py::test_non_loopback_host_is_refused[evil.internal]",
+     "tests/security/test_guardrails.py::test_non_loopback_host_is_refused[example.com]"
+    ],
+    "summary": "5 failed, 34 passed in 1.27s",
+    "seconds": 2.0,
+    "tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE UnsafeTargetError\n\ntests/security/test_guardrails.py:25: Failed\n__________________ test_non_loopback_host_is_refused[0.0.0.0] __________________\n\nhost = '0.0.0.0'\n\n    @pytest.mark.parametrize(\"host\", [\"example.com\", \"10.0.0.5\", \"0.0.0.0\", \"evil.internal\", \"8.8.8.8\"])\n    def test_non_loopback_host_is_refused(host):\n>       with pytest.raises(UnsafeTargetError):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE UnsafeTargetError\n\ntests/security/test_guardrails.py:25: Failed\n_______________ test_non_loopback_host_is_refused[evil.internal] _______________\n\nhost = 'evil.internal'\n\n    @pytest.mark.parametrize(\"host\", [\"example.com\", \"10.0.0.5\", \"0.0.0.0\", \"evil.internal\", \"8.8.8.8\"])\n    def test_non_loopback_host_is_refused(host):\n>       with pytest.raises(UnsafeTargetError):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE UnsafeTargetError\n\ntests/security/test_guardrails.py:25: Failed\n__________________ test_non_loopback_host_is_refused[8.8.8.8] __________________\n\nhost = '8.8.8.8'\n\n    @pytest.mark.parametrize(\"host\", [\"example.com\", \"10.0.0.5\", \"0.0.0.0\", \"evil.internal\", \"8.8.8.8\"])\n    def test_non_loopback_host_is_refused(host):\n>       with pytest.raises(UnsafeTargetError):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE UnsafeTargetError\n\ntests/security/test_guardrails.py:25: Failed\n=========================== short test summary info ============================\nFAILED tests/security/test_guardrails.py::test_non_loopback_host_is_refused[example.com]\nFAILED tests/security/test_guardrails.py::test_non_loopback_host_is_refused[10.0.0.5]\nFAILED tests/security/test_guardrails.py::test_non_loopback_host_is_refused[0.0.0.0]\nFAILED tests/security/test_guardrails.py::test_non_loopback_host_is_refused[evil.internal]\nFAILED tests/security/test_guardrails.py::test_non_loopback_host_is_refused[8.8.8.8]\n5 failed, 34 passed in 1.27s\n"
+   },
+   "verdict": "caught"
+  },
+  "SM5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/security/test_cli.py::test_run_holed_app_exits_1"
+    ],
+    "summary": "1 failed, 38 passed in 1.17s",
+    "seconds": 1.8,
+    "tail": "\n  \"schema\": \"lattice.security/report/1\",\n  \"target\": \"http://testserver\",\n  \"host\": \"in-process\",\n  \"scope\": \"system\",\n  \"classes\": [\n    \"authz\"\n  ],\n  \"attacks_planned\": 6,\n  \"wall_seconds\": 0.031,\n  \"out_dir\": \"/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-sec-out-xie551ia\",\n  \"classes_report\": [\n    {\n      \"class\": \"authz\",\n      \"severity\": \"high\",\n      \"run\": 6,\n      \"refuted\": 5,\n      \"findings\": 1,\n      \"unreproduced\": 0,\n      \"not_refuted\": 1\n    }\n  ],\n  \"confirmed_findings\": [\n    {\n      \"attack_id\": \"authz-GET-orders-1-ben\",\n      \"class\": \"authz\",\n      \"title\": \"GET /orders/1 as ben (not the owner)\",\n      \"endpoint\": \"GET /orders/1\",\n      \"rule\": \"ownership/access matrix\",\n      \"expected\": \"404 (the spec refuses ben on this route); writes nothing\",\n      \"severity\": \"high\",\n      \"confirmed\": true,\n      \"detail\": \"served 200 where (404,) was due (a 2xx means ben reached an owner-only resource)\",\n      \"observations\": [\n        {\n          \"method\": \"GET\",\n          \"path\": \"/orders/1\",\n          \"status\": 200\n        }\n      ]\n    }\n  ],\n  \"unreproduced_claims\": [],\n  \"cannot_see\": [\n    \"dependency CVEs (the spec does not name the app's libraries)\",\n    \"TLS and transport security (the module speaks plain loopback HTTP)\",\n    \"deployment and process config (one in-memory process is not the production topology)\",\n    \"secrets committed to the repository\",\n    \"timing side channels, and holes needing the signing key or app source knowledge\",\n    \"races and concurrency (the deterministic generator does not race requests)\"\n  ],\n  \"notes\": [\n    \"spec scope: system\"\n  ]\n}\n----------------------------- Captured stderr call -----------------------------\n\n(reports written under /var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-sec-out-xie551ia)\n=========================== short test summary info ============================\nFAILED tests/security/test_cli.py::test_run_holed_app_exits_1 - assert 0 == 1\n1 failed, 38 passed in 1.17s\n"
+   },
+   "verdict": "caught"
+  },
+  "SM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/security/test_plan.py::test_bounds_is_not_off_by_one"
+    ],
+    "summary": "1 failed, 38 passed in 1.17s",
+    "seconds": 1.8,
+    "tail": ".......................F...............                                  [100%]\n=================================== FAILURES ===================================\n________________________ test_bounds_is_not_off_by_one _________________________\n\nattack_spec = Spec(profile=Profile(schemas={}, version='v1', outputs=None, api=ApiProfile(tables={'User': Schema(columns=(('id', <Sc...in_len=None, max_len=None, one_of=None, column=None, ref=None, example=None)), errors=(), response=None)), services=())\n\n    def test_bounds_is_not_off_by_one(attack_spec):\n        \"\"\"The just-over-le value is le+1, not le (the mutant); the under-ge value is ge-1.\"\"\"\n        bounds = {a.id: a for a in generate(attack_spec, [\"bounds\"])}\n        over = bounds[\"bounds-POST-orders-1-items-quantity-just-over-le\"]\n>       assert over.requests[0].json[\"quantity\"] == 101  # le=100 -> 101, never 100\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       assert 100 == 101\n\ntests/security/test_plan.py:52: AssertionError\n=========================== short test summary info ============================\nFAILED tests/security/test_plan.py::test_bounds_is_not_off_by_one - assert 10...\n1 failed, 38 passed in 1.17s\n"
+   },
+   "verdict": "caught"
+  }
+ }
+}
