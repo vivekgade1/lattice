@@ -7,8 +7,8 @@
 * the Lattice runtime answers each style (the generated FastAPI app is compared with it
   in test_codegen_differential: errors_drf, errors_json_key, errors_400);
 * the defaults are today's: "lattice" bodies, 422 validation;
-* Go is gated (L892, ``Target.error_styles``) and so is the TS client (L893,
-  ``ClientTarget.error_styles``), with a decision-log row.
+* Go is gated (L892, ``Target.error_styles``), with a decision-log row (the TS client's
+  gate, L893, stays in the checker; its generator was removed).
 """
 
 from __future__ import annotations
@@ -25,9 +25,7 @@ from lattice.api.runtime import build_app, error_body
 from lattice.check import check_source
 from lattice.diagnostics import Severity
 from lattice.profile import ApiProfile, Profile, error_style_problem
-from lattice.targets import CLIENT_TARGETS, TARGETS, TS_REFUSAL, target_named
-from lattice.tsgen import compile_source_to_ts
-from lattice.tsgen.emit import TsGenRefusal
+from lattice.targets import TARGETS, target_named
 from tests.api import errstyles as F
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -298,20 +296,6 @@ def test_go_is_gated(pid: str) -> None:
 def test_go_accepts_the_default_styles() -> None:
     for api in (F.BASE, dataclasses.replace(F.BASE, error_body="fastapi")):
         assert check_source(F.PROGRAM, Profile(schemas={}, api=api), target="go").ok
-
-
-@pytest.mark.parametrize("pid", sorted(F.PROFILES))
-def test_the_ts_client_is_gated(pid: str) -> None:
-    assert not CLIENT_TARGETS["ts"].error_styles
-    with pytest.raises(TsGenRefusal, match=TS_REFUSAL) as err:
-        compile_source_to_ts(F.PROGRAM, F.PROFILES[pid])
-    assert "error_body" in str(err.value) and "validation_status" in str(err.value)
-
-
-def test_the_ts_client_accepts_the_default_styles() -> None:
-    for api in (F.BASE, dataclasses.replace(F.BASE, error_body="fastapi")):
-        _result, files = compile_source_to_ts(F.PROGRAM, Profile(schemas={}, api=api))
-        assert files is not None
 
 
 def test_the_gates_have_a_decision_log_row() -> None:

@@ -192,7 +192,7 @@ tests/                                    ~5,400 tests; `uv run pytest -q`; `liv
 | `lattice spec check/fidelity/draft/lint/probe/review/ask ...` | `python -m lattice.spec ...` | |
 | `lattice import ...` | `python -m lattice.importer` | |
 | `lattice mcp serve/guard ...` | `python -m lattice.mcp` | |
-| `lattice gogen build ...`, `lattice tsgen ...` | `python -m lattice.gogen`, `python -m lattice.tsgen` | |
+| `lattice gogen build ...` | `python -m lattice.gogen` | (`lattice tsgen` was removed 2026-10-12) |
 | `lattice projects [DIR ...]` | | lists Studio projects (`studio.toml`, or `spec.py` + `spec.trace.json`) in DIR, cwd, `dogfood/*` and one level of children |
 
 `lattice --version`, `lattice --help` and `lattice <command> --help` exit 0; an unknown command exits 2.
