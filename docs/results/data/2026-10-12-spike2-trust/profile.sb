@@ -1,0 +1,7 @@
+(version 1)
+(allow default)
+; no network at all: inet and unix sockets, outbound and inbound
+(deny network*)
+; writes only under the module's declared directory (and /dev/null for child processes)
+(deny file-write*)
+(allow file-write* (subpath "<probe>/module") (literal "/dev/null") (literal "/dev/dtracehelper"))

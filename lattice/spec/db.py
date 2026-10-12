@@ -38,6 +38,11 @@ driver              answers
                     ``jdbc:mysql://...``, ``jdbc:clickhouse://...``
 ==================  ==============================================================
 
+The server engines are data: each one's URL template, driver forms, SQL flags and
+container settings are a descriptor in ``lattice/spec/engines/*.toml`` (:mod:`lattice.spec.engines`,
+which a project can extend with its own descriptors); this module reads them from the
+registry. SQLite is built in.
+
 Placeholders: ``?`` for SQLite, ``%s`` for the three servers (:attr:`Database.ph`);
 identifiers are quoted with ``"`` (SQLite, Postgres, ClickHouse) or backticks (MySQL)
 (:meth:`Database.quote_ident`). Errors: the server adapters raise :class:`DatabaseError`;
@@ -57,10 +62,13 @@ import sqlite3
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qsl, quote, unquote, urlencode, urlsplit
+from urllib.parse import parse_qsl, quote, unquote, urlsplit
 
-DIALECTS = ("sqlite", "postgres", "mysql", "clickhouse")
-SERVER_DIALECTS = ("postgres", "mysql", "clickhouse")
+from lattice.spec import engines as _engines
+
+# the built-in dialects (a project's engines join the registry: engines.database_names())
+DIALECTS: tuple[str, ...] = (_engines.SQLITE, *_engines.BUILTIN_NAMES)
+SERVER_DIALECTS: tuple[str, ...] = _engines.BUILTIN_NAMES
 
 DbRef = Path | str  # a SQLite file's path, or a server database's canonical URL
 
@@ -91,12 +99,9 @@ def dialect_of(ref: Any) -> str:
     if not is_url(ref):
         return "sqlite"
     scheme = urlsplit(str(ref)).scheme.lower().split("+", 1)[0]
-    if scheme in ("postgres", "postgresql"):
-        return "postgres"
-    if scheme in ("mysql", "mariadb"):
-        return "mysql"
-    if scheme in ("clickhouse", "ch", "http", "https"):
-        return "clickhouse"
+    found = _engines.engine_for_scheme(scheme)
+    if found is not None:
+        return found.name
     if scheme == "sqlite":
         return "sqlite"
     raise ValueError(f"unknown database URL scheme {scheme!r} (in {redact(str(ref))})")
@@ -139,15 +144,11 @@ def canonical_url(
     password: str,
     database: str,
 ) -> str:
-    """The canonical URL of ``database`` on a server (see the module docstring)."""
-    auth = f"{quote(user, safe='')}:{quote(password, safe='')}@"
-    if dialect == "postgres":
-        return f"postgresql://{auth}{host}:{port}/{database}?sslmode=disable"
-    if dialect == "mysql":
-        return f"mysql://{auth}{host}:{port}/{database}"
-    if dialect == "clickhouse":
-        return f"clickhouse://{auth}{host}:{port}/{database}"
-    raise ValueError(f"{dialect!r} is not a server dialect")
+    """The canonical URL of ``database`` on a server (the engine's ``url_template``)."""
+    entry = _engines.REGISTRY.entry(dialect)
+    if entry is None:
+        raise ValueError(f"{dialect!r} is not a server dialect")
+    return entry.engine.canonical_url(host, port, user, password, database)
 
 
 def with_database(url: str, database: str) -> str:
@@ -173,39 +174,13 @@ def url_for(ref: DbRef, driver: str = "canonical") -> str:
         raise ValueError(f"no {driver!r} form of a SQLite path")
     url = str(ref)
     u = UrlParts(url)
-    hostport = f"{u.host}:{u.port}" if u.port else u.host
-    db = u.database or ""
     if driver == "canonical":
         return url
-    if u.dialect == "postgres":
-        if driver in ("go-pgx", "go-pq", "psycopg", "libpq"):
-            return url
-        if driver == "sqlalchemy":
-            return "postgresql+psycopg://" + url.split("://", 1)[1]
-        if driver == "jdbc":
-            q = {"user": u.user or "", "password": u.password or "", **u.query}
-            return f"jdbc:postgresql://{hostport}/{db}?{urlencode(q)}"
-    if u.dialect == "mysql":
-        if driver == "go-mysql":
-            auth = ""
-            if u.user is not None:
-                auth = u.user + ("" if u.password is None else ":" + u.password) + "@"
-            q = {"parseTime": "true", **u.query}
-            return f"{auth}tcp({hostport})/{db}?{urlencode(q)}"
-        if driver == "sqlalchemy":
-            return "mysql+pymysql://" + url.split("://", 1)[1]
-        if driver == "jdbc":
-            q = {"user": u.user or "", "password": u.password or "", **u.query}
-            return f"jdbc:mysql://{hostport}/{db}?{urlencode(q)}"
-    if u.dialect == "clickhouse":
-        if driver == "go-clickhouse":
-            return f"http://{u.auth()}{hostport}/{db}"
-        if driver == "sqlalchemy":
-            return f"clickhouse+http://{u.auth()}{hostport}/{db}"
-        if driver == "jdbc":
-            q = {"user": u.user or "", "password": u.password or ""}
-            return f"jdbc:clickhouse://{hostport}/{db}?{urlencode(q)}"
-    raise ValueError(f"no {driver!r} form of a {u.dialect} URL")
+    # the engine's [drivers] table
+    found = _engines.driver_url(_engines.engine(u.dialect), url, u, driver)
+    if found is None:
+        raise ValueError(f"no {driver!r} form of a {u.dialect} URL")
+    return found
 
 
 # ---- the interface ---------------------------------------------------------------------
@@ -220,6 +195,15 @@ class Database:
     ph: str = "%s"  # the parameter placeholder
     url: str  # the reference as a string: the path (SQLite) or the canonical URL
 
+    @property
+    def engine(self) -> _engines.EngineDescriptor:
+        """The server engine of this database (its descriptor: the SQL of
+        :meth:`tables` and :meth:`columns`, ...)."""
+        found = self.__dict__.get("_engine")
+        if found is None:
+            found = _engines.engine(dialect_of(self.url))
+        return found
+
     # -- the per-dialect surface
 
     def quote_ident(self, name: str) -> str:
@@ -232,10 +216,12 @@ class Database:
         raise NotImplementedError
 
     def tables(self) -> list[str]:
-        raise NotImplementedError
+        """The database's tables (the engine's ``sql.list_tables``)."""
+        return [r[0] for r in self.query(self.engine.sql.list_tables)]
 
     def columns(self, table: str) -> list[str]:
-        raise NotImplementedError
+        """``table``'s columns in order (the engine's ``sql.list_columns``)."""
+        return [r[0] for r in self.query(self.engine.sql.list_columns, [table])]
 
     def close(self) -> None:
         raise NotImplementedError
@@ -373,25 +359,6 @@ class PostgresDatabase(Database):
     def execute(self, sql: str, params: Sequence[Any] = ()) -> None:
         self._run(sql, params)
 
-    def tables(self) -> list[str]:
-        return [
-            r[0]
-            for r in self.query(
-                "SELECT table_name FROM information_schema.tables WHERE table_schema = "
-                "current_schema() AND table_type = 'BASE TABLE' ORDER BY table_name"
-            )
-        ]
-
-    def columns(self, table: str) -> list[str]:
-        return [
-            r[0]
-            for r in self.query(
-                "SELECT column_name FROM information_schema.columns WHERE table_schema = "
-                "current_schema() AND table_name = %s ORDER BY ordinal_position",
-                [table],
-            )
-        ]
-
     def close(self) -> None:
         self.conn.close()
 
@@ -410,7 +377,7 @@ class MysqlDatabase(Database):
         try:
             self.conn = pymysql.connect(
                 host=u.host,
-                port=u.port or 3306,
+                port=u.port or _engines.engine(u.dialect).default_port,
                 user=u.user or "root",
                 password=u.password or "",
                 database=u.database,
@@ -438,25 +405,6 @@ class MysqlDatabase(Database):
     def execute(self, sql: str, params: Sequence[Any] = ()) -> None:
         self._run(sql, params)
 
-    def tables(self) -> list[str]:
-        return [
-            r[0]
-            for r in self.query(
-                "SELECT table_name FROM information_schema.tables WHERE table_schema = "
-                "DATABASE() AND table_type = 'BASE TABLE' ORDER BY table_name"
-            )
-        ]
-
-    def columns(self, table: str) -> list[str]:
-        return [
-            r[0]
-            for r in self.query(
-                "SELECT column_name FROM information_schema.columns WHERE table_schema = "
-                "DATABASE() AND table_name = %s ORDER BY ordinal_position",
-                [table],
-            )
-        ]
-
     def close(self) -> None:
         try:
             self.conn.close()
@@ -480,7 +428,7 @@ class ClickhouseDatabase(Database):
         try:
             self.client = clickhouse_connect.get_client(
                 host=u.host,
-                port=u.port or 8123,
+                port=u.port or _engines.engine(u.dialect).default_port,
                 username=u.user or "default",
                 password=u.password or "",
                 database=u.database or "default",
@@ -515,25 +463,6 @@ class ClickhouseDatabase(Database):
         except self._errors as err:
             raise DatabaseError(str(err).strip()) from err
 
-    def tables(self) -> list[str]:
-        return [
-            r[0]
-            for r in self.query(
-                "SELECT name FROM system.tables WHERE database = currentDatabase() AND "
-                "engine NOT LIKE '%View' ORDER BY name"
-            )
-        ]
-
-    def columns(self, table: str) -> list[str]:
-        return [
-            r[0]
-            for r in self.query(
-                "SELECT name FROM system.columns WHERE database = currentDatabase() AND "
-                "table = %s ORDER BY position",
-                [table],
-            )
-        ]
-
     def close(self) -> None:
         try:
             self.client.close()
@@ -541,32 +470,36 @@ class ClickhouseDatabase(Database):
             pass
 
 
-_ADAPTERS: dict[str, type[Database]] = {
-    "postgres": PostgresDatabase,
-    "mysql": MysqlDatabase,
-    "clickhouse": ClickhouseDatabase,
-}
-
-
 def open_db(ref: Any) -> Database:
     """The adapter for a database reference: a path is a SQLite file, a URL a server's
-    database (by its scheme)."""
+    database (by its scheme: the engine's ``adapter``, a built-in class or a project's
+    ``module:Class``)."""
     dialect = dialect_of(ref)
     if dialect == "sqlite":
         text = str(ref)
         if text.startswith("sqlite:///"):  # SQLAlchemy's form: 4 slashes for an absolute path
             text = text[len("sqlite:///") :]
         return SqliteDatabase(text)
-    return _ADAPTERS[dialect](str(ref))
+    engine = _engines.engine(dialect)
+    db = engine.adapter_class()(str(ref))
+    db.__dict__["_engine"] = engine
+    if db.dialect != engine.name:  # a built-in adapter serving a project's engine
+        db.dialect = engine.name
+    return db
 
 
 def check_dialect(name: str) -> str:
+    """The ``--database`` value ``name`` as a dialect: ``sqlite`` or a registered server
+    engine (an alias resolved: ``postgresql`` is ``postgres``)."""
     wanted = (name or "sqlite").lower()
-    if wanted == "postgresql":
-        wanted = "postgres"
-    if wanted not in DIALECTS:
-        raise ValueError(f"unknown database {name!r} (one of {', '.join(DIALECTS)})")
-    return wanted
+    if wanted == "sqlite":
+        return wanted
+    found = _engines.find(wanted)
+    if found is None:
+        raise ValueError(
+            f"unknown database {name!r} (one of {', '.join(_engines.database_names())})"
+        )
+    return found.name
 
 
 __all__ = [

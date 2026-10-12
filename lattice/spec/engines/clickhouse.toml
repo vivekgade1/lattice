@@ -1,0 +1,45 @@
+# The ClickHouse engine of the spec checker: a descriptor (lattice/spec/engines.py; every
+# field: docs/design/lattice-module-descriptor.md). The adapter (clickhouse-connect over
+# HTTP, reads with final = 1) and the clone procedure (per table CREATE TABLE AS, INSERT
+# SELECT) are built-in code.
+name = "clickhouse"
+title = "ClickHouse"
+url_schemes = ["clickhouse", "ch", "http", "https"]
+url_template = "clickhouse://{user}:{password}@{host}:{port}/{db}"
+default_port = 8123
+adapter = "clickhouse"
+requires = ["clickhouse-connect>=0.8"]
+clone = "code"
+
+[drivers]
+go-clickhouse = "http://{auth}{hostport}/{db}"
+sqlalchemy = "clickhouse+http://{auth}{hostport}/{db}"
+jdbc = { template = "jdbc:clickhouse://{hostport}/{db}", query_auth = true }
+
+[sql]
+identifier_quote = '"'
+placeholder = "%s"
+true_literal = "true"
+false_literal = "false"
+backslash_escapes = true
+# no Decimal-with-Float arithmetic: both sides of a division are made Float64
+float_cast = "toFloat64({x})"
+divide = "({a} / {b})"
+list_tables = "SELECT name FROM system.tables WHERE database = currentDatabase() AND engine NOT LIKE '%View' ORDER BY name"
+list_columns = "SELECT name FROM system.columns WHERE database = currentDatabase() AND table = %s ORDER BY position"
+drop_database = "DROP DATABASE IF EXISTS {name} SYNC"
+
+# no unique constraints and no transactions: layer X does not race an upper count bound
+[capabilities]
+unique_constraints = false
+transactions = false
+
+[server]
+image = "clickhouse/clickhouse-server:24.8-alpine"
+port = 8123
+data_dir = "/var/lib/clickhouse"
+admin_user = "{user}"
+admin_db = "default"
+env = { CLICKHOUSE_USER = "{user}", CLICKHOUSE_PASSWORD = "{password}", CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT = "1" }
+docker_args = ["--ulimit", "nofile=262144:262144"]
+ready_sql = "SELECT 1"

@@ -1,0 +1,7 @@
+(version 1)
+(allow default)
+(deny network*)
+(deny file-write*)
+(allow file-write* (subpath "<probe>/module") (literal "/dev/null") (literal "/dev/dtracehelper"))
+(deny file-read* (subpath "<home>"))
+(allow file-read* (subpath "<probe>/module"))

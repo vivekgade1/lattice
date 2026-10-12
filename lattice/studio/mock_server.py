@@ -101,6 +101,13 @@ write tools, one that needs authentication, one that failed), classified and cou
 validates and stores ``source`` like the real server (a follow-up keeps its parent's), and the
 seeded change ``c0`` came from a fixture tracker item, so the change card shows a source.
 
+API v1.14 (database engines and modules): ``GET /api/engines`` answers the real server's
+shape: SQLite and the built-in engines read from the real registry (``lattice.spec.engines``;
+SQLite ``used``), the project engine ``docs/examples/engines/mariadb.toml`` (``source``
+``project``), and two fixture modules: ``acme-audit`` (kind custom, ``ok``, no engine) and
+``pg-tuned`` (an engine module whose tree ``changed``: refused, so its engine is not listed and
+``errors`` names it). No write route (``POST /api/engines`` answers 404).
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -155,6 +162,21 @@ LIVE_CHANGE_STATUSES = ("ready", "accepted")
 SPEC_BEHIND_BRANCH = "build/spec-behind"
 SPEC_BEHIND_FILES = ["REQUIREMENTS.md", "spec.trace.json"]
 SPEC_DRIFT_WARNING = "The spec on "
+# API v1.14: the project engine and the modules GET /api/engines lists
+MOCK_ENGINE_FILE = Path(__file__).resolve().parents[2] / "docs/examples/engines/mariadb.toml"
+MOCK_MODULES = (
+    {"name": "acme-audit", "version": "0.2.0", "status": "ok",
+     "sha256": "3f1c9a0e5b7d2c4a6e8f0b1d3c5e7a9b2d4f6a8c0e1b3d5f7a9c2e4b6d8f0a1c"},
+    {"name": "pg-tuned", "version": "1.0.0", "status": "changed",
+     "sha256": "9b8a7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b"},
+)  # fmt: skip
+MOCK_MODULE_ERROR = (
+    "module 'pg-tuned' (1.0.0) is changed: its tree hashes to "
+    "0000000000000000000000000000000000000000000000000000000000000000, the lock says "
+    "9b8a7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b; it is refused "
+    "(reinstall or uninstall it)"
+)
+
 # API v1.13: the system/init record a discovery would read (names only, as Claude Code prints them)
 MOCK_MCP_INIT: dict[str, Any] = {
     "type": "system",
@@ -913,6 +935,23 @@ class MockState:
             "fixture": "change-c1",
             "source": dict(MOCK_SOURCE),  # v1.13: it came from a tracker item
         }
+
+    # GET /api/engines (v1.14): the real registry's built-ins plus fixtures
+    def engines(self) -> dict[str, Any]:
+        from lattice.spec import engines as eng
+
+        def row(e: Any, source: str, used: bool = False) -> dict[str, Any]:
+            return {"name": e.name if e else "sqlite", "source": source, "used": used,
+                    "server": {"image": e.server.image} if e else None,
+                    "adapter": e.adapter if e else "sqlite",
+                    "requires": list(e.requires) if e else []}  # fmt: skip
+
+        rows = [row(None, "builtin", used=True)]
+        rows += [row(r.engine, "builtin") for r in eng.REGISTRY.entries() if r.source == "builtin"]
+        if MOCK_ENGINE_FILE.is_file():
+            rows.append(row(eng.read_descriptor(MOCK_ENGINE_FILE), "project"))
+        return {"engines": rows, "modules": [dict(m) for m in MOCK_MODULES],
+                "errors": [MOCK_MODULE_ERROR]}
 
     # GET /api/mcp (v1.13): the fixture discovery, classified by mcp_intake itself
     def mcp(self, refresh: bool = False) -> dict[str, Any]:
@@ -2689,6 +2728,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(state.areas(query.get("branch") or None))
         if path == "/api/branches":
             return self._json(state.branches())
+        if path == "/api/engines":
+            return self._json(state.engines())
         if path == "/api/mcp":
             raw = str(query.get("refresh", "0")).lower()
             if raw not in ("0", "1", "true", "false", ""):

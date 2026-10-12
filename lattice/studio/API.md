@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.12)
+# Lattice Studio API contract (v1.14)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -771,3 +771,43 @@ The conversation panel has a quiet **Connected tools** disclosure under the mode
 
 ### The mock
 `GET /api/mcp` answers the real shape from a fixture init record (Gmail and Claude Docs connected with read, write and unknown tools; Google Drive `needs-auth`; a `failed` tracker), classified by `mcp_intake`; `refresh=1` moves `refreshed_at`. `POST /api/changes` validates and stores `source`; the seeded change `c0` carries a fixture source.
+
+## v1.14 additions (database engines and modules, spike 2)
+
+The database engines of the spec checker are data: one descriptor per server engine (`lattice/spec/engines.py`; the built-ins `postgres`, `mysql`, `clickhouse` ship as `lattice/spec/engines/*.toml`; SQLite stays built in; every field: `docs/design/lattice-module-descriptor.md`). A project adds an engine without touching Lattice, and installs modules pinned by hash (`lattice/modules`). Evidence: `docs/results/2026-10-12-m-r-engine-seams.md`, `docs/results/2026-10-12-spike2-results.md`.
+
+### studio.toml
+```toml
+[app]
+database = "mariadb"                 # any registered engine name (or alias)
+
+[engines]
+paths = ["engines/mariadb.toml"]     # descriptor files, relative to the project
+```
+Studio registers the project's engines (these paths, then its installed modules) when the project is loaded, again on every `GET /api/engines` and before every check or verify, so the project's checks can name them. The CLI equivalent: `lattice spec check --engine-file FILE` (repeatable) and `--modules DIR`; `lattice check --project DIR` adds both from `DIR/studio.toml` and `DIR/lattice.modules.lock`. A descriptor that does not read or clashes with another engine is listed in `errors`, never fatal.
+
+### Modules
+`lattice module install SOURCE [--index DIR] [--yes]` copies a module directory (with `lattice-module.toml`) into `<project>/.lattice/modules/<name>/` after printing its manifest and asking (refused, exit 2, without `--yes` or an interactive `y`), and records name, version, kind, the sha256 of the installed tree and the source in `<project>/lattice.modules.lock`. Every load re-hashes each module: one whose tree changed is `changed` (`missing`: its directory is gone; `error`: its manifest no longer reads) and is refused, so its engine is not registered and a check naming it fails as an unknown database. Install from a git URL is recognised but not implemented yet (local paths and `file://` URLs only).
+
+### GET /api/engines
+Read only: there is no write endpoint (`POST /api/engines` answers 404).
+```json
+{"engines": [{"name": "sqlite", "source": "builtin", "used": false, "server": null,
+              "adapter": "sqlite", "requires": []},
+             {"name": "postgres", "source": "builtin", "used": false,
+              "server": {"image": "postgres:16-alpine"}, "adapter": "postgres",
+              "requires": ["psycopg[binary]>=3.2"]},
+             {"name": "mysql", "...": "..."}, {"name": "clickhouse", "...": "..."},
+             {"name": "mariadb", "source": "project", "used": true,
+              "server": {"image": "mariadb:11"}, "adapter": "mysql", "requires": ["pymysql>=1.1"]},
+             {"name": "pgfast", "source": "module", "used": false, "...": "..."}],
+ "modules": [{"name": "pg-fast", "version": "1.2.0", "sha256": "<64 hex>", "status": "ok"}],
+ "errors": []}
+```
+`engines`: SQLite, the built-ins (in that order), then the project's `[engines] paths` (`source: "project"`) and the engines of its `ok` modules (`source: "module"`); another project's engines registered in the same server process are not listed. `used`: the engine `[app] database` names (default `sqlite`, an alias resolved). `adapter`: a built-in adapter name (no code) or the descriptor's `module:Class`. `requires`: pip requirements the descriptor states (shown, never installed). `modules`: every lock entry, re-hashed now; `status` is `ok`, `changed`, `missing` or `error`. `errors` (an addition to the brief's shape): one line per descriptor that did not load and per refused module.
+
+### Studio UI
+Not shown in the web UI: the UI has no place where the project's check settings (layers, database) are shown, so the list is API and mock only for now.
+
+### The mock
+`GET /api/engines` answers the real shape: SQLite (`used`) and the built-ins read from the real registry, the project engine `docs/examples/engines/mariadb.toml`, and two fixture modules, `acme-audit` (custom, `ok`) and `pg-tuned` (an engine module whose tree `changed`: its engine is not listed and `errors` names it). No write route.

@@ -486,6 +486,24 @@
       "text": "The conversation panel has a quiet Connected tools list (each server's state and how many read tools each mode may use, with a Refresh), and a change card shows the external item its request came from, with its link.",
       "section": "Lattice Studio server: requirements > Connected tools (MCP)",
       "line": 128
+    },
+    {
+      "id": "R82",
+      "text": "GET /api/engines answers `engines` (each with `name`, `source` -- `builtin`, `project` or `module` --, `used`, `server` with its `image` or null, `adapter` and `requires`): SQLite and the built-in `postgres`, `mysql` and `clickhouse` first, then the engines of the project's `[engines] paths` and of its installed modules; `modules` (each with `name`, `version`, `sha256` and `status`) and `errors`. A project with no engines or modules of its own lists the built-ins, SQLite `used` (the default database), and no modules or errors.",
+      "section": "Lattice Studio server: requirements > Database engines and modules",
+      "line": 132
+    },
+    {
+      "id": "R83",
+      "text": "There is no write route for engines: POST /api/engines and DELETE /api/engines answer 404.",
+      "section": "Lattice Studio server: requirements > Database engines and modules",
+      "line": 133
+    },
+    {
+      "id": "R84",
+      "text": "The project's engine descriptors and installed modules are registered for its checks; every read re-hashes the modules, and one whose installed tree no longer matches its lock hash is listed `changed`, its engine is not registered and an error names it.",
+      "section": "Lattice Studio server: requirements > Database engines and modules",
+      "line": 134
     }
   ],
   "links": {
@@ -735,6 +753,12 @@
     ],
     "R79": [
       "scenario:an_invalid_source_is_refused"
+    ],
+    "R82": [
+      "scenario:database_engines_are_listed"
+    ],
+    "R83": [
+      "scenario:database_engines_are_listed"
     ]
   },
   "unchecked": {
@@ -749,7 +773,8 @@
     "R69": "process trees, containers and agent timeouts are not observable over HTTP; tests/studio/test_stop_cleanup.py covers them with a fake docker and a fake claude",
     "R75": "the web UI is not observable over HTTP; tests/studio/test_spec_sync.py checks the banner's code statically and the browser check is recorded in docs/results/2026-10-11-spec-sync-results.md",
     "R80": "a chat session needs the claude binary and the owner's account; tests/studio/test_mcp_intake.py checks the argv per mode (no --strict-mcp-config), the allowlist, allow_writes and the hermetic rebuild and planner argv against a fake claude, and docs/results/2026-10-12-spike4-results.md records the real-session probes (K-3, K-4)",
-    "R81": "the web UI is not observable over HTTP; tests/studio/test_mcp_intake.py checks its code statically and the browser check is recorded in docs/results/2026-10-12-spike4-results.md"
+    "R81": "the web UI is not observable over HTTP; tests/studio/test_mcp_intake.py checks its code statically and the browser check is recorded in docs/results/2026-10-12-spike4-results.md",
+    "R84": "a project with its own engines and modules is not in the seed; tests/studio/test_engines_api.py covers the registration, the re-hash on every read and the refusal of a changed module, tests/modules/test_modules.py the install, the lock and the checker's refusal"
   },
   "context": [
     "R1"

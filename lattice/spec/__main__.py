@@ -4,9 +4,9 @@
         [--app-dir DIR --package PKG | --go-src DIR] [--layers ABCDX] [--login mod:fn] \\
         [--login-path /login] [--mint-token mod:fn] [--json] \\
         [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process | go] \\
-        [--services mod:SERVICES] [--database sqlite|postgres|mysql|clickhouse] \\
-        [--database-url URL] [--only SELECTOR ...] [--only-file PATH] [--trace PATH] \\
-        [--await-cap SECONDS]
+        [--services mod:SERVICES] [--database sqlite|postgres|mysql|clickhouse|ENGINE] \\
+        [--database-url URL] [--engine-file FILE ...] [--modules DIR] \\
+        [--only SELECTOR ...] [--only-file PATH] [--trace PATH] [--await-cap SECONDS]
 
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
@@ -23,7 +23,12 @@ start them. ``--database`` (default ``sqlite``) runs layers C, D and X on a serv
 database: ``--db``, ``--app`` and the services then get a database's canonical URL
 instead of a file path (``lattice.spec.db``), on a throwaway Docker container, or on the
 server ``--database-url`` (or ``$LATTICE_<DIALECT>_URL``) names, where only databases
-the check creates are touched (``lattice.spec.dbserver``). ``--only`` (repeatable, one
+the check creates are touched (``lattice.spec.dbserver``). ``--engine-file FILE``
+(repeatable) registers a project's engine descriptor (``lattice.spec.engines``; e.g.
+``docs/examples/engines/mariadb.toml``) before ``--database`` is read, so its name is a
+``--database`` value; ``--modules DIR`` loads the modules installed in project ``DIR``
+(``lattice module install``: ``DIR/lattice.modules.lock``), each tree re-hashed first, and
+refuses (exit 2) a module whose tree changed since it was installed. ``--only`` (repeatable, one
 or more selectors each) and ``--only-file`` (a JSON array of selectors, or one per line)
 restrict layers D and X to the scenarios the selectors name: ``scenario:NAME``, a bare
 ``NAME``, a glob on names (``auth_*``), or ``rule:ID`` (the scenarios the trace links to
@@ -111,12 +116,28 @@ def _parser() -> argparse.ArgumentParser:
         help="module:SERVICES, the app's background services {name: (db_path) -> "
         "ServiceCmd} (or a function returning it), started by the spec's Await steps",
     )
+    from lattice.spec.engines import database_names
+
     c.add_argument(
         "--database",
         default="sqlite",
-        choices=("sqlite", "postgres", "mysql", "clickhouse"),
+        choices=database_names(),
         help="the database the app runs on (default sqlite; the others: a throwaway Docker "
         "container, or --database-url)",
+    )
+    c.add_argument(
+        "--engine-file",
+        action="append",
+        default=[],
+        metavar="FILE",
+        help="a project's engine descriptor (TOML, lattice.spec.engines), registered before "
+        "--database is read; repeatable",
+    )
+    c.add_argument(
+        "--modules",
+        metavar="DIR",
+        help="load the modules installed in project DIR (DIR/lattice.modules.lock), each "
+        "re-hashed; a changed module is refused",
     )
     c.add_argument(
         "--database-url",
@@ -298,11 +319,51 @@ def main(argv: Sequence[str] | None = None) -> int:
         import importlib
 
         return importlib.import_module(AUTHORING[argv[0]]).main(argv[1:])
+    if argv and argv[0] == "check":
+        problem = _preload_engines(argv[1:])
+        if problem is not None:
+            print(f"error: {problem}", file=sys.stderr)
+            return 2
     args = _parser().parse_args(argv)
     if args.command == "fidelity":
         return fidelity(args)
     with _cleanup_on_sigterm():
         return _check_main(args)
+
+
+def _flag_values(argv: Sequence[str], flag: str) -> list[str]:
+    """The values of ``flag`` in ``argv`` (``--flag V`` and ``--flag=V``), in order."""
+    out: list[str] = []
+    it = iter(argv)
+    for a in it:
+        if a == flag:
+            value = next(it, None)
+            if value is not None:
+                out.append(value)
+        elif a.startswith(flag + "="):
+            out.append(a.split("=", 1)[1])
+    return out
+
+
+def _preload_engines(argv: Sequence[str]) -> str | None:
+    """Register the engines of ``--modules DIR`` and ``--engine-file FILE`` (before the
+    parser is built, so their names are ``--database`` choices); an error message, or
+    None."""
+    from lattice.spec.engines import EngineError, load_engine_file
+
+    try:
+        for project in _flag_values(argv, "--modules"):
+            from lattice.modules import ModuleError, register_modules
+
+            try:
+                register_modules(project, strict=True)
+            except ModuleError as err:
+                return f"ModuleError: {err}"
+        for path in _flag_values(argv, "--engine-file"):
+            load_engine_file(path, "project")
+    except EngineError as err:
+        return f"EngineError: {err}"
+    return None
 
 
 @contextlib.contextmanager

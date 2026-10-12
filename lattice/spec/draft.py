@@ -844,8 +844,9 @@ def _parser() -> argparse.ArgumentParser:
     inc.add_argument("--login", help="--impact: module:fn, (client, handle) -> token")
     inc.add_argument("--runtime", help="--impact: module:RUNTIME, 'process' or 'go'")
     inc.add_argument("--services", help="--impact: module:SERVICES")
-    inc.add_argument("--database", default="sqlite",
-                     choices=("sqlite", "postgres", "mysql", "clickhouse"))  # fmt: skip
+    from lattice.spec.engines import database_names
+
+    inc.add_argument("--database", default="sqlite", choices=database_names())
     inc.add_argument("--database-url", help="--impact: an existing database server")
     inc.add_argument("--race", action="store_true", help="--impact: layer X too")
     return p

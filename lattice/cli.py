@@ -6,11 +6,14 @@
     lattice import ...                                                    # lattice.importer
     lattice mcp   serve|guard ...                                         # lattice.mcp
     lattice perf  measure|check [--project DIR] ...                       # lattice.perf
+    lattice module install|list|info|uninstall ...                        # lattice.modules
     lattice projects [DIR ...]                                            # discover projects
 
 Every ``lattice X ...`` is the same as ``python -m lattice.X ...`` (argv forwarded
 verbatim); the one convenience is ``lattice check``, which fills the harness flags from
-the project's ``studio.toml``. Targets are imported lazily so ``lattice --help`` stays
+the project's ``studio.toml`` (its ``[engines] paths`` become ``--engine-file`` flags,
+and a ``lattice.modules.lock`` there ``--modules DIR``). Targets are imported lazily so
+``lattice --help`` stays
 fast. Install: ``uv tool install -e .`` (or ``uv run lattice ...`` inside the repo).
 """
 
@@ -38,6 +41,8 @@ commands:
   perf      measure|check [--project DIR]          statements per request vs the
             [--sizes 5,25] [--runs 10] [--json]    budgets in DIR/perf.budget.json
                                                    (not a build gate; exit 1 over budget)
+  module    install|list|info|uninstall ...        a project's modules (installed into
+                                                   .lattice/modules, pinned by sha256)
   projects  [DIR ...]                              list Studio projects found
 
 `lattice <command> --help` shows a command's options. `lattice X ...` is the same as
@@ -46,7 +51,7 @@ commands:
 # lattice.spec.__main__ dispatches these itself; listed for `lattice spec --help`
 SPEC_COMMANDS = ("check", "fidelity", "draft", "lint", "probe", "review", "ask")
 
-COMMANDS = ("studio", "check", "spec", "import", "mcp", "perf", "projects")
+COMMANDS = ("studio", "check", "spec", "import", "mcp", "perf", "module", "projects")
 
 STUDIO_TOML = "studio.toml"
 SPEC_FILE = "spec.py"
@@ -234,6 +239,14 @@ def _fill_check_args(project: Path, args: list[str]) -> list[str] | str:
             out += [flag, str(chk[key])]
     if missing:
         return "lattice check: missing " + "; ".join(missing)
+    # a project's engines (lattice.spec.engines) and installed modules (lattice.modules)
+    engines = data.get("engines")
+    if isinstance(engines, dict) and isinstance(engines.get("paths"), list):
+        for p in engines["paths"]:
+            if isinstance(p, str):
+                out += ["--engine-file", str((project / p).resolve())]
+    if (project / "lattice.modules.lock").is_file() and not _flag_given(out, "--modules"):
+        out += ["--modules", str(project)]
     paths = [str(project)] + [
         str((project / p).resolve()) for p in (app.get("sys_path") or []) if isinstance(p, str)
     ]
@@ -329,6 +342,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         from lattice.importer.cli import main as target
     elif cmd == "perf":
         from lattice.perf.__main__ import main as target
+    elif cmd == "module":
+        from lattice.modules.__main__ import main as target
     else:
         from lattice.mcp.__main__ import main as target
     return _run(target, rest)

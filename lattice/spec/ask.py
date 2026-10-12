@@ -1476,9 +1476,9 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--login-path", help="a form login route taking Spec.users' credentials")
     p.add_argument("--runtime", help="module:RUNTIME, 'process' or 'go'")
     p.add_argument("--services", help="module:SERVICES")
-    p.add_argument(
-        "--database", default="sqlite", choices=("sqlite", "postgres", "mysql", "clickhouse")
-    )
+    from lattice.spec.engines import database_names
+
+    p.add_argument("--database", default="sqlite", choices=database_names())
     p.add_argument("--database-url")
     return p
 

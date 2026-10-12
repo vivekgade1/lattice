@@ -50,6 +50,7 @@ from collections.abc import Callable
 
 from lattice.api.backend import dialect_for
 from lattice.profile import Profile
+from lattice.spec import engines as _engines
 from lattice.spec.model import Invariant, tables_of
 from lattice.typesys import NUMERIC, Scalar, Schema, unify
 
@@ -152,16 +153,17 @@ class _Compiler:
         self.inv = inv
         self.dialect = dialect
         self.tables, self.sql_names = tables_of(profile)
+        # a server engine's SQL flags come from its descriptor (lattice.spec.engines)
+        self.engine = None if dialect == "sqlite" else _engines.find(dialect)
         if dialect == "sqlite":
             backend = profile.api.backend if profile.api is not None else "sqlite"
             self.quote: Callable[[str], str] = dialect_for(backend).quote
-        elif dialect == "mysql":
-            self.quote = _backtick
-        elif dialect in ("postgres", "clickhouse"):
-            self.quote = _double_quote
+            true, false = _SQLITE_BOOLS
+        elif self.engine is not None and self.engine.name == dialect:
+            self.quote = self.engine.quote_ident
+            true, false = self.engine.sql.true_literal, self.engine.sql.false_literal
         else:
             raise ValueError(f"unknown SQL dialect {dialect!r}")
-        true, false = _BOOLS[dialect]
         self.true, self.false = true, false
         # a condition that is NULL (unknown) does not hold
         self.unknown = "0" if dialect == "sqlite" else false
@@ -171,8 +173,10 @@ class _Compiler:
 
     def num(self, sql: str) -> str:
         """A number as a float where the dialect mixes Decimal and Float only so
-        (ClickHouse); as it is elsewhere."""
-        return f"toFloat64({sql})" if self.dialect == "clickhouse" else sql
+        (ClickHouse: the engine's ``float_cast``); as it is elsewhere."""
+        if self.engine is None:
+            return sql
+        return _engines.fill(self.engine.sql.float_cast, x=sql)
 
     # ---- names -----------------------------------------------------------------------
 
@@ -246,9 +250,11 @@ class _Compiler:
                     )
             scalar = unify(left.scalar, right.scalar) or Scalar.FLOAT
             if isinstance(node.op, ast.Div):  # SQL divides ints as ints
-                if self.dialect == "clickhouse":  # no Decimal-with-Float arithmetic there
-                    return _Operand(f"({self.num(left.sql)} / {self.num(right.sql)})", Scalar.FLOAT)
-                return _Operand(f"(({left.sql}) * 1.0 / ({right.sql}))", Scalar.FLOAT)
+                # the engine's divide template over its float casts (ClickHouse: no
+                # Decimal-with-Float arithmetic there)
+                template = _SQLITE_DIVIDE if self.engine is None else self.engine.sql.divide
+                return _Operand(_engines.fill(template, a=self.num(left.sql),
+                                              b=self.num(right.sql)), Scalar.FLOAT)  # fmt: skip
             op = _ARITH_SQL[type(node.op)]
             return _Operand(f"({left.sql} {op} {right.sql})", scalar)
         if isinstance(node, ast.Name):
@@ -547,27 +553,16 @@ def _one_column_key(schema: Schema, table: str) -> str:
     raise _form(f"{table} has no one-column key for sum(..., by=...) to reference")
 
 
-# (true, false) literals per dialect
-_BOOLS = {
-    "sqlite": ("1", "0"),
-    "postgres": ("TRUE", "FALSE"),
-    "mysql": ("TRUE", "FALSE"),
-    "clickhouse": ("true", "false"),
-}
-
-
-def _double_quote(name: str) -> str:
-    return '"' + name.replace('"', '""') + '"'
-
-
-def _backtick(name: str) -> str:
-    return "`" + name.replace("`", "``") + "`"
+# SQLite's (true, false) literals and division; a server engine's are in its descriptor
+_SQLITE_BOOLS = ("1", "0")
+_SQLITE_DIVIDE = "(({a}) * 1.0 / ({b}))"
 
 
 def _sql_text(value: str, dialect: str = "sqlite") -> str:
-    """A text literal; MySQL and ClickHouse read a backslash as an escape, so it is
-    doubled there."""
-    if dialect in ("mysql", "clickhouse"):
+    """A text literal; where the engine reads a backslash as an escape (its
+    ``backslash_escapes``: MySQL, ClickHouse) it is doubled."""
+    engine = None if dialect == "sqlite" else _engines.find(dialect)
+    if engine is not None and engine.sql.backslash_escapes:
         value = value.replace("\\", "\\\\")
     return "'" + value.replace("'", "''") + "'"
 

@@ -296,6 +296,17 @@ def _step_view(index: int, step: Step) -> dict[str, Any]:
     return {"step": index, "method": step.method, "path": step.path, "user": step.user}
 
 
+def _unenforceable(dialect: str) -> tuple[str, bool]:
+    """(the engine's title, whether it can enforce no upper count bound: neither unique
+    constraints nor transactions in its descriptor). SQLite enforces both."""
+    from lattice.spec import engines
+
+    engine = None if dialect == "sqlite" else engines.find(dialect)
+    if engine is None:
+        return dialect, False
+    return engine.title, not (engine.has("unique_constraints") or engine.has("transactions"))
+
+
 class _Harness:
     """What every race needs: the app, the database, the callers, the targets."""
 
@@ -322,9 +333,11 @@ class _Harness:
         self.one_server = bool(getattr(runtime, "one_server", False))
         self.dialect = db_dialect(make_db)
         self.targets = targets(spec)
-        # ClickHouse enforces no uniqueness: an upper count bound is not raced there
-        clickhouse = self.dialect == "clickhouse"
-        self.not_applicable = [t for t in self.targets if clickhouse and t.invariant is not None]
+        # an engine with neither unique constraints nor transactions (ClickHouse; its
+        # descriptor's [capabilities]) cannot enforce an upper count bound: not raced there
+        self.engine_title, unenforceable = _unenforceable(self.dialect)
+        self.not_applicable = [t for t in self.targets
+                               if unenforceable and t.invariant is not None]  # fmt: skip
         self.targets = [t for t in self.targets if t not in self.not_applicable]
         self.tables = list(dict.fromkeys(t.table for t in self.targets))
         self.keys: dict[str, str] = {}
@@ -794,7 +807,7 @@ def layer_x(
     report.races = []
     for t in h.not_applicable:
         report.notes.append(
-            f"layer X: {t.rule_id} not applicable on ClickHouse (no unique constraints or "
+            f"layer X: {t.rule_id} not applicable on {h.engine_title} (no unique constraints or "
             "transactions): an upper count bound cannot be enforced there, so it is not raced"
         )
     if not h.targets:

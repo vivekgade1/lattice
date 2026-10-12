@@ -1,0 +1,42 @@
+# The MySQL engine of the spec checker: a descriptor (lattice/spec/engines.py; every field:
+# docs/design/lattice-module-descriptor.md). The adapter (PyMySQL) and the clone procedure
+# (SHOW CREATE TABLE replayed, lattice.spec.dbserver) are built-in code.
+name = "mysql"
+title = "MySQL"
+url_schemes = ["mysql", "mariadb"]
+url_template = "mysql://{user}:{password}@{host}:{port}/{db}"
+default_port = 3306
+adapter = "mysql"
+requires = ["pymysql>=1.1"]
+clone = "code"
+
+[drivers]
+go-mysql = { template = "{raw_auth}tcp({hostport})/{db}", query_fixed = { parseTime = "true" }, query_url = true }
+sqlalchemy = "mysql+pymysql://{rest}"
+jdbc = { template = "jdbc:mysql://{hostport}/{db}", query_auth = true, query_url = true }
+
+[sql]
+identifier_quote = "`"
+placeholder = "%s"
+true_literal = "TRUE"
+false_literal = "FALSE"
+backslash_escapes = true
+float_cast = "{x}"
+divide = "(({a}) * 1.0 / ({b}))"
+list_tables = "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE' ORDER BY table_name"
+list_columns = "SELECT column_name FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = %s ORDER BY ordinal_position"
+drop_database = "DROP DATABASE IF EXISTS {name}"
+
+[capabilities]
+unique_constraints = true
+transactions = true
+
+[server]
+image = "mysql:8.4"
+port = 3306
+data_dir = "/var/lib/mysql"
+admin_user = "root"
+admin_db = "mysql"
+env = { MYSQL_ROOT_PASSWORD = "{password}" }
+args = ["--innodb-flush-log-at-trx-commit=0", "--skip-log-bin", "--sync-binlog=0", "--max-connections=300", "--innodb-doublewrite=OFF"]
+ready_sql = "SELECT 1"

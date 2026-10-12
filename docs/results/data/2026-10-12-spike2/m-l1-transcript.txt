@@ -1,0 +1,88 @@
+$ lattice module install ../mariadb-engine --project proj   (stdin: /dev/null)
+refused: not installed: mariadb-engine 0.1.0 was not confirmed (give --yes, or answer y at a terminal)
+module mariadb-engine 0.1.0 (engine)
+  MariaDB 11 for the spec checker (no code: the built-in MySQL adapter)
+  source:   <scratch>/ml1/mariadb-engine
+  sha256:   a3d5f5c084bb07d3ab405173f00f8a1708336fc237a94f88e759357c25ac6450
+  files:    2
+  provides: engine:mariadb
+  requires: pymysql>=1.1 (pip; not installed by Lattice)
+  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)
+  server:   docker image mariadb:11, port 3306
+
+--- lattice-module.toml ---
+name = "mariadb-engine"
+version = "0.1.0"
+kind = "engine"
+description = "MariaDB 11 for the spec checker (no code: the built-in MySQL adapter)"
+descriptor = "engine.toml"
+---
+exit=2
+files in proj: 1 ()
+
+$ lattice module install mariadb-engine --project proj --yes
+module mariadb-engine 0.1.0 (engine)
+  MariaDB 11 for the spec checker (no code: the built-in MySQL adapter)
+  source:   <scratch>/ml1/mariadb-engine
+  sha256:   a3d5f5c084bb07d3ab405173f00f8a1708336fc237a94f88e759357c25ac6450
+  files:    2
+  provides: engine:mariadb
+  requires: pymysql>=1.1 (pip; not installed by Lattice)
+  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)
+  server:   docker image mariadb:11, port 3306
+
+--- lattice-module.toml ---
+name = "mariadb-engine"
+version = "0.1.0"
+kind = "engine"
+description = "MariaDB 11 for the spec checker (no code: the built-in MySQL adapter)"
+descriptor = "engine.toml"
+---
+installed mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 a3d5f5c084bb...; lattice.modules.lock)
+exit=0
+proj/.lattice/modules/mariadb-engine/engine.toml
+proj/.lattice/modules/mariadb-engine/lattice-module.toml
+proj/lattice.modules.lock
+{
+  "version": 1,
+  "modules": [
+    {
+      "name": "mariadb-engine",
+      "version": "0.1.0",
+      "kind": "engine",
+      "sha256": "a3d5f5c084bb07d3ab405173f00f8a1708336fc237a94f88e759357c25ac6450",
+      "source": "<scratch>/ml1/mariadb-engine"
+    }
+  ]
+}
+
+$ lattice module list --project proj
+mariadb-engine  0.1.0      engine  ok       a3d5f5c084bb  <scratch>/ml1/mariadb-engine
+exit=0
+
+$ lattice module info mariadb-engine --project proj
+mariadb-engine 0.1.0 (engine): ok
+  sha256 (locked): a3d5f5c084bb07d3ab405173f00f8a1708336fc237a94f88e759357c25ac6450
+  source:          <scratch>/ml1/mariadb-engine
+  directory:       <scratch>/ml1/proj/.lattice/modules/mariadb-engine
+
+name = "mariadb-engine"
+version = "0.1.0"
+kind = "engine"
+exit=0
+
+# tamper: flip one bit of the first byte of engine.toml (# -> ")
+$ lattice module list --project proj
+mariadb-engine  0.1.0      engine  changed  a3d5f5c084bb  <scratch>/ml1/mariadb-engine
+                its tree hashes to 3ed06ae6a0e13d1b922cc328fff1db3a2329737a6a02ef74cc4f8e60034d6793, the lock says a3d5f5c084bb07d3ab405173f00f8a1708336fc237a94f88e759357c25ac6450
+exit=1
+$ python -m lattice.spec check --spec x:S --app x:a --db x:d --database mariadb --modules proj
+error: ModuleError: module 'mariadb-engine' (0.1.0) is changed: its tree hashes to 3ed06ae6a0e13d1b922cc328fff1db3a2329737a6a02ef74cc4f8e60034d6793, the lock says a3d5f5c084bb07d3ab405173f00f8a1708336fc237a94f88e759357c25ac6450; it is refused (reinstall or uninstall it)
+exit=2
+
+$ lattice module uninstall mariadb-engine --project proj
+uninstalled mariadb-engine 0.1.0 (removed <scratch>/ml1/proj/.lattice/modules/mariadb-engine and its lattice.modules.lock entry)
+exit=0
+left in proj: proj/.lattice proj/.lattice/modules 
+no modules installed in <scratch>/ml1/proj (no lattice.modules.lock)
+exit=0
