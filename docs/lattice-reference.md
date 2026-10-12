@@ -73,7 +73,7 @@ lattice/
   pycheck/                                Lattice guarantees checked on ordinary FastAPI code (PY801–PY806)
   llm/                                    prompts (tabular + API guides, equal-information baselines),
                                           client.py (Anthropic API), cli_client.py (claude -p transport)
-bench/                                    benchmarks (see §5)
+bench/                                    task corpora, fixture apps and test helpers of the earlier benchmarks (see §5)
 tests/                                    ~5,400 tests; `uv run pytest -q`; `live` marker deselected by default
 ```
 
@@ -140,42 +140,24 @@ tests/                                    ~5,400 tests; `uv run pytest -q`; `liv
 
 ---
 
-## 5. Benchmarks and how to run them
+## 5. Benchmarks (the harness was removed 2026-10-12)
 
-**Tabular** (`bench/`): 130 tasks plus bench2 (54 traps/safety).
-- Arms: A (pandas), P (pandas + repair), B (Lattice + repair), C (Lattice, first try).
-- Conditions: hints / `--no-hints` / `--implicit`.
+The experiment harness of the earlier language/codegen direction (the runner CLI and
+report, the Go arm, the edit-slice runner and analyses, the held-out apps under
+`bench/heldout/`, the offline kit) was removed on 2026-10-12; it is in git history
+before that date, and its results stay in `docs/results/` and `docs/archive/`.
 
-**API:** 40 tasks, with hidden HTTP cases.
+What remains in `bench/`, because live tests of the checker, runtime and importer use it:
 
-**Edit slice** (`bench/edit_slice/`): the main benchmark of rounds 1–5 and the confirmation.
-- **Tickets** (`tickets.py`): 30 realistic change tickets with unstated traps. The docstring lists the traps and is never sent to models.
-
-  | Tickets | Group |
-  |---|---|
-  | t1–t6 | tuned |
-  | t7–t18 | held-out template |
-  | t19–t24 | held-out apps (TaskFlow, JustNotes) |
-  | t25–t30 | fresh (3 template, 3 held-out apps) |
-- **Apps:**
-  - `bench/template_app/` (official full-stack-fastapi-template @ `cb740b6`, SQLite);
-  - `bench/import_repos/taskflow/` (PhilipOkeke/taskflow-backend-api @ `8c53dbc`, MIT);
-  - `bench/import_repos/justnotes/` (DatMayo/JustNotes @ `6cae6e3`, MIT).
-- **Oracle** (`oracle.py`, `repos/*.py`): hidden cases (generated suite + trap cases) against a hand-written Python reference. Outcomes:
-  - **correct**;
-  - **loud:** 5xx, fails to start, or refused;
-  - **silent:** a wrong non-5xx answer or a wrong DB effect.
-- **Arms** (`run.py`):
-  - **P:** edit Python.
-  - **L:** edit imported Lattice, then emit.
-  - **Q:** edit Python + `pycheck` findings.
-  - **L+ / Q+:** plus retrieved examples + mistakes table (`aids/`).
-- **Repairs:** 2 rounds. Feedback is only what a developer sees locally.
-- **Commands:**
-  - `uv run python -m bench.edit_slice.run --backend cli|api --model M --arm P|L|Q|L+|Q+ --tickets all|round3|round4|repos|t1,t2… --reps N --out X.jsonl [--resume] [--workers N] [--estimate] [--dry-run-reference] [--dry-run-partial]`
-  - `bench/edit_slice/rescore.py` re-scores saved runs under an updated oracle.
-  - `bench/analysis/diag_persistence.py` mines checker-error persistence.
-- **Results:** in `bench/results/` (gitignored). Artefacts hold every round's model response and candidate files.
+- **Task corpora and reference solutions:** `tasks.py`, `seed_tasks.py`, `more_tasks.py`,
+  `deep_tasks.py`, `bench2_*.py`, `api_tasks.py`, `api_datasets.py`, `datasets.py`
+  (tabular: 130 tasks plus bench2's 54 traps; API: 40 tasks with hidden HTTP cases).
+- **Test helpers:** `compare.py`, `api_runner.py`, `sandbox.py`, `metrics.py`,
+  `template_profile.py`, `template_suite.py`.
+- **Fixture apps** (read as source by the importer and spec tests): `template_app/`
+  (official full-stack-fastapi-template @ `cb740b6`, SQLite), `import_repos/` (taskflow @
+  `8c53dbc`, justnotes @ `6cae6e3`, multivendor and the Phase-2 apps), `imports/`, `specs/`.
+- **`edit_slice/`:** only the modules these tests import (tickets, oracle, repos, aids).
 
 **CLI transport** (`lattice/llm/cli_client.py`):
 - `claude -p --output-format json --system-prompt … --tools "" --setting-sources "" --no-session-persistence --strict-mcp-config --mcp-config '{"mcpServers":{}}' --disable-slash-commands`, run in an empty cwd.
@@ -192,7 +174,7 @@ tests/                                    ~5,400 tests; `uv run pytest -q`; `liv
 | `lattice spec check/fidelity/draft/lint/probe/review/ask ...` | `python -m lattice.spec ...` | |
 | `lattice import ...` | `python -m lattice.importer` | |
 | `lattice mcp serve/guard ...` | `python -m lattice.mcp` | |
-| `lattice gogen build ...` | `python -m lattice.gogen` | (`lattice tsgen` was removed 2026-10-12) |
+| (removed 2026-10-12) `lattice gogen`, `lattice tsgen` | the Go and TypeScript code generators | `lattice/gogen` keeps only `regex.py` and `types.py` for the checker's Go-target rules |
 | `lattice projects [DIR ...]` | | lists Studio projects (`studio.toml`, or `spec.py` + `spec.trace.json`) in DIR, cwd, `dogfood/*` and one level of children |
 
 `lattice --version`, `lattice --help` and `lattice <command> --help` exit 0; an unknown command exits 2.
