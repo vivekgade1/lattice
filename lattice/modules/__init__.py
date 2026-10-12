@@ -71,6 +71,7 @@ _MANIFEST_FIELDS = (
     "requires",
     "descriptor",
     "engine",
+    "entry",
 )
 _INDEX_FIELDS = ("name", "version", "source", "sha256", "description")
 _GIT_SCHEMES = ("git", "ssh", "http", "https")
@@ -98,6 +99,10 @@ class Manifest:
     engine: _engines.EngineDescriptor | None
     directory: Path
     text: str  # the manifest file as written
+    # a `custom` module's Python entry point: "pkg.module" whose main(argv) the host runs for
+    # the subcommand(s) in `provides` (spike 1b: the security module's entry, lattice.security).
+    # Engine modules do not use it. None when absent.
+    entry: str | None = None
 
 
 def _strs(data: Mapping[str, Any], key: str, where: str) -> tuple[str, ...]:
@@ -183,7 +188,12 @@ def read_manifest(directory: Path | str) -> Manifest:
             requires = engine.requires
     elif has_file or has_inline:
         raise ModuleError(f"{where}: only an engine module has a descriptor")
-    return Manifest(name, version, kind, description, provides, requires, engine, d, text)
+    entry = data.get("entry")
+    if entry is not None and not isinstance(entry, str):
+        raise ModuleError(f"{where}: entry must be a string (a 'pkg.module' with a main(argv))")
+    if entry is not None and kind == "engine":
+        raise ModuleError(f"{where}: an engine module has no entry (it provides an engine)")
+    return Manifest(name, version, kind, description, provides, requires, engine, d, text, entry)
 
 
 # ---- the tree hash --------------------------------------------------------------------------

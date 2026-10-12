@@ -1,0 +1,188 @@
+{
+  "S1_clean": [
+    {
+      "rc": 0,
+      "wall": 5.841,
+      "confirmed": [],
+      "unreproduced": [],
+      "planned": 42,
+      "classreport": [
+        {
+          "class": "authz",
+          "severity": "high",
+          "run": 42,
+          "refuted": 42,
+          "findings": 0,
+          "unreproduced": 0,
+          "not_refuted": 0
+        }
+      ]
+    },
+    {
+      "rc": 0,
+      "wall": 5.663,
+      "confirmed": [],
+      "unreproduced": [],
+      "planned": 42,
+      "classreport": [
+        {
+          "class": "authz",
+          "severity": "high",
+          "run": 42,
+          "refuted": 42,
+          "findings": 0,
+          "unreproduced": 0,
+          "not_refuted": 0
+        }
+      ]
+    },
+    {
+      "rc": 0,
+      "wall": 4.742,
+      "confirmed": [],
+      "unreproduced": [],
+      "planned": 42,
+      "classreport": [
+        {
+          "class": "authz",
+          "severity": "high",
+          "run": 42,
+          "refuted": 42,
+          "findings": 0,
+          "unreproduced": 0,
+          "not_refuted": 0
+        }
+      ]
+    }
+  ],
+  "S1_holed": [
+    {
+      "rc": 1,
+      "wall": 10.214,
+      "confirmed": [
+        "authz-GET-v1-habits-00000000-0000-4000-8000-000000000100-ben"
+      ],
+      "unreproduced": [],
+      "planned": 42,
+      "classreport": [
+        {
+          "class": "authz",
+          "severity": "high",
+          "run": 42,
+          "refuted": 41,
+          "findings": 1,
+          "unreproduced": 0,
+          "not_refuted": 1
+        }
+      ]
+    },
+    {
+      "rc": 1,
+      "wall": 11.26,
+      "confirmed": [
+        "authz-GET-v1-habits-00000000-0000-4000-8000-000000000100-ben"
+      ],
+      "unreproduced": [],
+      "planned": 42,
+      "classreport": [
+        {
+          "class": "authz",
+          "severity": "high",
+          "run": 42,
+          "refuted": 41,
+          "findings": 1,
+          "unreproduced": 0,
+          "not_refuted": 1
+        }
+      ]
+    },
+    {
+      "rc": 1,
+      "wall": 11.209,
+      "confirmed": [
+        "authz-GET-v1-habits-00000000-0000-4000-8000-000000000100-ben"
+      ],
+      "unreproduced": [],
+      "planned": 42,
+      "classreport": [
+        {
+          "class": "authz",
+          "severity": "high",
+          "run": 42,
+          "refuted": 41,
+          "findings": 1,
+          "unreproduced": 0,
+          "not_refuted": 1
+        }
+      ]
+    }
+  ],
+  "S3_clean_system": {
+    "rc": 0,
+    "wall": 123.349,
+    "confirmed": [],
+    "unreproduced": [
+      "auth-DELETE-v1-devices-1-empty-bearer",
+      "auth-DELETE-v1-habits-00000000-0000-4000-8000-000000000100-completions-00000000-0000-4000-8000-000000000300-empty-bearer",
+      "auth-DELETE-v1-habits-00000000-0000-4000-8000-000000000100-empty-bearer",
+      "auth-DELETE-v1-me-empty-bearer",
+      "auth-GET-v1-habits-00000000-0000-4000-8000-000000000100-completions-empty-bearer",
+      "auth-GET-v1-habits-00000000-0000-4000-8000-000000000100-empty-bearer",
+      "auth-GET-v1-habits-00000000-0000-4000-8000-000000000100-history-empty-bearer",
+      "auth-GET-v1-habits-00000000-0000-4000-8000-000000000100-progress-empty-bearer",
+      "auth-GET-v1-habits-empty-bearer",
+      "auth-GET-v1-home-empty-bearer",
+      "auth-GET-v1-me-empty-bearer",
+      "auth-GET-v1-nudges-empty-bearer",
+      "auth-GET-v1-sync-empty-bearer",
+      "auth-PATCH-v1-habits-00000000-0000-4000-8000-000000000100-empty-bearer",
+      "auth-POST-v1-auth-logout-empty-bearer",
+      "auth-POST-v1-completions-batch-empty-bearer",
+      "auth-POST-v1-devices-empty-bearer",
+      "auth-POST-v1-habits-00000000-0000-4000-8000-000000000100-completions-empty-bearer",
+      "auth-POST-v1-habits-empty-bearer",
+      "auth-POST-v1-nudges-00000000-0000-4000-8000-000000000500-dismiss-empty-bearer",
+      "auth-PUT-v1-me-empty-bearer",
+      "authz-DELETE-v1-habits-00000000-0000-4000-8000-000000000100-completions-00000000-0000-4000-8000-000000000300-ben"
+    ],
+    "planned": 160,
+    "classreport": [
+      {
+        "class": "auth",
+        "severity": "high",
+        "run": 84,
+        "refuted": 63,
+        "findings": 0,
+        "unreproduced": 21,
+        "not_refuted": 21
+      },
+      {
+        "class": "authz",
+        "severity": "high",
+        "run": 42,
+        "refuted": 41,
+        "findings": 0,
+        "unreproduced": 1,
+        "not_refuted": 1
+      },
+      {
+        "class": "leak",
+        "severity": "medium",
+        "run": 26,
+        "refuted": 26,
+        "findings": 0,
+        "unreproduced": 0,
+        "not_refuted": 0
+      },
+      {
+        "class": "state",
+        "severity": "medium",
+        "run": 8,
+        "refuted": 8,
+        "findings": 0,
+        "unreproduced": 0,
+        "not_refuted": 0
+      }
+    ]
+  }
+}
