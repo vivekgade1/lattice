@@ -1,0 +1,804 @@
+[
+ {
+  "label": "A",
+  "habits": 5,
+  "path": "/v1/home",
+  "runs": [
+   {
+    "run": 1,
+    "status": 200,
+    "ms": 12.77,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 2,
+    "status": 200,
+    "ms": 8.2,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 3,
+    "status": 200,
+    "ms": 7.63,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 4,
+    "status": 200,
+    "ms": 6.88,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 5,
+    "status": 200,
+    "ms": 7.43,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 6,
+    "status": 200,
+    "ms": 8.29,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 7,
+    "status": 200,
+    "ms": 7.4,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 8,
+    "status": 200,
+    "ms": 6.35,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 9,
+    "status": 200,
+    "ms": 6.78,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   },
+   {
+    "run": 10,
+    "status": 200,
+    "ms": 7.09,
+    "bytes": 2880,
+    "items": 5,
+    "pre_rows": 0,
+    "query_execute": 11,
+    "by_type": {
+     "Prepare": 11,
+     "Execute": 11,
+     "Close stmt": 11
+    },
+    "sequence_sha1": "9e23db5aa4c9"
+   }
+  ],
+  "run1_statements": [
+   "SELECT * FROM `test_clock` WHERE id = 1 LIMIT 1",
+   "SELECT * FROM `users` WHERE id = 1 LIMIT 1",
+   "SELECT * FROM `test_clock` WHERE id = 1 LIMIT 1",
+   "SELECT * FROM `test_clock` WHERE id = 1 LIMIT 1",
+   "SELECT * FROM `habits` WHERE user_id = 1 AND deleted_at IS NULL AND archived = 0 ORDER BY id",
+   "SELECT `date` FROM `completions` WHERE habit_id = '013b7053-6f79-425b-824a-7a15d43ceaef' AND deleted_at IS NULL AND date BETWEEN '2026-03-02' AND '2026-03-08'",
+   "SELECT `date` FROM `completions` WHERE habit_id = '700400fe-cf27-4f6a-9277-97ce3ec6d424' AND deleted_at IS NULL AND date BETWEEN '2026-03-02' AND '2026-03-08'",
+   "SELECT `date` FROM `completions` WHERE habit_id = '79091196-27d2-4b27-9d6f-e4d99839cec8' AND deleted_at IS NULL AND date BETWEEN '2026-03-02' AND '2026-03-08'",
+   "SELECT `date` FROM `completions` WHERE habit_id = 'b4925fb9-93a5-466e-9fb4-24514ea553f5' AND deleted_at IS NULL AND date BETWEEN '2026-03-02' AND '2026-03-08'",
+   "SELECT `date` FROM `completions` WHERE habit_id = 'b6cf5de9-54e5-4100-bf50-fc7e51ea2c15' AND deleted_at IS NULL AND date BETWEEN '2026-03-02' AND '2026-03-08'",
+   "SELECT `nudges`.`id`,`nudges`.`habit_id`,`nudges`.`for_date`,`nudges`.`kind`,`nudges`.`message`,`nudges`.`delivery`,`nudges`.`delivery_reason`,`nudges`.`change_seq`,`nudges`.`created_at`,`nudges`.`updated_at`,`nudges`.`dismissed_at`,`nudges`.`deleted_at` FROM `nudges` JOIN habits ON habits.id = nudges.habit_id WHERE habits.user_id = 1 AND habits.archived = 0 AND habits.deleted_at IS NULL AND nudges.for_date = '2026-03-04' AND nudges.dismissed_at IS NULL AND nudges.deleted_at IS NULL ORDER BY nudges.habit_id"
+  ]
+ },
+ {
+  "label": "B",
+  "habits": 25,
+  "path": "/v1/home",
+  "runs": [
+   {
+    "run": 1,
+    "status": 200,
+    "ms": 15.97,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 2,
+    "status": 200,
+    "ms": 16.04,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 3,
+    "status": 200,
+    "ms": 16.38,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 4,
+    "status": 200,
+    "ms": 17.6,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 5,
+    "status": 200,
+    "ms": 14.29,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 6,
+    "status": 200,
+    "ms": 13.89,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 7,
+    "status": 200,
+    "ms": 15.26,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 8,
+    "status": 200,
+    "ms": 13.98,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 9,
+    "status": 200,
+    "ms": 14.22,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   },
+   {
+    "run": 10,
+    "status": 200,
+    "ms": 14.63,
+    "bytes": 14220,
+    "items": 25,
+    "pre_rows": 0,
+    "query_execute": 31,
+    "by_type": {
+     "Prepare": 31,
+     "Execute": 31,
+     "Close stmt": 31
+    },
+    "sequence_sha1": "bb34244e2693"
+   }
+  ],
+  "run1_statements": "see label A for the full text; other stages differ only in the number of repeated per-habit SELECT `date` FROM `completions` statements"
+ },
+ {
+  "label": "C",
+  "habits": 50,
+  "path": "/v1/home",
+  "runs": [
+   {
+    "run": 1,
+    "status": 200,
+    "ms": 27.05,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 2,
+    "status": 200,
+    "ms": 25.41,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 3,
+    "status": 200,
+    "ms": 26.24,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 4,
+    "status": 200,
+    "ms": 28.03,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 5,
+    "status": 200,
+    "ms": 28.05,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 6,
+    "status": 200,
+    "ms": 32.06,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 7,
+    "status": 200,
+    "ms": 35.52,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 8,
+    "status": 200,
+    "ms": 30.46,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 9,
+    "status": 200,
+    "ms": 28.54,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   },
+   {
+    "run": 10,
+    "status": 200,
+    "ms": 29.9,
+    "bytes": 28395,
+    "items": 50,
+    "pre_rows": 0,
+    "query_execute": 56,
+    "by_type": {
+     "Prepare": 56,
+     "Execute": 56,
+     "Close stmt": 56
+    },
+    "sequence_sha1": "777cfee99264"
+   }
+  ],
+  "run1_statements": "see label A for the full text; other stages differ only in the number of repeated per-habit SELECT `date` FROM `completions` statements"
+ },
+ {
+  "label": "D",
+  "habits": 100,
+  "path": "/v1/home",
+  "runs": [
+   {
+    "run": 1,
+    "status": 200,
+    "ms": 50.65,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 2,
+    "status": 200,
+    "ms": 54.27,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 3,
+    "status": 200,
+    "ms": 53.75,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 4,
+    "status": 200,
+    "ms": 50.34,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 5,
+    "status": 200,
+    "ms": 50.34,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 6,
+    "status": 200,
+    "ms": 56.28,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 7,
+    "status": 200,
+    "ms": 57.61,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 8,
+    "status": 200,
+    "ms": 51.46,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 9,
+    "status": 200,
+    "ms": 50.75,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 10,
+    "status": 200,
+    "ms": 56.14,
+    "bytes": 56995,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   }
+  ],
+  "run1_statements": "see label A for the full text; other stages differ only in the number of repeated per-habit SELECT `date` FROM `completions` statements"
+ },
+ {
+  "label": "E",
+  "habits": 100,
+  "path": "/v1/home",
+  "runs": [
+   {
+    "run": 1,
+    "status": 200,
+    "ms": 52.24,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 2,
+    "status": 200,
+    "ms": 58.18,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 3,
+    "status": 200,
+    "ms": 44.76,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 4,
+    "status": 200,
+    "ms": 52.32,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 5,
+    "status": 200,
+    "ms": 55.05,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 6,
+    "status": 200,
+    "ms": 52.74,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 7,
+    "status": 200,
+    "ms": 55.12,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 8,
+    "status": 200,
+    "ms": 57.41,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 9,
+    "status": 200,
+    "ms": 55.59,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   },
+   {
+    "run": 10,
+    "status": 200,
+    "ms": 57.28,
+    "bytes": 69644,
+    "items": 100,
+    "pre_rows": 0,
+    "query_execute": 106,
+    "by_type": {
+     "Prepare": 106,
+     "Execute": 106,
+     "Close stmt": 106
+    },
+    "sequence_sha1": "594d8fef64bd"
+   }
+  ],
+  "run1_statements": "see label A for the full text; other stages differ only in the number of repeated per-habit SELECT `date` FROM `completions` statements"
+ }
+]
