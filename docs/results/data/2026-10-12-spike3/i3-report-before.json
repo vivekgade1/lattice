@@ -1,0 +1,225 @@
+{
+ "proposals": [
+  {
+   "id": "imp-3e1cd7f9",
+   "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]",
+   "signal_key": "gate:level_regression:X",
+   "evidence": [
+    "e-e8d9c91c15964512",
+    "e-327c71cd641f49a0",
+    "e-f6061c7895644d98"
+   ],
+   "score": 358.54,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 3,
+   "cost_per": 119.51,
+   "kind": "change_set",
+   "target_paths": [
+    "studio.toml"
+   ],
+   "why": "layer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates",
+   "status": "open",
+   "draftable": true,
+   "expected": {
+    "x_repeats_from": 5,
+    "x_repeats_to": 2,
+    "x_seconds_now": 119.5,
+    "saving_s_per_gate": 71.7,
+    "drop": 0.6,
+    "basis": "layer X seconds scale with tries per race (x_repeats)"
+   }
+  },
+  {
+   "id": "imp-256fef6a",
+   "title": "Cap Await waits at level gates (regression): level_gate_args += [\"--await-cap\", \"5\"]",
+   "signal_key": "gate:level_regression:D",
+   "evidence": [
+    "e-e8d9c91c15964512",
+    "e-327c71cd641f49a0",
+    "e-f6061c7895644d98"
+   ],
+   "score": 67.55,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 3,
+   "cost_per": 22.52,
+   "kind": "change_set",
+   "target_paths": [
+    "studio.toml"
+   ],
+   "why": "layer D (scenarios) is the measured cost; waits on unbuilt services are the usual reason (I-06)",
+   "status": "open",
+   "draftable": true
+  },
+  {
+   "id": "imp-56861ff8",
+   "title": "Layer C at level gates (regression) costs 0.4 s a run",
+   "signal_key": "gate:level_regression:C",
+   "evidence": [
+    "e-e8d9c91c15964512",
+    "e-327c71cd641f49a0",
+    "e-f6061c7895644d98"
+   ],
+   "score": 1.21,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 3,
+   "cost_per": 0.4,
+   "kind": "experiment",
+   "target_paths": [
+    "lattice/spec/check.py"
+   ],
+   "why": "no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically",
+   "status": "needs_owner",
+   "draftable": false
+  },
+  {
+   "id": "imp-1b47d34f",
+   "title": "Layer A at level gates (regression) costs 0.0 s a run",
+   "signal_key": "gate:level_regression:A",
+   "evidence": [
+    "e-e8d9c91c15964512",
+    "e-327c71cd641f49a0",
+    "e-f6061c7895644d98"
+   ],
+   "score": 0.08,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 3,
+   "cost_per": 0.03,
+   "kind": "experiment",
+   "target_paths": [
+    "lattice/spec/check.py"
+   ],
+   "why": "no configuration knob exists for layer A; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically",
+   "status": "needs_owner",
+   "draftable": false
+  },
+  {
+   "id": "imp-a8f0a344",
+   "title": "Unchecked rules (free text)",
+   "signal_key": "unchecked:free_text",
+   "evidence": [
+    "e-5eb5a759b8344fbc"
+   ],
+   "score": null,
+   "unit": null,
+   "score_class": "C",
+   "frequency": 5,
+   "cost_per": null,
+   "kind": "experiment",
+   "target_paths": [
+    "docs/lattice-reference.md"
+   ],
+   "why": "5 rule(s) unchecked for this reason",
+   "status": "open",
+   "draftable": true
+  }
+ ],
+ "events": 9,
+ "method": "Frequency x cost, the I-R method (docs/results/2026-10-12-i-r-improvement-ranking.md): events are clustered by signal_key or cause; f = occurrences; c = the mean cost of one occurrence in wall seconds, or in list-price dollars only when the cluster recorded no seconds (never converted); score = f x c. Seconds-scored clusters (class A) rank above dollar-scored ones (B), above clusters with no recorded cost (C, ordered by f, not a score). Items closed in improvements.jsonl are left out. At most N proposals; one that touches the checker or the spec language is needs_owner and never drafted. The owner decides; nothing is merged automatically.",
+ "blind_spots": [
+  "human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)",
+  "risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only",
+  "recurrence: f counts past occurrences, not future ones; a one-off scores like a habit",
+  "cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)",
+  "causes an old record cannot state (other) and signals no event records (a workaround that hides an error)",
+  "one project's log: n is small, so a ranking can overfit that project"
+ ],
+ "closed": [],
+ "clusters": [
+  {
+   "signal_key": "gate:level_regression:X",
+   "score_class": "A",
+   "frequency": 3,
+   "cost_per": 119.5142,
+   "score": 358.5426,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "gate:level_regression:D",
+   "score_class": "A",
+   "frequency": 3,
+   "cost_per": 22.516499999999997,
+   "score": 67.5495,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "gate:level_regression:C",
+   "score_class": "A",
+   "frequency": 3,
+   "cost_per": 0.4049666666666667,
+   "score": 1.2149,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "gate:level_regression:A",
+   "score_class": "A",
+   "frequency": 3,
+   "cost_per": 0.02673333333333333,
+   "score": 0.0802,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "unchecked:free_text",
+   "score_class": "C",
+   "frequency": 5,
+   "cost_per": null,
+   "score": null,
+   "unit": null,
+   "closed": false
+  },
+  {
+   "signal_key": "unchecked:stub_observability",
+   "score_class": "C",
+   "frequency": 3,
+   "cost_per": null,
+   "score": null,
+   "unit": null,
+   "closed": false
+  },
+  {
+   "signal_key": "unchecked:request_header",
+   "score_class": "C",
+   "frequency": 2,
+   "cost_per": null,
+   "score": null,
+   "unit": null,
+   "closed": false
+  },
+  {
+   "signal_key": "unchecked:pattern_match",
+   "score_class": "C",
+   "frequency": 1,
+   "cost_per": null,
+   "score": null,
+   "unit": null,
+   "closed": false
+  },
+  {
+   "signal_key": "unchecked:production_only",
+   "score_class": "C",
+   "frequency": 1,
+   "cost_per": null,
+   "score": null,
+   "unit": null,
+   "closed": false
+  },
+  {
+   "signal_key": "unchecked:response_header",
+   "score_class": "C",
+   "frequency": 1,
+   "cost_per": null,
+   "score": null,
+   "unit": null,
+   "closed": false
+  }
+ ],
+ "warnings": [],
+ "log": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/spike3-imp/i3-state/events.jsonl"
+}

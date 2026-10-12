@@ -1,0 +1,4 @@
+{"id": "I-05", "signal": "cause:spec_unsatisfiable", "status": "closed", "commit": "e93faea", "ts": "2026-10-12T23:07:52Z"}
+{"id": "I-06", "signal": "gate:node*:D", "status": "closed", "commit": "v1.11", "ts": "2026-10-12T23:07:52Z"}
+{"id": "I-07", "signal": "gate:level_full:*", "status": "closed", "commit": "v1.11", "ts": "2026-10-12T23:07:53Z"}
+{"id": "I-08", "signal": "human:spec_sync", "status": "closed", "commit": "13d6533", "ts": "2026-10-12T23:07:53Z"}

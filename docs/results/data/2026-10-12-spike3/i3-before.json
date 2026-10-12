@@ -1,0 +1,77 @@
+[
+ {
+  "phase": "before",
+  "run": 1,
+  "command": "./check.sh --only-file /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/spike3-imp/streak-imp/.lattice/rebuilds/streak-i3-before-1-5b4de9/.lattice-scope/level-selection.json",
+  "exit_code": 0,
+  "seconds": 143.76,
+  "layer_seconds": {
+   "A": 0.0269,
+   "C": 0.3961,
+   "D": 22.3772,
+   "X": 119.7542
+  },
+  "x_repeats": 5,
+  "counts": {
+   "A": 0,
+   "B": 0,
+   "C": 0,
+   "D": 0,
+   "X": 0
+  },
+  "findings": 0,
+  "level_gate_args": null,
+  "selected": 152,
+  "wall": 143.78
+ },
+ {
+  "phase": "before",
+  "run": 2,
+  "command": "./check.sh --only-file /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/spike3-imp/streak-imp/.lattice/rebuilds/streak-i3-before-2-cf56e7/.lattice-scope/level-selection.json",
+  "exit_code": 0,
+  "seconds": 143.81,
+  "layer_seconds": {
+   "A": 0.027,
+   "C": 0.4122,
+   "D": 22.808,
+   "X": 119.3136
+  },
+  "x_repeats": 5,
+  "counts": {
+   "A": 0,
+   "B": 0,
+   "C": 0,
+   "D": 0,
+   "X": 0
+  },
+  "findings": 0,
+  "level_gate_args": null,
+  "selected": 152,
+  "wall": 143.82
+ },
+ {
+  "phase": "before",
+  "run": 3,
+  "command": "./check.sh --only-file /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/spike3-imp/streak-imp/.lattice/rebuilds/streak-i3-before-3-ec3690/.lattice-scope/level-selection.json",
+  "exit_code": 0,
+  "seconds": 143.59,
+  "layer_seconds": {
+   "A": 0.0263,
+   "C": 0.4066,
+   "D": 22.3643,
+   "X": 119.4748
+  },
+  "x_repeats": 5,
+  "counts": {
+   "A": 0,
+   "B": 0,
+   "C": 0,
+   "D": 0,
+   "X": 0
+  },
+  "findings": 0,
+  "level_gate_args": null,
+  "selected": 152,
+  "wall": 143.61
+ }
+]

@@ -1,0 +1,46 @@
+Lattice improve: proposals from the event log (no model; the owner decides)
+
+Method: Frequency x cost, the I-R method (docs/results/2026-10-12-i-r-improvement-ranking.md): events are clustered by signal_key or cause; f = occurrences; c = the mean cost of one occurrence in wall seconds, or in list-price dollars only when the cluster recorded no seconds (never converted); score = f x c. Seconds-scored clusters (class A) rank above dollar-scored ones (B), above clusters with no recorded cost (C, ordered by f, not a score). Items closed in improvements.jsonl are left out. At most N proposals; one that touches the checker or the spec language is needs_owner and never drafted. The owner decides; nothing is merged automatically.
+
+Blind spots:
+  - human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)
+  - risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only
+  - recurrence: f counts past occurrences, not future ones; a one-off scores like a habit
+  - cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)
+  - causes an old record cannot state (other) and signals no event records (a workaround that hides an error)
+  - one project's log: n is small, so a ranking can overfit that project
+
+Events read: 33
+
+1. [A] Ask why the owner stopped these nodes
+   signal cause:stopped_by_owner: 1 x 2709.2 s = 2709.2 s
+   kind experiment; targets: -; status open
+   why: the owner stopped them; the log does not record why
+   evidence: e-42eaf8bf9cbbbb9d
+
+2. [A] Reuse the recorded result of a tip that was already gated (2 baseline(s) re-ran it)
+   signal gate:baseline_rerun:total: 2 x 421.2 s = 842.4 s
+   kind change_set; targets: lattice/studio/plan.py, scripts/import_plan_record.py; status open
+   why: a start baseline ran the full gate on a commit whose gate result the log already holds; seeding results/<sha>.json (also when a pre-v1.10 plan record is imported) skips it
+   evidence: e-c907a36c28a93d10, e-cb1490cdbfb210c4
+
+3. [A] Attribute the time of level gates (regression) to layers (5 run(s), no per-layer seconds logged)
+   signal gate:level_regression:total: 5 x 143.3 s = 716.3 s
+   kind experiment; targets: studio.toml; status open
+   why: the log has only whole-gate seconds; with [rebuild] findings_json the gate's JSON timings are logged per layer and the next report names the layer
+   evidence: e-ffe0a1ec90c98452, e-ba4b4d9cc5221d22, e-c2af354ec8240f31, e-f25d377a8358e974, e-9db0329c2f32d3a6
+
+4. [A] Classify give-ups whose cause was not recorded
+   signal cause:other: 2 x 317.0 s = 634.0 s
+   kind experiment; targets: -; status open
+   why: the records do not say why (records older than the cause field)
+   evidence: e-d28503262b10a8f9, e-d76d7043bfe29798
+
+5. [A] Attribute the time of start baselines to layers (2 run(s), no per-layer seconds logged)
+   signal gate:baseline:total: 2 x 148.4 s = 296.8 s
+   kind experiment; targets: studio.toml; status open
+   why: the log has only whole-gate seconds; with [rebuild] findings_json the gate's JSON timings are logged per layer and the next report names the layer
+   evidence: e-68ea223fc3c8e3f5, e-16ee4fa1685b0801
+
+Closed (left out):
+  - gate:level_full:total (I-07, v1.11): f = 2
