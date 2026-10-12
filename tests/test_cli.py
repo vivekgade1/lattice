@@ -11,7 +11,7 @@ import pytest
 
 from lattice import cli
 
-SUBCOMMANDS = ["studio", "check", "spec", "import", "mcp", "projects"]
+SUBCOMMANDS = ["studio", "check", "spec", "import", "mcp", "perf", "projects"]
 
 
 @pytest.mark.parametrize("sub", SUBCOMMANDS)
@@ -44,6 +44,7 @@ def test_unknown_subcommand_exits_two(capsys):
         (["import", ".", "--package", "x"], "lattice.importer.cli"),
         (["spec", "draft", "REQ.md", "--out", "x.py"], "lattice.spec.__main__"),
         (["spec", "fidelity", "--spec", "s"], "lattice.spec.__main__"),
+        (["perf", "check", "--project", "p", "--runs", "3"], "lattice.perf.__main__"),
     ],
 )
 def test_dispatch_forwards_argv_verbatim(argv, target, monkeypatch):

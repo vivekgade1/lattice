@@ -178,9 +178,13 @@ def _admin_user(dialect: str) -> str:
 
 
 def start_container(
-    dialect: str, image: str | None = None, timeout: float = START_TIMEOUT
+    dialect: str,
+    image: str | None = None,
+    timeout: float = START_TIMEOUT,
+    name_prefix: str = NAME_PREFIX,
 ) -> DbServer:
-    """A new throwaway server of ``dialect`` (see the module docstring)."""
+    """A new throwaway server of ``dialect`` (see the module docstring); its name starts
+    ``name_prefix`` (``lattice-``; the perf run uses ``lattice-perf-``)."""
     if dialect not in SERVER_DIALECTS:
         raise DbServerError(f"{dialect!r} is not a server dialect")
     if shutil.which("docker") is None:
@@ -188,7 +192,9 @@ def start_container(
             f"--database {dialect} needs Docker (the docker CLI is not installed), or a "
             f"server URL: --database-url or $LATTICE_{dialect.upper()}_URL"
         )
-    name = f"{NAME_PREFIX}{dialect}-{secrets.token_hex(4)}"
+    if not re.fullmatch(r"lattice-[a-z0-9-]*", name_prefix):
+        raise DbServerError(f"container name prefix {name_prefix!r} must start 'lattice-'")
+    name = f"{name_prefix}{dialect}-{secrets.token_hex(4)}"
     opts, args = _run_args(dialect)
     cport = PORTS[dialect]
     labels = ["--label", "lattice.spec=throwaway"]
@@ -427,9 +433,11 @@ class DbServer:
             remove_container(self.container)
 
 
-def server_for(dialect: str, url: str | None = None) -> tuple[DbServer, bool]:
+def server_for(
+    dialect: str, url: str | None = None, name_prefix: str = NAME_PREFIX
+) -> tuple[DbServer, bool]:
     """The server of ``dialect`` (see the module docstring) and whether the check owns it
-    (a container it started, removed when the check ends)."""
+    (a container it started, named ``name_prefix...``, removed when the check ends)."""
     given = url or os.environ.get(f"LATTICE_{dialect.upper()}_URL")
     if given:
         found = dialect_of(given)
@@ -438,7 +446,7 @@ def server_for(dialect: str, url: str | None = None) -> tuple[DbServer, bool]:
         server = DbServer(dialect, given)
         server.wait_ready(30)
         return server, False
-    return start_container(dialect), True
+    return start_container(dialect, name_prefix=name_prefix), True
 
 
 # ---- the per-scenario databases ------------------------------------------------------------
