@@ -11,6 +11,8 @@ API key, no Docker) with a real ``python -m lattice.studio`` server:
   A  killed while an agent is in the middle of a node's round
   B  killed while a level's gate is running (the gate process is left behind)
   C  killed while a level-repair round is running (API v1.11)
+  F  a fake `claude -p` killed mid-turn: the session is resumed (--resume) with a note
+  R  a REAL `claude -p` (haiku) killed mid-turn, same check; spends tokens, so only on request
 
 Checked after the restart, in every drill: the plan is ``interrupted`` with reason
 ``studio_restarted``; the orphaned process is terminated; ``resume`` names what is skipped
@@ -106,6 +108,7 @@ class Drill:
         self.procs: list[subprocess.Popen] = []
         self.checks: list[tuple[str, bool, str]] = []
         self.facts: dict[str, Any] = {}
+        self.env_extra: dict[str, str] = {}
 
     # -- project
     def make_project(
@@ -113,8 +116,15 @@ class Drill:
         scopes: dict[str, Any] | None = None,
         rounds: dict[str, Any] | None = None,
         gate_hold: bool = False,
+        toml: str | None = None,
+        gate: str | None = None,
     ) -> None:
         shutil.copytree(SEED, self.project)
+        if gate is not None:
+            (self.project / "gate.sh").write_text(gate)
+            (self.project / "gate.sh").chmod(0o755)
+        if toml is not None:
+            (self.project / "studio.toml").write_text(toml)
         if scopes is not None:
             (self.project / "stub-plan.json").write_text(json.dumps({"scopes": scopes}))
         if rounds:
@@ -142,6 +152,7 @@ class Drill:
         port = s.getsockname()[1]
         s.close()
         env = {k: v for k, v in os.environ.items() if not k.startswith("ANTHROPIC")}
+        env.update(self.env_extra)
         env.update(
             {
                 "PYTHONPATH": str(ROOT),
@@ -230,8 +241,8 @@ class Drill:
     def check(self, what: str, ok: bool, evidence: str = "") -> None:
         self.checks.append((what, bool(ok), evidence))
 
-    def start_plan(self, base: str, scope: Any) -> None:
-        assert http("POST", base + "/api/plan", {"scope": scope})[1]["id"] == "p1"
+    def start_plan(self, base: str, scope: Any, **extra: Any) -> None:
+        assert http("POST", base + "/api/plan", {"scope": scope, **extra})[1]["id"] == "p1"
         assert wait_for(lambda: self.plan(base)["status"] == "ready", 60), self.plan(base)
         assert http("POST", base + "/api/plan/p1/approve", {})[0] == 200
         assert http("POST", base + "/api/plan/p1/run", {})[0] == 200
@@ -460,23 +471,315 @@ def drill_c(d: Drill) -> None:
     d.finish(base2, before)
 
 
+# a stand-in for `claude -p`: logs its argv, answers the first call at once (a node that
+# passes), holds the second until $FAKE_DIR/release exists (the turn a restart cuts off), and
+# answers a --resume call at once; every call writes the files the seed's gate looks for
+FAKE_CLAUDE = """#!{python}
+import json, os, sys, time
+if "--version" in sys.argv:
+    print("2.0.0")
+    sys.exit(0)
+d = os.environ["FAKE_DIR"]
+calls = os.path.join(d, "calls.jsonl")
+n = len(open(calls).read().splitlines()) + 1 if os.path.exists(calls) else 1
+with open(calls, "a") as f:
+    f.write(json.dumps({{"n": n, "argv": sys.argv, "cwd": os.getcwd()}}) + "\\n")
+sid = "sess-fake-1"
+print(json.dumps({{"type": "system", "subtype": "init", "session_id": sid}}), flush=True)
+usage = {{"input_tokens": 10, "output_tokens": 20, "cache_read_input_tokens": 0,
+         "cache_creation_input_tokens": 0}}
+print(json.dumps({{"type": "assistant", "message": {{"id": "m%d" % n, "content": [
+    {{"type": "text", "text": "working"}}], "usage": usage}}}}), flush=True)
+if n == 2 and "--resume" not in sys.argv:
+    while not os.path.exists(os.path.join(d, "release")):
+        time.sleep(0.1)
+for name in ("writing.txt", "reading.txt"):
+    open(name, "w").write("x\\n")
+print(json.dumps({{"type": "result", "subtype": "success", "is_error": False,
+                  "result": "done", "session_id": sid, "num_turns": 1,
+                  "total_cost_usd": 0.001, "usage": usage}}), flush=True)
+"""
+
+
+def drill_f(d: Drill) -> None:
+    """A fake `claude` killed mid-turn (the second node's): the restarted Studio resumes
+    that very session (``--resume``) with a continuation note, and runs nothing twice."""
+    import stat
+
+    bindir = d.dir / "bin"
+    bindir.mkdir()
+    exe = bindir / "claude"
+    exe.write_text(FAKE_CLAUDE.format(python=sys.executable))
+    exe.chmod(exe.stat().st_mode | stat.S_IEXEC)
+    fake = d.dir / "fake"
+    fake.mkdir()
+    d.env_extra = {"PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}", "FAKE_DIR": str(fake)}
+    d.make_project(toml=REAL_TOML)
+    base = d.serve()
+    d.start_plan(base, {"areas": ["writing-notes", "reading-notes"]}, max_parallel=1)
+
+    def calls() -> list[dict[str, Any]]:
+        f = fake / "calls.jsonl"
+        return [json.loads(x) for x in f.read_text().splitlines()] if f.exists() else []
+
+    def rec_session() -> Any:
+        n = {x["id"]: x for x in d.plan(base)["nodes"]}.get("reading")
+        if not n or not n.get("build_id"):
+            return None
+        return (http("GET", base + f"/api/rebuild/{n['build_id']}")[1] or {}).get("session_id")
+
+    ok = wait_for(lambda: len(calls()) >= 2 and bool(rec_session()), 120)
+    d.check(
+        "the second node's turn was held mid-way and its session id already recorded",
+        ok,
+        f"calls={len(calls())} session={rec_session()}",
+    )
+    orphan = d.agent_pid(base, "reading")
+    nodes = {x["id"]: x["status"] for x in d.plan(base)["nodes"]}
+    d.check("the first node had passed", nodes.get("writing") == "passed", str(nodes))
+    d.kill_server()
+    base2 = d.serve()
+    rec = d.common_after_restart(base2, orphan)
+    code, out = http("POST", base2 + "/api/plan/p1/run", {})
+    d.check("POST run accepted", code == 200, f"{code} {out}")
+    rec = d.wait_done(base2, 120)
+    d.check(
+        "plan ends passed", rec["status"] == "passed", f"status={rec['status']} {rec.get('error')}"
+    )
+    cs = calls()
+    d.facts["claude_calls"] = [
+        {
+            "n": c["n"],
+            "resume": c["argv"][c["argv"].index("--resume") + 1]
+            if "--resume" in c["argv"]
+            else None,
+            "prompt": c["argv"][-1][:60],
+        }
+        for c in cs
+    ]
+    d.check(
+        "exactly three agent calls: writing, reading (killed), reading resumed",
+        len(cs) == 3,
+        f"{len(cs)} calls",
+    )
+    if len(cs) == 3:
+        d.check(
+            "the third call resumed the killed turn's session",
+            "--resume" in cs[2]["argv"]
+            and cs[2]["argv"][cs[2]["argv"].index("--resume") + 1] == "sess-fake-1",
+            str(cs[2]["argv"][:4]),
+        )
+        d.check(
+            "and told the agent it was interrupted",
+            "Studio was restarted" in cs[2]["argv"][-1],
+            cs[2]["argv"][-1][:80],
+        )
+        d.check(
+            "the first node was never called again",
+            "--resume" not in cs[0]["argv"] and cs[1]["cwd"] == cs[2]["cwd"] != cs[0]["cwd"],
+        )
+    r = {x["id"]: x for x in rec["nodes"]}.get("reading", {})
+    b = http("GET", base2 + f"/api/rebuild/{r.get('build_id')}")[1] or {}
+    tl = [e["event"] for e in b.get("timeline") or []]
+    d.check(
+        "the timeline says the session was resumed",
+        any("session resumed" in e for e in tl),
+        str(tl)[:200],
+    )
+    d.check("the owner's branch never moved", git(d.project, "rev-parse", "main") == d.main_before)
+
+
+REAL_TOML = """\
+[llm]
+backend = "stub"
+model = "stub"
+
+[rebuild]
+agent = "claude"
+gates = ["./gate.sh"]
+max_rounds = 3
+protected_branches = ["release"]
+planner = "stub"
+models = {fast = "haiku", mid = "haiku", frontier = "haiku"}
+node_timeout = 600
+scoped_gate_args = ["--layers", "CD", "--x-repeats", "1", "--await-cap", "5"]
+level_gate = "regression"
+"""
+
+
+# a gate a real agent can honestly satisfy: the handlers exist in notes.py (the seed's gate.sh
+# wants marker files only the stub agent writes, which a real agent rightly refuses to fake)
+REAL_GATE = """\
+#!/bin/sh
+only=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --only-file) only="$2"; shift 2 ;;
+    --layers|--x-repeats|--await-cap) shift 2 ;;
+    *) shift ;;
+  esac
+done
+selected() { [ -z "$only" ] && return 0; grep -q "\"scenario:$1\"" "$only"; }
+n=0
+out=""
+add() { n=$((n + 1)); out="$out$1
+"; }
+if selected create_a_note; then
+  grep -q "def create_note" notes.py 2>/dev/null ||
+    add "FAIL no create_note (scenario:create_a_note)"
+fi
+if selected read_own_and_other; then
+  grep -q "def read_note" notes.py 2>/dev/null ||
+    add "FAIL no read_note (scenario:read_own_and_other)"
+fi
+if [ "$n" = 0 ]; then echo "PASS: 0 findings (G 0)"; exit 0; fi
+echo "FAIL: $n findings (G $n)"
+printf '%s' "$out"
+exit 1
+"""
+
+
+def drill_r(d: Drill) -> None:
+    """A REAL `claude -p` agent (haiku, a few cents at list price) killed mid-round: the
+    restarted Studio continues the node's own session (``--resume``) and does not run the
+    node that had passed again. Not part of the default run: it spends real tokens."""
+    d.make_project(toml=REAL_TOML, gate=REAL_GATE)
+    base = d.serve()
+    d.start_plan(base, {"areas": ["writing-notes", "reading-notes"]}, max_parallel=1)
+
+    def node(rec: dict[str, Any], i: str) -> dict[str, Any]:
+        return {n["id"]: n for n in rec["nodes"]}[i]
+
+    def session_of(i: str) -> str | None:
+        n = node(d.plan(base), i)
+        if not n.get("build_id"):
+            return None
+        return (http("GET", base + f"/api/rebuild/{n['build_id']}")[1] or {}).get("session_id")
+
+    def ready() -> bool:
+        rec = d.plan(base)
+        if rec["status"] not in ("running",):
+            raise RuntimeError(
+                f"plan ended {rec['status']} before the kill window: {rec.get('error')}"
+            )
+        return (
+            node(rec, "writing")["status"] == "passed"
+            and node(rec, "reading")["status"] == "running"
+            and d.agent_pid(base, "reading") is not None
+            and bool(session_of("reading"))
+        )
+
+    ok = wait_for(ready, 420, 0.25)
+    d.check(
+        "a real agent was in the middle of reading's round",
+        ok,
+        "waiting for writing passed + reading agent",
+    )
+    if not ok:
+        return
+    orphan = d.agent_pid(base, "reading")
+    rec = d.plan(base)
+    w = node(rec, "writing")
+    before = {
+        "writing_build": w["build_id"],
+        "writing_rounds": w.get("rounds"),
+        "writing_tokens_out": (w.get("usage") or {}).get("tokens_out"),
+        "reading_session": session_of("reading"),
+        "reading_status": node(rec, "reading")["status"],
+        "totals_tokens_out": (rec.get("totals") or {}).get("tokens_out"),
+    }
+    d.facts["before_kill"] = before
+    d.kill_server()
+    d.check("the agent outlived its server", orphan is not None and alive(orphan), f"pid {orphan}")
+    base2 = d.serve()
+    rec = d.common_after_restart(base2, orphan)
+    by = {n["id"]: n for n in rec["nodes"]}
+    d.check(
+        "reading is interrupted, writing kept",
+        by["reading"]["status"] == "interrupted" and by["writing"]["status"] == "passed",
+        f"reading={by['reading']['status']} writing={by['writing']['status']}",
+    )
+    b = http("GET", base2 + f"/api/rebuild/{by['reading']['build_id']}")[1] or {}
+    d.check(
+        "the agent's session id was kept in the record",
+        b.get("session_id") == before["reading_session"],
+        f"{before['reading_session']}",
+    )
+    code, out = http("POST", base2 + "/api/plan/p1/run", {})
+    d.check("POST run accepted", code == 200, f"{code} {out}")
+    rec = d.wait_done(base2, 600)
+    d.check(
+        "plan ends passed",
+        rec["status"] == "passed",
+        f"status={rec['status']} error={rec.get('error')}",
+    )
+    by = {n["id"]: n for n in rec["nodes"]}
+    w2 = by["writing"]
+    d.check(
+        "the passed node was not run again",
+        w2["build_id"] == before["writing_build"]
+        and w2.get("rounds") == before["writing_rounds"]
+        and (w2.get("usage") or {}).get("tokens_out") == before["writing_tokens_out"],
+        f"build {w2['build_id']} rounds {w2.get('rounds')} "
+        f"tokens_out {(w2.get('usage') or {}).get('tokens_out')}",
+    )
+    r2 = by["reading"]
+    d.check(
+        "the interrupted node was continued (attempts 2)",
+        r2.get("attempts") == 2,
+        f"attempts={r2.get('attempts')}",
+    )
+    b2 = http("GET", base2 + f"/api/rebuild/{r2['build_id']}")[1] or {}
+    resumed = [e["event"] for e in b2.get("timeline") or [] if "resum" in e["event"].lower()]
+    log_lines = [x for x in d.srv_log.read_text().splitlines() if "resum" in x.lower()]
+    d.check(
+        "the session was resumed, not started fresh",
+        bool(resumed or log_lines),
+        (resumed or log_lines or ["no 'resume' line"])[0][:160],
+    )
+    node_out = sum(int((n.get("usage") or {}).get("tokens_out") or 0) for n in rec["nodes"])
+    t = rec.get("totals") or {}
+    d.check(
+        "plan totals equal the sum of its nodes across the restart",
+        int(t.get("tokens_out") or 0) == node_out,
+        f"totals {t.get('tokens_out')} vs nodes {node_out}",
+    )
+    try:
+        landed = "def read_note" in git(d.project, "show", "build/notes:notes.py")
+    except RuntimeError:
+        landed = False
+    d.check("reading's handler is on the target branch (build/notes)", landed)
+    d.check("the owner's branch never moved", git(d.project, "rev-parse", "main") == d.main_before)
+    d.facts["after"] = {
+        "reading_session": b2.get("session_id"),
+        "reading_rounds": r2.get("rounds"),
+        "tokens_out": t.get("tokens_out"),
+        "cost_usd_list_estimate": t.get("cost_usd_list_estimate"),
+        "wall_s": t.get("wall_s"),
+        "resume_evidence": (resumed or log_lines)[:3],
+    }
+
+
 DRILLS = {
     "A": ("killed mid agent round", drill_a),
     "B": ("killed mid level gate", drill_b),
     "C": ("killed mid repair round", drill_c),
+    "F": ("fake claude killed mid turn, session resumed", drill_f),
+    "R": ("REAL agent killed mid round (spends tokens; not in the default run)", drill_r),
 }
+DEFAULT = ["A", "B", "C", "F"]
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("drills", nargs="*", choices=[*DRILLS, []], default=list(DRILLS))
+    ap.add_argument("drills", nargs="*", choices=list(DRILLS), default=DEFAULT)
     ap.add_argument("--keep", action="store_true", help="keep the temp directory")
     args = ap.parse_args(argv)
     tmp = Path(tempfile.mkdtemp(prefix="lattice-drill-"))
     report: dict[str, Any] = {}
     bad = 0
     try:
-        for key in args.drills or list(DRILLS):
+        for key in args.drills or DEFAULT:
             title, fn = DRILLS[key]
             d = Drill(key, tmp)
             t0 = time.time()

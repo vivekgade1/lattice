@@ -182,6 +182,13 @@ from their exit codes; what you say about them is not trusted.
 - Finish with one or two sentences saying what you changed and why."""
 
 
+INTERRUPTED_NOTE = (
+    "Studio was restarted while you were working, which ended your previous turn. Your "
+    "conversation and every file you had already written in this worktree are intact. "
+    "Carry on with the task you were given: look at what you have, finish it, and run the "
+    "gate command(s) until they pass."
+)
+
 SCOPE_RULES = """\
 You are the coding agent of a Lattice Studio build from the spec. The project's spec is \
 committed; the app does not do all of it yet. Your job is to change the CODE so the checks \
@@ -1028,6 +1035,7 @@ class _Run:
     always_run: bool = False  # a scaffold node runs even with no in-scope failing check
     # durable state and resume (API v1.10)
     start_round: int = 1  # a continued build starts at the round after its last completed one
+    resume_turn: bool = False  # the first turn goes on the interrupted session (--resume)
     wall_offset: float = 0.0  # wall time of the earlier attempts of a continued build
     attempt: int = 1  # which start of this build (or plan node) this is
     skip_prelude: bool = False  # a continued scoped build whose baseline is already done
@@ -2057,6 +2065,7 @@ class Rebuilder:
             rec["max_rounds"] = max(int(rec.get("max_rounds") or 1), start)
             run.start_round = start
             run.session_id = rec.get("session_id") or run.session_id
+            run.resume_turn = bool(run.session_id)
             run.attempt = attempt if attempt is not None else int(rec.get("attempts") or 1) + 1
             rec["attempts"] = run.attempt
             run.wall_offset = float((rec.get("usage") or {}).get("wall_s") or 0.0)
@@ -2067,7 +2076,7 @@ class Rebuilder:
             run.baseline_done.set()
             run.tmp = None
             rec.update(status="queued", interrupted=False, finished=None, error=None, pids=[])
-            how = (f"from round {start}" + (" (session resumed)" if start > 1 and run.session_id
+            how = (f"from round {start}" + (" (session resumed)" if run.session_id
                                             else " (fresh session)"))  # fmt: skip
             rec.setdefault("timeline", []).append(
                 {"at": _now(), "event": f"continued {how}, attempt {run.attempt}"}
@@ -2405,6 +2414,10 @@ class Rebuilder:
 
         if run.repair_brief:  # a repair round after a failing level gate (API v1.11)
             return run.repair_brief if run.session_id else first() + "\n\n" + run.repair_brief
+        if run.resume_turn and run.session_id:  # the turn Studio's restart cut off
+            if n > 1 and last_check is not None:
+                return INTERRUPTED_NOTE + "\n\n" + again()
+            return INTERRUPTED_NOTE
         if n == 1 or last_check is None:
             return first()
         if not run.session_id:
@@ -2740,7 +2753,8 @@ class Rebuilder:
         if run.tmp is None:
             run.tmp = Path(tempfile.mkdtemp(prefix="lattice-rebuild-cfg-"))
             write_configs(run.tmp, "ask", run.worktree / run.project_rel, self.python)
-        resume = run.session_id if n > 1 else None
+        resume = run.session_id if (n > 1 or run.resume_turn) else None
+        run.resume_turn = False
         argv = build_rebuild_argv(
             claude_bin=self.claude_bin,
             text=prompt,
@@ -2808,6 +2822,17 @@ class Rebuilder:
                 if isinstance(rec, dict):
                     t.feed(rec)
                     seen.feed(rec)
+                    if (
+                        rec.get("type") == "assistant"
+                        and t.claude_session_id
+                        and run.record.get("session_id") != t.claude_session_id
+                    ):
+                        # known as soon as the agent has spoken, not when its process
+                        # exits: a Studio killed mid-turn can then resume this very session
+                        with self.lock:
+                            run.session_id = t.claude_session_id
+                            run.record["session_id"] = t.claude_session_id
+                            self._save(run)
                     if cap and not over_budget.is_set() and spent + seen.output_tokens() > cap:
                         over_budget.set()
                         _kill_group(proc, signal.SIGTERM)

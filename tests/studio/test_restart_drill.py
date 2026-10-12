@@ -14,7 +14,7 @@ import pytest
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "restart_drill.py"
 
 
-@pytest.mark.parametrize("drill", ["A", "B", "C"])
+@pytest.mark.parametrize("drill", ["A", "B", "C", "F"])
 def test_the_restart_drill(drill: str) -> None:
     r = subprocess.run(
         [sys.executable, str(SCRIPT), drill], capture_output=True, text=True, timeout=600
