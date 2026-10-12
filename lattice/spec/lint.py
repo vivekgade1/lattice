@@ -84,6 +84,15 @@ firing conditions and their known limits:
   (422 vs 201) are not compared; a contradiction spread across different setups is not
   seen.
 
+* **L012 unsatisfiable expectation** (`lattice.spec.preconditions.contradictions`) -- a
+  step expects *no* row of a table where W after an earlier step of its scenario expected
+  one (same table, same ``where``), and nothing in between can remove it (every step after
+  the earlier one is a read, or a request the spec says is refused, ``expect_status >=
+  400``; an ``Await`` or a write expecting a 2xx ends the pair). No implementation can
+  pass it. Limits: only the same ``where`` (equal as written); rests on "a refused request
+  changes nothing". ``check`` adds the other half at run time: a failing ``expect_db``
+  whose row nothing before it can have created says so ("spec problem: ...").
+
 CLI (``main``): ``lint --spec MOD:SPEC|FILE.py [--trace PATH] [--db MOD:fn]
 [--login MOD:fn] [--json]``; prints the findings grouped by code with their fixes (or
 JSON: ``{"findings": [...], "notes": [...]}``); exit 0 with no findings, 1 with
@@ -104,6 +113,7 @@ from pathlib import Path
 from typing import Any
 
 from lattice.spec.model import Await, Scenario, Spec, Step, resolve_table, tables_of
+from lattice.spec.preconditions import contradictions
 from lattice.spec.rules import LINK_KINDS, Trace, trace_path
 
 WRITE_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
@@ -119,6 +129,7 @@ CODES: Mapping[str, str] = {
     "L009": "vacuous scenario",
     "L010": "question without a default or rules",
     "L011": "conflicting expectations",
+    "L012": "unsatisfiable expectation",
 }
 
 _SIGNAL = re.compile(r"\b(never|at most|only|unique\w*|duplicat\w*|exactly|must|every|all)\b", re.I)
@@ -847,6 +858,29 @@ def _l011(spec: Spec, trace: Trace) -> list[LintFinding]:
     return out
 
 
+# ---- L012 ----------------------------------------------------------------------------------
+
+
+def _l012(spec: Spec, trace: Trace) -> list[LintFinding]:
+    """Steps expecting no row of a table where W after an earlier step expected one (L012)."""
+    by_element = _rules_by_element(trace)
+    out = []
+    for sc in spec.scenarios:
+        target = f"scenario:{sc.name}"
+        rules = by_element.get(target, [])
+        for c in contradictions(sc):
+            where = f" where {c.where}" if c.where else ""
+            out.append(LintFinding(
+                "L012", rules[0] if len(rules) == 1 else None, target,
+                f"scenario {sc.name!r}: step {c.step_b} expects no row of {c.table}{where}, "
+                f"but step {c.step_a} expected one and nothing in between can remove it",
+                f"Make step {c.step_b} look at a different row (a fresh value in its "
+                f"request and in its where), or expect the row of step {c.step_a} to be "
+                "unchanged: a refused request leaves what was there.",
+            ))  # fmt: skip
+    return out
+
+
 # ---- L009: vacuity -------------------------------------------------------------------------
 
 
@@ -956,6 +990,7 @@ def lint(
         found += _l009(spec, trace, vacuity, notes)
     found += _l010(trace)
     found += _l011(spec, trace)
+    found += _l012(spec, trace)
     return sorted(found, key=lambda f: f.code)
 
 

@@ -111,6 +111,7 @@ from lattice.pycheck import CODES, Policy, derive_policy, run_pycheck
 from lattice.spec.db import DB_ERRORS, DbRef, as_ref, check_dialect, open_db
 from lattice.spec.invariants import InvariantError, compile_invariant
 from lattice.spec.model import Await, Invariant, Scenario, Spec, Step, resolve_table, tables_of
+from lattice.spec.preconditions import unestablished
 from lattice.spec.report import LAYERS, Accepted, CheckFinding, Report
 from lattice.spec.services import POLL_S, Services, start_service
 from lattice.spec.validate import validate
@@ -1721,6 +1722,7 @@ def _run_scenario(
                             problems.append(f"body: expected {step.expect_body!r} within {body!r}")
                         if step.expect_db:
                             problems += _expect_db(spec, db, step.expect_db)
+                            problems += unestablished(scenario, i, step.expect_db, problems)
                         verdict = "correct"
                         if problems:
                             verdict = "loud" if response.status_code >= 500 else "silent"
