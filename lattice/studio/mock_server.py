@@ -94,6 +94,13 @@ server's fields and refusal codes (``branch_name_invalid``, ``branch_protected``
 ``no_branch``, ``build_running`` while a build or plan runs, ``nothing_to_sync``) and moves the
 branch to a fake commit. ``[rebuild] sync_spec = "auto"`` is not simulated (the mock is "off").
 
+API v1.13 (connected MCP servers): ``GET /api/mcp[?refresh=1]`` answers the real server's shape
+from a fixture discovery (``MOCK_MCP_INIT``: two connected claude.ai connectors with read and
+write tools, one that needs authentication, one that failed), classified and counted by
+``lattice.studio.mcp_intake`` itself; ``refresh=1`` moves ``refreshed_at``. ``POST /api/changes``
+validates and stores ``source`` like the real server (a follow-up keeps its parent's), and the
+seeded change ``c0`` came from a fixture tracker item, so the change card shows a source.
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -116,6 +123,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 from lattice.studio import areas as areas_mod
 from lattice.studio import plan as plan_mod
+from lattice.studio.mcp_intake import McpIntake, SourceError, parse_init, parse_source
 from lattice.studio.session import (
     SessionError,
     Transcript,
@@ -147,6 +155,28 @@ LIVE_CHANGE_STATUSES = ("ready", "accepted")
 SPEC_BEHIND_BRANCH = "build/spec-behind"
 SPEC_BEHIND_FILES = ["REQUIREMENTS.md", "spec.trace.json"]
 SPEC_DRIFT_WARNING = "The spec on "
+# API v1.13: the system/init record a discovery would read (names only, as Claude Code prints them)
+MOCK_MCP_INIT: dict[str, Any] = {
+    "type": "system",
+    "subtype": "init",
+    "mcp_servers": [
+        {"name": "claude.ai Gmail", "status": "connected", "source": "claudeai"},
+        {"name": "claude.ai Claude Docs", "status": "connected", "source": "claudeai"},
+        {"name": "claude.ai Google Drive", "status": "needs-auth", "source": "claudeai"},
+        {"name": "claude.ai Tracker", "status": "failed", "source": "claudeai"},
+    ],
+    "tools": [
+        *(f"mcp__claude_ai_Gmail__{t}" for t in (
+            "search_threads", "get_thread", "get_message", "list_labels", "list_drafts",
+            "get_draft", "send_message", "create_draft", "reply", "forward", "trash_thread",
+            "label_message", "mark_message_spam")),
+        *(f"mcp__claude_ai_Claude_Docs__{t}" for t in (
+            "read", "query", "export", "guide", "create", "update", "delete", "batch")),
+    ],
+}  # fmt: skip
+MOCK_SOURCE = {"server": "claude.ai Tracker", "item": "JOB-42",
+               "url": "https://tracker.example.com/issue/JOB-42",
+               "title": "Only admins should cancel runs"}  # fmt: skip
 
 # Keyword -> ask fixture. The first rule whose words all appear in the question wins.
 ASK_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
@@ -862,6 +892,7 @@ class MockState:
         self.spec_behind: dict[str, list[str]] = {SPEC_BEHIND_BRANCH: list(SPEC_BEHIND_FILES)}
         self.sessions = MockSessions(fixture_dir)
         self.plans = MockPlans(self)
+        self.mcp_refreshed: str | None = None
         if seed_change:
             self._seed_initial_change()
 
@@ -880,7 +911,18 @@ class MockState:
             "superseded_by": None,
             "error": None,
             "fixture": "change-c1",
+            "source": dict(MOCK_SOURCE),  # v1.13: it came from a tracker item
         }
+
+    # GET /api/mcp (v1.13): the fixture discovery, classified by mcp_intake itself
+    def mcp(self, refresh: bool = False) -> dict[str, Any]:
+        with self.lock:
+            if refresh or self.mcp_refreshed is None:
+                self.mcp_refreshed = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+            at = self.mcp_refreshed
+        intake = McpIntake("claude", ".", discover_fn=lambda *a, **k: {
+            "servers": parse_init(MOCK_MCP_INIT), "refreshed_at": at})  # fmt: skip
+        return intake.view(refresh)
 
     # GET /api/model
     def get_model(self) -> dict[str, Any]:
@@ -903,6 +945,8 @@ class MockState:
                     "parent": c.get("parent"),
                     "superseded_by": c.get("superseded_by"),
                 }
+                if c.get("source"):
+                    item["source"] = dict(c["source"])
                 if c["status"] == "accepted":
                     item["build"] = dict(c.get("build") or {"state": "not_built"})
                 out["changes"].append(item)
@@ -917,11 +961,14 @@ class MockState:
 
     # POST /api/changes
     def new_change(self, body: dict[str, Any]) -> dict[str, str]:
+        source = parse_source(body.get("source"))  # SourceError: a 422
         with self.lock:
             cid = f"c{self._next_id}"
             self._next_id += 1
             parent = body.get("parent")
             parent = str(parent) if parent else None
+            if source is None and parent and (self.changes.get(parent) or {}).get("source"):
+                source = dict(self.changes[parent]["source"])
             self.changes[cid] = {
                 "id": cid,
                 "request": str(body.get("request", "")),
@@ -933,6 +980,7 @@ class MockState:
                 # A follow-up is drafted "on top of the parent's proposal" (v1.1 #3); the
                 # mock just answers with the fixture that shows the conflict resolved.
                 "fixture": "change-followup" if parent else "change-c1",
+                "source": source,
             }
             return {"id": cid}
 
@@ -973,6 +1021,7 @@ class MockState:
                     "request": c["request"],
                     "status": c["status"],
                     "error": c.get("error"),
+                    "source": c.get("source"),
                     "parent": c.get("parent"),
                     "superseded_by": c.get("superseded_by"),
                     "notes": [],
@@ -1001,6 +1050,7 @@ class MockState:
             full["status"] = c["status"]
             full["parent"] = c.get("parent")
             full["superseded_by"] = c.get("superseded_by")
+            full["source"] = c.get("source")
             full.setdefault("notes", [])
             full.setdefault("timings", {})
             return full
@@ -2639,6 +2689,11 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(state.areas(query.get("branch") or None))
         if path == "/api/branches":
             return self._json(state.branches())
+        if path == "/api/mcp":
+            raw = str(query.get("refresh", "0")).lower()
+            if raw not in ("0", "1", "true", "false", ""):
+                return self._error(HTTPStatus.UNPROCESSABLE_ENTITY, "refresh must be 1 or 0")
+            return self._json(state.mcp(raw in ("1", "true")))
         if path == "/api/plans":
             return self._json(state.plans.list())
         if path.startswith("/api/plan/") and "/" not in path.removeprefix("/api/plan/"):
@@ -2800,7 +2855,10 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/changes":
             if not str(body.get("request", "")).strip():
                 return self._error(HTTPStatus.UNPROCESSABLE_ENTITY, "request is empty")
-            return self._json(state.new_change(body))
+            try:
+                return self._json(state.new_change(body))
+            except SourceError as e:
+                return self._error(HTTPStatus.UNPROCESSABLE_ENTITY, str(e))
         if path == "/api/check":
             return self._json(state.start_check())
         if path.startswith("/api/changes/"):

@@ -188,6 +188,15 @@ READY_STARRED = wait(
 )  # fmt: skip
 UNCHANGED = model(markdown=SEED_MD, project={"name": "notes", "git_head": SEED_HEAD[:7]})
 
+# ---- connected MCP servers (API.md v1.13) ----------------------------------------------------
+# the stub LLM runs no Claude Code session: GET /api/mcp answers this and starts no process
+MCP_STUB = {"servers": [], "refreshed_at": None,
+            "allowed_in": {"ask": 0, "explain": 0, "change": 0},
+            "note": "The stub LLM backend (test only) runs no Claude Code session, so no connected "
+                    "MCP server is discovered or used."}  # fmt: skip
+SOURCE = {"server": "claude.ai Linear", "item": "PROJ-7", "url": "https://tracker.example.com/PROJ-7",
+          "title": "Notes can be starred"}  # fmt: skip
+
 # ---- build from spec (API.md v1.8) ---------------------------------------------------------
 WRITING_COMMIT = "c15cbb303a97efa936a6018111f52b3926a6f845"
 READING_COMMIT = "04e0ae929beb561410a4d2cef4873fdc568f6776"
@@ -1099,6 +1108,63 @@ SCENARIOS = (
             {"name": "rebuild/writing-notes-1", "spec": BEHIND}]}),
         model(markdown=STARRED_MD, project={"name": "notes", "git_head": STARRED_COMMIT[:7]}),
     )),
+    Scenario("connected_tools_with_the_stub_llm", steps=(
+        Step("GET", "/api/mcp", expect_body=MCP_STUB),
+        Step("GET", "/api/mcp", params={"refresh": "1"}, expect_body=MCP_STUB),
+        Step("GET", "/api/mcp", params={"refresh": "true"}, expect_body=MCP_STUB),
+        refused("GET", "/api/mcp", 422, "refresh must be 1 or 0", params={"refresh": "maybe"}),
+        refused("POST", "/api/mcp", 404, "no such route", json={}),
+        refused("POST", "/api/mcp", 404, "no such route",
+                json={"server": "claude.ai Gmail", "tool": "send_message"}),
+        UNCHANGED,
+    )),
+    Scenario("a_change_records_its_source", steps=(
+        Step("POST", "/api/changes", json={"request": STARRED, "source": SOURCE},
+             expect_body={"id": "c1"}),
+        wait("c1", "ready", source=SOURCE, request=STARRED),
+        model(changes=[{"id": "c1", "status": "ready", "source": SOURCE}]),
+        # a follow-up that gives no source keeps its parent's
+        post_change(FIRST, parent="c1", cid="c2"),
+        wait("c2", "ready", source=SOURCE, parent="c1"),
+        # a change without a source has `source` null, and the model lists none for it
+        Step("POST", "/api/changes", json={"request": "Notes can be pinned.",
+                                           "source": None}, expect_body={"id": "c3"}),
+        wait("c3", "ready", source=None),
+        model(changes=[{"id": "c1", "status": "rejected", "source": SOURCE},
+                       {"id": "c2", "status": "ready", "source": SOURCE},
+                       {"id": "c3", "status": "ready"}]),
+        # whitespace is trimmed; empty optional fields are dropped
+        Step("POST", "/api/changes", json={"request": "Notes can be shared.", "source": {
+             "server": " claude.ai Linear ", "item": "PROJ-9", "url": "", "title": ""}},
+             expect_body={"id": "c4"}),
+        wait("c4", "ready", source={"server": "claude.ai Linear", "item": "PROJ-9"}),
+        UNCHANGED,
+    )),
+    Scenario("an_invalid_source_is_refused", steps=(
+        refused("POST", "/api/changes", 422,
+                "source must be an object {server, item, url?, title?}",
+                json={"request": STARRED, "source": "PROJ-7"}),
+        refused("POST", "/api/changes", 422, "source.server is required",
+                json={"request": STARRED, "source": {"item": "PROJ-7"}}),
+        refused("POST", "/api/changes", 422, "source.item is required",
+                json={"request": STARRED, "source": {"server": "claude.ai Linear", "item": "  "}}),
+        refused("POST", "/api/changes", 422, "source.item must be a string",
+                json={"request": STARRED, "source": {"server": "claude.ai Linear", "item": 7}}),
+        refused("POST", "/api/changes", 422, "source.item is longer than 200 characters",
+                json={"request": STARRED, "source": {"server": "t", "item": "x" * 201}}),
+        refused("POST", "/api/changes", 422, "source.url must start with http:// or https://",
+                json={"request": STARRED, "source": {"server": "t", "item": "PROJ-7",
+                                                     "url": "javascript:alert(1)"}}),
+        refused("POST", "/api/changes", 422, "source.title holds control characters",
+                json={"request": STARRED, "source": {"server": "t", "item": "PROJ-7",
+                                                     "title": "a\nb"}}),
+        refused("POST", "/api/changes", 422, "source: unknown field(s): token",
+                json={"request": STARRED, "source": {"server": "t", "item": "PROJ-7",
+                                                     "token": "secret"}}),
+        model(changes=[]),
+        refused("GET", "/api/changes/c1", 404, "no change c1"),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1225,6 +1291,22 @@ UNCHECKED = (
               "observable over HTTP; tests/studio/test_spec_sync.py checks its code and the "
               "mock's fields, and the browser check is in "
               "docs/results/2026-10-11-spec-sync-results.md."),
+    Unchecked("R76 (connected MCP servers): only the stub answer is observable here (the seed "
+              "runs the stub LLM; that no process starts is seen through the answer, refreshed_at "
+              "null). "
+              "The discovery from a real init record, the cache, `refresh`, the per-server counts "
+              "and `[mcp] allow_writes` are in tests/studio/test_mcp_intake.py against a fake "
+              "claude."),
+    Unchecked("R80 (what a chat session sees and may run) needs the claude binary and the owner's "
+              "account: tests/studio/test_mcp_intake.py checks the chat argv per mode (no "
+              "--strict-mcp-config, --setting-sources \"\"), the allowlist (read tools of "
+              "connected servers only, unknown treated as write), allow_writes, and the hermetic "
+              "rebuild and planner argv; the real-session probes (prompt injection K-3, end to "
+              "end K-4) are in docs/results/2026-10-12-spike4-results.md."),
+    Unchecked("R81 (the Connected tools list and the source on a change card) is web UI, not "
+              "observable over HTTP; tests/studio/test_mcp_intake.py checks its code and the "
+              "mock's fields, and the browser check is in "
+              "docs/results/2026-10-12-spike4-results.md."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

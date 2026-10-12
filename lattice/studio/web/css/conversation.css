@@ -11,6 +11,28 @@
 /* ---- mode switch */
 .chat .seg-wide { margin-bottom: var(--space-3); }
 
+/* ---- connected tools (API v1.13): one quiet disclosure under the mode switch */
+.mcp-panel { margin: 0 var(--space-4) var(--space-3); font-size: var(--fs-12); }
+.mcp-panel[hidden] { display: none; }
+.mcp-panel > summary { margin: 0; color: var(--ink-2); font-weight: var(--fw-medium); }
+.mcp-panel > summary:hover { color: var(--ink); }
+.mcp-panel > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.mcp-body { padding: var(--space-2) 0 0; }
+.mcp-body p { margin: 0 0 var(--space-2); }
+.mcp-list { list-style: none; margin: 0 0 var(--space-2); padding: 0; }
+.mcp-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--space-2); padding: var(--space-1) 0; border-bottom: 1px solid var(--hairline); }
+.mcp-row:last-child { border-bottom: 0; }
+.mcp-name { color: var(--ink); overflow-wrap: anywhere; }
+.mcp-state { font-size: var(--fs-12); }
+.mcp-state::before { content: "●"; margin-right: 4px; font-size: 0.8em; }
+.mcp-ok { color: var(--ok-text); }
+.mcp-warn { color: var(--warn-text); }
+.mcp-bad { color: var(--bad-text); }
+.mcp-muted { color: var(--ink-2); }
+.mcp-reads { flex-basis: 100%; }
+.mcp-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.change-source { margin: 0 0 var(--space-2); overflow-wrap: anywhere; }
+
 /* ---- thread */
 .thread > li { margin-bottom: var(--space-5); }
 .thread-empty p { margin: 0 0 var(--space-2); }

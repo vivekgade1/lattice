@@ -33,6 +33,10 @@ route also under ``/p/<name>/api/...``, the bare ``/api/...`` for the default pr
     claude_bin = "claude"       # the Claude Code binary of the chat sessions
     backend = "stub"            # TEST ONLY: StubGenerator instead of Claude (as --stub-llm)
 
+    [mcp]
+    protected = []              # more spec files a rebuild must not edit (lattice/mcp/guard.py)
+    allow_writes = []           # API v1.13: servers whose write tools change mode may use
+
 The project directory and the ``sys_path`` entries are put on ``sys.path``. Without
 ``[app] app`` and ``[app] db`` the app overlay, ``verify`` and the change impact are off.
 
@@ -66,6 +70,10 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
   ``GET /api/rebuild``: the rebuild loop of accepted changes (lattice/studio/rebuild.py, its
   ``[rebuild]`` table; API.md v1.7): a coding agent in a git worktree on its own branch, the
   gates run by Studio, never merged. ``model.changes[]`` carries ``build``.
+- ``GET /api/mcp[?refresh=1]``: the connected MCP servers a chat session sees and how many of
+  their read tools each chat mode may use (lattice/studio/mcp_intake.py; API.md v1.13). With
+  the stub LLM it answers no servers and starts no process. ``POST /api/changes`` takes an
+  optional ``source`` ({server, item, url?, title?}): where the request came from.
 """
 
 from __future__ import annotations
@@ -110,6 +118,7 @@ from lattice.spec.model import Spec, resolve_table, tables_of
 from lattice.spec.report import _detail_lines
 from lattice.spec.review import AccessGroup, ReviewData, _build
 from lattice.spec.rules import Trace, extract_rules
+from lattice.studio.mcp_intake import McpIntake, SourceError, parse_source, stub_view
 from lattice.studio.plan import PlanError, PlanManager
 from lattice.studio.rebuild import MAX_ROUNDS_LIMIT, WORKTREE_DIR, Rebuilder, RebuildError
 from lattice.studio.session import (
@@ -830,11 +839,14 @@ def impact_json(items: Sequence[Any], last_check: Mapping[str, Any] | None) -> d
     return {"verdict": "fail" if failing else "pass", "failing": failing}
 
 
-def empty_change(cid: str, request: str, parent: str | None) -> dict[str, Any]:
+def empty_change(
+    cid: str, request: str, parent: str | None, source: dict[str, str] | None = None
+) -> dict[str, Any]:
     return {
         "id": cid,
         "request": request,
         "parent": parent,
+        "source": source,  # v1.13: the external item the request came from, or None
         "status": "drafting",
         "error": None,
         "error_kind": None,  # v1.10: "interrupted" when a restart cut the draft off
@@ -895,6 +907,7 @@ class Studio:
             self.config.llm.get("session_timeout") or DEFAULT_SESSION_TIMEOUT
         )
         self._sessions: SessionManager | None = None
+        self._mcp: McpIntake | None = None
         self._rebuilder: Rebuilder | None = None
         self._plans: PlanManager | None = None
         self.base_url: str | None = None  # set by StudioServer once it is bound
@@ -968,7 +981,7 @@ class Studio:
             except Exception as exc:  # noqa: BLE001 -- the record stays readable
                 self.store.warn(self.store.path("changes", cid),
                                 f"the proposal of {cid} does not load ({exc})")  # fmt: skip
-            for k, v in (("error_kind", None), ("superseded_by", None)):
+            for k, v in (("error_kind", None), ("superseded_by", None), ("source", None)):
                 rec.setdefault(k, v)
             self.changes[cid] = rec
             self.private[cid] = p
@@ -1033,8 +1046,40 @@ class Studio:
                     claude_bin=self.claude_bin,
                     timeout=self.session_timeout,
                     studio_url=self.base_url,
+                    mcp=self.mcp_intake,
                 )
             return self._sessions
+
+    # -- connected MCP servers (lattice/studio/mcp_intake.py, API.md v1.13)
+    @property
+    def stub_llm(self) -> bool:
+        """The TEST-ONLY stub backend: no Claude Code session, no discovery."""
+        return self.config.llm.get("backend") == "stub" or isinstance(
+            self.generator, StubGenerator
+        )
+
+    @property
+    def allow_writes(self) -> list[str]:
+        v = self.config.mcp.get("allow_writes") or []
+        if not isinstance(v, list) or not all(isinstance(x, str) for x in v):
+            log("studio.toml: [mcp] allow_writes must be a list of server names; ignored")
+            return []
+        return list(v)
+
+    @property
+    def mcp_intake(self) -> McpIntake | None:
+        """None with the stub LLM: sessions then get lattice tools only."""
+        with self.lock:
+            if self._mcp is None and not self.stub_llm:
+                self._mcp = McpIntake(self.claude_bin, self.root, allow_writes=self.allow_writes)
+            return self._mcp
+
+    def get_mcp(self, refresh: bool = False) -> dict[str, Any]:
+        """``GET /api/mcp``: the servers, their state and the read tools per chat mode."""
+        intake = self.mcp_intake
+        if intake is None:
+            return stub_view()
+        return intake.view(refresh)
 
     def close_sessions(self) -> None:
         """Stop every chat turn and every running rebuild (the server is closing)."""
@@ -1252,7 +1297,8 @@ class Studio:
                 "session": claude_available(self.claude_bin),
             }
             out["changes"] = [
-                {"id": c["id"], "request": c["request"], "status": c["status"]}
+                {"id": c["id"], "request": c["request"], "status": c["status"],
+                 **({"source": c["source"]} if c.get("source") else {})}  # fmt: skip
                 for c in self.changes.values()
             ]
             rb = self._rebuilder
@@ -1325,6 +1371,10 @@ class Studio:
             request = str(redraft["request"])
         if not request:
             raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, "request is empty")
+        try:
+            source = parse_source(body.get("source"))
+        except SourceError as e:
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, str(e)) from None
         selected = [str(s) for s in body.get("selected") or []]
         snap = self.snapshot()
         with self.lock:
@@ -1334,6 +1384,8 @@ class Studio:
                 parent = self.changes.get(parent_id)
                 if parent is None:
                     raise ApiError(HTTPStatus.NOT_FOUND, f"no change {parent_id}")
+                if source is None and parent.get("source"):
+                    source = dict(parent["source"])  # a follow-up keeps its parent's source
                 pp = self.private[parent_id]
                 if redraft is not None:
                     base = dict(pp["base"])  # the interrupted change's own base
@@ -1357,7 +1409,7 @@ class Studio:
             else:
                 cid = f"c{self.next_id}"
                 self.next_id += 1
-            self.changes[cid] = empty_change(cid, request, parent_id)
+            self.changes[cid] = empty_change(cid, request, parent_id, source)
             self.private[cid] = {
                 "project_hash": project_hash,
                 "base": base,
@@ -1796,6 +1848,11 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(lambda: st.get_areas(branch))
         if path == "/api/branches":
             return self._dispatch(st.get_branches)
+        if path == "/api/mcp":
+            raw = (parse_qs(urlparse(self.path).query).get("refresh") or ["0"])[-1]
+            if raw.lower() not in ("0", "1", "true", "false", ""):
+                return self._json({"detail": "refresh must be 1 or 0"}, 422)
+            return self._dispatch(lambda: st.get_mcp(raw.lower() in ("1", "true")))
         if path == "/api/plans":
             return self._dispatch(lambda: st.plan_call(st.plans.list))
         if path.startswith("/api/plan/") and "/" not in path.removeprefix("/api/plan/"):

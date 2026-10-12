@@ -14,6 +14,10 @@
 // When the server reports `app.session` (a Claude Code session behind the chat, API.md v1.5)
 // each mode talks to its own session (session.js): streamed text, tool lines, change cards.
 // Otherwise the panel falls back to the one-shot ask / explain / change calls.
+//
+// API v1.13: under the mode switch, a quiet "Connected tools" disclosure lists the MCP servers
+// a session may read (GET /api/mcp, loaded when it is first opened), and a change card shows
+// the external item its request came from (`source`).
 
 import { h, icon, clear, plural, add } from "./util.js";
 import { api, sleep } from "./api.js";
@@ -125,6 +129,7 @@ export function mountChat(root, opts = {}) {
   const modeBtns = Object.fromEntries(MODES.map((m) => [m.id,
     h("button", { type: "button", class: "seg-btn", "aria-pressed": "false", onclick: () => setMode(m.id) }, m.label)]));
   const inputLabel = h("label", { for: "chat-input", class: "sr-only" }, "Question");
+  const mcpBox = mcpPanel();
 
   const form = h("form", { class: "composer", onsubmit: (e) => {
     e.preventDefault();
@@ -148,6 +153,7 @@ export function mountChat(root, opts = {}) {
     ),
     workStrip,
     h("div", { class: "seg seg-wide", role: "group", "aria-label": "Mode" }, MODES.map((m) => modeBtns[m.id])),
+    mcpBox,
     h("div", { class: "thread-wrap" }, thread, empty, live),
     editsBox,
     resumeRow,
@@ -155,7 +161,7 @@ export function mountChat(root, opts = {}) {
   );
   const wrap = root.querySelector(".thread-wrap");
   for (const v of Object.values(views)) wrap.insertBefore(v.ol, empty); // threads survive a re-mount
-  els = { root, wrap, thread, fallbackThread: thread, empty, live, ctxRow, prompts, input, verify, verifyLabel, verifyNote, sendBtn, stopBtn, newBtn, resumeRow, resumeCmd, copyBtn, resumeCost, modeBtns, inputLabel, workStrip, editsBox };
+  els = { root, wrap, thread, fallbackThread: thread, empty, live, ctxRow, prompts, input, verify, verifyLabel, verifyNote, sendBtn, stopBtn, newBtn, resumeRow, resumeCmd, copyBtn, resumeCost, modeBtns, inputLabel, workStrip, editsBox, mcpBox };
   applyMode(state.mode || "ask");
   renderContext();
   renderEdits();
@@ -929,6 +935,7 @@ function changeCard(c) {
       h("span", { class: "muted small" }, c.id, c.parent ? ` · follows ${c.parent}` : ""),
     ),
     h("p", { class: "change-request" }, h("q", {}, c.request)),
+    sourceLine(c.source),
 
     // Conflicts first: they need the owner's decision.
     conflicts.length
@@ -1023,6 +1030,17 @@ function changeCard(c) {
     }
   });
   return card;
+}
+
+/** v1.13: "From claude.ai Linear PROJ-7: <title>" with the item's link (http(s) only). */
+function sourceLine(src) {
+  if (!src || !src.server || !src.item) return null;
+  const url = typeof src.url === "string" && /^https?:\/\//i.test(src.url) ? src.url : null;
+  const item = url
+    ? h("a", { href: url, target: "_blank", rel: "noopener noreferrer" }, src.item)
+    : h("strong", {}, src.item);
+  return h("p", { class: "change-source muted small" },
+    "From ", src.server, " ", item, src.title ? `: ${src.title}` : "");
 }
 
 function ruleLine(label, ids, kind) {
@@ -1254,6 +1272,74 @@ function fallbackRebuildCard(rb, ids, stop) {
 }
 
 
+// ---------------------------------------------------------------- connected tools (v1.13)
+
+const MCP_STATES = {
+  connected: ["mcp-ok", "connected"],
+  "needs-auth": ["mcp-warn", "needs authentication"],
+  failed: ["mcp-bad", "failed"],
+  pending: ["mcp-muted", "starting"],
+};
+let mcpLoaded = false;
+
+function mcpPanel() {
+  mcpLoaded = false;
+  const count = h("span", { class: "muted small mcp-count" });
+  const body = h("div", { class: "mcp-body" }, h("p", { class: "muted small" }, "Opening shows the servers your Claude Code account has connected."));
+  const det = h("details", { class: "mcp-panel", hidden: true },
+    h("summary", {}, h("span", {}, "Connected tools"), count), body);
+  det.addEventListener("toggle", () => {
+    if (det.open && !mcpLoaded) loadMcp(false);
+  });
+  return det;
+}
+
+async function loadMcp(refresh) {
+  const det = els.mcpBox;
+  if (!det) return;
+  const body = det.querySelector(".mcp-body");
+  mcpLoaded = true;
+  body.replaceChildren(h("p", { class: "muted small", role: "status" }, refresh ? "Checking the servers again…" : "Looking up the connected servers…"));
+  let out;
+  try {
+    out = await api.mcp(refresh);
+  } catch (e) {
+    mcpLoaded = false;
+    body.replaceChildren(h("p", { class: "muted small" }, e.status === 404 ? "This server does not list connected tools." : `Could not list them: ${e.message}`));
+    return;
+  }
+  renderMcp(out);
+}
+
+function renderMcp(out) {
+  const det = els.mcpBox;
+  const body = det.querySelector(".mcp-body");
+  const servers = Array.isArray(out?.servers) ? out.servers : [];
+  const live = servers.filter((s) => s.status === "connected").length;
+  det.querySelector(".mcp-count").textContent = servers.length ? ` · ${live} of ${servers.length} connected` : "";
+  const rows = servers.map((s) => {
+    const [cls, word] = MCP_STATES[s.status] || ["mcp-muted", String(s.status || "unknown")];
+    const n = s.allowed_in || {};
+    const reads = s.status === "connected"
+      ? `read tools: ask ${n.ask ?? 0} · explain ${n.explain ?? 0} · change ${n.change ?? 0}`
+      : s.status === "needs-auth" ? "Authorize it in Claude Code first." : "No tools.";
+    return h("li", { class: "mcp-row" },
+      h("span", { class: "mcp-name" }, s.name),
+      h("span", { class: ["mcp-state", cls] }, word),
+      h("span", { class: "muted tiny mcp-reads" }, reads, s.writes_allowed ? " · writes allowed in change" : ""));
+  });
+  const when = out?.refreshed_at ? new Date(out.refreshed_at) : null;
+  add(clear(body), // add() skips nulls (native replaceChildren would print "null")
+    out?.note ? h("p", { class: "muted small" }, out.note) : null,
+    out?.error ? h("p", { class: "muted small" }, `Discovery failed: ${out.error}`) : null,
+    rows.length ? h("ul", { class: "mcp-list" }, rows) : (!out?.note && !out?.error ? h("p", { class: "muted small" }, "No connected servers.") : null),
+    h("p", { class: "muted tiny mcp-note" }, "Read-only: write tools are never offered unless studio.toml [mcp] allow_writes lists the server. What a tool fetches stays in this project's local transcripts."),
+    h("div", { class: "mcp-foot" },
+      when && !Number.isNaN(when.getTime()) ? h("span", { class: "muted tiny" }, `Checked ${when.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`) : null,
+      out?.note ? null : h("button", { type: "button", class: "btn btn-quiet small", onclick: () => loadMcp(true) }, "Refresh")),
+  );
+}
+
 // ---------------------------------------------------------------- session mode (Claude Code)
 
 function useSession() {
@@ -1312,6 +1398,7 @@ function syncSession() {
   els.thread = on ? viewFor(mode).ol : els.fallbackThread;
   els.thread.hidden = false;
   els.root.querySelector("#session-note").hidden = on;
+  if (els.mcpBox) els.mcpBox.hidden = !on;
   const c = on ? clients[mode] : null;
   const busy = !!c?.busy;
   const def = MODES.find((x) => x.id === mode);

@@ -450,6 +450,42 @@
       "text": "The Build view and the plan view show a quiet banner while the chosen target's spec, or a plan's target's, is behind (\"The spec on <branch> is newer than <target> (<files>).\") with one primary button, Sync spec, that syncs it and reloads; a refusal is shown inline, and the banner is hidden while a plan runs.",
       "section": "Lattice Studio server: requirements > Spec sync",
       "line": 119
+    },
+    {
+      "id": "R76",
+      "text": "GET /api/mcp answers `servers` (each with `name`, `status`, `source`, `tools` sorted into `read`, `write` and `unknown`, `allowed_in` per chat mode and `writes_allowed`), `refreshed_at` and `allowed_in` (how many external tools ask, explain and change may run); with the stub LLM it answers no servers, `refreshed_at` null, zero counts and a `note`, and starts no process, `refresh=1` included; a `refresh` other than 0, 1, true or false answers 422.",
+      "section": "Lattice Studio server: requirements > Connected tools (MCP)",
+      "line": 123
+    },
+    {
+      "id": "R77",
+      "text": "There is no write route for connected servers: POST /api/mcp answers 404.",
+      "section": "Lattice Studio server: requirements > Connected tools (MCP)",
+      "line": 124
+    },
+    {
+      "id": "R78",
+      "text": "POST /api/changes takes an optional `source` (`server` and `item`, optional `url` and `title`): the change record carries it (`source` null when none), GET /api/model lists it on the change, and a follow-up that gives none keeps its parent's.",
+      "section": "Lattice Studio server: requirements > Connected tools (MCP)",
+      "line": 125
+    },
+    {
+      "id": "R79",
+      "text": "An invalid `source` (not an object, a missing or empty `server` or `item`, a field that is not a string or is longer than its cap, a `url` that is not http or https, a control character, an unknown field) answers 422 and creates no change.",
+      "section": "Lattice Studio server: requirements > Connected tools (MCP)",
+      "line": 126
+    },
+    {
+      "id": "R80",
+      "text": "A chat session (ask, explain, change) sees the claude.ai connectors of the owner's account besides `lattice`, but not the owner's plugins, skills, hooks or plugin servers; only the read tools of connected servers may run, write and unknown tools are never offered unless `[mcp] allow_writes` lists the server (change mode only), and the rebuild agent and the planner see no external server.",
+      "section": "Lattice Studio server: requirements > Connected tools (MCP)",
+      "line": 127
+    },
+    {
+      "id": "R81",
+      "text": "The conversation panel has a quiet Connected tools list (each server's state and how many read tools each mode may use, with a Refresh), and a change card shows the external item its request came from, with its link.",
+      "section": "Lattice Studio server: requirements > Connected tools (MCP)",
+      "line": 128
     }
   ],
   "links": {
@@ -687,6 +723,18 @@
     ],
     "R74": [
       "scenario:a_plan_run_syncs_the_spec_first_when_configured"
+    ],
+    "R76": [
+      "scenario:connected_tools_with_the_stub_llm"
+    ],
+    "R77": [
+      "scenario:connected_tools_with_the_stub_llm"
+    ],
+    "R78": [
+      "scenario:a_change_records_its_source"
+    ],
+    "R79": [
+      "scenario:an_invalid_source_is_refused"
     ]
   },
   "unchecked": {
@@ -699,7 +747,9 @@
     "R63": "restarts are not expressible in the DSL (a scenario cannot kill and restart the server); tests/studio/test_resume.py and test_state_store.py cover them",
     "R54": "the repair loop's exhaustion and the loop off need a stub that never repairs or another configuration; tests/studio/test_level_repair.py and test_build_plan.py cover them",
     "R69": "process trees, containers and agent timeouts are not observable over HTTP; tests/studio/test_stop_cleanup.py covers them with a fake docker and a fake claude",
-    "R75": "the web UI is not observable over HTTP; tests/studio/test_spec_sync.py checks the banner's code statically and the browser check is recorded in docs/results/2026-10-11-spec-sync-results.md"
+    "R75": "the web UI is not observable over HTTP; tests/studio/test_spec_sync.py checks the banner's code statically and the browser check is recorded in docs/results/2026-10-11-spec-sync-results.md",
+    "R80": "a chat session needs the claude binary and the owner's account; tests/studio/test_mcp_intake.py checks the argv per mode (no --strict-mcp-config), the allowlist, allow_writes and the hermetic rebuild and planner argv against a fake claude, and docs/results/2026-10-12-spike4-results.md records the real-session probes (K-3, K-4)",
+    "R81": "the web UI is not observable over HTTP; tests/studio/test_mcp_intake.py checks its code statically and the browser check is recorded in docs/results/2026-10-12-spike4-results.md"
   },
   "context": [
     "R1"
