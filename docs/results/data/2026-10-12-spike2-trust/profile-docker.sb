@@ -1,0 +1,6 @@
+(version 1)
+(allow default)
+(deny network*)
+(allow network-outbound (remote unix-socket (path-literal "<home>/.docker/run/docker.sock")))
+(deny file-write*)
+(allow file-write* (subpath "<probe>/module") (literal "/dev/null") (literal "/dev/dtracehelper") (subpath "<home>/.docker"))

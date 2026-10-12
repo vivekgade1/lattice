@@ -1,0 +1,145 @@
+{
+ "hashes": {
+  "lattice/spec/engines.py": "da49a4b52428e578",
+  "lattice/spec/engines/mysql.toml": "c5de4bf43a8f7e33",
+  "lattice/modules/__init__.py": "98c9648643a791d9",
+  "tests/spec/test_engines.py": "c6996378c439b3e8",
+  "tests/studio/test_engines_api.py": "2869cf64441c00ed",
+  "dogfood/module_mutants.py": "2942a2b2e6dec450"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "91 passed in 2.60s",
+    "seconds": 3.0,
+    "tail": "........................................................................ [ 79%]\n...................                                                      [100%]\n91 passed in 2.60s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "summary": "PASS: 0 findings (D 0, X 0); 393 cases run",
+    "seconds": 48.6,
+    "tail": "d modules registered, re-hashed on every read, a changed module refused) needs a project with its own [engines] paths and installed modules; the seed has neither (adding them would change the seed commit every recorded id depends on). tests/studio/test_engines_api.py covers it on the real server (a project engine used, an engine module listed, one byte of its tree changed: `changed`, its engine dropped, the error listed), tests/modules/test_modules.py the install, the lock and the checker's refusal.\n  - Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up finishing) are not raced; Studio keeps no database, so layer X has no table to race on.\n  - LLM content: the markdown edit, the drafted spec and the questions a real model writes are not checked; the stub writes them.\n\nnotes:\n  - layer X: the spec has no upper count bound and no machine; nothing to race\n\ntimings: total 48.5s (D 48.5s, X 0.00s)\nscenarios: 47 in 48.5s, 1.03s each on average (start 0.25, db 0.00, steps 0.75, stop 0.02)\nslowest 5:\n  5.00s a_rebuild_gives_up_at_max_rounds_and_can_run_again (start 0.27, db 0.00, steps 4.71, 9 requests)\n  3.14s a_plan_runs_level_by_level (start 0.24, db 0.00, steps 2.87, 12 requests)\n  3.08s forget_drops_a_plan_and_its_anchors (start 0.24, db 0.00, steps 2.81, 14 requests)\n  2.88s one_rebuild_at_a_time_and_stop (start 0.25, db 0.00, steps 2.60, 14 requests)\n  2.79s a_rebuild_passes_in_round_2_on_its_own_branch (start 0.25, db 0.00, steps 2.51, 12 requests)\n"
+   },
+   "caught_by": [],
+   "verdict": "PASS (control)"
+  },
+  "MM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/modules/test_modules.py::test_a_changed_module_is_dropped_from_the_registry_when_not_strict",
+     "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+     "tests/modules/test_modules.py::test_list_info_uninstall_through_the_cli",
+     "tests/modules/test_modules.py::test_the_checker_refuses_a_tampered_module",
+     "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+    ],
+    "summary": "5 failed, 86 passed in 2.66s",
+    "seconds": 3.1,
+    "tail": "    (mod / \"lattice-module.toml\").write_text(\n            'name = \"pg-fast\"\\nversion = \"1.2.0\"\\nkind = \"engine\"\\ndescriptor = \"engine.toml\"\\n'\n        )\n        entry = install(project, str(mod), yes=True, out=lambda s: None)\n        srv = make_server(project, 0, generator=StubGenerator())\n        base = serve(srv)\n        try:\n            status, out = request(\"GET\", base + \"/api/engines\")\n            assert status == 200 and out[\"errors\"] == []\n            rows = {r[\"name\"]: r for r in out[\"engines\"]}\n            assert list(rows) == [\"sqlite\", \"postgres\", \"mysql\", \"clickhouse\", \"mariadb\", \"pgfast\"]\n            assert all(set(r) == ROW_KEYS for r in out[\"engines\"])\n            assert rows[\"mariadb\"] == {\n                \"name\": \"mariadb\",\n                \"source\": \"project\",\n                \"used\": True,\n                \"server\": {\"image\": \"mariadb:11\"},\n                \"adapter\": \"mysql\",\n                \"requires\": [\"pymysql>=1.1\"],\n            }\n            assert rows[\"sqlite\"][\"used\"] is False\n            assert rows[\"pgfast\"][\"source\"] == \"module\"\n            assert out[\"modules\"] == [\n                {\"name\": \"pg-fast\", \"version\": \"1.2.0\", \"sha256\": entry.sha256, \"status\": \"ok\"}\n            ]\n            # the project's checks can name its engine (registered in Studio's process)\n            assert REGISTRY.entry(\"mariadb\").source == \"project\"\n            # one byte of the installed tree changed: re-hashed on the next read, refused\n            f = project / \".lattice/modules/pg-fast/engine.toml\"\n            f.write_text(f.read_text().replace(\"pgfast\", \"pgfasT\", 1))\n            out = request(\"GET\", base + \"/api/engines\")[1]\n            assert [r[\"name\"] for r in out[\"engines\"]][-1] == \"mariadb\"\n>           assert out[\"modules\"][0][\"status\"] == \"changed\"\nE           AssertionError: assert 'error' == 'changed'\nE             \nE             - changed\nE             + error\n\ntests/studio/test_engines_api.py:136: AssertionError\n=========================== short test summary info ============================\nFAILED tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load\nFAILED tests/modules/test_modules.py::test_a_changed_module_is_dropped_from_the_registry_when_not_strict\nFAILED tests/modules/test_modules.py::test_the_checker_refuses_a_tampered_module\nFAILED tests/modules/test_modules.py::test_list_info_uninstall_through_the_cli\nFAILED tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed\n5 failed, 86 passed in 2.66s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "summary": "PASS: 0 findings (D 0, X 0); 393 cases run",
+    "seconds": 50.2,
+    "tail": "R84 (engines and modules registered, re-hashed on every read, a changed module refused) needs a project with its own [engines] paths and installed modules; the seed has neither (adding them would change the seed commit every recorded id depends on). tests/studio/test_engines_api.py covers it on the real server (a project engine used, an engine module listed, one byte of its tree changed: `changed`, its engine dropped, the error listed), tests/modules/test_modules.py the install, the lock and the checker's refusal.\n  - Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up finishing) are not raced; Studio keeps no database, so layer X has no table to race on.\n  - LLM content: the markdown edit, the drafted spec and the questions a real model writes are not checked; the stub writes them.\n\nnotes:\n  - layer X: the spec has no upper count bound and no machine; nothing to race\n\ntimings: total 50.1s (D 50.1s, X 0.00s)\nscenarios: 47 in 50.1s, 1.07s each on average (start 0.27, db 0.00, steps 0.77, stop 0.02)\nslowest 5:\n  5.08s a_rebuild_gives_up_at_max_rounds_and_can_run_again (start 0.27, db 0.00, steps 4.77, 9 requests)\n  3.14s a_plan_runs_level_by_level (start 0.26, db 0.00, steps 2.84, 12 requests)\n  3.03s forget_drops_a_plan_and_its_anchors (start 0.28, db 0.00, steps 2.72, 14 requests)\n  2.92s one_rebuild_at_a_time_and_stop (start 0.26, db 0.00, steps 2.63, 14 requests)\n  2.87s land_is_409_when_nothing_waits (start 0.25, db 0.00, steps 2.59, 11 requests)\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/spec/test_engines.py::test_builtin_adapter_default_ports_are_unchanged",
+     "tests/spec/test_engines.py::test_builtin_container_tables_equal_the_old_literals",
+     "tests/spec/test_engines.py::test_defaults_fill_in_optional_fields"
+    ],
+    "summary": "3 failed, 88 passed in 2.66s",
+    "seconds": 3.1,
+    "tail": "ult_port\n\ntests/spec/test_engines.py:263: AssertionError\n_______________ test_builtin_adapter_default_ports_are_unchanged _______________\n\n    def test_builtin_adapter_default_ports_are_unchanged():\n        for name, port in OLD_ADAPTER_DEFAULT_PORT.items():\n>           assert engines.engine(name).default_port == port\nE           AssertionError: assert 3307 == 3306\nE            +  where 3307 = EngineDescriptor(name='mysql', title='MySQL', aliases=(), url_schemes=('mysql', 'mariadb'), url_template='mysql://{use...xPath('<copy>/lattice/spec/engines')) = <function engine at 0x10bf22cf0>('mysql')\nE            +      where <function engine at 0x10bf22cf0> = engines.engine\n\ntests/spec/test_engines.py:271: AssertionError\n____________________ test_defaults_fill_in_optional_fields _____________________\n\n    def test_defaults_fill_in_optional_fields():\n        data = _with(\n            sql__float_cast=None,\n            sql__divide=None,\n            sql__placeholder=None,\n            server__port=None,\n            server__ready_sql=None,\n            server__env=None,\n            server__args=None,\n            title=None,\n            requires=None,\n            drivers=None,\n        )\n        e = parse_descriptor(data, \"E\")\n        assert (e.sql.float_cast, e.sql.divide, e.sql.placeholder) == (\n            \"{x}\",\n            \"(({a}) * 1.0 / ({b}))\",\n            \"%s\",\n        )\n>       assert (e.server.port, e.server.ready_sql, e.server.env, e.server.args) == (\n            3306,\n            \"SELECT 1\",\n            (),\n            (),\n        )\nE       AssertionError: assert (3307, 'SELECT 1', (), ()) == (3306, 'SELECT 1', (), ())\nE         \nE         At index 0 diff: 3307 != 3306\nE         Use -v to get more diff\n\ntests/spec/test_engines.py:611: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_engines.py::test_builtin_container_tables_equal_the_old_literals\nFAILED tests/spec/test_engines.py::test_builtin_adapter_default_ports_are_unchanged\nFAILED tests/spec/test_engines.py::test_defaults_fill_in_optional_fields - As...\n3 failed, 88 passed in 2.66s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "summary": "PASS: 0 findings (D 0, X 0); 393 cases run",
+    "seconds": 50.2,
+    "tail": "R84 (engines and modules registered, re-hashed on every read, a changed module refused) needs a project with its own [engines] paths and installed modules; the seed has neither (adding them would change the seed commit every recorded id depends on). tests/studio/test_engines_api.py covers it on the real server (a project engine used, an engine module listed, one byte of its tree changed: `changed`, its engine dropped, the error listed), tests/modules/test_modules.py the install, the lock and the checker's refusal.\n  - Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up finishing) are not raced; Studio keeps no database, so layer X has no table to race on.\n  - LLM content: the markdown edit, the drafted spec and the questions a real model writes are not checked; the stub writes them.\n\nnotes:\n  - layer X: the spec has no upper count bound and no machine; nothing to race\n\ntimings: total 50.1s (D 50.1s, X 0.00s)\nscenarios: 47 in 50.1s, 1.07s each on average (start 0.27, db 0.00, steps 0.76, stop 0.02)\nslowest 5:\n  5.08s a_rebuild_gives_up_at_max_rounds_and_can_run_again (start 0.27, db 0.00, steps 4.77, 9 requests)\n  3.14s a_plan_runs_level_by_level (start 0.28, db 0.00, steps 2.83, 12 requests)\n  3.06s forget_drops_a_plan_and_its_anchors (start 0.25, db 0.00, steps 2.78, 14 requests)\n  2.93s one_rebuild_at_a_time_and_stop (start 0.28, db 0.00, steps 2.62, 14 requests)\n  2.87s land_is_409_when_nothing_waits (start 0.27, db 0.00, steps 2.57, 11 requests)\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/modules/test_modules.py::test_install_refuses_without_confirmation_and_writes_nothing",
+     "tests/modules/test_modules.py::test_the_cli_refuses_without_yes_when_stdin_is_not_a_terminal"
+    ],
+    "summary": "2 failed, 89 passed in 2.67s",
+    "seconds": 3.1,
+    "tail": "....................................................................FF.. [ 79%]\n...................                                                      [100%]\n=================================== FAILURES ===================================\n_________ test_install_refuses_without_confirmation_and_writes_nothing _________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2476/test_install_refuses_without_c0')\nproject = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2476/test_install_refuses_without_c0/proj')\n\n    def test_install_refuses_without_confirmation_and_writes_nothing(tmp_path, project):\n        src = make_module(tmp_path)\n        shown: list[str] = []\n>       with pytest.raises(Refused, match=\"was not confirmed\"):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE Refused\n\ntests/modules/test_modules.py:132: Failed\n________ test_the_cli_refuses_without_yes_when_stdin_is_not_a_terminal _________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2476/test_the_cli_refuses_without_y0')\nproject = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2476/test_the_cli_refuses_without_y0/proj')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10cf16850>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ca08770>\n\n    def test_the_cli_refuses_without_yes_when_stdin_is_not_a_terminal(\n        tmp_path, project, capsys, monkeypatch\n    ):\n        monkeypatch.setattr(\"sys.stdin\", io.StringIO(\"y\\n\"))  # not a TTY: the \"y\" is never read\n        src = make_module(tmp_path)\n        rc = main([\"install\", str(src), \"--project\", str(project)])\n        out, err = capsys.readouterr()\n>       assert rc == 2\nE       assert 0 == 2\n\ntests/modules/test_modules.py:149: AssertionError\n=========================== short test summary info ============================\nFAILED tests/modules/test_modules.py::test_install_refuses_without_confirmation_and_writes_nothing\nFAILED tests/modules/test_modules.py::test_the_cli_refuses_without_yes_when_stdin_is_not_a_terminal\n2 failed, 89 passed in 2.67s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "summary": "PASS: 0 findings (D 0, X 0); 393 cases run",
+    "seconds": 50.5,
+    "tail": "R84 (engines and modules registered, re-hashed on every read, a changed module refused) needs a project with its own [engines] paths and installed modules; the seed has neither (adding them would change the seed commit every recorded id depends on). tests/studio/test_engines_api.py covers it on the real server (a project engine used, an engine module listed, one byte of its tree changed: `changed`, its engine dropped, the error listed), tests/modules/test_modules.py the install, the lock and the checker's refusal.\n  - Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up finishing) are not raced; Studio keeps no database, so layer X has no table to race on.\n  - LLM content: the markdown edit, the drafted spec and the questions a real model writes are not checked; the stub writes them.\n\nnotes:\n  - layer X: the spec has no upper count bound and no machine; nothing to race\n\ntimings: total 50.3s (D 50.3s, X 0.00s)\nscenarios: 47 in 50.3s, 1.07s each on average (start 0.27, db 0.00, steps 0.77, stop 0.02)\nslowest 5:\n  5.09s a_rebuild_gives_up_at_max_rounds_and_can_run_again (start 0.27, db 0.00, steps 4.79, 9 requests)\n  3.18s forget_drops_a_plan_and_its_anchors (start 0.28, db 0.00, steps 2.87, 14 requests)\n  3.03s a_plan_runs_level_by_level (start 0.25, db 0.00, steps 2.75, 12 requests)\n  2.92s one_rebuild_at_a_time_and_stop (start 0.27, db 0.00, steps 2.61, 14 requests)\n  2.81s land_is_409_when_nothing_waits (start 0.25, db 0.00, steps 2.53, 11 requests)\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/spec/test_engines.py::test_validation_errors_are_exact[changes23-E:"
+    ],
+    "summary": "1 failed, 90 passed in 2.67s",
+    "seconds": 3.1,
+    "tail": "divide: must use {a} and {b}\"),\n            (\n                {\"sql__float_cast\": \"CAST({y} AS DOUBLE)\"},\n                \"E: sql.float_cast: unknown placeholder {y} (known: {x})\",\n            ),\n            ({\"sql__drop_database\": \"DROP DATABASE x\"}, \"E: sql.drop_database: must use {name}\"),\n            (\n                {\"capabilities__json\": True},\n                \"E: [capabilities] unknown flag 'json' (known: transactions, unique_constraints)\",\n            ),\n            ({\"capabilities__transactions\": None}, \"E: [capabilities] missing flag 'transactions'\"),\n            (\n                {\"capabilities__transactions\": 1},\n                \"E: capabilities.transactions: must be true or false, not an integer\",\n            ),\n            ({\"server__image\": None}, \"E: [server] missing required field 'image'\"),\n            (\n                {\"server__data_dir\": \"var/lib\"},\n                \"E: server.data_dir: must be an absolute path in the container, not 'var/lib'\",\n            ),\n            (\n                {\"server__env\": {\"A\": \"{secret}\"}},\n                \"E: server.env: unknown placeholder {secret} (known: {user}, {password})\",\n            ),\n            ({\"server__env\": {\"A-B\": \"x\"}}, \"E: server.env: 'A-B' is not an environment variable name\"),\n            (\n                {\"drivers\": {\"canonical\": \"{url}\"}},\n                \"E: drivers.canonical: 'canonical' is always the URL itself\",\n            ),\n            (\n                {\"drivers\": {\"go\": {\"template\": \"{url}\", \"query\": {}}}},\n                \"E: [drivers.go] unknown field \"\n                \"'query' (known: template, query_auth, query_fixed, query_url)\",\n            ),\n            (\n                {\"drivers\": {\"go\": \"{dsn}\"}},\n                \"E: drivers.go: unknown placeholder {dsn} (known: {url}, \"\n                \"{rest}, {auth}, {raw_auth}, {host}, {port}, {hostport}, {db}, {user}, {password})\",\n            ),\n            ({\"sql\": \"x\"}, \"E: sql: must be a table, not a string\"),\n        ],\n    )\n    def test_validation_errors_are_exact(changes, message):\n>       with pytest.raises(EngineError) as err:\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE EngineError\n\ntests/spec/test_engines.py:578: Failed\n=========================== short test summary info ============================\nFAILED tests/spec/test_engines.py::test_validation_errors_are_exact[changes23-E: [capabilities] unknown flag 'json' (known: transactions, unique_constraints)]\n1 failed, 90 passed in 2.67s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "summary": "PASS: 0 findings (D 0, X 0); 393 cases run",
+    "seconds": 50.5,
+    "tail": "R84 (engines and modules registered, re-hashed on every read, a changed module refused) needs a project with its own [engines] paths and installed modules; the seed has neither (adding them would change the seed commit every recorded id depends on). tests/studio/test_engines_api.py covers it on the real server (a project engine used, an engine module listed, one byte of its tree changed: `changed`, its engine dropped, the error listed), tests/modules/test_modules.py the install, the lock and the checker's refusal.\n  - Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up finishing) are not raced; Studio keeps no database, so layer X has no table to race on.\n  - LLM content: the markdown edit, the drafted spec and the questions a real model writes are not checked; the stub writes them.\n\nnotes:\n  - layer X: the spec has no upper count bound and no machine; nothing to race\n\ntimings: total 50.3s (D 50.3s, X 0.00s)\nscenarios: 47 in 50.3s, 1.07s each on average (start 0.27, db 0.00, steps 0.77, stop 0.02)\nslowest 5:\n  5.07s a_rebuild_gives_up_at_max_rounds_and_can_run_again (start 0.25, db 0.00, steps 4.78, 9 requests)\n  3.18s forget_drops_a_plan_and_its_anchors (start 0.28, db 0.00, steps 2.87, 14 requests)\n  3.03s a_plan_runs_level_by_level (start 0.27, db 0.00, steps 2.73, 12 requests)\n  2.91s one_rebuild_at_a_time_and_stop (start 0.25, db 0.00, steps 2.63, 14 requests)\n  2.90s land_is_409_when_nothing_waits (start 0.28, db 0.00, steps 2.59, 11 requests)\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MM5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+     "tests/modules/test_modules.py::test_list_info_uninstall_through_the_cli",
+     "tests/modules/test_modules.py::test_the_checker_refuses_a_tampered_module",
+     "tests/modules/test_modules.py::test_the_lock_hash_covers_file_contents_and_paths",
+     "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+    ],
+    "summary": "5 failed, 86 passed in 2.65s",
+    "seconds": 3.0,
+    "tail": "e_text(text)\n        (mod / \"lattice-module.toml\").write_text(\n            'name = \"pg-fast\"\\nversion = \"1.2.0\"\\nkind = \"engine\"\\ndescriptor = \"engine.toml\"\\n'\n        )\n        entry = install(project, str(mod), yes=True, out=lambda s: None)\n        srv = make_server(project, 0, generator=StubGenerator())\n        base = serve(srv)\n        try:\n            status, out = request(\"GET\", base + \"/api/engines\")\n            assert status == 200 and out[\"errors\"] == []\n            rows = {r[\"name\"]: r for r in out[\"engines\"]}\n            assert list(rows) == [\"sqlite\", \"postgres\", \"mysql\", \"clickhouse\", \"mariadb\", \"pgfast\"]\n            assert all(set(r) == ROW_KEYS for r in out[\"engines\"])\n            assert rows[\"mariadb\"] == {\n                \"name\": \"mariadb\",\n                \"source\": \"project\",\n                \"used\": True,\n                \"server\": {\"image\": \"mariadb:11\"},\n                \"adapter\": \"mysql\",\n                \"requires\": [\"pymysql>=1.1\"],\n            }\n            assert rows[\"sqlite\"][\"used\"] is False\n            assert rows[\"pgfast\"][\"source\"] == \"module\"\n            assert out[\"modules\"] == [\n                {\"name\": \"pg-fast\", \"version\": \"1.2.0\", \"sha256\": entry.sha256, \"status\": \"ok\"}\n            ]\n            # the project's checks can name its engine (registered in Studio's process)\n            assert REGISTRY.entry(\"mariadb\").source == \"project\"\n            # one byte of the installed tree changed: re-hashed on the next read, refused\n            f = project / \".lattice/modules/pg-fast/engine.toml\"\n            f.write_text(f.read_text().replace(\"pgfast\", \"pgfasT\", 1))\n            out = request(\"GET\", base + \"/api/engines\")[1]\n            assert [r[\"name\"] for r in out[\"engines\"]][-1] == \"mariadb\"\n>           assert out[\"modules\"][0][\"status\"] == \"changed\"\nE           AssertionError: assert 'error' == 'changed'\nE             \nE             - changed\nE             + error\n\ntests/studio/test_engines_api.py:136: AssertionError\n=========================== short test summary info ============================\nFAILED tests/modules/test_modules.py::test_the_lock_hash_covers_file_contents_and_paths\nFAILED tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load\nFAILED tests/modules/test_modules.py::test_the_checker_refuses_a_tampered_module\nFAILED tests/modules/test_modules.py::test_list_info_uninstall_through_the_cli\nFAILED tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed\n5 failed, 86 passed in 2.65s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "summary": "PASS: 0 findings (D 0, X 0); 393 cases run",
+    "seconds": 48.4,
+    "tail": "d modules registered, re-hashed on every read, a changed module refused) needs a project with its own [engines] paths and installed modules; the seed has neither (adding them would change the seed commit every recorded id depends on). tests/studio/test_engines_api.py covers it on the real server (a project engine used, an engine module listed, one byte of its tree changed: `changed`, its engine dropped, the error listed), tests/modules/test_modules.py the install, the lock and the checker's refusal.\n  - Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up finishing) are not raced; Studio keeps no database, so layer X has no table to race on.\n  - LLM content: the markdown edit, the drafted spec and the questions a real model writes are not checked; the stub writes them.\n\nnotes:\n  - layer X: the spec has no upper count bound and no machine; nothing to race\n\ntimings: total 48.3s (D 48.3s, X 0.00s)\nscenarios: 47 in 48.3s, 1.03s each on average (start 0.25, db 0.00, steps 0.74, stop 0.02)\nslowest 5:\n  5.04s a_rebuild_gives_up_at_max_rounds_and_can_run_again (start 0.27, db 0.00, steps 4.73, 9 requests)\n  3.08s forget_drops_a_plan_and_its_anchors (start 0.24, db 0.00, steps 2.80, 14 requests)\n  2.91s one_rebuild_at_a_time_and_stop (start 0.26, db 0.00, steps 2.62, 14 requests)\n  2.88s a_plan_runs_level_by_level (start 0.24, db 0.00, steps 2.61, 12 requests)\n  2.79s a_rebuild_passes_in_round_2_on_its_own_branch (start 0.25, db 0.00, steps 2.51, 12 requests)\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  }
+ }
+}

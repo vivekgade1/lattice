@@ -1,0 +1,57 @@
+{
+ "B1": {
+  "tree": "lattice (cc77f73, unrefactored)",
+  "args": "",
+  "wall_s": 146.47,
+  "rc": 0,
+  "verdict_line": "PASS: 0 findings (A 0, B 0, C 0, D 0, X 0); 480 cases run",
+  "timings": "timings: total 145.3s (A 0.03s, C 0.39s, D 22.5s, X 117.0s); database server 5.13s",
+  "scenarios": "scenarios: 156 in 22.5s, 0.14s each on average (start 0.03, db 0.03, steps 0.07, stop 0.00)",
+  "database": "database: mysql (container lattice-mysql-f3010504); seed built once (seed 0.34s), 613 clone(s), 26 ms each on average",
+  "containers_left": []
+ },
+ "B2": {
+  "tree": "lattice (cc77f73, unrefactored)",
+  "args": "",
+  "wall_s": 146.02,
+  "rc": 0,
+  "verdict_line": "PASS: 0 findings (A 0, B 0, C 0, D 0, X 0); 480 cases run",
+  "timings": "timings: total 145.5s (A 0.03s, C 0.28s, D 22.4s, X 118.5s); database server 4.04s",
+  "scenarios": "scenarios: 156 in 22.4s, 0.14s each on average (start 0.03, db 0.03, steps 0.07, stop 0.00)",
+  "database": "database: mysql (container lattice-mysql-00bcfe2a); seed built once (seed 0.23s), 613 clone(s), 26 ms each on average",
+  "containers_left": []
+ },
+ "R1": {
+  "tree": "lattice-np2 (refactored)",
+  "args": "",
+  "wall_s": 147.86,
+  "rc": 0,
+  "verdict_line": "PASS: 0 findings (A 0, B 0, C 0, D 0, X 0); 480 cases run",
+  "timings": "timings: total 147.4s (A 0.02s, C 0.34s, D 22.7s, X 118.8s); database server 5.16s",
+  "scenarios": "scenarios: 156 in 22.7s, 0.15s each on average (start 0.03, db 0.03, steps 0.07, stop 0.00)",
+  "database": "database: mysql (container lattice-mysql-4ed12b5b); seed built once (seed 0.28s), 613 clone(s), 26 ms each on average",
+  "containers_left": []
+ },
+ "R2": {
+  "tree": "lattice-np2 (refactored)",
+  "args": "",
+  "wall_s": 147.16,
+  "rc": 0,
+  "verdict_line": "PASS: 0 findings (A 0, B 0, C 0, D 0, X 0); 480 cases run",
+  "timings": "timings: total 146.7s (A 0.03s, C 0.34s, D 22.7s, X 118.2s); database server 5.10s",
+  "scenarios": "scenarios: 156 in 22.7s, 0.15s each on average (start 0.03, db 0.03, steps 0.07, stop 0.00)",
+  "database": "database: mysql (container lattice-mysql-9e8d5d70); seed built once (seed 0.28s), 613 clone(s), 26 ms each on average",
+  "containers_left": []
+ },
+ "P2": {
+  "tree": "lattice-np2 (refactored)",
+  "args": "--database mariadb --engine-file mariadb.toml",
+  "wall_s": 149.17,
+  "rc": 0,
+  "verdict_line": "PASS: 0 findings (A 0, B 0, C 0, D 0, X 0); 480 cases run",
+  "timings": "timings: total 148.7s (A 0.02s, C 0.31s, D 22.7s, X 122.0s); database server 3.30s",
+  "scenarios": "scenarios: 156 in 22.7s, 0.15s each on average (start 0.03, db 0.01, steps 0.08, stop 0.00)",
+  "database": "database: mariadb (container lattice-mariadb-7f6f6fcd); seed built once (seed 0.27s), 613 clone(s), 14 ms each on average",
+  "containers_left": []
+ }
+}
