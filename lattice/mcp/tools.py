@@ -896,8 +896,17 @@ class Toolbox:
         )
 
         def change_propose(a: Mapping[str, Any]) -> dict[str, Any]:
+            from lattice.studio.mcp_intake import SourceError, parse_source
+
             req = _str(a, "request")
-            out = b.new_change({"request": req, "selected": _targets(a)})
+            body: dict[str, Any] = {"request": req, "selected": _targets(a)}
+            try:
+                source = parse_source(a.get("source"))
+            except SourceError as e:
+                raise ToolError(str(e)) from None
+            if source:
+                body["source"] = source  # API v1.13: where the request came from
+            out = b.new_change(body)
             cid = out["id"]
             c = b.get_change(cid)
             return {
@@ -912,10 +921,24 @@ class Toolbox:
             "Propose a change to the requirements, the way Studio's 'ask for a change' does: "
             "drafts the new markdown/spec/trace in the background and checks it. Returns "
             "{id, status}; poll change_get. Never accepts: a human accepts in Studio. Use "
-            "this instead of editing REQUIREMENTS.md, spec.py or spec.trace.json.",
+            "this instead of editing REQUIREMENTS.md, spec.py or spec.trace.json. When the "
+            "request comes from an external item (an issue, a document, a message read through "
+            "another MCP server), pass `source` so the change set records where it came from.",
             {
                 "request": {**S, "description": "the change in plain words"},
                 "selected": {"type": "array", "items": S},
+                "source": {
+                    "type": "object",
+                    "description": "the external item the request came from",
+                    "properties": {
+                        "server": {**S, "description": "the MCP server, e.g. claude.ai Linear"},
+                        "item": {**S, "description": "the item's id, e.g. PROJ-123"},
+                        "url": {**S, "description": "http(s) link to the item (optional)"},
+                        "title": {**S, "description": "the item's title (optional)"},
+                    },
+                    "required": ["server", "item"],
+                    "additionalProperties": False,
+                },
             },
             ["request"],
             change_propose,

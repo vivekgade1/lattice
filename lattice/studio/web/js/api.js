@@ -131,6 +131,9 @@ export const api = {
   planLand: (id, body = {}) => call("POST", `/api/plan/${encodeURIComponent(id)}/land`, body),
   planStop: (id) => call("DELETE", `/api/plan/${encodeURIComponent(id)}`),
 
+  // v1.13: the connected MCP servers a chat session may read (refresh re-runs the discovery)
+  mcp: (refresh = false) => call("GET", `/api/mcp${refresh ? "?refresh=1" : ""}`),
+
   // v1.5: the chat on a Claude Code session (session.js drives these).
   sessionCreate: (mode, change = null) => call("POST", "/api/session", change ? { mode, change } : { mode }),
   sessionMessage: (id, text, selected = []) =>

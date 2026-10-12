@@ -150,7 +150,9 @@ def test_argv_per_mode(mgr: SessionManager, fake: Fake, project: Path, capsys) -
         assert argv[0] == str(fake.bin) and argv[1] == "-p"
         assert flag(argv, "--output-format") == "stream-json"
         assert "--verbose" in argv and "--include-partial-messages" in argv
-        assert "--strict-mcp-config" in argv and "--resume" not in argv
+        # API v1.13: no --strict-mcp-config, so the account's claude.ai connectors load
+        # (read-only by allowlist, tests/studio/test_mcp_intake.py); rebuild keeps it
+        assert "--strict-mcp-config" not in argv and "--resume" not in argv
         # the owner's user/project settings (plugins, hooks, skills) stay out
         assert flag(argv, "--setting-sources") == "" and "--disable-slash-commands" in argv
         assert flag(argv, "--model") == "sonnet"
