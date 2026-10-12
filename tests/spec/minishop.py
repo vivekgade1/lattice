@@ -559,3 +559,227 @@ def login(client: Any, handle: str) -> str:
     if r.status_code != 200:
         raise RuntimeError(f"login of {handle!r} failed: {r.status_code} {r.text}")
     return r.json()["access_token"]
+
+
+# ---- security fixture (spike 1b): contracts, access-style scenarios, holed variants -------
+#
+# Additive only: `spec()`, `BROKEN` and the baseline tests are untouched. `attack_spec()`
+# returns a Spec carrying `contracts` and concrete anon/ben/ann cells so the deterministic
+# attack generator (lattice.security.plan) has endpoints, per-caller expected statuses,
+# parameter bounds and ownership. `SEC_BROKEN` holes one class each; `write_sec_app` applies
+# a variant's (possibly several) edits.
+
+from lattice.spec.model import Contract, ContractError, ContractParam  # noqa: E402
+
+CONTRACTS = (
+    Contract(
+        "GET", "/orders", auth="Authenticated", table="Order", kind="list", owner_scope="owner"
+    ),
+    Contract(
+        "GET",
+        "/orders/{order_id}",
+        auth="Authenticated",
+        table="Order",
+        kind="read",
+        owner_scope="owner",
+        params=(ContractParam("order_id", source="path", scalar=S.INT),),
+        errors=(ContractError(401, when="unauthenticated"), ContractError(404, when="not_owned")),
+    ),
+    Contract(
+        "POST",
+        "/orders/{order_id}/cancel",
+        auth="Authenticated",
+        table="Order",
+        kind="action",
+        owner_scope="owner",
+        params=(ContractParam("order_id", source="path", scalar=S.INT),),
+    ),
+    Contract(
+        "POST",
+        "/orders/{order_id}/items",
+        auth="Authenticated",
+        table="OrderItem",
+        kind="create",
+        owner_scope="owner",
+        params=(
+            ContractParam("order_id", source="path", scalar=S.INT),
+            ContractParam("product_id", source="body", scalar=S.INT, ge=1),
+            ContractParam("quantity", source="body", scalar=S.INT, ge=1, le=100),
+        ),
+    ),
+)
+
+# anon / ben (non-owner) / ann (owner) cells on ann's order 1 (pending) and her item route
+SEC_SCENARIOS = (
+    Scenario("sec_read_own", steps=(Step("GET", "/orders/1", user="ann", expect_status=200),)),
+    Scenario("sec_read_other", steps=(Step("GET", "/orders/1", user="ben", expect_status=404),)),
+    Scenario("sec_read_anon", steps=(Step("GET", "/orders/1", user=None, expect_status=401),)),
+    Scenario(
+        "sec_cancel_own", steps=(Step("POST", "/orders/1/cancel", user="ann", expect_status=200),)
+    ),
+    Scenario(
+        "sec_cancel_other", steps=(Step("POST", "/orders/1/cancel", user="ben", expect_status=404),)
+    ),
+    Scenario(
+        "sec_cancel_anon", steps=(Step("POST", "/orders/1/cancel", user=None, expect_status=401),)
+    ),
+    Scenario(
+        "sec_add_item_own",
+        steps=(
+            Step(
+                "POST",
+                "/orders/1/items",
+                user="ann",
+                json={"product_id": 1, "quantity": 1},
+                expect_status=201,
+            ),
+        ),
+    ),
+    Scenario(
+        "sec_add_item_other",
+        steps=(
+            Step(
+                "POST",
+                "/orders/1/items",
+                user="ben",
+                json={"product_id": 1, "quantity": 1},
+                expect_status=404,
+            ),
+        ),
+    ),
+    Scenario(
+        "sec_add_item_anon",
+        steps=(
+            Step(
+                "POST",
+                "/orders/1/items",
+                user=None,
+                json={"product_id": 1, "quantity": 1},
+                expect_status=401,
+            ),
+        ),
+    ),
+)
+
+
+def attack_spec() -> Spec:
+    """The minishop spec with contracts and access cells, for the security attack module."""
+    base = spec()
+    return Spec(
+        profile=base.profile,
+        programs=dict(base.programs),
+        machines=base.machines,
+        invariants=base.invariants,
+        scenarios=SEC_SCENARIOS,
+        unchecked=base.unchecked,
+        users=dict(base.users),
+        contracts=CONTRACTS,
+    )
+
+
+# variant -> list of (file, old, new) edits; each holes exactly one attack class
+SEC_BROKEN: dict[str, list[tuple[str, str, str]]] = {
+    # authz: another user's order is readable (the same hole as BROKEN["wrong_answer"])
+    "authz": [
+        (
+            "routes.py",
+            "    order = session.get(Order, order_id)\n"
+            "    if not order or order.user_id != current_user.id:\n"
+            '        raise HTTPException(status_code=404, detail="Order not found")\n'
+            "    return order\n",
+            "    order = session.get(Order, order_id)\n"
+            "    if not order:\n"
+            '        raise HTTPException(status_code=404, detail="Order not found")\n'
+            "    return order\n",
+        )
+    ],
+    # auth: a missing or forged token falls back to the first user (auth bypass)
+    "auth": [
+        (
+            "deps.py",
+            '    scheme, _, token = (authorization or "").partition(" ")\n'
+            '    if scheme.lower() != "bearer" or not token:\n'
+            '        raise HTTPException(status_code=401, detail="Not authenticated")\n'
+            "    user = session.exec(select(User).where(User.token == token)).first()\n"
+            "    if not user:\n"
+            '        raise HTTPException(status_code=401, detail="Not authenticated")\n',
+            '    scheme, _, token = (authorization or "").partition(" ")\n'
+            "    user = session.exec(select(User).where(User.token == token)).first()\n"
+            "    if not user:\n"
+            "        user = session.exec(select(User)).first()\n",
+        )
+    ],
+    # bounds: the quantity bounds are removed (0 / negative / 101 are accepted; the stock
+    # check still bounds the upper side, so the observable breach is the lower bound)
+    "bounds": [
+        (
+            "models.py",
+            "    quantity: int = Field(ge=1, le=100)\n",
+            "    quantity: int\n",
+        )
+    ],
+    # mass-assignment: a client-supplied price is accepted and stored
+    "mass": [
+        (
+            "models.py",
+            "class ItemCreate(SQLModel):\n"
+            "    product_id: int = Field(ge=1)\n"
+            "    quantity: int = Field(ge=1, le=100)\n",
+            "class ItemCreate(SQLModel):\n"
+            "    product_id: int = Field(ge=1)\n"
+            "    quantity: int = Field(ge=1, le=100)\n"
+            "    price: float | None = None\n",
+        ),
+        (
+            "routes.py",
+            "        order_id=order.id, product_id=product.id, quantity=item_in.quantity,\n"
+            "        price=product.price,\n",
+            "        order_id=order.id, product_id=product.id, quantity=item_in.quantity,\n"
+            "        price=item_in.price if item_in.price is not None else product.price,\n",
+        ),
+    ],
+    # state: the pending guard on cancel is removed (a cancelled order can be cancelled again)
+    "state": [
+        (
+            "routes.py",
+            '    if order.status != "pending":\n'
+            '        raise HTTPException(status_code=409, detail="Order cannot be cancelled")\n'
+            '    order.status = "cancelled"\n',
+            '    order.status = "cancelled"\n',
+        )
+    ],
+    # leak: a validation error is answered with a verbose body (stack trace, file path, driver)
+    "leak": [
+        (
+            "main.py",
+            "    app.include_router(routes.router)\n    return app\n",
+            "    from fastapi.exceptions import RequestValidationError\n"
+            "    from fastapi.responses import JSONResponse\n\n"
+            "    @app.exception_handler(RequestValidationError)\n"
+            "    async def _leak(request, exc):  # noqa: ANN001, ANN202\n"
+            "        return JSONResponse(\n"
+            "            status_code=500,\n"
+            '            content={"detail": f"Traceback (most recent call last): {exc!r} at '
+            '/Users/app/routes.py sqlalchemy"},\n'
+            "        )\n\n"
+            "    app.include_router(routes.router)\n    return app\n",
+        )
+    ],
+}
+
+
+def write_sec_app(root: Path, variant: str = "ok") -> tuple[Path, str]:
+    """Write the minishop app holed for one security class (or ``ok`` for the clean app)."""
+    package = f"minishop_sec_{variant}_{uuid.uuid4().hex[:8]}"
+    pkg = root / package
+    pkg.mkdir(parents=True)
+    files = dict(FILES)
+    for rel, old, new in SEC_BROKEN.get(variant, []):
+        assert old in files[rel], (variant, rel)
+        files[rel] = files[rel].replace(old, new)
+    for rel, src in files.items():
+        (pkg / rel).write_text(src.replace("PKG", package))
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    importlib.invalidate_caches()
+    return pkg, package

@@ -7,6 +7,7 @@
     lattice mcp   serve|guard ...                                         # lattice.mcp
     lattice perf  measure|check [--project DIR] ...                       # lattice.perf
     lattice module install|list|info|uninstall ...                        # lattice.modules
+    lattice attack plan|run|report --project DIR ...                       # lattice.security
     lattice projects [DIR ...]                                            # discover projects
 
 Every ``lattice X ...`` is the same as ``python -m lattice.X ...`` (argv forwarded
@@ -43,6 +44,9 @@ commands:
                                                    (not a build gate; exit 1 over budget)
   module    install|list|info|uninstall ...        a project's modules (installed into
                                                    .lattice/modules, pinned by sha256)
+  attack    plan|run|report --project DIR           spec-driven security attacks against the
+            [--scope ...] [--classes ...]          app this starts on a loopback throwaway DB
+                                                   (separate module; owner's own systems only)
   projects  [DIR ...]                              list Studio projects found
 
 `lattice <command> --help` shows a command's options. `lattice X ...` is the same as
@@ -51,7 +55,7 @@ commands:
 # lattice.spec.__main__ dispatches these itself; listed for `lattice spec --help`
 SPEC_COMMANDS = ("check", "fidelity", "draft", "lint", "probe", "review", "ask")
 
-COMMANDS = ("studio", "check", "spec", "import", "mcp", "perf", "module", "projects")
+COMMANDS = ("studio", "check", "spec", "import", "mcp", "perf", "module", "attack", "projects")
 
 STUDIO_TOML = "studio.toml"
 SPEC_FILE = "spec.py"
@@ -344,6 +348,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         from lattice.perf.__main__ import main as target
     elif cmd == "module":
         from lattice.modules.__main__ import main as target
+    elif cmd == "attack":
+        from lattice.security.__main__ import main as target
     else:
         from lattice.mcp.__main__ import main as target
     return _run(target, rest)

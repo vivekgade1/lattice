@@ -1,0 +1,6 @@
+name = "security"
+version = "0.1.0"
+kind = "custom"
+description = "Spec-driven security attack swarm (authz, auth, bounds, mass, state, leak). Separate module; not a build gate. For the owner's own systems only."
+provides = ["attack"]
+entry = "lattice.security"
