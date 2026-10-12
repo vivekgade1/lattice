@@ -16,7 +16,7 @@ route also under ``/p/<name>/api/...``, the bare ``/api/...`` for the default pr
     login_path = "/login"       # optional
     runtime = "process"         # optional: process | go | module:attr
     services = "harness:SERVICES"  # optional
-    database = "sqlite"         # optional: sqlite | postgres | mysql | clickhouse
+    database = "sqlite"         # optional: sqlite | postgres | mysql | clickhouse | ENGINE
     database_url = ""           # optional
     cwd = "."                   # optional: the working directory of checks
     sys_path = ["src"]          # optional: more importable dirs (relative to the project)
@@ -36,6 +36,10 @@ route also under ``/p/<name>/api/...``, the bare ``/api/...`` for the default pr
     [mcp]
     protected = []              # more spec files a rebuild must not edit (lattice/mcp/guard.py)
     allow_writes = []           # API v1.13: servers whose write tools change mode may use
+
+    [engines]
+    paths = ["engines/mariadb.toml"]   # API v1.14: the project's engine descriptors
+                                       # (lattice/spec/engines.py), --database values
 
 The project directory and the ``sys_path`` entries are put on ``sys.path``. Without
 ``[app] app`` and ``[app] db`` the app overlay, ``verify`` and the change impact are off.
@@ -70,6 +74,9 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
   ``GET /api/rebuild``: the rebuild loop of accepted changes (lattice/studio/rebuild.py, its
   ``[rebuild]`` table; API.md v1.7): a coding agent in a git worktree on its own branch, the
   gates run by Studio, never merged. ``model.changes[]`` carries ``build``.
+- ``GET /api/engines``: the database engines the project can check on (built in, its
+  ``[engines] paths``, its installed modules re-hashed) and its modules with their status
+  (lattice/spec/engines.py, lattice/modules; API.md v1.14). Read only.
 - ``GET /api/mcp[?refresh=1]``: the connected MCP servers a chat session sees and how many of
   their read tools each chat mode may use (lattice/studio/mcp_intake.py; API.md v1.13). With
   the stub LLM it answers no servers and starts no process. ``POST /api/changes`` takes an
@@ -189,6 +196,7 @@ class StudioConfig:
     rebuild: dict[str, Any] = dataclasses.field(default_factory=dict)
     mcp: dict[str, Any] = dataclasses.field(default_factory=dict)
     state: dict[str, Any] = dataclasses.field(default_factory=dict)
+    engines: Any = dataclasses.field(default_factory=dict)  # [engines] (API v1.14), as written
 
     @classmethod
     def load(cls, root: Path) -> StudioConfig:
@@ -203,6 +211,7 @@ class StudioConfig:
             dict(data.get("rebuild") or {}) if isinstance(data.get("rebuild"), dict) else {},
             dict(data.get("mcp") or {}) if isinstance(data.get("mcp"), dict) else {},
             dict(data.get("state") or {}) if isinstance(data.get("state"), dict) else {},
+            data.get("engines") or {},
         )
 
     @property
@@ -304,6 +313,11 @@ class Harness:
         return self._resolved
 
     def check_kwargs(self) -> dict[str, Any]:
+        # every check re-registers the project's engines: modules re-hashed, a changed one
+        # dropped (its --database then fails as unknown)
+        from lattice.modules import load_project_engines
+
+        load_project_engines(self.root, self.config.engines)
         r = self.resolve()
         kw = {
             k: r[k]
@@ -312,6 +326,9 @@ class Harness:
         return {**kw, **self.config.check_options}
 
     def verify_config(self) -> VerifyConfig:
+        from lattice.modules import load_project_engines
+
+        load_project_engines(self.root, self.config.engines)
         r = self.resolve()
         return VerifyConfig(
             app=r["app_factory"],
@@ -931,6 +948,44 @@ class Studio:
             self._load_changes()
             self.plans  # noqa: B018 -- builds the Rebuilder and the plans: both load and reconcile
             self._scan_worktrees()
+        # the project's database engines (API v1.14): registered now so its checks can name
+        # them; problems are listed by GET /api/engines, never fatal
+        self.get_engines()
+
+    # -- database engines and modules (lattice/spec/engines.py, lattice/modules; API v1.14)
+    def get_engines(self) -> dict[str, Any]:
+        """``GET /api/engines``: the engines this project can check on and its modules
+        (each re-hashed now; a changed module's engine is not registered)."""
+        from lattice.modules import load_project_engines
+        from lattice.spec import engines as eng
+
+        loaded = load_project_engines(self.root, self.config.engines)
+        wanted = str(self.config.app.get("database") or "sqlite").lower()
+        found = eng.find(wanted)
+        used = found.name if found is not None else wanted
+
+        def row(name: str, source: str, e: Any) -> dict[str, Any]:
+            return {"name": name, "source": source, "used": name == used,
+                    "server": None if e is None else {"image": e.server.image},
+                    "adapter": "sqlite" if e is None else e.adapter,
+                    "requires": [] if e is None else list(e.requires)}  # fmt: skip
+
+        rows = [row(eng.SQLITE, "builtin", None)]
+        rows += [row(r.engine.name, "builtin", r.engine) for r in eng.REGISTRY.entries()
+                 if r.source == "builtin"]  # fmt: skip
+        seen = {r["name"] for r in rows}
+        for _path, e in loaded.files:
+            if e.name not in seen:
+                seen.add(e.name)
+                rows.append(row(e.name, "project", e))
+        for st in loaded.modules:
+            m = st.manifest
+            if st.status == "ok" and m is not None and m.engine is not None and \
+                    m.engine.name not in seen:  # fmt: skip
+                seen.add(m.engine.name)
+                rows.append(row(m.engine.name, "module", m.engine))
+        return {"engines": rows, "modules": [st.to_dict() for st in loaded.modules],
+                "errors": loaded.errors}  # fmt: skip
 
     # -- durable state
     def _change_private(self, cid: str) -> dict[str, Any]:
@@ -1848,6 +1903,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(lambda: st.get_areas(branch))
         if path == "/api/branches":
             return self._dispatch(st.get_branches)
+        if path == "/api/engines":
+            return self._dispatch(st.get_engines)
         if path == "/api/mcp":
             raw = (parse_qs(urlparse(self.path).query).get("refresh") or ["0"])[-1]
             if raw.lower() not in ("0", "1", "true", "false", ""):

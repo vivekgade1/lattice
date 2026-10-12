@@ -126,3 +126,9 @@ Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project direc
 - An invalid `source` (not an object, a missing or empty `server` or `item`, a field that is not a string or is longer than its cap, a `url` that is not http or https, a control character, an unknown field) answers 422 and creates no change.
 - A chat session (ask, explain, change) sees the claude.ai connectors of the owner's account besides `lattice`, but not the owner's plugins, skills, hooks or plugin servers; only the read tools of connected servers may run, write and unknown tools are never offered unless `[mcp] allow_writes` lists the server (change mode only), and the rebuild agent and the planner see no external server.
 - The conversation panel has a quiet Connected tools list (each server's state and how many read tools each mode may use, with a Refresh), and a change card shows the external item its request came from, with its link.
+
+## Database engines and modules
+
+- GET /api/engines answers `engines` (each with `name`, `source` -- `builtin`, `project` or `module` --, `used`, `server` with its `image` or null, `adapter` and `requires`): SQLite and the built-in `postgres`, `mysql` and `clickhouse` first, then the engines of the project's `[engines] paths` and of its installed modules; `modules` (each with `name`, `version`, `sha256` and `status`) and `errors`. A project with no engines or modules of its own lists the built-ins, SQLite `used` (the default database), and no modules or errors.
+- There is no write route for engines: POST /api/engines and DELETE /api/engines answer 404.
+- The project's engine descriptors and installed modules are registered for its checks; every read re-hashes the modules, and one whose installed tree no longer matches its lock hash is listed `changed`, its engine is not registered and an error names it.

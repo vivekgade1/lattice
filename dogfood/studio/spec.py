@@ -197,6 +197,21 @@ MCP_STUB = {"servers": [], "refreshed_at": None,
 SOURCE = {"server": "claude.ai Linear", "item": "PROJ-7", "url": "https://tracker.example.com/PROJ-7",
           "title": "Notes can be starred"}  # fmt: skip
 
+# ---- database engines and modules (API.md v1.14) ---------------------------------------------
+# the seed has no [app], no [engines] and no modules: the built-ins, SQLite used (the default)
+ENGINES_SEED = {"engines": [
+    {"name": "sqlite", "source": "builtin", "used": True, "server": None, "adapter": "sqlite",
+     "requires": []},
+    {"name": "postgres", "source": "builtin", "used": False,
+     "server": {"image": "postgres:16-alpine"}, "adapter": "postgres",
+     "requires": ["psycopg[binary]>=3.2"]},
+    {"name": "mysql", "source": "builtin", "used": False, "server": {"image": "mysql:8.4"},
+     "adapter": "mysql", "requires": ["pymysql>=1.1"]},
+    {"name": "clickhouse", "source": "builtin", "used": False,
+     "server": {"image": "clickhouse/clickhouse-server:24.8-alpine"}, "adapter": "clickhouse",
+     "requires": ["clickhouse-connect>=0.8"]},
+], "modules": [], "errors": []}  # fmt: skip
+
 # ---- build from spec (API.md v1.8) ---------------------------------------------------------
 WRITING_COMMIT = "c15cbb303a97efa936a6018111f52b3926a6f845"
 READING_COMMIT = "04e0ae929beb561410a4d2cef4873fdc568f6776"
@@ -1165,6 +1180,16 @@ SCENARIOS = (
         refused("GET", "/api/changes/c1", 404, "no change c1"),
         UNCHANGED,
     )),
+    Scenario("database_engines_are_listed", steps=(
+        Step("GET", "/api/engines", expect_body=ENGINES_SEED),
+        refused("POST", "/api/engines", 404, "no such route", json={}),
+        refused("POST", "/api/engines", 404, "no such route",
+                json={"paths": ["engines/mariadb.toml"]}),
+        refused("DELETE", "/api/engines", 404, "no such route"),
+        # still the built-ins only: nothing was registered or installed
+        Step("GET", "/api/engines", expect_body=ENGINES_SEED),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1307,6 +1332,13 @@ UNCHECKED = (
               "observable over HTTP; tests/studio/test_mcp_intake.py checks its code and the "
               "mock's fields, and the browser check is in "
               "docs/results/2026-10-12-spike4-results.md."),
+    Unchecked("R84 (engines and modules registered, re-hashed on every read, a changed module "
+              "refused) needs a project with its own [engines] paths and installed modules; the "
+              "seed has neither (adding them would change the seed commit every recorded id "
+              "depends on). tests/studio/test_engines_api.py covers it on the real server (a "
+              "project engine used, an engine module listed, one byte of its tree changed: "
+              "`changed`, its engine dropped, the error listed), tests/modules/test_modules.py "
+              "the install, the lock and the checker's refusal."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

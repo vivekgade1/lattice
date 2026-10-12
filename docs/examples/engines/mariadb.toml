@@ -1,0 +1,46 @@
+# MariaDB as a project's engine for the spec checker: a pure descriptor, no code
+# (spike 2, docs/results/2026-10-12-spike2-results.md). It reuses the built-in MySQL adapter
+# (PyMySQL) and the MySQL clone procedure (clone = "code" with adapter "mysql").
+#
+#   lattice spec check ... --database mariadb --engine-file docs/examples/engines/mariadb.toml
+#   or studio.toml:  [engines] paths = ["engines/mariadb.toml"]  and  [app] database = "mariadb"
+#
+# The canonical URL is mysql:// (MariaDB speaks the MySQL wire protocol, and harnesses and
+# drivers that take a MySQL URL take it); a mariadb:// URL resolves to this engine too
+# (url_schemes), taking that alias over from the built-in mysql engine while this file is
+# registered. Fields: docs/design/lattice-module-descriptor.md.
+name = "mariadb"
+title = "MariaDB"
+url_schemes = ["mariadb"]
+url_template = "mysql://{user}:{password}@{host}:{port}/{db}"
+default_port = 3306
+adapter = "mysql"
+requires = ["pymysql>=1.1"]
+clone = "code"
+
+[drivers]
+go-mysql = { template = "{raw_auth}tcp({hostport})/{db}", query_fixed = { parseTime = "true" }, query_url = true }
+sqlalchemy = "mysql+pymysql://{rest}"
+jdbc = { template = "jdbc:mariadb://{hostport}/{db}", query_auth = true, query_url = true }
+
+[sql]
+identifier_quote = "`"
+true_literal = "TRUE"
+false_literal = "FALSE"
+backslash_escapes = true
+list_tables = "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE' ORDER BY table_name"
+list_columns = "SELECT column_name FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = %s ORDER BY ordinal_position"
+drop_database = "DROP DATABASE IF EXISTS {name}"
+
+[capabilities]
+unique_constraints = true
+transactions = true
+
+[server]
+image = "mariadb:11"
+port = 3306
+data_dir = "/var/lib/mysql"
+admin_user = "root"
+admin_db = "mysql"
+env = { MARIADB_ROOT_PASSWORD = "{password}" }
+args = ["--innodb-flush-log-at-trx-commit=0", "--skip-log-bin", "--sync-binlog=0", "--max-connections=300"]

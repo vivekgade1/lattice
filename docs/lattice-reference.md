@@ -175,6 +175,7 @@ What remains in `bench/`, because live tests of the checker, runtime and importe
 | `lattice import ...` | `python -m lattice.importer` | |
 | `lattice mcp serve/guard ...` | `python -m lattice.mcp` | |
 | `lattice perf measure/check [--project DIR] [--budget FILE] [--json] [--sizes 5,25] [--runs 10] [--id ID] [--statements]` | `python -m lattice.perf` | statements per request (and latency) of the endpoints in `DIR/perf.budget.json`, against their budgets; not part of `lattice check`, not a build gate (spike 1a, below) |
+| `lattice module install SOURCE [--index DIR] [--yes]`, `list`, `info NAME`, `uninstall NAME` (all `[--project DIR]`) | `python -m lattice.modules` | local modules pinned by sha256 in `DIR/lattice.modules.lock`, copied to `DIR/.lattice/modules/<name>/`; install prints the manifest and needs `--yes` or an interactive y; every load re-hashes and refuses a changed tree; git sources not implemented. Engines are descriptors (`lattice/spec/engines/*.toml`); a project adds one with `studio.toml` `[engines] paths` or `lattice spec check --engine-file FILE` (spike 2, `docs/design/lattice-module-descriptor.md`, API.md v1.14) |
 | (removed 2026-10-12) `lattice gogen`, `lattice tsgen` | the Go and TypeScript code generators | `lattice/gogen` keeps only `regex.py` and `types.py` for the checker's Go-target rules |
 | `lattice projects [DIR ...]` | | lists Studio projects (`studio.toml`, or `spec.py` + `spec.trace.json`) in DIR, cwd, `dogfood/*` and one level of children |
 
