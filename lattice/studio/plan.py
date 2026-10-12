@@ -114,6 +114,7 @@ from lattice.studio.rebuild import (
     _zero_usage,
     reap_orphans,
     result_doc,
+    scoped_command,
     write_selection,
 )
 from lattice.studio.session import DEFAULT_MAX_TOKENS, Transcript, _kill_group
@@ -2678,6 +2679,7 @@ class PlanManager:
         """The gate settings a run used (API v1.11), for the UI and the results doc."""
         return {"scoped_gate_args": self.cfg.scoped_gate_args,
                 "level_gate": self.cfg.level_gate,
+                "level_gate_args": self.cfg.level_gate_args,
                 "level_repair_attempts": self.cfg.level_repair_attempts,
                 "node_timeout": self.cfg.node_timeout,
                 "node_max_tokens": self.cfg.node_max_tokens}  # fmt: skip
@@ -3059,8 +3061,8 @@ class PlanManager:
                             if t.startswith("scenario:")]  # fmt: skip
                 if selected and irun.gates:
                     path = write_selection(wt, selected, "level-selection.json")
-                    irun.gates = [f"{irun.gates[0]} --only-file {shlex.quote(str(path))}",
-                                  *irun.gates[1:]]  # fmt: skip
+                    irun.gates = [scoped_command(irun.gates[0], self.cfg.level_gate_args or [],
+                                                 path), *irun.gates[1:]]  # fmt: skip
                 else:
                     mode, selected = "full", None
             gates, counts, findings = rb.gate_round(irun, L + 1)

@@ -240,8 +240,8 @@ def test_plan_defaults_on_get_projects(seed) -> None:
     item = hub.summary("notes")
     assert item["plan_defaults"] == {
         "max_parallel": 2, "models": {"fast": "haiku", "mid": "sonnet", "frontier": "opus"},
-        "scoped_gate": ARGS, "level_gate": "regression", "node_timeout": 1800.0,
-        "level_repair_attempts": 2}  # fmt: skip
+        "scoped_gate": ARGS, "level_gate": "regression", "level_gate_args": None,
+        "node_timeout": 1800.0, "level_repair_attempts": 2}  # fmt: skip
 
 
 FAKE_PLANNER = """#!{python}
@@ -270,3 +270,34 @@ def test_planner_usage_is_in_the_record_and_the_totals(seed, tmp_path: Path) -> 
     assert pu["cache_read_input_tokens"] == 6000 and pu["cost_usd_list_estimate"] == 1.0
     assert pu["wall_s"] > 0
     assert rec["totals"]["tokens_in"] == 8100 and rec["totals"]["cost_usd_list_estimate"] == 1.0
+
+
+def test_level_gate_args_apply_to_the_regression_level_gate_only(seed) -> None:
+    """``[rebuild] level_gate_args``: the regression level gate carries them before
+    ``--only-file``; the final full gate and the node gates do not (a level end was about
+    two minutes of layer X on Streak)."""
+    root = seed()
+    pm = manager(root, level_gate="regression", level_gate_args=["--x-repeats", "2"])
+    rec = run_plan(pm, "all")
+    assert rec["status"] == "passed", rec
+    first = rec["level_runs"][0]["gate"]
+    assert first["mode"] == "regression"
+    cmd = first["gates"][0]["command"]
+    assert cmd.startswith("./gate.sh --x-repeats 2 --only-file ") and cmd.endswith(
+        "/.lattice-scope/level-selection.json"
+    )
+    # node gates keep their own scoped args; the final gate is the plain full gate
+    node_cmds = [pm.rb.get(n["build_id"])["gates"][0] for n in rec["nodes"] if n.get("build_id")]
+    assert node_cmds and all("--x-repeats 2" not in c for c in node_cmds)
+    assert rec["final_gate"]["gates"][0]["command"] == "./gate.sh"
+    assert pm.cfg.plan_defaults()["level_gate_args"] == ["--x-repeats", "2"]
+
+
+def test_without_level_gate_args_the_level_gate_is_unchanged(seed) -> None:
+    root = seed()
+    pm = manager(root, level_gate="regression")
+    rec = run_plan(pm, "all")
+    cmd = rec["level_runs"][0]["gate"]["gates"][0]["command"]
+    assert cmd.startswith("./gate.sh --only-file ") and "--x-repeats" not in cmd
+    assert pm.cfg.plan_defaults()["level_gate_args"] is None
+    assert rec["gate_config"]["level_gate_args"] is None

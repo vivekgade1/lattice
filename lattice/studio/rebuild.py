@@ -400,6 +400,18 @@ class RebuildConfig:
         return "regression" if self.table.get("level_gate") == "regression" else "full"
 
     @property
+    def level_gate_args(self) -> list[str] | None:
+        """``[rebuild] level_gate_args``: extra arguments of the first gate at a
+        *regression* level gate only (e.g. ``["--x-repeats", "2"]``: about 2 minutes of
+        every Streak level were layer X, which the regression selection does not shrink).
+        The final full gate and the integration node run as configured. None (default):
+        none."""
+        a = self.table.get("level_gate_args")
+        if isinstance(a, list) and all(isinstance(x, str) for x in a):
+            return [str(x) for x in a]
+        return None
+
+    @property
     def level_repair_attempts(self) -> int:
         """``[rebuild] level_repair_attempts`` (default 2; 0 turns the repair loop off):
         repair rounds after a failing level gate before the plan stops ``partial``."""
@@ -448,6 +460,7 @@ class RebuildConfig:
             "models": self.models,
             "scoped_gate": self.scoped_gate_args,
             "level_gate": self.level_gate,
+            "level_gate_args": self.level_gate_args,
             "node_timeout": self.node_timeout,
             "level_repair_attempts": self.level_repair_attempts,
         }

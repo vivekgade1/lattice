@@ -587,6 +587,7 @@ A Streak level took 35-45 minutes, mostly gate time: the full gate (`./check.sh`
 [rebuild]
 scoped_gate_args = ["--layers", "CD", "--x-repeats", "1", "--await-cap", "5"]  # default: none (gates as configured)
 level_gate = "full"            # "full" (default) | "regression"
+level_gate_args = []           # extra args of the first gate at a *regression* level gate only, e.g. ["--x-repeats", "2"]; default none
 level_repair_attempts = 2      # repair rounds after a failing level gate (0: stop as in v1.10)
 node_timeout = 1800            # seconds one plan node's agent step may run (default round_timeout)
 node_max_tokens = 0            # output tokens one node's agent may spend in all (0/absent: no cap)
@@ -638,7 +639,7 @@ Repair-loop states:
 ### Planner and areas
 - `planner_usage: {tokens_in (cache included), tokens_out, cache_read_input_tokens, cache_creation_input_tokens, cost_usd_list_estimate, wall_s, calls}` on every plan; `totals` include the planner from the moment planning ends. A planner call cut off without a result event keeps the usage its stream showed.
 - The planner message marks each area `built: true|false|null` (every check of it passes at the target's tip, from the per-tip results; null: never gated). After planning (and after a revision), a node with nothing failing in its scope at the target's tip is `passed` with `nothing_to_build` and `dropped_at_planning: <sha>` and never runs an agent; the scaffold too: a scaffold with rules runs only when its own checks fail, a scaffold with no rules only while something fails in the plan scope (the v1.9 "the scaffold always runs" rule is gone). The same rule applies when a level starts.
-- Plan records add `gate_config: {scoped_gate_args, level_gate, level_repair_attempts, node_timeout, node_max_tokens}` (once run), `final_gate`, `repair_attempts`, `planner_usage`.
+- Plan records add `gate_config: {scoped_gate_args, level_gate, level_gate_args, level_repair_attempts, node_timeout, node_max_tokens}` (once run), `final_gate`, `repair_attempts`, `planner_usage`.
 
 ### A restart during an agent's turn
 A node build's `session_id` is recorded as soon as the agent has spoken (its first `assistant` event), not when its process exits. A Studio killed mid-turn therefore keeps the session: `POST .../run` (or `POST /api/rebuild/{id}/continue`) goes on with `claude -p --resume <session id>` and a continuation note ("Studio was restarted while you were working ... carry on") instead of the build brief, whatever round the cut-off turn was; the timeline says `continued from round N (session resumed), attempt 2`. Without a recorded session (killed before the agent's first message) the round starts again with a fresh session, as before. `scripts/restart_drill.py F` (a fake `claude`) checks this with no tokens, `R` with a real agent.
@@ -651,7 +652,7 @@ A Studio killed while a level was being repaired reconciles on load like any int
 - An agent stopped by `node_timeout` (plan nodes; stand-alone builds keep `round_timeout`) or `node_max_tokens` keeps the usage its stream showed (each assistant message's usage, once per message id) instead of 0: the round gets `status: "timeout"`, `error: {kind: "timeout", reason: "node_timeout|round_timeout|node_max_tokens", message}`, `agent.partial: true`, and its files stay (the gates still run on them).
 
 ### `plan_defaults` on GET /api/projects
-`{"max_parallel": 2, "models": {"fast", "mid", "frontier"}, "scoped_gate": [args] | null, "level_gate": "full|regression", "node_timeout": 1800.0, "level_repair_attempts": 2}` from the project's `[rebuild]`.
+`{"max_parallel": 2, "models": {"fast", "mid", "frontier"}, "scoped_gate": [args] | null, "level_gate": "full|regression", "level_gate_args": [args] | null, "node_timeout": 1800.0, "level_repair_attempts": 2}` from the project's `[rebuild]`.
 
 ### The mock
 Projects carry `plan_defaults` (scoped gate, regression level gate); plans carry `planner_usage` and, once run, `gate_config`; level gates carry `mode`/`selected`/`in_scope_failing`. A mock run's level 1 (in a plan of three or more levels) fails its gate once and is repaired over one poll (a node `repairing`, `repairs` on the level run and the node, timeline `repair: true`) before it lands. The second project gets a third fixture plan `p3` whose level 1 ran out of repair attempts (`partial`, `error.kind: repair_exhausted`, `resume.kind: repair`); `POST /api/plan/p3/run` repairs it again over one poll and goes on. One of p3's failing checks is owned by no merged node, so it also carries a `kind: "repair"` node `repair-l1` (`gave_up`; `attributed` by `repair_node`). A fourth fixture `p4` is `partial` because a node gave up and blocked its dependents (`resume.kind: "retry"`). Repair entries carry per-node `usage`, nodes `repair_usage`, `totals` include the planner, a resumed run's `baseline.reused` is true and a run's last level is preceded by `final_gate`.

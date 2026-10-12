@@ -1608,6 +1608,7 @@ MOCK_PLAN_DEFAULTS = {
     "models": dict(plan_mod.DEFAULT_MODELS),
     "scoped_gate": ["--layers", "CD", "--x-repeats", "1", "--await-cap", "5"],
     "level_gate": "regression",
+    "level_gate_args": None,
     "node_timeout": 1800.0,
     "level_repair_attempts": 2,
 }
