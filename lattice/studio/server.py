@@ -110,6 +110,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qs, unquote, urlparse
 
+from lattice.improve.events import EventLog
 from lattice.llm.client import Generator
 from lattice.spec.ask import VerifyConfig, ask, build_digest
 from lattice.spec.draft import load_spec
@@ -944,6 +945,9 @@ class Studio:
                 self.store = StateStore(d, log=log)
             except OSError as exc:
                 log(f"state: no durable state for {self.name}: {exc}")
+        # the improvement event log (spike 3): <state dir>/events.jsonl, none without a store
+        self.events = EventLog.in_dir(self.store.root if self.store is not None else None,
+                                      self.name, log=log)  # fmt: skip
         if self.store is not None:
             self._load_changes()
             self.plans  # noqa: B018 -- builds the Rebuilder and the plans: both load and reconcile
@@ -953,6 +957,29 @@ class Studio:
         self.get_engines()
 
     # -- database engines and modules (lattice/spec/engines.py, lattice/modules; API v1.14)
+    # -- improvement proposals (lattice/improve, spike 3; API v1.15)
+    def get_improve(self) -> dict[str, Any]:
+        """``GET /api/improve``: the ranker's proposals from this project's event log (read
+        only; the owner decides)."""
+        from lattice.improve.analyze import analyze, read_ledger
+        from lattice.improve.events import read_events
+
+        events: list[dict[str, Any]] = []
+        ledger: list[dict[str, Any]] = []
+        if self.store is not None:
+            events = read_events(self.store.root / "events.jsonl").events
+            ledger, _ = read_ledger(self.store.root / "improvements.jsonl")
+        rep = analyze(events, ledger)
+        return {k: rep[k] for k in ("proposals", "events", "method", "blind_spots")}
+
+    def sync_spec(self, branch: str, body: Mapping[str, Any] | None) -> dict[str, Any]:
+        """``POST /api/branches/{name}/sync-spec`` (API v1.12), logged as the owner's action."""
+        out = self.rebuilder.sync_spec(branch, body)
+        files = list(out.get("files") or [])
+        self.events.append("human", what="spec_sync", actor="owner", branch=branch,
+                           files=files, commit=out.get("commit"))  # fmt: skip
+        return out
+
     def get_engines(self) -> dict[str, Any]:
         """``GET /api/engines``: the engines this project can check on and its modules
         (each re-hashed now; a changed module's engine is not registered)."""
@@ -1166,6 +1193,7 @@ class Studio:
                     log=log,
                     trailer=COMMIT_TRAILER,
                     store=self.store,
+                    events=self.events,
                 )
             return self._rebuilder
 
@@ -1699,6 +1727,9 @@ class Studio:
                 raise ApiError(HTTPStatus.CONFLICT, f"change {cid} is already accepted")
             c["status"] = "rejected"
             self._save_change(cid)
+            source = (c.get("source") or {}).get("server") if c.get("source") else None
+        self.events.append("human", what="change_reject", actor="owner", change=cid)
+        self.events.append("change", change=cid, decision="rejected", source=source or "studio")
         log(f"{cid}: rejected")
         return {"ok": True}
 
@@ -1721,6 +1752,9 @@ class Studio:
             self._cache = None
             self._save_change(cid)
             request = " ".join(c["request"].split())
+            source = (c.get("source") or {}).get("server") if c.get("source") else None
+        self.events.append("human", what="change_accept", actor="owner", change=cid)
+        self.events.append("change", change=cid, decision="accepted", source=source or "studio")
         message = f"spec: {request}\n\n{COMMIT_TRAILER}\n"
         if not is_git_repo(self.root):
             log(f"{cid}: accepted; files written (not a git repository)")
@@ -1905,6 +1939,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(st.get_branches)
         if path == "/api/engines":
             return self._dispatch(st.get_engines)
+        if path == "/api/improve":
+            return self._dispatch(st.get_improve)
         if path == "/api/mcp":
             raw = (parse_qs(urlparse(self.path).query).get("refresh") or ["0"])[-1]
             if raw.lower() not in ("0", "1", "true", "false", ""):
@@ -1989,7 +2025,7 @@ class Handler(BaseHTTPRequestHandler):
             if path.startswith("/api/branches/") and path.endswith("/sync-spec"):
                 # API v1.12; the name may hold slashes, raw or %2F-escaped
                 branch = unquote(path.removeprefix("/api/branches/").removesuffix("/sync-spec"))
-                return st.plan_call(lambda: st.rebuilder.sync_spec(branch, body))
+                return st.plan_call(lambda: st.sync_spec(branch, body))
             if path.startswith("/api/rebuild/"):
                 parts = path.removeprefix("/api/rebuild/").split("/")
                 if len(parts) == 2 and parts[1] == "continue":

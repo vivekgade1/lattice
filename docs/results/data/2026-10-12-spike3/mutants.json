@@ -1,0 +1,106 @@
+{
+ "hashes": {
+  "lattice/improve/analyze.py": "fef7473447985799",
+  "lattice/improve/events.py": "8d06ce8104647ac2",
+  "lattice/studio/rebuild.py": "ab4dd7b3124bfd6d",
+  "lattice/improve/signals.py": "4b3ec0139f0a0f0e",
+  "lattice/studio/plan.py": "ef6520932f25fe0b",
+  "dogfood/improve_mutants.py": "9777b0cbb98bbd37"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "61 passed in 39.04s",
+    "seconds": 39.2,
+    "tail": ".............................................................            [100%]\n61 passed in 39.04s\n"
+   },
+   "verdict": "PASS (control)"
+  },
+  "IM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_analyze.py::test_at_most_n_proposals_with_evidence",
+     "tests/improve/test_analyze.py::test_closed_items_are_left_out_and_recurrence_is_counted",
+     "tests/improve/test_analyze.py::test_layer_x_at_level_gates_names_the_config_change_and_its_expected_saving",
+     "tests/improve/test_analyze.py::test_seconds_are_never_converted_to_dollars",
+     "tests/improve/test_analyze.py::test_the_i_r_arithmetic_and_class_order"
+    ],
+    "summary": "5 failed, 56 passed in 40.59s",
+    "seconds": 40.8,
+    "tail": "evel_regression:X'\nE         \nE         - gate:level_regression:X\nE         + change:rejected)\n\ntests/improve/test_analyze.py:145: AssertionError\n____________________ test_at_most_n_proposals_with_evidence ____________________\n\n    def test_at_most_n_proposals_with_evidence() -> None:\n        rep = analyze(hand_set(), top=2)\n        assert len(rep[\"proposals\"]) == 2\n        p = rep[\"proposals\"][1]\n>       assert p[\"evidence\"] == [\n            \"e-2026-10-01T00:00:00Z\",\n            \"e-2026-10-01T00:01:00Z\",\n            \"e-2026-10-01T00:02:00Z\",\n        ]\nE       AssertionError: assert ['e-2026-10-01T03:30:00Z'] == ['e-2026-10-0...01T00:02:00Z']\nE         \nE         At index 0 diff: 'e-2026-10-01T03:30:00Z' != 'e-2026-10-01T00:00:00Z'\nE         Right contains 2 more items, first extra item: 'e-2026-10-01T00:01:00Z'\nE         Use -v to get more diff\n\ntests/improve/test_analyze.py:171: AssertionError\n_ test_layer_x_at_level_gates_names_the_config_change_and_its_expected_saving __\n\n    def test_layer_x_at_level_gates_names_the_config_change_and_its_expected_saving() -> None:\n        p = analyze(hand_set(), top=2)[\"proposals\"][1]\n>       assert p[\"signal_key\"] == \"gate:level_regression:X\" and p[\"kind\"] == \"change_set\"\nE       AssertionError: assert ('cause:token_budget' == 'gate:level_regression:X'\nE         \nE         - gate:level_regression:X\nE         + cause:token_budget)\n\ntests/improve/test_analyze.py:197: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_analyze.py::test_the_i_r_arithmetic_and_class_order\nFAILED tests/improve/test_analyze.py::test_seconds_are_never_converted_to_dollars\nFAILED tests/improve/test_analyze.py::test_closed_items_are_left_out_and_recurrence_is_counted\nFAILED tests/improve/test_analyze.py::test_at_most_n_proposals_with_evidence\nFAILED tests/improve/test_analyze.py::test_layer_x_at_level_gates_names_the_config_change_and_its_expected_saving\n5 failed, 56 passed in 40.59s\n"
+   },
+   "verdict": "caught"
+  },
+  "IM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_analyze.py::test_i4_a_checker_proposal_needs_the_owner",
+     "tests/improve/test_cli.py::test_i4_refusal_in_the_cli[i4_checker-needs_owner]",
+     "tests/studio/test_events.py::test_the_mock_serves_the_same_shape"
+    ],
+    "summary": "3 failed, 58 passed in 40.59s",
+    "seconds": 40.8,
+    "tail": " = <_pytest.capture.CaptureFixture object at 0x10d121010>\nevents = <function i4_checker at 0x10b4acca0>, status = 'needs_owner'\n\n    @pytest.mark.parametrize(\n        (\"events\", \"status\"), [(i4_lint_noise, \"open\"), (i4_checker, \"needs_owner\")]\n    )\n    def test_i4_refusal_in_the_cli(tmp_path: Path, capsys, events, status) -> None:\n        p = project(tmp_path)\n        log = EventLog(p / \"state\" / \"events.jsonl\", \"proj\")\n        log.extend(events())\n        assert lattice_main([\"improve\", \"report\", \"--project\", str(p), \"--json\"]) == 0\n        top = json.loads(capsys.readouterr().out)[\"proposals\"][0]\n>       assert top[\"status\"] == status\nE       AssertionError: assert 'open' == 'needs_owner'\nE         \nE         - needs_owner\nE         + open\n\ntests/improve/test_cli.py:101: AssertionError\n_____________________ test_the_mock_serves_the_same_shape ______________________\n\n    def test_the_mock_serves_the_same_shape() -> None:\n        srv = make_mock(0)\n        base = serve(srv)\n        try:\n            status, out = request(\"GET\", base + \"/api/improve\")\n            assert status == 200 and set(out) == {\"proposals\", \"events\", \"method\", \"blind_spots\"}\n            top = out[\"proposals\"][0]\n            assert top[\"signal_key\"] == \"gate:level_regression:X\" and top[\"kind\"] == \"change_set\"\n            assert top[\"expected\"][\"saving_s_per_gate\"] == 72.0\n>           assert any(p[\"status\"] == \"needs_owner\" for p in out[\"proposals\"])\nE           assert False\nE            +  where False = any(<generator object test_the_mock_serves_the_same_shape.<locals>.<genexpr> at 0x10cadfed0>)\n\ntests/studio/test_events.py:341: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_analyze.py::test_i4_a_checker_proposal_needs_the_owner\nFAILED tests/improve/test_cli.py::test_i4_refusal_in_the_cli[i4_checker-needs_owner]\nFAILED tests/studio/test_events.py::test_the_mock_serves_the_same_shape - ass...\n3 failed, 58 passed in 40.59s\n"
+   },
+   "verdict": "caught"
+  },
+  "IM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_analyze.py::test_closed_items_are_left_out_and_recurrence_is_counted",
+     "tests/improve/test_cli.py::test_ledger_closes_an_item",
+     "tests/improve/test_import.py::test_the_i_r_replay",
+     "tests/studio/test_events.py::test_the_mock_serves_the_same_shape"
+    ],
+    "summary": "4 failed, 57 passed in 40.59s",
+    "seconds": 40.8,
+    "tail": "   rep = analyze(evs, IR_LEDGER, top=5)\n        got = [(p[\"signal_key\"], p[\"frequency\"], p[\"score\"]) for p in rep[\"proposals\"]]\n>       assert got == [\n            (\"cause:stopped_by_owner\", 1, 2709.23),\n            (\"gate:baseline_rerun:total\", 2, 842.35),\n            (\"gate:level_regression:total\", 5, 716.34),\n            (\"cause:other\", 2, 634.0),\n            (\"gate:baseline:total\", 2, 296.8),\n        ]\nE       AssertionError: assert [('cause:stop...r', 2, 634.0)] == [('cause:stop...l', 2, 296.8)]\nE         \nE         At index 1 diff: ('gate:level_full:total', 2, 846.34) != ('gate:baseline_rerun:total', 2, 842.35)\nE         Use -v to get more diff\n\ntests/improve/test_import.py:111: AssertionError\n_____________________ test_the_mock_serves_the_same_shape ______________________\n\n    def test_the_mock_serves_the_same_shape() -> None:\n        srv = make_mock(0)\n        base = serve(srv)\n        try:\n            status, out = request(\"GET\", base + \"/api/improve\")\n            assert status == 200 and set(out) == {\"proposals\", \"events\", \"method\", \"blind_spots\"}\n            top = out[\"proposals\"][0]\n            assert top[\"signal_key\"] == \"gate:level_regression:X\" and top[\"kind\"] == \"change_set\"\n            assert top[\"expected\"][\"saving_s_per_gate\"] == 72.0\n>           assert any(p[\"status\"] == \"needs_owner\" for p in out[\"proposals\"])\nE           assert False\nE            +  where False = any(<generator object test_the_mock_serves_the_same_shape.<locals>.<genexpr> at 0x10ab05560>)\n\ntests/studio/test_events.py:341: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_analyze.py::test_closed_items_are_left_out_and_recurrence_is_counted\nFAILED tests/improve/test_cli.py::test_ledger_closes_an_item - AssertionError...\nFAILED tests/improve/test_import.py::test_the_i_r_replay - AssertionError: as...\nFAILED tests/studio/test_events.py::test_the_mock_serves_the_same_shape - ass...\n4 failed, 57 passed in 40.59s\n"
+   },
+   "verdict": "caught"
+  },
+  "IM6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_events.py::test_a_layer_seconds_copied_from_the_report"
+    ],
+    "summary": "1 failed, 60 passed in 39.32s",
+    "seconds": 39.6,
+    "tail": "..................................................F..........            [100%]\n=================================== FAILURES ===================================\n_________________ test_a_layer_seconds_copied_from_the_report __________________\n\ngive_up_plan = {'pm': <lattice.studio.plan.PlanManager object at 0x10a2b3a10>, 'rec': {'id': 'p1', 'project': 'notes', 'status': 'par...': PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2549/events0/notes')}\n\n    def test_a_layer_seconds_copied_from_the_report(give_up_plan) -> None:\n        rec, events = give_up_plan[\"rec\"], give_up_plan[\"events\"]\n        gates = [e for e in events if e[\"kind\"] == \"gate_run\"]\n        assert gates, \"every gate run is logged\"\n        node_gates = [e for e in gates if e[\"gate\"] == \"node\"]\n        level = [e for e in gates if e[\"gate\"] in (\"level\", \"baseline\", \"final\")]\n        # node gates run --layers CD (the seed's scoped_gate_args): C and D only\n>       assert node_gates and all(e[\"layer_seconds\"] == {\"C\": 0.11, \"D\": 0.42} for e in node_gates)\nE       AssertionError: assert ([{'v': 1, 'ts': '2026-10-12T23:21:52Z', 'project': 'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-12T23:21...'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-12T23:21:56Z', 'project': 'notes', 'kind': 'gate_run', ...}] and False)\nE        +  where False = all(<generator object test_a_layer_seconds_copied_from_the_report.<locals>.<genexpr> at 0x10ab957b0>)\n\ntests/studio/test_events.py:154: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_events.py::test_a_layer_seconds_copied_from_the_report\n1 failed, 60 passed in 39.32s\n"
+   },
+   "verdict": "caught"
+  },
+  "IM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_a_torn_last_line_is_skipped_with_a_warning",
+     "tests/improve/test_events.py::test_bad_middle_lines_unknown_fields_and_kinds_are_tolerated"
+    ],
+    "summary": "2 failed, 59 passed in 39.33s",
+    "seconds": 39.6,
+    "tail": ") + \"\\n\")\n>       res = read_events(p)\n              ^^^^^^^^^^^^^^\n\ntests/improve/test_events.py:55: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-imp-mutant-IM4-1_7d1w_f/lattice/improve/events.py:208: in read_events\n    ev = json.loads(raw.decode(\"utf-8\"))  # MUTANT IM4: no tolerance\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py:346: in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py:345: in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x105c96510>, s = 'not json at all'\nidx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_a_torn_last_line_is_skipped_with_a_warning\nFAILED tests/improve/test_events.py::test_bad_middle_lines_unknown_fields_and_kinds_are_tolerated\n2 failed, 59 passed in 39.33s\n"
+   },
+   "verdict": "caught"
+  },
+  "IM5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_events.py::test_b_cause_on_a_give_up",
+     "tests/studio/test_events.py::test_b_cause_on_an_owner_stop",
+     "tests/studio/test_events.py::test_the_ranker_reads_the_live_log"
+    ],
+    "summary": "3 failed, 58 passed in 39.33s",
+    "seconds": 39.6,
+    "tail": "ime()\n            while (\n                not any(n[\"status\"] == \"running\" and n.get(\"build_id\") for n in pm.get(pid)[\"nodes\"])\n                and time.time() - t0 < 30\n            ):\n                time.sleep(0.1)\n            pm.stop(pid)\n            rec = finish(pm, pid)\n            slow = next(n for n in rec[\"nodes\"] if n.get(\"build_id\"))\n            assert slow[\"status\"] == \"stopped\" and slow[\"cause\"] == \"stopped_by_owner\"\n            evs = read_events(log).events\n>           assert any(e[\"kind\"] == \"node_ended\" and e[\"cause\"] == \"stopped_by_owner\" for e in evs)\nE           assert False\nE            +  where False = any(<generator object test_b_cause_on_an_owner_stop.<locals>.<genexpr> at 0x1089e0ee0>)\n\ntests/studio/test_events.py:224: AssertionError\n______________________ test_the_ranker_reads_the_live_log ______________________\n\ngive_up_plan = {'pm': <lattice.studio.plan.PlanManager object at 0x108123a10>, 'rec': {'id': 'p1', 'project': 'notes', 'status': 'par...': PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2550/events0/notes')}\n\n    def test_the_ranker_reads_the_live_log(give_up_plan) -> None:\n        from lattice.improve.analyze import analyze\n    \n        rep = analyze(give_up_plan[\"events\"], top=50)\n        keys = [p[\"signal_key\"] for p in rep[\"proposals\"]]\n>       assert \"cause:spec_unsatisfiable\" in keys and \"gate:node:D\" in keys\nE       AssertionError: assert ('cause:spec_unsatisfiable' in ['cause:other', 'gate:node:D', 'gate:baseline:X', 'gate:level_regression:X', 'gate:node:C', 'gate:baseline:D', ...])\n\ntests/studio/test_events.py:284: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_events.py::test_b_cause_on_a_give_up - AssertionErro...\nFAILED tests/studio/test_events.py::test_b_cause_on_an_owner_stop - assert False\nFAILED tests/studio/test_events.py::test_the_ranker_reads_the_live_log - Asse...\n3 failed, 58 passed in 39.33s\n"
+   },
+   "verdict": "caught"
+  }
+ }
+}

@@ -1,0 +1,12 @@
+diff --git a/studio.toml b/studio.toml
+index 12b2948..8780c47 100644
+--- a/studio.toml
++++ b/studio.toml
+@@ -19,6 +19,7 @@ go_src = "/Users/vivekgade/Documents/streak"
+ x_repeats = 5
+ 
+ [rebuild]
++level_gate_args = ["--x-repeats", "2"]   # spike 3 I-3: the ranker's top proposal (scratch clone only)
+ repo = "."
+ gates = ["./check.sh"]                          # writes metrics/last-check.json when Studio runs it
+ findings_json = "metrics/last-check.json"       # findings by scenario/rule, so areas can be scoped

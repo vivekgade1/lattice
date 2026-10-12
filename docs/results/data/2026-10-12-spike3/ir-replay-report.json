@@ -1,0 +1,203 @@
+{
+ "proposals": [
+  {
+   "id": "imp-198174f5",
+   "title": "Ask why the owner stopped these nodes",
+   "signal_key": "cause:stopped_by_owner",
+   "evidence": [
+    "e-42eaf8bf9cbbbb9d"
+   ],
+   "score": 2709.23,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 1,
+   "cost_per": 2709.23,
+   "kind": "experiment",
+   "target_paths": [],
+   "why": "the owner stopped them; the log does not record why",
+   "status": "open",
+   "draftable": true
+  },
+  {
+   "id": "imp-ed26281e",
+   "title": "Reuse the recorded result of a tip that was already gated (2 baseline(s) re-ran it)",
+   "signal_key": "gate:baseline_rerun:total",
+   "evidence": [
+    "e-c907a36c28a93d10",
+    "e-cb1490cdbfb210c4"
+   ],
+   "score": 842.35,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 2,
+   "cost_per": 421.18,
+   "kind": "change_set",
+   "target_paths": [
+    "lattice/studio/plan.py",
+    "scripts/import_plan_record.py"
+   ],
+   "why": "a start baseline ran the full gate on a commit whose gate result the log already holds; seeding results/<sha>.json (also when a pre-v1.10 plan record is imported) skips it",
+   "status": "open",
+   "draftable": true
+  },
+  {
+   "id": "imp-9186af48",
+   "title": "Attribute the time of level gates (regression) to layers (5 run(s), no per-layer seconds logged)",
+   "signal_key": "gate:level_regression:total",
+   "evidence": [
+    "e-ffe0a1ec90c98452",
+    "e-ba4b4d9cc5221d22",
+    "e-c2af354ec8240f31",
+    "e-f25d377a8358e974",
+    "e-9db0329c2f32d3a6"
+   ],
+   "score": 716.34,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 5,
+   "cost_per": 143.27,
+   "kind": "experiment",
+   "target_paths": [
+    "studio.toml"
+   ],
+   "why": "the log has only whole-gate seconds; with [rebuild] findings_json the gate's JSON timings are logged per layer and the next report names the layer",
+   "status": "open",
+   "draftable": true
+  },
+  {
+   "id": "imp-ee35799d",
+   "title": "Classify give-ups whose cause was not recorded",
+   "signal_key": "cause:other",
+   "evidence": [
+    "e-d28503262b10a8f9",
+    "e-d76d7043bfe29798"
+   ],
+   "score": 634.0,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 2,
+   "cost_per": 317.0,
+   "kind": "experiment",
+   "target_paths": [],
+   "why": "the records do not say why (records older than the cause field)",
+   "status": "open",
+   "draftable": true
+  },
+  {
+   "id": "imp-d1d01850",
+   "title": "Attribute the time of start baselines to layers (2 run(s), no per-layer seconds logged)",
+   "signal_key": "gate:baseline:total",
+   "evidence": [
+    "e-68ea223fc3c8e3f5",
+    "e-16ee4fa1685b0801"
+   ],
+   "score": 296.8,
+   "unit": "s",
+   "score_class": "A",
+   "frequency": 2,
+   "cost_per": 148.4,
+   "kind": "experiment",
+   "target_paths": [
+    "studio.toml"
+   ],
+   "why": "the log has only whole-gate seconds; with [rebuild] findings_json the gate's JSON timings are logged per layer and the next report names the layer",
+   "status": "open",
+   "draftable": true
+  }
+ ],
+ "events": 33,
+ "method": "Frequency x cost, the I-R method (docs/results/2026-10-12-i-r-improvement-ranking.md): events are clustered by signal_key or cause; f = occurrences; c = the mean cost of one occurrence in wall seconds, or in list-price dollars only when the cluster recorded no seconds (never converted); score = f x c. Seconds-scored clusters (class A) rank above dollar-scored ones (B), above clusters with no recorded cost (C, ordered by f, not a score). Items closed in improvements.jsonl are left out. At most N proposals; one that touches the checker or the spec language is needs_owner and never drafted. The owner decides; nothing is merged automatically.",
+ "blind_spots": [
+  "human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)",
+  "risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only",
+  "recurrence: f counts past occurrences, not future ones; a one-off scores like a habit",
+  "cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)",
+  "causes an old record cannot state (other) and signals no event records (a workaround that hides an error)",
+  "one project's log: n is small, so a ranking can overfit that project"
+ ],
+ "closed": [
+  {
+   "signal_key": "gate:level_full:total",
+   "id": "I-07",
+   "commit": "v1.11",
+   "frequency": 2,
+   "recurred": 0
+  }
+ ],
+ "clusters": [
+  {
+   "signal_key": "cause:stopped_by_owner",
+   "score_class": "A",
+   "frequency": 1,
+   "cost_per": 2709.23,
+   "score": 2709.23,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "gate:level_full:total",
+   "score_class": "A",
+   "frequency": 2,
+   "cost_per": 423.17,
+   "score": 846.34,
+   "unit": "s",
+   "closed": true
+  },
+  {
+   "signal_key": "gate:baseline_rerun:total",
+   "score_class": "A",
+   "frequency": 2,
+   "cost_per": 421.175,
+   "score": 842.35,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "gate:level_regression:total",
+   "score_class": "A",
+   "frequency": 5,
+   "cost_per": 143.26799999999997,
+   "score": 716.3399999999999,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "cause:other",
+   "score_class": "A",
+   "frequency": 2,
+   "cost_per": 317.0,
+   "score": 634.0,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "gate:baseline:total",
+   "score_class": "A",
+   "frequency": 2,
+   "cost_per": 148.4,
+   "score": 296.8,
+   "unit": "s",
+   "closed": false
+  },
+  {
+   "signal_key": "human:resume",
+   "score_class": "C",
+   "frequency": 3,
+   "cost_per": null,
+   "score": null,
+   "unit": null,
+   "closed": false
+  },
+  {
+   "signal_key": "land:branch_checked_out",
+   "score_class": "C",
+   "frequency": 1,
+   "cost_per": null,
+   "score": null,
+   "unit": null,
+   "closed": false
+  }
+ ],
+ "warnings": [],
+ "log": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/spike3-imp/ir-replay/state/events.jsonl"
+}

@@ -1,0 +1,44 @@
+Lattice improve: proposals from the event log (no model; the owner decides)
+
+Method: Frequency x cost, the I-R method (docs/results/2026-10-12-i-r-improvement-ranking.md): events are clustered by signal_key or cause; f = occurrences; c = the mean cost of one occurrence in wall seconds, or in list-price dollars only when the cluster recorded no seconds (never converted); score = f x c. Seconds-scored clusters (class A) rank above dollar-scored ones (B), above clusters with no recorded cost (C, ordered by f, not a score). Items closed in improvements.jsonl are left out. At most N proposals; one that touches the checker or the spec language is needs_owner and never drafted. The owner decides; nothing is merged automatically.
+
+Blind spots:
+  - human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)
+  - risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only
+  - recurrence: f counts past occurrences, not future ones; a one-off scores like a habit
+  - cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)
+  - causes an old record cannot state (other) and signals no event records (a workaround that hides an error)
+  - one project's log: n is small, so a ranking can overfit that project
+
+Events read: 9
+
+1. [A] Fewer layer X repeats at level gates (regression): level_gate_args = ["--x-repeats", "2"]
+   signal gate:level_regression:X: 3 x 119.5 s = 358.5 s
+   kind change_set; targets: studio.toml; status open
+   expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)
+   why: layer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates
+   evidence: e-e8d9c91c15964512, e-327c71cd641f49a0, e-f6061c7895644d98
+
+2. [A] Cap Await waits at level gates (regression): level_gate_args += ["--await-cap", "5"]
+   signal gate:level_regression:D: 3 x 22.5 s = 67.5 s
+   kind change_set; targets: studio.toml; status open
+   why: layer D (scenarios) is the measured cost; waits on unbuilt services are the usual reason (I-06)
+   evidence: e-e8d9c91c15964512, e-327c71cd641f49a0, e-f6061c7895644d98
+
+3. [A] Layer C at level gates (regression) costs 0.4 s a run
+   signal gate:level_regression:C: 3 x 0.4 s = 1.2 s
+   kind experiment; targets: lattice/spec/check.py; status needs_owner
+   why: no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically
+   evidence: e-e8d9c91c15964512, e-327c71cd641f49a0, e-f6061c7895644d98
+
+4. [A] Layer A at level gates (regression) costs 0.0 s a run
+   signal gate:level_regression:A: 3 x 0.0 s = 0.1 s
+   kind experiment; targets: lattice/spec/check.py; status needs_owner
+   why: no configuration knob exists for layer A; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically
+   evidence: e-e8d9c91c15964512, e-327c71cd641f49a0, e-f6061c7895644d98
+
+5. [C] Unchecked rules (free text)
+   signal unchecked:free_text: f = 5 (no cost recorded)
+   kind experiment; targets: docs/lattice-reference.md; status open
+   why: 5 rule(s) unchecked for this reason
+   evidence: e-5eb5a759b8344fbc

@@ -199,6 +199,7 @@ def test_passes_in_round_2_with_findings_fed_forward(repo: Path, fake: Path) -> 
             "id": "f1",
             "title": "FAIL: built.txt is missing (scenario:built)",
             "target": "scenario:built",
+            "signal_key": "gate:finding",  # spike 3: a text finding with no layer named
         }
     ]
     assert r1["files_changed"] == ["notes.txt"] and r2["files_changed"] == ["built.txt"]

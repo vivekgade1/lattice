@@ -264,7 +264,9 @@ def test_findings_json_shape_and_identity() -> None:
         "title": "D silent access__me__as_anon / step 1: status: expected 401, got 404",
         "target": "scenario:access__me__as_anon",
         "key": "D:GET /v1/me:access__me__as_anon / step 1",
+        "signal_key": "D:status",  # spike 3
     }
+    assert fs[1]["signal_key"] == "A:other"
     assert fs[1]["target"] == "" and areas_mod.finding_identity(fs[1]) == "key:A:main.go:3"
     assert areas_mod.finding_identity(fs[0]) == "scenario:access__me__as_anon"
     assert areas_mod.finding_identity({"title": "boom"}) == "title:boom"

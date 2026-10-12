@@ -108,6 +108,13 @@ SQLite ``used``), the project engine ``docs/examples/engines/mariadb.toml`` (``s
 ``pg-tuned`` (an engine module whose tree ``changed``: refused, so its engine is not listed and
 ``errors`` names it). No write route (``POST /api/engines`` answers 404).
 
+API v1.15 (improvement proposals, spike 3): ``GET /api/improve`` answers the real server's
+shape, ranked by ``lattice.improve.analyze`` itself from a fixture event log
+(``MOCK_IMPROVE_EVENTS``: five regression level gates whose layer X took ~120 s, a start
+baseline that re-ran an already-gated tip, a node that gave up on an unsatisfiable check, an
+owner's resume) and a fixture ledger that closes the unsatisfiable-check cause. Read only (no
+POST); no web UI in this version.
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -162,6 +169,32 @@ LIVE_CHANGE_STATUSES = ("ready", "accepted")
 SPEC_BEHIND_BRANCH = "build/spec-behind"
 SPEC_BEHIND_FILES = ["REQUIREMENTS.md", "spec.trace.json"]
 SPEC_DRIFT_WARNING = "The spec on "
+# API v1.15 (spike 3): the fixture event log and ledger GET /api/improve ranks
+MOCK_IMPROVE_EVENTS = (
+    *({"v": 1, "ts": f"2026-10-11T23:{40 + 5 * i:02d}:00Z", "project": "mock",
+       "kind": "gate_run", "id": f"e-mock-level-{i}", "gate": "level", "mode": "regression",
+       "plan": "p2", "level": i + 2, "seconds": s, "x_repeats": 5,
+       "layer_seconds": {"A": 2.1, "B": 3.4, "C": 1.2, "D": round(s - 126.7, 2), "X": 120.0}}
+      for i, s in enumerate((137.5, 138.92, 143.71, 145.32, 150.89))),
+    {"v": 1, "ts": "2026-10-11T02:02:35Z", "project": "mock", "kind": "gate_run",
+     "id": "e-mock-level-1", "gate": "level", "mode": "full", "plan": "p2", "level": 1,
+     "seconds": 423.87, "sha": "941735104cf670beb7f0905cd8d14b6022eda586"},
+    {"v": 1, "ts": "2026-10-11T23:40:31Z", "project": "mock", "kind": "gate_run",
+     "id": "e-mock-baseline", "gate": "baseline", "mode": "full", "plan": "p2",
+     "seconds": 416.0, "sha": "941735104c"},
+    {"v": 1, "ts": "2026-10-11T23:45:40Z", "project": "mock", "kind": "node_ended",
+     "id": "e-mock-account", "plan": "p2", "node": "account", "build": "b4",
+     "status": "gave_up", "cause": "spec_unsatisfiable", "rounds": 3, "wall_s": 308.85,
+     "usage": {"cost_usd_list_estimate": 1.229954}},
+    {"v": 1, "ts": "2026-10-12T01:28:25Z", "project": "mock", "kind": "human",
+     "id": "e-mock-resume", "what": "resume", "actor": "owner", "plan": "p2"},
+)  # fmt: skip
+MOCK_IMPROVE_LEDGER = (
+    {"id": "I-05", "signal": "cause:spec_unsatisfiable", "status": "closed",
+     "commit": "e93faea", "ts": "2026-10-12T00:00:00Z"},
+    {"id": "I-07", "signal": "gate:level_full:*", "status": "closed", "commit": "v1.11",
+     "ts": "2026-10-11T12:00:00Z"},
+)  # fmt: skip
 # API v1.14: the project engine and the modules GET /api/engines lists
 MOCK_ENGINE_FILE = Path(__file__).resolve().parents[2] / "docs/examples/engines/mariadb.toml"
 MOCK_MODULES = (
@@ -952,6 +985,14 @@ class MockState:
             rows.append(row(eng.read_descriptor(MOCK_ENGINE_FILE), "project"))
         return {"engines": rows, "modules": [dict(m) for m in MOCK_MODULES],
                 "errors": [MOCK_MODULE_ERROR]}
+
+    # GET /api/improve (v1.15): the fixture event log, ranked by lattice.improve itself
+    def improve(self) -> dict[str, Any]:
+        from lattice.improve.analyze import analyze
+
+        rep = analyze([dict(e) for e in MOCK_IMPROVE_EVENTS],
+                      [dict(e) for e in MOCK_IMPROVE_LEDGER])  # fmt: skip
+        return {k: rep[k] for k in ("proposals", "events", "method", "blind_spots")}
 
     # GET /api/mcp (v1.13): the fixture discovery, classified by mcp_intake itself
     def mcp(self, refresh: bool = False) -> dict[str, Any]:
@@ -2730,6 +2771,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(state.branches())
         if path == "/api/engines":
             return self._json(state.engines())
+        if path == "/api/improve":
+            return self._json(state.improve())
         if path == "/api/mcp":
             raw = str(query.get("refresh", "0")).lower()
             if raw not in ("0", "1", "true", "false", ""):

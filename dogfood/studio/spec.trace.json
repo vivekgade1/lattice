@@ -504,6 +504,36 @@
       "text": "The project's engine descriptors and installed modules are registered for its checks; every read re-hashes the modules, and one whose installed tree no longer matches its lock hash is listed `changed`, its engine is not registered and an error names it.",
       "section": "Lattice Studio server: requirements > Database engines and modules",
       "line": 134
+    },
+    {
+      "id": "R85",
+      "text": "GET /api/improve answers `proposals` (each with `id`, `title`, `signal_key`, `evidence`, `score`, `unit`, `score_class`, `frequency`, `cost_per`, `kind`, `target_paths`, `why` and `status`), `events` (how many events the project's log holds), `method` and `blind_spots`; a project whose log is empty has no proposals.",
+      "section": "Lattice Studio server: requirements > Improvement proposals",
+      "line": 138
+    },
+    {
+      "id": "R86",
+      "text": "There is no write route for proposals: POST /api/improve answers 404.",
+      "section": "Lattice Studio server: requirements > Improvement proposals",
+      "line": 139
+    },
+    {
+      "id": "R87",
+      "text": "The owner's change decisions are logged: accepting or rejecting a change adds a `human` event and a `change` event to the project's log; GET /api/improve then counts them, proposes nothing for an accepted change, and proposes the rejected change sets as one cluster with no recorded cost (`change:rejected`, class C).",
+      "section": "Lattice Studio server: requirements > Improvement proposals",
+      "line": 140
+    },
+    {
+      "id": "R88",
+      "text": "Every build and plan logs its improvement signals without blocking: gate runs with `layer_seconds` copied from the check's JSON timings, a `cause` on every give-up, stop and failed node, the owner's plan actions as timeline entries with `actor: \"owner\"`, the ledger line's own wall time, and a `signal_key` on every finding.",
+      "section": "Lattice Studio server: requirements > Improvement proposals",
+      "line": 141
+    },
+    {
+      "id": "R89",
+      "text": "Proposals are ranked by frequency x cost, seconds before list-price dollars and never converted, with no model; items closed in the improvement ledger are left out; a proposal that touches the checker or the spec language is `needs_owner` and never drafted.",
+      "section": "Lattice Studio server: requirements > Improvement proposals",
+      "line": 142
     }
   ],
   "links": {
@@ -759,6 +789,15 @@
     ],
     "R83": [
       "scenario:database_engines_are_listed"
+    ],
+    "R85": [
+      "scenario:improvement_proposals_are_listed"
+    ],
+    "R86": [
+      "scenario:improvement_proposals_are_listed"
+    ],
+    "R87": [
+      "scenario:improvement_proposals_are_listed"
     ]
   },
   "unchecked": {
@@ -774,7 +813,9 @@
     "R75": "the web UI is not observable over HTTP; tests/studio/test_spec_sync.py checks the banner's code statically and the browser check is recorded in docs/results/2026-10-11-spec-sync-results.md",
     "R80": "a chat session needs the claude binary and the owner's account; tests/studio/test_mcp_intake.py checks the argv per mode (no --strict-mcp-config), the allowlist, allow_writes and the hermetic rebuild and planner argv against a fake claude, and docs/results/2026-10-12-spike4-results.md records the real-session probes (K-3, K-4)",
     "R81": "the web UI is not observable over HTTP; tests/studio/test_mcp_intake.py checks its code statically and the browser check is recorded in docs/results/2026-10-12-spike4-results.md",
-    "R84": "a project with its own engines and modules is not in the seed; tests/studio/test_engines_api.py covers the registration, the re-hash on every read and the refusal of a changed module, tests/modules/test_modules.py the install, the lock and the checker's refusal"
+    "R84": "a project with its own engines and modules is not in the seed; tests/studio/test_engines_api.py covers the registration, the re-hash on every read and the refusal of a changed module, tests/modules/test_modules.py the install, the lock and the checker's refusal",
+    "R88": "the log's contents need a build with a JSON-writing gate, a give-up and a stop; tests/studio/test_events.py checks each field (layer_seconds, cause, actor, the ledger's own wall time, signal_key) on a stub plan of this seed whose gate writes a check-shaped report",
+    "R89": "the seed's log never holds a checker-targeted or closed cluster; tests/improve/test_analyze.py checks the arithmetic, the class order (no conversion), the ledger and the needs_owner refusal, tests/improve/test_cli.py the CLI run"
   },
   "context": [
     "R1"
