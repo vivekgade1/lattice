@@ -249,3 +249,19 @@ exactly once; checked by applying each to a scratch copy); they were not re-run.
 - Behaviour under concurrent appends from several Studio processes on one project (one process
   per project is the supported setup; appends are serialised per process only).
 - The existing mutant suites of other spikes were checked to still apply, not re-run.
+
+## Orchestrator verification (re-run independently on a backup copy of the worktree)
+
+| Check | Result |
+|---|---|
+| pytest, the task's suite list | 1313 passed, 5 skipped (7 min 0 s) |
+| `dogfood/studio/check.sh` | PASS, 0 findings, 403 cases (run twice) |
+| `scripts/restart_drill.py` | drills A, B, C, F pass |
+| `dogfood/improve_mutants.py` | control 61 passed; IM1-IM6 all caught |
+| ruff check (changed files), ruff format --check (created files) | clean |
+| I-R replay top 5 (re-read from the recorded report) | matches the results table above |
+
+Not re-run by the orchestrator: the I-3 before/after timing (read from the raw JSON the agent
+recorded) and the other spikes' mutant suites. Reading of the I-R replay: the ranker's #1 is
+the owner's 45-minute stop of a node, which a frequency x cost score cannot tell from a
+defect; it is listed as an experiment ("ask why"), not a change. Raised as a blind spot.
