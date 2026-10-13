@@ -1,0 +1,868 @@
+{
+ "checks": {
+  "1 project_list shows both": true,
+  "2 model_get per project": true,
+  "3 project_set_active changes the default": true,
+  "4 unknown project is a tool error listing names": true
+ },
+ "pass": true,
+ "facts": {
+  "streak_overview_truncated": true,
+  "streak_preview_head": "{\"project\":\"streak\",\"project_info\":{\"name\":\"streak\",\"root\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak\",\"git_head\":\"a0db033\"},\"rule_count\":148,\"rule_status_counts\":{\"",
+  "studio_rule_count": 93,
+  "studio_R1": "Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project direc",
+  "unknown_error": "unknown project 'nope'; known projects: launch, streak, studio (project_list shows their paths)"
+ },
+ "transcript": [
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+     "protocolVersion": "2024-11-05",
+     "capabilities": {},
+     "clientInfo": {
+      "name": "mp1"
+     }
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+     "protocolVersion": "2024-11-05",
+     "capabilities": {
+      "tools": {
+       "listChanged": false
+      }
+     },
+     "serverInfo": {
+      "name": "lattice",
+      "version": "0.1.0"
+     },
+     "instructions": "Lattice Studio tools for this project's requirements spec. Read with model_get, rule_get, spec_ask, spec_lint, code_links, graph_get. Never edit REQUIREMENTS.md, spec.py or spec.trace.json directly: propose a change with change_propose, poll change_get, and tell the owner to accept it in Lattice Studio. Several projects are known: project_list lists them; every tool takes an optional `project` (a name or path from project_list; default: the active project, which project_set_active changes)."
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/call",
+    "params": {
+     "name": "project_list",
+     "arguments": {}
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"active\":\"launch\",\"projects\":[{\"name\":\"launch\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/launch\",\"spec\":\"missing\",\"active\":true,\"source\":\"launch\",\"role\":null,\"links\":[]},{\"name\":\"streak\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak\",\"spec\":\"present\",\"active\":false,\"source\":\"workspace\",\"role\":\"provider\",\"links\":[{\"from\":\"studio\",\"to\":\"streak\",\"kind\":\"uses\",\"note\":\"MP-1 probe link\"}]},{\"name\":\"studio\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/studio\",\"spec\":\"present\",\"active\":false,\"source\":\"workspace\",\"role\":\"app\",\"links\":[{\"from\":\"studio\",\"to\":\"streak\",\"kind\":\"uses\",\"note\":\"MP-1 probe link\"}]}],\"workspace\":{\"name\":\"mp1\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/launch/lattice.workspace.toml\",\"problems\":[]}}"
+      }
+     ],
+     "isError": false,
+     "structuredContent": {
+      "active": "launch",
+      "projects": [
+       {
+        "name": "launch",
+        "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/launch",
+        "spec": "missing",
+        "active": true,
+        "source": "launch",
+        "role": null,
+        "links": []
+       },
+       {
+        "name": "streak",
+        "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak",
+        "spec": "present",
+        "active": false,
+        "source": "workspace",
+        "role": "provider",
+        "links": [
+         {
+          "from": "studio",
+          "to": "streak",
+          "kind": "uses",
+          "note": "MP-1 probe link"
+         }
+        ]
+       },
+       {
+        "name": "studio",
+        "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/studio",
+        "spec": "present",
+        "active": false,
+        "source": "workspace",
+        "role": "app",
+        "links": [
+         {
+          "from": "studio",
+          "to": "streak",
+          "kind": "uses",
+          "note": "MP-1 probe link"
+         }
+        ]
+       }
+      ],
+      "workspace": {
+       "name": "mp1",
+       "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/launch/lattice.workspace.toml",
+       "problems": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+     "name": "model_get",
+     "arguments": {
+      "project": "streak"
+     }
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"truncated\":true,\"original_chars\":27567,\"preview\":\"{\\\"project\\\":\\\"streak\\\",\\\"project_info\\\":{\\\"name\\\":\\\"streak\\\",\\\"root\\\":\\\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak\\\",\\\"git_head\\\":\\\"a0db033\\\"},\\\"rule_count\\\":148,\\\"rule_status_counts\\\":{\\\"context\\\":2,\\\"checked\\\":141,\\\"unchecked\\\":5},\\\"rules\\\":[{\\\"id\\\":\\\"R1\\\",\\\"status\\\":\\\"context\\\",\\\"text\\\":\\\"Streak is a mobile habit tracker (iOS and Android clients) where a user creates habits with a target count per week, month or year, checks in (also offline), se...\\\"},{\\\"id\\\":\\\"R2\\\",\\\"status\\\":\\\"context\\\",\\\"text\\\":\\\"The owner's idea did not state these; each is restated as a rule below. Review them first.\\\"},{\\\"id\\\":\\\"R3\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every route is under `/v1`, except `GET /health`, which answers 200 without a token.\\\"},{\\\"id\\\":\\\"R4\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every error answers `{\\\\\\\"error\\\\\\\": {\\\\\\\"code\\\\\\\": <code>, \\\\\\\"message\\\\\\\": <text>}}`, plus `\\\\\\\"field\\\\\\\": <request field name>` when one request field caused it; `code` is one of th...\\\"},{\\\"id\\\":\\\"R5\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every request body or query value that fails validation answers 422 with code `validation_failed` and the offending `field`, and writes nothing.\\\"},{\\\"id\\\":\\\"R6\\\",\\\"status\\\":\\\"unchecked\\\",\\\"text\\\":\\\"A request may send `X-Client-Version: MAJOR.MINOR.PATCH`; when it is lower than the configured minimum (`HABIT_MIN_CLIENT_VERSION`) or malformed, the request an...\\\"},{\\\"id\\\":\\\"R7\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A refused or invalid request (any 4xx) writes nothing, with one exception: a 401 `refresh_token_reused` revokes every refresh token of that user and installatio...\\\"},{\\\"id\\\":\\\"R8\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/auth/register` takes `{email, password, timezone?}` and answers 201 `{id, email, timezone}`; the email is stored lower-cased and `timezone` defaults t...\\\"},{\\\"id\\\":\\\"R9\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A password is 8 to 72 bytes, an email must be valid, and a timezone must be an IANA zone name (e.g. `Europe/Berlin`); anything else answers 422 `validation_fail...\\\"},{\\\"id\\\":\\\"R10\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"An email already registered, compared case-insensitively, answers 409 with code `email_taken` and creates no user.\\\"},{\\\"id\\\":\\\"R11\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Registering a user also creates their `notification_prefs` row with `push_enabled` true, `quiet_start` `\\\\\\\"22:00\\\\\\\"`, `quiet_end` `\\\\\\\"08:00\\\\\\\"` and `nudge_time` `\\\\\\\"20:00...\\\"},{\\\"id\\\":\\\"R12\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The password is stored only as a bcrypt hash in `users.hashed_password`; no response ever contains the password, its hash, or a refresh token's hash.\\\"},{\\\"id\\\":\\\"R13\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/auth/login` takes `{email, password, installation_id}` (`installation_id` a UUID the app generates once per install) and answers 200 `{access_token, r...\\\"},{\\\"id\\\":\\\"R14\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A wrong password or an unknown email at login answers 401 with code `invalid_credentials`.\\\"},{\\\"id\\\":\\\"R15\\\",\\\"status\\\":\\\"unchecked\\\",\\\"text\\\":\\\"The access token is a JWT signed HS256 with `HABIT_SECRET_KEY`, with `sub` = the user id and `sid` = the installation_id, expiring 15 minutes after it was issue...\\\"},{\\\"id\\\":\\\"R16\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The refresh token is an opaque random string of at least 32 bytes of entropy, valid for 30 days; the app stores only its SHA-256 hex digest in `refresh_tokens.t...\\\"},{\\\"id\\\":\\\"R17\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A user has at most one live refresh token per installation: a login revokes (sets `revoked_at` on) every unrevoked refresh token of the same user and installati...\\\"},{\\\"id\\\":\\\"R18\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/auth/refresh` takes `{refresh_token}`; for a live token (not rotated, not revoked, not expired) it sets that token's `rotated_at`, writes a new refres...\\\"},{\\\"id\\\":\\\"R19\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A refresh token that is unknown, expired or revoked answers 401 with code `invalid_refresh_token`.\\\"},{\\\"id\\\":\\\"R20\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A refresh token that was already rotated (reuse) answers 401 with code `refresh_token_reused` and revokes every refresh token of that user and installation, so ...\\\"},{\\\"id\\\":\\\"R21\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every other `/v1` route except register, login and refresh needs `Authorization: Bearer <access token>`; without one it answers 401 with code `not_authenticated...\\\"},{\\\"id\\\":\\\"R22\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"An access token that is past its expiry answers 401 with code `token_expired`; a malformed or wrongly signed one, or one whose user no longer exists, answers 40...\\\"},{\\\"id\\\":\\\"R23\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/auth/logout` (signed in) revokes every refresh token of the caller's installation (the token's `sid`), deletes the caller's device row with that insta...\\\"},{\\\"id\\\":\\\"R24\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/me` answers `{id, email, timezone, notification_prefs: {push_enabled, quiet_start, quiet_end, nudge_time}}`.\\\"},{\\\"id\\\":\\\"R25\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`PUT /v1/me` takes any subset of `{timezone, push_enabled, quiet_start, quiet_end, nudge_time}` and answers 200 with the new `GET /v1/me` body; times are `\\\\\\\"HH:M...\\\"},{\\\"id\\\":\\\"R26\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`DELETE /v1/me` answers 204 and permanently deletes the user with their notification prefs, devices, refresh tokens, habits, habit targets, check-ins and nudges...\\\"},{\\\"id\\\":\\\"R27\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"There are no roles or admins: a user sees and changes only their own habits, check-ins, nudges and devices.\\\"},{\\\"id\\\":\\\"R28\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A habit, check-in, nudge or device of another user answers 404 with code `not_found` on every route, exactly like an id that does not exist, and writes nothing.\\\"},{\\\"id\\\":\\\"R29\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A signed-in user may make 120 requests per clock minute (fixed windows starting at second 0); the 121st and later requests in that minute answer 429 with code `...\\\"},{\\\"id\\\":\\\"R30\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A sync or batch request counts as one request whatever it contains.\\\"},{\\\"id\\\":\\\"R31\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/devices` takes `{installation_id, platform, push_token, timezone, app_version}` and answers 201 with the device `{id, installation_id, platform, push_...\\\"},{\\\"id\\\":\\\"R32\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/devices` with a `push_token` that is already registered updates that device row's other fields, makes it the caller's, and answers 200 with it; there ...\\\"},{\\\"id\\\":\\\"R33\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`DELETE /v1/devices/{id}` answers 204 and deletes the caller's device row.\\\"},{\\\"id\\\":\\\"R34\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A device's `timezone` is stored for information only; it never changes the user's timezone.\\\"},{\\\"id\\\":\\\"R35\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`users`: `id` (integer), `email` (unique), `hashed_password`, `timezone`, `change_seq` (integer, the last change counter value given out, starting at 0), `creat...\\\"},{\\\"id\\\":\\\"R36\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`notification_prefs`: `user_id` (unique), `push_enabled`, `quiet_start`, `quiet_end`, `nudge_time` (all three `\\\\\\\"HH:MM\\\\\\\"`), `last_pass_date` (a date, nullable: th...\\\"},{\\\"id\\\":\\\"R37\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`devices`: `id` (integer), `user_id`, `installation_id`, `platform` (`ios` | `android`), `push_token` (unique), `timezone`, `app_version`, `created_at`, `update...\\\"},{\\\"id\\\":\\\"R38\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`refresh_tokens`: `id` (integer), `user_id`, `installation_id`, `token_hash` (unique), `expires_at`, `rotated_at` (nullable), `revoked_at` (nullable), `created_...\\\"},{\\\"id\\\":\\\"R39\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`habits`: `id` (a client UUID), `user_id`, `name`, `description` (nullable), `target_count`, `period` (`week` | `month` | `year`), `start_date`, `end_date` (nul...\\\"},{\\\"id\\\":\\\"R40\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`habit_targets`: `id` (integer), `habit_id`, `target_count`, `effective_from` (the first day of the period from which this target applies); one row per (`habit_...\\\"},{\\\"id\\\":\\\"R41\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`completions`: `id` (a client UUID), `habit_id`, `date` (the user's local date), `note` (nullable), `change_seq`, `created_at`, `updated_at`, `deleted_at` (null...\\\"},{\\\"id\\\":\\\"R42\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`nudges`: `id` (a server UUID), `habit_id`, `for_date` (a local date), `kind` (`on_track` | `behind` | `unreachable` | `achieved`), `message`, `delivery` (`pend...\\\"},{\\\"id\\\":\\\"R43\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Dates travel as `YYYY-MM-DD` strings and instants as ISO-8601 UTC strings ending in `Z`; every stored instant is UTC; a malformed date or id in a request answer...\\\"},{\\\"id\\\":\\\"R44\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The app reads the current instant only from its clock: the real time in production, and in test mode the instant the harness sets (see CONTEXT.md).\\\"},{\\\"id\\\":\\\"R45\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A user's \\\\\\\"today\\\\\\\" (written `t` below) is the calendar date of the current instant in the user's `timezone`; every day and period boundary is computed in that tim...\\\"},{\\\"id\\\":\\\"R46\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A weekly period runs Monday to Sunday, a monthly period from the 1st to the last day of the calendar month, a yearly period from January 1 to December 31, all a...\\\"},{\\\"id\\\":\\\"R47\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Changing the user's timezone changes only what today is from then on: check-ins keep the local `date` they were made with, and no period or past check-in is rec...\\\"},{\\\"id\\\":\\\"R48\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A habit's target applies again in every period, from the period containing `start_date` until the period containing `end_date` (or for ever when `end_date` is n...\\\"},{\\\"id\\\":\\\"R49\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/habits` takes `{id, name, description?, target_count, period, start_date?, end_date?}` (`id` a UUID the client generated) and answers 201 with the hab...\\\"},{\\\"id\\\":\\\"R50\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`start_date` defaults to the user's today; it may be in the past or the future.\\\"},{\\\"id\\\":\\\"R51\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`name` is 1 to 100 characters and not only whitespace, `description` at most 500 characters, `period` one of `week`, `month`, `year`, and `target_count` an inte...\\\"},{\\\"id\\\":\\\"R52\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`end_date`, when given, must be on or after `start_date`; an earlier one answers 422 `validation_failed` with field `end_date`.\\\"},{\\\"id\\\":\\\"R53\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/habits` with the id of an existing habit of the caller whose name, description, target_count, period, start_date and end_date all equal the request's ...\\\"},{\\\"id\\\":\\\"R54\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/habits` with an id that exists with different content, belongs to another user, or belongs to a deleted habit answers 409 with code `id_conflict` and ...\\\"},{\\\"id\\\":\\\"R55\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A habit name is unique among the user's non-deleted habits, archived or not, compared case-insensitively (`Run` and `run` conflict); a duplicate on create or on...\\\"},{\\\"id\\\":\\\"R56\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A user has at most 50 active (non-archived, non-deleted) habits; creating one more answers 409 with code `habit_limit`.\\\"},{\\\"id\\\":\\\"R57\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Creating a habit also writes its first `habit_targets` row: its `target_count`, with `effective_from` = the first day of the period containing `start_date`.\\\"},{\\\"id\\\":\\\"R58\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/habits` answers `{items, next_cursor, has_more}` with the caller's non-deleted, non-archived habits ordered by id; `?include_archived=true` includes ar...\\\"},{\\\"id\\\":\\\"R59\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/habits/{id}` answers the habit; a deleted habit answers 404 `not_found`.\\\"},{\\\"id\\\":\\\"R60\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`PATCH /v1/habits/{id}` takes `{version, ...}` with any subset of `{name, description, target_count, start_date, end_date, archived}` and answers 200 with the u...\\\"},{\\\"id\\\":\\\"R61\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A `PATCH` without `version` answers 422 `validation_failed` with field `version`.\\\"},{\\\"id\\\":\\\"R62\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A `PATCH` whose `version` is not the habit's current version answers 409 `{\\\\\\\"error\\\\\\\": {\\\\\\\"code\\\\\\\": \\\\\\\"version_conflict\\\\\\\", ...}, \\\\\\\"current\\\\\\\": <the habit as stored>}` and ch...\\\"},{\\\"id\\\":\\\"R63\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A `PATCH` body that contains `period` answers 422 `validation_failed` with field `period` and changes nothing.\\\"},{\\\"id\\\":\\\"R64\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`description: null` and `end_date: null` in a `PATCH` clear them.\\\"},{\\\"id\\\":\\\"R65\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Changing `target_count` updates `habits.target_count` and writes the `habit_targets` row for the current period (`effective_from` = the first day of the period ...\\\"},{\\\"id\\\":\\\"R66\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The new `target_count` applies to the current period at once: progress and nudges use it from the next request on.\\\"},{\\\"id\\\":\\\"R67\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`start_date` can be changed only while today is before the current `start_date`; otherwise the change answers 409 with code `start_date_locked`. A permitted cha...\\\"},{\\\"id\\\":\\\"R68\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`end_date` can be changed at any time, also to a past date (which ends the habit); an `end_date` before the date of one of the habit's non-deleted check-ins ans...\\\"},{\\\"id\\\":\\\"R69\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`archived: true` archives the habit and `archived: false` restores it; restoring when the user already has 50 active habits answers 409 `habit_limit`.\\\"},{\\\"id\\\":\\\"R70\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`DELETE /v1/habits/{id}` answers 204, sets the habit's `deleted_at`, increments its `version`, and sets `deleted_at` on its non-deleted check-ins and nudges; no...\\\"},{\\\"id\\\":\\\"R71\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every change to a habit, check-in or nudge (create, update, soft delete, dismissal, a nudge rewrite) increments the owner's `users.change_seq` and stores the ne...\\\"},{\\\"id\\\":\\\"R72\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/habits/{habit_id}/completions` takes `{id, date, note?}` (`id` a client UUID, `date` the user's local date) and answers 201 `{id, habit_id, date, note...\\\"},{\\\"id\\\":\\\"R73\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A check-in `date` after the user's today answers 422 with code `date_in_future`.\\\"},{\\\"id\\\":\\\"R74\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A check-in `date` before the habit's `start_date` or after its `end_date` answers 422 with code `date_out_of_range`.\\\"},{\\\"id\\\":\\\"R75\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted.\\\"},{\\\"id\\\":\\\"R76\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"When several of these date rules apply at once, the code answered is `date_in_future` first, then `date_out_of_range`, then `date_too_old`.\\\"},{\\\"id\\\":\\\"R77\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`note` is at most 280 characters; longer answers 422 `validation_failed` with field `note`.\\\"},{\\\"id\\\":\\\"R78\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A habit has at most one non-deleted check-in per date; another one with a new id answers 409 with code `already_checked_in`.\\\"},{\\\"id\\\":\\\"R79\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A check-in with the id of an existing check-in of the same habit, date and note answers 200 with the existing one and writes nothing; the same id with different...\\\"},{\\\"id\\\":\\\"R80\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Creating or deleting a check-in on an archived habit answers 409 with code `habit_archived`.\\\"},{\\\"id\\\":\\\"R81\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/habits/{habit_id}/completions` answers `{items, next_cursor, has_more}` with the habit's non-deleted check-ins ordered by date ascending; `?from=` and ...\\\"},{\\\"id\\\":\\\"R82\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`DELETE /v1/habits/{habit_id}/completions/{id}` answers 204 and sets the check-in's `deleted_at`; a check-in of a different habit, or one already deleted, answe...\\\"},{\\\"id\\\":\\\"R83\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/completions/batch` takes `{items: [{id, habit_id, date, note?}, ...]}` with 1 to 100 items, else 422 `validation_failed` with field `items`.\\\"},{\\\"id\\\":\\\"R84\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A batch processes its items in order, each exactly as a single check-in create would, and answers 200 `{results: [{id, status, code?, completion?}, ...]}` in th...\\\"},{\\\"id\\\":\\\"R85\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A batch item that is rejected writes nothing, and never stops the other items.\\\"},{\\\"id\\\":\\\"R86\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A list answers `{items, next_cursor, has_more}`; `?limit=` is 1 to 200 (default 50), any other value answers 422 `validation_failed`, and `?cursor=` is the `nex...\\\"},{\\\"id\\\":\\\"R87\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`has_more` is true exactly when more items follow; `next_cursor` is null when `has_more` is false.\\\"},{\\\"id\\\":\\\"R88\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A cursor that the app did not issue answers 422 with code `invalid_cursor`.\\\"},{\\\"id\\\":\\\"R89\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/sync?cursor=<opaque>&limit=<n>` answers `{changes, next_cursor, has_more}`: the caller's habits, check-ins and nudges whose `change_seq` is greater tha...\\\"},{\\\"id\\\":\\\"R90\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Each change is `{type: \\\\\\\"habit\\\\\\\" | \\\\\\\"completion\\\\\\\" | \\\\\\\"nudge\\\\\\\", id, change_seq, deleted, data}`, where `deleted` is true for a soft-deleted row (a tombstone) and `data...\\\"},{\\\"id\\\":\\\"R91\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A missing or empty cursor means a full sync: every change from the start, tombstones included.\\\"},{\\\"id\\\":\\\"R92\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`limit` is 1 to 200 (default 100); any other value answers 422 `validation_failed`.\\\"},{\\\"id\\\":\\\"R93\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`next_cursor` is always present and encodes the `change_seq` of the last change returned (or the request's own cursor position when nothing is returned); `has_m...\\\"},{\\\"id\\\":\\\"R94\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A cursor that the app did not issue answers 422 with code `invalid_cursor`.\\\"},{\\\"id\\\":\\\"R95\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/habits/{id}/progress` answers 200 `{habit_id, period, period_start, period_end, target, done, days_elapsed, days_remaining, rate_per_day, rate_per_peri...\\\"},{\\\"id\\\":\\\"R96\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The current period is the period containing `t` (the user's today); `period_start` and `period_end` are its first and last day.\\\"},{\\\"id\\\":\\\"R97\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The active window is `as = max(period_start, start_date)` to `ae = min(period_end, end_date)` (`ae = period_end` when `end_date` is null), and `A = ae - as + 1`...\\\"},{\\\"id\\\":\\\"R98\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`N` is the habit's current `target_count`; the effective target is `target = N` when `A = L`, else `target = (N*A + L - 1) div L` (pro-rated and rounded up; `di...\\\"},{\\\"id\\\":\\\"R99\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`done` = `D` is the number of the habit's non-deleted check-ins dated from `as` to `ae` inclusive.\\\"},{\\\"id\\\":\\\"R100\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`days_elapsed` = `E = t - as + 1` (today included) and `days_remaining` = `\",\"hint\":\"narrow the call (a section, a focus, a smaller depth) to see the rest\"}"
+      }
+     ],
+     "isError": false,
+     "structuredContent": {
+      "truncated": true,
+      "original_chars": 27567,
+      "preview": "{\"project\":\"streak\",\"project_info\":{\"name\":\"streak\",\"root\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak\",\"git_head\":\"a0db033\"},\"rule_count\":148,\"rule_status_counts\":{\"context\":2,\"checked\":141,\"unchecked\":5},\"rules\":[{\"id\":\"R1\",\"status\":\"context\",\"text\":\"Streak is a mobile habit tracker (iOS and Android clients) where a user creates habits with a target count per week, month or year, checks in (also offline), se...\"},{\"id\":\"R2\",\"status\":\"context\",\"text\":\"The owner's idea did not state these; each is restated as a rule below. Review them first.\"},{\"id\":\"R3\",\"status\":\"checked\",\"text\":\"Every route is under `/v1`, except `GET /health`, which answers 200 without a token.\"},{\"id\":\"R4\",\"status\":\"checked\",\"text\":\"Every error answers `{\\\"error\\\": {\\\"code\\\": <code>, \\\"message\\\": <text>}}`, plus `\\\"field\\\": <request field name>` when one request field caused it; `code` is one of th...\"},{\"id\":\"R5\",\"status\":\"checked\",\"text\":\"Every request body or query value that fails validation answers 422 with code `validation_failed` and the offending `field`, and writes nothing.\"},{\"id\":\"R6\",\"status\":\"unchecked\",\"text\":\"A request may send `X-Client-Version: MAJOR.MINOR.PATCH`; when it is lower than the configured minimum (`HABIT_MIN_CLIENT_VERSION`) or malformed, the request an...\"},{\"id\":\"R7\",\"status\":\"checked\",\"text\":\"A refused or invalid request (any 4xx) writes nothing, with one exception: a 401 `refresh_token_reused` revokes every refresh token of that user and installatio...\"},{\"id\":\"R8\",\"status\":\"checked\",\"text\":\"`POST /v1/auth/register` takes `{email, password, timezone?}` and answers 201 `{id, email, timezone}`; the email is stored lower-cased and `timezone` defaults t...\"},{\"id\":\"R9\",\"status\":\"checked\",\"text\":\"A password is 8 to 72 bytes, an email must be valid, and a timezone must be an IANA zone name (e.g. `Europe/Berlin`); anything else answers 422 `validation_fail...\"},{\"id\":\"R10\",\"status\":\"checked\",\"text\":\"An email already registered, compared case-insensitively, answers 409 with code `email_taken` and creates no user.\"},{\"id\":\"R11\",\"status\":\"checked\",\"text\":\"Registering a user also creates their `notification_prefs` row with `push_enabled` true, `quiet_start` `\\\"22:00\\\"`, `quiet_end` `\\\"08:00\\\"` and `nudge_time` `\\\"20:00...\"},{\"id\":\"R12\",\"status\":\"checked\",\"text\":\"The password is stored only as a bcrypt hash in `users.hashed_password`; no response ever contains the password, its hash, or a refresh token's hash.\"},{\"id\":\"R13\",\"status\":\"checked\",\"text\":\"`POST /v1/auth/login` takes `{email, password, installation_id}` (`installation_id` a UUID the app generates once per install) and answers 200 `{access_token, r...\"},{\"id\":\"R14\",\"status\":\"checked\",\"text\":\"A wrong password or an unknown email at login answers 401 with code `invalid_credentials`.\"},{\"id\":\"R15\",\"status\":\"unchecked\",\"text\":\"The access token is a JWT signed HS256 with `HABIT_SECRET_KEY`, with `sub` = the user id and `sid` = the installation_id, expiring 15 minutes after it was issue...\"},{\"id\":\"R16\",\"status\":\"checked\",\"text\":\"The refresh token is an opaque random string of at least 32 bytes of entropy, valid for 30 days; the app stores only its SHA-256 hex digest in `refresh_tokens.t...\"},{\"id\":\"R17\",\"status\":\"checked\",\"text\":\"A user has at most one live refresh token per installation: a login revokes (sets `revoked_at` on) every unrevoked refresh token of the same user and installati...\"},{\"id\":\"R18\",\"status\":\"checked\",\"text\":\"`POST /v1/auth/refresh` takes `{refresh_token}`; for a live token (not rotated, not revoked, not expired) it sets that token's `rotated_at`, writes a new refres...\"},{\"id\":\"R19\",\"status\":\"checked\",\"text\":\"A refresh token that is unknown, expired or revoked answers 401 with code `invalid_refresh_token`.\"},{\"id\":\"R20\",\"status\":\"checked\",\"text\":\"A refresh token that was already rotated (reuse) answers 401 with code `refresh_token_reused` and revokes every refresh token of that user and installation, so ...\"},{\"id\":\"R21\",\"status\":\"checked\",\"text\":\"Every other `/v1` route except register, login and refresh needs `Authorization: Bearer <access token>`; without one it answers 401 with code `not_authenticated...\"},{\"id\":\"R22\",\"status\":\"checked\",\"text\":\"An access token that is past its expiry answers 401 with code `token_expired`; a malformed or wrongly signed one, or one whose user no longer exists, answers 40...\"},{\"id\":\"R23\",\"status\":\"checked\",\"text\":\"`POST /v1/auth/logout` (signed in) revokes every refresh token of the caller's installation (the token's `sid`), deletes the caller's device row with that insta...\"},{\"id\":\"R24\",\"status\":\"checked\",\"text\":\"`GET /v1/me` answers `{id, email, timezone, notification_prefs: {push_enabled, quiet_start, quiet_end, nudge_time}}`.\"},{\"id\":\"R25\",\"status\":\"checked\",\"text\":\"`PUT /v1/me` takes any subset of `{timezone, push_enabled, quiet_start, quiet_end, nudge_time}` and answers 200 with the new `GET /v1/me` body; times are `\\\"HH:M...\"},{\"id\":\"R26\",\"status\":\"checked\",\"text\":\"`DELETE /v1/me` answers 204 and permanently deletes the user with their notification prefs, devices, refresh tokens, habits, habit targets, check-ins and nudges...\"},{\"id\":\"R27\",\"status\":\"checked\",\"text\":\"There are no roles or admins: a user sees and changes only their own habits, check-ins, nudges and devices.\"},{\"id\":\"R28\",\"status\":\"checked\",\"text\":\"A habit, check-in, nudge or device of another user answers 404 with code `not_found` on every route, exactly like an id that does not exist, and writes nothing.\"},{\"id\":\"R29\",\"status\":\"checked\",\"text\":\"A signed-in user may make 120 requests per clock minute (fixed windows starting at second 0); the 121st and later requests in that minute answer 429 with code `...\"},{\"id\":\"R30\",\"status\":\"checked\",\"text\":\"A sync or batch request counts as one request whatever it contains.\"},{\"id\":\"R31\",\"status\":\"checked\",\"text\":\"`POST /v1/devices` takes `{installation_id, platform, push_token, timezone, app_version}` and answers 201 with the device `{id, installation_id, platform, push_...\"},{\"id\":\"R32\",\"status\":\"checked\",\"text\":\"`POST /v1/devices` with a `push_token` that is already registered updates that device row's other fields, makes it the caller's, and answers 200 with it; there ...\"},{\"id\":\"R33\",\"status\":\"checked\",\"text\":\"`DELETE /v1/devices/{id}` answers 204 and deletes the caller's device row.\"},{\"id\":\"R34\",\"status\":\"checked\",\"text\":\"A device's `timezone` is stored for information only; it never changes the user's timezone.\"},{\"id\":\"R35\",\"status\":\"checked\",\"text\":\"`users`: `id` (integer), `email` (unique), `hashed_password`, `timezone`, `change_seq` (integer, the last change counter value given out, starting at 0), `creat...\"},{\"id\":\"R36\",\"status\":\"checked\",\"text\":\"`notification_prefs`: `user_id` (unique), `push_enabled`, `quiet_start`, `quiet_end`, `nudge_time` (all three `\\\"HH:MM\\\"`), `last_pass_date` (a date, nullable: th...\"},{\"id\":\"R37\",\"status\":\"checked\",\"text\":\"`devices`: `id` (integer), `user_id`, `installation_id`, `platform` (`ios` | `android`), `push_token` (unique), `timezone`, `app_version`, `created_at`, `update...\"},{\"id\":\"R38\",\"status\":\"checked\",\"text\":\"`refresh_tokens`: `id` (integer), `user_id`, `installation_id`, `token_hash` (unique), `expires_at`, `rotated_at` (nullable), `revoked_at` (nullable), `created_...\"},{\"id\":\"R39\",\"status\":\"checked\",\"text\":\"`habits`: `id` (a client UUID), `user_id`, `name`, `description` (nullable), `target_count`, `period` (`week` | `month` | `year`), `start_date`, `end_date` (nul...\"},{\"id\":\"R40\",\"status\":\"checked\",\"text\":\"`habit_targets`: `id` (integer), `habit_id`, `target_count`, `effective_from` (the first day of the period from which this target applies); one row per (`habit_...\"},{\"id\":\"R41\",\"status\":\"checked\",\"text\":\"`completions`: `id` (a client UUID), `habit_id`, `date` (the user's local date), `note` (nullable), `change_seq`, `created_at`, `updated_at`, `deleted_at` (null...\"},{\"id\":\"R42\",\"status\":\"checked\",\"text\":\"`nudges`: `id` (a server UUID), `habit_id`, `for_date` (a local date), `kind` (`on_track` | `behind` | `unreachable` | `achieved`), `message`, `delivery` (`pend...\"},{\"id\":\"R43\",\"status\":\"checked\",\"text\":\"Dates travel as `YYYY-MM-DD` strings and instants as ISO-8601 UTC strings ending in `Z`; every stored instant is UTC; a malformed date or id in a request answer...\"},{\"id\":\"R44\",\"status\":\"checked\",\"text\":\"The app reads the current instant only from its clock: the real time in production, and in test mode the instant the harness sets (see CONTEXT.md).\"},{\"id\":\"R45\",\"status\":\"checked\",\"text\":\"A user's \\\"today\\\" (written `t` below) is the calendar date of the current instant in the user's `timezone`; every day and period boundary is computed in that tim...\"},{\"id\":\"R46\",\"status\":\"checked\",\"text\":\"A weekly period runs Monday to Sunday, a monthly period from the 1st to the last day of the calendar month, a yearly period from January 1 to December 31, all a...\"},{\"id\":\"R47\",\"status\":\"checked\",\"text\":\"Changing the user's timezone changes only what today is from then on: check-ins keep the local `date` they were made with, and no period or past check-in is rec...\"},{\"id\":\"R48\",\"status\":\"checked\",\"text\":\"A habit's target applies again in every period, from the period containing `start_date` until the period containing `end_date` (or for ever when `end_date` is n...\"},{\"id\":\"R49\",\"status\":\"checked\",\"text\":\"`POST /v1/habits` takes `{id, name, description?, target_count, period, start_date?, end_date?}` (`id` a UUID the client generated) and answers 201 with the hab...\"},{\"id\":\"R50\",\"status\":\"checked\",\"text\":\"`start_date` defaults to the user's today; it may be in the past or the future.\"},{\"id\":\"R51\",\"status\":\"checked\",\"text\":\"`name` is 1 to 100 characters and not only whitespace, `description` at most 500 characters, `period` one of `week`, `month`, `year`, and `target_count` an inte...\"},{\"id\":\"R52\",\"status\":\"checked\",\"text\":\"`end_date`, when given, must be on or after `start_date`; an earlier one answers 422 `validation_failed` with field `end_date`.\"},{\"id\":\"R53\",\"status\":\"checked\",\"text\":\"`POST /v1/habits` with the id of an existing habit of the caller whose name, description, target_count, period, start_date and end_date all equal the request's ...\"},{\"id\":\"R54\",\"status\":\"checked\",\"text\":\"`POST /v1/habits` with an id that exists with different content, belongs to another user, or belongs to a deleted habit answers 409 with code `id_conflict` and ...\"},{\"id\":\"R55\",\"status\":\"checked\",\"text\":\"A habit name is unique among the user's non-deleted habits, archived or not, compared case-insensitively (`Run` and `run` conflict); a duplicate on create or on...\"},{\"id\":\"R56\",\"status\":\"checked\",\"text\":\"A user has at most 50 active (non-archived, non-deleted) habits; creating one more answers 409 with code `habit_limit`.\"},{\"id\":\"R57\",\"status\":\"checked\",\"text\":\"Creating a habit also writes its first `habit_targets` row: its `target_count`, with `effective_from` = the first day of the period containing `start_date`.\"},{\"id\":\"R58\",\"status\":\"checked\",\"text\":\"`GET /v1/habits` answers `{items, next_cursor, has_more}` with the caller's non-deleted, non-archived habits ordered by id; `?include_archived=true` includes ar...\"},{\"id\":\"R59\",\"status\":\"checked\",\"text\":\"`GET /v1/habits/{id}` answers the habit; a deleted habit answers 404 `not_found`.\"},{\"id\":\"R60\",\"status\":\"checked\",\"text\":\"`PATCH /v1/habits/{id}` takes `{version, ...}` with any subset of `{name, description, target_count, start_date, end_date, archived}` and answers 200 with the u...\"},{\"id\":\"R61\",\"status\":\"checked\",\"text\":\"A `PATCH` without `version` answers 422 `validation_failed` with field `version`.\"},{\"id\":\"R62\",\"status\":\"checked\",\"text\":\"A `PATCH` whose `version` is not the habit's current version answers 409 `{\\\"error\\\": {\\\"code\\\": \\\"version_conflict\\\", ...}, \\\"current\\\": <the habit as stored>}` and ch...\"},{\"id\":\"R63\",\"status\":\"checked\",\"text\":\"A `PATCH` body that contains `period` answers 422 `validation_failed` with field `period` and changes nothing.\"},{\"id\":\"R64\",\"status\":\"checked\",\"text\":\"`description: null` and `end_date: null` in a `PATCH` clear them.\"},{\"id\":\"R65\",\"status\":\"checked\",\"text\":\"Changing `target_count` updates `habits.target_count` and writes the `habit_targets` row for the current period (`effective_from` = the first day of the period ...\"},{\"id\":\"R66\",\"status\":\"checked\",\"text\":\"The new `target_count` applies to the current period at once: progress and nudges use it from the next request on.\"},{\"id\":\"R67\",\"status\":\"checked\",\"text\":\"`start_date` can be changed only while today is before the current `start_date`; otherwise the change answers 409 with code `start_date_locked`. A permitted cha...\"},{\"id\":\"R68\",\"status\":\"checked\",\"text\":\"`end_date` can be changed at any time, also to a past date (which ends the habit); an `end_date` before the date of one of the habit's non-deleted check-ins ans...\"},{\"id\":\"R69\",\"status\":\"checked\",\"text\":\"`archived: true` archives the habit and `archived: false` restores it; restoring when the user already has 50 active habits answers 409 `habit_limit`.\"},{\"id\":\"R70\",\"status\":\"checked\",\"text\":\"`DELETE /v1/habits/{id}` answers 204, sets the habit's `deleted_at`, increments its `version`, and sets `deleted_at` on its non-deleted check-ins and nudges; no...\"},{\"id\":\"R71\",\"status\":\"checked\",\"text\":\"Every change to a habit, check-in or nudge (create, update, soft delete, dismissal, a nudge rewrite) increments the owner's `users.change_seq` and stores the ne...\"},{\"id\":\"R72\",\"status\":\"checked\",\"text\":\"`POST /v1/habits/{habit_id}/completions` takes `{id, date, note?}` (`id` a client UUID, `date` the user's local date) and answers 201 `{id, habit_id, date, note...\"},{\"id\":\"R73\",\"status\":\"checked\",\"text\":\"A check-in `date` after the user's today answers 422 with code `date_in_future`.\"},{\"id\":\"R74\",\"status\":\"checked\",\"text\":\"A check-in `date` before the habit's `start_date` or after its `end_date` answers 422 with code `date_out_of_range`.\"},{\"id\":\"R75\",\"status\":\"checked\",\"text\":\"A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted.\"},{\"id\":\"R76\",\"status\":\"checked\",\"text\":\"When several of these date rules apply at once, the code answered is `date_in_future` first, then `date_out_of_range`, then `date_too_old`.\"},{\"id\":\"R77\",\"status\":\"checked\",\"text\":\"`note` is at most 280 characters; longer answers 422 `validation_failed` with field `note`.\"},{\"id\":\"R78\",\"status\":\"checked\",\"text\":\"A habit has at most one non-deleted check-in per date; another one with a new id answers 409 with code `already_checked_in`.\"},{\"id\":\"R79\",\"status\":\"checked\",\"text\":\"A check-in with the id of an existing check-in of the same habit, date and note answers 200 with the existing one and writes nothing; the same id with different...\"},{\"id\":\"R80\",\"status\":\"checked\",\"text\":\"Creating or deleting a check-in on an archived habit answers 409 with code `habit_archived`.\"},{\"id\":\"R81\",\"status\":\"checked\",\"text\":\"`GET /v1/habits/{habit_id}/completions` answers `{items, next_cursor, has_more}` with the habit's non-deleted check-ins ordered by date ascending; `?from=` and ...\"},{\"id\":\"R82\",\"status\":\"checked\",\"text\":\"`DELETE /v1/habits/{habit_id}/completions/{id}` answers 204 and sets the check-in's `deleted_at`; a check-in of a different habit, or one already deleted, answe...\"},{\"id\":\"R83\",\"status\":\"checked\",\"text\":\"`POST /v1/completions/batch` takes `{items: [{id, habit_id, date, note?}, ...]}` with 1 to 100 items, else 422 `validation_failed` with field `items`.\"},{\"id\":\"R84\",\"status\":\"checked\",\"text\":\"A batch processes its items in order, each exactly as a single check-in create would, and answers 200 `{results: [{id, status, code?, completion?}, ...]}` in th...\"},{\"id\":\"R85\",\"status\":\"checked\",\"text\":\"A batch item that is rejected writes nothing, and never stops the other items.\"},{\"id\":\"R86\",\"status\":\"checked\",\"text\":\"A list answers `{items, next_cursor, has_more}`; `?limit=` is 1 to 200 (default 50), any other value answers 422 `validation_failed`, and `?cursor=` is the `nex...\"},{\"id\":\"R87\",\"status\":\"checked\",\"text\":\"`has_more` is true exactly when more items follow; `next_cursor` is null when `has_more` is false.\"},{\"id\":\"R88\",\"status\":\"checked\",\"text\":\"A cursor that the app did not issue answers 422 with code `invalid_cursor`.\"},{\"id\":\"R89\",\"status\":\"checked\",\"text\":\"`GET /v1/sync?cursor=<opaque>&limit=<n>` answers `{changes, next_cursor, has_more}`: the caller's habits, check-ins and nudges whose `change_seq` is greater tha...\"},{\"id\":\"R90\",\"status\":\"checked\",\"text\":\"Each change is `{type: \\\"habit\\\" | \\\"completion\\\" | \\\"nudge\\\", id, change_seq, deleted, data}`, where `deleted` is true for a soft-deleted row (a tombstone) and `data...\"},{\"id\":\"R91\",\"status\":\"checked\",\"text\":\"A missing or empty cursor means a full sync: every change from the start, tombstones included.\"},{\"id\":\"R92\",\"status\":\"checked\",\"text\":\"`limit` is 1 to 200 (default 100); any other value answers 422 `validation_failed`.\"},{\"id\":\"R93\",\"status\":\"checked\",\"text\":\"`next_cursor` is always present and encodes the `change_seq` of the last change returned (or the request's own cursor position when nothing is returned); `has_m...\"},{\"id\":\"R94\",\"status\":\"checked\",\"text\":\"A cursor that the app did not issue answers 422 with code `invalid_cursor`.\"},{\"id\":\"R95\",\"status\":\"checked\",\"text\":\"`GET /v1/habits/{id}/progress` answers 200 `{habit_id, period, period_start, period_end, target, done, days_elapsed, days_remaining, rate_per_day, rate_per_peri...\"},{\"id\":\"R96\",\"status\":\"checked\",\"text\":\"The current period is the period containing `t` (the user's today); `period_start` and `period_end` are its first and last day.\"},{\"id\":\"R97\",\"status\":\"checked\",\"text\":\"The active window is `as = max(period_start, start_date)` to `ae = min(period_end, end_date)` (`ae = period_end` when `end_date` is null), and `A = ae - as + 1`...\"},{\"id\":\"R98\",\"status\":\"checked\",\"text\":\"`N` is the habit's current `target_count`; the effective target is `target = N` when `A = L`, else `target = (N*A + L - 1) div L` (pro-rated and rounded up; `di...\"},{\"id\":\"R99\",\"status\":\"checked\",\"text\":\"`done` = `D` is the number of the habit's non-deleted check-ins dated from `as` to `ae` inclusive.\"},{\"id\":\"R100\",\"status\":\"checked\",\"text\":\"`days_elapsed` = `E = t - as + 1` (today included) and `days_remaining` = `",
+      "hint": "narrow the call (a section, a focus, a smaller depth) to see the rest"
+     }
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "tools/call",
+    "params": {
+     "name": "model_get",
+     "arguments": {
+      "project": "studio"
+     }
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 4,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"project\":\"studio\",\"project_info\":{\"name\":\"studio\",\"root\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/studio\",\"git_head\":\"\"},\"rule_count\":93,\"rule_status_counts\":{\"context\":1,\"checked\":76,\"unchecked\":16},\"rules\":[{\"id\":\"R1\",\"status\":\"context\",\"text\":\"Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project directory (`REQUIREMENTS.md`, `spec.py`, `spec.trace.json`) over a JSON API on 127.0....\"},{\"id\":\"R2\",\"status\":\"checked\",\"text\":\"GET /api/model answers 200 with the project (`name`: `[project] name` of its studio.toml, else the directory's name; `git_head`: the short id of the repository'...\"},{\"id\":\"R3\",\"status\":\"checked\",\"text\":\"A change that is drafting, ready, rejected, cancelled or failed never writes the project's files: GET /api/model keeps answering the same markdown and `git_head...\"},{\"id\":\"R4\",\"status\":\"checked\",\"text\":\"POST /api/changes {\\\"request\\\": ...} answers 200 with the change's id (`c1`, then `c2`, ... in order) and drafts it in the background: its status starts as `draft...\"},{\"id\":\"R5\",\"status\":\"checked\",\"text\":\"GET /api/changes/{id}?wait=S (S from 0 to 60 seconds) answers once the change's background job has finished, or after S seconds; a `wait` that is not such a num...\"},{\"id\":\"R6\",\"status\":\"checked\",\"text\":\"A ready change's record names the rules its edit added, changed and removed, and `checks.valid` says whether its drafted spec validates.\"},{\"id\":\"R7\",\"status\":\"checked\",\"text\":\"POST /api/changes/{id}/accept on a ready, valid change writes REQUIREMENTS.md, spec.py and spec.trace.json and makes exactly one git commit of those files on to...\"},{\"id\":\"R8\",\"status\":\"checked\",\"text\":\"After an accept, GET /api/model answers the new markdown, `git_head` the new commit, and the change's status `accepted`.\"},{\"id\":\"R9\",\"status\":\"checked\",\"text\":\"A change can be accepted once: a second accept answers 409 (\\\"change <id> is accepted, not ready\\\").\"},{\"id\":\"R10\",\"status\":\"checked\",\"text\":\"A proposal drafted on files that have changed since (for example because another change was accepted) is stale: its accept answers 409 (\\\"the spec changed since ...\"},{\"id\":\"R11\",\"status\":\"checked\",\"text\":\"POST /api/changes/{id}/reject answers 200 {\\\"ok\\\": true} and the change's status becomes `rejected`; an accept after it answers 409. Rejecting an accepted change ...\"},{\"id\":\"R12\",\"status\":\"checked\",\"text\":\"A change rejected while it is still drafting or checking stays rejected: its background job's result is dropped and it can never be accepted.\"},{\"id\":\"R13\",\"status\":\"checked\",\"text\":\"DELETE /api/changes/{id} cancels a change that is still drafting or checking: it answers 200 {\\\"ok\\\": true, \\\"status\\\": \\\"cancelled\\\"}, the change stays `cancelled` a...\"},{\"id\":\"R14\",\"status\":\"checked\",\"text\":\"A change whose markdown edit or draft fails ends `failed` with the error in `error`; it cannot be accepted (409) or cancelled (409).\"},{\"id\":\"R15\",\"status\":\"checked\",\"text\":\"POST /api/changes with \\\"parent\\\": \\\"<id>\\\" drafts a follow-up on top of the parent's proposal (its markdown already holds the parent's edit). The parent must be re...\"},{\"id\":\"R16\",\"status\":\"checked\",\"text\":\"When the follow-up becomes ready, it supersedes its parent: the parent's status becomes `rejected` and its `superseded_by` names the follow-up; a further follow...\"},{\"id\":\"R17\",\"status\":\"checked\",\"text\":\"Accepting the follow-up writes the parent's edit and its own in one commit.\"},{\"id\":\"R18\",\"status\":\"checked\",\"text\":\"A request body that is not a JSON object answers 400; an empty `request` (or `question` for POST /api/ask) answers 422 with a `detail`.\"},{\"id\":\"R19\",\"status\":\"checked\",\"text\":\"An unknown change id answers 404 (\\\"no change <id>\\\") on GET, DELETE, accept and reject, and as a follow-up's parent; an unknown /api/ path answers 404 (\\\"no such ...\"},{\"id\":\"R20\",\"status\":\"checked\",\"text\":\"Every error answer is a JSON object `{\\\"detail\\\": \\\"...\\\"}`.\"},{\"id\":\"R21\",\"status\":\"checked\",\"text\":\"POST /api/ask {\\\"question\\\": ...} answers 200 with `kind` (yes, no, value or not_specified), `answer`, `explanation` and `citations` checked against the spec; wit...\"},{\"id\":\"R22\",\"status\":\"unchecked\",\"text\":\"An answer's content comes from the LLM.\"},{\"id\":\"R23\",\"status\":\"checked\",\"text\":\"Any other GET path serves a file of the web UI directory (`/` is index.html); a path that resolves outside that directory, or names no file, answers 404 {\\\"detai...\"},{\"id\":\"R24\",\"status\":\"unchecked\",\"text\":\"POST /api/check runs the full check of the current spec against the configured app in the background and reports it in `app.last_check`.\"},{\"id\":\"R25\",\"status\":\"unchecked\",\"text\":\"The chat runs on Claude Code sessions (POST /api/session and the routes under it).\"},{\"id\":\"R26\",\"status\":\"unchecked\",\"text\":\"A change's impact is checked against the configured app when `studio.toml` hooks one up.\"},{\"id\":\"R27\",\"status\":\"unchecked\",\"text\":\"Outside a git repository, accept writes the files and answers `commit: null` with a note; a git failure answers 500 after the files are written.\"},{\"id\":\"R28\",\"status\":\"checked\",\"text\":\"GET /api/projects answers 200 with every project the server serves, in order: `name`, `root`, `git_head`, `spec` (whether `spec.py` and `spec.trace.json` are pr...\"},{\"id\":\"R29\",\"status\":\"checked\",\"text\":\"Every /api/ route is also served under /p/<name>/api/... for a served project: /p/<name>/api/model answers what the bare /api/model answers for the default proj...\"},{\"id\":\"R30\",\"status\":\"checked\",\"text\":\"A /p/<name>/ path whose name is no served project answers 404 (\\\"no such project\\\").\"},{\"id\":\"R31\",\"status\":\"unchecked\",\"text\":\"Projects served by one server do not share change sets: each project numbers its own changes from `c1`, and a change made in one project is not visible in anoth...\"},{\"id\":\"R32\",\"status\":\"checked\",\"text\":\"POST /api/rebuild {\\\"changes\\\": [...]} on accepted changes answers 200 with the rebuild's id (`b1`, then `b2`, ... in order) and runs it in the background in a ne...\"},{\"id\":\"R33\",\"status\":\"checked\",\"text\":\"Each round, the coding agent edits the code in the worktree, then Studio itself runs the project's gate commands there: a round passes only when every gate exit...\"},{\"id\":\"R34\",\"status\":\"checked\",\"text\":\"A round in which the agent edited REQUIREMENTS.md, spec.py or spec.trace.json fails with the finding \\\"spec files were edited\\\", and those files are restored to t...\"},{\"id\":\"R35\",\"status\":\"checked\",\"text\":\"When a round passes, the rebuild ends `passed` with exactly one commit on its branch, on top of the base commit, with the message `build: <requests>` and a `Lat...\"},{\"id\":\"R36\",\"status\":\"checked\",\"text\":\"A rebuild never merges and never moves the owner's checkout: after it passes, GET /api/model answers the same markdown and `git_head` as before, and the record'...\"},{\"id\":\"R37\",\"status\":\"checked\",\"text\":\"An accepted change carries `build` in GET /api/model: `not_built` before any rebuild and after a stopped one, `rebuilding` while one runs, `built` with its `reb...\"},{\"id\":\"R38\",\"status\":\"checked\",\"text\":\"POST /api/rebuild for a change that is not accepted answers 409 (\\\"change <id> is <status>, not accepted\\\"), for a change already rebuilding or built 409 (\\\"change...\"},{\"id\":\"R39\",\"status\":\"checked\",\"text\":\"DELETE /api/rebuild/{id} stops a queued or running rebuild: it answers {\\\"id\\\": ..., \\\"status\\\": \\\"stopped\\\"}, its worktree is removed, its branch too when it has no ...\"},{\"id\":\"R40\",\"status\":\"checked\",\"text\":\"GET /api/projects reports `capabilities.rebuild`: true when the project's `[rebuild]` table names a git repository and gate commands that resolve, and its agent...\"},{\"id\":\"R41\",\"status\":\"checked\",\"text\":\"GET /api/areas answers the spec's areas: its rules grouped by their top-level requirements section, in document order, each with `id`, `title`, `rules`, `scenar...\"},{\"id\":\"R42\",\"status\":\"checked\",\"text\":\"POST /api/rebuild {\\\"scope\\\": {\\\"area\\\": id} | {\\\"rules\\\": [ids]} | \\\"all\\\"} needs no accepted change: Studio first runs the gates once (the baseline), and the scope's ...\"},{\"id\":\"R43\",\"status\":\"checked\",\"text\":\"A scoped round passes when every target of the scope passes and no check that passed in the baseline fails (a regression), decided by Studio from the gate findi...\"},{\"id\":\"R44\",\"status\":\"checked\",\"text\":\"Scoped builds land on a target branch, by default `build/<project>`, created from HEAD on first use: each build starts from the target's tip and, when it passes...\"},{\"id\":\"R45\",\"status\":\"checked\",\"text\":\"A scope with nothing failing after the baseline answers 409 (\\\"nothing to build: the checks in this scope already pass\\\") and leaves no rebuild record; an unknown...\"},{\"id\":\"R46\",\"status\":\"checked\",\"text\":\"GET /api/branches answers the repository's local branches (`name`, `head`, `current`, `protected`, `ahead_of_base`, `is_integration`) with `current_branch`, `pr...\"},{\"id\":\"R47\",\"status\":\"checked\",\"text\":\"POST /api/rebuild with \\\"branch\\\": {\\\"name\\\", \\\"create\\\", \\\"from\\\"} targets that branch: an unknown branch answers 404 (code `no_branch`), an existing one with create 4...\"},{\"id\":\"R48\",\"status\":\"checked\",\"text\":\"GET /api/projects reports `capabilities.build_from_spec`, true when the project can rebuild.\"},{\"id\":\"R49\",\"status\":\"checked\",\"text\":\"POST /api/plan {\\\"scope\\\": \\\"all\\\" | {\\\"areas\\\": [ids]} | {\\\"rules\\\": [ids]}} answers 200 with the plan's id (`p1`, then `p2`, ... in order) and status `planning`, and ...\"},{\"id\":\"R50\",\"status\":\"checked\",\"text\":\"Studio validates every plan: two nodes on one level never write the same table, package or file -- the later node (in the plan's order) gets a dependency on the...\"},{\"id\":\"R51\",\"status\":\"checked\",\"text\":\"A plan whose rules are not each covered by exactly one node (or that has a cycle or a malformed node) goes back to the planner once; if it is still invalid, the...\"},{\"id\":\"R52\",\"status\":\"checked\",\"text\":\"A plan runs only once approved: POST /api/plan/{id}/run on a plan that is not approved answers 409 (\\\"plan <id> is ready, not approved: approve it first\\\" for a r...\"},{\"id\":\"R53\",\"status\":\"checked\",\"text\":\"A running plan builds level by level: the nodes of a level whose dependencies all passed start from the target branch's tip at the start of the level; a node wi...\"},{\"id\":\"R54\",\"status\":\"unchecked\",\"text\":\"When a level's gate on the merged tip still fails after `[rebuild] level_repair_attempts` repair attempts, or fails with the repair loop off (0), the level fail...\"},{\"id\":\"R55\",\"status\":\"checked\",\"text\":\"A node whose build gives up ends `gave_up`; the nodes that depend on it are `blocked` (with `blocked_by`) and never run, while its siblings run and land; the pl...\"},{\"id\":\"R56\",\"status\":\"checked\",\"text\":\"DELETE /api/plan/{id} stops a planning or running plan: it answers {\\\"id\\\": ..., \\\"status\\\": \\\"stopped\\\"} and its running node builds are stopped; on any other plan i...\"},{\"id\":\"R57\",\"status\":\"checked\",\"text\":\"An unknown plan answers 404 (\\\"no plan <id>\\\"); when a plan is created, a malformed scope answers 422, an unknown area or rule 404 (\\\"no area <id>\\\", \\\"no rule <id>\\\"...\"},{\"id\":\"R58\",\"status\":\"checked\",\"text\":\"GET /api/plans and GET /api/plan/{id} answer every plan created since the project's state began, each with `interrupted` (false unless a restart cut it off), `a...\"},{\"id\":\"R59\",\"status\":\"checked\",\"text\":\"POST /api/plan/{id}/land answers 409 with the code `nothing_to_land` (\\\"nothing is waiting to land in plan <id>\\\") when no level of the plan passed its full gate ...\"},{\"id\":\"R60\",\"status\":\"checked\",\"text\":\"DELETE /api/plan/{id}?forget=true drops a plan that is not running and answers {\\\"id\\\", \\\"status\\\": \\\"forgotten\\\", \\\"refs_removed\\\"}, the git anchors it removed (`refs/...\"},{\"id\":\"R61\",\"status\":\"checked\",\"text\":\"A plan that ended `partial` because a node gave up offers a retry (`resume.kind` `retry`, the passed nodes in `will_skip`): POST /api/plan/{id}/run runs the nod...\"},{\"id\":\"R62\",\"status\":\"checked\",\"text\":\"A stopped plan offers to continue: `resume.kind` `continue` from the level it stopped at.\"},{\"id\":\"R63\",\"status\":\"unchecked\",\"text\":\"Plans, build records and change sets are kept on disk in the project's state directory (git-ignored) and survive a restart of Studio: a plan, build or change th...\"},{\"id\":\"R64\",\"status\":\"checked\",\"text\":\"GET /api/projects reports each project's `plan_defaults` from its `[rebuild]` settings: `max_parallel`, `models`, `scoped_gate` (the scoped gate's arguments, or...\"},{\"id\":\"R65\",\"status\":\"checked\",\"text\":\"With `[rebuild] scoped_gate_args`, a plan node other than the integration node runs its gate as the first gate command with those arguments and `--only-file` na...\"},{\"id\":\"R66\",\"status\":\"checked\",\"text\":\"With `[rebuild] level_gate = \\\"regression\\\"` a level ends with the first gate on the scenarios that passed before the level and those of every scope landed so far...\"},{\"id\":\"R67\",\"status\":\"checked\",\"text\":\"When a level's gate fails on the merged tip -- a check that passed before the level, or a node's own target that passed in its node gate -- the plan goes on: ea...\"},{\"id\":\"R68\",\"status\":\"checked\",\"text\":\"GET /api/areas reports a target branch's areas from the gate results recorded for its tip, so the areas of landed levels are `built`.\"},{\"id\":\"R69\",\"status\":\"unchecked\",\"text\":\"Stopping a plan or a build, or a gate that times out, ends the gate's whole process tree (the apps and services its check started included) and removes the data...\"},{\"id\":\"R70\",\"status\":\"checked\",\"text\":\"GET /api/branches gives every local branch that is neither protected nor the current one a `spec`: `in_sync`, `files` (the spec files -- REQUIREMENTS.md, spec.p...\"},{\"id\":\"R71\",\"status\":\"checked\",\"text\":\"POST /api/branches/{name}/sync-spec makes one commit on the branch, `spec: sync from <current branch> <sha7>` with the trailer `Lattice-Spec-Sync: <HEAD's commi...\"},{\"id\":\"R72\",\"status\":\"checked\",\"text\":\"A sync is refused, changing nothing, with 409 and the code `branch_protected` for a protected branch, `branch_checked_out` for a branch checked out in any workt...\"},{\"id\":\"R73\",\"status\":\"checked\",\"text\":\"A plan carries `spec_drift` -- `head` and `files` when the spec committed on its target branch differs from HEAD's, else null -- computed when the plan is creat...\"},{\"id\":\"R74\",\"status\":\"checked\",\"text\":\"With `[rebuild] sync_spec = \\\"auto\\\"`, POST /api/plan/{id}/run first syncs the spec onto the plan's target branch when it differs (a refusal is the run's 409), be...\"},{\"id\":\"R75\",\"status\":\"unchecked\",\"text\":\"The Build view and the plan view show a quiet banner while the chosen target's spec, or a plan's target's, is behind (\\\"The spec on <branch> is newer than <targe...\"},{\"id\":\"R76\",\"status\":\"checked\",\"text\":\"GET /api/mcp answers `servers` (each with `name`, `status`, `source`, `tools` sorted into `read`, `write` and `unknown`, `allowed_in` per chat mode and `writes_...\"},{\"id\":\"R77\",\"status\":\"checked\",\"text\":\"There is no write route for connected servers: POST /api/mcp answers 404.\"},{\"id\":\"R78\",\"status\":\"checked\",\"text\":\"POST /api/changes takes an optional `source` (`server` and `item`, optional `url` and `title`): the change record carries it (`source` null when none), GET /api...\"},{\"id\":\"R79\",\"status\":\"checked\",\"text\":\"An invalid `source` (not an object, a missing or empty `server` or `item`, a field that is not a string or is longer than its cap, a `url` that is not http or h...\"},{\"id\":\"R80\",\"status\":\"unchecked\",\"text\":\"A chat session (ask, explain, change) sees the claude.ai connectors of the owner's account besides `lattice`, but not the owner's plugins, skills, hooks or plug...\"},{\"id\":\"R81\",\"status\":\"unchecked\",\"text\":\"The conversation panel has a quiet Connected tools list (each server's state and how many read tools each mode may use, with a Refresh), and a change card shows...\"},{\"id\":\"R82\",\"status\":\"checked\",\"text\":\"GET /api/engines answers `engines` (each with `name`, `source` -- `builtin`, `project` or `module` --, `used`, `server` with its `image` or null, `adapter` and ...\"},{\"id\":\"R83\",\"status\":\"checked\",\"text\":\"There is no write route for engines: POST /api/engines and DELETE /api/engines answer 404.\"},{\"id\":\"R84\",\"status\":\"unchecked\",\"text\":\"The project's engine descriptors and installed modules are registered for its checks; every read re-hashes the modules, and one whose installed tree no longer m...\"},{\"id\":\"R85\",\"status\":\"checked\",\"text\":\"GET /api/improve answers `proposals` (each with `id`, `title`, `signal_key`, `evidence`, `score`, `unit`, `score_class`, `frequency`, `cost_per`, `kind`, `targe...\"},{\"id\":\"R86\",\"status\":\"checked\",\"text\":\"There is no write route for proposals: POST /api/improve answers 404.\"},{\"id\":\"R87\",\"status\":\"checked\",\"text\":\"The owner's change decisions are logged: accepting or rejecting a change adds a `human` event and a `change` event to the project's log; GET /api/improve then c...\"},{\"id\":\"R88\",\"status\":\"unchecked\",\"text\":\"Every build and plan logs its improvement signals without blocking: gate runs with `layer_seconds` copied from the check's JSON timings, a `cause` on every give...\"},{\"id\":\"R89\",\"status\":\"unchecked\",\"text\":\"Proposals are ranked by frequency x cost, seconds before list-price dollars and never converted, with no model; items closed in the improvement ledger are left ...\"},{\"id\":\"R90\",\"status\":\"checked\",\"text\":\"GET /api/workspace answers the workspace manifest Studio found when it started (`--workspace`, else `LATTICE_WORKSPACE`, else the first `lattice.workspace.toml`...\"},{\"id\":\"R91\",\"status\":\"checked\",\"text\":\"A workspace project is `in_hub` when Studio serves its directory, and its `hub_name` is the name Studio serves it under; a project Studio does not serve has `in...\"},{\"id\":\"R92\",\"status\":\"checked\",\"text\":\"There is no write route for the workspace: POST /api/workspace answers 404, and reading it changes nothing; a declared project whose directory does not exist is...\"},{\"id\":\"R93\",\"status\":\"unchecked\",\"text\":\"With no manifest, GET /api/workspace answers `workspace` null and empty `projects`, `links` and `problems`; a manifest with an unknown link end, a duplicate pro...\"}],\"app\":{\"configured\":true,\"check_running\":false,\"last_check\":null,\"session\":true},\"changes\":[],\"tables\":[],\"sections\":[\"rules\",\"views\",\"data_model\",\"app\",\"changes\"],\"hint\":\"pass section=rules|views|data_model|app|changes for the full part\"}"
+      }
+     ],
+     "isError": false,
+     "structuredContent": {
+      "project": "studio",
+      "project_info": {
+       "name": "studio",
+       "root": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/studio",
+       "git_head": ""
+      },
+      "rule_count": 93,
+      "rule_status_counts": {
+       "context": 1,
+       "checked": 76,
+       "unchecked": 16
+      },
+      "rules": [
+       {
+        "id": "R1",
+        "status": "context",
+        "text": "Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project directory (`REQUIREMENTS.md`, `spec.py`, `spec.trace.json`) over a JSON API on 127.0...."
+       },
+       {
+        "id": "R2",
+        "status": "checked",
+        "text": "GET /api/model answers 200 with the project (`name`: `[project] name` of its studio.toml, else the directory's name; `git_head`: the short id of the repository'..."
+       },
+       {
+        "id": "R3",
+        "status": "checked",
+        "text": "A change that is drafting, ready, rejected, cancelled or failed never writes the project's files: GET /api/model keeps answering the same markdown and `git_head..."
+       },
+       {
+        "id": "R4",
+        "status": "checked",
+        "text": "POST /api/changes {\"request\": ...} answers 200 with the change's id (`c1`, then `c2`, ... in order) and drafts it in the background: its status starts as `draft..."
+       },
+       {
+        "id": "R5",
+        "status": "checked",
+        "text": "GET /api/changes/{id}?wait=S (S from 0 to 60 seconds) answers once the change's background job has finished, or after S seconds; a `wait` that is not such a num..."
+       },
+       {
+        "id": "R6",
+        "status": "checked",
+        "text": "A ready change's record names the rules its edit added, changed and removed, and `checks.valid` says whether its drafted spec validates."
+       },
+       {
+        "id": "R7",
+        "status": "checked",
+        "text": "POST /api/changes/{id}/accept on a ready, valid change writes REQUIREMENTS.md, spec.py and spec.trace.json and makes exactly one git commit of those files on to..."
+       },
+       {
+        "id": "R8",
+        "status": "checked",
+        "text": "After an accept, GET /api/model answers the new markdown, `git_head` the new commit, and the change's status `accepted`."
+       },
+       {
+        "id": "R9",
+        "status": "checked",
+        "text": "A change can be accepted once: a second accept answers 409 (\"change <id> is accepted, not ready\")."
+       },
+       {
+        "id": "R10",
+        "status": "checked",
+        "text": "A proposal drafted on files that have changed since (for example because another change was accepted) is stale: its accept answers 409 (\"the spec changed since ..."
+       },
+       {
+        "id": "R11",
+        "status": "checked",
+        "text": "POST /api/changes/{id}/reject answers 200 {\"ok\": true} and the change's status becomes `rejected`; an accept after it answers 409. Rejecting an accepted change ..."
+       },
+       {
+        "id": "R12",
+        "status": "checked",
+        "text": "A change rejected while it is still drafting or checking stays rejected: its background job's result is dropped and it can never be accepted."
+       },
+       {
+        "id": "R13",
+        "status": "checked",
+        "text": "DELETE /api/changes/{id} cancels a change that is still drafting or checking: it answers 200 {\"ok\": true, \"status\": \"cancelled\"}, the change stays `cancelled` a..."
+       },
+       {
+        "id": "R14",
+        "status": "checked",
+        "text": "A change whose markdown edit or draft fails ends `failed` with the error in `error`; it cannot be accepted (409) or cancelled (409)."
+       },
+       {
+        "id": "R15",
+        "status": "checked",
+        "text": "POST /api/changes with \"parent\": \"<id>\" drafts a follow-up on top of the parent's proposal (its markdown already holds the parent's edit). The parent must be re..."
+       },
+       {
+        "id": "R16",
+        "status": "checked",
+        "text": "When the follow-up becomes ready, it supersedes its parent: the parent's status becomes `rejected` and its `superseded_by` names the follow-up; a further follow..."
+       },
+       {
+        "id": "R17",
+        "status": "checked",
+        "text": "Accepting the follow-up writes the parent's edit and its own in one commit."
+       },
+       {
+        "id": "R18",
+        "status": "checked",
+        "text": "A request body that is not a JSON object answers 400; an empty `request` (or `question` for POST /api/ask) answers 422 with a `detail`."
+       },
+       {
+        "id": "R19",
+        "status": "checked",
+        "text": "An unknown change id answers 404 (\"no change <id>\") on GET, DELETE, accept and reject, and as a follow-up's parent; an unknown /api/ path answers 404 (\"no such ..."
+       },
+       {
+        "id": "R20",
+        "status": "checked",
+        "text": "Every error answer is a JSON object `{\"detail\": \"...\"}`."
+       },
+       {
+        "id": "R21",
+        "status": "checked",
+        "text": "POST /api/ask {\"question\": ...} answers 200 with `kind` (yes, no, value or not_specified), `answer`, `explanation` and `citations` checked against the spec; wit..."
+       },
+       {
+        "id": "R22",
+        "status": "unchecked",
+        "text": "An answer's content comes from the LLM."
+       },
+       {
+        "id": "R23",
+        "status": "checked",
+        "text": "Any other GET path serves a file of the web UI directory (`/` is index.html); a path that resolves outside that directory, or names no file, answers 404 {\"detai..."
+       },
+       {
+        "id": "R24",
+        "status": "unchecked",
+        "text": "POST /api/check runs the full check of the current spec against the configured app in the background and reports it in `app.last_check`."
+       },
+       {
+        "id": "R25",
+        "status": "unchecked",
+        "text": "The chat runs on Claude Code sessions (POST /api/session and the routes under it)."
+       },
+       {
+        "id": "R26",
+        "status": "unchecked",
+        "text": "A change's impact is checked against the configured app when `studio.toml` hooks one up."
+       },
+       {
+        "id": "R27",
+        "status": "unchecked",
+        "text": "Outside a git repository, accept writes the files and answers `commit: null` with a note; a git failure answers 500 after the files are written."
+       },
+       {
+        "id": "R28",
+        "status": "checked",
+        "text": "GET /api/projects answers 200 with every project the server serves, in order: `name`, `root`, `git_head`, `spec` (whether `spec.py` and `spec.trace.json` are pr..."
+       },
+       {
+        "id": "R29",
+        "status": "checked",
+        "text": "Every /api/ route is also served under /p/<name>/api/... for a served project: /p/<name>/api/model answers what the bare /api/model answers for the default proj..."
+       },
+       {
+        "id": "R30",
+        "status": "checked",
+        "text": "A /p/<name>/ path whose name is no served project answers 404 (\"no such project\")."
+       },
+       {
+        "id": "R31",
+        "status": "unchecked",
+        "text": "Projects served by one server do not share change sets: each project numbers its own changes from `c1`, and a change made in one project is not visible in anoth..."
+       },
+       {
+        "id": "R32",
+        "status": "checked",
+        "text": "POST /api/rebuild {\"changes\": [...]} on accepted changes answers 200 with the rebuild's id (`b1`, then `b2`, ... in order) and runs it in the background in a ne..."
+       },
+       {
+        "id": "R33",
+        "status": "checked",
+        "text": "Each round, the coding agent edits the code in the worktree, then Studio itself runs the project's gate commands there: a round passes only when every gate exit..."
+       },
+       {
+        "id": "R34",
+        "status": "checked",
+        "text": "A round in which the agent edited REQUIREMENTS.md, spec.py or spec.trace.json fails with the finding \"spec files were edited\", and those files are restored to t..."
+       },
+       {
+        "id": "R35",
+        "status": "checked",
+        "text": "When a round passes, the rebuild ends `passed` with exactly one commit on its branch, on top of the base commit, with the message `build: <requests>` and a `Lat..."
+       },
+       {
+        "id": "R36",
+        "status": "checked",
+        "text": "A rebuild never merges and never moves the owner's checkout: after it passes, GET /api/model answers the same markdown and `git_head` as before, and the record'..."
+       },
+       {
+        "id": "R37",
+        "status": "checked",
+        "text": "An accepted change carries `build` in GET /api/model: `not_built` before any rebuild and after a stopped one, `rebuilding` while one runs, `built` with its `reb..."
+       },
+       {
+        "id": "R38",
+        "status": "checked",
+        "text": "POST /api/rebuild for a change that is not accepted answers 409 (\"change <id> is <status>, not accepted\"), for a change already rebuilding or built 409 (\"change..."
+       },
+       {
+        "id": "R39",
+        "status": "checked",
+        "text": "DELETE /api/rebuild/{id} stops a queued or running rebuild: it answers {\"id\": ..., \"status\": \"stopped\"}, its worktree is removed, its branch too when it has no ..."
+       },
+       {
+        "id": "R40",
+        "status": "checked",
+        "text": "GET /api/projects reports `capabilities.rebuild`: true when the project's `[rebuild]` table names a git repository and gate commands that resolve, and its agent..."
+       },
+       {
+        "id": "R41",
+        "status": "checked",
+        "text": "GET /api/areas answers the spec's areas: its rules grouped by their top-level requirements section, in document order, each with `id`, `title`, `rules`, `scenar..."
+       },
+       {
+        "id": "R42",
+        "status": "checked",
+        "text": "POST /api/rebuild {\"scope\": {\"area\": id} | {\"rules\": [ids]} | \"all\"} needs no accepted change: Studio first runs the gates once (the baseline), and the scope's ..."
+       },
+       {
+        "id": "R43",
+        "status": "checked",
+        "text": "A scoped round passes when every target of the scope passes and no check that passed in the baseline fails (a regression), decided by Studio from the gate findi..."
+       },
+       {
+        "id": "R44",
+        "status": "checked",
+        "text": "Scoped builds land on a target branch, by default `build/<project>`, created from HEAD on first use: each build starts from the target's tip and, when it passes..."
+       },
+       {
+        "id": "R45",
+        "status": "checked",
+        "text": "A scope with nothing failing after the baseline answers 409 (\"nothing to build: the checks in this scope already pass\") and leaves no rebuild record; an unknown..."
+       },
+       {
+        "id": "R46",
+        "status": "checked",
+        "text": "GET /api/branches answers the repository's local branches (`name`, `head`, `current`, `protected`, `ahead_of_base`, `is_integration`) with `current_branch`, `pr..."
+       },
+       {
+        "id": "R47",
+        "status": "checked",
+        "text": "POST /api/rebuild with \"branch\": {\"name\", \"create\", \"from\"} targets that branch: an unknown branch answers 404 (code `no_branch`), an existing one with create 4..."
+       },
+       {
+        "id": "R48",
+        "status": "checked",
+        "text": "GET /api/projects reports `capabilities.build_from_spec`, true when the project can rebuild."
+       },
+       {
+        "id": "R49",
+        "status": "checked",
+        "text": "POST /api/plan {\"scope\": \"all\" | {\"areas\": [ids]} | {\"rules\": [ids]}} answers 200 with the plan's id (`p1`, then `p2`, ... in order) and status `planning`, and ..."
+       },
+       {
+        "id": "R50",
+        "status": "checked",
+        "text": "Studio validates every plan: two nodes on one level never write the same table, package or file -- the later node (in the plan's order) gets a dependency on the..."
+       },
+       {
+        "id": "R51",
+        "status": "checked",
+        "text": "A plan whose rules are not each covered by exactly one node (or that has a cycle or a malformed node) goes back to the planner once; if it is still invalid, the..."
+       },
+       {
+        "id": "R52",
+        "status": "checked",
+        "text": "A plan runs only once approved: POST /api/plan/{id}/run on a plan that is not approved answers 409 (\"plan <id> is ready, not approved: approve it first\" for a r..."
+       },
+       {
+        "id": "R53",
+        "status": "checked",
+        "text": "A running plan builds level by level: the nodes of a level whose dependencies all passed start from the target branch's tip at the start of the level; a node wi..."
+       },
+       {
+        "id": "R54",
+        "status": "unchecked",
+        "text": "When a level's gate on the merged tip still fails after `[rebuild] level_repair_attempts` repair attempts, or fails with the repair loop off (0), the level fail..."
+       },
+       {
+        "id": "R55",
+        "status": "checked",
+        "text": "A node whose build gives up ends `gave_up`; the nodes that depend on it are `blocked` (with `blocked_by`) and never run, while its siblings run and land; the pl..."
+       },
+       {
+        "id": "R56",
+        "status": "checked",
+        "text": "DELETE /api/plan/{id} stops a planning or running plan: it answers {\"id\": ..., \"status\": \"stopped\"} and its running node builds are stopped; on any other plan i..."
+       },
+       {
+        "id": "R57",
+        "status": "checked",
+        "text": "An unknown plan answers 404 (\"no plan <id>\"); when a plan is created, a malformed scope answers 422, an unknown area or rule 404 (\"no area <id>\", \"no rule <id>\"..."
+       },
+       {
+        "id": "R58",
+        "status": "checked",
+        "text": "GET /api/plans and GET /api/plan/{id} answer every plan created since the project's state began, each with `interrupted` (false unless a restart cut it off), `a..."
+       },
+       {
+        "id": "R59",
+        "status": "checked",
+        "text": "POST /api/plan/{id}/land answers 409 with the code `nothing_to_land` (\"nothing is waiting to land in plan <id>\") when no level of the plan passed its full gate ..."
+       },
+       {
+        "id": "R60",
+        "status": "checked",
+        "text": "DELETE /api/plan/{id}?forget=true drops a plan that is not running and answers {\"id\", \"status\": \"forgotten\", \"refs_removed\"}, the git anchors it removed (`refs/..."
+       },
+       {
+        "id": "R61",
+        "status": "checked",
+        "text": "A plan that ended `partial` because a node gave up offers a retry (`resume.kind` `retry`, the passed nodes in `will_skip`): POST /api/plan/{id}/run runs the nod..."
+       },
+       {
+        "id": "R62",
+        "status": "checked",
+        "text": "A stopped plan offers to continue: `resume.kind` `continue` from the level it stopped at."
+       },
+       {
+        "id": "R63",
+        "status": "unchecked",
+        "text": "Plans, build records and change sets are kept on disk in the project's state directory (git-ignored) and survive a restart of Studio: a plan, build or change th..."
+       },
+       {
+        "id": "R64",
+        "status": "checked",
+        "text": "GET /api/projects reports each project's `plan_defaults` from its `[rebuild]` settings: `max_parallel`, `models`, `scoped_gate` (the scoped gate's arguments, or..."
+       },
+       {
+        "id": "R65",
+        "status": "checked",
+        "text": "With `[rebuild] scoped_gate_args`, a plan node other than the integration node runs its gate as the first gate command with those arguments and `--only-file` na..."
+       },
+       {
+        "id": "R66",
+        "status": "checked",
+        "text": "With `[rebuild] level_gate = \"regression\"` a level ends with the first gate on the scenarios that passed before the level and those of every scope landed so far..."
+       },
+       {
+        "id": "R67",
+        "status": "checked",
+        "text": "When a level's gate fails on the merged tip -- a check that passed before the level, or a node's own target that passed in its node gate -- the plan goes on: ea..."
+       },
+       {
+        "id": "R68",
+        "status": "checked",
+        "text": "GET /api/areas reports a target branch's areas from the gate results recorded for its tip, so the areas of landed levels are `built`."
+       },
+       {
+        "id": "R69",
+        "status": "unchecked",
+        "text": "Stopping a plan or a build, or a gate that times out, ends the gate's whole process tree (the apps and services its check started included) and removes the data..."
+       },
+       {
+        "id": "R70",
+        "status": "checked",
+        "text": "GET /api/branches gives every local branch that is neither protected nor the current one a `spec`: `in_sync`, `files` (the spec files -- REQUIREMENTS.md, spec.p..."
+       },
+       {
+        "id": "R71",
+        "status": "checked",
+        "text": "POST /api/branches/{name}/sync-spec makes one commit on the branch, `spec: sync from <current branch> <sha7>` with the trailer `Lattice-Spec-Sync: <HEAD's commi..."
+       },
+       {
+        "id": "R72",
+        "status": "checked",
+        "text": "A sync is refused, changing nothing, with 409 and the code `branch_protected` for a protected branch, `branch_checked_out` for a branch checked out in any workt..."
+       },
+       {
+        "id": "R73",
+        "status": "checked",
+        "text": "A plan carries `spec_drift` -- `head` and `files` when the spec committed on its target branch differs from HEAD's, else null -- computed when the plan is creat..."
+       },
+       {
+        "id": "R74",
+        "status": "checked",
+        "text": "With `[rebuild] sync_spec = \"auto\"`, POST /api/plan/{id}/run first syncs the spec onto the plan's target branch when it differs (a refusal is the run's 409), be..."
+       },
+       {
+        "id": "R75",
+        "status": "unchecked",
+        "text": "The Build view and the plan view show a quiet banner while the chosen target's spec, or a plan's target's, is behind (\"The spec on <branch> is newer than <targe..."
+       },
+       {
+        "id": "R76",
+        "status": "checked",
+        "text": "GET /api/mcp answers `servers` (each with `name`, `status`, `source`, `tools` sorted into `read`, `write` and `unknown`, `allowed_in` per chat mode and `writes_..."
+       },
+       {
+        "id": "R77",
+        "status": "checked",
+        "text": "There is no write route for connected servers: POST /api/mcp answers 404."
+       },
+       {
+        "id": "R78",
+        "status": "checked",
+        "text": "POST /api/changes takes an optional `source` (`server` and `item`, optional `url` and `title`): the change record carries it (`source` null when none), GET /api..."
+       },
+       {
+        "id": "R79",
+        "status": "checked",
+        "text": "An invalid `source` (not an object, a missing or empty `server` or `item`, a field that is not a string or is longer than its cap, a `url` that is not http or h..."
+       },
+       {
+        "id": "R80",
+        "status": "unchecked",
+        "text": "A chat session (ask, explain, change) sees the claude.ai connectors of the owner's account besides `lattice`, but not the owner's plugins, skills, hooks or plug..."
+       },
+       {
+        "id": "R81",
+        "status": "unchecked",
+        "text": "The conversation panel has a quiet Connected tools list (each server's state and how many read tools each mode may use, with a Refresh), and a change card shows..."
+       },
+       {
+        "id": "R82",
+        "status": "checked",
+        "text": "GET /api/engines answers `engines` (each with `name`, `source` -- `builtin`, `project` or `module` --, `used`, `server` with its `image` or null, `adapter` and ..."
+       },
+       {
+        "id": "R83",
+        "status": "checked",
+        "text": "There is no write route for engines: POST /api/engines and DELETE /api/engines answer 404."
+       },
+       {
+        "id": "R84",
+        "status": "unchecked",
+        "text": "The project's engine descriptors and installed modules are registered for its checks; every read re-hashes the modules, and one whose installed tree no longer m..."
+       },
+       {
+        "id": "R85",
+        "status": "checked",
+        "text": "GET /api/improve answers `proposals` (each with `id`, `title`, `signal_key`, `evidence`, `score`, `unit`, `score_class`, `frequency`, `cost_per`, `kind`, `targe..."
+       },
+       {
+        "id": "R86",
+        "status": "checked",
+        "text": "There is no write route for proposals: POST /api/improve answers 404."
+       },
+       {
+        "id": "R87",
+        "status": "checked",
+        "text": "The owner's change decisions are logged: accepting or rejecting a change adds a `human` event and a `change` event to the project's log; GET /api/improve then c..."
+       },
+       {
+        "id": "R88",
+        "status": "unchecked",
+        "text": "Every build and plan logs its improvement signals without blocking: gate runs with `layer_seconds` copied from the check's JSON timings, a `cause` on every give..."
+       },
+       {
+        "id": "R89",
+        "status": "unchecked",
+        "text": "Proposals are ranked by frequency x cost, seconds before list-price dollars and never converted, with no model; items closed in the improvement ledger are left ..."
+       },
+       {
+        "id": "R90",
+        "status": "checked",
+        "text": "GET /api/workspace answers the workspace manifest Studio found when it started (`--workspace`, else `LATTICE_WORKSPACE`, else the first `lattice.workspace.toml`..."
+       },
+       {
+        "id": "R91",
+        "status": "checked",
+        "text": "A workspace project is `in_hub` when Studio serves its directory, and its `hub_name` is the name Studio serves it under; a project Studio does not serve has `in..."
+       },
+       {
+        "id": "R92",
+        "status": "checked",
+        "text": "There is no write route for the workspace: POST /api/workspace answers 404, and reading it changes nothing; a declared project whose directory does not exist is..."
+       },
+       {
+        "id": "R93",
+        "status": "unchecked",
+        "text": "With no manifest, GET /api/workspace answers `workspace` null and empty `projects`, `links` and `problems`; a manifest with an unknown link end, a duplicate pro..."
+       }
+      ],
+      "app": {
+       "configured": true,
+       "check_running": false,
+       "last_check": null,
+       "session": true
+      },
+      "changes": [],
+      "tables": [],
+      "sections": [
+       "rules",
+       "views",
+       "data_model",
+       "app",
+       "changes"
+      ],
+      "hint": "pass section=rules|views|data_model|app|changes for the full part"
+     }
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 5,
+    "method": "tools/call",
+    "params": {
+     "name": "project_set_active",
+     "arguments": {
+      "name": "streak"
+     }
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 5,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"active\":\"streak\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak\",\"spec\":\"present\",\"previous\":\"launch\",\"note\":\"tools without a `project` argument now run on this project, until project_set_active is called again or the server restarts\"}"
+      }
+     ],
+     "isError": false,
+     "structuredContent": {
+      "active": "streak",
+      "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak",
+      "spec": "present",
+      "previous": "launch",
+      "note": "tools without a `project` argument now run on this project, until project_set_active is called again or the server restarts"
+     }
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 6,
+    "method": "tools/call",
+    "params": {
+     "name": "model_get",
+     "arguments": {}
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 6,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"truncated\":true,\"original_chars\":27567,\"preview\":\"{\\\"project\\\":\\\"streak\\\",\\\"project_info\\\":{\\\"name\\\":\\\"streak\\\",\\\"root\\\":\\\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak\\\",\\\"git_head\\\":\\\"a0db033\\\"},\\\"rule_count\\\":148,\\\"rule_status_counts\\\":{\\\"context\\\":2,\\\"checked\\\":141,\\\"unchecked\\\":5},\\\"rules\\\":[{\\\"id\\\":\\\"R1\\\",\\\"status\\\":\\\"context\\\",\\\"text\\\":\\\"Streak is a mobile habit tracker (iOS and Android clients) where a user creates habits with a target count per week, month or year, checks in (also offline), se...\\\"},{\\\"id\\\":\\\"R2\\\",\\\"status\\\":\\\"context\\\",\\\"text\\\":\\\"The owner's idea did not state these; each is restated as a rule below. Review them first.\\\"},{\\\"id\\\":\\\"R3\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every route is under `/v1`, except `GET /health`, which answers 200 without a token.\\\"},{\\\"id\\\":\\\"R4\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every error answers `{\\\\\\\"error\\\\\\\": {\\\\\\\"code\\\\\\\": <code>, \\\\\\\"message\\\\\\\": <text>}}`, plus `\\\\\\\"field\\\\\\\": <request field name>` when one request field caused it; `code` is one of th...\\\"},{\\\"id\\\":\\\"R5\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every request body or query value that fails validation answers 422 with code `validation_failed` and the offending `field`, and writes nothing.\\\"},{\\\"id\\\":\\\"R6\\\",\\\"status\\\":\\\"unchecked\\\",\\\"text\\\":\\\"A request may send `X-Client-Version: MAJOR.MINOR.PATCH`; when it is lower than the configured minimum (`HABIT_MIN_CLIENT_VERSION`) or malformed, the request an...\\\"},{\\\"id\\\":\\\"R7\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A refused or invalid request (any 4xx) writes nothing, with one exception: a 401 `refresh_token_reused` revokes every refresh token of that user and installatio...\\\"},{\\\"id\\\":\\\"R8\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/auth/register` takes `{email, password, timezone?}` and answers 201 `{id, email, timezone}`; the email is stored lower-cased and `timezone` defaults t...\\\"},{\\\"id\\\":\\\"R9\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A password is 8 to 72 bytes, an email must be valid, and a timezone must be an IANA zone name (e.g. `Europe/Berlin`); anything else answers 422 `validation_fail...\\\"},{\\\"id\\\":\\\"R10\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"An email already registered, compared case-insensitively, answers 409 with code `email_taken` and creates no user.\\\"},{\\\"id\\\":\\\"R11\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Registering a user also creates their `notification_prefs` row with `push_enabled` true, `quiet_start` `\\\\\\\"22:00\\\\\\\"`, `quiet_end` `\\\\\\\"08:00\\\\\\\"` and `nudge_time` `\\\\\\\"20:00...\\\"},{\\\"id\\\":\\\"R12\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The password is stored only as a bcrypt hash in `users.hashed_password`; no response ever contains the password, its hash, or a refresh token's hash.\\\"},{\\\"id\\\":\\\"R13\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/auth/login` takes `{email, password, installation_id}` (`installation_id` a UUID the app generates once per install) and answers 200 `{access_token, r...\\\"},{\\\"id\\\":\\\"R14\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A wrong password or an unknown email at login answers 401 with code `invalid_credentials`.\\\"},{\\\"id\\\":\\\"R15\\\",\\\"status\\\":\\\"unchecked\\\",\\\"text\\\":\\\"The access token is a JWT signed HS256 with `HABIT_SECRET_KEY`, with `sub` = the user id and `sid` = the installation_id, expiring 15 minutes after it was issue...\\\"},{\\\"id\\\":\\\"R16\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The refresh token is an opaque random string of at least 32 bytes of entropy, valid for 30 days; the app stores only its SHA-256 hex digest in `refresh_tokens.t...\\\"},{\\\"id\\\":\\\"R17\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A user has at most one live refresh token per installation: a login revokes (sets `revoked_at` on) every unrevoked refresh token of the same user and installati...\\\"},{\\\"id\\\":\\\"R18\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/auth/refresh` takes `{refresh_token}`; for a live token (not rotated, not revoked, not expired) it sets that token's `rotated_at`, writes a new refres...\\\"},{\\\"id\\\":\\\"R19\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A refresh token that is unknown, expired or revoked answers 401 with code `invalid_refresh_token`.\\\"},{\\\"id\\\":\\\"R20\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A refresh token that was already rotated (reuse) answers 401 with code `refresh_token_reused` and revokes every refresh token of that user and installation, so ...\\\"},{\\\"id\\\":\\\"R21\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every other `/v1` route except register, login and refresh needs `Authorization: Bearer <access token>`; without one it answers 401 with code `not_authenticated...\\\"},{\\\"id\\\":\\\"R22\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"An access token that is past its expiry answers 401 with code `token_expired`; a malformed or wrongly signed one, or one whose user no longer exists, answers 40...\\\"},{\\\"id\\\":\\\"R23\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/auth/logout` (signed in) revokes every refresh token of the caller's installation (the token's `sid`), deletes the caller's device row with that insta...\\\"},{\\\"id\\\":\\\"R24\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/me` answers `{id, email, timezone, notification_prefs: {push_enabled, quiet_start, quiet_end, nudge_time}}`.\\\"},{\\\"id\\\":\\\"R25\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`PUT /v1/me` takes any subset of `{timezone, push_enabled, quiet_start, quiet_end, nudge_time}` and answers 200 with the new `GET /v1/me` body; times are `\\\\\\\"HH:M...\\\"},{\\\"id\\\":\\\"R26\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`DELETE /v1/me` answers 204 and permanently deletes the user with their notification prefs, devices, refresh tokens, habits, habit targets, check-ins and nudges...\\\"},{\\\"id\\\":\\\"R27\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"There are no roles or admins: a user sees and changes only their own habits, check-ins, nudges and devices.\\\"},{\\\"id\\\":\\\"R28\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A habit, check-in, nudge or device of another user answers 404 with code `not_found` on every route, exactly like an id that does not exist, and writes nothing.\\\"},{\\\"id\\\":\\\"R29\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A signed-in user may make 120 requests per clock minute (fixed windows starting at second 0); the 121st and later requests in that minute answer 429 with code `...\\\"},{\\\"id\\\":\\\"R30\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A sync or batch request counts as one request whatever it contains.\\\"},{\\\"id\\\":\\\"R31\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/devices` takes `{installation_id, platform, push_token, timezone, app_version}` and answers 201 with the device `{id, installation_id, platform, push_...\\\"},{\\\"id\\\":\\\"R32\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/devices` with a `push_token` that is already registered updates that device row's other fields, makes it the caller's, and answers 200 with it; there ...\\\"},{\\\"id\\\":\\\"R33\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`DELETE /v1/devices/{id}` answers 204 and deletes the caller's device row.\\\"},{\\\"id\\\":\\\"R34\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A device's `timezone` is stored for information only; it never changes the user's timezone.\\\"},{\\\"id\\\":\\\"R35\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`users`: `id` (integer), `email` (unique), `hashed_password`, `timezone`, `change_seq` (integer, the last change counter value given out, starting at 0), `creat...\\\"},{\\\"id\\\":\\\"R36\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`notification_prefs`: `user_id` (unique), `push_enabled`, `quiet_start`, `quiet_end`, `nudge_time` (all three `\\\\\\\"HH:MM\\\\\\\"`), `last_pass_date` (a date, nullable: th...\\\"},{\\\"id\\\":\\\"R37\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`devices`: `id` (integer), `user_id`, `installation_id`, `platform` (`ios` | `android`), `push_token` (unique), `timezone`, `app_version`, `created_at`, `update...\\\"},{\\\"id\\\":\\\"R38\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`refresh_tokens`: `id` (integer), `user_id`, `installation_id`, `token_hash` (unique), `expires_at`, `rotated_at` (nullable), `revoked_at` (nullable), `created_...\\\"},{\\\"id\\\":\\\"R39\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`habits`: `id` (a client UUID), `user_id`, `name`, `description` (nullable), `target_count`, `period` (`week` | `month` | `year`), `start_date`, `end_date` (nul...\\\"},{\\\"id\\\":\\\"R40\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`habit_targets`: `id` (integer), `habit_id`, `target_count`, `effective_from` (the first day of the period from which this target applies); one row per (`habit_...\\\"},{\\\"id\\\":\\\"R41\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`completions`: `id` (a client UUID), `habit_id`, `date` (the user's local date), `note` (nullable), `change_seq`, `created_at`, `updated_at`, `deleted_at` (null...\\\"},{\\\"id\\\":\\\"R42\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`nudges`: `id` (a server UUID), `habit_id`, `for_date` (a local date), `kind` (`on_track` | `behind` | `unreachable` | `achieved`), `message`, `delivery` (`pend...\\\"},{\\\"id\\\":\\\"R43\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Dates travel as `YYYY-MM-DD` strings and instants as ISO-8601 UTC strings ending in `Z`; every stored instant is UTC; a malformed date or id in a request answer...\\\"},{\\\"id\\\":\\\"R44\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The app reads the current instant only from its clock: the real time in production, and in test mode the instant the harness sets (see CONTEXT.md).\\\"},{\\\"id\\\":\\\"R45\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A user's \\\\\\\"today\\\\\\\" (written `t` below) is the calendar date of the current instant in the user's `timezone`; every day and period boundary is computed in that tim...\\\"},{\\\"id\\\":\\\"R46\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A weekly period runs Monday to Sunday, a monthly period from the 1st to the last day of the calendar month, a yearly period from January 1 to December 31, all a...\\\"},{\\\"id\\\":\\\"R47\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Changing the user's timezone changes only what today is from then on: check-ins keep the local `date` they were made with, and no period or past check-in is rec...\\\"},{\\\"id\\\":\\\"R48\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A habit's target applies again in every period, from the period containing `start_date` until the period containing `end_date` (or for ever when `end_date` is n...\\\"},{\\\"id\\\":\\\"R49\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/habits` takes `{id, name, description?, target_count, period, start_date?, end_date?}` (`id` a UUID the client generated) and answers 201 with the hab...\\\"},{\\\"id\\\":\\\"R50\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`start_date` defaults to the user's today; it may be in the past or the future.\\\"},{\\\"id\\\":\\\"R51\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`name` is 1 to 100 characters and not only whitespace, `description` at most 500 characters, `period` one of `week`, `month`, `year`, and `target_count` an inte...\\\"},{\\\"id\\\":\\\"R52\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`end_date`, when given, must be on or after `start_date`; an earlier one answers 422 `validation_failed` with field `end_date`.\\\"},{\\\"id\\\":\\\"R53\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/habits` with the id of an existing habit of the caller whose name, description, target_count, period, start_date and end_date all equal the request's ...\\\"},{\\\"id\\\":\\\"R54\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/habits` with an id that exists with different content, belongs to another user, or belongs to a deleted habit answers 409 with code `id_conflict` and ...\\\"},{\\\"id\\\":\\\"R55\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A habit name is unique among the user's non-deleted habits, archived or not, compared case-insensitively (`Run` and `run` conflict); a duplicate on create or on...\\\"},{\\\"id\\\":\\\"R56\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A user has at most 50 active (non-archived, non-deleted) habits; creating one more answers 409 with code `habit_limit`.\\\"},{\\\"id\\\":\\\"R57\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Creating a habit also writes its first `habit_targets` row: its `target_count`, with `effective_from` = the first day of the period containing `start_date`.\\\"},{\\\"id\\\":\\\"R58\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/habits` answers `{items, next_cursor, has_more}` with the caller's non-deleted, non-archived habits ordered by id; `?include_archived=true` includes ar...\\\"},{\\\"id\\\":\\\"R59\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/habits/{id}` answers the habit; a deleted habit answers 404 `not_found`.\\\"},{\\\"id\\\":\\\"R60\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`PATCH /v1/habits/{id}` takes `{version, ...}` with any subset of `{name, description, target_count, start_date, end_date, archived}` and answers 200 with the u...\\\"},{\\\"id\\\":\\\"R61\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A `PATCH` without `version` answers 422 `validation_failed` with field `version`.\\\"},{\\\"id\\\":\\\"R62\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A `PATCH` whose `version` is not the habit's current version answers 409 `{\\\\\\\"error\\\\\\\": {\\\\\\\"code\\\\\\\": \\\\\\\"version_conflict\\\\\\\", ...}, \\\\\\\"current\\\\\\\": <the habit as stored>}` and ch...\\\"},{\\\"id\\\":\\\"R63\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A `PATCH` body that contains `period` answers 422 `validation_failed` with field `period` and changes nothing.\\\"},{\\\"id\\\":\\\"R64\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`description: null` and `end_date: null` in a `PATCH` clear them.\\\"},{\\\"id\\\":\\\"R65\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Changing `target_count` updates `habits.target_count` and writes the `habit_targets` row for the current period (`effective_from` = the first day of the period ...\\\"},{\\\"id\\\":\\\"R66\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The new `target_count` applies to the current period at once: progress and nudges use it from the next request on.\\\"},{\\\"id\\\":\\\"R67\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`start_date` can be changed only while today is before the current `start_date`; otherwise the change answers 409 with code `start_date_locked`. A permitted cha...\\\"},{\\\"id\\\":\\\"R68\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`end_date` can be changed at any time, also to a past date (which ends the habit); an `end_date` before the date of one of the habit's non-deleted check-ins ans...\\\"},{\\\"id\\\":\\\"R69\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`archived: true` archives the habit and `archived: false` restores it; restoring when the user already has 50 active habits answers 409 `habit_limit`.\\\"},{\\\"id\\\":\\\"R70\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`DELETE /v1/habits/{id}` answers 204, sets the habit's `deleted_at`, increments its `version`, and sets `deleted_at` on its non-deleted check-ins and nudges; no...\\\"},{\\\"id\\\":\\\"R71\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Every change to a habit, check-in or nudge (create, update, soft delete, dismissal, a nudge rewrite) increments the owner's `users.change_seq` and stores the ne...\\\"},{\\\"id\\\":\\\"R72\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/habits/{habit_id}/completions` takes `{id, date, note?}` (`id` a client UUID, `date` the user's local date) and answers 201 `{id, habit_id, date, note...\\\"},{\\\"id\\\":\\\"R73\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A check-in `date` after the user's today answers 422 with code `date_in_future`.\\\"},{\\\"id\\\":\\\"R74\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A check-in `date` before the habit's `start_date` or after its `end_date` answers 422 with code `date_out_of_range`.\\\"},{\\\"id\\\":\\\"R75\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted.\\\"},{\\\"id\\\":\\\"R76\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"When several of these date rules apply at once, the code answered is `date_in_future` first, then `date_out_of_range`, then `date_too_old`.\\\"},{\\\"id\\\":\\\"R77\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`note` is at most 280 characters; longer answers 422 `validation_failed` with field `note`.\\\"},{\\\"id\\\":\\\"R78\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A habit has at most one non-deleted check-in per date; another one with a new id answers 409 with code `already_checked_in`.\\\"},{\\\"id\\\":\\\"R79\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A check-in with the id of an existing check-in of the same habit, date and note answers 200 with the existing one and writes nothing; the same id with different...\\\"},{\\\"id\\\":\\\"R80\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Creating or deleting a check-in on an archived habit answers 409 with code `habit_archived`.\\\"},{\\\"id\\\":\\\"R81\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/habits/{habit_id}/completions` answers `{items, next_cursor, has_more}` with the habit's non-deleted check-ins ordered by date ascending; `?from=` and ...\\\"},{\\\"id\\\":\\\"R82\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`DELETE /v1/habits/{habit_id}/completions/{id}` answers 204 and sets the check-in's `deleted_at`; a check-in of a different habit, or one already deleted, answe...\\\"},{\\\"id\\\":\\\"R83\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`POST /v1/completions/batch` takes `{items: [{id, habit_id, date, note?}, ...]}` with 1 to 100 items, else 422 `validation_failed` with field `items`.\\\"},{\\\"id\\\":\\\"R84\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A batch processes its items in order, each exactly as a single check-in create would, and answers 200 `{results: [{id, status, code?, completion?}, ...]}` in th...\\\"},{\\\"id\\\":\\\"R85\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A batch item that is rejected writes nothing, and never stops the other items.\\\"},{\\\"id\\\":\\\"R86\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A list answers `{items, next_cursor, has_more}`; `?limit=` is 1 to 200 (default 50), any other value answers 422 `validation_failed`, and `?cursor=` is the `nex...\\\"},{\\\"id\\\":\\\"R87\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`has_more` is true exactly when more items follow; `next_cursor` is null when `has_more` is false.\\\"},{\\\"id\\\":\\\"R88\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A cursor that the app did not issue answers 422 with code `invalid_cursor`.\\\"},{\\\"id\\\":\\\"R89\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/sync?cursor=<opaque>&limit=<n>` answers `{changes, next_cursor, has_more}`: the caller's habits, check-ins and nudges whose `change_seq` is greater tha...\\\"},{\\\"id\\\":\\\"R90\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"Each change is `{type: \\\\\\\"habit\\\\\\\" | \\\\\\\"completion\\\\\\\" | \\\\\\\"nudge\\\\\\\", id, change_seq, deleted, data}`, where `deleted` is true for a soft-deleted row (a tombstone) and `data...\\\"},{\\\"id\\\":\\\"R91\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A missing or empty cursor means a full sync: every change from the start, tombstones included.\\\"},{\\\"id\\\":\\\"R92\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`limit` is 1 to 200 (default 100); any other value answers 422 `validation_failed`.\\\"},{\\\"id\\\":\\\"R93\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`next_cursor` is always present and encodes the `change_seq` of the last change returned (or the request's own cursor position when nothing is returned); `has_m...\\\"},{\\\"id\\\":\\\"R94\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"A cursor that the app did not issue answers 422 with code `invalid_cursor`.\\\"},{\\\"id\\\":\\\"R95\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`GET /v1/habits/{id}/progress` answers 200 `{habit_id, period, period_start, period_end, target, done, days_elapsed, days_remaining, rate_per_day, rate_per_peri...\\\"},{\\\"id\\\":\\\"R96\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The current period is the period containing `t` (the user's today); `period_start` and `period_end` are its first and last day.\\\"},{\\\"id\\\":\\\"R97\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"The active window is `as = max(period_start, start_date)` to `ae = min(period_end, end_date)` (`ae = period_end` when `end_date` is null), and `A = ae - as + 1`...\\\"},{\\\"id\\\":\\\"R98\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`N` is the habit's current `target_count`; the effective target is `target = N` when `A = L`, else `target = (N*A + L - 1) div L` (pro-rated and rounded up; `di...\\\"},{\\\"id\\\":\\\"R99\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`done` = `D` is the number of the habit's non-deleted check-ins dated from `as` to `ae` inclusive.\\\"},{\\\"id\\\":\\\"R100\\\",\\\"status\\\":\\\"checked\\\",\\\"text\\\":\\\"`days_elapsed` = `E = t - as + 1` (today included) and `days_remaining` = `\",\"hint\":\"narrow the call (a section, a focus, a smaller depth) to see the rest\"}"
+      }
+     ],
+     "isError": false,
+     "structuredContent": {
+      "truncated": true,
+      "original_chars": 27567,
+      "preview": "{\"project\":\"streak\",\"project_info\":{\"name\":\"streak\",\"root\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/streak\",\"git_head\":\"a0db033\"},\"rule_count\":148,\"rule_status_counts\":{\"context\":2,\"checked\":141,\"unchecked\":5},\"rules\":[{\"id\":\"R1\",\"status\":\"context\",\"text\":\"Streak is a mobile habit tracker (iOS and Android clients) where a user creates habits with a target count per week, month or year, checks in (also offline), se...\"},{\"id\":\"R2\",\"status\":\"context\",\"text\":\"The owner's idea did not state these; each is restated as a rule below. Review them first.\"},{\"id\":\"R3\",\"status\":\"checked\",\"text\":\"Every route is under `/v1`, except `GET /health`, which answers 200 without a token.\"},{\"id\":\"R4\",\"status\":\"checked\",\"text\":\"Every error answers `{\\\"error\\\": {\\\"code\\\": <code>, \\\"message\\\": <text>}}`, plus `\\\"field\\\": <request field name>` when one request field caused it; `code` is one of th...\"},{\"id\":\"R5\",\"status\":\"checked\",\"text\":\"Every request body or query value that fails validation answers 422 with code `validation_failed` and the offending `field`, and writes nothing.\"},{\"id\":\"R6\",\"status\":\"unchecked\",\"text\":\"A request may send `X-Client-Version: MAJOR.MINOR.PATCH`; when it is lower than the configured minimum (`HABIT_MIN_CLIENT_VERSION`) or malformed, the request an...\"},{\"id\":\"R7\",\"status\":\"checked\",\"text\":\"A refused or invalid request (any 4xx) writes nothing, with one exception: a 401 `refresh_token_reused` revokes every refresh token of that user and installatio...\"},{\"id\":\"R8\",\"status\":\"checked\",\"text\":\"`POST /v1/auth/register` takes `{email, password, timezone?}` and answers 201 `{id, email, timezone}`; the email is stored lower-cased and `timezone` defaults t...\"},{\"id\":\"R9\",\"status\":\"checked\",\"text\":\"A password is 8 to 72 bytes, an email must be valid, and a timezone must be an IANA zone name (e.g. `Europe/Berlin`); anything else answers 422 `validation_fail...\"},{\"id\":\"R10\",\"status\":\"checked\",\"text\":\"An email already registered, compared case-insensitively, answers 409 with code `email_taken` and creates no user.\"},{\"id\":\"R11\",\"status\":\"checked\",\"text\":\"Registering a user also creates their `notification_prefs` row with `push_enabled` true, `quiet_start` `\\\"22:00\\\"`, `quiet_end` `\\\"08:00\\\"` and `nudge_time` `\\\"20:00...\"},{\"id\":\"R12\",\"status\":\"checked\",\"text\":\"The password is stored only as a bcrypt hash in `users.hashed_password`; no response ever contains the password, its hash, or a refresh token's hash.\"},{\"id\":\"R13\",\"status\":\"checked\",\"text\":\"`POST /v1/auth/login` takes `{email, password, installation_id}` (`installation_id` a UUID the app generates once per install) and answers 200 `{access_token, r...\"},{\"id\":\"R14\",\"status\":\"checked\",\"text\":\"A wrong password or an unknown email at login answers 401 with code `invalid_credentials`.\"},{\"id\":\"R15\",\"status\":\"unchecked\",\"text\":\"The access token is a JWT signed HS256 with `HABIT_SECRET_KEY`, with `sub` = the user id and `sid` = the installation_id, expiring 15 minutes after it was issue...\"},{\"id\":\"R16\",\"status\":\"checked\",\"text\":\"The refresh token is an opaque random string of at least 32 bytes of entropy, valid for 30 days; the app stores only its SHA-256 hex digest in `refresh_tokens.t...\"},{\"id\":\"R17\",\"status\":\"checked\",\"text\":\"A user has at most one live refresh token per installation: a login revokes (sets `revoked_at` on) every unrevoked refresh token of the same user and installati...\"},{\"id\":\"R18\",\"status\":\"checked\",\"text\":\"`POST /v1/auth/refresh` takes `{refresh_token}`; for a live token (not rotated, not revoked, not expired) it sets that token's `rotated_at`, writes a new refres...\"},{\"id\":\"R19\",\"status\":\"checked\",\"text\":\"A refresh token that is unknown, expired or revoked answers 401 with code `invalid_refresh_token`.\"},{\"id\":\"R20\",\"status\":\"checked\",\"text\":\"A refresh token that was already rotated (reuse) answers 401 with code `refresh_token_reused` and revokes every refresh token of that user and installation, so ...\"},{\"id\":\"R21\",\"status\":\"checked\",\"text\":\"Every other `/v1` route except register, login and refresh needs `Authorization: Bearer <access token>`; without one it answers 401 with code `not_authenticated...\"},{\"id\":\"R22\",\"status\":\"checked\",\"text\":\"An access token that is past its expiry answers 401 with code `token_expired`; a malformed or wrongly signed one, or one whose user no longer exists, answers 40...\"},{\"id\":\"R23\",\"status\":\"checked\",\"text\":\"`POST /v1/auth/logout` (signed in) revokes every refresh token of the caller's installation (the token's `sid`), deletes the caller's device row with that insta...\"},{\"id\":\"R24\",\"status\":\"checked\",\"text\":\"`GET /v1/me` answers `{id, email, timezone, notification_prefs: {push_enabled, quiet_start, quiet_end, nudge_time}}`.\"},{\"id\":\"R25\",\"status\":\"checked\",\"text\":\"`PUT /v1/me` takes any subset of `{timezone, push_enabled, quiet_start, quiet_end, nudge_time}` and answers 200 with the new `GET /v1/me` body; times are `\\\"HH:M...\"},{\"id\":\"R26\",\"status\":\"checked\",\"text\":\"`DELETE /v1/me` answers 204 and permanently deletes the user with their notification prefs, devices, refresh tokens, habits, habit targets, check-ins and nudges...\"},{\"id\":\"R27\",\"status\":\"checked\",\"text\":\"There are no roles or admins: a user sees and changes only their own habits, check-ins, nudges and devices.\"},{\"id\":\"R28\",\"status\":\"checked\",\"text\":\"A habit, check-in, nudge or device of another user answers 404 with code `not_found` on every route, exactly like an id that does not exist, and writes nothing.\"},{\"id\":\"R29\",\"status\":\"checked\",\"text\":\"A signed-in user may make 120 requests per clock minute (fixed windows starting at second 0); the 121st and later requests in that minute answer 429 with code `...\"},{\"id\":\"R30\",\"status\":\"checked\",\"text\":\"A sync or batch request counts as one request whatever it contains.\"},{\"id\":\"R31\",\"status\":\"checked\",\"text\":\"`POST /v1/devices` takes `{installation_id, platform, push_token, timezone, app_version}` and answers 201 with the device `{id, installation_id, platform, push_...\"},{\"id\":\"R32\",\"status\":\"checked\",\"text\":\"`POST /v1/devices` with a `push_token` that is already registered updates that device row's other fields, makes it the caller's, and answers 200 with it; there ...\"},{\"id\":\"R33\",\"status\":\"checked\",\"text\":\"`DELETE /v1/devices/{id}` answers 204 and deletes the caller's device row.\"},{\"id\":\"R34\",\"status\":\"checked\",\"text\":\"A device's `timezone` is stored for information only; it never changes the user's timezone.\"},{\"id\":\"R35\",\"status\":\"checked\",\"text\":\"`users`: `id` (integer), `email` (unique), `hashed_password`, `timezone`, `change_seq` (integer, the last change counter value given out, starting at 0), `creat...\"},{\"id\":\"R36\",\"status\":\"checked\",\"text\":\"`notification_prefs`: `user_id` (unique), `push_enabled`, `quiet_start`, `quiet_end`, `nudge_time` (all three `\\\"HH:MM\\\"`), `last_pass_date` (a date, nullable: th...\"},{\"id\":\"R37\",\"status\":\"checked\",\"text\":\"`devices`: `id` (integer), `user_id`, `installation_id`, `platform` (`ios` | `android`), `push_token` (unique), `timezone`, `app_version`, `created_at`, `update...\"},{\"id\":\"R38\",\"status\":\"checked\",\"text\":\"`refresh_tokens`: `id` (integer), `user_id`, `installation_id`, `token_hash` (unique), `expires_at`, `rotated_at` (nullable), `revoked_at` (nullable), `created_...\"},{\"id\":\"R39\",\"status\":\"checked\",\"text\":\"`habits`: `id` (a client UUID), `user_id`, `name`, `description` (nullable), `target_count`, `period` (`week` | `month` | `year`), `start_date`, `end_date` (nul...\"},{\"id\":\"R40\",\"status\":\"checked\",\"text\":\"`habit_targets`: `id` (integer), `habit_id`, `target_count`, `effective_from` (the first day of the period from which this target applies); one row per (`habit_...\"},{\"id\":\"R41\",\"status\":\"checked\",\"text\":\"`completions`: `id` (a client UUID), `habit_id`, `date` (the user's local date), `note` (nullable), `change_seq`, `created_at`, `updated_at`, `deleted_at` (null...\"},{\"id\":\"R42\",\"status\":\"checked\",\"text\":\"`nudges`: `id` (a server UUID), `habit_id`, `for_date` (a local date), `kind` (`on_track` | `behind` | `unreachable` | `achieved`), `message`, `delivery` (`pend...\"},{\"id\":\"R43\",\"status\":\"checked\",\"text\":\"Dates travel as `YYYY-MM-DD` strings and instants as ISO-8601 UTC strings ending in `Z`; every stored instant is UTC; a malformed date or id in a request answer...\"},{\"id\":\"R44\",\"status\":\"checked\",\"text\":\"The app reads the current instant only from its clock: the real time in production, and in test mode the instant the harness sets (see CONTEXT.md).\"},{\"id\":\"R45\",\"status\":\"checked\",\"text\":\"A user's \\\"today\\\" (written `t` below) is the calendar date of the current instant in the user's `timezone`; every day and period boundary is computed in that tim...\"},{\"id\":\"R46\",\"status\":\"checked\",\"text\":\"A weekly period runs Monday to Sunday, a monthly period from the 1st to the last day of the calendar month, a yearly period from January 1 to December 31, all a...\"},{\"id\":\"R47\",\"status\":\"checked\",\"text\":\"Changing the user's timezone changes only what today is from then on: check-ins keep the local `date` they were made with, and no period or past check-in is rec...\"},{\"id\":\"R48\",\"status\":\"checked\",\"text\":\"A habit's target applies again in every period, from the period containing `start_date` until the period containing `end_date` (or for ever when `end_date` is n...\"},{\"id\":\"R49\",\"status\":\"checked\",\"text\":\"`POST /v1/habits` takes `{id, name, description?, target_count, period, start_date?, end_date?}` (`id` a UUID the client generated) and answers 201 with the hab...\"},{\"id\":\"R50\",\"status\":\"checked\",\"text\":\"`start_date` defaults to the user's today; it may be in the past or the future.\"},{\"id\":\"R51\",\"status\":\"checked\",\"text\":\"`name` is 1 to 100 characters and not only whitespace, `description` at most 500 characters, `period` one of `week`, `month`, `year`, and `target_count` an inte...\"},{\"id\":\"R52\",\"status\":\"checked\",\"text\":\"`end_date`, when given, must be on or after `start_date`; an earlier one answers 422 `validation_failed` with field `end_date`.\"},{\"id\":\"R53\",\"status\":\"checked\",\"text\":\"`POST /v1/habits` with the id of an existing habit of the caller whose name, description, target_count, period, start_date and end_date all equal the request's ...\"},{\"id\":\"R54\",\"status\":\"checked\",\"text\":\"`POST /v1/habits` with an id that exists with different content, belongs to another user, or belongs to a deleted habit answers 409 with code `id_conflict` and ...\"},{\"id\":\"R55\",\"status\":\"checked\",\"text\":\"A habit name is unique among the user's non-deleted habits, archived or not, compared case-insensitively (`Run` and `run` conflict); a duplicate on create or on...\"},{\"id\":\"R56\",\"status\":\"checked\",\"text\":\"A user has at most 50 active (non-archived, non-deleted) habits; creating one more answers 409 with code `habit_limit`.\"},{\"id\":\"R57\",\"status\":\"checked\",\"text\":\"Creating a habit also writes its first `habit_targets` row: its `target_count`, with `effective_from` = the first day of the period containing `start_date`.\"},{\"id\":\"R58\",\"status\":\"checked\",\"text\":\"`GET /v1/habits` answers `{items, next_cursor, has_more}` with the caller's non-deleted, non-archived habits ordered by id; `?include_archived=true` includes ar...\"},{\"id\":\"R59\",\"status\":\"checked\",\"text\":\"`GET /v1/habits/{id}` answers the habit; a deleted habit answers 404 `not_found`.\"},{\"id\":\"R60\",\"status\":\"checked\",\"text\":\"`PATCH /v1/habits/{id}` takes `{version, ...}` with any subset of `{name, description, target_count, start_date, end_date, archived}` and answers 200 with the u...\"},{\"id\":\"R61\",\"status\":\"checked\",\"text\":\"A `PATCH` without `version` answers 422 `validation_failed` with field `version`.\"},{\"id\":\"R62\",\"status\":\"checked\",\"text\":\"A `PATCH` whose `version` is not the habit's current version answers 409 `{\\\"error\\\": {\\\"code\\\": \\\"version_conflict\\\", ...}, \\\"current\\\": <the habit as stored>}` and ch...\"},{\"id\":\"R63\",\"status\":\"checked\",\"text\":\"A `PATCH` body that contains `period` answers 422 `validation_failed` with field `period` and changes nothing.\"},{\"id\":\"R64\",\"status\":\"checked\",\"text\":\"`description: null` and `end_date: null` in a `PATCH` clear them.\"},{\"id\":\"R65\",\"status\":\"checked\",\"text\":\"Changing `target_count` updates `habits.target_count` and writes the `habit_targets` row for the current period (`effective_from` = the first day of the period ...\"},{\"id\":\"R66\",\"status\":\"checked\",\"text\":\"The new `target_count` applies to the current period at once: progress and nudges use it from the next request on.\"},{\"id\":\"R67\",\"status\":\"checked\",\"text\":\"`start_date` can be changed only while today is before the current `start_date`; otherwise the change answers 409 with code `start_date_locked`. A permitted cha...\"},{\"id\":\"R68\",\"status\":\"checked\",\"text\":\"`end_date` can be changed at any time, also to a past date (which ends the habit); an `end_date` before the date of one of the habit's non-deleted check-ins ans...\"},{\"id\":\"R69\",\"status\":\"checked\",\"text\":\"`archived: true` archives the habit and `archived: false` restores it; restoring when the user already has 50 active habits answers 409 `habit_limit`.\"},{\"id\":\"R70\",\"status\":\"checked\",\"text\":\"`DELETE /v1/habits/{id}` answers 204, sets the habit's `deleted_at`, increments its `version`, and sets `deleted_at` on its non-deleted check-ins and nudges; no...\"},{\"id\":\"R71\",\"status\":\"checked\",\"text\":\"Every change to a habit, check-in or nudge (create, update, soft delete, dismissal, a nudge rewrite) increments the owner's `users.change_seq` and stores the ne...\"},{\"id\":\"R72\",\"status\":\"checked\",\"text\":\"`POST /v1/habits/{habit_id}/completions` takes `{id, date, note?}` (`id` a client UUID, `date` the user's local date) and answers 201 `{id, habit_id, date, note...\"},{\"id\":\"R73\",\"status\":\"checked\",\"text\":\"A check-in `date` after the user's today answers 422 with code `date_in_future`.\"},{\"id\":\"R74\",\"status\":\"checked\",\"text\":\"A check-in `date` before the habit's `start_date` or after its `end_date` answers 422 with code `date_out_of_range`.\"},{\"id\":\"R75\",\"status\":\"checked\",\"text\":\"A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted.\"},{\"id\":\"R76\",\"status\":\"checked\",\"text\":\"When several of these date rules apply at once, the code answered is `date_in_future` first, then `date_out_of_range`, then `date_too_old`.\"},{\"id\":\"R77\",\"status\":\"checked\",\"text\":\"`note` is at most 280 characters; longer answers 422 `validation_failed` with field `note`.\"},{\"id\":\"R78\",\"status\":\"checked\",\"text\":\"A habit has at most one non-deleted check-in per date; another one with a new id answers 409 with code `already_checked_in`.\"},{\"id\":\"R79\",\"status\":\"checked\",\"text\":\"A check-in with the id of an existing check-in of the same habit, date and note answers 200 with the existing one and writes nothing; the same id with different...\"},{\"id\":\"R80\",\"status\":\"checked\",\"text\":\"Creating or deleting a check-in on an archived habit answers 409 with code `habit_archived`.\"},{\"id\":\"R81\",\"status\":\"checked\",\"text\":\"`GET /v1/habits/{habit_id}/completions` answers `{items, next_cursor, has_more}` with the habit's non-deleted check-ins ordered by date ascending; `?from=` and ...\"},{\"id\":\"R82\",\"status\":\"checked\",\"text\":\"`DELETE /v1/habits/{habit_id}/completions/{id}` answers 204 and sets the check-in's `deleted_at`; a check-in of a different habit, or one already deleted, answe...\"},{\"id\":\"R83\",\"status\":\"checked\",\"text\":\"`POST /v1/completions/batch` takes `{items: [{id, habit_id, date, note?}, ...]}` with 1 to 100 items, else 422 `validation_failed` with field `items`.\"},{\"id\":\"R84\",\"status\":\"checked\",\"text\":\"A batch processes its items in order, each exactly as a single check-in create would, and answers 200 `{results: [{id, status, code?, completion?}, ...]}` in th...\"},{\"id\":\"R85\",\"status\":\"checked\",\"text\":\"A batch item that is rejected writes nothing, and never stops the other items.\"},{\"id\":\"R86\",\"status\":\"checked\",\"text\":\"A list answers `{items, next_cursor, has_more}`; `?limit=` is 1 to 200 (default 50), any other value answers 422 `validation_failed`, and `?cursor=` is the `nex...\"},{\"id\":\"R87\",\"status\":\"checked\",\"text\":\"`has_more` is true exactly when more items follow; `next_cursor` is null when `has_more` is false.\"},{\"id\":\"R88\",\"status\":\"checked\",\"text\":\"A cursor that the app did not issue answers 422 with code `invalid_cursor`.\"},{\"id\":\"R89\",\"status\":\"checked\",\"text\":\"`GET /v1/sync?cursor=<opaque>&limit=<n>` answers `{changes, next_cursor, has_more}`: the caller's habits, check-ins and nudges whose `change_seq` is greater tha...\"},{\"id\":\"R90\",\"status\":\"checked\",\"text\":\"Each change is `{type: \\\"habit\\\" | \\\"completion\\\" | \\\"nudge\\\", id, change_seq, deleted, data}`, where `deleted` is true for a soft-deleted row (a tombstone) and `data...\"},{\"id\":\"R91\",\"status\":\"checked\",\"text\":\"A missing or empty cursor means a full sync: every change from the start, tombstones included.\"},{\"id\":\"R92\",\"status\":\"checked\",\"text\":\"`limit` is 1 to 200 (default 100); any other value answers 422 `validation_failed`.\"},{\"id\":\"R93\",\"status\":\"checked\",\"text\":\"`next_cursor` is always present and encodes the `change_seq` of the last change returned (or the request's own cursor position when nothing is returned); `has_m...\"},{\"id\":\"R94\",\"status\":\"checked\",\"text\":\"A cursor that the app did not issue answers 422 with code `invalid_cursor`.\"},{\"id\":\"R95\",\"status\":\"checked\",\"text\":\"`GET /v1/habits/{id}/progress` answers 200 `{habit_id, period, period_start, period_end, target, done, days_elapsed, days_remaining, rate_per_day, rate_per_peri...\"},{\"id\":\"R96\",\"status\":\"checked\",\"text\":\"The current period is the period containing `t` (the user's today); `period_start` and `period_end` are its first and last day.\"},{\"id\":\"R97\",\"status\":\"checked\",\"text\":\"The active window is `as = max(period_start, start_date)` to `ae = min(period_end, end_date)` (`ae = period_end` when `end_date` is null), and `A = ae - as + 1`...\"},{\"id\":\"R98\",\"status\":\"checked\",\"text\":\"`N` is the habit's current `target_count`; the effective target is `target = N` when `A = L`, else `target = (N*A + L - 1) div L` (pro-rated and rounded up; `di...\"},{\"id\":\"R99\",\"status\":\"checked\",\"text\":\"`done` = `D` is the number of the habit's non-deleted check-ins dated from `as` to `ae` inclusive.\"},{\"id\":\"R100\",\"status\":\"checked\",\"text\":\"`days_elapsed` = `E = t - as + 1` (today included) and `days_remaining` = `",
+      "hint": "narrow the call (a section, a focus, a smaller depth) to see the rest"
+     }
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 7,
+    "method": "tools/call",
+    "params": {
+     "name": "project_set_active",
+     "arguments": {
+      "name": "studio"
+     }
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 7,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"active\":\"studio\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/studio\",\"spec\":\"present\",\"previous\":\"streak\",\"note\":\"tools without a `project` argument now run on this project, until project_set_active is called again or the server restarts\"}"
+      }
+     ],
+     "isError": false,
+     "structuredContent": {
+      "active": "studio",
+      "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/studio",
+      "spec": "present",
+      "previous": "streak",
+      "note": "tools without a `project` argument now run on this project, until project_set_active is called again or the server restarts"
+     }
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 8,
+    "method": "tools/call",
+    "params": {
+     "name": "rule_get",
+     "arguments": {
+      "id": "R1"
+     }
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 8,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"project\":\"studio\",\"id\":\"R1\",\"text\":\"Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project directory (`REQUIREMENTS.md`, `spec.py`, `spec.trace.json`) over a JSON API on 127.0.0.1, with no login. These rules are what `lattice/studio/server.py` and `tests/studio/test_server.py` establish; `lattice/studio/API.md` is the contract.\",\"section\":\"Lattice Studio server: requirements\",\"line\":3,\"status\":\"context\",\"links\":[],\"questions\":[],\"unchecked_reason\":null,\"question_details\":[],\"code_links\":[],\"code_links_source\":\"trace+grep\"}"
+      }
+     ],
+     "isError": false,
+     "structuredContent": {
+      "project": "studio",
+      "id": "R1",
+      "text": "Lattice Studio (`python -m lattice.studio PROJECT_DIR`) serves one project directory (`REQUIREMENTS.md`, `spec.py`, `spec.trace.json`) over a JSON API on 127.0.0.1, with no login. These rules are what `lattice/studio/server.py` and `tests/studio/test_server.py` establish; `lattice/studio/API.md` is the contract.",
+      "section": "Lattice Studio server: requirements",
+      "line": 3,
+      "status": "context",
+      "links": [],
+      "questions": [],
+      "unchecked_reason": null,
+      "question_details": [],
+      "code_links": [],
+      "code_links_source": "trace+grep"
+     }
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 9,
+    "method": "tools/call",
+    "params": {
+     "name": "model_get",
+     "arguments": {
+      "project": "nope"
+     }
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 9,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "unknown project 'nope'; known projects: launch, streak, studio (project_list shows their paths)"
+      }
+     ],
+     "isError": true
+    }
+   }
+  },
+  {
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 10,
+    "method": "tools/call",
+    "params": {
+     "name": "project_set_active",
+     "arguments": {
+      "name": "nope"
+     }
+    }
+   },
+   "reply": {
+    "jsonrpc": "2.0",
+    "id": 10,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "unknown project 'nope'; known projects: launch, streak, studio (project_list shows their paths)"
+      }
+     ],
+     "isError": true
+    }
+   }
+  }
+ ],
+ "stderr_tail": "[studio 19:01:50] model built in 0.03s\n[studio 19:01:50] model built in 0.02s\n"
+}

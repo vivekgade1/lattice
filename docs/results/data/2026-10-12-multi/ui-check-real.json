@@ -1,0 +1,32 @@
+{
+ "switcher": [
+  [
+   "billing-api · provider",
+   "billing",
+   false
+  ],
+  [
+   "web-app · consumer (not in this Studio)",
+   "",
+   true
+  ],
+  [
+   "shared-auth · library (not in this Studio)",
+   "",
+   true
+  ]
+ ],
+ "optgroup": "Workspace mp3",
+ "mapModes": [],
+ "tilesButton": true,
+ "workspaceCanvas": true,
+ "workspaceStatus": "Workspace mp3: 3 projects, 3 links. A line runs from a project to the one it relies on (solid: depends on; dashed: uses). Double-click a project this Studio serves to open it.",
+ "workspaceNodes": [
+  "billing-apiprovider",
+  "web-appconsumer · not in this Studio",
+  "shared-authlibrary · not in this Studio"
+ ],
+ "workspaceEdges": 3,
+ "problems": [],
+ "console": []
+}

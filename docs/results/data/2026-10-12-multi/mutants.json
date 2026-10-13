@@ -1,0 +1,122 @@
+{
+ "hashes": {
+  "lattice/mcp/guard.py": "d25cb8a8e67d35ed",
+  "lattice/mcp/projects.py": "d5341a050b2e3382",
+  "lattice/workspace.py": "03b31f1534202867",
+  "lattice/mcp/server.py": "5cfdf2f93753f6b5",
+  "lattice/studio/hub.py": "03c463a02e1c7a02",
+  "dogfood/multi_mutants.py": "2264adbc9ac16b28"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "181 passed in 11.39s",
+    "seconds": 11.6,
+    "tail": "........................................................................ [ 39%]\n........................................................................ [ 79%]\n.....................................                                    [100%]\n181 passed in 11.39s\n"
+   },
+   "verdict": "PASS (control)"
+  },
+  "MM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/mcp/test_multi_server.py::test_a_single_project_router_is_the_old_toolbox",
+     "tests/mcp/test_multi_server.py::test_an_unknown_project_is_a_tool_error_listing_the_names",
+     "tests/mcp/test_multi_server.py::test_one_server_with_no_project_and_a_workspace",
+     "tests/mcp/test_multi_server.py::test_project_set_active_persists_for_the_process",
+     "tests/mcp/test_multi_server.py::test_repeated_project_flags_and_a_relative_project_path",
+     "tests/mcp/test_multi_server.py::test_the_project_argument_picks_the_project",
+     "tests/mcp/test_multi_server.py::test_tool_errors_name_the_project_when_several_are_known"
+    ],
+    "summary": "7 failed, 174 passed in 12.03s",
+    "seconds": 12.3,
+    "tail": "tr0000gn/T/pytest-of-vivekgade/pytest-2573/test_repeated_pro...var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2573/test_repeated_project_flags_an0/beta'))\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2573/test_repeated_project_flags_an0')\n\n    def test_repeated_project_flags_and_a_relative_project_path(pair, tmp_path: Path) -> None:\n        a, b = pair\n        msgs = [\n            INIT,\n            call(1, \"project_list\"),\n            call(2, \"model_get\", project=\"beta\"),\n            req(3, \"tools/list\"),\n        ]\n        out = serve(tmp_path, msgs, \"--project\", \"alpha\", \"--project\", str(b))\n        lst = payload(out[1])\n        assert [(p[\"name\"], p[\"source\"]) for p in lst[\"projects\"]] == [\n            (\"alpha\", \"explicit\"),\n            (\"beta\", \"explicit\"),\n        ]\n>       assert payload(out[2])[\"rules\"][0][\"text\"].startswith(\"Beta only\")\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x10cbe4440>('Beta only')\nE        +    where <built-in method startswith of str object at 0x10cbe4440> = 'Alpha only: notes have owners.'.startswith\n\ntests/mcp/test_multi_server.py:360: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_multi_server.py::test_the_project_argument_picks_the_project\nFAILED tests/mcp/test_multi_server.py::test_an_unknown_project_is_a_tool_error_listing_the_names\nFAILED tests/mcp/test_multi_server.py::test_tool_errors_name_the_project_when_several_are_known\nFAILED tests/mcp/test_multi_server.py::test_project_set_active_persists_for_the_process\nFAILED tests/mcp/test_multi_server.py::test_a_single_project_router_is_the_old_toolbox\nFAILED tests/mcp/test_multi_server.py::test_one_server_with_no_project_and_a_workspace\nFAILED tests/mcp/test_multi_server.py::test_repeated_project_flags_and_a_relative_project_path\n7 failed, 174 passed in 12.03s\n"
+   },
+   "verdict": "caught"
+  },
+  "MM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/mcp/test_multi_server.py::test_one_server_with_no_project_and_a_workspace",
+     "tests/mcp/test_multi_server.py::test_project_set_active_persists_for_the_process"
+    ],
+    "summary": "2 failed, 179 passed in 12.10s",
+    "seconds": 12.4,
+    "tail": "1xtrtr0000gn/T/lattice-mp-mutant-MM3-o__eklyw/tests/mcp/test_server.py:94: in payload\n    return json.loads(resp[\"result\"][\"content\"][0][\"text\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py:346: in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py:345: in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x105dea510>\ns = '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2574/test_one_server_with_no_proj...this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: launch)'\nidx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_multi_server.py::test_project_set_active_persists_for_the_process\nFAILED tests/mcp/test_multi_server.py::test_one_server_with_no_project_and_a_workspace\n2 failed, 179 passed in 12.10s\n"
+   },
+   "verdict": "caught"
+  },
+  "MM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/mcp/test_multi_guard.py::test_an_explicit_project_without_a_spec_is_inert_but_owners_still_count",
+     "tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[cd",
+     "tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[cp",
+     "tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[echo",
+     "tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[git",
+     "tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[mv",
+     "tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[python3",
+     "tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[rm",
+     "tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[sed",
+     "tests/mcp/test_multi_guard.py::test_each_project_protects_its_own_spec[both]",
+     "tests/mcp/test_multi_guard.py::test_each_project_protects_its_own_spec[first]",
+     "tests/mcp/test_multi_guard.py::test_each_project_protects_its_own_spec[none]",
+     "tests/mcp/test_multi_guard.py::test_relative_and_dotdot_paths_resolve_to_the_owner",
+     "tests/mcp/test_multi_guard.py::test_symlink_aliases_resolve_to_the_real_owner",
+     "tests/mcp/test_multi_guard.py::test_the_hook_names_the_project_in_its_reason",
+     "tests/mcp/test_multi_guard.py::test_whole_tree_commands_name_the_cwd_project"
+    ],
+    "summary": "20 failed, 161 passed in 12.10s",
+    "seconds": 12.4,
+    "tail": "info ============================\nFAILED tests/mcp/test_multi_guard.py::test_each_project_protects_its_own_spec[none]\nFAILED tests/mcp/test_multi_guard.py::test_each_project_protects_its_own_spec[first]\nFAILED tests/mcp/test_multi_guard.py::test_each_project_protects_its_own_spec[both]\nFAILED tests/mcp/test_multi_guard.py::test_relative_and_dotdot_paths_resolve_to_the_owner\nFAILED tests/mcp/test_multi_guard.py::test_symlink_aliases_resolve_to_the_real_owner\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[echo x > spec.py]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[echo x >> ../b/spec.trace.json]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[sed -i s/a/b/ REQUIREMENTS.md]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[cp /tmp/x spec.py]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[mv spec.py /tmp/gone]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[rm -rf ../b]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[rm -rf .]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[git checkout -- spec.py]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[git reset --hard]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[git stash]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[python3 -c \"open('spec.py','w').write('x')\"]\nFAILED tests/mcp/test_multi_guard.py::test_bash_forms_with_no_explicit_project[cd ../b && tee spec.py < /dev/null]\nFAILED tests/mcp/test_multi_guard.py::test_whole_tree_commands_name_the_cwd_project\nFAILED tests/mcp/test_multi_guard.py::test_an_explicit_project_without_a_spec_is_inert_but_owners_still_count\nFAILED tests/mcp/test_multi_guard.py::test_the_hook_names_the_project_in_its_reason\n20 failed, 161 passed in 12.10s\n"
+   },
+   "verdict": "caught"
+  },
+  "MM5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/mcp/test_multi_server.py::test_workspace_impact_is_transitive_and_listed_only_with_a_workspace",
+     "tests/workspace/test_workspace.py::test_impact_follows_a_chain_and_survives_uses_cycles"
+    ],
+    "summary": "2 failed, 179 passed in 12.24s",
+    "seconds": 12.5,
+    "tail": "s_transitive_and_listed_only_with_a_workspace(shop, pair) -> None:\n        r, _a, lib = shop\n        assert \"workspace_impact\" in r.names()\n        out = r.call(\"workspace_impact\", {\"project\": \"lib\"})\n>       assert out[\"impacted\"] == [\"alpha\", \"beta\"] and out[\"project\"] == \"lib\"\nE       AssertionError: assert (['alpha'] == ['alpha', 'beta']\nE         \nE         Right contains one more item: 'beta'\nE         Use -v to get more diff)\n\ntests/mcp/test_multi_server.py:218: AssertionError\n_____________ test_impact_follows_a_chain_and_survives_uses_cycles _____________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2576/test_impact_follows_a_chain_an0')\n\n    def test_impact_follows_a_chain_and_survives_uses_cycles(tmp_path: Path) -> None:\n        text = \"\"\"[workspace]\n    name = \"chain\"\n    [[project]]\n    name = \"a\"\n    path = \"a\"\n    [[project]]\n    name = \"b\"\n    path = \"b\"\n    [[project]]\n    name = \"c\"\n    path = \"c\"\n    [[project]]\n    name = \"d\"\n    path = \"d\"\n    [[link]]\n    from = \"b\"\n    to = \"a\"\n    kind = \"depends_on\"\n    [[link]]\n    from = \"c\"\n    to = \"b\"\n    kind = \"uses\"\n    [[link]]\n    from = \"d\"\n    to = \"c\"\n    kind = \"uses\"\n    [[link]]\n    from = \"c\"\n    to = \"d\"\n    kind = \"uses\"\n    \"\"\"\n        w = ws.load(manifest(tmp_path, text, (\"a\", \"b\", \"c\", \"d\")))\n>       assert w.impact_of(\"a\") == [\"b\", \"c\", \"d\"], \"three hops, breadth first\"\nE       AssertionError: three hops, breadth first\nE       assert ['b'] == ['b', 'c', 'd']\nE         \nE         Right contains 2 more items, first extra item: 'c'\nE         Use -v to get more diff\n\ntests/workspace/test_workspace.py:133: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_multi_server.py::test_workspace_impact_is_transitive_and_listed_only_with_a_workspace\nFAILED tests/workspace/test_workspace.py::test_impact_follows_a_chain_and_survives_uses_cycles\n2 failed, 179 passed in 12.24s\n"
+   },
+   "verdict": "caught"
+  },
+  "MM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/workspace/test_studio_api.py::test_errors_are_listed_and_the_rest_still_answers[[[link]]\\nfrom",
+     "tests/workspace/test_workspace.py::test_cli_validate_rejects_each_error_class[depends_on_cycle]",
+     "tests/workspace/test_workspace.py::test_each_error_class_is_rejected_with_its_own_message[depends_on_cycle]",
+     "tests/workspace/test_workspace.py::test_the_cycle_message_names_the_cycle"
+    ],
+    "summary": "4 failed, 177 passed in 12.37s",
+    "seconds": 12.6,
+    "tail": "____\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2575/test_the_cycle_message_names_t0')\n\n    def test_the_cycle_message_names_the_cycle(tmp_path: Path) -> None:\n        w = ws.parse(manifest(tmp_path, ERRORS[\"depends_on_cycle\"]))\n>       msg = next(p.message for p in w.problems if p.code == \"depends_on_cycle\")\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       StopIteration\n\ntests/workspace/test_workspace.py:168: StopIteration\n_________ test_cli_validate_rejects_each_error_class[depends_on_cycle] _________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2575/test_cli_validate_rejects_each0')\ncode = 'depends_on_cycle'\n\n    @pytest.mark.parametrize(\"code\", sorted(ERRORS))\n    def test_cli_validate_rejects_each_error_class(tmp_path: Path, code: str) -> None:\n        manifest(tmp_path, ERRORS[code])\n        r = run_cli(tmp_path, \"validate\", \"--json\")\n>       assert r.returncode == 1\nE       assert 0 == 1\nE        +  where 0 = CompletedProcess(args=['/Users/vivekgade/Documents/lattice/.venv/bin/python', '-m', 'lattice.workspace', 'validate', '...   \"to\": \"web-app\",\\n   \"kind\": \"depends_on\",\\n   \"note\": \"\"\\n  }\\n ],\\n \"problems\": [],\\n \"ok\": true\\n}\\n', stderr='').returncode\n\ntests/workspace/test_workspace.py:277: AssertionError\n=========================== short test summary info ============================\nFAILED tests/workspace/test_studio_api.py::test_errors_are_listed_and_the_rest_still_answers[[[link]]\\nfrom = \"shared-auth\"\\nto = \"billing-api\"\\nkind = \"depends_on\"\\n-depends_on_cycle]\nFAILED tests/workspace/test_workspace.py::test_each_error_class_is_rejected_with_its_own_message[depends_on_cycle]\nFAILED tests/workspace/test_workspace.py::test_the_cycle_message_names_the_cycle\nFAILED tests/workspace/test_workspace.py::test_cli_validate_rejects_each_error_class[depends_on_cycle]\n4 failed, 177 passed in 12.37s\n"
+   },
+   "verdict": "caught"
+  },
+  "MM6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/mcp/test_multi_server.py::test_a_single_project_router_is_the_old_toolbox",
+     "tests/mcp/test_multi_server.py::test_a_single_project_server_lists_the_old_tools_first",
+     "tests/mcp/test_server.py::test_read_tools_round_trip"
+    ],
+    "summary": "3 failed, 178 passed in 12.24s",
+    "seconds": 12.5,
+    "tail": "l(8, \"model_get\", section=\"data_model\"),\n            ],\n        )\n        by = {o[\"id\"]: o for o in out}\n        for i in range(1, 9):\n            assert by[i][\"result\"][\"isError\"] is False, by[i]\n            assert by[i][\"result\"][\"structuredContent\"] == payload(by[i])\n        overview = payload(by[1])\n        assert overview[\"rule_count\"] >= 4 and overview[\"rules\"][0][\"id\"] == \"R1\"\n        assert \"markdown\" not in overview and \"views\" not in overview\n        assert {r[\"id\"] for r in payload(by[2])[\"data\"]} >= {\"R1\", \"R3\"}\n        rule = payload(by[3])\n        assert rule[\"id\"] == \"R3\" and rule[\"status\"] and \"text\" in rule\n        assert rule[\"questions\"] == [\"Q1\"] and rule[\"question_details\"][0][\"id\"] == \"Q1\"\n        assert isinstance(payload(by[4])[\"findings\"], list)\n        cl = payload(by[5])\n        assert cl[\"source\"] == \"trace+grep\" and cl[\"target\"] == \"rule:R3\"\n        assert any(x[\"path\"] == \"notes_routes.py\" and x[\"line_from\"] == 4 for x in cl[\"links\"]), cl\n        g = payload(by[6])\n        assert g[\"focus\"] == \"rule:R3\" and {n[\"id\"] for n in g[\"nodes\"]} >= {\"rule:R3\"}\n        assert all(e[\"source\"] in {n[\"id\"] for n in g[\"nodes\"]} for e in g[\"edges\"])\n>       assert payload(by[7]) == {\"count\": 0, \"changes\": []}\nE       AssertionError: assert {'project': '...'changes': []} == {'count': 0, 'changes': []}\nE         \nE         Omitting 2 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'project': 'p'}\nE         Use -v to get more diff\n\n/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-mp-mutant-MM6-ojy7wiyk/tests/mcp/test_server.py:196: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_multi_server.py::test_a_single_project_router_is_the_old_toolbox\nFAILED tests/mcp/test_multi_server.py::test_a_single_project_server_lists_the_old_tools_first\nFAILED tests/mcp/test_server.py::test_read_tools_round_trip - AssertionError:...\n3 failed, 178 passed in 12.24s\n"
+   },
+   "verdict": "caught"
+  }
+ }
+}

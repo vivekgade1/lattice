@@ -1,0 +1,83 @@
+
+== Drill A: killed mid agent round: PASS (3.5 s)
+  [ok] an agent was running when the server was killed  (pid 44320)
+  [ok] the agent outlived its server (a real crash)
+  [ok] plan is interrupted with reason studio_restarted  (status=interrupted reason=studio_restarted)
+  [ok] the orphaned process was terminated  (pid 44320)
+  [ok] resume is available  ({"available": true, "kind": "continue", "from_level": 1, "will_skip": ["scaffold"], "will_run": ["writing", "reading", "tokens", "integration"]})
+  [ok] the node that was running is interrupted, passed nodes kept  (reading=interrupted passed=['scaffold'])
+  [ok] POST run accepted  (200 {'id': 'p1', 'status': 'running'})
+  [ok] plan ends passed  (status=passed error=None)
+  [ok] no completed agent round ran again  (re-run: none)
+  [ok] the owner's branch never moved
+  [ok] the interrupted node was continued (attempts 2), not restarted from scratch  (attempts=2)
+  [ok] no process of the project is left  (pids [])
+      completed_before_kill: ["scaffold#1"]
+      passed_at_kill: ["scaffold"]
+      resume: {"available": true, "kind": "continue", "from_level": 1, "will_skip": ["scaffold"], "will_run": ["writing", "reading", "tokens", "integration"]}
+      agent_runs: {"reading#1": 2, "scaffold#1": 1, "writing#1": 2}
+      runs: 2
+      wall_s: 2.67
+      levels: [[0, "passed"], [1, "interrupted"], [1, "passed"], [2, "passed"], [3, "passed"]]
+
+== Drill B: killed mid level gate: PASS (3.4 s)
+  [ok] a level gate was running when the server was killed  (waiting on the gate's announcement)
+  [ok] the gate outlived its server  (pid 44593)
+  [ok] plan is interrupted with reason studio_restarted  (status=interrupted reason=studio_restarted)
+  [ok] the orphaned process was terminated  (pid 44593)
+  [ok] resume is available  ({"available": true, "kind": "continue", "from_level": 1, "will_skip": ["scaffold"], "will_run": ["writing", "reading", "tokens", "integration"]})
+  [ok] the level run that was gating is interrupted  ([(0, 'interrupted')])
+  [ok] POST run accepted  (200 {'id': 'p1', 'status': 'running'})
+  [ok] plan ends passed  (status=passed error=None)
+  [ok] no completed agent round ran again  (re-run: none)
+  [ok] the owner's branch never moved
+  [ok] no process of the project is left  (pids [])
+      completed_before_kill: ["scaffold#1"]
+      resume: {"available": true, "kind": "continue", "from_level": 1, "will_skip": ["scaffold"], "will_run": ["writing", "reading", "tokens", "integration"]}
+      agent_runs: {"reading#1": 1, "scaffold#1": 1, "writing#1": 1}
+      runs: 2
+      wall_s: 2.63
+      levels: [[0, "interrupted"], [1, "passed"], [2, "passed"], [3, "passed"]]
+
+== Drill C: killed mid repair round: PASS (2.6 s)
+  [ok] a repair round was running when the server was killed  (pid 44950)
+  [ok] plan is interrupted with reason studio_restarted  (status=interrupted reason=studio_restarted)
+  [ok] the orphaned process was terminated  (pid 44950)
+  [ok] resume is available  ({"available": true, "kind": "repair", "from_level": 0, "will_skip": [], "will_run": ["w-clash", "r-clash", "integration"]})
+  [ok] the repair state was kept (level not discarded)  ([{"level": 0, "status": "failed", "repair_pending": true, "repair_resume": null}])
+  [ok] POST run accepted  (200 {'id': 'p1', 'status': 'running'})
+  [ok] plan ends passed  (status=passed error=None)
+  [ok] no completed agent round ran again  (re-run: none)
+  [ok] the owner's branch never moved
+  [ok] no process of the project is left  (pids [])
+      completed_before_kill: ["r-clash#1", "r-clash#2", "w-clash#1"]
+      node_status_at_kill: {"w-clash": "repairing", "r-clash": "repairing", "integration": "pending"}
+      level_runs_at_kill: [{"level": 0, "status": "failed"}]
+      resume: {"available": true, "kind": "repair", "from_level": 0, "will_skip": [], "will_run": ["w-clash", "r-clash", "integration"]}
+      node_status_after_restart: {"w-clash": "interrupted", "r-clash": "interrupted", "integration": "pending"}
+      level_runs_after_restart: [{"level": 0, "status": "failed"}]
+      agent_runs: {"r-clash#1": 1, "r-clash#2": 1, "r-clash#3": 1, "w-clash#1": 1, "w-clash#2": 2}
+      runs: 2
+      wall_s: 1.77
+      levels: [[0, "failed"], [0, "passed"], [1, "passed"]]
+
+== Drill F: fake claude killed mid turn, session resumed: PASS (2.5 s)
+  [ok] the second node's turn was held mid-way and its session id already recorded  (calls=2 session=sess-fake-1)
+  [ok] the first node had passed  ({'writing': 'passed', 'reading': 'running', 'integration': 'pending'})
+  [ok] plan is interrupted with reason studio_restarted  (status=interrupted reason=studio_restarted)
+  [ok] the orphaned process was terminated  (pid 45302)
+  [ok] resume is available  ({"available": true, "kind": "continue", "from_level": 1, "will_skip": ["writing"], "will_run": ["reading", "integration"]})
+  [ok] POST run accepted  (200 {'id': 'p1', 'status': 'running'})
+  [ok] plan ends passed  (status=passed None)
+  [ok] exactly three agent calls: writing, reading (killed), reading resumed  (3 calls)
+  [ok] the third call resumed the killed turn's session  (['/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-drill-j1qx6av8/F/bin/claude', '-p', '--output-format', 'stream-json'])
+  [ok] and told the agent it was interrupted  (Studio was restarted while you were working, which ended your previous turn. You)
+  [ok] the first node was never called again
+  [ok] the timeline says the session was resumed  (['started (plan p1, node reading, attempt 1)', 'interrupted: Studio restarted while it ran (1 orphan process group(s) terminated)', 'continued from round 1 (session resumed), attempt 2', 'passed'])
+  [ok] the owner's branch never moved
+  [ok] no process of the project is left  (pids [])
+      resume: {"available": true, "kind": "continue", "from_level": 1, "will_skip": ["writing"], "will_run": ["reading", "integration"]}
+      claude_calls: [{"n": 1, "resume": null, "prompt": "# Build brief\n\nThe project's spec lives in the repository ro"}, {"n": 2, "resume": null, "prompt": "# Build brief\n\nThe project's spec lives in the repository ro"}, {"n": 3, "resume": "sess-fake-1", "prompt": "Studio was restarted while you were working, which ended you"}]
+
+report: /var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-drill-j1qx6av8/report.json
+exit=0

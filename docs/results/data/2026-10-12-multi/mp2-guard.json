@@ -1,0 +1,334 @@
+{
+ "both --project": {
+  "rows": [
+   {
+    "case": 1,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/Users/vivekgade/Documents/streak/spec.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "streak",
+    "decision": "deny",
+    "reason": "Blocked: spec.py of project streak (/Users/vivekgade/Documents/streak) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/streak\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 2,
+    "event": {
+     "tool_name": "Bash",
+     "tool_input": {
+      "command": "echo x > /Users/vivekgade/Documents/streak/spec.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "streak",
+    "decision": "deny",
+    "reason": "Blocked: spec.py of project streak (/Users/vivekgade/Documents/streak) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/streak\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 3,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio/spec.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "lattice-studio",
+    "decision": "deny",
+    "reason": "Blocked: spec.py of project lattice-studio (/Users/vivekgade/Documents/lattice-npm/dogfood/studio) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/lattice-npm/dogfood/studio\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 4,
+    "event": {
+     "tool_name": "Bash",
+     "tool_input": {
+      "command": "echo x >> spec.trace.json"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "lattice-studio",
+    "decision": "deny",
+    "reason": "Blocked: spec.trace.json of project lattice-studio (/Users/vivekgade/Documents/lattice-npm/dogfood/studio) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/lattice-npm/dogfood/studio\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 5,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/Users/vivekgade/Documents/streak/harness.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "allow",
+    "decision": "allow",
+    "reason": "",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 6,
+    "event": {
+     "tool_name": "Bash",
+     "tool_input": {
+      "command": "echo x > harness.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "allow",
+    "decision": "allow",
+    "reason": "",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 7,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/nospec/spec.py"
+     },
+     "cwd": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/nospec",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "allow",
+    "decision": "allow",
+    "reason": "",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 8,
+    "event": {
+     "tool_name": "Bash",
+     "tool_input": {
+      "command": "echo x > spec.py"
+     },
+     "cwd": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/nospec",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "allow",
+    "decision": "allow",
+    "reason": "",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 9,
+    "event": {
+     "tool_name": "Write",
+     "tool_input": {
+      "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/c/alias.py"
+     },
+     "cwd": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/c",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "streak",
+    "decision": "deny",
+    "reason": "Blocked: spec.py of project streak (/Users/vivekgade/Documents/streak) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/streak\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 10,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/c/dalias/spec.trace.json"
+     },
+     "cwd": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/c",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "lattice-studio",
+    "decision": "deny",
+    "reason": "Blocked: spec.trace.json of project lattice-studio (/Users/vivekgade/Documents/lattice-npm/dogfood/studio) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/lattice-npm/dogfood/studio\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   }
+  ],
+  "passed": 10,
+  "of": 10
+ },
+ "no --project": {
+  "rows": [
+   {
+    "case": 1,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/Users/vivekgade/Documents/streak/spec.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "streak",
+    "decision": "deny",
+    "reason": "Blocked: spec.py of project streak (/Users/vivekgade/Documents/streak) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/streak\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 2,
+    "event": {
+     "tool_name": "Bash",
+     "tool_input": {
+      "command": "echo x > /Users/vivekgade/Documents/streak/spec.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "streak",
+    "decision": "deny",
+    "reason": "Blocked: spec.py of project streak (/Users/vivekgade/Documents/streak) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/streak\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 3,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio/spec.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "lattice-studio",
+    "decision": "deny",
+    "reason": "Blocked: spec.py of project lattice-studio (/Users/vivekgade/Documents/lattice-npm/dogfood/studio) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/lattice-npm/dogfood/studio\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 4,
+    "event": {
+     "tool_name": "Bash",
+     "tool_input": {
+      "command": "echo x >> spec.trace.json"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "lattice-studio",
+    "decision": "deny",
+    "reason": "Blocked: spec.trace.json of project lattice-studio (/Users/vivekgade/Documents/lattice-npm/dogfood/studio) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/lattice-npm/dogfood/studio\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 5,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/Users/vivekgade/Documents/streak/harness.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "allow",
+    "decision": "allow",
+    "reason": "",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 6,
+    "event": {
+     "tool_name": "Bash",
+     "tool_input": {
+      "command": "echo x > harness.py"
+     },
+     "cwd": "/Users/vivekgade/Documents/lattice-npm/dogfood/studio",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "allow",
+    "decision": "allow",
+    "reason": "",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 7,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/nospec/spec.py"
+     },
+     "cwd": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/nospec",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "allow",
+    "decision": "allow",
+    "reason": "",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 8,
+    "event": {
+     "tool_name": "Bash",
+     "tool_input": {
+      "command": "echo x > spec.py"
+     },
+     "cwd": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/nospec",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "allow",
+    "decision": "allow",
+    "reason": "",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 9,
+    "event": {
+     "tool_name": "Write",
+     "tool_input": {
+      "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/c/alias.py"
+     },
+     "cwd": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/c",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "streak",
+    "decision": "deny",
+    "reason": "Blocked: spec.py of project streak (/Users/vivekgade/Documents/streak) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/streak\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   },
+   {
+    "case": 10,
+    "event": {
+     "tool_name": "Edit",
+     "tool_input": {
+      "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/c/dalias/spec.trace.json"
+     },
+     "cwd": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp/mp2/c",
+     "hook_event_name": "PreToolUse"
+    },
+    "expected": "lattice-studio",
+    "decision": "deny",
+    "reason": "Blocked: spec.trace.json of project lattice-studio (/Users/vivekgade/Documents/lattice-npm/dogfood/studio) is a Lattice spec file that Studio owns, and nothing changes in it without a checked change set. Do not edit it directly (not with Edit/Write and not from the shell). Call the Lattice MCP tool change_propose with {request: <the change in plain words>, selected: [<targets>], project: \"/Users/vivekgade/Documents/lattice-npm/dogfood/studio\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.",
+    "exit": 0,
+    "ok": true
+   }
+  ],
+  "passed": 10,
+  "of": 10
+ }
+}

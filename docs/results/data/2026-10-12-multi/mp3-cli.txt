@@ -1,0 +1,22 @@
+## validate
+/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/4a12ca95-cf29-48df-94c4-af809da90b17/scratchpad/mp3/lattice.workspace.toml: ok (3 project(s), 3 link(s))
+exit=0
+## impact shared-auth
+{
+ "workspace": "mp3",
+ "project": "shared-auth",
+ "impacted": [
+  "web-app",
+  "billing-api"
+ ],
+ "problems": []
+}
+exit=0
+## impact web-app
+{
+ "workspace": "mp3",
+ "project": "web-app",
+ "impacted": [],
+ "problems": []
+}
+exit=0

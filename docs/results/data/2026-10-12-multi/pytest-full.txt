@@ -1,0 +1,130 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 20%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 35%]
+....................................s................................... [ 40%]
+........................................................................ [ 46%]
+........................................................................ [ 51%]
+........................................................................ [ 56%]
+.................................................ss..................... [ 61%]
+....................................s................................... [ 66%]
+............................................................s........... [ 71%]
+........................................................................ [ 76%]
+........................................................................ [ 81%]
+........................................................................ [ 87%]
+........................................................................ [ 92%]
+........................................................................ [ 97%]
+.....................................                                    [100%]
+=============================== warnings summary ===============================
+bench/import_repos/multivendor/app/core/config.py:5
+  /Users/vivekgade/Documents/lattice-npm/bench/import_repos/multivendor/app/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_multivendor_spec.py: 30 warnings
+tests/spec/test_phase0_exit.py: 26 warnings
+tests/spec/test_probes.py: 76 warnings
+  /Users/vivekgade/Documents/lattice-npm/bench/import_repos/multivendor/app/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_multivendor_spec.py: 3 warnings
+tests/spec/test_phase0_exit.py: 14 warnings
+tests/spec/test_probes.py: 45 warnings
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/pydantic/_internal/_fields.py:727: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return fac()
+
+tests/spec/test_phase0_exit.py: 10 warnings
+tests/spec/test_probes.py: 14 warnings
+  /Users/vivekgade/Documents/lattice-npm/bench/edit_slice/repos/multivendor.py:91: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    exp = datetime.utcnow() + timedelta(days=36500)
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_mutant_is_refuted_by_th0/mv_mutant_drop_owner_filter/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_mutant_is_refuted_by_th0/mv_mutant_drop_owner_filter/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_mutant_is_refuted_by_th1/mv_mutant_remove_bound/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_mutant_is_refuted_by_th1/mv_mutant_remove_bound/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_mutant_is_refuted_by_th2/mv_mutant_swallow_unique_check/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_mutant_is_refuted_by_th2/mv_mutant_swallow_unique_check/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_mutant_is_refuted_by_th3/mv_mutant_widen_role/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_mutant_is_refuted_by_th3/mv_mutant_widen_role/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_refuted_item_proposes_t0/mv_mutant_widen_role_obs/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_a_refuted_item_proposes_t0/mv_mutant_widen_role_obs/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_layer_r_runs_with_the_oth0/mv_mutant_remove_bound_c/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2578/test_layer_r_runs_with_the_oth0/mv_mutant_remove_bound_c/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1400 passed, 5 skipped, 267 warnings in 430.33s (0:07:10)
+uv run pytest tests/workspace tests/improve tests/security tests/modules       170.98s user 65.74s system 54% cpu 7:12.94 total
+exit=0
