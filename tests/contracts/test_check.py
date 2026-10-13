@@ -482,18 +482,14 @@ def test_text_output(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None
 # ---- live ------------------------------------------------------------------------------------
 
 
-def test_the_live_stub_raises_not_built() -> None:
-    with pytest.raises(NotImplementedError, match="live check not built"):
-        live.run_live(None, None, [], {})  # type: ignore[arg-type]
-
-
-def test_live_link_reports_not_built_cleanly(tmp_path: Path) -> None:
+def test_live_link_without_a_harness_is_an_error_not_a_crash(tmp_path: Path) -> None:
+    # the provider declares no app/db/login (and has no studio.toml): the live check cannot
+    # start anything, which is a cannot-run (exit 2), never a clean pass
     w = pinned_world(tmp_path, contract="live")
     rc, out = w.check()
     link = link_of(out)
-    assert rc == 0 and link["status"] == "ok" and link["contract"] == "live"
-    assert link["live"] == {"status": "not_built", "reason": "live check not built"}
-    assert link["findings"] == [] and link["gaps"] == []
+    assert rc == 2 and link["contract"] == "live"
+    assert link["error"]["code"] == "no_harness"
 
 
 def test_static_only_skips_live(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
