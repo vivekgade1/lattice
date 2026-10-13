@@ -8,8 +8,18 @@ Wire it in ``.claude/settings.json``::
                    "command": "python -m lattice.mcp.guard --project /path/to/project"}]}]}}
 
 It reads the hook's JSON from stdin (``tool_name``, ``tool_input``, ``cwd``, ...). The
-protected files are the project's ``REQUIREMENTS.md``, ``spec.py`` and ``spec.trace.json``
+protected files are a project's ``REQUIREMENTS.md``, ``spec.py`` and ``spec.trace.json``
 (plus names under ``[mcp] protected = [...]`` in ``studio.toml``, relative to the project).
+
+**Many projects** (layer 1 of the multi-project phase): ``--project`` is optional and may be
+repeated. Each ``--project`` that has a drafted spec is protected as before; on top of that,
+every path the hook sees is checked against its *owning* project: the nearest directory holding
+``spec.trace.json``, walking up from the path's real location (the walk stops at the
+filesystem root, or at a directory holding ``.git`` that has no ``spec.trace.json``: a project
+never owns files outside its repository). A path with no owning project is allowed. Commands
+that name no path (an interpreter one-liner, ``git reset --hard``, a bare ``git stash``) are
+checked against the explicit projects and the project owning the command's working directory.
+The deny reason names the project (its ``[project] name`` and directory).
 
 Output format (Claude Code hooks):
 
@@ -60,13 +70,20 @@ _WRITE_WORDS = re.compile(
 )
 
 
-def _reason(name: str) -> str:
+def _reason(name: str, project: Path | None = None) -> str:
+    where = ""
+    pick = ""
+    if project is not None:
+        from lattice.cli import project_name
+
+        where = f" of project {project_name(project)} ({project})"
+        pick = f', project: "{project}"'
     return (
-        f"Blocked: {name} is a Lattice spec file that Studio owns, and nothing changes in it "
-        "without a checked change set. Do not edit it directly (not with Edit/Write and not "
+        f"Blocked: {name}{where} is a Lattice spec file that Studio owns, and nothing changes in "
+        "it without a checked change set. Do not edit it directly (not with Edit/Write and not "
         "from the shell). Call the Lattice MCP tool change_propose with {request: <the "
-        "change in plain words>, selected: [<targets>]}, poll change_get until it is ready, "
-        "and tell the owner to review and accept it in Lattice Studio."
+        f"change in plain words>, selected: [<targets>]{pick}}}, poll change_get until it is "
+        "ready, and tell the owner to review and accept it in Lattice Studio."
     )
 
 
@@ -83,6 +100,11 @@ class Guard:
         self.names = list(dict.fromkeys(names))
         self.protected = [self._real(self.project / n) for n in self.names]
         self._fold = sys.platform == "darwin"
+        self.last_project: Path | None = None  # the project of the last protected hit
+
+    def _cwd_guards(self, cwd: str) -> list[Guard]:
+        """The guards that apply to a command naming no path, run in `cwd`."""
+        return [self]
 
     @staticmethod
     def _real(p: str | Path) -> str:
@@ -102,9 +124,11 @@ class Guard:
         k = self._key(resolved)
         for name, p in zip(self.names, self.protected, strict=True):
             if k == self._key(p):
+                self.last_project = self.project
                 return name
             try:
                 if os.path.exists(resolved) and os.path.samefile(resolved, p):
+                    self.last_project = self.project
                     return name
             except OSError:
                 pass
@@ -117,6 +141,7 @@ class Guard:
         base = self._key(resolved.rstrip(os.sep)) + os.sep
         for name, p in zip(self.names, self.protected, strict=True):
             if self._key(p).startswith(base):
+                self.last_project = self.project
                 return name
         return None
 
@@ -234,9 +259,11 @@ class Guard:
         if cmd in _INTERP or re.fullmatch(r"python[\d.]+", cmd):
             blob = " ".join(args)
             if _WRITE_WORDS.search(blob):
-                for name in self.names:
-                    if os.path.basename(name) in blob:
-                        return name
+                for g in self._cwd_guards(cwd):
+                    for name in g.names:
+                        if os.path.basename(name) in blob:
+                            self.last_project = g.project
+                            return name
         return None
 
     def _git(self, args: list[str], cwd: str) -> str | None:
@@ -254,7 +281,7 @@ class Guard:
             hit = self._first_hit(rest, cwd, dirs=sub in ("checkout", "restore", "clean"))
             return hit
         if sub == "reset" and "--hard" in rest:
-            return self.names[0]
+            return self._cwd_hit(cwd)
         if sub == "stash":
             verb = rest[0] if rest else "push"
             if verb in ("list", "show", "branch"):
@@ -265,7 +292,15 @@ class Guard:
                 if hit:
                     return hit
                 if not [a for a in rest if not a.startswith("-") and a not in ("push", "save")]:
-                    return self.names[0]  # a bare stash sweeps every tracked change
+                    return self._cwd_hit(cwd)  # a bare stash sweeps every tracked change
+        return None
+
+    def _cwd_hit(self, cwd: str) -> str | None:
+        """The first protected name of the guards that apply in `cwd` (a whole-tree command)."""
+        for g in self._cwd_guards(cwd):
+            if g.names:
+                self.last_project = g.project
+                return g.names[0]
         return None
 
     # -- the hook
@@ -286,6 +321,81 @@ class Guard:
         return None
 
 
+TRACE_FILE = "spec.trace.json"
+
+
+def owner_of(path: str | Path) -> Path | None:
+    """The project owning `path` (already a real path): the nearest directory holding
+    ``spec.trace.json``, walking up from the path (a directory counts itself). The walk stops at
+    the filesystem root, or at a directory holding ``.git`` without ``spec.trace.json``."""
+    p = Path(path)
+    try:
+        start = p if p.is_dir() else p.parent
+    except OSError:
+        start = p.parent
+    for d in (start, *start.parents):
+        try:
+            if (d / TRACE_FILE).is_file():
+                return d
+            if (d / ".git").exists():
+                return None
+        except OSError:
+            return None
+    return None
+
+
+class MultiGuard(Guard):
+    """The guard over many projects: the explicit ones (as :class:`Guard` each, when they have a
+    drafted spec) plus, for every path, the project owning it (:func:`owner_of`)."""
+
+    def __init__(self, projects: Sequence[Path] = ()) -> None:
+        self.static: list[Guard] = []
+        for p in projects:
+            if is_lattice_project(p) and all(g.project != p.resolve() for g in self.static):
+                self.static.append(Guard(p))
+        self._owners: dict[str, Guard | None] = {}
+        self._fold = sys.platform == "darwin"
+        self.last_project: Path | None = None
+        self.names = [n for g in self.static for n in g.names]  # informational only
+        self.project = self.static[0].project if self.static else Path(os.sep)
+
+    def _owner_guard(self, resolved: str) -> Guard | None:
+        own = owner_of(resolved)
+        if own is None:
+            return None
+        key = str(own)
+        if key not in self._owners:
+            same = next((g for g in self.static if g.project == own.resolve()), None)
+            self._owners[key] = same or Guard(own)
+        return self._owners[key]
+
+    def _guards_for(self, resolved: str) -> list[Guard]:
+        out = list(self.static)
+        g = self._owner_guard(resolved)
+        if g is not None and g not in out:
+            out.append(g)
+        return out
+
+    def _cwd_guards(self, cwd: str) -> list[Guard]:
+        return self._guards_for(self._real(cwd))
+
+    def protected_name(self, resolved: str) -> str | None:
+        for g in self._guards_for(resolved):
+            name = g.protected_name(resolved)
+            if name:
+                self.last_project = g.project
+                return name
+        return None
+
+    def holds_protected(self, resolved: str) -> str | None:
+        for g in self._guards_for(resolved):
+            name = g.holds_protected(resolved)
+            if name:
+                self.last_project = g.project
+                return name
+        return None
+
+
 def is_lattice_project(project: Path) -> bool:
     """A project is guarded only once it has a drafted spec (spec.py and spec.trace.json).
 
@@ -298,7 +408,14 @@ def is_lattice_project(project: Path) -> bool:
 
 def main(argv: Sequence[str] | None = None, stdin: Any = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m lattice.mcp.guard", description=__doc__)
-    ap.add_argument("--project", type=Path, required=True)
+    ap.add_argument(
+        "--project",
+        type=Path,
+        action="append",
+        default=[],
+        help="a project to protect (repeatable; optional: every path is also checked against "
+        "the nearest project holding spec.trace.json)",
+    )
     ap.add_argument("--mode", choices=("json", "exit2"), default="json")
     ns = ap.parse_args(list(sys.argv[1:] if argv is None else argv))
     try:
@@ -308,12 +425,11 @@ def main(argv: Sequence[str] | None = None, stdin: Any = None) -> int:
     except (ValueError, OSError) as e:
         print(f"lattice guard: unreadable hook input: {e}", file=sys.stderr)
         return 1
-    if not is_lattice_project(ns.project):
-        return 0  # a directory with no spec yet (or not a Lattice project): nothing to guard
-    hit = Guard(ns.project).decide(event)
+    g = MultiGuard(ns.project)
+    hit = g.decide(event)
     if hit is None:
-        return 0
-    reason = _reason(hit)
+        return 0  # nothing protected is written (no project owns the paths, or no spec file)
+    reason = _reason(hit, g.last_project)
     if ns.mode == "exit2":
         print(reason, file=sys.stderr)
         return 2

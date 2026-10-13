@@ -6,7 +6,9 @@
 // shift adds), double-click or Enter on a selected element opens its own view. The first
 // view is drawn at a readable size, top-left, and pans; "Fit all" is one click away.
 // A List switch shows the same elements as a table. Without /api/graph (the real server)
-// or when the bundle cannot load, the original tile Map is drawn instead.
+// or when the bundle cannot load, the original tile Map is drawn instead. With a workspace
+// (GET /api/workspace, API v1.16) a Workspace switch draws its projects as nodes and its
+// declared links as edges (no /api/graph needed); double-click opens a project Studio serves.
 
 import { h, icon, add, plural } from "../util.js";
 import { state, update, subscribe } from "../store.js";
@@ -99,11 +101,13 @@ export function render(model, root, ctx) {
   let ctl = null;
   let token = 0;
 
+  if (S.mode === "workspace" && !state.workspace) S.mode = "graph";
+  const modes = [["graph", "Graph"], ["list", "List"], ...(state.workspace ? [["workspace", "Workspace"]] : [])];
   const switchEl = h("div", { class: "seg gr-switch", role: "group", "aria-label": "Map view" },
-    [["graph", "Graph"], ["list", "List"]].map(([id, label]) =>
+    modes.map(([id, label]) =>
       h("button", {
         type: "button", class: "seg-btn", "data-mode": id, "aria-pressed": S.mode === id ? "true" : "false",
-        onclick: () => { S.mode = id; persist(); paint(); },
+        onclick: () => { S.mode = id; persist(); if (id !== "workspace" && !data) load(); else paint(); },
       }, label)));
   const head = h("header", { class: "view-head map-head" },
     h("div", {},
@@ -130,6 +134,7 @@ export function render(model, root, ctx) {
   // ---- data
 
   async function load() {
+    if (S.mode === "workspace") return paint(); // the workspace level needs no /api/graph
     const mine = ++token;
     refocus = focusKey() || refocus;
     ctl?.destroy();
@@ -165,6 +170,50 @@ export function render(model, root, ctx) {
       ? "The graph needs the mock server (the real server has no graph yet). Here is the tile map."
       : `The graph could not be drawn (${err?.message || "unknown error"}). Here is the tile map.`;
     renderTiles(state.model || model, root, ctx, { note });
+    if (state.workspace) {
+      // v1.16: the workspace level draws without /api/graph, so it stays one click away
+      root.prepend(h("p", {}, h("button", {
+        type: "button", class: "btn btn-quiet", "data-ctl": "workspace-map",
+        onclick: () => { S.mode = "workspace"; root.replaceChildren(); render(state.model || model, root, ctx); },
+      }, "Workspace map")));
+    }
+  }
+
+  /** The workspace level: the manifest's projects as nodes, its declared links as edges. */
+  function paintWorkspace() {
+    ctl?.destroy();
+    ctl = null;
+    for (const b of switchEl.children) b.setAttribute("aria-pressed", String(b.dataset.mode === S.mode));
+    const ws = state.workspace;
+    const projects = ws.projects || [];
+    const byName = new Map(projects.map((p) => [p.name, p]));
+    const links = (ws.links || []).filter((l) => byName.has(l.from) && byName.has(l.to) && l.from !== l.to);
+    const status = h("p", { class: "gr-status", role: "status", "aria-live": "polite" },
+      `Workspace ${ws.workspace.name}: ${plural(projects.length, "project")}, ${plural(links.length, "link")}. `
+      + "A line runs from a project to the one it relies on (solid: depends on; dashed: uses). Double-click a project this Studio serves to open it.");
+    const problems = (ws.problems || []).map((p) => h("li", {}, `${p.severity}: ${p.message}`));
+    const canvas = h("div", { class: "gr-canvas is-map", "data-view": "map-workspace" });
+    body.replaceChildren(status, problems.length ? h("ul", { class: "gr-note muted small" }, problems) : null,
+      h("div", { class: "gr-stage" }, canvas));
+    sizeCanvas(canvas);
+    ctl = mountGraph(canvas, {
+      nodes: projects.map((p) => ({
+        id: `project:${p.name}`, kind: "project", label: p.name, badges: [], target: `project:${p.name}`,
+        sub: [p.role, p.in_hub ? null : "not in this Studio", p.spec ? null : "no spec"].filter(Boolean).join(" · "),
+      })),
+      edges: links.map((l, i) => ({
+        id: `wl${i}`, source: `project:${l.from}`, target: `project:${l.to}`, kind: l.kind,
+        label: l.note ? `${l.kind}: ${l.note}` : l.kind, state: l.kind === "uses" ? "dashed" : undefined,
+      })),
+      layout: "dagre",
+      selected: [],
+      marked: [],
+      label: `Workspace ${ws.workspace.name}: projects and their links`,
+      onOpen: (id) => {
+        const p = byName.get(id.slice("project:".length));
+        if (p?.in_hub && p.hub_name) location.hash = `#project=${encodeURIComponent(p.hub_name)}&view=map`;
+      },
+    });
   }
 
   // ---- what is drawn
@@ -229,6 +278,7 @@ export function render(model, root, ctx) {
   // ---- paint
 
   function paint() {
+    if (S.mode === "workspace") return paintWorkspace();
     const keep = focusKey() || refocus;
     refocus = null;
     ctl?.destroy();

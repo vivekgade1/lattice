@@ -1,6 +1,7 @@
-"""``python -m lattice.mcp serve --project DIR [--readonly] [--studio-url URL] [--model M]``
-and ``python -m lattice.mcp guard --project DIR`` (the same as ``python -m
-lattice.mcp.guard``)."""
+"""``python -m lattice.mcp serve [--project DIR ...] [--workspace PATH] [--readonly]
+[--studio-url URL] [--model M]`` and ``python -m lattice.mcp guard [--project DIR ...]`` (the
+same as ``python -m lattice.mcp.guard``). With no ``--project`` the server runs on the launch
+directory and the projects it discovers (lattice/mcp/projects.py)."""
 
 from __future__ import annotations
 
@@ -19,7 +20,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m lattice.mcp", description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sv = sub.add_parser("serve", help="run the stdio MCP server")
-    sv.add_argument("--project", type=Path, required=True)
+    sv.add_argument(
+        "--project",
+        type=Path,
+        action="append",
+        default=[],
+        help="a project directory (repeatable; the first is the default project). None: the "
+        "launch directory, plus the projects Studio's discovery finds from it",
+    )
+    sv.add_argument(
+        "--workspace",
+        default=None,
+        help="a lattice.workspace.toml (or its directory); default: $LATTICE_WORKSPACE, else "
+        "the first one walking up from the launch directory",
+    )
     sv.add_argument("--readonly", action="store_true", help="hide change_propose and check_run")
     sv.add_argument("--model", default=None, help="the LLM (default: studio.toml, else sonnet)")
     sv.add_argument(
@@ -32,7 +46,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     ns = ap.parse_args(args)
     from lattice.mcp.server import serve
 
-    return serve(ns.project, readonly=ns.readonly, model=ns.model, studio_url=ns.studio_url)
+    return serve(
+        ns.project,
+        readonly=ns.readonly,
+        model=ns.model,
+        studio_url=ns.studio_url,
+        workspace=ns.workspace,
+    )
 
 
 if __name__ == "__main__":

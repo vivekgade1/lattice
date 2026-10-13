@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.15)
+# Lattice Studio API contract (v1.16)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -850,3 +850,34 @@ None in this version: the proposals are API, CLI and mock only.
 
 ### The mock
 `GET /api/improve` answers the real shape, ranked by `lattice.improve.analyze` itself from a fixture log (five regression level gates whose layer X took ~120 s, a full level gate, a start baseline that re-ran that gate's commit, a node that gave up on an unsatisfiable check, an owner's resume) and a fixture ledger closing the unsatisfiable-check cause and the full level gates: the X proposal comes first with its `expected` saving, and the layer A/B proposals are `needs_owner`. No write route.
+
+## v1.16 additions (workspace manifest, multi-project layer 2)
+
+Several Lattice projects can be grouped in a workspace and declare how they relate. Code: `lattice/workspace.py` (the manifest, its problems, `impact_of`), `lattice/studio/hub.py` (`StudioHub.workspace`, discovery), `lattice/mcp/projects.py` (the MCP server's side). Design: `docs/design/lattice-multi-project-phase.md` (layers 1 and 2; contracts between projects, layer 3, are not built). Evidence: `docs/results/2026-10-12-multi-results.md`.
+
+### The manifest
+`lattice.workspace.toml`: `[workspace] name`; `[[project]] name` (unique, `[a-z0-9._-]+`), `path` (relative to the manifest, or absolute), optional `role` (`provider`, `consumer`, `library`, `app`); `[[link]] from`, `to` (project names), `kind` (`uses` or `depends_on`), optional `note`. A link `from -> to` says *from* relies on *to*. Problems, each `{code, severity, message}`: errors `unknown_project` (a link end that is not declared), `duplicate_name`, `self_link`, `depends_on_cycle` (a cycle of `depends_on` links; `uses` links may form cycles), `bad_name`, `bad_role`, `bad_kind`, `missing_field`, `bad_type`, `unreadable` (the file cannot be read or is not TOML); the warning `missing_path` (a declared directory that does not exist). `lattice workspace show|validate|impact NAME [--json] [--workspace PATH]` (also `python -m lattice.workspace ...`): exit 0 ok (warnings allowed), 1 problems or an unknown project, 2 no manifest or unreadable.
+
+Studio finds the manifest once at start: `lattice studio --workspace PATH` (the file or its directory), else `$LATTICE_WORKSPACE`, else the first `lattice.workspace.toml` walking up from the directory Studio started in. It re-reads that file on every `GET /api/workspace`. With no DIR, the workspace's projects (those that are projects: a `studio.toml`, or `spec.py` and `spec.trace.json`) also join discovery, after the cwd's and before the registry's, under their manifest names; with DIRs the hub is exactly the DIRs, as before.
+
+### GET /api/workspace
+Not project-scoped (like `GET /api/projects`; `/p/<name>/api/workspace` answers the same). Read-only: there is no write route (`POST /api/workspace` answers 404).
+```json
+{"workspace": {"name": "shop", "path": "/Users/owner/shop/lattice.workspace.toml"},
+ "projects": [{"name": "billing-api", "path": "/Users/owner/shop/billing", "role": "provider",
+               "in_hub": true, "hub_name": "billing", "spec": true},
+              {"name": "web-app", "path": "/Users/owner/shop/web", "role": "consumer",
+               "in_hub": false, "hub_name": null, "spec": false}],
+ "links": [{"from": "web-app", "to": "billing-api", "kind": "uses", "note": "POST /invoices"}],
+ "problems": [{"code": "missing_path", "severity": "warning", "message": "project web-app: /Users/owner/shop/web does not exist"}]}
+```
+`in_hub`: this Studio serves the project's directory; `hub_name`: the name it is served under (`/p/<hub_name>/api/...`), null when not served. `spec`: `spec.py` and `spec.trace.json` exist. Projects and links are listed even when the manifest has errors (best effort; the errors are in `problems`). No manifest: `{"workspace": null, "projects": [], "links": [], "problems": []}`. An unreadable manifest: `workspace` `{"name": null, "path": ...}`, empty lists, the `unreadable` problem.
+
+### Studio UI
+When `GET /api/workspace` names a workspace, the project switcher in the top bar lists the hub's projects under a "Workspace <name>" group by their manifest names and roles (`studio · app`), and the manifest's projects this Studio does not serve as disabled entries ("(not in this Studio)"); the option values stay the hub names. The Map gets a third switch, **Workspace**, when a workspace exists: the manifest's projects as nodes (role, "not in this Studio", "no spec" as the subtitle) and its links as edges (solid `depends_on`, dashed `uses`), drawn by the same graph adapter (`graph.js`) without `/api/graph`; double-clicking a project the hub serves opens it. On the real server, whose Map falls back to tiles, a "Workspace map" button above the tiles opens the same level. With no workspace both are unchanged.
+
+### The MCP server (multi-project layer 1; not an HTTP route)
+`python -m lattice.mcp serve [--project DIR ...] [--workspace PATH]` serves many projects: `project_list`, `project_set_active`, an optional `project` argument on every tool, and with a workspace `workspace_impact`; `python -m lattice.mcp guard [--project DIR ...]` protects the spec files of the project owning each path (nearest `spec.trace.json`). See `lattice/mcp/projects.py` and `lattice/mcp/guard.py`. Studio's chat sessions still pass one fixed `--project`.
+
+### The mock
+`GET /api/workspace` answers the real shape for a fixture manifest `owner-dev`: `scheduler` (the default project, `provider`) and `studio` (the second project, `app`) in the hub, `scheduler-web` (`consumer`) not served and missing (a `missing_path` warning), three links. No write route.

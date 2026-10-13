@@ -128,7 +128,7 @@ function renderTopbar() {
   clear($project);
   const list = state.projects || [];
   const cur = currentProject();
-  if (list.length > 1 && cur) {
+  if ((list.length > 1 || (state.workspace?.projects || []).length > 1) && cur) {
     add($project, projectSwitcher(list, cur));
   } else if (m) {
     add($project, h("span", { class: "project-name" }, m.project?.name || "Untitled project"));
@@ -203,16 +203,33 @@ function projectHealth(p) {
   return { tone: "ok", word: "spec and app ready" };
 }
 
+/** A hub project's entry in the workspace manifest (v1.16), or null (no workspace, or not in it). */
+function wsEntry(p) {
+  return (state.workspace?.projects || []).find((w) => w.hub_name === p.name) || null;
+}
+
+/** The switcher's word for a project: its manifest name and role in a workspace, else its name. */
+function projectLabel(p) {
+  const w = wsEntry(p);
+  const base = w ? `${w.name}${w.role ? ` · ${w.role}` : ""}` : p.name;
+  return `${base}${projectHealth(p).tone === "bad" ? " (no spec)" : ""}`;
+}
+
 function projectSwitcher(list, cur) {
   const health = projectHealth(cur);
   const id = "project-select";
+  const ws = state.workspace;
+  const options = list.map((p) => h("option", { value: p.name, selected: p.name === cur.name }, projectLabel(p)));
+  // v1.16: the manifest's projects this Studio does not serve are named, not selectable
+  const outside = (ws?.projects || []).filter((w) => !w.in_hub)
+    .map((w) => h("option", { value: "", disabled: true }, `${w.name}${w.role ? ` · ${w.role}` : ""} (not in this Studio)`));
   return h("span", { class: "project-switch" },
-    h("span", { class: ["proj-dot", `proj-${health.tone}`], role: "img", "aria-label": health.word, title: `${cur.name}: ${health.word}` }),
-    h("label", { class: "sr-only", for: id }, "Project"),
+    h("span", { class: ["proj-dot", `proj-${health.tone}`], role: "img", "aria-label": health.word, title: `${projectLabel(cur)}: ${health.word}` }),
+    h("label", { class: "sr-only", for: id }, ws ? `Project in workspace ${ws.workspace.name}` : "Project"),
     h("select", {
       id, class: "project-select", title: cur.root || cur.name,
-      onchange: (e) => switchProject(e.target.value),
-    }, list.map((p) => h("option", { value: p.name, selected: p.name === cur.name }, `${p.name}${projectHealth(p).tone === "bad" ? " (no spec)" : ""}`))),
+      onchange: (e) => e.target.value && switchProject(e.target.value),
+    }, ws ? h("optgroup", { label: `Workspace ${ws.workspace.name}` }, options, outside) : options),
   );
 }
 
@@ -514,6 +531,12 @@ async function loadProjects() {
   } catch (e) {
     update({ projects: null }); // an older server: no switcher, and no capability gating
   }
+  try {
+    const ws = await api.workspace();
+    update({ workspace: ws && ws.workspace && ws.workspace.name ? ws : null });
+  } catch (e) {
+    update({ workspace: null }); // an older server (before v1.16): no workspace
+  }
 }
 
 /** Switch to project `name` (null: the server's default, bare /api). Clears everything
@@ -580,7 +603,7 @@ window.addEventListener("studio:run-check", () => {
 
 subscribe((st, patch) => {
   const keys = Object.keys(patch);
-  if (keys.some((k) => ["model", "connected", "checkRunning", "overlay", "loadError", "projects", "project"].includes(k))) renderTopbar();
+  if (keys.some((k) => ["model", "connected", "checkRunning", "overlay", "loadError", "projects", "project", "workspace"].includes(k))) renderTopbar();
   if (keys.some((k) => ["model", "view"].includes(k)) || (("buildRun" in patch || "planActive" in patch) && buildLive() !== navBuildLive)) {
     navBuildLive = buildLive();
     renderNav();
@@ -588,7 +611,7 @@ subscribe((st, patch) => {
   if ("view" in patch) document.body.classList.remove("nav-open");
   if ("view" in patch && st.view !== "rules" && !("rulesScope" in patch)) st.rulesScope = null;
   if ("view" in patch && location.hash !== hashFor(st.view, st.project)) history.replaceState(null, "", hashFor(st.view, st.project));
-  if (keys.some((k) => ["model", "view", "change", "overlay", "marked", "loadError", "lens", "projects", "planView"].includes(k))) {
+  if (keys.some((k) => ["model", "view", "change", "overlay", "marked", "loadError", "lens", "projects", "planView", "workspace"].includes(k))) {
     const keep = !("view" in patch) && !st.focusTarget;
     renderMain(keep);
   } else if ("selection" in patch || "codeTarget" in patch) {

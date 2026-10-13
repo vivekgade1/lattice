@@ -74,6 +74,12 @@ export const api = {
     if (!Array.isArray(data)) throw new Error("The server did not return a project list.");
     return data;
   },
+  // v1.16, not project-scoped: the workspace manifest ({workspace: null, ...} when none).
+  workspace: async () => {
+    const res = await fetch("/api/workspace", { cache: "no-store" });
+    if (!res.ok) throw new Error(`The server answered ${res.status}.`);
+    return res.json();
+  },
   model: () => call("GET", "/api/model"),
   ask: (question, selected, verify) => call("POST", "/api/ask", { question, selected, verify }),
   // `parent` (v1.1 #3) answers a change set's conflict or question as a follow-up: the

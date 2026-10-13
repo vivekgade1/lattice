@@ -534,6 +534,30 @@
       "text": "Proposals are ranked by frequency x cost, seconds before list-price dollars and never converted, with no model; items closed in the improvement ledger are left out; a proposal that touches the checker or the spec language is `needs_owner` and never drafted.",
       "section": "Lattice Studio server: requirements > Improvement proposals",
       "line": 142
+    },
+    {
+      "id": "R90",
+      "text": "GET /api/workspace answers the workspace manifest Studio found when it started (`--workspace`, else `LATTICE_WORKSPACE`, else the first `lattice.workspace.toml` walking up from the directory it started in): `workspace` (`name` and `path`), `projects` (each with `name`, `path`, `role`, `in_hub`, `hub_name` and `spec`), `links` (each with `from`, `to`, `kind` and `note`) and `problems` (each with `code`, `severity` and `message`); it answers the same under `/p/<name>/api/workspace`.",
+      "section": "Lattice Studio server: requirements > Workspace",
+      "line": 146
+    },
+    {
+      "id": "R91",
+      "text": "A workspace project is `in_hub` when Studio serves its directory, and its `hub_name` is the name Studio serves it under; a project Studio does not serve has `in_hub` false and `hub_name` null; `spec` says whether the project's directory holds spec.py and spec.trace.json.",
+      "section": "Lattice Studio server: requirements > Workspace",
+      "line": 147
+    },
+    {
+      "id": "R92",
+      "text": "There is no write route for the workspace: POST /api/workspace answers 404, and reading it changes nothing; a declared project whose directory does not exist is a `missing_path` warning and the workspace still answers.",
+      "section": "Lattice Studio server: requirements > Workspace",
+      "line": 148
+    },
+    {
+      "id": "R93",
+      "text": "With no manifest, GET /api/workspace answers `workspace` null and empty `projects`, `links` and `problems`; a manifest with an unknown link end, a duplicate project name, a self link or a cycle of `depends_on` links answers its projects and links with each of those as an error in `problems`.",
+      "section": "Lattice Studio server: requirements > Workspace",
+      "line": 149
     }
   ],
   "links": {
@@ -798,6 +822,15 @@
     ],
     "R87": [
       "scenario:improvement_proposals_are_listed"
+    ],
+    "R90": [
+      "scenario:the_workspace_is_listed"
+    ],
+    "R91": [
+      "scenario:the_workspace_is_listed"
+    ],
+    "R92": [
+      "scenario:the_workspace_is_listed"
     ]
   },
   "unchecked": {
@@ -815,7 +848,8 @@
     "R81": "the web UI is not observable over HTTP; tests/studio/test_mcp_intake.py checks its code statically and the browser check is recorded in docs/results/2026-10-12-spike4-results.md",
     "R84": "a project with its own engines and modules is not in the seed; tests/studio/test_engines_api.py covers the registration, the re-hash on every read and the refusal of a changed module, tests/modules/test_modules.py the install, the lock and the checker's refusal",
     "R88": "the log's contents need a build with a JSON-writing gate, a give-up and a stop; tests/studio/test_events.py checks each field (layer_seconds, cause, actor, the ledger's own wall time, signal_key) on a stub plan of this seed whose gate writes a check-shaped report",
-    "R89": "the seed's log never holds a checker-targeted or closed cluster; tests/improve/test_analyze.py checks the arithmetic, the class order (no conversion), the ledger and the needs_owner refusal, tests/improve/test_cli.py the CLI run"
+    "R89": "the seed's log never holds a checker-targeted or closed cluster; tests/improve/test_analyze.py checks the arithmetic, the class order (no conversion), the ledger and the needs_owner refusal, tests/improve/test_cli.py the CLI run",
+    "R93": "the harness puts every scenario's project under one valid workspace manifest, so no scenario sees no manifest or an invalid one; tests/workspace/test_studio_api.py checks both on the real server and the mock, tests/workspace/test_workspace.py each error class, and docs/results/2026-10-12-multi-results.md (MP-3) records a real-server run with and without a manifest"
   },
   "context": [
     "R1"

@@ -45,6 +45,8 @@ READ_TOOLS = [
     "change_list",
 ]
 WRITE_TOOLS = ["check_run", "change_propose"]
+# multi-project layer 1: always listed, also --readonly (tests/mcp/test_multi_server.py)
+PROJECT_TOOLS = ["project_list", "project_set_active"]
 FORBIDDEN = {"change_accept", "change_reject", "change_delete", "accept", "reject", "write_file"}
 
 
@@ -115,7 +117,7 @@ def test_initialize_ping_list_and_notifications(project: Path) -> None:
     assert out[1]["result"] == {}
     tools = out[2]["result"]["tools"]
     names = [t["name"] for t in tools]
-    assert sorted(names) == sorted(READ_TOOLS + WRITE_TOOLS)
+    assert sorted(names) == sorted(READ_TOOLS + WRITE_TOOLS + PROJECT_TOOLS)
     assert not FORBIDDEN & set(names)
     for t in tools:
         assert t["inputSchema"]["type"] == "object" and t["description"]
@@ -236,7 +238,7 @@ def test_readonly_hides_change_propose_and_check_run(project: Path) -> None:
         "--readonly",
     )
     names = [t["name"] for t in out[1]["result"]["tools"]]
-    assert sorted(names) == sorted(READ_TOOLS)
+    assert sorted(names) == sorted(READ_TOOLS + PROJECT_TOOLS)
     assert out[2]["error"]["code"] == -32602 and out[3]["error"]["code"] == -32602
 
 

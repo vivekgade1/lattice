@@ -5,6 +5,8 @@ Run it with ``uv run --extra db python -m lattice.studio PROJECT_DIR [--port N]
 [--model sonnet]``. It binds to 127.0.0.1 only. With no directory, or several, one server
 holds many projects (lattice/studio/hub.py, API.md v1.6): ``GET /api/projects``, every
 route also under ``/p/<name>/api/...``, the bare ``/api/...`` for the default project.
+``GET /api/workspace`` (API.md v1.16) answers the ``lattice.workspace.toml`` in force
+(``--workspace``, ``$LATTICE_WORKSPACE``, else walking up from the cwd; lattice/workspace.py).
 
 **The project directory** holds ``REQUIREMENTS.md``, ``spec.py`` (defines ``SPEC``),
 ``spec.trace.json`` and, optionally, ``studio.toml``::
@@ -1911,6 +1913,8 @@ class Handler(BaseHTTPRequestHandler):
         path, name = split
         if path == "/api/projects":
             return self._dispatch(self.server.hub.list)
+        if path == "/api/workspace":  # API v1.16: not project-scoped, read-only
+            return self._dispatch(lambda: self.server.hub.workspace(self.server.workspace_path))
         if not path.startswith("/api/"):
             return self._static(path)
         st = self._project(name)
@@ -2111,10 +2115,13 @@ class StudioServer(ThreadingHTTPServer):
         studio: Studio | StudioHub,
         web_dir: Path = WEB_DIR,
         verbose: bool = False,
+        workspace: Path | None = None,
     ) -> None:
         from lattice.studio.hub import StudioHub
 
         super().__init__(addr, Handler)
+        # API v1.16: the lattice.workspace.toml GET /api/workspace reads (None: no workspace)
+        self.workspace_path = workspace
         if isinstance(studio, StudioHub):
             self.hub = studio
         else:  # one project, served as before v1.6 (bare --studio-url)
@@ -2144,9 +2151,11 @@ def make_server(
     claude_bin: str | None = None,
     web_dir: Path = WEB_DIR,
     verbose: bool = False,
+    workspace: Path | None = None,
 ) -> StudioServer:
     """A Studio server for `project` on 127.0.0.1:`port` (0 picks a free one); not yet
-    serving. `generator` (tests: a ScriptedGenerator) replaces the Claude CLI client."""
+    serving. `generator` (tests: a ScriptedGenerator) replaces the Claude CLI client.
+    `workspace`: the manifest GET /api/workspace answers (API v1.16)."""
     from lattice.cli import project_name
 
     root = Path(project).resolve()
@@ -2158,7 +2167,7 @@ def make_server(
         claude_bin=claude_bin,
         name=project_name(root),
     )
-    return StudioServer(("127.0.0.1", port), studio, web_dir, verbose)
+    return StudioServer(("127.0.0.1", port), studio, web_dir, verbose, workspace)
 
 
 def make_hub_server(
@@ -2173,6 +2182,7 @@ def make_hub_server(
     web_dir: Path = WEB_DIR,
     verbose: bool = False,
     prefixed: bool = True,
+    workspace: Path | None = None,
 ) -> StudioServer:
     """A Studio server over many `projects` (``(name, root)``, see lattice.studio.hub),
     each with its own Studio built on first use; ``default`` (else the first) answers
@@ -2191,7 +2201,7 @@ def make_hub_server(
         )
 
     hub = StudioHub(projects, factory, default=default, prefixed=prefixed, claude_bin=claude_bin)
-    return StudioServer(("127.0.0.1", port), hub, web_dir, verbose)
+    return StudioServer(("127.0.0.1", port), hub, web_dir, verbose, workspace)
 
 
 NO_PROJECTS = """studio: no Lattice projects found in {where}.
@@ -2228,6 +2238,7 @@ def _single(args: argparse.Namespace) -> StudioServer | int:
         model=args.model,
         generator=StubGenerator() if args.stub_llm else None,
         verbose=not args.quiet,
+        workspace=args.workspace_path,
     )
     st = srv.studio
     print(
@@ -2246,9 +2257,13 @@ def _single(args: argparse.Namespace) -> StudioServer | int:
 
 def _many(args: argparse.Namespace) -> StudioServer | int:
     """No DIR (discovery) or several: one server, a Studio per project."""
+    from lattice import workspace as wsmod
     from lattice.studio.hub import discover, registry_path
 
-    projects = discover(args.dirs)
+    ws = None
+    if not args.dirs and args.workspace_path is not None:  # a workspace joins discovery
+        ws, _problems = wsmod.try_load(args.workspace_path)
+    projects = discover(args.dirs, workspace=ws)
     if not projects:
         where = (
             ", ".join(str(d) for d in args.dirs) if args.dirs else f"{Path.cwd()} (and dogfood/*)"
@@ -2267,6 +2282,7 @@ def _many(args: argparse.Namespace) -> StudioServer | int:
         model=args.model,
         generator_factory=(lambda _m: StubGenerator()) if args.stub_llm else None,
         verbose=not args.quiet,
+        workspace=args.workspace_path,
     )
     base = f"http://127.0.0.1:{srv.server_address[1]}"
     w = max(len(n) for n in names)
@@ -2298,11 +2314,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--model", default=None, help="the LLM (default: studio.toml, else sonnet)")
     ap.add_argument("--quiet", action="store_true", help="no request log")
     ap.add_argument(
+        "--workspace",
+        default=None,
+        help="a lattice.workspace.toml (or its directory) for GET /api/workspace; default: "
+        "$LATTICE_WORKSPACE, else the first one walking up from the cwd. With no DIR its "
+        "projects also join discovery",
+    )
+    ap.add_argument(
         "--stub-llm",
         action="store_true",
         help="TEST ONLY: a fixed offline generator instead of Claude (StubGenerator)",
     )
     args = ap.parse_args(argv)
+    from lattice import workspace as wsmod
+
+    args.workspace_path = wsmod.find(start=Path.cwd(), explicit=args.workspace)
     if len(args.dirs) == 1:
         srv = _single(args)
     else:
